@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Windows" />
+	<File name="GUIFrame.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="1774" topLine="0" />
+	</File>
+	<File name="SleepyHeadApp.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="308" topLine="0" />
+	</File>
+	<File name="SleepyHeadMain.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="202" topLine="0" />
+	</File>
+	<File name="SleepyHeadMain.h" open="1" top="0" tabpos="4">
+		<Cursor position="199" topLine="0" />
+	</File>
+	<File name="graphs/graph.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="112" topLine="0" />
+	</File>
+	<File name="graphs/graph.h" open="1" top="0" tabpos="5">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/binary_file.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/binary_file.h" open="1" top="0" tabpos="14">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/machine.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="4763" topLine="174" />
+	</File>
+	<File name="libs/sleeplib/machine.h" open="1" top="0" tabpos="2">
+		<Cursor position="108" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/machine_loader.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/machine_loader.h" open="1" top="0" tabpos="15">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/preferences.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/preferences.h" open="1" top="0" tabpos="16">
+		<Cursor position="31" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/profiles.cpp" open="1" top="0" tabpos="10">
+		<Cursor position="22" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/profiles.h" open="1" top="0" tabpos="17">
+		<Cursor position="28" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="libs/sleeplib/prs1_loader.h" open="1" top="1" tabpos="18">
+		<Cursor position="31" topLine="0" />
+	</File>
+	<File name="libs/tinyxml/tinystr.cpp" open="1" top="0" tabpos="13">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="version.h" open="0" top="0" tabpos="11">
+		<Cursor position="0" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

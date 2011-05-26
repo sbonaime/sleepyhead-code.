@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="SleepyHead" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/SleepyHead" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-march=core2" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/SleepyHead" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-march=core2" />
+					<Add option="-O2" />
+					<Add option="-pg" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg" />
+				</Linker>
+			</Target>
+			<Target title="Windows">
+				<Option output="bin/Windows/SleepyHead" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/Windows/" />
+				<Option object_output="obj/Windows/" />
+				<Option type="0" />
+				<Option compiler="mingw" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Option projectLinkerOptionsRelation="1" />
+				<Compiler>
+					<Add option="-march=i686" />
+					<Add option="-O2" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --cflags`" />
+					<Add option="-std=gnu++0x" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`wx-config --version=2.8 --cflags`" />
+			<Add option="-std=gnu++0x" />
+			<Add directory="libs" />
+			<Add directory="graphs" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --version=2.8 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
+		</Linker>
+		<Unit filename="GUIFrame.cpp" />
+		<Unit filename="GUIFrame.h" />
+		<Unit filename="SleepyHeadApp.cpp" />
+		<Unit filename="SleepyHeadApp.h" />
+		<Unit filename="SleepyHeadMain.cpp" />
+		<Unit filename="SleepyHeadMain.h" />
+		<Unit filename="WxWizFrame.fbp" />
+		<Unit filename="graphs/graph.cpp" />
+		<Unit filename="graphs/graph.h" />
+		<Unit filename="libs/sleeplib/binary_file.cpp" />
+		<Unit filename="libs/sleeplib/binary_file.h" />
+		<Unit filename="libs/sleeplib/machine.cpp" />
+		<Unit filename="libs/sleeplib/machine.h" />
+		<Unit filename="libs/sleeplib/machine_loader.cpp" />
+		<Unit filename="libs/sleeplib/machine_loader.h" />
+		<Unit filename="libs/sleeplib/preferences.cpp" />
+		<Unit filename="libs/sleeplib/preferences.h" />
+		<Unit filename="libs/sleeplib/profiles.cpp" />
+		<Unit filename="libs/sleeplib/profiles.h" />
+		<Unit filename="libs/sleeplib/prs1_loader.cpp" />
+		<Unit filename="libs/sleeplib/prs1_loader.h" />
+		<Unit filename="libs/tinyxml/tinystr.cpp" />
+		<Unit filename="libs/tinyxml/tinystr.h" />
+		<Unit filename="libs/tinyxml/tinyxml.cpp" />
+		<Unit filename="libs/tinyxml/tinyxml.h" />
+		<Unit filename="libs/tinyxml/tinyxmlerror.cpp" />
+		<Unit filename="libs/tinyxml/tinyxmlparser.cpp" />
+		<Unit filename="version.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="300" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
