@@ -141,6 +141,20 @@ void gGraphWindow::SetXBounds(double minx, double maxx)
 }
 void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
+    double rx1=0,rx2=0;
+    ZoomXPixels(x1,x2,rx1,rx2);
+    for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+        (*g)->SetXBounds(rx1,rx2);
+    }
+
+    if (m_block_zoom) {
+        RefreshRect(m_mouseRBrect,false);
+    } else {
+        SetXBounds(rx1,rx2);
+    }
+}
+void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
+{
     x1-=GetLeftMargin();
     x2-=GetLeftMargin();
     if (x1<0) x1=0;
@@ -151,33 +165,41 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
     double min=min_x;
     double max=max_x;
     double q=max-min;
-    double rx1=min+(double(x1)/Width()) * q;
-    double rx2=min+(double(x2)/Width()) * q;
-    SetXBounds(rx1,rx2);
+    rx1=min+(double(x1)/Width()) * q;
+    rx2=min+(double(x2)/Width()) * q;
 }
 
 // Move x-axis by the amount of space represented by integer i Pixels (negative values moves backwards)
-void gGraphWindow::MoveX(int i)
+void gGraphWindow::MoveX(int i,double &min, double & max)
 {
     //if (i==0) return;
-    double mx=min_x;
-    double Mx=max_x;
-    double q=Mx-mx;
+    min=min_x;
+    max=max_x;
+    double q=max-min;
     double rx1=(double(i)/Width()) * q;
-    mx-=rx1;
-    Mx-=rx1;
+    min-=rx1;
+    max-=rx1;
 
     // Keep bounds when hitting hard edges
-    if (mx<rmin_x) { //(t=rRealMinX())) {
-        mx=rmin_x;
-        Mx=mx+q;
+    if (min<rmin_x) { //(t=rRealMinX())) {
+        min=rmin_x;
+        max=min+q;
     }
-    if (Mx>rmax_x) {
-        Mx=rmax_x;
-        mx=Mx-q;
+    if (max>rmax_x) {
+        max=rmax_x;
+        min=max-q;
     }
+}
 
-    SetXBounds(mx,Mx);
+void gGraphWindow::MoveX(int i)
+{
+    double min,max;
+    MoveX(i,min,max);
+
+    for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+        (*g)->SetXBounds(min,max);
+    }
+    if (!m_block_zoom) SetXBounds(min,max);
 }
 void gGraphWindow::ZoomX(double mult,int origin_px)
 {
@@ -251,7 +273,13 @@ void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 {
     if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
-        ZoomX(2,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+        for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->ZoomX(2,0);
+        }
+        if (m_block_zoom) {
+        } else {
+            ZoomX(2,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+        }
     }
     m_mouseRDown=false;
 
@@ -276,11 +304,13 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     int t1=MIN(x1,x2);
     int t2=MAX(x1,x2);
 
+    wxRect r;
     if (t1 != t2) {
         ZoomXPixels(t1,t2);
     }
+    r=wxRect(0, 0, 0, 0);
 
-    wxRect r(0, 0, 0, 0);
+
     m_mouseRBrect=r;
     event.Skip();
 }
@@ -296,6 +326,9 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
     SetMargins(10, 15, 30, 80);
+    m_block_move=false;
+    m_block_zoom=false;
+
 
 }
 gGraphWindow::~gGraphWindow()

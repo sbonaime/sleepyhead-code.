@@ -334,9 +334,11 @@ Daily::Daily(wxWindow *win)
     AddData(flags[6]=new FlagData(CPAP_RERA,1));
     AddData(flags[7]=new FlagData(PRS1_PressurePulse,1));
     AddData(flags[8]=new FlagData(PRS1_VSnore2,1));
+    AddData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
     FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
     FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
+    FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
     FRW->AddLayer(new gLineOverlayBar(flags[5],wxRED,wxT("VS")));
     FRW->AddLayer(new gLineOverlayBar(flags[4],wxBLACK,wxT("FL")));
     FRW->AddLayer(new gLineOverlayBar(flags[3],wxBLUE,wxT("H")));
@@ -347,6 +349,14 @@ Daily::Daily(wxWindow *win)
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Sleep Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     SF->SetMargins(10,15,20,80);
 
+    SF->LinkZoom(FRW);
+    SF->LinkZoom(PRD);
+    SF->LinkZoom(LEAK);
+
+    const int sfc=9;
+
+
+    SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
     SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
     SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
     SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));

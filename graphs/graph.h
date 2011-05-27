@@ -141,6 +141,9 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         inline int Width() { return m_scrX-m_marginLeft-m_marginRight; };
         inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };
 
+        void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); }; // Linking graphs changes zoom behaviour..
+        void LinkMove(gGraphWindow *g) { link_move.push_back(g); }; // Linking graphs changes zoom behaviour..
+
         virtual double MinX();
         virtual double MaxX();
         virtual double MinY();
@@ -159,7 +162,10 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         virtual void SetXBounds(double minx, double maxx);
         virtual void ZoomX(double mult,int origin_px);
         virtual void ZoomXPixels(int x1, int x2);           // Zoom between two selected points on screen
+        virtual void ZoomXPixels(int x1,int x2,double &rx1,double &rx2);
+
         virtual void MoveX(int i);                          // Move x bounds by i Pixels
+        virtual void MoveX(int i,double &min, double & max);
 
         inline int x2p(double x) {
             double xx=max_x-min_x;
@@ -188,13 +194,20 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         //virtual void Update();
         void AddLayer(gLayer *l);
 
-        void DataChanged(gLayer *layer);
+        virtual void DataChanged(gLayer *layer);
 
         double max_x,min_x,max_y,min_y;
         double rmax_x,rmin_x,rmax_y,rmin_y;
 
-    protected:
+        void SetBlockZoom(bool b) { m_block_zoom=b; };
+        void SetBlockMove(bool b) { m_block_move=b; };
 
+    protected:
+        list<gGraphWindow *>link_zoom;
+        list<gGraphWindow *>link_move;
+
+        bool m_block_move;
+        bool m_block_zoom;
         std::list<gLayer *> layers;
         wxColour m_bgColour;	//!< Background Colour
         wxColour m_fgColour;	//!< Foreground Colour
