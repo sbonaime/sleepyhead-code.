@@ -385,6 +385,10 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     session->summary[CPAP_PressurePercentName]=90.0;
     session->summary[CPAP_PressureAverage]=buffer[0x19]/10.0;
 
+    if (max==0) {
+        session->summary[CPAP_PressureAverage]=session->summary[CPAP_PressureMin];
+    }
+
     session->summary[CPAP_Obstructive]=(long)buffer[0x1C] | (buffer[0x1D] << 8);
     session->summary[CPAP_ClearAirway]=(long)buffer[0x20] | (buffer[0x21] << 8);
     session->summary[CPAP_Hypopnea]=(long)buffer[0x2A] | (buffer[0x2B] << 8);
@@ -552,16 +556,20 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     vector<int> wavesize;
     int samples=0;
     int duration=0;
-
     while (true) {
         br=f.Read(header,hl);
 
         if (br<hl) {
-            if (cnt==0) return false;
+            if (cnt==0)
+                return false;
             else break;
         }
 
-        if (header[0]!=header[5]) return false;
+        if (header[0]!=header[5]) {
+            if (cnt==0)
+                return false;
+            else break;
+        }
 
         sequence=size=timestamp=seconds=ext=0;
         sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
@@ -569,16 +577,24 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         size=(header[2] << 8) | header[1];
         ext=header[6];
 
+        if (sequence==328) {
+            seconds=0;
+        }
         if (!start) start=timestamp;
         seconds=(header[16] << 8) | header[15];
 
         size-=(hl+2);
 
-        if (ext!=5) return false;
+        if (ext!=5) {
+            if (cnt==0)
+                return false;
+            else break;
+        }
 
         unsigned char sum=0;
         for (int i=0; i<hl-1; i++) sum+=header[i];
-        if (sum!=header[hl-1]) return false;
+        if (sum!=header[hl-1])
+            return false;
 
         char * buffer=new char [size];
         br=f.Read(buffer,size);
@@ -596,12 +612,14 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         char chkbuf[2];
         wxInt16 chksum;
         br=f.Read(chkbuf,2);
-        if (br<2) return false;
+        if (br<2)
+            return false;
         chksum=chkbuf[0] << 8 | chkbuf[1];
 
     }
 
-    if (samples==0) return false;
+    if (samples==0)
+        return false;
 
     //double rate=double(duration)/double(samples);
 

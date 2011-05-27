@@ -215,13 +215,13 @@ Summary::Summary(wxWindow *win)
     fgSizer->Add(AHI,1,wxEXPAND);
 
     pressure=new HistoryCodeData(machine,CPAP_PressureAverage,30);
-    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Average Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,60,80);
     PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
     leak=new HistoryCodeData(machine,CPAP_LeakAverage,30);
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Average Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     LEAK->SetMargins(10,15,60,80);
     LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     fgSizer->Add(LEAK,1,wxEXPAND);
