@@ -7785,3 +7785,191 @@
 	"wx/progdlg.h"
 	"wx/dialog.h"
 
+1306390268 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
+	"wx/wxprec.h"
+	<wx/wx.h>
+	"GUIFrame.h"
+
+1306384009 /home/mark/projects/git/sleepyhead/GUIFrame.h
+	<wx/intl.h>
+	<wx/string.h>
+	<wx/bitmap.h>
+	<wx/image.h>
+	<wx/icon.h>
+	<wx/menu.h>
+	<wx/gdicmn.h>
+	<wx/font.h>
+	<wx/colour.h>
+	<wx/settings.h>
+	<wx/statusbr.h>
+	<wx/aui/auibook.h>
+	<wx/frame.h>
+	<wx/aui/aui.h>
+	<wx/html/htmlwin.h>
+	<wx/sizer.h>
+	<wx/scrolwin.h>
+	<wx/calctrl.h>
+	<wx/panel.h>
+
+1306414983 source:/home/mark/projects/git/sleepyhead/SleepyHeadApp.cpp
+	"wx_pch.h"
+	<iostream>
+	<wx/log.h>
+	<wx/progdlg.h>
+	<wx/datetime.h>
+	"SleepyHeadApp.h"
+	"SleepyHeadMain.h"
+	"version.h"
+	"sleeplib/prs1_loader.h"
+	"sleeplib/profiles.h"
+
+1305881106 /home/mark/projects/git/sleepyhead/SleepyHeadApp.h
+	<wx/app.h>
+
+1306414968 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
+	"SleepyHeadApp.h"
+	"GUIFrame.h"
+	"sleeplib/machine.h"
+	"graphs/graph.h"
+
+1306415028 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
+	<wx/string.h>
+	<wx/variant.h>
+	<wx/dir.h>
+	<wx/filename.h>
+	<wx/ffile.h>
+	<wx/utils.h>
+	<map>
+	<vector>
+	<list>
+	"tinyxml/tinyxml.h"
+	"preferences.h"
+
+1305166866 /home/mark/projects/git/sleepyhead/libs/tinyxml/tinyxml.h
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<string>
+	<iostream>
+	<sstream>
+	"tinystr.h"
+
+1305166866 /home/mark/projects/git/sleepyhead/libs/tinyxml/tinystr.h
+	<assert.h>
+	<string.h>
+
+1306415056 /home/mark/projects/git/sleepyhead/libs/sleeplib/preferences.h
+	<wx/string.h>
+	<wx/variant.h>
+	<map>
+	"tinyxml/tinyxml.h"
+
+1306414968 /home/mark/projects/git/sleepyhead/graphs/graph.h
+	<sleeplib/machine.h>
+	<list>
+
+1306410340 /home/mark/projects/git/sleepyhead/version.h
+
+1306415077 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
+	"machine.h"
+	"machine_loader.h"
+	"profiles.h"
+
+1306415040 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine_loader.h
+	"profiles.h"
+
+1306415066 /home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.h
+	<wx/string.h>
+	<map>
+	"machine.h"
+	"preferences.h"
+	"tinyxml/tinyxml.h"
+
+1306414968 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+	"wx_pch.h"
+	"version.h"
+	<wx/app.h>
+	<wx/msgdlg.h>
+	<wx/dirdlg.h>
+	<wx/progdlg.h>
+	"SleepyHeadMain.h"
+	"sleeplib/profiles.h"
+
+1306414974 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
+	<wx/settings.h>
+	<wx/dcbuffer.h>
+	<wx/log.h>
+	"graph.h"
+
+1306414966 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/binary_file.cpp
+	<wx/filename.h>
+	"binary_file.h"
+
+1306415015 /home/mark/projects/git/sleepyhead/libs/sleeplib/binary_file.h
+	<wx/ffile.h>
+	<wx/utils.h>
+
+1306405052 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+	<tr1/random>
+	<wx/colour.h>
+	<wx/log.h>
+	<wx/progdlg.h>
+	"binary_file.h"
+	"machine.h"
+	"profiles.h"
+
+1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine_loader.cpp
+	"machine_loader.h"
+
+1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/preferences.cpp
+	<wx/wx.h>
+	<wx/filename.h>
+	<wx/string.h>
+	<wx/variant.h>
+	<wx/stdpaths.h>
+	"preferences.h"
+
+1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
+	<wx/filefn.h>
+	<wx/filename.h>
+	<wx/utils.h>
+	<wx/dir.h>
+	<wx/log.h>
+	"preferences.h"
+	"profiles.h"
+	"machine.h"
+	"machine_loader.h"
+	"tinyxml/tinyxml.h"
+
+1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
+	<wx/dir.h>
+	<wx/filename.h>
+	<wx/ffile.h>
+	<wx/textfile.h>
+	<wx/string.h>
+	<wx/datetime.h>
+	<wx/log.h>
+	<wx/progdlg.h>
+	<initializer_list>
+	"prs1_loader.h"
+
+1305166866 source:/home/mark/projects/git/sleepyhead/libs/tinyxml/tinystr.cpp
+	"tinystr.h"
+
+1305166866 source:/home/mark/projects/git/sleepyhead/libs/tinyxml/tinyxml.cpp
+	<ctype.h>
+	<sstream>
+	<iostream>
+	"tinyxml.h"
+
+1305166866 source:/home/mark/projects/git/sleepyhead/libs/tinyxml/tinyxmlerror.cpp
+	"tinyxml.h"
+
+1305166866 source:/home/mark/projects/git/sleepyhead/libs/tinyxml/tinyxmlparser.cpp
+	<ctype.h>
+	<stddef.h>
+	"tinyxml.h"
+	<windows.h>
+
