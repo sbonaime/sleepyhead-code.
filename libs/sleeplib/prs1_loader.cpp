@@ -367,6 +367,7 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     session->summary[CPAP_HumidifierStatus]=(buffer[0x09]&0x80)==0x80;
     session->summary[PRS1_SystemLockStatus]=(buffer[0x0a]&0x80)==0x80;
     session->summary[PRS1_SystemResistanceStatus]=(buffer[0x0a]&0x40)==0x40;
+    session->summary[PRS1_SystemResistanceSetting]=(long)buffer[0x0a]&7;
     session->summary[PRS1_HoseDiameter]=(long)((buffer[0x0a]&0x08)?15:22);
     session->summary[PRS1_AutoOff]=(buffer[0x0c]&0x10)==0x10;
     session->summary[PRS1_MaskAlert]=(buffer[0x0c]&0x08)==0x08;

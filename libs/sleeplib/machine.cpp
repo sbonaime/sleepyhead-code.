@@ -1100,7 +1100,11 @@ bool Session::StoreWaveforms(wxString filename)
             //t8=0; // 0=signed, 1=unsigned, 2=float
 
             // followed by sample data.
-            for (int k=0; k<(*j)->samples(); k++) f.Pack((wxInt16)w[k]);
+            if (wxIsPlatformLittleEndian()) {
+                f.Write(w.GetBuffer(),w.samples()*sizeof(SampleFormat));
+            } else {
+                for (int k=0; k<(*j)->samples(); k++) f.Pack((wxInt16)w[k]);
+            }
         }
     }
     return true;

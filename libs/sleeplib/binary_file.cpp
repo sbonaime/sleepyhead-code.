@@ -28,6 +28,11 @@ BinaryFile::~BinaryFile()
 {
     Close();
 }
+size_t BinaryFile::Write(const void* buffer, size_t count)
+{
+    return f.Write(buffer,count);
+}
+
 bool BinaryFile::Open(wxString filename,BFOpenMode mode)
 {
     pos=size=0;

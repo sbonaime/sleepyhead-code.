@@ -67,6 +67,8 @@ public:
     bool Pack(const wxString & data);
     bool Pack(const wxDateTime & data);
 
+    size_t Write(const void* buffer, size_t count);
+
 protected:
     BFOpenMode bf_mode;
     wxFFile f;

@@ -486,17 +486,20 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
         html=html+wxT("<tr><td><b>")+_("Ramp-Time")+wxT("</b></td><td>")+wxString::Format(wxT("%imin"),(int)d->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Ramp-Prs.")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_RampStartingPressure))+wxT("</td></tr>\n");
         // check HumidiferStatus..
-        wxString humid;
+        wxString str;
         if (bool(d->summary_max(CPAP_HumidifierStatus))) {
-            humid=wxString::Format(wxT("x%i"),(int)d->summary_max(CPAP_HumidifierSetting));
-        } else humid=wxT("No");
-        html=html+wxT("<tr><td><b>")+_("Humidifier")+wxT("</b></td><td>")+humid+wxT("</td></tr>\n");
+            str=wxString::Format(wxT("x%i"),(int)d->summary_max(CPAP_HumidifierSetting));
+        } else str=wxT("No");
+        html=html+wxT("<tr><td><b>")+_("Humidifier")+wxT("</b></td><td>")+str+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("System-Lock")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_SystemLockStatus)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Auto-Off")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_AutoOff)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Mask-Alert")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_MaskAlert)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Show-AHI")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_ShowAHI)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Hose-Size")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_HoseDiameter)) ? _("22mm") : _("15mm"))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Sys-Resist.")+wxT("</b></td><td>")+wxString::Format(wxT("%i"),int(d->summary_max(PRS1_SystemResistanceStatus)))+wxT("</td></tr>\n");
+        if (bool(d->summary_max(PRS1_SystemResistanceStatus))) {
+            str=wxString::Format(wxT("x%i"),(int)d->summary_max(PRS1_SystemResistanceSetting));
+        } else str=wxT("No");
+        html=html+wxT("<tr><td><b>")+_("Sys-Resist.")+wxT("</b></td><td>")+str+wxT("</td></tr>\n");
 
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
