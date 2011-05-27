@@ -207,24 +207,35 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 Summary::Summary(wxWindow *win)
 :SummaryPanel(win)
 {
+    const int days_shown=90;
     machine=NULL;
-    ahidata=new HistoryData(machine,30);
+    AddData(ahidata=new HistoryData(machine,days_shown));
     AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     AHI->SetMargins(10,15,60,80);
     AHI->AddLayer(new gBarChart(ahidata,wxRED));
     fgSizer->Add(AHI,1,wxEXPAND);
 
-    pressure=new HistoryCodeData(machine,CPAP_PressureAverage,30);
+    AddData(pressure=new HistoryCodeData(machine,CPAP_PressureAverage,days_shown));
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,60,80);
     PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
-    leak=new HistoryCodeData(machine,CPAP_LeakAverage,30);
+    AddData(leak=new HistoryCodeData(machine,CPAP_LeakAverage,days_shown));
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     LEAK->SetMargins(10,15,60,80);
     LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     fgSizer->Add(LEAK,1,wxEXPAND);
+
+    AddData(usage=new UsageHistoryData(machine,days_shown,UHD_Hours));
+    AddData(waketime=new UsageHistoryData(machine,days_shown,UHD_Waketime));
+    AddData(bedtime=new UsageHistoryData(machine,days_shown,UHD_Bedtime));
+
+    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    USAGE->SetMargins(10,15,60,80);
+    USAGE->AddLayer(new gBarChart(usage,wxGREEN));
+    fgSizer->Add(USAGE,1,wxEXPAND);
+
 
     RefreshData();
 
@@ -241,16 +252,20 @@ void Summary::RefreshData()
         if (vm.size()>=1) {
             machine=vm[0];
         } else machine=NULL;
-        ahidata->SetMachine(machine);
-        pressure->SetMachine(machine);
-        leak->SetMachine(machine);
+        for (auto h=Data.begin();h!=Data.end();h++) {
+            (*h)->SetMachine(machine);
+        }
     }
-    ahidata->Update();
-    pressure->Update();
-    leak->Update();
+    for (auto h=Data.begin();h!=Data.end();h++) {
+        (*h)->Update();
+    }
+
     wxString submodel=_("Unknown Model");
     double ahi=ahidata->GetAverage();
     double avp=pressure->GetAverage();
+    double bt=fmod(bedtime->GetAverage(),12.0);
+    double ua=usage->GetAverage();
+    double wt=fmod(bt+ua,12.0);
 
     wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0>\n");
 
@@ -259,12 +274,17 @@ void Summary::RefreshData()
         if (machine->properties.find(wxT("SubModel"))!=machine->properties.end())
             submodel=wxT(" <br>\n ")+machine->properties[wxT("SubModel")];
         html=html+wxT("<tr><td colspan=2 align=center><b>")+machine->properties[wxT("Brand")]+wxT("</b> <br/>")+machine->properties[wxT("Model")]+wxT("&nbsp;")+machine->properties[wxT("ModelNumber")]+submodel+wxT("</td></tr>\n");
-        //html=html+wxT("<tr><td colspan=2 align=center>")+_("Serial")+wxT(" ")+machine->properties[wxT("Serial")]+wxT("</td></tr>");
+        html=html+wxT("<tr><td colspan=2 align=center>")+_("Firmware")+wxT(" ")+machine->properties[wxT("SoftwareVersion")]+wxT("</td></tr>");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=left><i>")+_("Indice Averages")+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),avp)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Mask Leaks")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),leak->GetAverage())+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+
+        html=html+wxT("<tr><td><b>")+_("Bedtime")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),bt,int(bt*60) % 60)+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td><b>")+_("Waketime")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),wt,int(wt*60) % 60)+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td><b>")+_("Hours/Night")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),ua,int(ua*60)%60)+wxT("</td></tr>\n");
         html=html+wxT("</table>");
     } else {
         html=html+_("Please import some data.");
@@ -323,7 +343,6 @@ Daily::Daily(wxWindow *win)
 
     AddData(frw=new FlowData());
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
-  //  FRW->SetMargins(10,15,25,80);
 
     AddData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
     AddData(flags[1]=new FlagData(CPAP_ClearAirway,6));
@@ -351,11 +370,10 @@ Daily::Daily(wxWindow *win)
     SF->SetMargins(10,15,20,80);
 
     SF->LinkZoom(FRW);
-    //SF->LinkZoom(PRD);
+    //SF->LinkZoom(PRD); // Uncomment to link in more graphs
     //SF->LinkZoom(LEAK);
 
     const int sfc=9;
-
 
     SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
     SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
@@ -366,16 +384,6 @@ Daily::Daily(wxWindow *win)
     SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
     SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
     SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
-    //l=new gBarChart(graphdata,wxHORIZONTAL);
-    //graph->AddLayer(l);
-    //graph->SetData(graphdata);
-    /*l=new gBarChart(wxHORIZONTAL);
-    graph2->AddLayer(l); */
-    //m_mgr2.AddPane(graph,wxLEFT);
-    //wxAuiPaneInfo &z=m_mgr2.GetPane(graph);
-    //z.Caption(graph->GetTitle());
-    //z.CloseButton(false);
-
 
     fgSizer->Add(SF,1,wxEXPAND);
     fgSizer->Add(G_AHI,1,wxEXPAND);
@@ -384,10 +392,7 @@ Daily::Daily(wxWindow *win)
     fgSizer->Add(LEAK,1,wxEXPAND);
     fgSizer->Add(TAP,1,wxEXPAND);
 
-
-    //m_mgr2.Update();
-    //DailyGraphHolder->Add(graph,1,wxEXPAND);
-    foobar_datehack=false;
+    foobar_datehack=false; // this exists due to a wxGTK bug.
     RefreshData();
 
 }

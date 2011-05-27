@@ -1905,3 +1905,30 @@ double HistoryCodeData::Calc(Day *day)
     return day->summary_avg(code);
 }
 
+UsageHistoryData::UsageHistoryData(Machine *_machine,int _days,T_UHD _uhd)
+:HistoryData(_machine,_days),uhd(_uhd)
+{
+}
+UsageHistoryData::~UsageHistoryData()
+{
+}
+double UsageHistoryData::Calc(Day *day)
+{
+    double d;
+    if (uhd==UHD_Bedtime) {
+        d=day->first().GetHour();
+        if (d<12) d+=24;
+        d+=(day->first().GetMinute()/60.0);
+        d+=(day->first().GetSecond()/3600.0);
+        return d;
+    }
+    else if (uhd==UHD_Waketime) {
+        d=day->last().GetHour();
+        d+=(day->last().GetMinute()/60.0);
+        d+=(day->last().GetSecond()/3600.0);
+        return d;
+    }
+    else if (uhd==UHD_Hours) return day->hours();
+    else
+        return 0;
+}

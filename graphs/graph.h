@@ -464,4 +464,16 @@ protected:
     MachineCode code;
 };
 
+
+enum T_UHD { UHD_Bedtime, UHD_Waketime, UHD_Hours };
+class UsageHistoryData:public HistoryData
+{
+public:
+    UsageHistoryData(Machine *_machine,int _days,T_UHD _uhd);
+    virtual ~UsageHistoryData();
+    virtual double Calc(Day *day);
+protected:
+    T_UHD uhd;
+};
+
 #endif // GRAPH_H

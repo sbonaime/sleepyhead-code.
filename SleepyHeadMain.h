@@ -27,10 +27,12 @@ public:
     Summary(wxWindow *win);
     virtual ~Summary();
     Machine *machine;
-    HistoryData *ahidata,*pressure,*leak;
-    gGraphWindow *AHI,*PRESSURE,*LEAK;
+    HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime;
+    gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
     void RefreshData();
-
+	void AddData(HistoryData *d) { Data.push_back(d);  };
+protected:
+    list<HistoryData *> Data;
 };
 
 
