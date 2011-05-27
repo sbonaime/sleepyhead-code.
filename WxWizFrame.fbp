@@ -287,6 +287,26 @@
                     </object>
                 </object>
                 <object class="wxMenu" expanded="1">
+                    <property name="label">Tools</property>
+                    <property name="name">ToolsMenu</property>
+                    <property name="permission">protected</property>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Screenshot</property>
+                        <property name="name">ToolsMenuScreenshot</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnScreenshot</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                </object>
+                <object class="wxMenu" expanded="1">
                     <property name="label">&amp;Help</property>
                     <property name="name">HelpMenu</property>
                     <property name="permission">protected</property>

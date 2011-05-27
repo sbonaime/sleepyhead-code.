@@ -56,6 +56,8 @@ protected:
     list<gPointData *> Data;
 };
 
+const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();
+
 class SleepyHeadFrame: public GUIFrame
 {
     public:
@@ -65,6 +67,8 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnClose(wxCloseEvent& event);
         virtual void OnQuit(wxCommandEvent& event);
         virtual void OnAbout(wxCommandEvent& event);
+        virtual void OnScreenshot(wxCommandEvent& event);
+        virtual void DoScreenshot(wxCommandEvent& event);
         virtual void OnImportSD(wxCommandEvent& event);
         virtual void OnViewMenuDaily(wxCommandEvent& event);
         virtual void OnViewMenuSummary(wxCommandEvent& event);

@@ -54,6 +54,13 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	menubar->Append( ViewMenu, _("&View") ); 
 	
+	ToolsMenu = new wxMenu();
+	wxMenuItem* ToolsMenuScreenshot;
+	ToolsMenuScreenshot = new wxMenuItem( ToolsMenu, wxID_ANY, wxString( _("Screenshot") ) , wxEmptyString, wxITEM_NORMAL );
+	ToolsMenu->Append( ToolsMenuScreenshot );
+	
+	menubar->Append( ToolsMenu, _("Tools") ); 
+	
 	HelpMenu = new wxMenu();
 	wxMenuItem* HelpMenuAbout;
 	HelpMenuAbout = new wxMenuItem( HelpMenu, wxID_ANY, wxString( _("&About") ) , wxEmptyString, wxITEM_NORMAL );
@@ -78,6 +85,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( FileMenuExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Connect( ViewMenuSummary->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Connect( ViewMenuDaily->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Connect( ToolsMenuScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Connect( HelpMenuAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 }
 
@@ -90,6 +98,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_QUIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	
 	m_mgr.UnInit();

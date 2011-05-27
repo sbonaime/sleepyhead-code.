@@ -20,7 +20,10 @@
 #include <wx/msgdlg.h>
 #include <wx/dirdlg.h>
 #include <wx/progdlg.h>
-
+#include <wx/bitmap.h>
+#include <wx/log.h>
+#include <wx/dcscreen.h>
+#include <wx/dcmemory.h>
 #include "SleepyHeadMain.h"
 #include "sleeplib/profiles.h"
 //#include "graphs/sleepflagsgraph.h"
@@ -59,9 +62,45 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 }
 
 
+void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
+{
+    wxRect r=GetRect();
+
+#if defined(__UNIX__)
+    /*int cx, cy;
+    ClientToScreen(&cx,&cy);
+    int border_width = cx - r.x;
+    int title_bar_height = cy - r.y;
+    r.width += (border_width * 2);
+    r.height += title_bar_height + border_width; */
+#endif
+    int x=r.x;
+    int y=r.y;
+    int w=r.width;
+    int h=r.height;
+
+    wxScreenDC sdc;
+    wxMemoryDC mdc;
+
+    wxBitmap bmp(r.width, r.height,-1);
+    //wxBitMap *bmp=wxEmptyImage(r.width,r.height);
+    mdc.SelectObject(bmp);
+
+    mdc.Blit((wxCoord)0, (wxCoord)0, (wxCoord)r.width, (wxCoord)r.height, &sdc, (wxCoord)r.x, (wxCoord)r.y);
+
+    mdc.SelectObject(wxNullBitmap);
+
+    wxString fileName = wxT("myImage.png");
+    wxImage img=bmp.ConvertToImage();
+    if (!img.SaveFile(fileName, wxBITMAP_TYPE_PNG)) {
+        wxLogError(wxT("Couldn't save screenshot ")+fileName);
+    }
+}
+
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
+    wxInitAllImageHandlers();
     loader_progress=new wxProgressDialog(wxT("SleepyHead"),wxT("Please Wait..."),100,this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_SMOOTH);
     loader_progress->Hide();
     wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
@@ -71,6 +110,9 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     wxCommandEvent dummy;
     OnViewMenuSummary(dummy);   // Summary Page
     OnViewMenuDaily(dummy);     // Daily Page
+
+    this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
+    //this->Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
 
 #if wxUSE_STATUSBAR
     //statusBar->SetStatusText(_("Hello!"), 0);
@@ -95,6 +137,12 @@ void SleepyHeadFrame::OnClose(wxCloseEvent &event)
 void SleepyHeadFrame::OnQuit(wxCommandEvent &event)
 {
     Destroy();
+}
+
+void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
+{
+    wxCommandEvent MyEvent( wxEVT_DO_SCREENSHOT);
+    wxPostEvent(this, MyEvent);
 }
 
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
@@ -205,6 +253,7 @@ void Summary::RefreshData()
         if (machine->properties.find(wxT("SubModel"))!=machine->properties.end())
             submodel=wxT(" <br>\n ")+machine->properties[wxT("SubModel")];
         html=html+wxT("<tr><td colspan=2 align=center><b>")+machine->properties[wxT("Brand")]+wxT("</b> <br/>")+machine->properties[wxT("Model")]+wxT("&nbsp;")+machine->properties[wxT("ModelNumber")]+submodel+wxT("</td></tr>\n");
+        //html=html+wxT("<tr><td colspan=2 align=center>")+_("Serial")+wxT(" ")+machine->properties[wxT("Serial")]+wxT("</td></tr>");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=left><i>")+_("Indice Averages")+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
