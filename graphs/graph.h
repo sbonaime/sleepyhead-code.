@@ -331,16 +331,18 @@ class gLineChart:public gLayer
 
 };
 
+enum LO_Type { LOT_Bar, LOT_Dot };
 class gLineOverlayBar:public gLayer
 {
     public:
-        gLineOverlayBar(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""));
+        gLineOverlayBar(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""),LO_Type _lot=LOT_Bar);
         virtual ~gLineOverlayBar();
 
         virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
         wxString label;
+        LO_Type lo_type;
 };
 
 class gFlagsLine:public gLayer

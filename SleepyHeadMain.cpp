@@ -337,6 +337,7 @@ Daily::Daily(wxWindow *win)
     AddData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
     FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
+    FRW->AddLayer(new gLineOverlayBar(flags[7],wxRED,wxT("PR"),LOT_Dot));
     FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
     FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
     FRW->AddLayer(new gLineOverlayBar(flags[5],wxRED,wxT("VS")));

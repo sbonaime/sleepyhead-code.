@@ -372,7 +372,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 
     //wxLogMessage(wxT("Paint"));
     //dc.DrawText(m_title,m_marginLeft,3);
-    for (auto l=layers.rbegin();l!=layers.rend();l++) {
+    for (auto l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(dc,*this);
     }
 
@@ -1316,8 +1316,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     DrawXTicks(dc,w);
 }
 
-gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label)
-:gLayer(d),label(_label)
+gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
+:gLayer(d),label(_label),lo_type(_lot)
 {
     color.clear();
     color.push_back(col);
@@ -1349,6 +1349,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
+    wxPen sfp3(*color[0], 4, wxSOLID);
     wxPen sfp2(*color[0], 5, wxSOLID);
     wxPen sfp1(*color[0], 1, wxSOLID);
 
@@ -1382,18 +1383,23 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
             double w1=x2-x1;
             dc.SetPen(sfp1);
             int x,y;
-            if (rp.x==rp.y) {
-                if (xx<(1800.0/86400)) {
-                    //dc.SetTextForeground(*color[0]);
-                    dc.GetTextExtent(label,&x,&y);
-                    dc.DrawText(label,x1-(x/2),start_py+20-y);
+            if (lo_type==LOT_Bar) {
+                if (rp.x==rp.y) {
+                    if (xx<(1800.0/86400)) {
+                        //dc.SetTextForeground(*color[0]);
+                        dc.GetTextExtent(label,&x,&y);
+                        dc.DrawText(label,x1-(x/2),start_py+20-y);
+                    }
+                    dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
+                    dc.SetPen(sfp2);
+                    dc.DrawLine(x1,start_py+25,x1,start_py+25);
+                } else {
+            //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
+                    dc.DrawRectangle(x1,start_py,w1,height);
                 }
-                dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
-                dc.SetPen(sfp2);
-                dc.DrawLine(x1,start_py+25,x1,start_py+25);
-            } else {
-         //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
-                dc.DrawRectangle(x1,start_py,w1,height);
+            } else if (lo_type==LOT_Dot) {
+                dc.SetPen(sfp3);
+                dc.DrawLine(x1,start_py+(height/2)-10,x1,start_py+(height/2)-10);
             }
 
 
