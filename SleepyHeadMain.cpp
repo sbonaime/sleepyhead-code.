@@ -350,8 +350,8 @@ Daily::Daily(wxWindow *win)
     SF->SetMargins(10,15,20,80);
 
     SF->LinkZoom(FRW);
-    SF->LinkZoom(PRD);
-    SF->LinkZoom(LEAK);
+    //SF->LinkZoom(PRD);
+    //SF->LinkZoom(LEAK);
 
     const int sfc=9;
 
