@@ -333,6 +333,7 @@ Daily::Daily(wxWindow *win)
     AddData(flags[5]=new FlagData(CPAP_VSnore,2));
     AddData(flags[6]=new FlagData(CPAP_RERA,1));
     AddData(flags[7]=new FlagData(PRS1_PressurePulse,1));
+    AddData(flags[8]=new FlagData(PRS1_VSnore2,1));
 
     FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
     FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
@@ -346,13 +347,14 @@ Daily::Daily(wxWindow *win)
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Sleep Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     SF->SetMargins(10,15,20,80);
 
-    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),6,7));
-    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,7));
-    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,7));
-    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,7));
-    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,7));
-    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,7));
-    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,7));
+    SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
+    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
+    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));
+    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,sfc));
+    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
+    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
+    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
+    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
     //l=new gBarChart(graphdata,wxHORIZONTAL);
     //graph->AddLayer(l);
     //graph->SetData(graphdata);

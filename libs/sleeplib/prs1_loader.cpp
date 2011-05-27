@@ -644,9 +644,6 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     }
     Waveform *w=new Waveform(start,CPAP_FlowRate,data,samples,duration,min,max);
     session->AddWaveform(w);
-    if (sequence==9) {
-        sequence=9;
-    }
     //wxLogMessage(wxT("Done PRS1 Waveforms ")+filename);
     return true;
 }

@@ -33,6 +33,8 @@ public:
 
 };
 
+const int sfc=8;
+
 class Daily:public DailyPanel
 {
 public:
@@ -49,7 +51,7 @@ protected:
 
     bool foobar_datehack;
     gPointData *tap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
-    gPointData *flags[8];
+    gPointData *flags[9];
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF;
 
 
