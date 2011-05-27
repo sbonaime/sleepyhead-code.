@@ -141,6 +141,7 @@ void SleepyHeadFrame::OnQuit(wxCommandEvent &event)
 
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 {
+    Refresh(); // Make sure the menu is closed.. (It pushes the Update event in front of the manual event we push next)
     wxCommandEvent MyEvent( wxEVT_DO_SCREENSHOT);
     wxPostEvent(this, MyEvent);
 }
