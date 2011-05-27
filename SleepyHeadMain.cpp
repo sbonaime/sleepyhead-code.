@@ -67,9 +67,9 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
     wxRect r=GetRect();
 
 #if defined(__UNIX__)
-    /*int cx, cy;
+    int cx, cy;
     ClientToScreen(&cx,&cy);
-    int border_width = cx - r.x;
+    /*int border_width = cx - r.x;
     int title_bar_height = cy - r.y;
     r.width += (border_width * 2);
     r.height += title_bar_height + border_width; */
@@ -308,9 +308,13 @@ Daily::Daily(wxWindow *win)
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false));
 
+    AddData(pressure_iap=new PressureData(CPAP_IAP));
+    AddData(pressure_eap=new PressureData(CPAP_EAP));
     AddData(prd=new PressureData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false));
+    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false));
+    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false));
 
     AddData(frw=new FlowData());
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);

@@ -48,7 +48,7 @@ protected:
 	void UpdateGraphs(wxDateTime date);
 
     bool foobar_datehack;
-    gPointData *tap,*g_ahi,*frw,*prd,*leakdata;
+    gPointData *tap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
     gPointData *flags[8];
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF;
 
