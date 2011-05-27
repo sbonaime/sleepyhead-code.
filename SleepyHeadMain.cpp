@@ -370,8 +370,10 @@ Daily::Daily(wxWindow *win)
     SF->SetMargins(10,15,20,80);
 
     SF->LinkZoom(FRW);
-    //SF->LinkZoom(PRD); // Uncomment to link in more graphs
-    //SF->LinkZoom(LEAK);
+    #if defined(__UNIX__)
+    SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
+    SF->LinkZoom(LEAK);
+    #endif
 
     const int sfc=9;
 
