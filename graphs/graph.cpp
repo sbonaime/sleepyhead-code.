@@ -337,7 +337,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 	dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
 	//dc.DrawRectangle(0,0,m_scrX,m_scrY);
 
-    wxLogMessage(wxT("Paint"));
+    //wxLogMessage(wxT("Paint"));
     //dc.DrawText(m_title,m_marginLeft,3);
     for (auto l=layers.rbegin();l!=layers.rend();l++) {
         (*l)->Plot(dc,*this);

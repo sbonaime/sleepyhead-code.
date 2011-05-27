@@ -256,7 +256,8 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             delete sess;
             continue;
         }
-        if (sess->hours()<0.016666667) { // Ignore useless sessions under 1 minute
+        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
+        if (sess->hours()<ignore_thresh) {
             delete sess;
             continue;
         }

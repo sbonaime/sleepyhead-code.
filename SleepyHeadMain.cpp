@@ -141,7 +141,12 @@ void SleepyHeadFrame::OnQuit(wxCommandEvent &event)
 
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 {
-    Refresh(); // Make sure the menu is closed.. (It pushes the Update event in front of the manual event we push next)
+    ToolsMenu->UpdateUI();
+    //wxWindow::DoUpdateWindowUI();
+    wxWindow::UpdateWindowUI();
+    //Refresh(true); // Make sure the menu is closed.. (It pushes the Update event in front of the manual event we push next)
+   // Update(true);
+
     wxCommandEvent MyEvent( wxEVT_DO_SCREENSHOT);
     wxPostEvent(this, MyEvent);
 }
@@ -466,10 +471,12 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
         if (mode==MODE_CPAP) {
             html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
         } else if (mode==MODE_APAP) {
-            html=html+wxT("<tr><td><b>")+_("Pressure-Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pressure-Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure-Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Avg Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(CPAP_PressureAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("90% Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pressure-Min2")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pressure-Max2")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Avg Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureAverage))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90% Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
         }
 
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
@@ -490,6 +497,12 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
         html=html+wxT("<tr><td><b>")+_("Show-AHI")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_ShowAHI)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Hose-Size")+wxT("</b></td><td>")+(bool(d->summary_max(PRS1_HoseDiameter)) ? _("22mm") : _("15mm"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Sys-Resist.")+wxT("</b></td><td>")+wxString::Format(wxT("%i"),int(d->summary_max(PRS1_SystemResistanceStatus)))+wxT("</td></tr>\n");
+
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
+        for (auto i=d->begin();i!=d->end();i++) {
+            html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->first().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
+        }
         //PRS1_SystemLockStatus
 
         html=html+wxT("</table>");
