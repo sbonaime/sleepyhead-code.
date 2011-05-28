@@ -223,7 +223,7 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 Summary::Summary(wxWindow *win)
 :SummaryPanel(win)
 {
-    const int days_shown=30;
+    const int days_shown=60;
     machine=NULL;
 
     AddData(ahidata=new HistoryData(machine,days_shown));

@@ -321,8 +321,6 @@ class gLineChart:public gLayer
         virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
 
     protected:
-        float m_yminor_ticks;
-        float m_ymajor_ticks;
         bool m_accelerate;
         int m_drawlist_size;
         wxPoint *m_drawlist;
@@ -368,11 +366,9 @@ class gBarChart:public gLayer
         virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
-        void DrawYTicks(wxDC & dc,gGraphWindow &w);
+        virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
 
         wxOrientation m_direction;
-        float m_yminor_ticks;
-        float m_ymajor_ticks;
 
         // d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
 

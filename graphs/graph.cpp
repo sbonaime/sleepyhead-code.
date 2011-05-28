@@ -672,8 +672,6 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
 gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
 :gLayer(d),m_direction(o)
 {
-    m_yminor_ticks=2;
-    m_ymajor_ticks=10;
     m_show_grid=true;
     m_show_minor_grid=true;
     if (col) {
@@ -761,6 +759,7 @@ void gBarChart::DrawYTicks(wxDC & dc,gGraphWindow &w)
     dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
 }
 
+
 void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 {
     if (!m_visible) return;
@@ -790,17 +789,16 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     for (int i=0;i<data->np[0];i++) {
        if ((data->point[0][i].x > w.min_x) && (data->point[0][i].x<w.max_x)) days++;
     }*/
-    // == max_y
 
     float barwidth,pxr;
-    int px,py;
+    float px,py;
 
     if (m_direction==wxVERTICAL) {
-        barwidth=(height-days*2)/days;
+        barwidth=(height-days)/float(days);
         pxr=width/w.max_y;
         px=start_py;
     } else {
-        barwidth=(width-days*2)/days;
+        barwidth=(width-days)/float(days);
         pxr=height/w.max_y;
         px=start_px;
     }
@@ -811,15 +809,14 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 
 
     wxString str;
-    //const wxColor *colors[6]={wxRED, wxBLUE, wxGREEN, wxCYAN , wxBLACK, wxLIGHT_GREY };
 
     int cnt=0;
     for (int i=0;i<data->np[0];i++) {
         //if (data->point[0][i].x < w.min_x) continue;
         //if (data->point[0][i].x > w.max_x) break;
         dc.SetBrush(*wxTRANSPARENT_BRUSH);
-        t1=px+1;
-        px+=barwidth+2;
+        t1=px;
+        px+=barwidth+1;
         t2=px-t1-1;
 
         wxRect rect;
@@ -853,6 +850,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px,start_py,start_px,start_py+height);
 
     dc.DrawLine(start_px,start_py+height,start_px+width,start_py+height);
+   // DrawXTicks(dc,w);
 }
 
 /*gBarChart::gBarChart(gGraphData *d,wxOrientation o)
@@ -983,8 +981,6 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a)
 :gLayer(d),m_accelerate(a),m_drawlist_size(dlsize)
 {
-    m_yminor_ticks=0.5;
-    m_ymajor_ticks=1;
     m_drawlist=new wxPoint [dlsize];
     color.clear();
     color.push_back(col);
@@ -1122,7 +1118,7 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
         show_time=false;
         st=st2;
         min_tick=1;
-        double mtiks=(y+10)/width;
+        double mtiks=(y+20.0)/width;
         double mt=mtiks*xx;
         min_tick=mt;
         if (min_tick<1) min_tick=1;
