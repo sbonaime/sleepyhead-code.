@@ -61,6 +61,9 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	menubar->Append( ViewMenu, _("&View") ); 
 	
+	MachineMenu = new wxMenu();
+	menubar->Append( MachineMenu, _("&Machine") ); 
+	
 	ToolsMenu = new wxMenu();
 	wxMenuItem* ToolsMenuScreenshot;
 	ToolsMenuScreenshot = new wxMenuItem( ToolsMenu, wxID_ANY, wxString( _("Screenshot") ) + wxT('\t') + wxT("Shift+F12"), wxEmptyString, wxITEM_NORMAL );
@@ -159,7 +162,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_mgr.SetManagedWindow(this);
 	
 	HTMLInfo = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Right() .Caption( wxT("Information") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).MinSize( wxSize( 200,400 ) ) );
+	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Right() .Caption( wxT("Information") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( 208,424 ) ).DockFixed( false ).Row( 0 ).Position( 2 ).MinSize( wxSize( 200,400 ) ) );
 	
 	ScrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	ScrolledWindow->SetScrollRate( 5, 5 );
@@ -172,12 +175,44 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	ScrolledWindow->SetSizer( fgSizer );
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
+	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panel1->SetMaxSize( wxSize( -1,40 ) );
+	m_mgr.AddPane( m_panel1, wxAuiPaneInfo() .Bottom() .Caption( wxT("Date Range") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).BestSize( wxSize( 300,40 ) ).MinSize( wxSize( 300,40 ) ).MaxSize( wxSize( 300,40 ) ) );
+	
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_staticText1 = new wxStaticText( m_panel1, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1->Wrap( -1 );
+	bSizer1->Add( m_staticText1, 0, wxALIGN_TOP|wxLEFT|wxTOP, 12 );
+	
+	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
+	bSizer1->Add( StartDatePicker, 0, wxALL, 5 );
+	
+	m_staticText2 = new wxStaticText( m_panel1, wxID_ANY, _("End"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	bSizer1->Add( m_staticText2, 0, wxALIGN_TOP|wxLEFT|wxTOP, 12 );
+	
+	EndDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
+	bSizer1->Add( EndDatePicker, 0, wxALL, 5 );
+	
+	m_panel1->SetSizer( bSizer1 );
+	m_panel1->Layout();
+	bSizer1->Fit( m_panel1 );
 	
 	m_mgr.Update();
+	
+	// Connect Events
+	StartDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
+	EndDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
 }
 
 SummaryPanel::~SummaryPanel()
 {
+	// Disconnect Events
+	StartDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
+	EndDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
+	
 	m_mgr.UnInit();
 	
 }

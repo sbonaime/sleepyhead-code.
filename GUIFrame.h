@@ -28,6 +28,9 @@
 #include <wx/scrolwin.h>
 #include <wx/calctrl.h>
 #include <wx/panel.h>
+#include <wx/stattext.h>
+#include <wx/datectrl.h>
+#include <wx/dateevt.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -44,6 +47,7 @@ class GUIFrame : public wxFrame
 		wxMenuBar* menubar;
 		wxMenu* FileMenu;
 		wxMenu* ViewMenu;
+		wxMenu* MachineMenu;
 		wxMenu* ToolsMenu;
 		wxMenu* HelpMenu;
 		wxStatusBar* statusBar;
@@ -107,10 +111,20 @@ class SummaryPanel : public wxPanel
 		wxHtmlWindow* HTMLInfo;
 		wxScrolledWindow* ScrolledWindow;
 		wxFlexGridSizer* fgSizer;
+		wxPanel* m_panel1;
+		wxStaticText* m_staticText1;
+		wxDatePickerCtrl* StartDatePicker;
+		wxStaticText* m_staticText2;
+		wxDatePickerCtrl* EndDatePicker;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnStartDateChanged( wxDateEvent& event ) { event.Skip(); }
+		virtual void OnEndDateChanged( wxDateEvent& event ) { event.Skip(); }
+		
 	
 	public:
 		
-		SummaryPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 712,445 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
+		SummaryPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 775,447 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
 		
 		~SummaryPanel();
 	

@@ -93,8 +93,6 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
 
     wxDateTime d=wxDateTime::Now();
 
-
-
 //    wxDirDialog sfs(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
     wxString filename=wxSaveFileSelector(_("Please give a filename for the screenshot"),wxT("png"),wxT("Sleepyhead-")+d.Format(wxT("%Y%m%d-%H%M%S")),this);
     if (!filename.IsEmpty()) {
@@ -106,6 +104,7 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
     }
 }
 
+
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
@@ -114,13 +113,43 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     loader_progress->Hide();
     wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
     SetTitle(title);
+
+    profile=Profiles::Get();
+    if (!profile) {
+        wxLogError(wxT("Couldn't get active profile"));
+        abort();
+    }
+
+    UpdateMachineMenu();
+
     //wxDisableAsserts();
     // Create AUINotebook Tabs
     wxCommandEvent dummy;
     OnViewMenuDaily(dummy);     // Daily Page
     OnViewMenuSummary(dummy);   // Summary Page
 
+    int id=0;
+    if (pref.Exists("DefaultMachine")) {
+        id=pref[wxT("DefaultMachine")].GetInteger();
+    }
+
+    Machine *m=cpap_machines[id];
+
+    int idx=main_auinotebook->GetPageIndex(daily);
+    if (idx!=wxNOT_FOUND) {
+        daily->RefreshData(m);
+    }
+    idx=main_auinotebook->GetPageIndex(summary);
+    if (idx!=wxNOT_FOUND) {
+        summary->RefreshData(m);
+    }
+    summary->Refresh();
+    daily->Refresh();
+    Refresh();
+
+
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
+    //this->Connect(wxID_ANY, wxEVT_MACHINE_SELECTED, wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
     //this->Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
 
 #if wxUSE_STATUSBAR
@@ -136,6 +165,35 @@ SleepyHeadFrame::~SleepyHeadFrame()
         loader_progress->Destroy();
         delete loader_progress;
     }
+}
+void SleepyHeadFrame::UpdateMachineMenu()
+{
+    cpap_machines=profile->GetMachines(MT_CPAP);
+
+    wxMenuItemList &z=MachineMenu->GetMenuItems();
+    //wxMenuItemList::iterator q;
+    int i=MachineMenuID;
+    for (auto q=z.begin();q!=z.end();q++) {
+        this->Disconnect(i,wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
+        MachineMenu->Remove(*q);
+        i++;
+    }
+
+    i=MachineMenuID;
+
+    for (auto m=cpap_machines.begin();m!=cpap_machines.end();m++) {
+        wxMenuItem *item=MachineMenu->AppendRadioItem(i,(*m)->properties[wxT("Serial")],wxEmptyString);
+        this->Connect(i,wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
+        i++;
+    }
+
+    long l=pref[wxT("DefaultMachine")];
+    MachineMenu->Check(l+MachineMenuID,true);
+
+    /*if (vm.size()>=1) {
+        machine=vm[0];
+    } else machine=NULL; */
+
 }
 
 void SleepyHeadFrame::OnClose(wxCloseEvent &event)
@@ -154,6 +212,28 @@ void SleepyHeadFrame::OnFullscreen(wxCommandEvent& event)
     } else {
         ShowFullScreen(false);
     }
+}
+void SleepyHeadFrame::OnMachineSelected(wxCommandEvent& event)
+{
+    int id=event.GetId()-MachineMenuID;
+    wxLogMessage(wxT("Machine Selected:")+wxString::Format(wxT("%i"),id));
+    event.Skip();
+    Machine *m=cpap_machines[id];
+
+    if (m) {
+        pref[wxT("DefaultMachine")]=(long)id;
+    }
+    int idx=main_auinotebook->GetPageIndex(daily);
+    if (idx!=wxNOT_FOUND) {
+        daily->RefreshData(m);
+    }
+    idx=main_auinotebook->GetPageIndex(summary);
+    if (idx!=wxNOT_FOUND) {
+        summary->RefreshData(m);
+    }
+    summary->Refresh();
+    daily->Refresh();
+    Refresh();
 }
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 {
@@ -177,27 +257,37 @@ void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
 void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
 {
     wxDirDialog dd(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
-    if (dd.ShowModal()==wxID_OK) {
-        wxString path=dd.GetPath();
+    if (dd.ShowModal()!=wxID_OK) return;
 
-        Profile *p=Profiles::Get();
+    wxString path=dd.GetPath();
 
-        loader_progress->Update(0);
-        loader_progress->Show();
-        if (p) p->Import(path);
-        loader_progress->Show(false);
+    loader_progress->Update(0);
+    loader_progress->Show();
+    profile->Import(path);
+    loader_progress->Update(100);
+    loader_progress->Show(false);
+
+    UpdateMachineMenu(); // Also updates cpap_machines list.
+    auto q=MachineMenu->GetMenuItems().rbegin();
+    int i=0;
+    if (q!=MachineMenu->GetMenuItems().rend()) {
+        (*q)->Check(true);
+        i=(*q)->GetId()-MachineMenuID;
     }
+    Machine *m=cpap_machines[i];
+
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
-        daily->RefreshData();
+        daily->RefreshData(m);
     }
     idx=main_auinotebook->GetPageIndex(summary);
     if (idx!=wxNOT_FOUND) {
-        summary->RefreshData();
+        summary->RefreshData(m);
     }
     summary->Refresh();
     daily->Refresh();
     Refresh();
+
 }
 void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 {
@@ -223,8 +313,9 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 Summary::Summary(wxWindow *win)
 :SummaryPanel(win)
 {
-    const int days_shown=60;
     machine=NULL;
+
+    const int days_shown=60;
 
     AddData(ahidata=new HistoryData(machine,days_shown));
     AddData(pressure=new HistoryCodeData(machine,CPAP_PressureAverage,days_shown));
@@ -252,33 +343,27 @@ Summary::Summary(wxWindow *win)
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
-    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     USAGE->SetMargins(10,15,60,80);
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
     //USAGE->AddLayer(new gLineChart(usage,wxGREEN));
     fgSizer->Add(USAGE,1,wxEXPAND);
 
 
-    RefreshData();
+//    RefreshData();
 
 }
 Summary::~Summary()
 {
 }
 
-void Summary::RefreshData()
+void Summary::RefreshData(Machine *m)
 {
-    if (!machine) {
-        Profile *p=Profiles::Get();
-        vector<Machine *>vm=p->GetMachines(MT_CPAP);
-        if (vm.size()>=1) {
-            machine=vm[0];
-        } else machine=NULL;
-        for (auto h=Data.begin();h!=Data.end();h++) {
-            (*h)->SetMachine(machine);
-        }
-    }
+    if (!m) return;
+    machine=m;
+
     for (auto h=Data.begin();h!=Data.end();h++) {
+        (*h)->SetMachine(m);
         (*h)->Update();
     }
 
@@ -320,12 +405,7 @@ void Summary::RefreshData()
 Daily::Daily(wxWindow *win)
 :DailyPanel(win)
 {
-    Profile *p=Profiles::Get();
-    vector<Machine *>vm=p->GetMachines(MT_CPAP);
-    wxString s;
-    if (vm.size()>=1) {
-        machine=vm[0];
-    } else machine=NULL;
+    machine=NULL;
 
     TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
     TAP->SetMargins(20,15,5,50);
@@ -417,25 +497,21 @@ Daily::Daily(wxWindow *win)
     fgSizer->Add(TAP,1,wxEXPAND);
 
     foobar_datehack=false; // this exists due to a wxGTK bug.
-    RefreshData();
+  //  RefreshData();
 
 }
 Daily::~Daily()
 {
 
 }
-void Daily::RefreshData()
+void Daily::RefreshData(Machine *m)
 {
-    if (!machine) {
-        Profile *p=Profiles::Get();
-        vector<Machine *>vm=p->GetMachines(MT_CPAP);
-        wxString s;
-        if (vm.size()>=1) {
-            machine=vm[0];
-        } else machine=NULL;
-    }
+    if (!m) return;
+    machine=m;
 
-    wxDateTime day=Calendar->GetDate();
+
+    wxDateTime day=m->LastDay()+wxTimeSpan::Days(1);
+    Calendar->SetDate(day);
     day.ResetTime();
     day.SetHour(0);
     //et-=wxTimeSpan::Days(1);

@@ -26,12 +26,12 @@ class Summary:public SummaryPanel
 public:
     Summary(wxWindow *win);
     virtual ~Summary();
-    Machine *machine;
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime;
     gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
-    void RefreshData();
+    void RefreshData(Machine *m);
 	void AddData(HistoryData *d) { Data.push_back(d);  };
 protected:
+    Machine *machine;
     list<HistoryData *> Data;
 };
 
@@ -41,9 +41,8 @@ class Daily:public DailyPanel
 public:
     Daily(wxWindow *win);
     virtual ~Daily();
-    void RefreshData();
+    void RefreshData(Machine *m);
 
-    Machine *machine;
 protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );
 	virtual void OnCalendarMonth( wxCalendarEvent& event );
@@ -56,10 +55,14 @@ protected:
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF;
 
 
+    Machine *machine;
     list<gPointData *> Data;
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();
+const wxEventType wxEVT_MACHINE_SELECTED = wxNewEventType();
+
+const int MachineMenuID=wxID_HIGHEST;
 
 class SleepyHeadFrame: public GUIFrame
 {
@@ -76,11 +79,17 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnImportSD(wxCommandEvent& event);
         virtual void OnViewMenuDaily(wxCommandEvent& event);
         virtual void OnViewMenuSummary(wxCommandEvent& event);
+        virtual void OnMachineSelected(wxCommandEvent& event);
+
+        virtual void UpdateMachineMenu();
 
         Summary *summary;
         Daily *daily;
         Machine *machine;
         Profile *profile;
+
+        vector<Machine *>cpap_machines;
+        int current_machine;
 
 };
 

@@ -1329,7 +1329,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             if (done) break;
         }
 
-        dc.SetClippingRegion(start_px+1,start_py+1,width,height);
+        dc.SetClippingRegion(start_px+1,start_py-1,width,height+1);
         if (accel) {
             // dc.DrawLine(1, 1, 1, height);
             dp=0;
