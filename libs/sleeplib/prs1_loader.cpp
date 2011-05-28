@@ -24,7 +24,8 @@ extern wxProgressDialog *loader_progress;
 
 map<int,wxString> ModelMap= {
     {34,wxT("RemStar Pro with C-Flex+")},
-    {35,wxT("RemStar Auto with A-Flex")}
+    {35,wxT("RemStar Auto with A-Flex")},
+    {37,wxT("RemStar BIPAP Auto with Bi-Flex")}
 };
 
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
@@ -43,6 +44,7 @@ PRS1::~PRS1()
 
 PRS1Loader::PRS1Loader()
 {
+    m_buffer=new unsigned char [max_load_buffer_size]; //allocate once and reuse.
 }
 
 PRS1Loader::~PRS1Loader()
@@ -50,6 +52,7 @@ PRS1Loader::~PRS1Loader()
     for (auto i=PRS1List.begin(); i!=PRS1List.end(); i++) {
         delete i->second;
     }
+    delete [] m_buffer;
 }
 Machine *PRS1Loader::CreateMachine(wxString serial,Profile *profile)
 {
@@ -87,7 +90,7 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
     wxString newpath;
     wxString sep=wxFileName::GetPathSeparator();
     wxString pseries=wxT("P-Series");
-    if (path.Right(pseries.Len()+sep.Len())==pseries) {
+    if (path.Right(pseries.Len()+sep.Len())==sep+pseries) {
         newpath=path;
     } else {
         newpath=path+sep+pseries;
@@ -256,8 +259,8 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             delete sess;
             continue;
         }
-        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
-        if (sess->hours()<ignore_thresh) {
+        const double ignore_thresh=0;//300.0/3600.0;// Ignore useless sessions under 5 minute
+        if (sess->hours()<=ignore_thresh) {
             delete sess;
             continue;
         }
@@ -299,18 +302,20 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     int size,sequence,seconds,br;
     time_t timestamp;
     unsigned char header[24];
-    unsigned char ext;
+    unsigned char ext,sum;
 
     //wxLogMessage(wxT("Opening PRS1 Summary ")+filename);
     wxFFile f(filename,wxT("rb"));
 
-    if (!f.IsOpened()) return false;
+    if (!f.IsOpened())
+        return false;
 
     int hl=16;
 
     br=f.Read(header,hl);
 
-    if (header[0]!=header[5]) return false;
+    if (header[0]!=header[5])
+        return false;
 
     sequence=size=timestamp=seconds=ext=0;
     sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
@@ -318,28 +323,26 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     size=(header[2] << 8) | header[1];
     ext=header[6];
 
-    if (ext!=1) return false;
+    if (ext!=1)
+        return false;
     //size|=(header[3]<<16) | (header[4]<<24); // the jury is still out on the 32bitness of one. doesn't matter here anyway.
 
     size-=(hl+2);
-
-    unsigned char sum=0;
+    sum=0;
     for (int i=0; i<hl-1; i++) sum+=header[i];
-    if (sum!=header[hl-1]) return false;
+    if (sum!=header[hl-1])
+        return false;
 
     wxDateTime date(timestamp);
     //wxDateTime tmpdate=date;
     //wxLogMessage(date.Format()+wxT(" UTC=")+tmpdate.Format());
     //int ticks=date.GetTicks();
 
-
-
     if (!date.IsValid()) return false;
 
-    unsigned char *buffer=(unsigned char *)malloc(size);
+    unsigned char * buffer=m_buffer;
     br=f.Read(buffer,size);
     if (br<size) {
-        delete buffer;
         return false;
     }
 
@@ -395,7 +398,6 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     session->summary[CPAP_RERA]=(long)buffer[0x2E] | (buffer[0x2F] << 8);
     session->summary[CPAP_FlowLimit]=(long)buffer[0x30] | (buffer[0x31] << 8);
 
-    delete buffer;
     return true;
 }
 
@@ -498,7 +500,7 @@ bool PRS1Loader::OpenEvents(Session *session,wxString filename)
 {
     int size,sequence,seconds,br;
     time_t timestamp;
-    unsigned char header[24];
+    unsigned char header[24]; // use m_buffer?
     unsigned char ext;
 
     //wxLogMessage(wxT("Opening PRS1 Events ")+filename);
@@ -526,21 +528,20 @@ bool PRS1Loader::OpenEvents(Session *session,wxString filename)
     for (int i=0; i<hl-1; i++) sum+=header[i];
     if (sum!=header[hl-1]) return false;
 
-    unsigned char *buffer=(unsigned char *)malloc(size);
+    unsigned char *buffer=(unsigned char *)m_buffer;
     br=f.Read(buffer,size);
     if (br<size) {
-        delete buffer;
         return false;
     }
     Parse002(session,buffer,size,timestamp);
 
-    delete buffer;
     return true;
 }
 
 bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
 {
     //wxLogMessage(wxT("Opening PRS1 Waveforms ")+filename);
+
 
     int size,sequence,seconds,br;
     unsigned cnt=0;
@@ -551,24 +552,26 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     unsigned char ext;
 
     wxFFile f(filename,wxT("rb"));
+
+
     int hl=24;
-    vector<char *> wavedata;
-    vector<int> wavesize;
-    int samples=0;
+    long samples=0;
     int duration=0;
+    char * buffer=(char *)m_buffer;
+
     while (true) {
         br=f.Read(header,hl);
 
         if (br<hl) {
             if (cnt==0)
                 return false;
-            else break;
+            break;
         }
 
         if (header[0]!=header[5]) {
             if (cnt==0)
                 return false;
-            else break;
+            break;
         }
 
         sequence=size=timestamp=seconds=ext=0;
@@ -588,7 +591,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         if (ext!=5) {
             if (cnt==0)
                 return false;
-            else break;
+            break;
         }
 
         unsigned char sum=0;
@@ -596,14 +599,19 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         if (sum!=header[hl-1])
             return false;
 
-        char * buffer=new char [size];
-        br=f.Read(buffer,size);
+        if (samples+size>max_load_buffer_size) {
+            wxLogError(wxT("max_load_buffer_size is too small in PRS1 Loader"));
+            if (cnt==0) return false;
+            break;
+        }
+        br=f.Read((char *)&buffer[samples],size);
         if (br<size) {
             delete [] buffer;
             break;
         }
-        wavedata.push_back(buffer);
-        wavesize.push_back(size);
+
+        //wavedata.push_back(buffer);
+        //wavesize.push_back(size);
         cnt++;
 
         duration+=seconds;
@@ -623,25 +631,23 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
 
     //double rate=double(duration)/double(samples);
 
+    // Convert to SampleFormat
     SampleFormat *data=new SampleFormat [samples];
-    int s=0;
 
-    SampleFormat min,max,c;
+    SampleFormat min,max;
     bool first=true;
-    //assert (cnt==wavedata.size());
-    cnt=wavedata.size();
-    for (unsigned i=0; i<cnt; i++) {
-        for (int j=0; j<wavesize[i]; j++) {
-            c=wavedata[i][j];
-            if (first) {
-                min=max=c;
-            }
-            if (min>c) min=c;
-            if (max<c) max=c;
-            data[s++]=c;
+
+    for (long i=0;i<samples;i++) {
+        data[i]=buffer[i];
+        SampleFormat &c=data[i];
+        if (first) {
+            min=max=c;
+            first=false;
         }
-        delete wavedata[i];
+        if (min>c) min=c;
+        if (max<c) max=c;
     }
+
     Waveform *w=new Waveform(start,CPAP_FlowRate,data,samples,duration,min,max);
     session->AddWaveform(w);
     //wxLogMessage(wxT("Done PRS1 Waveforms ")+filename);

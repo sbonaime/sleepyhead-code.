@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Windows" />
+	<ActiveTarget name="Debug" />
 	<File name="GUIFrame.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="1774" topLine="0" />
 	</File>
 	<File name="SleepyHeadApp.cpp" open="0" top="0" tabpos="12">
 		<Cursor position="308" topLine="0" />
 	</File>
-	<File name="SleepyHeadMain.cpp" open="1" top="1" tabpos="3">
-		<Cursor position="1408" topLine="21" />
+	<File name="SleepyHeadMain.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="13420" topLine="361" />
 	</File>
-	<File name="SleepyHeadMain.h" open="0" top="0" tabpos="4">
-		<Cursor position="199" topLine="0" />
+	<File name="SleepyHeadMain.h" open="1" top="0" tabpos="4">
+		<Cursor position="851" topLine="10" />
 	</File>
-	<File name="graphs/graph.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="112" topLine="0" />
+	<File name="graphs/graph.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="576" topLine="0" />
 	</File>
-	<File name="graphs/graph.h" open="0" top="0" tabpos="5">
-		<Cursor position="0" topLine="0" />
+	<File name="graphs/graph.h" open="1" top="0" tabpos="5">
+		<Cursor position="15192" topLine="423" />
 	</File>
 	<File name="libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="0" topLine="0" />
@@ -26,7 +26,7 @@
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="libs/sleeplib/machine.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="4763" topLine="174" />
+		<Cursor position="4763" topLine="162" />
 	</File>
 	<File name="libs/sleeplib/machine.h" open="1" top="0" tabpos="2">
 		<Cursor position="108" topLine="0" />
@@ -49,8 +49,8 @@
 	<File name="libs/sleeplib/profiles.h" open="0" top="0" tabpos="17">
 		<Cursor position="28" topLine="0" />
 	</File>
-	<File name="libs/sleeplib/prs1_loader.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="0" topLine="0" />
+	<File name="libs/sleeplib/prs1_loader.cpp" open="1" top="1" tabpos="7">
+		<Cursor position="556" topLine="0" />
 	</File>
 	<File name="libs/sleeplib/prs1_loader.h" open="0" top="0" tabpos="18">
 		<Cursor position="31" topLine="0" />

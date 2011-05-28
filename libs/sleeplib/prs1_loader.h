@@ -22,6 +22,8 @@ public:
     virtual ~PRS1();
 };
 
+const int max_load_buffer_size=384*1024;
+
 class PRS1Loader : public MachineLoader
 {
 public:
@@ -41,7 +43,7 @@ protected:
     bool OpenEvents(Session *session,wxString filename);
     bool OpenWaveforms(Session *session,wxString filename);
     bool Parse002(Session *session,unsigned char *buffer,int size,time_t timestamp);
-
+    unsigned char * m_buffer;
 };
 
 

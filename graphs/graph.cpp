@@ -11,7 +11,7 @@ License: LGPL
 #include "graph.h"
 
 #if !wxCHECK_VERSION(2,9,0)
-wxColor zwxYELLOW=wxColor(0xcf,0xcf,0x40,0xff);
+wxColor zwxYELLOW=wxColor(0xc0,0xc0,0x40,0xff);
 wxColor *wxYELLOW=&zwxYELLOW;
 #endif
 wxColor zwxAQUA=wxColor(0x00,0xff,0xff,0xff);
@@ -20,7 +20,7 @@ wxColor zwxPURPLE=wxColor(0xff,0x40,0xff,0xff);
 wxColor * wxPURPLE=&zwxPURPLE;
 wxColor zwxGREEN2=wxColor(0x40,0xff,0x40,0x5f);
 wxColor * wxGREEN2=&zwxGREEN2;
-wxColor zwxLIGHT_YELLOW(248,248,188,255);
+wxColor zwxLIGHT_YELLOW(228,228,168,255);
 wxColor *wxLIGHT_YELLOW=&zwxLIGHT_YELLOW;
 wxColor zwxDARK_GREEN=wxColor(20,128,20,255);
 wxColor *wxDARK_GREEN=&zwxDARK_GREEN;
