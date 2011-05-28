@@ -786,9 +786,10 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     double days=int(xx);
     days=data->np[0];
 
-    //for (int i=0;i<data->np[0];i++) {
-     //   if ((data->point[0][i].x > w.min_x) && (data->point[0][i].x<w.max_x)) days++;
-    //}
+    /*days=0;
+    for (int i=0;i<data->np[0];i++) {
+       if ((data->point[0][i].x > w.min_x) && (data->point[0][i].x<w.max_x)) days++;
+    }*/
     // == max_y
 
     float barwidth,pxr;
@@ -1099,20 +1100,34 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
 
     bool show_seconds=false;
     bool show_milliseconds=false;
-    int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
-    double min_tick;
-    int ri;
-    for (ri=0;ri<16;ri++) {
-        st=round(st2*rounding[ri])/rounding[ri];
-        min_tick=round(minor_tick*rounding[ri])/rounding[ri];
-        q=xx/min_tick;  // number of ticks that fits in range
-        if (q<=jj) break; // compared to number of ticks that fit on screen.
-    }
-    if (ri>8) show_seconds=true;
-    if (ri>=14) show_milliseconds=true;
+    bool show_time=true;
 
-    if (min_tick<=0.25/86400.0)
-        min_tick=0.25/86400;
+    double min_tick;
+    if (xx<1) {
+        int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
+
+        int ri;
+        for (ri=0;ri<16;ri++) {
+            st=round(st2*rounding[ri])/rounding[ri];
+            min_tick=round(minor_tick*rounding[ri])/rounding[ri];
+            q=xx/min_tick;  // number of ticks that fits in range
+            if (q<=jj) break; // compared to number of ticks that fit on screen.
+        }
+        if (ri>8) show_seconds=true;
+        if (ri>=14) show_milliseconds=true;
+
+        if (min_tick<=0.25/86400.0)
+            min_tick=0.25/86400;
+    } else {
+        show_time=false;
+        st=st2;
+        min_tick=1;
+        double mtiks=(y+10)/width;
+        double mt=mtiks*xx;
+        min_tick=mt;
+        if (min_tick<1) min_tick=1;
+        if (min_tick>10) min_tick=10;
+    }
 
     dc.SetPen(*wxBLACK_PEN);
 
@@ -1139,28 +1154,36 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
     int hour,minute,second,millisecond;
     wxDateTime d;
     for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
-        minute=d.GetMinute();
-        hour=d.GetHour();
-        second=d.GetSecond();
-        millisecond=d.GetMillisecond();
+        d.Set(i+2400000.5+.000001+1); // JDN vs MJD vs Rounding errors
 
-        if (show_milliseconds) {
-            fd=wxString::Format(wxT("%02i:%02i:%02i:%04i"),hour,minute,second,millisecond);
-        } else if (show_seconds) {
-            fd=wxString::Format(wxT("%02i:%02i:%02i"),hour,minute,second);
+        if (show_time) {
+            minute=d.GetMinute();
+            hour=d.GetHour();
+            second=d.GetSecond();
+            millisecond=d.GetMillisecond();
+
+            if (show_milliseconds) {
+                fd=wxString::Format(wxT("%02i:%02i:%02i:%04i"),hour,minute,second,millisecond);
+            } else if (show_seconds) {
+                fd=wxString::Format(wxT("%02i:%02i:%02i"),hour,minute,second);
+            } else {
+                fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
+            }
         } else {
-            fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
+            fd=d.Format(wxT("%e %b"));
         }
-        dc.GetTextExtent(fd,&x,&y);
+       // dc.GetTextExtent(fd,&x,&y);
 
 //        px=x2p(w,i);
         px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
 		dc.DrawLine(px,py,px,py+6);
 
         dc.GetTextExtent(fd,&x,&y);
-        //dc.DrawRotatedText(fd, px-(y/2)-20, py+x, 60);
-        dc.DrawText(fd, px-(x/2), py+y);
+        if (!show_time) {
+            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
+        } else {
+            dc.DrawText(fd, px-(x/2), py+y);
+        }
 
     }
 
@@ -1261,20 +1284,37 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         }
         int minz=width,maxz=0;
 
-        for (int i=0;i<siz;i+=sam) { //,done==false
-            if (point[i].x < minx) continue;
-            if (first) {
-                first=false;
-                if (i>=sam)  i-=sam;
-            }
+        bool reverse=false;
+        if (point[0].x>point[siz-1].x) reverse=true;
 
-            if (point[i].x > maxx) done=true;
+        for (int i=0;i<siz;i+=sam) { //,done==false
+            if (!reverse) {
+                if (point[i].x < minx) continue;
+                if (first) {
+                    first=false;
+                    if (i>=sam)  i-=sam;
+                }
+
+                if (point[i].x > maxx) done=true;
+            } else {
+                if (point[i].x > maxx) continue;
+                if (first) {
+                    first=false;
+                    if (i>=sam)  i-=sam;
+                }
+                if (point[i].x < minx) done=true;
+            }
 
 
             px=(point[i].x - minx) * xmult;
-            if (px<0) px=0;
-            if (px>width) px=width;
             py=height - ((point[i].y - miny) * ymult);
+            /*if (px<0) {
+                // high school maths failure..
+                px=0;
+            }
+            if (px>width) {
+                px=width;
+            } */
 
             if (accel) {
                 int z=round(px);
@@ -1293,8 +1333,9 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             if (done) break;
         }
 
+        dc.SetClippingRegion(start_px+1,start_py+1,width,height);
         if (accel) {
-             dc.DrawLine(1, 1, 1, height);
+            // dc.DrawLine(1, 1, 1, height);
             dp=0;
             for (int i=minz;i<=maxz;i++) {
                 int y1=m_drawlist[i].x;
@@ -1313,7 +1354,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             if (dp) dc.DrawLines(dp,m_drawlist);
         }
     }
+    dc.DestroyClippingRegion();
+    //dc.SetClippingRegion(start_px-1,start_py+height,width+1,w.GetBottomMargin());
     DrawXTicks(dc,w);
+    //dc.DestroyClippingRegion();
 }
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
@@ -1850,11 +1894,17 @@ void HistoryData::Reload(Day *day)
 
     auto d=machine->day.rbegin();
     int i=0;
+    while (d!=machine->day.rend() && (i<days)) {
+        d++;
+        i++;
+    }
     vc=0;
     bool first=true;
     double x,y;
     max_y=0;
-    while (d!=machine->day.rend() && (i<days)) {
+    i=0;
+    do {
+        d--;
         y=Calc(d->second);
         x=d->first.GetMJD()+1;
         if (first) {
@@ -1871,8 +1921,7 @@ void HistoryData::Reload(Day *day)
         point[vc][i].x=x;
         point[vc][i].y=y;
         i++;
-        d++;
-    }
+    } while (d!=machine->day.rbegin() && (i<days));
     np[vc]=i;
     vc++;
     min_y=0;

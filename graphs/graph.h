@@ -309,7 +309,7 @@ class gCandleStick:public gLayer
 class gLineChart:public gLayer
 {
     public:
-        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool a=true);
+        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool a=false);
         virtual ~gLineChart();
 
         virtual void Plot(wxDC & dc, gGraphWindow & w);

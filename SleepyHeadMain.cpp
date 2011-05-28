@@ -68,12 +68,12 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
     wxRect r=GetRect();
 
 #if defined(__UNIX__)
-    int cx, cy;
+    int cx=r.x, cy=r.y;
     ClientToScreen(&cx,&cy);
-    /*int border_width = cx - r.x;
+    int border_width = cx - r.x;
     int title_bar_height = cy - r.y;
     r.width += (border_width * 2);
-    r.height += title_bar_height + border_width; */
+    r.height += title_bar_height + border_width;
 #endif
     int x=r.x;
     int y=r.y;
@@ -117,8 +117,8 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     //wxDisableAsserts();
     // Create AUINotebook Tabs
     wxCommandEvent dummy;
-    OnViewMenuSummary(dummy);   // Summary Page
     OnViewMenuDaily(dummy);     // Daily Page
+    OnViewMenuSummary(dummy);   // Summary Page
 
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
     //this->Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
@@ -223,33 +223,39 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 Summary::Summary(wxWindow *win)
 :SummaryPanel(win)
 {
-    const int days_shown=90;
+    const int days_shown=30;
     machine=NULL;
+
     AddData(ahidata=new HistoryData(machine,days_shown));
-    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    AHI->SetMargins(10,15,60,80);
-    AHI->AddLayer(new gBarChart(ahidata,wxRED));
-    fgSizer->Add(AHI,1,wxEXPAND);
-
     AddData(pressure=new HistoryCodeData(machine,CPAP_PressureAverage,days_shown));
-    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    PRESSURE->SetMargins(10,15,60,80);
-    PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
-    fgSizer->Add(PRESSURE,1,wxEXPAND);
-
     AddData(leak=new HistoryCodeData(machine,CPAP_LeakAverage,days_shown));
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    LEAK->SetMargins(10,15,60,80);
-    LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
-    fgSizer->Add(LEAK,1,wxEXPAND);
-
     AddData(usage=new UsageHistoryData(machine,days_shown,UHD_Hours));
     AddData(waketime=new UsageHistoryData(machine,days_shown,UHD_Waketime));
     AddData(bedtime=new UsageHistoryData(machine,days_shown,UHD_Bedtime));
 
+    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    AHI->SetMargins(10,15,60,80);
+    AHI->AddLayer(new gBarChart(ahidata,wxRED));
+    //AHI->AddLayer(new gLineChart(ahidata,wxRED));
+    fgSizer->Add(AHI,1,wxEXPAND);
+
+    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    PRESSURE->SetMargins(10,15,60,80);
+    //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
+    PRESSURE->AddLayer(new gLineChart(pressure,wxBLUE));
+    fgSizer->Add(PRESSURE,1,wxEXPAND);
+
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
+    LEAK->SetMargins(10,15,60,80);
+    //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
+    LEAK->AddLayer(new gLineChart(leak,wxYELLOW));
+    fgSizer->Add(LEAK,1,wxEXPAND);
+
+
     USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     USAGE->SetMargins(10,15,60,80);
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
+    //USAGE->AddLayer(new gLineChart(usage,wxGREEN));
     fgSizer->Add(USAGE,1,wxEXPAND);
 
 
