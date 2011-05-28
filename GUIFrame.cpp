@@ -27,11 +27,11 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	menubar = new wxMenuBar( 0 );
 	FileMenu = new wxMenu();
 	wxMenuItem* FileMenuImportSD;
-	FileMenuImportSD = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Import SD") ) , wxEmptyString, wxITEM_NORMAL );
+	FileMenuImportSD = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Import SD") ) + wxT('\t') + wxT("F9"), wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuImportSD );
 	
 	wxMenuItem* FileMenuPreferences;
-	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Preferences") ) , wxEmptyString, wxITEM_NORMAL );
+	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Preferences") ) + wxT('\t') + wxT("F10"), wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuPreferences );
 	
 	wxMenuItem* m_separator1;
@@ -45,18 +45,25 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	ViewMenu = new wxMenu();
 	wxMenuItem* ViewMenuSummary;
-	ViewMenuSummary = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("&Summary") ) , wxEmptyString, wxITEM_NORMAL );
+	ViewMenuSummary = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("&Summary") ) + wxT('\t') + wxT("F5"), wxEmptyString, wxITEM_NORMAL );
 	ViewMenu->Append( ViewMenuSummary );
 	
 	wxMenuItem* ViewMenuDaily;
-	ViewMenuDaily = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("&Daily") ) , wxEmptyString, wxITEM_NORMAL );
+	ViewMenuDaily = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("&Daily") ) + wxT('\t') + wxT("F6"), wxEmptyString, wxITEM_NORMAL );
 	ViewMenu->Append( ViewMenuDaily );
+	
+	wxMenuItem* m_separator2;
+	m_separator2 = ViewMenu->AppendSeparator();
+	
+	wxMenuItem* ViewMenuFullscreen;
+	ViewMenuFullscreen = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("Full Screen") ) + wxT('\t') + wxT("F11"), wxEmptyString, wxITEM_NORMAL );
+	ViewMenu->Append( ViewMenuFullscreen );
 	
 	menubar->Append( ViewMenu, _("&View") ); 
 	
 	ToolsMenu = new wxMenu();
 	wxMenuItem* ToolsMenuScreenshot;
-	ToolsMenuScreenshot = new wxMenuItem( ToolsMenu, wxID_ANY, wxString( _("Screenshot") ) , wxEmptyString, wxITEM_NORMAL );
+	ToolsMenuScreenshot = new wxMenuItem( ToolsMenu, wxID_ANY, wxString( _("Screenshot") ) + wxT('\t') + wxT("Shift+F12"), wxEmptyString, wxITEM_NORMAL );
 	ToolsMenu->Append( ToolsMenuScreenshot );
 	
 	menubar->Append( ToolsMenu, _("Tools") ); 
@@ -85,6 +92,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( FileMenuExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Connect( ViewMenuSummary->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Connect( ViewMenuDaily->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Connect( ViewMenuFullscreen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Connect( ToolsMenuScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Connect( HelpMenuAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 }
@@ -98,6 +106,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_QUIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	

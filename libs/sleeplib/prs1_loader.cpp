@@ -259,7 +259,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             delete sess;
             continue;
         }
-        const double ignore_thresh=0;//300.0/3600.0;// Ignore useless sessions under 5 minute
+        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
         if (sess->hours()<=ignore_thresh) {
             delete sess;
             continue;
@@ -279,10 +279,16 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             }
         }
 
+
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
         sess->summary[CPAP_VSnore]=(long)sess->count_events(CPAP_VSnore);
         sess->summary[PRS1_VSnore2]=sess->sum_event_field(PRS1_VSnore2,0);
+
+
         sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
+        sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+        sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
+        sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
 
         sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
         sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..

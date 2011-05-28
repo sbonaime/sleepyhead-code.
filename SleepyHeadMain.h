@@ -71,6 +71,7 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnQuit(wxCommandEvent& event);
         virtual void OnAbout(wxCommandEvent& event);
         virtual void OnScreenshot(wxCommandEvent& event);
+        virtual void OnFullscreen(wxCommandEvent& event);
         virtual void DoScreenshot(wxCommandEvent& event);
         virtual void OnImportSD(wxCommandEvent& event);
         virtual void OnViewMenuDaily(wxCommandEvent& event);

@@ -211,7 +211,7 @@
                         <property name="label">&amp;Import SD</property>
                         <property name="name">FileMenuImportSD</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">F9</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnImportSD</event>
                         <event name="OnUpdateUI"></event>
@@ -226,7 +226,7 @@
                         <property name="label">&amp;Preferences</property>
                         <property name="name">FileMenuPreferences</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">F10</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnPreferencesClicked</event>
                         <event name="OnUpdateUI"></event>
@@ -265,7 +265,7 @@
                         <property name="label">&amp;Summary</property>
                         <property name="name">ViewMenuSummary</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">F5</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnViewMenuSummary</event>
                         <event name="OnUpdateUI"></event>
@@ -280,9 +280,28 @@
                         <property name="label">&amp;Daily</property>
                         <property name="name">ViewMenuDaily</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">F6</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnViewMenuDaily</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="separator" expanded="1">
+                        <property name="name">m_separator2</property>
+                        <property name="permission">none</property>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Full Screen</property>
+                        <property name="name">ViewMenuFullscreen</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut">F11</property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnFullscreen</event>
                         <event name="OnUpdateUI"></event>
                     </object>
                 </object>
@@ -300,7 +319,7 @@
                         <property name="label">Screenshot</property>
                         <property name="name">ToolsMenuScreenshot</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">Shift+F12</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnScreenshot</event>
                         <event name="OnUpdateUI"></event>

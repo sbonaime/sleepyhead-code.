@@ -24,6 +24,7 @@
 #include <wx/log.h>
 #include <wx/dcscreen.h>
 #include <wx/dcmemory.h>
+#include <wx/filedlg.h>
 #include "SleepyHeadMain.h"
 #include "sleeplib/profiles.h"
 //#include "graphs/sleepflagsgraph.h"
@@ -90,10 +91,18 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
 
     mdc.SelectObject(wxNullBitmap);
 
-    wxString fileName = wxT("myImage.png");
-    wxImage img=bmp.ConvertToImage();
-    if (!img.SaveFile(fileName, wxBITMAP_TYPE_PNG)) {
-        wxLogError(wxT("Couldn't save screenshot ")+fileName);
+    wxDateTime d=wxDateTime::Now();
+
+
+
+//    wxDirDialog sfs(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
+    wxString filename=wxSaveFileSelector(_("Please give a filename for the screenshot"),wxT("png"),wxT("Sleepyhead-")+d.Format(wxT("%Y%m%d-%H%M%S")),this);
+    if (!filename.IsEmpty()) {
+        if (!filename.Lower().EndsWith(wxT(".png"))) filename+=wxT(".png");
+        wxImage img=bmp.ConvertToImage();
+        if (!img.SaveFile(filename, wxBITMAP_TYPE_PNG)) {
+            wxLogError(wxT("Couldn't save screenshot ")+filename);
+        }
     }
 }
 
@@ -138,7 +147,14 @@ void SleepyHeadFrame::OnQuit(wxCommandEvent &event)
 {
     Destroy();
 }
-
+void SleepyHeadFrame::OnFullscreen(wxCommandEvent& event)
+{
+    if (!IsFullScreen()) {
+        ShowFullScreen(true,wxFULLSCREEN_NOBORDER|wxFULLSCREEN_NOCAPTION|wxFULLSCREEN_NOSTATUSBAR);
+    } else {
+        ShowFullScreen(false);
+    }
+}
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 {
     ToolsMenu->UpdateUI();
@@ -265,7 +281,7 @@ void Summary::RefreshData()
     double avp=pressure->GetAverage();
     double bt=fmod(bedtime->GetAverage(),12.0);
     double ua=usage->GetAverage();
-    double wt=fmod(bt+ua,12.0);
+    double wt=waketime->GetAverage(); //fmod(bt+ua,12.0);
 
     wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0>\n");
 
@@ -438,7 +454,7 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
     day.SetHour(0);
     day-=wxTimeSpan::Days(1);
     Day *d;
-    if (machine && (machine->day.find(day)!=machine->day.end()) && (d=machine->day[day]) && (d->size()>0) && ((d->last()-d->first())>wxTimeSpan::Minutes(15))) {
+    if (machine && (machine->day.find(day)!=machine->day.end()) && (d=machine->day[day]) && (d->size()>0)) { // && ((d->last()-d->first())>wxTimeSpan::Minutes(15))) {
     //HTMLInfo->SetPage(wxT(""));
         UpdateGraphs(day);
 
@@ -491,12 +507,12 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
         if (mode==MODE_CPAP) {
             html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
         } else if (mode==MODE_APAP) {
-            html=html+wxT("<tr><td><b>")+_("Pressure-Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMin))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Avg Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),d->summary_avg(CPAP_PressureAverage))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90% Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),d->summary_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pressure-Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure-Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Pressure-Min2")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pressure-Min2")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure-Max2")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Avg Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("90% Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
         }
 
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
@@ -579,7 +595,7 @@ void Daily::OnCalendarMonth( wxCalendarEvent& event )
 		if (i>j) break;
 		wxDateTime d(i,m,y,0,0,0,0);
 		d-=wxTimeSpan::Days(1);
-		if ((machine->day.find(d)!=machine->day.end()) && ((machine->day[d]->last() - machine->day[d]->first())>wxTimeSpan::Minutes(15))) {
+		if ((machine->day.find(d)!=machine->day.end())) {
 #if wxCHECK_VERSION(2,9,0)
 			Calendar->Mark(i,true);
 #else

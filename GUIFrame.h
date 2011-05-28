@@ -55,6 +55,7 @@ class GUIFrame : public wxFrame
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewMenuSummary( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewMenuDaily( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFullscreen( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScreenshot( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
 		

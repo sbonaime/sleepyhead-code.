@@ -267,12 +267,7 @@ EventDataType Day::summary_max(MachineCode code)
         Session & sess=*(*s);
         if (sess.summary.find(code)!=sess.summary.end()) {
             tmp=sess.summary[code].GetDouble();
-            if (fir) {
-                val=tmp;
-                fir=false;
-            } else {
-                if (val>tmp) val=tmp;
-            }
+            if (tmp>val) val=tmp;
         }
     }
     return val;
