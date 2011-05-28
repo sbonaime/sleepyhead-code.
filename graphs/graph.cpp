@@ -1560,7 +1560,8 @@ void FlowData::Reload(Day *day)
     for (auto s=day->begin();s!=day->end(); s++) {
         if ((*s)->waveforms.find(code)==(*s)->waveforms.end()) continue;
         for (auto l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
-            if (vc<=(int)point.size()) {
+            int ps=point.size();
+            if (vc>=ps) {
                 AddSegment(max_points); // TODO: Add size limit capabilities.
             }
             int t=0;
@@ -1626,7 +1627,7 @@ void PressureData::Reload(Day *day)
     bool first=true;
     for (auto s=day->begin();s!=day->end(); s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
-        if (vc<=(int)point.size()) {
+        if (vc>=(int)point.size()) {
             AddSegment(max_points);
         }
 
@@ -1777,7 +1778,7 @@ void AHIData::Reload(Day *day)
 }
 
 FlagData::FlagData(MachineCode _code,double _value,int _field,int _offset)
-:gPointData(512),code(_code),value(_value),field(_field),offset(_offset)
+:gPointData(1024),code(_code),value(_value),field(_field),offset(_offset)
 {
     AddSegment(max_points);
 }

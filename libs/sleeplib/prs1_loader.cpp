@@ -599,7 +599,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         if (sum!=header[hl-1])
             return false;
 
-        if (samples+size>max_load_buffer_size) {
+        if (samples+size>=max_load_buffer_size) {
             wxLogError(wxT("max_load_buffer_size is too small in PRS1 Loader"));
             if (cnt==0) return false;
             break;
