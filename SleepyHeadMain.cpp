@@ -599,6 +599,9 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
         float rei=d->count(CPAP_RERA)/d->hours();
         float vsi=d->count(CPAP_VSnore)/d->hours();
         float fli=d->count(CPAP_FlowLimit)/d->hours();
+        float p90=d->percentile(CPAP_Pressure,0,0.9);
+        float eap90=d->percentile(CPAP_EAP,0,0.9);
+        float iap90=d->percentile(CPAP_IAP,0,0.9);
         wxString submodel=_("Unknown Model");
 
 
@@ -637,7 +640,7 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
             html=html+wxT("<tr><td><b>")+_("Avg&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),d->summary_avg(CPAP_PressureAverage))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Min&nbsp;Reached")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Max&nbsp;Reached")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure?")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
             html=html+wxT("<tr><td><b>")+_("Avg IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),d->summary_avg(BIPAP_IAPAverage))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Avg EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(BIPAP_EAPAverage))+wxT("</td></tr>\n");
@@ -645,6 +648,8 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
             html=html+wxT("<tr><td><b>")+_("Max IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(BIPAP_IAPMax))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Min EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(BIPAP_EAPMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Max EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(BIPAP_EAPMax))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90%&nbsp;IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90%&nbsp;EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n");
 
         }
         html=html+wxT("<tr><td><b>")+_("Avg Leak")+wxT("</b></td><td>")+wxString::Format(wxT("%.2f"),d->summary_avg(CPAP_LeakAverage))+wxT("</td></tr>\n");

@@ -62,7 +62,7 @@ void Profile::ExtraLoad(TiXmlHandle *root)
     TiXmlElement *elem;
     elem=root->FirstChild("Machines").FirstChild().Element();
     if (!elem) {
-        wxLogError(wxT("ExtraLoad: Elem is empty!!!"));
+        wxLogDebug(wxT("ExtraLoad: Elem is empty!!!"));
     }
     for(; elem; elem=elem->NextSiblingElement()) {
         wxString pKey(elem->Value(),wxConvUTF8);

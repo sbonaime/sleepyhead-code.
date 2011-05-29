@@ -5,7 +5,7 @@
 #include "binary_file.h"
 #include "machine.h"
 #include "profiles.h"
-
+#include <algorithm>
 
 
 extern wxProgressDialog *loader_progress;
@@ -457,6 +457,23 @@ wxTimeSpan Day::total_time()
     }
     return d_totaltime;
 }
+EventDataType Day::percentile(MachineCode code,int field,double percent)
+{
+    double val=0;
+    // Cache this?
+    int cnt=0;
+    // Don't assume sessions are in order.
+    for (auto s=sessions.begin();s!=sessions.end();s++) {
+        Session & sess=*(*s);
+        if (sess.events.find(code)!=sess.events.end()) {
+            val+=sess.percentile(code,field,percent);
+            cnt++;
+        }
+    }
+    if (cnt==0) return 0;
+    return EventDataType(val/cnt);
+
+}
 
 const wxDateTime & Day::first(MachineCode code)
 {
@@ -656,6 +673,35 @@ double Session::avg_event_field(MachineCode mc,int field)
 
     return sum/cnt;
 }
+
+bool sortfunction (double i,double j) { return (i<j); }
+
+double Session::percentile(MachineCode mc,int field,double percent)
+{
+    if (events.find(mc)==events.end()) return 0;
+
+    vector<EventDataType> array;
+
+    for (auto e=events[mc].begin(); e!=events[mc].end(); e++) {
+        Event & ev = *(*e);
+        array.push_back(ev[0]);
+    }
+    std::sort(array.begin(),array.end(),sortfunction);
+    int size=array.size();
+    double i=size*percent;
+    double t;
+    double q=modf(i,&t);
+    int j=t;
+    if (j>=size-1) return array[j];
+
+    double a=array[j-1];
+    double b=array[j];
+    if (a==b) return a;
+    double c=(b-a);
+    double d=c*q;
+    return array[j]+q;
+}
+
 double Session::weighted_avg_event_field(MachineCode mc,int field)
 {
     if (events.find(mc)==events.end()) return 0;
@@ -719,6 +765,9 @@ void Session::AddWaveform(Waveform *w)
 {
     waveforms[w->code()].push_back(w);
     //wxLogMessage(w->start().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+w->end().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %i %.1f"),w->samples(), w->duration()));
+
+    // Could parse the flow data for Breaths per minute info here..
+
 
 }
 void Session::TrashEvents()

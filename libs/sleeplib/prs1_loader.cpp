@@ -56,7 +56,7 @@ PRS1Loader::~PRS1Loader()
 }
 Machine *PRS1Loader::CreateMachine(wxString serial,Profile *profile)
 {
-    wxLogMessage(wxT("Create Machine")+serial);
+    wxLogMessage(wxT("Create Machine ")+serial);
     if (!profile) {
         wxLogMessage(wxT("No Profile!"));
         return NULL;
@@ -681,9 +681,11 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     SampleFormat min,max;
     bool first=true;
 
+    SampleFormat c;
+
     for (long i=0;i<samples;i++) {
         data[i]=buffer[i];
-        SampleFormat &c=data[i];
+        c=data[i];
         if (first) {
             min=max=c;
             first=false;
@@ -691,10 +693,14 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
         if (min>c) min=c;
         if (max<c) max=c;
     }
+    //wxLogMessage(wxT("Samples Per Breath: ")+wxString::Format(wxT("%.2f"),double(breath_total)/double(breaths)));
+
+
 
     Waveform *w=new Waveform(start,CPAP_FlowRate,data,samples,duration,min,max);
     //wxLogMessage(wxString::Format(wxT("%i %i %i %i %i"),start,samples,duration,min,max));
     session->AddWaveform(w);
+
     //wxLogMessage(wxT("Done PRS1 Waveforms ")+filename);
     return true;
 }

@@ -4,11 +4,11 @@
 	<File name="GUIFrame.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="1774" topLine="0" />
 	</File>
-	<File name="SleepyHeadApp.cpp" open="1" top="1" tabpos="9">
+	<File name="SleepyHeadApp.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="1346" topLine="14" />
 	</File>
 	<File name="SleepyHeadMain.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="14754" topLine="408" />
+		<Cursor position="16541" topLine="457" />
 	</File>
 	<File name="SleepyHeadMain.h" open="1" top="0" tabpos="4">
 		<Cursor position="2066" topLine="34" />
@@ -26,10 +26,10 @@
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="libs/sleeplib/machine.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="4755" topLine="129" />
+		<Cursor position="20308" topLine="691" />
 	</File>
 	<File name="libs/sleeplib/machine.h" open="1" top="0" tabpos="2">
-		<Cursor position="6107" topLine="197" />
+		<Cursor position="2173" topLine="55" />
 	</File>
 	<File name="libs/sleeplib/machine_loader.cpp" open="0" top="0" tabpos="8">
 		<Cursor position="0" topLine="0" />
@@ -37,20 +37,20 @@
 	<File name="libs/sleeplib/machine_loader.h" open="0" top="0" tabpos="15">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="libs/sleeplib/preferences.cpp" open="0" top="0" tabpos="9">
-		<Cursor position="0" topLine="0" />
+	<File name="libs/sleeplib/preferences.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="5120" topLine="160" />
 	</File>
 	<File name="libs/sleeplib/preferences.h" open="0" top="0" tabpos="16">
 		<Cursor position="31" topLine="0" />
 	</File>
-	<File name="libs/sleeplib/profiles.cpp" open="0" top="0" tabpos="10">
-		<Cursor position="22" topLine="0" />
+	<File name="libs/sleeplib/profiles.cpp" open="1" top="0" tabpos="10">
+		<Cursor position="1342" topLine="38" />
 	</File>
 	<File name="libs/sleeplib/profiles.h" open="0" top="0" tabpos="17">
 		<Cursor position="28" topLine="0" />
 	</File>
-	<File name="libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="15901" topLine="250" />
+	<File name="libs/sleeplib/prs1_loader.cpp" open="1" top="1" tabpos="7">
+		<Cursor position="22943" topLine="679" />
 	</File>
 	<File name="libs/sleeplib/prs1_loader.h" open="1" top="0" tabpos="8">
 		<Cursor position="1115" topLine="0" />

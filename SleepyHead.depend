@@ -7835,7 +7835,7 @@
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1306667662 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
+1306682653 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -7873,7 +7873,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1306667877 /home/mark/projects/git/sleepyhead/version.h
+1306683584 /home/mark/projects/git/sleepyhead/version.h
 
 1306549105 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -7890,7 +7890,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1306667876 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+1306683142 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -7919,7 +7919,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1306667681 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+1306683485 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -7927,6 +7927,7 @@
 	"binary_file.h"
 	"machine.h"
 	"profiles.h"
+	<algorithm>
 
 1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine_loader.cpp
 	"machine_loader.h"
@@ -7939,7 +7940,7 @@
 	<wx/stdpaths.h>
 	"preferences.h"
 
-1306414968 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
+1306673434 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
 	<wx/filefn.h>
 	<wx/filename.h>
 	<wx/utils.h>
@@ -7951,7 +7952,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1306667633 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
+1306681892 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>

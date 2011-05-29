@@ -39,6 +39,7 @@ wxInt16 {
     // General Event Codes
     CPAP_Obstructive=0, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate,
+    CPAP_BreathsPerMinute,
 
     // General CPAP Summary Information
     CPAP_PressureMin=0x80, CPAP_PressureMax, CPAP_RampTime, CPAP_RampStartingPressure, CPAP_Mode, CPAP_PressureReliefType,
@@ -95,6 +96,7 @@ public:
     EventDataType sum(MachineCode code,int field=0);
     EventDataType count(MachineCode code);
     EventDataType weighted_avg(MachineCode code,int field=0);
+    EventDataType percentile(MachineCode mc,int field,double percent);
 
     // Note, the following convert to doubles without considering the consequences fully.
     EventDataType summary_avg(MachineCode code);
@@ -305,6 +307,7 @@ public:
     double sum_event_field(MachineCode mc,int field);
     double avg_event_field(MachineCode mc,int field);
     double weighted_avg_event_field(MachineCode mc,int field);
+    double percentile(MachineCode mc,int field,double percentile);
 
     map<MachineCode,wxVariant> summary;
     void SetChanged(bool val) {
