@@ -1936,7 +1936,7 @@ void HistoryData::Reload(Day *day)
 
     auto d=machine->day.rbegin();
     int i=0;
-    while (d!=machine->day.rend() && (i<days)) {
+    while (d!=machine->day.rend() && (i<=days)) {
         d++;
         i++;
     }
@@ -1948,7 +1948,7 @@ void HistoryData::Reload(Day *day)
     do {
         d--;
         y=Calc(d->second);
-        x=d->first.GetMJD()+1;
+        x=d->first.GetMJD();
         if (first) {
             max_x=x;
             min_x=x;

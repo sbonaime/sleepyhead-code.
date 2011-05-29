@@ -323,6 +323,8 @@ Summary::Summary(wxWindow *win)
 
     AddData(ahidata=new HistoryData(machine,days_shown));
     AddData(pressure=new HistoryCodeData(machine,CPAP_PressureAverage,days_shown));
+    AddData(pressure_eap=new HistoryCodeData(machine,BIPAP_EAPAverage,days_shown));
+    AddData(pressure_iap=new HistoryCodeData(machine,BIPAP_IAPAverage,days_shown));
     AddData(leak=new HistoryCodeData(machine,CPAP_LeakMedian,days_shown));
     AddData(usage=new UsageHistoryData(machine,days_shown,UHD_Hours));
     AddData(waketime=new UsageHistoryData(machine,days_shown,UHD_Waketime));
@@ -338,6 +340,8 @@ Summary::Summary(wxWindow *win)
     PRESSURE->SetMargins(10,15,60,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
     PRESSURE->AddLayer(new gLineChart(pressure,wxBLUE));
+    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED));
+    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxGREEN));
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
@@ -512,6 +516,7 @@ Daily::Daily(wxWindow *win)
     fgSizer->Add(TAP,1,wxEXPAND);
     fgSizer->Add(TAP_IAP,1,wxEXPAND);
     fgSizer->Add(TAP_EAP,1,wxEXPAND);
+    //fgSizer->Layout();
 
     foobar_datehack=false; // this exists due to a wxGTK bug.
   //  RefreshData();
@@ -555,12 +560,31 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
     Day *d;
     if (machine && (machine->day.find(day)!=machine->day.end()) && (d=machine->day[day]) && (d->size()>0)) { // && ((d->last()-d->first())>wxTimeSpan::Minutes(15))) {
     //HTMLInfo->SetPage(wxT(""));
+        CPAPMode mode=(CPAPMode)d->summary_max(CPAP_Mode);
         UpdateGraphs(day);
+        if (mode!=MODE_BIPAP) {
+
+            TAP_EAP->Show(false);
+            TAP_IAP->Show(false);
+            TAP->Show(true);
+        } else {
+            TAP->Show(false);
+            TAP_IAP->Show(true);
+            TAP_EAP->Show(true);
+        }
+
+        TAP_EAP->Refresh();
+        TAP_IAP->Refresh();
+        TAP->Refresh();
+        fgSizer->Layout();
+//        Update();
+        ScrolledWindow->FitInside();
+        //ScrolledWindow->Refresh();
+//        wxWindow::UpdateWindowUI();
 
 //        Session *s=(*machine->day[day])[0];
         PRTypes pr=(PRTypes)d->summary_max(CPAP_PressureReliefType);
         wxString epr=PressureReliefNames[pr]+wxString::Format(wxT(" x%i"),(int)d->summary_max(CPAP_PressureReliefSetting));
-        CPAPMode mode=(CPAPMode)d->summary_max(CPAP_Mode);
         wxString modestr=CPAPModeNames[mode];
 
         float ahi=(d->count(CPAP_Obstructive)+d->count(CPAP_Hypopnea)+d->count(CPAP_ClearAirway))/d->hours();
@@ -630,17 +654,8 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
-            TAP->Hide();
-            TAP_EAP->Show();
-            TAP_IAP->Show();
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;IAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;EAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
-        }
-        if (mode!=MODE_BIPAP) {
-            TAP->Show();
-            TAP_EAP->Hide();
-            TAP_IAP->Hide();
-
         }
         html=html+wxT("<tr><td><b>")+_("Ramp-Time")+wxT("</b></td><td>")+wxString::Format(wxT("%imin"),(int)d->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Ramp-Prs.")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_RampStartingPressure))+wxT("</td></tr>\n");

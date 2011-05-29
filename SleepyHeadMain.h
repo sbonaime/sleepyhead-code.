@@ -26,7 +26,7 @@ class Summary:public SummaryPanel
 public:
     Summary(wxWindow *win);
     virtual ~Summary();
-    HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime;
+    HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
     void RefreshData(Machine *m);
 	void AddData(HistoryData *d) { Data.push_back(d);  };
@@ -53,7 +53,6 @@ protected:
     gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
     gPointData *flags[10];
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP;
-
 
     Machine *machine;
     list<gPointData *> Data;
