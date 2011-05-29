@@ -61,7 +61,7 @@ map<CPAPMode,wxString> CPAPModeNames={
 map<PRTypes,wxString> PressureReliefNames={
     {PR_NONE,_("None")},
     {PR_CFLEX,wxT("C-Flex")},
-    {PR_CFLEXPLUS,wxT("C-Flex Plus")},
+    {PR_CFLEXPLUS,wxT("C-Flex+")},
     {PR_AFLEX,wxT("A-Flex")},
     {PR_EPR,wxT("Exhalation Pressure Relief (EPR)")},
     {PR_SMARTFLEX,wxT("SmartFlex")}
@@ -444,12 +444,15 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
 }
 wxTimeSpan Day::total_time()
 {
-    if (d_totaltime>wxTimeSpan::Seconds(0)) return d_totaltime;
+    //if (d_totaltime>wxTimeSpan::Seconds(0)) return d_totaltime;
 
     d_totaltime=wxTimeSpan::Seconds(0);
     for (auto s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         d_totaltime+=sess.last()-sess.first();
+        if (d_totaltime>wxTimeSpan::Hours(15)) {
+            int c=1;
+        }
     }
     return d_totaltime;
 }
@@ -470,7 +473,7 @@ const wxDateTime & Day::first(MachineCode code)
                 date=tmp;
                 fir=false;
             } else {
-                if (date>tmp) date=tmp;
+                if (tmp<date) date=tmp;
             }
         }
     }
@@ -496,7 +499,7 @@ const wxDateTime & Day::last(MachineCode code)
                 date=tmp;
                 fir=false;
             } else {
-                if (date<tmp) date=tmp;
+                if (tmp>date) date=tmp;
             }
         }
     }

@@ -294,10 +294,19 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
 
 
         if (sess->count_events(CPAP_IAP)>0) {
+            sess->summary[CPAP_Mode]=(long)MODE_BIPAP;
             sess->summary[CPAP_PressureMedian]=(sess->avg_event_field(CPAP_EAP,0)+sess->avg_event_field(CPAP_IAP,0))/2.0;
             sess->summary[CPAP_PressureAverage]=(sess->weighted_avg_event_field(CPAP_IAP,0)+sess->weighted_avg_event_field(CPAP_EAP,0))/2.0;
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_IAP,0);
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_EAP,0);
+
+            sess->summary[BIPAP_IAPAverage]=sess->weighted_avg_event_field(CPAP_IAP,0);
+            sess->summary[BIPAP_IAPMin]=sess->min_event_field(CPAP_IAP,0);
+            sess->summary[BIPAP_IAPMax]=sess->max_event_field(CPAP_IAP,0);
+            sess->summary[BIPAP_EAPAverage]=sess->weighted_avg_event_field(CPAP_EAP,0);
+            sess->summary[BIPAP_EAPMin]=sess->min_event_field(CPAP_EAP,0);
+            sess->summary[BIPAP_EAPMax]=sess->max_event_field(CPAP_EAP,0);
+
         } else {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
@@ -345,6 +354,8 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     ext=header[6];
 
     if (ext!=1)
+        return false;
+    if (size<0x30)
         return false;
     //size|=(header[3]<<16) | (header[4]<<24); // the jury is still out on the 32bitness of one. doesn't matter here anyway.
 
@@ -399,9 +410,11 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     session->summary[PRS1_MaskAlert]=(buffer[0x0c]&0x08)==0x08;
     session->summary[PRS1_ShowAHI]=(buffer[0x0c]&0x04)==0x04;
 
-    int duration=buffer[0x14] | (buffer[0x15] << 8);
+    unsigned char * b=&buffer[0x14];
+    wxUint16 bb=*(wxUint16*)b;
+    int duration=bb;// | (buffer[0x15] << 8);
     session->summary[CPAP_Duration]=(long)duration;
-    wxLogMessage(wxString::Format(wxT("%i"),duration));
+    wxLogMessage(wxString::Format(wxT("ID: %i %i"),session->session(),duration));
     float hours=float(duration)/3600.0;
     session->set_hours(hours);
 

@@ -159,6 +159,7 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         virtual void SetMinY(double v);
         virtual void SetMaxY(double v);
 
+        virtual void ResetXBounds();
         virtual void SetXBounds(double minx, double maxx);
         virtual void ZoomX(double mult,int origin_px);
         virtual void ZoomXPixels(int x1, int x2);           // Zoom between two selected points on screen

@@ -139,6 +139,15 @@ void gGraphWindow::SetXBounds(double minx, double maxx)
     SetMaxX(maxx);
     Refresh(false);
 }
+void gGraphWindow::ResetXBounds()
+{
+    //min_x=minx;
+    //max_x=maxx;
+    SetMinX(RealMinX());
+    SetMaxX(RealMaxX());
+    Refresh(false);
+}
+
 void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
     double rx1=0,rx2=0;
@@ -272,13 +281,14 @@ void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 //voiid ZoomX
 void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 {
+    double zoom_fact=2;
+    if (event.ControlDown()) zoom_fact=5.0;
     if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
         for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->ZoomX(2,0);
+            (*g)->ZoomX(zoom_fact,0);
         }
-        if (m_block_zoom) {
-        } else {
-            ZoomX(2,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+        if (!m_block_zoom) {
+            ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
         }
     }
     m_mouseRDown=false;
@@ -305,9 +315,19 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     int t2=MAX(x1,x2);
 
     wxRect r;
-    if (t1 != t2) {
+    if ((t2-t1)>3) {
         ZoomXPixels(t1,t2);
+    } else {
+        double zoom_fact=0.5;
+        if (event.ControlDown()) zoom_fact=0.25;
+        for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->ZoomX(zoom_fact,event.GetX());
+        }
+        if (!m_block_zoom) {
+            ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+        }
     }
+
     r=wxRect(0, 0, 0, 0);
 
 
@@ -1712,7 +1732,7 @@ void PressureData::Reload(Day *day)
         }
     } else { */
         min_y=floor(min_y);
-        max_y=ceil(max_y);
+        max_y=ceil(max_y+1);
     //}
 
     real_min_x=min_x;
