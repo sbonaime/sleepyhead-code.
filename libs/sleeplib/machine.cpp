@@ -63,6 +63,7 @@ map<PRTypes,wxString> PressureReliefNames={
     {PR_CFLEX,wxT("C-Flex")},
     {PR_CFLEXPLUS,wxT("C-Flex+")},
     {PR_AFLEX,wxT("A-Flex")},
+    {PR_BIFLEX,wxT("Bi-Flex")},
     {PR_EPR,wxT("Exhalation Pressure Relief (EPR)")},
     {PR_SMARTFLEX,wxT("SmartFlex")}
 };

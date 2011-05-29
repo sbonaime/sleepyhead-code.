@@ -64,7 +64,7 @@ short {
 };
 enum PRTypes:
 short {
-    PR_NONE=0,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_EPR,PR_SMARTFLEX
+    PR_NONE=0,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
 };
 
 extern map<MachineCode,wxString> DefaultMCShortNames;

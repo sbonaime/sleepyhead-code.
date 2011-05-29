@@ -295,6 +295,9 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
 
         if (sess->count_events(CPAP_IAP)>0) {
             sess->summary[CPAP_Mode]=(long)MODE_BIPAP;
+            if (sess->summary[CPAP_PressureReliefType].GetInteger()!=(long)PR_NONE) {
+                sess->summary[CPAP_PressureReliefType]=(long)PR_BIFLEX;
+            }
             sess->summary[CPAP_PressureMedian]=(sess->avg_event_field(CPAP_EAP,0)+sess->avg_event_field(CPAP_IAP,0))/2.0;
             sess->summary[CPAP_PressureAverage]=(sess->weighted_avg_event_field(CPAP_IAP,0)+sess->weighted_avg_event_field(CPAP_EAP,0))/2.0;
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_IAP,0);
