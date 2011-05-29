@@ -402,12 +402,13 @@ protected:
 class TAPData:public gPointData
 {
 public:
-    TAPData();
+    TAPData(MachineCode _code);
     virtual ~TAPData();
     virtual void Reload(Day *day=NULL);
 
     static const int max_slots=256;
     wxTimeSpan pTime[max_slots];
+    MachineCode code;
 
 };
 

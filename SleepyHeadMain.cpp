@@ -411,10 +411,21 @@ Daily::Daily(wxWindow *win)
 {
     machine=NULL;
 
+    AddData(tap_eap=new TAPData(CPAP_EAP));
+    AddData(tap_iap=new TAPData(CPAP_IAP));
+    AddData(tap=new TAPData(CPAP_Pressure));
+
     TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
     TAP->SetMargins(20,15,5,50);
-    AddData(tap=new TAPData());
     TAP->AddLayer(new gCandleStick(tap));
+
+    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@IAP"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    TAP_IAP->SetMargins(20,15,5,50);
+    TAP_IAP->AddLayer(new gCandleStick(tap_iap));
+
+    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@EAP"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    TAP_EAP->SetMargins(20,15,5,50);
+    TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
     G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT("Event Breakdown"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
     G_AHI->SetMargins(20,15,5,50);
@@ -499,6 +510,8 @@ Daily::Daily(wxWindow *win)
     fgSizer->Add(PRD,1,wxEXPAND);
     fgSizer->Add(LEAK,1,wxEXPAND);
     fgSizer->Add(TAP,1,wxEXPAND);
+    fgSizer->Add(TAP_IAP,1,wxEXPAND);
+    fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
     foobar_datehack=false; // this exists due to a wxGTK bug.
   //  RefreshData();
@@ -617,8 +630,17 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
+            TAP->Hide();
+            TAP_EAP->Show();
+            TAP_IAP->Show();
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;IAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;EAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
+        }
+        if (mode!=MODE_BIPAP) {
+            TAP->Show();
+            TAP_EAP->Hide();
+            TAP_IAP->Hide();
+
         }
         html=html+wxT("<tr><td><b>")+_("Ramp-Time")+wxT("</b></td><td>")+wxString::Format(wxT("%imin"),(int)d->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Ramp-Prs.")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(CPAP_RampStartingPressure))+wxT("</td></tr>\n");

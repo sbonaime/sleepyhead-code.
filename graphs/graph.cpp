@@ -1768,8 +1768,8 @@ void PressureData::Reload(Day *day)
     //graph->Refresh(false);
 }
 
-TAPData::TAPData()
-:gPointData(256)
+TAPData::TAPData(MachineCode _code)
+:gPointData(256),code(_code)
 {
     AddSegment(max_points);
 }
@@ -1793,7 +1793,6 @@ void TAPData::Reload(Day *day)
     int lastval,val;
 
     int field=0;
-    MachineCode code=CPAP_Pressure;
 
     for (auto s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
