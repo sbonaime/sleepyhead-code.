@@ -310,7 +310,7 @@ class gCandleStick:public gLayer
 class gLineChart:public gLayer
 {
     public:
-        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool a=false);
+        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool a=false,bool _hide_axes=false);
         virtual ~gLineChart();
 
         virtual void Plot(wxDC & dc, gGraphWindow & w);
@@ -327,6 +327,9 @@ class gLineChart:public gLayer
         wxPoint *m_drawlist;
         bool m_show_grid;
         bool m_show_minor_grid;
+        bool m_hide_axes;
+        wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
+
 
 };
 
@@ -402,6 +405,10 @@ public:
     TAPData();
     virtual ~TAPData();
     virtual void Reload(Day *day=NULL);
+
+    static const int max_slots=256;
+    wxTimeSpan pTime[max_slots];
+
 };
 
 class FlowData:public gPointData

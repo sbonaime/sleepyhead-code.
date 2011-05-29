@@ -501,7 +501,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             } else if (code==0x03) {
                 data0/=10.0;
                 data1/=10.0;
-                session->AddEvent(new Event(t,CPAP_EAP, {data1,data0}));
+                session->AddEvent(new Event(t,CPAP_EAP, {data1}));
                 session->AddEvent(new Event(t,CPAP_IAP, {data0}));
             } else {
                 session->AddEvent(new Event(t,cpapcode, {data0,data1}));

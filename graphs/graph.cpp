@@ -458,13 +458,17 @@ double gGraphWindow::MinY()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinY();
-            first=false;
+            if (!((val==(*l)->MaxY()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->MinY() < val) val = (*l)->MinY();
+            tmp=(*l)->MinY();
+            if (!((tmp==(*l)->MaxY()) && (tmp==0))) { // Ignore this layer if both are 0
+                if (tmp < val) val = tmp;
+            }
         }
     }
     return min_y=val;
@@ -476,13 +480,17 @@ double gGraphWindow::MaxY()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxY();
-            first=false;
+            if (!((val==(*l)->MinY()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->MaxY()>val) val = (*l)->MaxY();
+            tmp=(*l)->MaxY();
+            if (!((tmp==(*l)->MinY()) && (tmp==0))) { // Ignore this layer if both are 0
+                if (tmp > val) val = tmp;
+            }
         }
     }
     return max_y=val;
@@ -531,13 +539,17 @@ double gGraphWindow::RealMinY()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinY();
-            first=false;
+            if (!((val==(*l)->RealMaxY()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->RealMinY() < val) val = (*l)->RealMinY();
+            tmp=(*l)->RealMinY();
+            if (!((tmp==(*l)->RealMaxY()) && (tmp==0))) { // Ignore this if both are 0
+                if (tmp < val) val = tmp;
+            }
         }
     }
     return rmin_y=val;
@@ -549,13 +561,17 @@ double gGraphWindow::RealMaxY()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxY();
-            first=false;
+            if (!((val==(*l)->RealMinY()) && (val==0))) // Does this create a loop??
+                first=false;
         } else {
-            if ((*l)->RealMaxY()>val) val = (*l)->RealMaxY();
+            tmp=(*l)->RealMaxY();
+            if (!((tmp==(*l)->RealMinY()) && (tmp==0))) { // Ignore this if both are 0
+                if (tmp > val) val = tmp;
+            }
         }
     }
     return rmax_y=val;
@@ -998,8 +1014,8 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 }
 */
 
-gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a)
-:gLayer(d),m_accelerate(a),m_drawlist_size(dlsize)
+gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a,bool _hide_axes)
+:gLayer(d),m_accelerate(a),m_drawlist_size(dlsize),m_hide_axes(_hide_axes)
 {
     m_drawlist=new wxPoint [dlsize];
     color.clear();
@@ -1238,7 +1254,6 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     if (yy<=0)
         return;
    // assert(xx>=0);
-    static wxPoint screen[4096]; // max screen size
 
     static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
 
@@ -1261,8 +1276,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+px,start_py+height+8,start_px+px,start_py+height+12);
     dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
 
-    DrawYTicks(dc,w);
-    DrawXTicks(dc,w);
+    if (!m_hide_axes) {
+        DrawYTicks(dc,w);
+        DrawXTicks(dc,w);
+    }
 
     wxPen pen(*color[0], 1, wxSOLID);
     dc.SetPen(pen);
@@ -1655,8 +1672,8 @@ void FlowData::Reload(Day *day)
 
     //max_y=t1;
     //min_y=-t1;
-    min_y=-100;
-    max_y=100;
+    min_y=-90;
+    max_y=90;
 
     real_min_x=min_x;
     real_min_y=min_y;
@@ -1685,7 +1702,8 @@ void PressureData::Reload(Day *day)
     if (min_x>max_x) {
         max_x=max_x;
     }
-    max_y=0;
+    min_y=max_y=0;
+    int tt=0;
     bool first=true;
     for (auto s=day->begin();s!=day->end(); s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
@@ -1706,16 +1724,17 @@ void PressureData::Reload(Day *day)
             point[vc][t++]=r;
             assert(t<max_points);
             if (first) {
-                min_y=r.y;
+                max_y=min_y=r.y;
                 first=false;
             } else {
                 if (r.y<min_y) min_y=r.y;
+                if (r.y>max_y) max_y=r.y;
             }
-            if (r.y>max_y) max_y=r.y;
 
             lastp=p;
         }
         np[vc]=t;
+        tt+=t;
         vc++;
 
     }
@@ -1731,8 +1750,11 @@ void PressureData::Reload(Day *day)
             max_y=ceil(max_y);
         }
     } else { */
+    if (tt>0) {
         min_y=floor(min_y);
         max_y=ceil(max_y+1);
+        if (min_y>1) min_y-=1;
+    }
     //}
 
     real_min_x=min_x;
@@ -1761,8 +1783,6 @@ void TAPData::Reload(Day *day)
         return;
     }
 
-    const int max_slots=256;
-    static wxTimeSpan pTime[max_slots];
 
     for (int i=0;i<max_slots;i++) pTime[i]=wxTimeSpan::Seconds(0);
 

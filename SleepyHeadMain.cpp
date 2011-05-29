@@ -263,14 +263,13 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
         daily->RefreshData(m);
+        daily->Refresh();
     }
     idx=main_auinotebook->GetPageIndex(summary);
     if (idx!=wxNOT_FOUND) {
         summary->RefreshData(m);
+        summary->Refresh();
     }
-    summary->Refresh();
-    daily->Refresh();
-    Refresh();
 
 }
 void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
@@ -280,9 +279,13 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
     if (idx==wxNOT_FOUND) {
         daily=new Daily(this);
         main_auinotebook->AddPage(daily,_("Daily"),true);
-        id=pref["DefaultMachine"].GetInteger();
-        Machine *m=cpap_machines[id];
-        if (m) daily->RefreshData(m);
+        if (pref.Exists(wxT("DefaultMachine")))
+            id=pref["DefaultMachine"].GetInteger();
+        else id=0;
+        if (id<cpap_machines.size()) {
+            Machine *m=cpap_machines[id];
+            if (m) daily->RefreshData(m);
+        }
         daily->Refresh();
 
     } else {
@@ -298,11 +301,14 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
     if (idx==wxNOT_FOUND) {
         summary=new Summary(this);
         main_auinotebook->AddPage(summary,_("Summary"),true);
-        id=pref["DefaultMachine"].GetInteger();
-        Machine *m=cpap_machines[id];
-        if (m) summary->RefreshData(m);
+        if (pref.Exists(wxT("DefaultMachine")))
+            id=pref["DefaultMachine"].GetInteger();
+        else id=0;
+        if (id<cpap_machines.size()) {
+            Machine *m=cpap_machines[id];
+            if (m) summary->RefreshData(m);
+        }
         summary->Refresh();
-
     } else {
         main_auinotebook->SetSelection(idx);
     }
@@ -317,7 +323,7 @@ Summary::Summary(wxWindow *win)
 
     AddData(ahidata=new HistoryData(machine,days_shown));
     AddData(pressure=new HistoryCodeData(machine,CPAP_PressureAverage,days_shown));
-    AddData(leak=new HistoryCodeData(machine,CPAP_LeakAverage,days_shown));
+    AddData(leak=new HistoryCodeData(machine,CPAP_LeakMedian,days_shown));
     AddData(usage=new UsageHistoryData(machine,days_shown,UHD_Hours));
     AddData(waketime=new UsageHistoryData(machine,days_shown,UHD_Waketime));
     AddData(bedtime=new UsageHistoryData(machine,days_shown,UHD_Bedtime));
@@ -438,8 +444,8 @@ Daily::Daily(wxWindow *win)
     AddData(prd=new PressureData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false));
-    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false));
-    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false));
+    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true));
+    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true));
 
     AddData(frw=new FlowData());
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
