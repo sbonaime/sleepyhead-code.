@@ -11,10 +11,10 @@ License: LGPL
 #include "graph.h"
 
 #if !wxCHECK_VERSION(2,9,0)
-wxColor zwxYELLOW=wxColor(0xc0,0xc0,0x40,0xff);
+wxColor zwxYELLOW=wxColor(0xb0,0xb0,0x40,0xff);
 wxColor *wxYELLOW=&zwxYELLOW;
 #endif
-wxColor zwxAQUA=wxColor(0x00,0xff,0xff,0xff);
+wxColor zwxAQUA=wxColor(0x00,0xaf,0xbf,0xff);
 wxColor * wxAQUA=&zwxAQUA;
 wxColor zwxPURPLE=wxColor(0xff,0x40,0xff,0xff);
 wxColor * wxPURPLE=&zwxPURPLE;
@@ -407,7 +407,7 @@ double gGraphWindow::MinX()
             val=(*l)->MinX();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->MinX();
+            if ((*l)->MinX() < val) val = (*l)->MinX();
         }
     }
 
@@ -426,7 +426,7 @@ double gGraphWindow::MaxX()
             val=(*l)->MaxX();
             first=false;
         } else {
-            if (val < (*l)->MinX()) val = (*l)->MaxX();
+            if ((*l)->MaxX() > val) val = (*l)->MaxX();
         }
     }
     return max_x=val;
@@ -444,7 +444,7 @@ double gGraphWindow::MinY()
             val=(*l)->MinY();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->MinY();
+            if ((*l)->MinY() < val) val = (*l)->MinY();
         }
     }
     return min_y=val;
@@ -462,7 +462,7 @@ double gGraphWindow::MaxY()
             val=(*l)->MaxY();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->MaxY();
+            if ((*l)->MaxY()>val) val = (*l)->MaxY();
         }
     }
     return max_y=val;
@@ -481,7 +481,7 @@ double gGraphWindow::RealMinX()
             val=(*l)->RealMinX();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->RealMinX();
+            if ((*l)->RealMinX() < val) val = (*l)->RealMinX();
         }
     }
     return rmin_x=val;
@@ -499,7 +499,7 @@ double gGraphWindow::RealMaxX()
             val=(*l)->RealMaxX();
             first=false;
         } else {
-            if (val < (*l)->MinX()) val = (*l)->RealMaxX();
+            if ((*l)->RealMaxX() > val) val = (*l)->RealMaxX();
         }
     }
     return rmax_x=val;
@@ -517,7 +517,7 @@ double gGraphWindow::RealMinY()
             val=(*l)->RealMinY();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->RealMinY();
+            if ((*l)->RealMinY() < val) val = (*l)->RealMinY();
         }
     }
     return rmin_y=val;
@@ -535,7 +535,7 @@ double gGraphWindow::RealMaxY()
             val=(*l)->RealMaxY();
             first=false;
         } else {
-            if (val > (*l)->MinX()) val = (*l)->RealMaxY();
+            if ((*l)->RealMaxY()>val) val = (*l)->RealMaxY();
         }
     }
     return rmax_y=val;
@@ -1215,6 +1215,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     double ymult=height/yy;
     if (xx<=0)
         return;
+    if (yy<=0)
+        return;
    // assert(xx>=0);
     static wxPoint screen[4096]; // max screen size
 
@@ -1226,8 +1228,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
    // dc.DrawLine(start_px,start_py,start_px+width,start_py);
     dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1);
 
-    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    static wxPen pen3(*wxGREEN, 2, wxSOLID);
+    wxPen pen2(wxDARK_GREY, 1, wxDOT);
+    wxPen pen3(*wxGREEN, 2, wxSOLID);
 
     dc.SetPen( pen2 );
     dc.DrawLine(start_px,start_py+height+10,start_px+width,start_py+height+10);
@@ -1240,6 +1242,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
 
     DrawYTicks(dc,w);
+    DrawXTicks(dc,w);
 
     wxPen pen(*color[0], 1, wxSOLID);
     dc.SetPen(pen);
@@ -1301,16 +1304,16 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 if (point[i].x < minx) done=true;
             }
 
-
             px=(point[i].x - minx) * xmult;
             py=height - ((point[i].y - miny) * ymult);
-            /*if (px<0) {
-                // high school maths failure..
+
+            // Can't avoid this.. SetClippingRegion does not work without crashing.. need to find a workaround:(
+            if (px<0) {
                 px=0;
             }
             if (px>width) {
                 px=width;
-            } */
+            }
 
             if (accel) {
                 int z=round(px);
@@ -1329,7 +1332,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             if (done) break;
         }
 
-        dc.SetClippingRegion(start_px+1,start_py-1,width,height+1);
+        dc.SetClippingRegion(start_px+1,start_py-1,width,height+2);
         if (accel) {
             // dc.DrawLine(1, 1, 1, height);
             dp=0;
@@ -1352,7 +1355,6 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     }
     dc.DestroyClippingRegion();
     //dc.SetClippingRegion(start_px-1,start_py+height,width+1,w.GetBottomMargin());
-    DrawXTicks(dc,w);
     //dc.DestroyClippingRegion();
 }
 
@@ -1593,8 +1595,8 @@ void FlowData::Reload(Day *day)
     }
     //wxRealPoint *rpl;
     MachineCode code=CPAP_FlowRate;
-    min_x=day->first(CPAP_Pressure).GetMJD();
-    max_x=day->last(CPAP_Pressure).GetMJD();
+    min_x=day->first().GetMJD();
+    max_x=day->last().GetMJD();
     max_y=0;
     bool first=true;
     for (auto s=day->begin();s!=day->end(); s++) {
@@ -1629,12 +1631,12 @@ void FlowData::Reload(Day *day)
     min_y=floor(min_y);
     max_y=ceil(max_y);
 
-    double t1=MAX(fabs(min_y),fabs(max_y));
+    //double t1=MAX(fabs(min_y),fabs(max_y));
 
-    max_y=t1;
-    min_y=-t1;
-    min_y=-120;
-    max_y=120;
+    //max_y=t1;
+    //min_y=-t1;
+    min_y=-100;
+    max_y=100;
 
     real_min_x=min_x;
     real_min_y=min_y;
@@ -1697,16 +1699,21 @@ void PressureData::Reload(Day *day)
         vc++;
 
     }
-    if ((code==CPAP_Pressure) && (day->summary_max(CPAP_Mode)==MODE_CPAP)) {
-        min_y=4;
-        max_y=ceil(max_y+1);
-    } else {
-        if (min_y>day->summary_min(CPAP_PressureMin)) min_y=day->summary_min(CPAP_PressureMin);
-        if (max_y<day->summary_max(CPAP_PressureMax)) max_y=day->summary_min(CPAP_PressureMax);
+    /*if ((code==CPAP_Pressure) || (code==CPAP_EAP) || (code==CPAP_IAP)) {
+        if (day->summary_max(CPAP_Mode)==MODE_CPAP) {
+            min_y=4;
+            max_y=ceil(max_y+1);
+        } else {
+            if (min_y>day->summary_min(CPAP_PressureMin)) min_y=day->summary_min(CPAP_PressureMin);
+            if (max_y<day->summary_max(CPAP_PressureMax)) max_y=day->summary_min(CPAP_PressureMax);
         //max_y=ceil(day->summary_max(CPAP_PressureMax));
+            min_y=floor(min_y);
+            max_y=ceil(max_y);
+        }
+    } else { */
         min_y=floor(min_y);
         max_y=ceil(max_y);
-    }
+    //}
 
     real_min_x=min_x;
     real_min_y=min_y;
@@ -1860,7 +1867,7 @@ void FlagData::Reload(Day *day)
             if (v2>max_x) max_x=v2; */
         }
     }
-    min_y=0;
+    min_y=-value;
     max_y=value;
     np[vc]=c;
     vc++;

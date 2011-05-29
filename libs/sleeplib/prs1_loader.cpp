@@ -259,19 +259,20 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             delete sess;
             continue;
         }
-        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
-        if (sess->hours()<=ignore_thresh) {
-            delete sess;
-            continue;
-        }
+        wxLogMessage(sess->first().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+sess->last().Format(wxT("%Y-%m-%d %H:%M:%S")));
 
         //sess->SetSessionID(sess->start().GetTicks());
-        m->AddSession(sess);
         if (!s->second[1].IsEmpty()) {
             if (!OpenEvents(sess,s->second[1])) {
                 wxLogWarning(wxT("PRS1Loader: Couldn't open event file ")+s->second[1]);
             }
         }
+        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
+        if (sess->hours()<=ignore_thresh) {
+            delete sess;
+            continue;
+        }
+        m->AddSession(sess);
 
         if (!s->second[2].IsEmpty()) {
             if (!OpenWaveforms(sess,s->second[2])) {
@@ -279,16 +280,30 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             }
         }
 
+        if (sess->summary.find(CPAP_Obstructive)!=sess->summary.end()) {
+            sess->summary[CPAP_Obstructive]=(long)sess->count_events(CPAP_Obstructive);
+            sess->summary[CPAP_Hypopnea]=(long)sess->count_events(CPAP_Hypopnea);
+            sess->summary[CPAP_ClearAirway]=(long)sess->count_events(CPAP_ClearAirway);
+            sess->summary[CPAP_RERA]=(long)sess->count_events(CPAP_RERA);
+            sess->summary[CPAP_FlowLimit]=(long)sess->count_events(CPAP_FlowLimit);
+        }
 
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
         sess->summary[CPAP_VSnore]=(long)sess->count_events(CPAP_VSnore);
         sess->summary[PRS1_VSnore2]=sess->sum_event_field(PRS1_VSnore2,0);
 
 
-        sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
-        sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
-        sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
-        sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
+        if (sess->count_events(CPAP_IAP)>0) {
+            sess->summary[CPAP_PressureMedian]=(sess->avg_event_field(CPAP_EAP,0)+sess->avg_event_field(CPAP_IAP,0))/2.0;
+            sess->summary[CPAP_PressureAverage]=(sess->weighted_avg_event_field(CPAP_IAP,0)+sess->weighted_avg_event_field(CPAP_EAP,0))/2.0;
+            sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_IAP,0);
+            sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_EAP,0);
+        } else {
+            sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
+        }
 
         sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
         sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..
@@ -346,6 +361,7 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
 
     if (!date.IsValid()) return false;
 
+    memset(m_buffer,0,size);
     unsigned char * buffer=m_buffer;
     br=f.Read(buffer,size);
     if (br<size) {
@@ -353,6 +369,7 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     }
 
     session->set_first(date);
+    session->set_last(date);
     double max;
     session->summary[CPAP_PressureMin]=(double)buffer[0x03]/10.0;
     session->summary[CPAP_PressureMax]=max=(double)buffer[0x04]/10.0;
@@ -383,6 +400,8 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     session->summary[PRS1_ShowAHI]=(buffer[0x0c]&0x04)==0x04;
 
     int duration=buffer[0x14] | (buffer[0x15] << 8);
+    session->summary[CPAP_Duration]=(long)duration;
+    wxLogMessage(wxString::Format(wxT("%i"),duration));
     float hours=float(duration)/3600.0;
     session->set_hours(hours);
 
@@ -397,13 +416,14 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     if (max==0) {
         session->summary[CPAP_PressureAverage]=session->summary[CPAP_PressureMin];
     }
+    if (size==0x4d) {
 
-    session->summary[CPAP_Obstructive]=(long)buffer[0x1C] | (buffer[0x1D] << 8);
-    session->summary[CPAP_ClearAirway]=(long)buffer[0x20] | (buffer[0x21] << 8);
-    session->summary[CPAP_Hypopnea]=(long)buffer[0x2A] | (buffer[0x2B] << 8);
-    session->summary[CPAP_RERA]=(long)buffer[0x2E] | (buffer[0x2F] << 8);
-    session->summary[CPAP_FlowLimit]=(long)buffer[0x30] | (buffer[0x31] << 8);
-
+        session->summary[CPAP_Obstructive]=(long)buffer[0x1C] | (buffer[0x1D] << 8);
+        session->summary[CPAP_ClearAirway]=(long)buffer[0x20] | (buffer[0x21] << 8);
+        session->summary[CPAP_Hypopnea]=(long)buffer[0x2A] | (buffer[0x2B] << 8);
+        session->summary[CPAP_RERA]=(long)buffer[0x2E] | (buffer[0x2F] << 8);
+        session->summary[CPAP_FlowLimit]=(long)buffer[0x30] | (buffer[0x31] << 8);
+    }
     return true;
 }
 
@@ -466,8 +486,10 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
                     session->AddEvent(new Event(tt,PRS1_VSnore2, {data1}));
                 }
             } else if (code==0x03) {
-                session->AddEvent(new Event(t,CPAP_EAP, {data0,data1}));
-                session->AddEvent(new Event(t,CPAP_IAP, {data1}));
+                data0/=10.0;
+                data1/=10.0;
+                session->AddEvent(new Event(t,CPAP_EAP, {data1,data0}));
+                session->AddEvent(new Event(t,CPAP_IAP, {data0}));
             } else {
                 session->AddEvent(new Event(t,cpapcode, {data0,data1}));
             }
@@ -655,6 +677,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     }
 
     Waveform *w=new Waveform(start,CPAP_FlowRate,data,samples,duration,min,max);
+    //wxLogMessage(wxString::Format(wxT("%i %i %i %i %i"),start,samples,duration,min,max));
     session->AddWaveform(w);
     //wxLogMessage(wxT("Done PRS1 Waveforms ")+filename);
     return true;

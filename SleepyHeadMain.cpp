@@ -63,48 +63,6 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 }
 
 
-void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
-{
-    wxRect r=GetRect();
-
-#if defined(__UNIX__)
-    int cx=r.x, cy=r.y;
-    ClientToScreen(&cx,&cy);
-    int border_width = cx - r.x;
-    int title_bar_height = cy - r.y;
-    r.width += (border_width * 2);
-    r.height += title_bar_height + border_width;
-#endif
-    int x=r.x;
-    int y=r.y;
-    int w=r.width;
-    int h=r.height;
-
-    wxScreenDC sdc;
-    wxMemoryDC mdc;
-
-    wxBitmap bmp(r.width, r.height,-1);
-    //wxBitMap *bmp=wxEmptyImage(r.width,r.height);
-    mdc.SelectObject(bmp);
-
-    mdc.Blit((wxCoord)0, (wxCoord)0, (wxCoord)r.width, (wxCoord)r.height, &sdc, (wxCoord)r.x, (wxCoord)r.y);
-
-    mdc.SelectObject(wxNullBitmap);
-
-    wxDateTime d=wxDateTime::Now();
-
-//    wxDirDialog sfs(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
-    wxString filename=wxSaveFileSelector(_("Please give a filename for the screenshot"),wxT("png"),wxT("Sleepyhead-")+d.Format(wxT("%Y%m%d-%H%M%S")),this);
-    if (!filename.IsEmpty()) {
-        if (!filename.Lower().EndsWith(wxT(".png"))) filename+=wxT(".png");
-        wxImage img=bmp.ConvertToImage();
-        if (!img.SaveFile(filename, wxBITMAP_TYPE_PNG)) {
-            wxLogError(wxT("Couldn't save screenshot ")+filename);
-        }
-    }
-}
-
-
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
@@ -133,19 +91,21 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
         id=pref[wxT("DefaultMachine")].GetInteger();
     }
 
-    Machine *m=cpap_machines[id];
+    if (id<cpap_machines.size()) {
+        Machine *m=cpap_machines[id];
 
-    int idx=main_auinotebook->GetPageIndex(daily);
-    if (idx!=wxNOT_FOUND) {
-        daily->RefreshData(m);
+        int idx=main_auinotebook->GetPageIndex(daily);
+        if (idx!=wxNOT_FOUND) {
+            daily->RefreshData(m);
+        }
+        idx=main_auinotebook->GetPageIndex(summary);
+        if (idx!=wxNOT_FOUND) {
+            summary->RefreshData(m);
+        }
+        summary->Refresh();
+        daily->Refresh();
+        Refresh();
     }
-    idx=main_auinotebook->GetPageIndex(summary);
-    if (idx!=wxNOT_FOUND) {
-        summary->RefreshData(m);
-    }
-    summary->Refresh();
-    daily->Refresh();
-    Refresh();
 
 
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
@@ -245,6 +205,47 @@ void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 
     wxCommandEvent MyEvent( wxEVT_DO_SCREENSHOT);
     wxPostEvent(this, MyEvent);
+}
+
+void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
+{
+    wxRect r=GetRect();
+
+#if defined(__UNIX__)
+    int cx=r.x, cy=r.y;
+    ClientToScreen(&cx,&cy);
+    int border_width = cx - r.x;
+    int title_bar_height = cy - r.y;
+    r.width += (border_width * 2);
+    r.height += title_bar_height + border_width;
+#endif
+    int x=r.x;
+    int y=r.y;
+    int w=r.width;
+    int h=r.height;
+
+    wxScreenDC sdc;
+    wxMemoryDC mdc;
+
+    wxBitmap bmp(r.width, r.height,-1);
+    //wxBitMap *bmp=wxEmptyImage(r.width,r.height);
+    mdc.SelectObject(bmp);
+
+    mdc.Blit((wxCoord)0, (wxCoord)0, (wxCoord)r.width, (wxCoord)r.height, &sdc, (wxCoord)r.x, (wxCoord)r.y);
+
+    mdc.SelectObject(wxNullBitmap);
+
+    wxDateTime d=wxDateTime::Now();
+
+//    wxDirDialog sfs(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
+    wxString filename=wxSaveFileSelector(_("Please give a filename for the screenshot"),wxT("png"),wxT("Sleepyhead-")+d.Format(wxT("%Y%m%d-%H%M%S")),this);
+    if (!filename.IsEmpty()) {
+        if (!filename.Lower().EndsWith(wxT(".png"))) filename+=wxT(".png");
+        wxImage img=bmp.ConvertToImage();
+        if (!img.SaveFile(filename, wxBITMAP_TYPE_PNG)) {
+            wxLogError(wxT("Couldn't save screenshot ")+filename);
+        }
+    }
 }
 
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
@@ -458,6 +459,7 @@ Daily::Daily(wxWindow *win)
     AddData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
     FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
+   /* FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
     FRW->AddLayer(new gLineOverlayBar(flags[7],wxRED,wxT("PR"),LOT_Dot));
     FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
     FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
@@ -465,16 +467,15 @@ Daily::Daily(wxWindow *win)
     FRW->AddLayer(new gLineOverlayBar(flags[4],wxBLACK,wxT("FL")));
     FRW->AddLayer(new gLineOverlayBar(flags[3],wxBLUE,wxT("H")));
     FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
-    FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
-    FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
+    FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA"))); */
 
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Sleep Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
     SF->SetMargins(10,15,20,80);
 
-    SF->LinkZoom(FRW);
+  //  SF->LinkZoom(FRW);
     #if defined(__UNIX__)
-    SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
-    SF->LinkZoom(LEAK);
+ //   SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
+ //   SF->LinkZoom(LEAK);
     #endif
 
     const int sfc=9;

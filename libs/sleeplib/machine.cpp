@@ -138,21 +138,51 @@ Session *Machine::SessionExists(SessionID session)
 }
 void Machine::AddSession(Session *s)
 {
+    wxDateTime date=s->first();
+    date.ResetTime();
+    date-=wxTimeSpan::Day();
+
+    bool ok=false;
+    if (day.find(date)!=day.end()) {
+        wxTimeSpan span=s->first()-day[date]->last();
+        if (span<wxTimeSpan::Hours(4)) ok=true;
+        else {
+
+            wxDateTime t=s->first();
+            t.ResetTime();
+            wxTimeSpan j=s->first()-t;
+            if (j<wxTimeSpan::Hours(6)) {
+                ok=true;
+            }
+        }
+    } else {
+        wxDateTime t=s->first();
+        t.ResetTime();
+        wxTimeSpan j=s->first()-t;
+        if (j<wxTimeSpan::Hours(6)) {
+            ok=true;
+        }
+    }
+
+    if (!ok) {
+        date+=wxTimeSpan::Day();
+    }
+
+
     sessionlist[s->session()]=s;
 
-    wxDateTime s1=s->first();
+/*    wxDateTime s1=s->first();
     wxDateTime s2=s->last();
     if (s1==s2) return; // leave this session out of daylist.. it's dodgy. DELETE?
 
 
     wxDateTime date,d1=s1;
-    d1.ResetTime();
     date=d1;
-    d1.SetHour(16);
+    d1.SetHour(15);
 
     if (s1<d1) {
         date-=wxTimeSpan::Hours(24);
-    }
+    } */
 
     if (!firstsession) {
         if (firstday>date) firstday=date;
@@ -168,7 +198,6 @@ void Machine::AddSession(Session *s)
         //wxLogMessage(wxT("Using Day ")+date.Format()+wxT(" to store ")+s1.Format()+wxT(" ")+s2.Format());
 
     day[date]->AddSession(s);
-
 }
 
 bool Machine::Load()
@@ -679,10 +708,14 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 void Session::AddEvent(Event * e)
 {
     events[e->code()].push_back(e);
+  //  if (e->time()>s_last) s_last=e->time();
+   // wxLogMessage(e->time().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %04i %02i "),e->code(),e->fields()));
 }
 void Session::AddWaveform(Waveform *w)
 {
     waveforms[w->code()].push_back(w);
+    //wxLogMessage(w->start().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+w->end().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %i %.1f"),w->samples(), w->duration()));
+
 }
 void Session::TrashEvents()
 // Trash this sessions Events and release memory.
