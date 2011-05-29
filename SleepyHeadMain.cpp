@@ -91,23 +91,6 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
         id=pref[wxT("DefaultMachine")].GetInteger();
     }
 
-    if (id<cpap_machines.size()) {
-        Machine *m=cpap_machines[id];
-
-        int idx=main_auinotebook->GetPageIndex(daily);
-        if (idx!=wxNOT_FOUND) {
-            daily->RefreshData(m);
-        }
-        idx=main_auinotebook->GetPageIndex(summary);
-        if (idx!=wxNOT_FOUND) {
-            summary->RefreshData(m);
-        }
-        summary->Refresh();
-        daily->Refresh();
-        Refresh();
-    }
-
-
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
     //this->Connect(wxID_ANY, wxEVT_MACHINE_SELECTED, wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
     //this->Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
@@ -186,14 +169,14 @@ void SleepyHeadFrame::OnMachineSelected(wxCommandEvent& event)
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
         daily->RefreshData(m);
+        daily->Refresh();
     }
     idx=main_auinotebook->GetPageIndex(summary);
     if (idx!=wxNOT_FOUND) {
         summary->RefreshData(m);
+        summary->Refresh();
     }
-    summary->Refresh();
-    daily->Refresh();
-    Refresh();
+    //Refresh();
 }
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
 {
@@ -293,19 +276,33 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
 void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 {
     int idx=main_auinotebook->GetPageIndex(daily);
+    int id;
     if (idx==wxNOT_FOUND) {
         daily=new Daily(this);
         main_auinotebook->AddPage(daily,_("Daily"),true);
+        id=pref["DefaultMachine"].GetInteger();
+        Machine *m=cpap_machines[id];
+        if (m) daily->RefreshData(m);
+        daily->Refresh();
+
     } else {
         main_auinotebook->SetSelection(idx);
     }
+
+
 }
 void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 {
-    int idx=main_auinotebook->GetPageIndex(summary);
+
+    int id,idx=main_auinotebook->GetPageIndex(summary);
     if (idx==wxNOT_FOUND) {
         summary=new Summary(this);
         main_auinotebook->AddPage(summary,_("Summary"),true);
+        id=pref["DefaultMachine"].GetInteger();
+        Machine *m=cpap_machines[id];
+        if (m) summary->RefreshData(m);
+        summary->Refresh();
+
     } else {
         main_auinotebook->SetSelection(idx);
     }
