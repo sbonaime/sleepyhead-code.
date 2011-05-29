@@ -259,7 +259,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             delete sess;
             continue;
         }
-        wxLogMessage(sess->first().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+sess->last().Format(wxT("%Y-%m-%d %H:%M:%S")));
+        //wxLogMessage(sess->first().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+sess->last().Format(wxT("%Y-%m-%d %H:%M:%S")));
 
         //sess->SetSessionID(sess->start().GetTicks());
         if (!s->second[1].IsEmpty()) {
@@ -414,7 +414,7 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     wxUint16 bb=*(wxUint16*)b;
     int duration=bb;// | (buffer[0x15] << 8);
     session->summary[CPAP_Duration]=(long)duration;
-    wxLogMessage(wxString::Format(wxT("ID: %i %i"),session->session(),duration));
+    //wxLogMessage(wxString::Format(wxT("ID: %i %i"),session->session(),duration));
     float hours=float(duration)/3600.0;
     session->set_hours(hours);
 

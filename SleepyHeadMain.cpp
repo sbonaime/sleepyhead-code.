@@ -79,17 +79,18 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     }
 
     UpdateMachineMenu();
+    int id=0;
+    if (pref.Exists("DefaultMachine")) {
+        id=pref[wxT("DefaultMachine")].GetInteger();
+    } else {
+        pref[wxT("DefaultMachine")]=(long)0;
+    }
 
     //wxDisableAsserts();
     // Create AUINotebook Tabs
     wxCommandEvent dummy;
     OnViewMenuDaily(dummy);     // Daily Page
     OnViewMenuSummary(dummy);   // Summary Page
-
-    int id=0;
-    if (pref.Exists("DefaultMachine")) {
-        id=pref[wxT("DefaultMachine")].GetInteger();
-    }
 
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
     //this->Connect(wxID_ANY, wxEVT_MACHINE_SELECTED, wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
@@ -113,12 +114,12 @@ void SleepyHeadFrame::UpdateMachineMenu()
 {
     cpap_machines=profile->GetMachines(MT_CPAP);
 
-    wxMenuItemList &z=MachineMenu->GetMenuItems();
-    //wxMenuItemList::iterator q;
+    wxMenuItemList z=MachineMenu->GetMenuItems();
     int i=MachineMenuID;
-    for (auto q=z.begin();q!=z.end();q++) {
+    for (int j=0;j<z.size();j++) {
+        wxMenuItem *mi=z[j];
         this->Disconnect(i,wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
-        MachineMenu->Remove(*q);
+        MachineMenu->Remove(mi);
         i++;
     }
 
@@ -159,8 +160,8 @@ void SleepyHeadFrame::OnFullscreen(wxCommandEvent& event)
 void SleepyHeadFrame::OnMachineSelected(wxCommandEvent& event)
 {
     int id=event.GetId()-MachineMenuID;
+
     wxLogMessage(wxT("Machine Selected:")+wxString::Format(wxT("%i"),id));
-    event.Skip();
     Machine *m=cpap_machines[id];
 
     if (m) {
@@ -176,6 +177,7 @@ void SleepyHeadFrame::OnMachineSelected(wxCommandEvent& event)
         summary->RefreshData(m);
         summary->Refresh();
     }
+    event.Skip();
     //Refresh();
 }
 void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
@@ -252,13 +254,15 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     loader_progress->Show(false);
 
     UpdateMachineMenu(); // Also updates cpap_machines list.
+
     auto q=MachineMenu->GetMenuItems().rbegin();
     int i=0;
+    Machine *m;
     if (q!=MachineMenu->GetMenuItems().rend()) {
         (*q)->Check(true);
         i=(*q)->GetId()-MachineMenuID;
     }
-    Machine *m=cpap_machines[i];
+    m=cpap_machines[i];
 
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
@@ -573,9 +577,9 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
             TAP_EAP->Show(true);
         }
 
-        TAP_EAP->Refresh();
-        TAP_IAP->Refresh();
-        TAP->Refresh();
+        //TAP_EAP->Refresh();
+        //TAP_IAP->Refresh();
+        //TAP->Refresh();
         fgSizer->Layout();
 //        Update();
         ScrolledWindow->FitInside();
