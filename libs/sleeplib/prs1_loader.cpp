@@ -14,7 +14,7 @@ License: GPL
 #include <wx/datetime.h>
 #include <wx/log.h>
 #include <wx/progdlg.h>
-
+#include <wx/msgdlg.h>
 #include <initializer_list>
 
 #include "prs1_loader.h"
@@ -126,13 +126,19 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
     for (sn=SerialNumbers.begin(); sn!=SerialNumbers.end(); sn++) {
         wxString s=*sn;
         m=CreateMachine(s,profile);
-
-        if (m) OpenMachine(m,newpath+wxFileName::GetPathSeparator()+(*sn),profile);
+        try {
+            if (m) OpenMachine(m,newpath+wxFileName::GetPathSeparator()+(*sn),profile);
+        } catch(OneTypePerDay e) {
+            profile->DelMachine(m);
+            PRS1List.erase(s);
+            wxMessageBox(_("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),_("Import Error"),wxOK|wxCENTER);
+            delete m;
+        }
     }
 
     return PRS1List.size();
 
-    return c;
+   // return c;
 }
 bool PRS1Loader::ParseProperties(Machine *m,wxString filename)
 {

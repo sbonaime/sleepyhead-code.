@@ -184,8 +184,8 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
 	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_panel1->SetMaxSize( wxSize( -1,40 ) );
-	m_mgr.AddPane( m_panel1, wxAuiPaneInfo() .Bottom() .Caption( wxT("Date Range") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).BestSize( wxSize( 570,42 ) ).MinSize( wxSize( 570,42 ) ).MaxSize( wxSize( -1,42 ) ) );
+	m_panel1->SetMaxSize( wxSize( -1,42 ) );
+	m_mgr.AddPane( m_panel1, wxAuiPaneInfo() .Bottom() .Caption( wxT("Date Range") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).LeftDockable( false ).RightDockable( false ).Row( 0 ).Position( 1 ).BestSize( wxSize( 570,42 ) ).MinSize( wxSize( 570,42 ) ).MaxSize( wxSize( -1,42 ) ) );
 	
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
@@ -197,10 +197,10 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	bSizer1->Add( rbLastWeek, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
 	rbLastMonth = new wxRadioButton( m_panel1, wxID_ANY, _("Last Month"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( rbLastMonth, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	bSizer1->Add( rbLastMonth, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
 	rbCustomDate = new wxRadioButton( m_panel1, wxID_ANY, _("Custom"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( rbCustomDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	bSizer1->Add( rbCustomDate, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
 	sdLabel = new wxStaticText( m_panel1, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
 	sdLabel->Wrap( -1 );
@@ -208,7 +208,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	
 	bSizer1->Add( sdLabel, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
-	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY|wxDP_SPIN );
+	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SPIN );
 	StartDatePicker->Enable( false );
 	
 	bSizer1->Add( StartDatePicker, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );

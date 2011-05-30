@@ -7785,7 +7785,7 @@
 	"wx/progdlg.h"
 	"wx/dialog.h"
 
-1306753008 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
+1306758595 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
@@ -7837,7 +7837,7 @@
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1306726896 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
+1306759276 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -7875,7 +7875,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1306756665 /home/mark/projects/git/sleepyhead/version.h
+1306761075 /home/mark/projects/git/sleepyhead/version.h
 
 1306724655 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -7885,14 +7885,14 @@
 1306415040 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine_loader.h
 	"profiles.h"
 
-1306754109 /home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.h
+1306759480 /home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.h
 	<wx/string.h>
 	<map>
 	"machine.h"
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1306756567 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+1306758522 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -7923,7 +7923,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1306753649 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+1306760870 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -7944,7 +7944,7 @@
 	<wx/stdpaths.h>
 	"preferences.h"
 
-1306755802 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
+1306759549 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
 	<wx/filefn.h>
 	<wx/filename.h>
 	<wx/utils.h>
@@ -7956,7 +7956,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1306724998 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
+1306760452 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -7965,6 +7965,7 @@
 	<wx/datetime.h>
 	<wx/log.h>
 	<wx/progdlg.h>
+	<wx/msgdlg.h>
 	<initializer_list>
 	"prs1_loader.h"
 

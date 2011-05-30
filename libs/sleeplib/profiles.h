@@ -34,10 +34,11 @@ public:
     bool is_first_day;
     map<MachineID,Machine *> machlist;
     void AddMachine(Machine *m);
+    void DelMachine(Machine *m);
     void LoadMachineData();
     void Import(wxString path);
 
-    void AddDay(wxDateTime date,Day *day);
+    void AddDay(wxDateTime date,Day *day,MachineType mt);
 
     vector<Machine *> GetMachines(MachineType t);
     Machine * GetMachine(MachineType t,wxDateTime date);

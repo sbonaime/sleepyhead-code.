@@ -182,7 +182,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
     }
     if (day.find(date)==day.end()) {
         day[date]=new Day(this);
-        p->AddDay(date,day[date]);
+        p->AddDay(date,day[date],m_type);
     }
 
     day[date]->AddSession(s);
@@ -259,6 +259,9 @@ Day::Day(Machine *m)
 }
 Day::~Day()
 {
+    for (auto s=sessions.begin();s!=sessions.end();s++) {
+        delete (*s);
+    }
 
 }
 MachineType Day::machine_type()

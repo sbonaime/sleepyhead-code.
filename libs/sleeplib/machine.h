@@ -83,6 +83,10 @@ class Session;
 class Profile;
 class Machine;
 
+class OneTypePerDay
+{
+};
+
 class Day
 {
 public:

@@ -98,6 +98,10 @@ void Profile::AddMachine(Machine *m) {
     assert(m!=NULL);
     machlist[m->id()]=m;
 };
+void Profile::DelMachine(Machine *m) {
+    assert(m!=NULL);
+    machlist.erase(m->id());
+};
 
 TiXmlElement * Profile::ExtraSave()
 {
@@ -123,7 +127,7 @@ TiXmlElement * Profile::ExtraSave()
 
 }
 
-void Profile::AddDay(wxDateTime date,Day *day) {
+void Profile::AddDay(wxDateTime date,Day *day,MachineType mt) {
     //date+=wxTimeSpan::Day();
     if (is_first_day) {
         m_first=m_last=date;
@@ -131,6 +135,15 @@ void Profile::AddDay(wxDateTime date,Day *day) {
     }
     if (m_first>date) m_first=date;
     if (m_last<date) m_last=date;
+
+    // Check for any other machines of same type.. Throw an exception if one already exists.
+    vector<Day *> & dl=daylist[date];
+    for (auto a=dl.begin();a!=dl.end();a++) {
+        if ((*a)->machine->GetType()==mt) {
+            throw OneTypePerDay();
+        }
+    }
+
     daylist[date].push_back(day);
 }
 

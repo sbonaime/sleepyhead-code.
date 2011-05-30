@@ -355,7 +355,7 @@ Summary::Summary(wxWindow *win,Profile *_profile)
 }
 Summary::~Summary()
 {
-    wxMemoryFSHandler::RemoveFile(_T("test.png"));
+//    wxMemoryFSHandler::RemoveFile(_T("test.png"));
 }
 void Summary::ResetProfile(Profile *p)
 {
@@ -582,7 +582,7 @@ void Daily::ResetDate()
   //  RefreshData();
     wxDateTime date;
     if (profile->LastDay().IsValid()) {
-        date=profile->LastDay();
+        date=profile->LastDay()+wxTimeSpan::Day();
         Calendar->SetDate(date);
     } else {
         Calendar->SetDate(wxDateTime::Today());
