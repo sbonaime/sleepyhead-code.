@@ -346,7 +346,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     SetBackgroundColour( *wxWHITE );
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
-    SetMargins(10, 15, 30, 80);
+    SetMargins(10, 15, 32, 80);
     m_block_move=false;
     m_block_zoom=false;
 
@@ -422,13 +422,17 @@ double gGraphWindow::MinX()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinX();
-            first=false;
+            if (!((val==(*l)->MaxX()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->MinX() < val) val = (*l)->MinX();
+            tmp=(*l)->MinX();
+            if (!((tmp==(*l)->MaxX()) && (tmp==0))) {
+                if (tmp < val) val = tmp;
+            }
         }
     }
 
@@ -441,13 +445,18 @@ double gGraphWindow::MaxX()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxX();
-            first=false;
+            if (!((val==(*l)->MinX()) && (val==0)))
+                first=false;
+
         } else {
-            if ((*l)->MaxX() > val) val = (*l)->MaxX();
+            tmp=(*l)->MaxX();
+            if (!((tmp==(*l)->MinX()) && (tmp==0))) {
+                if (tmp > val) val = tmp;
+            }
         }
     }
     return max_x=val;
@@ -504,13 +513,17 @@ double gGraphWindow::RealMinX()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinX();
-            first=false;
+            if (!((val==(*l)->RealMaxX()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->RealMinX() < val) val = (*l)->RealMinX();
+            tmp=(*l)->RealMinX();
+            if (!((tmp==(*l)->RealMaxX()) && (tmp==0))) { // Ignore this layer if both are 0
+                if (tmp < val) val = tmp;
+            }
         }
     }
     return rmin_x=val;
@@ -522,13 +535,17 @@ double gGraphWindow::RealMaxX()
     //f=false;
 
     bool first=true;
-    double val;
+    double val,tmp;
     for (auto l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxX();
-            first=false;
+            if (!((val==(*l)->RealMinX()) && (val==0)))
+                first=false;
         } else {
-            if ((*l)->RealMaxX() > val) val = (*l)->RealMaxX();
+            tmp=(*l)->RealMaxX();
+            if (!((tmp==(*l)->RealMinX()) && (tmp==0))) { // Ignore this layer if both are 0
+                if (tmp > val) val = tmp;
+            }
         }
     }
     return rmax_x=val;
@@ -616,6 +633,226 @@ void gGraphWindow::DataChanged(gLayer *layer)
     RealMinX(); RealMinY(); RealMaxX(); RealMaxY();
 
     Refresh(false);
+}
+
+
+gXAxis::gXAxis(gPointData *d,const wxColor * col)
+:gLayer(d)
+{
+    if (col) {
+        color.clear();
+        color.push_back(col);
+    }
+}
+gXAxis::~gXAxis()
+{
+}
+void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
+{
+    float px,py;
+    wxCoord x,y;
+
+    int scrx = w.GetScrX();
+    int scry = w.GetScrY();
+    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
+    //dc.DrawText(label,0,0);
+
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetTopMargin();
+    int width=scrx-(start_px+w.GetRightMargin());
+    int height=scry-(start_py+w.GetBottomMargin());
+
+    dc.SetPen(*color[0]);
+
+    //wxDateTime d;
+    wxString fd=wxT("00:00:00:0000");
+    dc.GetTextExtent(fd,&x,&y);
+    double max_ticks=(x+25.0)/width; // y+50 for rotated text
+    double jj=1/max_ticks;
+    double xx=w.max_x-w.min_x;
+    double minor_tick=max_ticks*xx;
+    double st2=w.min_x; //double(int(frac*1440.0))/1440.0;
+    double st,q;
+
+    bool show_seconds=false;
+    bool show_milliseconds=false;
+    bool show_time=true;
+
+    double min_tick;
+    if (xx<1.5) {
+        int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
+
+        int ri;
+        for (ri=0;ri<16;ri++) {
+            st=round(st2*rounding[ri])/rounding[ri];
+            min_tick=round(minor_tick*rounding[ri])/rounding[ri];
+            q=xx/min_tick;  // number of ticks that fits in range
+            if (q<=jj) break; // compared to number of ticks that fit on screen.
+        }
+        if (ri>8) show_seconds=true;
+        if (ri>=14) show_milliseconds=true;
+
+        if (min_tick<=0.25/86400.0)
+            min_tick=0.25/86400;
+    } else { // Day ticks..
+        show_time=false;
+        st=st2;
+        min_tick=1;
+        double mtiks=(x+20.0)/width;
+        double mt=mtiks*xx;
+        min_tick=mt;
+        if (min_tick<1) min_tick=1;
+        if (min_tick>10) min_tick=10;
+    }
+
+   // dc.SetPen(*wxBLACK_PEN);
+
+    double st3=st;
+    while (st3>w.min_x) {
+        st3-=min_tick/10.0;
+    }
+    st3+=min_tick/10.0;
+
+    py=start_py+height;
+
+    for (double i=st3; i<=w.max_x; i+=min_tick/10.0) {
+        if (i<w.min_x) continue;
+        //px=x2p(w,i);
+        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
+		dc.DrawLine(px,py,px,py+4);
+    }
+
+
+    while (st<w.min_x) {
+        st+=min_tick;
+    }
+
+    int hour,minute,second,millisecond;
+    wxDateTime d;
+    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
+        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
+
+        if (show_time) {
+            minute=d.GetMinute();
+            hour=d.GetHour();
+            second=d.GetSecond();
+            millisecond=d.GetMillisecond();
+
+            if (show_milliseconds) {
+                fd=wxString::Format(wxT("%02i:%02i:%02i:%04i"),hour,minute,second,millisecond);
+            } else if (show_seconds) {
+                fd=wxString::Format(wxT("%02i:%02i:%02i"),hour,minute,second);
+            } else {
+                fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
+            }
+        } else {
+            fd=d.Format(wxT("%e %b"));
+        }
+       // dc.GetTextExtent(fd,&x,&y);
+
+//        px=x2p(w,i);
+        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
+		dc.DrawLine(px,py,px,py+6);
+
+        dc.GetTextExtent(fd,&x,&y);
+        if (!show_time) {
+            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
+        } else {
+            dc.DrawText(fd, px-(x/2), py+y);
+        }
+
+    }
+}
+
+
+gYAxis::gYAxis(gPointData *d,const wxColor * col)
+:gLayer(d)
+{
+    if (col) {
+        color.clear();
+        color.push_back(col);
+    }
+    m_show_major_lines=true;
+    m_show_minor_lines=true;
+}
+gYAxis::~gYAxis()
+{
+}
+void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
+{
+    static wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
+    static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
+    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
+    wxCoord x,y,labelW=0;
+
+    int scrx = w.GetScrX();
+    int scry = w.GetScrY();
+    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
+    //dc.DrawText(label,0,0);
+
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetTopMargin();
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+
+    dc.SetPen(*wxBLACK_PEN);
+
+    wxString fd=wxT("0");
+    dc.GetTextExtent(fd,&x,&y);
+    double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
+    double max_yticks=1/max_yticksdiv;
+    double miny=w.min_y;
+    double maxy=w.max_y;
+    double yy=w.max_y-w.min_y;
+    double ymult=height/yy;
+    double major_ytick=max_yticksdiv*yy;
+
+    double min_ytick,q;
+
+    if (w.min_y>=0) {
+        int yrounding[9]={1,2,5,10,20,30,40,50,100}; // time rounding
+        int ry;
+        for (ry=0;ry<9;ry++) {
+       // st=round(st2*rounding[ry])/rounding[ry];
+            min_ytick=round(major_ytick*yrounding[ry])/yrounding[ry];
+            q=yy/min_ytick;  // number of ticks that fits in range
+            if (q<=max_yticks) break; // compared to number of ticks that fit on screen.
+        }
+    } else {
+        min_ytick=60;
+    }
+    if (min_ytick<=0.25)
+        min_ytick=0.25;
+
+    int ty,h;
+    for (float i=w.min_y; i<w.max_y; i+=min_ytick/2) {
+		ty=(i - w.min_y) * ymult;
+        h=(start_py+height)-ty;
+    	dc.DrawLine(start_px-4, h, start_px, h);
+    }
+    dc.SetPen(pen1);
+    for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
+		ty=(i - w.min_y) * ymult;
+        h=(start_py+height)-ty;
+        if (m_show_minor_lines && (i > w.min_y))
+            dc.DrawLine(start_px+1,h,start_px+width,h);
+    }
+
+    for (double i=w.min_y; i<=w.max_y; i+=min_ytick) {
+		ty=(i - w.min_y) * ymult;
+        fd=Format(i); // Override this as a function.
+        dc.GetTextExtent(fd,&x,&y);
+        if (x>labelW) labelW=x;
+        h=(start_py+height)-ty;
+        dc.DrawText(fd,start_px-8-x,h - (y / 2));
+        dc.SetPen(*wxBLACK_PEN);
+		dc.DrawLine(start_px-6,h,start_px,h);
+        dc.SetPen(pen2);
+        if (m_show_major_lines && (i > w.min_y))
+            dc.DrawLine(start_px+1,h,start_px+width,h);
+	}
+	dc.GetTextExtent(w.Title(),&x,&y);
+    dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
 }
 
 
@@ -709,211 +946,18 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
 gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
 :gLayer(d),m_direction(o)
 {
-    m_show_grid=true;
-    m_show_minor_grid=true;
     if (col) {
         color.clear();
         color.push_back(col);
     }
+    Xaxis=new gXAxis(NULL,wxBLACK);
+    Yaxis=new gYAxis(NULL,wxBLACK);
 }
 gBarChart::~gBarChart()
 {
+    delete Yaxis;
+    delete Xaxis;
 }
-void gBarChart::DrawYTicks(wxDC & dc,gGraphWindow &w)
-{
-    static wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
-    static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
-    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    wxCoord x,y,labelW=0;
-
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
-
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    wxString fd=wxT("0");
-    dc.GetTextExtent(fd,&x,&y);
-    double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
-    double max_yticks=1/max_yticksdiv;
-    double miny=w.min_y;
-    double maxy=w.max_y;
-    double yy=w.max_y-w.min_y;
-    double ymult=height/yy;
-    double major_ytick=max_yticksdiv*yy;
-
-    double min_ytick,q;
-
-    if (w.min_y>=0) {
-        int yrounding[9]={1,2,5,10,20,30,40,50,100}; // time rounding
-        int ry;
-        for (ry=0;ry<9;ry++) {
-       // st=round(st2*rounding[ry])/rounding[ry];
-            min_ytick=round(major_ytick*yrounding[ry])/yrounding[ry];
-            q=yy/min_ytick;  // number of ticks that fits in range
-            if (q<=max_yticks) break; // compared to number of ticks that fit on screen.
-        }
-    } else {
-        min_ytick=60;
-    }
-    if (min_ytick<=0.25)
-        min_ytick=0.25;
-
-    int ty,h;
-    for (float i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
-    	dc.DrawLine(start_px-4, h, start_px, h);
-    }
-    dc.SetPen(pen1);
-    for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
-        if (m_show_minor_grid && (i > w.min_y))
-            dc.DrawLine(start_px+1,h,start_px+width,h);
-    }
-
-    for (double i=w.min_y; i<=w.max_y; i+=min_ytick) {
-		ty=(i - w.min_y) * ymult;
-        fd=FormatY(i); // Override this as a function.
-        dc.GetTextExtent(fd,&x,&y);
-        if (x>labelW) labelW=x;
-        h=(start_py+height)-ty;
-        dc.DrawText(fd,start_px-8-x,h - (y / 2));
-        dc.SetPen(*wxBLACK_PEN);
-		dc.DrawLine(start_px-6,h,start_px,h);
-        dc.SetPen(pen2);
-        if (m_show_grid && (i > w.min_y))
-            dc.DrawLine(start_px+1,h,start_px+width,h);
-	}
-	dc.GetTextExtent(w.Title(),&x,&y);
-    dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
-}
-
-void gBarChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
-{
-    float px,py;
-    wxCoord x,y;
-
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
-
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(start_px+w.GetRightMargin());
-    int height=scry-(start_py+w.GetBottomMargin());
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    //wxDateTime d;
-    wxString fd=wxT("00:00:00:0000");
-    dc.GetTextExtent(fd,&x,&y);
-    double max_ticks=(x+25.0)/width; // y+50 for rotated text
-    double jj=1/max_ticks;
-    double xx=w.max_x-w.min_x;
-    double minor_tick=max_ticks*xx;
-    double st2=w.min_x; //double(int(frac*1440.0))/1440.0;
-    double st,q;
-
-    bool show_seconds=false;
-    bool show_milliseconds=false;
-    bool show_time=true;
-
-    double min_tick;
-    if (xx<1.5) {
-        int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
-
-        int ri;
-        for (ri=0;ri<16;ri++) {
-            st=round(st2*rounding[ri])/rounding[ri];
-            min_tick=round(minor_tick*rounding[ri])/rounding[ri];
-            q=xx/min_tick;  // number of ticks that fits in range
-            if (q<=jj) break; // compared to number of ticks that fit on screen.
-        }
-        if (ri>8) show_seconds=true;
-        if (ri>=14) show_milliseconds=true;
-
-        if (min_tick<=0.25/86400.0)
-            min_tick=0.25/86400;
-    } else { // Day ticks..
-        show_time=false;
-        st=st2;
-        min_tick=1;
-        double mtiks=(x+20.0)/width;
-        double mt=mtiks*xx;
-        min_tick=mt;
-        if (min_tick<1) min_tick=1;
-        if (min_tick>10) min_tick=10;
-    }
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    double st3=st;
-    while (st3>w.min_x) {
-        st3-=min_tick/10.0;
-    }
-    st3+=min_tick/10.0;
-
-    py=start_py+height;
-
-    for (double i=st3; i<=w.max_x; i+=min_tick/10.0) {
-        if (i<w.min_x) continue;
-        //px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
-		dc.DrawLine(px,py,px,py+4);
-    }
-
-
-    while (st<w.min_x) {
-        st+=min_tick;
-    }
-
-    int hour,minute,second,millisecond;
-    wxDateTime d;
-    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
-
-        if (show_time) {
-            minute=d.GetMinute();
-            hour=d.GetHour();
-            second=d.GetSecond();
-            millisecond=d.GetMillisecond();
-
-            if (show_milliseconds) {
-                fd=wxString::Format(wxT("%02i:%02i:%02i:%04i"),hour,minute,second,millisecond);
-            } else if (show_seconds) {
-                fd=wxString::Format(wxT("%02i:%02i:%02i"),hour,minute,second);
-            } else {
-                fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
-            }
-        } else {
-            fd=d.Format(wxT("%e %b"));
-        }
-       // dc.GetTextExtent(fd,&x,&y);
-
-//        px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
-		dc.DrawLine(px,py,px,py+6);
-
-        dc.GetTextExtent(fd,&x,&y);
-        if (!show_time) {
-            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
-        } else {
-            dc.DrawText(fd, px-(x/2), py+y);
-        }
-
-    }
-
-}
-
 
 void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 {
@@ -938,13 +982,10 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
        if ((data->point[0][i].x >= w.min_x) && (data->point[0][i].x<w.max_x)) days+=1;
     }
     if (days==0) return;
-    //if (m_direction==wxVERTICAL) {
-    //} else {
-        DrawYTicks(dc,w);
-    //}
+
+    Yaxis->Plot(dc,w);
+
     dc.SetPen( *wxBLACK_PEN );
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
 
     float barwidth,pxr;
     float px,py;
@@ -1003,137 +1044,13 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         } else draw_xticks_instead=true;
 
     }
-    if (draw_xticks_instead) DrawXTicks(dc,w);
-    dc.DrawLine(start_px,start_py,start_px,start_py+height);
-
-    dc.DrawLine(start_px,start_py+height,start_px+width,start_py+height);
-   // DrawXTicks(dc,w);
-}
-
-/*gBarChart::gBarChart(gGraphData *d,wxOrientation o)
-:gLayer(d),m_direction(o)
-{
-    m_yminor_ticks=2;
-    m_ymajor_ticks=10;
-}
-gBarChart::~gBarChart()
-{
-}
-void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
-{
-    if (!m_visible) return;
-    if (!data) return;
-    if (!data->NP(0)) return;
-
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    dc.SetPen( *wxBLACK_PEN );
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
-
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
-    double max=0;
-
-    for (int i=0;i<data->NP(0);i++) {
-        if (data->vpoint[0][i].y>max) max=data->vpoint[0][i].y;
-    }
-
-    float barwidth,pxr;
-    int px,py;
-
-    if (m_direction==wxVERTICAL) {
-        barwidth=(height-data->NP(0)*2)/data->NP(0);
-        pxr=width/max;
-        px=start_py;
-    } else {
-        barwidth=(width-data->NP(0)*2)/data->NP(0);
-        pxr=(height)/max;
-        px=start_px;
-    }
-    px+=1;
-    int t1,t2;
-    int u1,u2;
-    int textX, textY;
-
-    wxString str;
-    const wxColor *colors[6]={wxRED, wxBLUE, wxGREEN, wxCYAN , wxBLACK, wxLIGHT_GREY };
-
-    for (int i=0;i<data->NP(0);i++) {
-        dc.SetBrush(*wxTRANSPARENT_BRUSH);
-        t1=px+1;
-        px+=barwidth+2;
-        t2=px-t1-1;
-
-        wxRect rect;
-        wxDirection dir;
-
-        if (data->Type()==gDT_Stacked) {
-            py=start_py+height;
-            for (size_t j=0;j<data->yaxis[i].size();j++) {
-                u1=(data->yaxis[i][j]*pxr); // height of section in pixels
-                u2=height-u1;
-
-                //if (m_direction==wxVERTICAL) {
-                //    rect=wxRect(start_px+u1,t1,u2,t2);
-                //    dir=wxSOUTH;
-                //} else {
-                rect=wxRect(t1,py-u1,t2,u1);
-                dir=wxEAST;
-                dc.GradientFillLinear(rect,*colors[j%6],*wxLIGHT_GREY,dir);
-                dc.DrawRectangle(rect);
-                py-=u1;
-            }
-        } else if (data->Type()==gDT_Point) {
-            u2=data->vpoint[0][i].y*pxr;
-            u1=(start_py+height)-u2;
-            rect=wxRect(t1,u1,t2,u2);
-            dir=wxEAST;
-            dc.GradientFillLinear(rect,*colors[0],*wxLIGHT_GREY,dir);
-            dc.DrawRectangle(rect);
-        }
-
-        str=FormatX(data->vpoint[0][i].x);
-        dc.GetTextExtent(str, &textX, &textY);
-        if (t2>textY) {
-            int j=t1+((t2/2)-(textY/2));
-            if (m_direction==wxVERTICAL) {
-                dc.DrawRotatedText(str,start_px+barwidth+2+textY,j,270);
-            } else {
-                dc.DrawRotatedText(str,j,start_py+height+8+textX,90);
-            }
-        }
-
-    }
+    if (draw_xticks_instead)
+        Xaxis->Plot(dc,w);
 
     dc.DrawLine(start_px,start_py,start_px,start_py+height);
 
     dc.DrawLine(start_px,start_py+height,start_px+width,start_py+height);
-
-
-	wxCoord x,y;
-	wxString S;
-	wxCoord labelW=0;
-	for (float i=0;i<=max;i+=1) {
-		int s=4;
-		if (i/m_yminor_ticks!=0) continue;
-		if (i/m_ymajor_ticks==0) {
-			s=6;
-			S=FormatY(i); // Override this as a function.
-			dc.GetTextExtent(S,&x,&y);
-			if (x>labelW) labelW=x;
-			dc.DrawText(S,start_px-8-x,start_py+height-(i*pxr)-y/2);
-		}
-		dc.DrawLine(start_px-s,start_py+height-(i*pxr),start_px,start_py+height-(i*pxr));
-	}
-	dc.GetTextExtent(w.Title(),&x,&y);
-    dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
-
 }
-*/
 
 gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a,bool _hide_axes)
 :gLayer(d),m_accelerate(a),m_drawlist_size(dlsize),m_hide_axes(_hide_axes)
@@ -1141,205 +1058,14 @@ gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a,bool 
     m_drawlist=new wxPoint [dlsize];
     color.clear();
     color.push_back(col);
-    m_show_grid=true;
-    m_show_minor_grid=true;
-
+    Yaxis=new gYAxis(NULL,wxBLACK);
+    Yaxis->SetShowMajorLines(true);
+    Yaxis->SetShowMinorLines(true);
 }
 gLineChart::~gLineChart()
 {
+    delete Yaxis;
     delete [] m_drawlist;
-}
-void gLineChart::DrawYTicks(wxDC & dc,gGraphWindow &w)
-{
-    static wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
-    static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
-    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    wxCoord x,y,labelW=0;
-
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
-
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    wxString fd=wxT("0");
-    dc.GetTextExtent(fd,&x,&y);
-    double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
-    double max_yticks=1/max_yticksdiv;
-    double yy=w.max_y-w.min_y;
-    double ymult=height/yy;
-    double major_ytick=max_yticksdiv*yy;
-
-    double min_ytick,q;
-
-    if (w.min_y>=0) {
-        int yrounding[9]={1,2,5,10,20,30,40,60,120}; // time rounding
-        int ry;
-        for (ry=0;ry<3;ry++) {
-       // st=round(st2*rounding[ry])/rounding[ry];
-            min_ytick=round(major_ytick*yrounding[ry])/yrounding[ry];
-            q=yy/min_ytick;  // number of ticks that fits in range
-            if (q<=max_yticks) break; // compared to number of ticks that fit on screen.
-        }
-    } else {
-        min_ytick=60;
-    }
-    if (min_ytick<=1)
-        min_ytick=1;
-
-    int ty,h;
-    for (float i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
-    	dc.DrawLine(start_px-4, h, start_px, h);
-    }
-    dc.SetPen(pen1);
-    for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
-        if (m_show_minor_grid && (i > w.min_y))
-            dc.DrawLine(start_px+1,h,start_px+width,h);
-    }
-
-    for (double i=w.min_y; i<=w.max_y; i+=min_ytick) {
-		ty=(i - w.min_y) * ymult;
-        fd=FormatY(i); // Override this as a function.
-        dc.GetTextExtent(fd,&x,&y);
-        if (x>labelW) labelW=x;
-        h=(start_py+height)-ty;
-        dc.DrawText(fd,start_px-8-x,h - (y / 2));
-        dc.SetPen(*wxBLACK_PEN);
-		dc.DrawLine(start_px-6,h,start_px,h);
-        dc.SetPen(pen2);
-        if (m_show_grid && (i > w.min_y))
-            dc.DrawLine(start_px+1,h,start_px+width,h);
-	}
-	dc.GetTextExtent(w.Title(),&x,&y);
-    dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
-}
-
-void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
-{
-    float px,py;
-    wxCoord x,y;
-
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
-
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(start_px+w.GetRightMargin());
-    int height=scry-(start_py+w.GetBottomMargin());
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    //wxDateTime d;
-    wxString fd=wxT("00:00:00:0000");
-    dc.GetTextExtent(fd,&x,&y);
-    double max_ticks=(x+25.0)/width; // y+50 for rotated text
-    double jj=1/max_ticks;
-    double xx=w.max_x-w.min_x;
-    double minor_tick=max_ticks*xx;
-    double st2=w.min_x; //double(int(frac*1440.0))/1440.0;
-    double st,q;
-
-    bool show_seconds=false;
-    bool show_milliseconds=false;
-    bool show_time=true;
-
-    double min_tick;
-    if (xx<1.5) {
-        int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
-
-        int ri;
-        for (ri=0;ri<16;ri++) {
-            st=round(st2*rounding[ri])/rounding[ri];
-            min_tick=round(minor_tick*rounding[ri])/rounding[ri];
-            q=xx/min_tick;  // number of ticks that fits in range
-            if (q<=jj) break; // compared to number of ticks that fit on screen.
-        }
-        if (ri>8) show_seconds=true;
-        if (ri>=14) show_milliseconds=true;
-
-        if (min_tick<=0.25/86400.0)
-            min_tick=0.25/86400;
-    } else { // Day ticks..
-        show_time=false;
-        st=st2;
-        min_tick=1;
-        double mtiks=(x+20.0)/width;
-        double mt=mtiks*xx;
-        min_tick=mt;
-        if (min_tick<1) min_tick=1;
-        if (min_tick>10) min_tick=10;
-    }
-
-    dc.SetPen(*wxBLACK_PEN);
-
-    double st3=st;
-    while (st3>w.min_x) {
-        st3-=min_tick/10.0;
-    }
-    st3+=min_tick/10.0;
-
-    py=start_py+height;
-
-    for (double i=st3; i<=w.max_x; i+=min_tick/10.0) {
-        if (i<w.min_x) continue;
-        //px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
-		dc.DrawLine(px,py,px,py+4);
-    }
-
-
-    while (st<w.min_x) {
-        st+=min_tick;
-    }
-
-    int hour,minute,second,millisecond;
-    wxDateTime d;
-    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
-
-        if (show_time) {
-            minute=d.GetMinute();
-            hour=d.GetHour();
-            second=d.GetSecond();
-            millisecond=d.GetMillisecond();
-
-            if (show_milliseconds) {
-                fd=wxString::Format(wxT("%02i:%02i:%02i:%04i"),hour,minute,second,millisecond);
-            } else if (show_seconds) {
-                fd=wxString::Format(wxT("%02i:%02i:%02i"),hour,minute,second);
-            } else {
-                fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
-            }
-        } else {
-            fd=d.Format(wxT("%e %b"));
-        }
-       // dc.GetTextExtent(fd,&x,&y);
-
-//        px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
-		dc.DrawLine(px,py,px,py+6);
-
-        dc.GetTextExtent(fd,&x,&y);
-        if (!show_time) {
-            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
-        } else {
-            dc.DrawText(fd, px-(x/2), py+y);
-        }
-
-    }
-
 }
 
 // Time Domain Line Chart
@@ -1398,8 +1124,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
 
     if (!m_hide_axes) {
-        DrawYTicks(dc,w);
-        DrawXTicks(dc,w);
+        Yaxis->Plot(dc,w);
     }
 
     wxPen pen(*color[0], 1, wxSOLID);

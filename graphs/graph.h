@@ -309,6 +309,34 @@ class gCandleStick:public gLayer
 
 };
 
+class gXAxis:public gLayer
+{
+    public:
+        gXAxis(gPointData *d=NULL,const wxColor * col=wxBLACK);
+        virtual ~gXAxis();
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
+    protected:
+//        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
+};
+class gYAxis:public gLayer
+{
+    public:
+        gYAxis(gPointData *d=NULL,const wxColor * col=wxBLACK);
+        virtual ~gYAxis();
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        void SetShowMinorLines(bool b) { m_show_minor_lines=b; };
+        void SetShowMajorLines(bool b) { m_show_major_lines=b; };
+        bool ShowMinorLines() { return m_show_minor_lines; };
+        bool ShowMajorLines() { return m_show_major_lines; };
+        virtual const wxString & Format(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
+
+    protected:
+        bool m_show_major_lines;
+        bool m_show_minor_lines;
+  //      virtual const wxString & Format(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
+};
+
+
 class gLineChart:public gLayer
 {
     public:
@@ -316,22 +344,15 @@ class gLineChart:public gLayer
         virtual ~gLineChart();
 
         virtual void Plot(wxDC & dc, gGraphWindow & w);
-        virtual const wxString & FormatX(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
-        //virtual const wxString & FormatX(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
-        virtual const wxString & FormatY(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
 
-        virtual void DrawXTicks(wxDC & dc,gGraphWindow &w);
-        virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
 
     protected:
         bool m_accelerate;
         int m_drawlist_size;
         wxPoint *m_drawlist;
-        bool m_show_grid;
-        bool m_show_minor_grid;
         bool m_hide_axes;
         wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
-
+        gYAxis * Yaxis;
 
 };
 
@@ -372,8 +393,7 @@ class gBarChart:public gLayer
         virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
-        virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
-        virtual void DrawXTicks(wxDC & dc,gGraphWindow &w);
+        //virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
 
 
         wxOrientation m_direction;
@@ -385,8 +405,8 @@ class gBarChart:public gLayer
         //virtual const wxString & FormatX(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
         virtual const wxString & FormatY(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
 
-        bool m_show_grid;
-        bool m_show_minor_grid;
+        gXAxis *Xaxis;
+        gYAxis *Yaxis;
 
 };
 
