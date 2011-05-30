@@ -24,14 +24,27 @@
 class Summary:public SummaryPanel
 {
 public:
-    Summary(wxWindow *win);
+    Summary(wxWindow *win,Profile *_profile);
     virtual ~Summary();
+    void RefreshData();
+    void ResetProfile(Profile *p);
+	void AddData(HistoryData *d) { Data.push_back(d);  };
+
+//    void SetProfile(Profile *p);
+
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
-    void RefreshData(Machine *m);
-	void AddData(HistoryData *d) { Data.push_back(d);  };
+
+    wxBitmap Logo;
+
 protected:
-    Machine *machine;
+    virtual void OnRBSelect( wxCommandEvent& event );
+	virtual void OnStartDateChanged( wxDateEvent& event );
+	virtual void OnEndDateChanged( wxDateEvent& event );
+
+    void EnableDatePickers(bool b);
+
+    Profile *profile;
     list<HistoryData *> Data;
 };
 
@@ -39,29 +52,30 @@ protected:
 class Daily:public DailyPanel
 {
 public:
-    Daily(wxWindow *win);
+    Daily(wxWindow *win,Profile *p);
     virtual ~Daily();
-    void RefreshData(Machine *m);
-
+    void ResetDate();
+    void RefreshData();
+  //  void SetProfile(Profile *p);
 protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );
 	virtual void OnCalendarMonth( wxCalendarEvent& event );
 	void AddData(gPointData *d) { Data.push_back(d);  };
-	void UpdateGraphs(wxDateTime date);
+	void UpdateGraphs(Day *day);
 
     bool foobar_datehack;
     gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
     gPointData *flags[10];
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP;
 
-    Machine *machine;
+    Profile *profile;
     list<gPointData *> Data;
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();
 const wxEventType wxEVT_MACHINE_SELECTED = wxNewEventType();
 
-const int MachineMenuID=wxID_HIGHEST;
+const int ProfileMenuID=wxID_HIGHEST;
 
 class SleepyHeadFrame: public GUIFrame
 {
@@ -78,9 +92,10 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnImportSD(wxCommandEvent& event);
         virtual void OnViewMenuDaily(wxCommandEvent& event);
         virtual void OnViewMenuSummary(wxCommandEvent& event);
-        virtual void OnMachineSelected(wxCommandEvent& event);
+        virtual void OnShowSerial(wxCommandEvent& event);
+        virtual void OnProfileSelected(wxCommandEvent& event);
 
-        virtual void UpdateMachineMenu();
+        virtual void UpdateProfiles();
 
         Summary *summary;
         Daily *daily;

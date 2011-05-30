@@ -31,15 +31,26 @@ public:
     Profile();
     virtual ~Profile();
 
+    bool is_first_day;
     map<MachineID,Machine *> machlist;
     void AddMachine(Machine *m);
     void LoadMachineData();
     void Import(wxString path);
+
+    void AddDay(wxDateTime date,Day *day);
+
     vector<Machine *> GetMachines(MachineType t);
     Machine * GetMachine(MachineType t,wxDateTime date);
 
     virtual void ExtraLoad(TiXmlHandle *root);
     virtual TiXmlElement * ExtraSave();
+    map<wxDateTime,vector<Day *> > daylist;
+    const wxDateTime & FirstDay() { return m_first; };
+    const wxDateTime & LastDay() { return m_last; };
+
+protected:
+    wxDateTime m_first,m_last;
+
 };
 
 extern Preferences *p_pref;

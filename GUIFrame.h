@@ -28,6 +28,7 @@
 #include <wx/scrolwin.h>
 #include <wx/calctrl.h>
 #include <wx/panel.h>
+#include <wx/radiobut.h>
 #include <wx/stattext.h>
 #include <wx/datectrl.h>
 #include <wx/dateevt.h>
@@ -35,6 +36,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #define wxID_QUIT 1000
+#define wxID_RB 1001
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GUIFrame
@@ -47,7 +49,8 @@ class GUIFrame : public wxFrame
 		wxMenuBar* menubar;
 		wxMenu* FileMenu;
 		wxMenu* ViewMenu;
-		wxMenu* MachineMenu;
+		wxMenuItem* ViewMenuSerial;
+		wxMenu* ProfileMenu;
 		wxMenu* ToolsMenu;
 		wxMenu* HelpMenu;
 		wxStatusBar* statusBar;
@@ -59,6 +62,7 @@ class GUIFrame : public wxFrame
 		virtual void OnQuit( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewMenuSummary( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewMenuDaily( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnShowSerial( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFullscreen( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScreenshot( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
@@ -112,19 +116,24 @@ class SummaryPanel : public wxPanel
 		wxScrolledWindow* ScrolledWindow;
 		wxFlexGridSizer* fgSizer;
 		wxPanel* m_panel1;
-		wxStaticText* m_staticText1;
+		wxRadioButton* rbAll;
+		wxRadioButton* rbLastWeek;
+		wxRadioButton* rbLastMonth;
+		wxRadioButton* rbCustomDate;
+		wxStaticText* sdLabel;
 		wxDatePickerCtrl* StartDatePicker;
-		wxStaticText* m_staticText2;
+		wxStaticText* edLabel;
 		wxDatePickerCtrl* EndDatePicker;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnRBSelect( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnStartDateChanged( wxDateEvent& event ) { event.Skip(); }
 		virtual void OnEndDateChanged( wxDateEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		
-		SummaryPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 775,447 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
+		SummaryPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 868,599 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
 		
 		~SummaryPanel();
 	

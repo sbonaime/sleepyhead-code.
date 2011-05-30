@@ -127,7 +127,7 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
         wxString s=*sn;
         m=CreateMachine(s,profile);
 
-        if (m) OpenMachine(m,newpath+wxFileName::GetPathSeparator()+(*sn));
+        if (m) OpenMachine(m,newpath+wxFileName::GetPathSeparator()+(*sn),profile);
     }
 
     return PRS1List.size();
@@ -174,7 +174,7 @@ bool PRS1Loader::ParseProperties(Machine *m,wxString filename)
     return true;
 }
 
-int PRS1Loader::OpenMachine(Machine *m,wxString path)
+int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
 {
 
     wxLogDebug(wxT("Opening PRS1 ")+path);
@@ -267,18 +267,17 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
                 wxLogWarning(wxT("PRS1Loader: Couldn't open event file ")+s->second[1]);
             }
         }
-        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
-        if (sess->hours()<=ignore_thresh) {
-            delete sess;
-            continue;
-        }
-        m->AddSession(sess);
-
         if (!s->second[2].IsEmpty()) {
             if (!OpenWaveforms(sess,s->second[2])) {
                 wxLogWarning(wxT("PRS1Loader: Couldn't open event file ")+s->second[2]);
             }
         }
+        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
+        if (sess->hours()<=ignore_thresh) {
+            delete sess;
+            continue;
+        }
+        m->AddSession(sess,profile);
 
         if (sess->summary.find(CPAP_Obstructive)!=sess->summary.end()) {
             sess->summary[CPAP_Obstructive]=(long)sess->count_events(CPAP_Obstructive);
@@ -309,13 +308,24 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path)
             sess->summary[BIPAP_EAPAverage]=sess->weighted_avg_event_field(CPAP_EAP,0);
             sess->summary[BIPAP_EAPMin]=sess->min_event_field(CPAP_EAP,0);
             sess->summary[BIPAP_EAPMax]=sess->max_event_field(CPAP_EAP,0);
-
         } else {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
+            if (sess->summary.find(CPAP_PressureMin)==sess->summary.end()) {
+                sess->summary[CPAP_BrokenSummary]=true;
+                sess->set_last(sess->first());
+                if (sess->summary[CPAP_PressureMinAchieved]==sess->summary[CPAP_PressureMaxAchieved]) {
+                    sess->summary[CPAP_Mode]=(long)MODE_CPAP;
+                } else {
+                    sess->summary[CPAP_Mode]=(long)MODE_UNKNOWN;
+                }
+                sess->summary[CPAP_PressureReliefType]=(long)PR_UNKNOWN;
+            }
+
         }
+
 
         sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
         sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..
@@ -358,8 +368,7 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
 
     if (ext!=1)
         return false;
-    if (size<0x30)
-        return false;
+
     //size|=(header[3]<<16) | (header[4]<<24); // the jury is still out on the 32bitness of one. doesn't matter here anyway.
 
     size-=(hl+2);
@@ -367,6 +376,11 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     for (int i=0; i<hl-1; i++) sum+=header[i];
     if (sum!=header[hl-1])
         return false;
+
+    if (size<=19) {
+        wxLogWarning(wxT("Ignoring short session file ")+filename);
+        return false;
+    }
 
     wxDateTime date(timestamp);
     //wxDateTime tmpdate=date;
@@ -381,6 +395,8 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
     if (br<size) {
         return false;
     }
+    if (size<0x30)
+        return true;
 
     session->set_first(date);
     session->set_last(date);

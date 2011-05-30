@@ -47,7 +47,7 @@ wxInt16 {
     CPAP_PressureMaxAchieved, CPAP_PressurePercentValue, CPAP_PressurePercentName, CPAP_PressureAverage, CPAP_PressureMedian,
     CPAP_LeakMedian,CPAP_LeakMinimum,CPAP_LeakMaximum,CPAP_LeakAverage,CPAP_Duration,
 
-    BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,
+    BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,CPAP_BrokenSummary,
 
     // PRS1 Specific Codes
     PRS1_PressurePulse=0x1000, PRS1_VSnore2,
@@ -61,11 +61,11 @@ short { FT_BAR, FT_DOT, FT_SPAN };
 
 enum CPAPMode:
 short {
-    MODE_CPAP=0,MODE_APAP,MODE_BIPAP,MODE_ASV
+    MODE_UNKNOWN=0,MODE_CPAP,MODE_APAP,MODE_BIPAP,MODE_ASV
 };
 enum PRTypes:
 short {
-    PR_NONE=0,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
+    PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
 };
 
 extern map<MachineCode,wxString> DefaultMCShortNames;
@@ -81,14 +81,16 @@ typedef float EventDataType;
 
 class Session;
 class Profile;
+class Machine;
 
 class Day
 {
 public:
-    Day();
+    Day(Machine *m);
     ~Day();
     void AddSession(Session *s);
 
+    MachineType machine_type();
 
     EventDataType min(MachineCode code,int field=0);
     EventDataType max(MachineCode code,int field=0);
@@ -117,6 +119,7 @@ public:
     vector<Session *>::iterator end() { return sessions.end(); };
 
     size_t size() { return sessions.size(); };
+    Machine *machine;
 
 protected:
     vector<Session *> sessions;
@@ -141,7 +144,7 @@ public:
     map<wxString,wxString> properties;
 
     Session * SessionExists(SessionID session);
-    void AddSession(Session *s);
+    Day *AddSession(Session *s,Profile *p);
 
     void SetClass(wxString t) {
         m_class=t;

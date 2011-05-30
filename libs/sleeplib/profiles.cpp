@@ -22,12 +22,15 @@ Preferences *p_pref;
 Preferences *p_layout;
 
 Profile::Profile()
+:Preferences(),is_first_day(true)
 {
     p_name=wxT("Profile");
     p_path=pref.Get("{home}{sep}Profiles");
     machlist.clear();
+    m_first=m_last=wxInvalidDateTime;
 }
 Profile::Profile(wxString path)
+:Preferences(),is_first_day(true)
 {
     const wxString xmlext=wxT(".xml");
     p_name=wxT("Profile");
@@ -38,6 +41,7 @@ Profile::Profile(wxString path)
     if (!p_path.EndsWith(sep)) p_path+=sep;
     p_filename=p_path+p_name+xmlext;
     machlist.clear();
+    m_first=m_last=wxInvalidDateTime;
 }
 
 Profile::~Profile()
@@ -118,6 +122,18 @@ TiXmlElement * Profile::ExtraSave()
     return mach;
 
 }
+
+void Profile::AddDay(wxDateTime date,Day *day) {
+    //date+=wxTimeSpan::Day();
+    if (is_first_day) {
+        m_first=m_last=date;
+        is_first_day=false;
+    }
+    if (m_first>date) m_first=date;
+    if (m_last<date) m_last=date;
+    daylist[date].push_back(day);
+}
+
 
 /**
  * @brief Import Machine Data

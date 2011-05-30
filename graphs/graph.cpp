@@ -9,6 +9,7 @@ License: LGPL
 #include <wx/dcbuffer.h>
 #include <wx/log.h>
 #include "graph.h"
+#include "sleeplib/profiles.h"
 
 #if !wxCHECK_VERSION(2,9,0)
 wxColor zwxYELLOW=wxColor(0xb0,0xb0,0x40,0xff);
@@ -819,12 +820,12 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 
     double xx=w.max_x - w.min_x;
     double days=int(xx);
-    days=data->np[0];
+    //days=data->np[0];
 
-    /*days=0;
+    days=0;
     for (int i=0;i<data->np[0];i++) {
-       if ((data->point[0][i].x > w.min_x) && (data->point[0][i].x<w.max_x)) days++;
-    }*/
+       if ((data->point[0][i].x >= w.min_x) && (data->point[0][i].x<w.max_x)) days+=1;
+    }
 
     float barwidth,pxr;
     float px,py;
@@ -848,8 +849,8 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 
     int cnt=0;
     for (int i=0;i<data->np[0];i++) {
-        //if (data->point[0][i].x < w.min_x) continue;
-        //if (data->point[0][i].x > w.max_x) break;
+        if (data->point[0][i].x < w.min_x) continue;
+        if (data->point[0][i].x >= w.max_x) break;
         dc.SetBrush(*wxTRANSPARENT_BRUSH);
         t1=px;
         px+=barwidth+1;
@@ -1150,11 +1151,11 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
 
         if (min_tick<=0.25/86400.0)
             min_tick=0.25/86400;
-    } else {
+    } else { // Day ticks..
         show_time=false;
         st=st2;
         min_tick=1;
-        double mtiks=(y+20.0)/width;
+        double mtiks=(x+20.0)/width;
         double mt=mtiks*xx;
         min_tick=mt;
         if (min_tick<1) min_tick=1;
@@ -1186,7 +1187,7 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
     int hour,minute,second,millisecond;
     wxDateTime d;
     for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001+1); // JDN vs MJD vs Rounding errors
+        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
 
         if (show_time) {
             minute=d.GetMinute();
@@ -1211,11 +1212,11 @@ void gLineChart::DrawXTicks(wxDC & dc,gGraphWindow &w)
 		dc.DrawLine(px,py,px,py+6);
 
         dc.GetTextExtent(fd,&x,&y);
-        if (!show_time) {
-            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
-        } else {
+        //if (!show_time) {
+          //  dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
+        //} else {
             dc.DrawText(fd, px-(x/2), py+y);
-        }
+        //}
 
     }
 
@@ -1917,13 +1918,25 @@ void FlagData::Reload(Day *day)
     m_ready=true;
 }
 
-HistoryData::HistoryData(Machine *_machine,int _days)
-:gPointData(_days*2),machine(_machine),days(_days)
+HistoryData::HistoryData(Profile * _profile)
+:gPointData(1024),profile(_profile)
 {
     AddSegment(max_points);
+    if (profile->LastDay().IsValid()) {
+        real_min_x=profile->FirstDay().GetMJD()-1;
+        real_max_x=profile->LastDay().GetMJD()+1;
+    }
 }
 HistoryData::~HistoryData()
 {
+}
+void HistoryData::ResetDateRange()
+{
+    if (profile->LastDay().IsValid()) {
+        real_min_x=profile->FirstDay().GetMJD()-1;
+        real_max_x=profile->LastDay().GetMJD()+1;
+    }
+    Reload(NULL);
 }
 double HistoryData::Calc(Day *day)
 {
@@ -1932,27 +1945,31 @@ double HistoryData::Calc(Day *day)
 
 void HistoryData::Reload(Day *day)
 {
-    if (!machine) return;
-
-    auto d=machine->day.rbegin();
-    int i=0;
-    while (d!=machine->day.rend() && (i<=days)) {
-        d++;
-        i++;
-    }
+    wxDateTime date;
     vc=0;
+    int i=0;
     bool first=true;
-    double x,y;
-    max_y=0;
-    i=0;
-    do {
-        d--;
-        y=Calc(d->second);
-        x=d->first.GetMJD();
+    bool done=false;
+    double y;
+    for (int x=real_min_x;x<=real_max_x;x++) {
+        date.Set(x+2400000.5);
+        date.ResetTime();
+        if (profile->daylist.find(date)==profile->daylist.end()) continue;
+
+        y=0;
+        int z=0;
+        vector<Day *> & daylist=profile->daylist[date];
+        for (auto dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
+            Day *d=(*dd);
+            y=Calc(d);
+            z++;
+        }
+        if (z>1) y /= z;
+        point[vc][i].x=x;
+        point[vc][i].y=y;
         if (first) {
-            max_x=x;
-            min_x=x;
-            min_y=y;
+            max_x=min_x=x;
+            max_y=min_y=y;
             first=false;
         }
         if (y>max_y) max_y=y;
@@ -1960,14 +1977,16 @@ void HistoryData::Reload(Day *day)
         if (x<min_x) min_x=x;
         if (x>max_x) max_x=x;
 
-        point[vc][i].x=x;
-        point[vc][i].y=y;
         i++;
-    } while (d!=machine->day.rbegin() && (i<days));
+        if (i>max_points) {
+            wxLogError(wxT("max_points is not enough in HistoryData"));
+            done=true;
+        }
+        if (done) break;
+    }
     np[vc]=i;
     vc++;
-    min_y=0;
-    max_y=ceil(max_y);
+    max_x+=1;
     real_min_x=min_x;
     real_max_x=max_x;
     real_min_y=min_y;
@@ -1983,10 +2002,22 @@ double HistoryData::GetAverage()
     val/=np[0];
     return val;
 }
+void HistoryData::SetDateRange(wxDateTime start,wxDateTime end)
+{
+    double x1=start.GetMJD()+1;
+    double x2=end.GetMJD()+1;
+    if (x1 < real_min_x) x1=real_min_x;
+    if (x2 > real_max_x) x2=real_max_x;
+    min_x=x1;
+    max_x=x2;
+    for (auto i=notify_layers.begin();i!=notify_layers.end();i++) {
+        (*i)->DataChanged(this);
+    }    // Do nothing else.. Callers responsibility to Refresh window.
+}
 
 
-HistoryCodeData::HistoryCodeData(Machine *_machine,MachineCode _code,int _days)
-:HistoryData(_machine,_days),code(_code)
+HistoryCodeData::HistoryCodeData(Profile *_profile,MachineCode _code)
+:HistoryData(_profile),code(_code)
 {
 }
 HistoryCodeData::~HistoryCodeData()
@@ -1997,8 +2028,8 @@ double HistoryCodeData::Calc(Day *day)
     return day->summary_avg(code);
 }
 
-UsageHistoryData::UsageHistoryData(Machine *_machine,int _days,T_UHD _uhd)
-:HistoryData(_machine,_days),uhd(_uhd)
+UsageHistoryData::UsageHistoryData(Profile *_profile,T_UHD _uhd)
+:HistoryData(_profile),uhd(_uhd)
 {
 }
 UsageHistoryData::~UsageHistoryData()

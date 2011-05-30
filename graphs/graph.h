@@ -444,27 +444,26 @@ public:
 class HistoryData:public gPointData
 {
 public:
-    HistoryData(Machine *_machine,int _days);
+    HistoryData(Profile * _profile);
     virtual ~HistoryData();
 
-    void SetMachine(Machine *_machine) { machine=_machine; Reload(); };
-    Machine * GetMachine() { return machine; };
-    void SetDays(int i) { days=i; };
-    int GetDays() { return days; };
+    void SetProfile(Profile *_profile) { profile=_profile; Reload(); };
+    Profile * GetProfile() { return profile; };
     double GetAverage();
 
     virtual double Calc(Day *day);
     virtual void Reload(Day *day=NULL);
+    virtual void ResetDateRange();
+    virtual void SetDateRange(wxDateTime start,wxDateTime end);
   //  virtual void Reload(Machine *machine=NULL);
 protected:
-    Machine *machine;
-    int days;
+    Profile * profile;
 };
 
 class HistoryCodeData:public HistoryData
 {
 public:
-    HistoryCodeData(Machine *_machine,MachineCode _code,int _days);
+    HistoryCodeData(Profile *_profile,MachineCode _code);
     virtual ~HistoryCodeData();
     virtual double Calc(Day *day);
 protected:
@@ -476,7 +475,7 @@ enum T_UHD { UHD_Bedtime, UHD_Waketime, UHD_Hours };
 class UsageHistoryData:public HistoryData
 {
 public:
-    UsageHistoryData(Machine *_machine,int _days,T_UHD _uhd);
+    UsageHistoryData(Profile *_profile,T_UHD _uhd);
     virtual ~UsageHistoryData();
     virtual double Calc(Day *day);
 protected:

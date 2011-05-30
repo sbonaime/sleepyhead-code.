@@ -7785,12 +7785,12 @@
 	"wx/progdlg.h"
 	"wx/dialog.h"
 
-1306577554 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
+1306753008 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
-1306577554 /home/mark/projects/git/sleepyhead/GUIFrame.h
+1306753008 /home/mark/projects/git/sleepyhead/GUIFrame.h
 	<wx/intl.h>
 	<wx/string.h>
 	<wx/bitmap.h>
@@ -7810,16 +7810,18 @@
 	<wx/scrolwin.h>
 	<wx/calctrl.h>
 	<wx/panel.h>
+	<wx/radiobut.h>
 	<wx/stattext.h>
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1306414983 source:/home/mark/projects/git/sleepyhead/SleepyHeadApp.cpp
+1306741958 source:/home/mark/projects/git/sleepyhead/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
 	<wx/progdlg.h>
 	<wx/datetime.h>
+	<wx/fs_mem.h>
 	"SleepyHeadApp.h"
 	"SleepyHeadMain.h"
 	"version.h"
@@ -7829,13 +7831,13 @@
 1305881106 /home/mark/projects/git/sleepyhead/SleepyHeadApp.h
 	<wx/app.h>
 
-1306662900 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
+1306753017 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
 	"SleepyHeadApp.h"
 	"GUIFrame.h"
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1306682653 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
+1306726896 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -7869,13 +7871,13 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1306659032 /home/mark/projects/git/sleepyhead/graphs/graph.h
+1306750273 /home/mark/projects/git/sleepyhead/graphs/graph.h
 	<sleeplib/machine.h>
 	<list>
 
-1306683584 /home/mark/projects/git/sleepyhead/version.h
+1306756665 /home/mark/projects/git/sleepyhead/version.h
 
-1306549105 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
+1306724655 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
 	"machine_loader.h"
 	"profiles.h"
@@ -7883,14 +7885,14 @@
 1306415040 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine_loader.h
 	"profiles.h"
 
-1306415066 /home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.h
+1306754109 /home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.h
 	<wx/string.h>
 	<map>
 	"machine.h"
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1306683142 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+1306756567 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -7902,14 +7904,16 @@
 	<wx/dcscreen.h>
 	<wx/dcmemory.h>
 	<wx/filedlg.h>
+	<wx/fs_mem.h>
 	"SleepyHeadMain.h"
 	"sleeplib/profiles.h"
 
-1306658943 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
+1306756303 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
 	"graph.h"
+	"sleeplib/profiles.h"
 
 1306485891 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/binary_file.cpp
 	<wx/filename.h>
@@ -7919,7 +7923,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1306683485 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+1306753649 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -7940,7 +7944,7 @@
 	<wx/stdpaths.h>
 	"preferences.h"
 
-1306673434 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
+1306755802 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/profiles.cpp
 	<wx/filefn.h>
 	<wx/filename.h>
 	<wx/utils.h>
@@ -7952,7 +7956,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1306681892 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
+1306724998 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -8003,4 +8007,72 @@
 1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/msw/datectrl.h
 
 1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/generic/datectrl.h
+
+1302101440 /usr/include/wx-2.8/wx/fs_mem.h
+	"wx/defs.h"
+	"wx/filesys.h"
+
+1305166121 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/fs_mem.h
+	"wx/defs.h"
+	"wx/filesys.h"
+
+1302101441 /usr/include/wx-2.8/wx/statline.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/univ/statline.h"
+	"wx/msw/statline.h"
+	"wx/gtk/statline.h"
+	"wx/gtk1/statline.h"
+	"wx/os2/statline.h"
+	"wx/mac/statline.h"
+	"wx/cocoa/statline.h"
+	"wx/generic/statline.h"
+
+1302101441 /usr/include/wx-2.8/wx/gtk/statline.h
+	"wx/defs.h"
+
+1305215600 /usr/include/wx-2.9/wx/datectrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/datetime.h"
+	"wx/palmos/datectrl.h"
+	"wx/msw/datectrl.h"
+	"wx/generic/datectrl.h"
+
+1305215600 /usr/include/wx-2.9/wx/generic/datectrl.h
+	"wx/calctrl.h"
+	"wx/combo.h"
+
+1305215599 /usr/include/wx-2.9/wx/combo.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/renderer.h"
+	"wx/bitmap.h"
+	"wx/msw/combo.h"
+	"wx/generic/combo.h"
+
+1305215599 /usr/include/wx-2.9/wx/renderer.h
+	"wx/gdicmn.h"
+	"wx/colour.h"
+	"wx/font.h"
+	"wx/bitmap.h"
+	"wx/string.h"
+
+1305215599 /usr/include/wx-2.9/wx/generic/combo.h
+
+1305215600 /usr/include/wx-2.9/wx/progdlg.h
+	"wx/defs.h"
+	"wx/palmos/progdlg.h"
+	"wx/generic/progdlgg.h"
+
+1305215599 /usr/include/wx-2.9/wx/generic/progdlgg.h
+	"wx/defs.h"
+	"wx/progdlg.h"
+	"wx/dialog.h"
+
+1305215598 /usr/include/wx-2.9/wx/fs_mem.h
+	"wx/defs.h"
+	"wx/filesys.h"
+	"wx/hashmap.h"
+	"wx/bitmap.h"
 

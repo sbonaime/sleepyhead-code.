@@ -52,6 +52,12 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	ViewMenuDaily = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("&Daily") ) + wxT('\t') + wxT("F6"), wxEmptyString, wxITEM_NORMAL );
 	ViewMenu->Append( ViewMenuDaily );
 	
+	wxMenuItem* m_separator3;
+	m_separator3 = ViewMenu->AppendSeparator();
+	
+	ViewMenuSerial = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("Show Serial Numbers") ) , wxEmptyString, wxITEM_CHECK );
+	ViewMenu->Append( ViewMenuSerial );
+	
 	wxMenuItem* m_separator2;
 	m_separator2 = ViewMenu->AppendSeparator();
 	
@@ -61,8 +67,8 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	menubar->Append( ViewMenu, _("&View") ); 
 	
-	MachineMenu = new wxMenu();
-	menubar->Append( MachineMenu, _("&Machine") ); 
+	ProfileMenu = new wxMenu();
+	menubar->Append( ProfileMenu, _("&Profiles") ); 
 	
 	ToolsMenu = new wxMenu();
 	wxMenuItem* ToolsMenuScreenshot;
@@ -95,6 +101,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( FileMenuExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Connect( ViewMenuSummary->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Connect( ViewMenuDaily->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Connect( ViewMenuSerial->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnShowSerial ) );
 	this->Connect( ViewMenuFullscreen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Connect( ToolsMenuScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Connect( HelpMenuAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
@@ -109,6 +116,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_QUIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnShowSerial ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
@@ -177,24 +185,44 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	fgSizer->Fit( ScrolledWindow );
 	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	m_panel1->SetMaxSize( wxSize( -1,40 ) );
-	m_mgr.AddPane( m_panel1, wxAuiPaneInfo() .Bottom() .Caption( wxT("Date Range") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).BestSize( wxSize( 300,40 ) ).MinSize( wxSize( 300,40 ) ).MaxSize( wxSize( 300,40 ) ) );
+	m_mgr.AddPane( m_panel1, wxAuiPaneInfo() .Bottom() .Caption( wxT("Date Range") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).BestSize( wxSize( 570,42 ) ).MinSize( wxSize( 570,42 ) ).MaxSize( wxSize( -1,42 ) ) );
 	
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_staticText1 = new wxStaticText( m_panel1, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText1->Wrap( -1 );
-	bSizer1->Add( m_staticText1, 0, wxALIGN_TOP|wxLEFT|wxTOP, 12 );
+	rbAll = new wxRadioButton( m_panel1, wxID_RB, _("Everything"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	bSizer1->Add( rbAll, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
-	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizer1->Add( StartDatePicker, 0, wxALL, 5 );
+	rbLastWeek = new wxRadioButton( m_panel1, wxID_ANY, _("Last Week"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer1->Add( rbLastWeek, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
-	m_staticText2 = new wxStaticText( m_panel1, wxID_ANY, _("End"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText2->Wrap( -1 );
-	bSizer1->Add( m_staticText2, 0, wxALIGN_TOP|wxLEFT|wxTOP, 12 );
+	rbLastMonth = new wxRadioButton( m_panel1, wxID_ANY, _("Last Month"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer1->Add( rbLastMonth, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
-	EndDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
-	bSizer1->Add( EndDatePicker, 0, wxALL, 5 );
+	rbCustomDate = new wxRadioButton( m_panel1, wxID_ANY, _("Custom"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer1->Add( rbCustomDate, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	sdLabel = new wxStaticText( m_panel1, wxID_ANY, _("Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	sdLabel->Wrap( -1 );
+	sdLabel->Enable( false );
+	
+	bSizer1->Add( sdLabel, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+	
+	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY|wxDP_SPIN );
+	StartDatePicker->Enable( false );
+	
+	bSizer1->Add( StartDatePicker, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	edLabel = new wxStaticText( m_panel1, wxID_ANY, _("End"), wxDefaultPosition, wxDefaultSize, 0 );
+	edLabel->Wrap( -1 );
+	edLabel->Enable( false );
+	
+	bSizer1->Add( edLabel, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+	
+	EndDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SPIN );
+	EndDatePicker->Enable( false );
+	
+	bSizer1->Add( EndDatePicker, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	m_panel1->SetSizer( bSizer1 );
 	m_panel1->Layout();
@@ -203,6 +231,10 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_mgr.Update();
 	
 	// Connect Events
+	rbAll->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastWeek->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastMonth->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbCustomDate->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	StartDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
 	EndDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
 }
@@ -210,6 +242,10 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 SummaryPanel::~SummaryPanel()
 {
 	// Disconnect Events
+	rbAll->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastWeek->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastMonth->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbCustomDate->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	StartDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
 	EndDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
 	

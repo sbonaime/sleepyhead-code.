@@ -37,7 +37,7 @@ public:
 protected:
     wxString last;
     map<wxString,Machine *> PRS1List;
-    int OpenMachine(Machine *m,wxString path);
+    int OpenMachine(Machine *m,wxString path,Profile *profile);
     bool ParseProperties(Machine *m,wxString filename);
     bool OpenSummary(Session *session,wxString filename);
     bool OpenEvents(Session *session,wxString filename);

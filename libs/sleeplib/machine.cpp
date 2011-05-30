@@ -53,12 +53,14 @@ const map<MachineCode,wxColour> DefaultFlagColours= {
     {PRS1_PressurePulse,wxColour(0xff,0x40,0xff,flagalpha)}
 };
 map<CPAPMode,wxString> CPAPModeNames={
+    {MODE_UNKNOWN,wxT("Undetermined")},
     {MODE_CPAP,wxT("CPAP")},
     {MODE_APAP,wxT("APAP")},
     {MODE_BIPAP,wxT("BIPAP")},
     {MODE_ASV,wxT("ASV")}
 };
 map<PRTypes,wxString> PressureReliefNames={
+    {PR_UNKNOWN,_("Undetermined")},
     {PR_NONE,_("None")},
     {PR_CFLEX,wxT("C-Flex")},
     {PR_CFLEXPLUS,wxT("C-Flex+")},
@@ -137,7 +139,7 @@ Session *Machine::SessionExists(SessionID session)
         return NULL;
     }
 }
-void Machine::AddSession(Session *s)
+Day *Machine::AddSession(Session *s,Profile *p)
 {
     wxDateTime date=s->first();
     date.ResetTime();
@@ -156,11 +158,11 @@ void Machine::AddSession(Session *s)
                 ok=true;
             }
         }
-    } else {
+    } else { // No day record yesterday
         wxDateTime t=s->first();
         t.ResetTime();
         wxTimeSpan j=s->first()-t;
-        if (j<wxTimeSpan::Hours(6)) {
+        if (j<wxTimeSpan::Hours(12)) {
             ok=true;
         }
     }
@@ -169,21 +171,7 @@ void Machine::AddSession(Session *s)
         date+=wxTimeSpan::Day();
     }
 
-
     sessionlist[s->session()]=s;
-
-/*    wxDateTime s1=s->first();
-    wxDateTime s2=s->last();
-    if (s1==s2) return; // leave this session out of daylist.. it's dodgy. DELETE?
-
-
-    wxDateTime date,d1=s1;
-    date=d1;
-    d1.SetHour(15);
-
-    if (s1<d1) {
-        date-=wxTimeSpan::Hours(24);
-    } */
 
     if (!firstsession) {
         if (firstday>date) firstday=date;
@@ -193,12 +181,13 @@ void Machine::AddSession(Session *s)
         firstsession=false;
     }
     if (day.find(date)==day.end()) {
-        day[date]=new Day();
-        //wxLogMessage(wxT("Creating Day ")+date.Format()+wxT(" to store ")+s1.Format());
+        day[date]=new Day(this);
+        p->AddDay(date,day[date]);
     }
-        //wxLogMessage(wxT("Using Day ")+date.Format()+wxT(" to store ")+s1.Format()+wxT(" ")+s2.Format());
 
     day[date]->AddSession(s);
+
+    return day[date];
 }
 
 bool Machine::Load()
@@ -239,7 +228,7 @@ bool Machine::Load()
             //	wxPrintf(s+wxT(" O=%i H=%i CA=%i \n"),sess->summary[CPAP_Obstructive].GetLong(),sess->summary[CPAP_Hypopnea].GetLong(),sess->summary[CPAP_ClearAirway].GetLong());
             sess->LoadEvents(s->second[1]);
             sess->LoadWaveforms(s->second[2]);
-            AddSession(sess);
+            AddSession(sess,profile);
         } else {
             delete sess;
         }
@@ -262,7 +251,8 @@ bool Machine::Save()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Day Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Day::Day()
+Day::Day(Machine *m)
+:machine(m)
 {
     d_firstsession=true;
     sessions.clear();
@@ -271,6 +261,11 @@ Day::~Day()
 {
 
 }
+MachineType Day::machine_type()
+{
+    return machine->GetType();
+};
+
 void Day::AddSession(Session *s)
 {
     if (!s) {
@@ -758,7 +753,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 void Session::AddEvent(Event * e)
 {
     events[e->code()].push_back(e);
-  //  if (e->time()>s_last) s_last=e->time();
+    if (e->time()>s_last) s_last=e->time();
    // wxLogMessage(e->time().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %04i %02i "),e->code(),e->fields()));
 }
 void Session::AddWaveform(Waveform *w)

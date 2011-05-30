@@ -20,6 +20,8 @@
 #include <wx/log.h>
 #include <wx/progdlg.h>
 #include <wx/datetime.h>
+#include <wx/fs_mem.h>
+
 #include "SleepyHeadApp.h"
 #include "SleepyHeadMain.h"
 #include "version.h"
@@ -36,6 +38,9 @@ bool SleepyHeadApp::OnInit()
     wxLog *logger=new wxLogStream(&std::cout);
     wxLog::SetActiveTarget(logger);
 
+    wxFileSystem::AddHandler(new wxMemoryFSHandler);
+
+    wxInitAllImageHandlers();
     //wxDateTime::SetCountry(wxDateTime::USA);
     SetAppName(_("SleepyHead"));
     PRS1Loader::Register();
