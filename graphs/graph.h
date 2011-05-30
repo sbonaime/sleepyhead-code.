@@ -373,6 +373,8 @@ class gBarChart:public gLayer
 
     protected:
         virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
+        virtual void DrawXTicks(wxDC & dc,gGraphWindow &w);
+
 
         wxOrientation m_direction;
 

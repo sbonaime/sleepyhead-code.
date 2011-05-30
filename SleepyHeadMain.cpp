@@ -330,15 +330,15 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,60,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
-    PRESSURE->AddLayer(new gLineChart(pressure,wxBLUE));
-    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED));
-    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxGREEN));
+    PRESSURE->AddLayer(new gLineChart(pressure,wxBLUE,6192));
+    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
+    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxGREEN,6192,false,true));
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     LEAK->SetMargins(10,15,60,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
-    LEAK->AddLayer(new gLineChart(leak,wxYELLOW));
+    LEAK->AddLayer(new gLineChart(leak,wxYELLOW,6192));
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
