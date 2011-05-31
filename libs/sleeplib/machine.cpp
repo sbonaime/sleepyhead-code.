@@ -143,33 +143,43 @@ Session *Machine::SessionExists(SessionID session)
 }
 Day *Machine::AddSession(Session *s,Profile *p)
 {
-    wxDateTime date=s->first();
+    wxTimeSpan span;
+
+    wxDateTime date=s->first()-wxTimeSpan::Day();
     date.ResetTime();
-    date-=wxTimeSpan::Day();
 
-    bool ok=false;
+    const int hours_since_last_session=4;
+    const int hours_since_midnight=12;
+
+    bool previous=false;
+
+    // Find what day session belongs to.
     if (day.find(date)!=day.end()) {
-        wxTimeSpan span=s->first()-day[date]->last();
-        if (span<wxTimeSpan::Hours(4)) ok=true;
-        else {
+        // Previous day record exists...
 
-            wxDateTime t=s->first();
-            t.ResetTime();
-            wxTimeSpan j=s->first()-t;
-            if (j<wxTimeSpan::Hours(6)) {
-                ok=true;
-            }
-        }
-    } else { // No day record yesterday
-        wxDateTime t=s->first();
-        t.ResetTime();
-        wxTimeSpan j=s->first()-t;
-        if (j<wxTimeSpan::Hours(12)) {
-            ok=true;
+        // Calculate time since end of previous days last session
+        span=s->first()-day[date]->last();
+
+        // less than n hours since last session yesterday?
+        if (span < wxTimeSpan::Hours(hours_since_last_session)) {
+            previous=true;
         }
     }
 
-    if (!ok) {
+    if (!previous) {
+        // Calculate Hours since midnight.
+        wxDateTime t=s->first();
+        t.ResetTime();
+        span=s->first()-t;
+
+        // Bedtime was late last night.
+        if (span < wxTimeSpan::Hours(hours_since_midnight)) {
+            previous=true;
+        }
+    }
+
+    if (!previous) {
+        // Revert to sessions original day.
         date+=wxTimeSpan::Day();
     }
 

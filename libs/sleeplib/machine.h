@@ -326,6 +326,8 @@ public:
     map<MachineCode,vector<Event *> > events;
     map<MachineCode,vector<Waveform *> > waveforms;
 
+    bool IsLoneSession() { return s_lonesession; };
+    void SetLoneSession(bool b) { s_lonesession=b; };
 protected:
     SessionID s_session;
 
@@ -334,6 +336,7 @@ protected:
     wxDateTime s_last;
     float s_hours;
     bool s_changed;
+    bool s_lonesession;
 };
 
 class CPAP:public Machine

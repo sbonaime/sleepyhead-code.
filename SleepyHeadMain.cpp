@@ -589,10 +589,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->AddLayer(new gFooBar());
 
     fgSizer->Add(SF,1,wxEXPAND);
-    fgSizer->Add(G_AHI,1,wxEXPAND);
     fgSizer->Add(FRW,1,wxEXPAND);
     fgSizer->Add(PRD,1,wxEXPAND);
     fgSizer->Add(LEAK,1,wxEXPAND);
+    fgSizer->Add(G_AHI,1,wxEXPAND);
     fgSizer->Add(TAP,1,wxEXPAND);
     fgSizer->Add(TAP_IAP,1,wxEXPAND);
     fgSizer->Add(TAP_EAP,1,wxEXPAND);

@@ -719,6 +719,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
    // dc.SetPen(*wxBLACK_PEN);
 
+
+    dc.SetClippingRegion(start_px-10,start_py+height,width+20,w.GetBottomMargin());
     double st3=st;
     while (st3>w.min_x) {
         st3-=min_tick/10.0;
@@ -734,16 +736,17 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 		dc.DrawLine(px,py,px,py+4);
     }
 
+    //st=st3;
 
     while (st<w.min_x) {
-        st+=min_tick;///10.0;  // mucking with this changes the scrollyness of the ticker.
+        st+=min_tick; //10.0;  // mucking with this changes the scrollyness of the ticker.
     }
 
     int hour,minute,second,millisecond;
     wxDateTime d;
 
     for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001+1); // JDN vs MJD vs Rounding errors
+        d.Set(i+2400000.5+.00000001+1); // JDN vs MJD vs Rounding errors
 
         if (show_time) {
             minute=d.GetMinute();
@@ -764,6 +767,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
         px=w.x2p(i);
 		dc.DrawLine(px,py,px,py+6);
+		//dc.DrawLine(px+1,py,px+1,py+6);
         y=x=0;
         dc.GetTextExtent(fd,&x,&y); // This doesn't work properly on windows.
 
@@ -778,6 +782,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
         }
 
     }
+    dc.DestroyClippingRegion();
+
 }
 
 
