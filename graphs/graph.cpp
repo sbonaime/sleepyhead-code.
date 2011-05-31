@@ -123,6 +123,28 @@ BEGIN_EVENT_TABLE(gGraphWindow, wxWindow)
 
 END_EVENT_TABLE()
 
+gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
+: wxWindow( parent, id, pos, size, flags, title )
+{
+    m_scrX   = m_scrY   = 64;
+    m_title=title;
+    m_mouseRDown=m_mouseLDown=false;
+    SetBackgroundColour( *wxWHITE );
+    m_bgColour = *wxWHITE;
+    m_fgColour = *wxBLACK;
+    SetMargins(10, 15, 46, 80);
+    m_block_move=false;
+    m_block_zoom=false;
+
+
+}
+gGraphWindow::~gGraphWindow()
+{
+    for (auto l=layers.begin();l!=layers.end();l++) delete (*l);
+    layers.clear();
+}
+
+
 void gGraphWindow::AddLayer(gLayer *l) {
     if (l) {
         l->NotifyGraphWindow(this);
@@ -337,26 +359,6 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 }
 
 
-gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
-: wxWindow( parent, id, pos, size, flags, title )
-{
-    m_scrX   = m_scrY   = 64;
-    m_title=title;
-    m_mouseRDown=m_mouseLDown=false;
-    SetBackgroundColour( *wxWHITE );
-    m_bgColour = *wxWHITE;
-    m_fgColour = *wxBLACK;
-    SetMargins(10, 15, 32, 80);
-    m_block_move=false;
-    m_block_zoom=false;
-
-
-}
-gGraphWindow::~gGraphWindow()
-{
-    for (auto l=layers.begin();l!=layers.end();l++) delete (*l);
-    layers.clear();
-}
 void gGraphWindow::Update()
 {
     Refresh();
@@ -706,12 +708,12 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     } else { // Day ticks..
         show_time=false;
         st=st2;
-        min_tick=1;
+        min_tick=1.0;
         double mtiks=(x+20.0)/width;
         double mt=mtiks*xx;
         min_tick=mt;
-        if (min_tick<1) min_tick=1;
-        if (min_tick>10) min_tick=10;
+        //if (min_tick<1.0) min_tick=1.0;
+        //if (min_tick>10) min_tick=10;
     }
 
    // dc.SetPen(*wxBLACK_PEN);
@@ -733,13 +735,13 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
 
     while (st<w.min_x) {
-        st+=min_tick;
+        st+=min_tick/10.0;
     }
 
     int hour,minute,second,millisecond;
     wxDateTime d;
 
-    for (double i=st; i<w.max_x; i+=min_tick) { //600.0/86400.0) {
+    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
         d.Set(i+2400000.5+.000001+1); // JDN vs MJD vs Rounding errors
 
         if (show_time) {
@@ -757,13 +759,9 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
             }
         } else {
             fd=d.Format(wxT("%d %b"));
-
-            //fd=wxT("ZZ FUNK");
         }
-       // dc.GetTextExtent(fd,&x,&y);
 
-//        px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
+        px=w.x2p(i);
 		dc.DrawLine(px,py,px,py+6);
         y=x=0;
         dc.GetTextExtent(fd,&x,&y); // This doesn't work properly on windows.
@@ -1370,6 +1368,9 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     if (!m_visible) return;
     if (!data) return;
     if (!data->IsReady()) return;
+
+    double xx=w.max_x-w.min_x;
+    if (xx<=0) return;
     //if (!data->NP()) return;
 
     int scrx = w.GetScrX();
@@ -1382,15 +1383,10 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-
-    double xx=w.max_x-w.min_x;
-    if (xx<=0) return;
-
     static wxColor col1=wxColor(0xff,0xf0,0xd0,0x7f);
     static wxColor col2=wxColor(0xe0,0xff,0xd0,0x7f);
     static wxBrush linebr1(col1, wxSOLID);
     static wxBrush linebr2(col2, wxSOLID);
-
 
     static wxPen pen2(wxDARK_GREY, 1, wxDOT);
     static wxPen pen3(*wxGREEN, 2, wxSOLID);
@@ -1405,15 +1401,15 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+px,start_py+height+8,start_px+px,start_py+height+12);
     dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
 
-    wxPen sfp1(*color[0], 1, wxSOLID);
 
+    wxPen sfp1(*color[0], 1, wxSOLID);
     wxBrush brush(*color[0],wxSOLID); //FDIAGONAL_HATCH);
 
 
-    double line_h=((height)/total_lines);
+    double line_h=(height+1)/double(total_lines);
     int r=int(height) % total_lines;
 
-    double line_top=1+(start_py+(line_num*line_h)-r/2.0);
+    double line_top=start_py+round(line_num*line_h)-1;
     //double line_bottom=line_top+line_h;
 
     dc.SetPen(*wxBLACK);
@@ -1422,7 +1418,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     } else {
         dc.SetBrush(linebr2);
     }
-    dc.DrawRectangle(start_px,line_top,width+1,line_h+1);
+    dc.DrawRectangle(start_px,line_top,width+1,round(line_h+1));
     int x,y;
     dc.GetTextExtent(label,&x,&y);
     dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
@@ -1792,7 +1788,7 @@ HistoryData::HistoryData(Profile * _profile)
     AddSegment(max_points);
     if (profile->LastDay().IsValid()) {
         real_min_x=profile->FirstDay().GetMJD();
-        real_max_x=profile->LastDay().GetMJD()+1;
+        real_max_x=profile->LastDay().GetMJD()+0.5;
     }
 }
 HistoryData::~HistoryData()
@@ -1802,7 +1798,7 @@ void HistoryData::ResetDateRange()
 {
     if (profile->LastDay().IsValid()) {
         real_min_x=profile->FirstDay().GetMJD();
-        real_max_x=profile->LastDay().GetMJD()+1;
+        real_max_x=profile->LastDay().GetMJD()+0.5;
     }
     Reload(NULL);
 }
@@ -1874,7 +1870,7 @@ double HistoryData::GetAverage()
 }
 void HistoryData::SetDateRange(wxDateTime start,wxDateTime end)
 {
-    double x1=start.GetMJD()-1;//+1;
+    double x1=start.GetMJD()-0.5;
     double x2=end.GetMJD();
     if (x1 < real_min_x) x1=real_min_x;
     if (x2 > (real_max_x)) x2=(real_max_x);

@@ -330,15 +330,15 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     AddData(waketime=new UsageHistoryData(profile,UHD_Waketime));
     AddData(bedtime=new UsageHistoryData(profile,UHD_Bedtime));
 
-    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    AHI->SetMargins(10,15,60,80);
+    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    AHI->SetMargins(10,15,65,80);
     AHI->AddLayer(new gBarChart(ahidata,wxRED));
    // AHI->AddLayer(new gXAxis(NULL,wxBLACK));
     //AHI->AddLayer(new gLineChart(ahidata,wxRED));
     fgSizer->Add(AHI,1,wxEXPAND);
 
-    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    PRESSURE->SetMargins(10,15,60,80);
+    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    PRESSURE->SetMargins(10,15,65,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
     PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192));
     PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
@@ -347,16 +347,16 @@ Summary::Summary(wxWindow *win,Profile *_profile)
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    LEAK->SetMargins(10,15,60,80);
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192));
     LEAK->AddLayer(new gXAxis(NULL,wxBLACK));
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
-    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
-    USAGE->SetMargins(10,15,60,80);
+    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
     //USAGE->AddLayer(new gXAxis(NULL,wxBLACK));
 
@@ -491,19 +491,19 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddData(tap_iap=new TAPData(CPAP_IAP));
     AddData(tap=new TAPData(CPAP_Pressure));
 
-    TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     TAP->SetMargins(20,15,5,50);
     TAP->AddLayer(new gCandleStick(tap));
 
-    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@IPAP"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@IPAP"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     TAP_IAP->SetMargins(20,15,5,50);
     TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
-    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@EPAP"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@EPAP"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     TAP_EAP->SetMargins(20,15,5,50);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
-    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT("Event Breakdown"),wxPoint(0,0), wxSize(600,50), wxNO_BORDER);
+    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT("Event Breakdown"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     G_AHI->SetMargins(20,15,5,50);
     AddData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
@@ -562,7 +562,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
     FRW->AddLayer(new gXAxis(NULL,wxBLACK));
 
-    SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
 
     SF->LinkZoom(FRW);
