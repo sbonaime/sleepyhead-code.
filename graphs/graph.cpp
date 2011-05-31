@@ -736,7 +736,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
 
     while (st<w.min_x) {
-        st+=min_tick/10.0;
+        st+=min_tick;///10.0;  // mucking with this changes the scrollyness of the ticker.
     }
 
     int hour,minute,second,millisecond;
