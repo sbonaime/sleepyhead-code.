@@ -38,7 +38,7 @@ bool SleepyHeadApp::OnInit()
     wxLog *logger=new wxLogStream(&std::cout);
     wxLog::SetActiveTarget(logger);
 
-    wxFileSystem::AddHandler(new wxMemoryFSHandler);
+   // wxFileSystem::AddHandler(new wxMemoryFSHandler);
 
     wxInitAllImageHandlers();
     //wxDateTime::SetCountry(wxDateTime::USA);
@@ -67,6 +67,8 @@ bool SleepyHeadApp::OnInit()
 int SleepyHeadApp::OnExit()
 {
     //delete loader_progress;
+    wxLogMessage("Closing Profiles...");
     Profiles::Done();
+
     return true;
 }

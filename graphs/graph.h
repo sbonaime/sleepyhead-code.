@@ -400,7 +400,7 @@ class gBarChart:public gLayer
 
         // d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
 
-        virtual const wxString & FormatX(double v) { static wxString t; wxDateTime d; d.Set(v+2400000.5+1); t=d.Format(wxT("%e %b")); return t; };
+        virtual const wxString & FormatX(double v) { static wxString t; wxDateTime d; d.Set(v+2400000.5+1); t=d.Format(wxT("%d %b")); return t; };
         //virtual const wxString & FormatX(double v) { static wxString t; wxDateTime d; d.Set(vi+2400000.5); t=d.Format(wxT("%H:%M")); return t; };
         //virtual const wxString & FormatX(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
         virtual const wxString & FormatY(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };

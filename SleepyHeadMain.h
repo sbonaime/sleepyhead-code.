@@ -41,6 +41,7 @@ protected:
     virtual void OnRBSelect( wxCommandEvent& event );
 	virtual void OnStartDateChanged( wxDateEvent& event );
 	virtual void OnEndDateChanged( wxDateEvent& event );
+    virtual void OnClose(wxCloseEvent &event);
 
     void EnableDatePickers(bool b);
 
@@ -60,6 +61,7 @@ public:
 protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );
 	virtual void OnCalendarMonth( wxCalendarEvent& event );
+    virtual void OnClose(wxCloseEvent &event);
 	void AddData(gPointData *d) { Data.push_back(d);  };
 	void UpdateGraphs(Day *day);
 

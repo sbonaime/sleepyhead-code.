@@ -245,7 +245,7 @@ void Scan()
 
     if (!wxDirExists(path)) {
         wxString tmp=pref.Get("{home}");
-        wxLogMessage(wxT("zzz")+tmp);
+        //wxLogMessage(wxT("zzz")+tmp);
         if (!wxDirExists(tmp)) wxMkdir(tmp);
         Create(wxGetUserId(),wxGetUserName(),wxT(""));
         return;

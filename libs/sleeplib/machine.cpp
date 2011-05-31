@@ -109,6 +109,7 @@ map<MachineCode,wxString> DefaultMCLongNames= {
 //////////////////////////////////////////////////////////////////////////////////////////
 Machine::Machine(Profile *p,MachineID id)
 {
+    wxLogDebug(wxT("Create Machine"));
     profile=p;
     if (!id) {
         std::tr1::minstd_rand gen;
@@ -127,6 +128,7 @@ Machine::Machine(Profile *p,MachineID id)
 }
 Machine::~Machine()
 {
+    wxLogDebug(wxT("Destroy Machine"));
     for (auto d=day.begin();d!=day.end();d++) {
         delete d->second;
     }
@@ -254,6 +256,7 @@ bool Machine::Save()
 Day::Day(Machine *m)
 :machine(m)
 {
+
     d_firstsession=true;
     sessions.clear();
 }

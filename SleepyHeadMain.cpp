@@ -31,6 +31,7 @@
 
 #include "SleepyHeadMain.h"
 #include "sleeplib/profiles.h"
+#include "sleeplib/machine_loader.h"
 
 #if defined(__WXMSW__)
 extern "C" void *_GdipStringFormatCachedGenericTypographic = NULL;
@@ -68,8 +69,6 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
-    loader_progress=new wxProgressDialog(wxT("SleepyHead"),wxT("Please Wait..."),100,this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_SMOOTH);
-    loader_progress->Hide();
     wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
     SetTitle(title);
 
@@ -101,11 +100,10 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
 
 SleepyHeadFrame::~SleepyHeadFrame()
 {
-    if (loader_progress) {
-        loader_progress->Hide();
-        loader_progress->Destroy();
-        delete loader_progress;
-    }
+    //delete summary;
+
+    //DestroyLoaders();
+
 }
 void SleepyHeadFrame::UpdateProfiles()
 {
@@ -138,6 +136,26 @@ void SleepyHeadFrame::UpdateProfiles()
 
 void SleepyHeadFrame::OnClose(wxCloseEvent &event)
 {
+    int idx=main_auinotebook->GetPageIndex(daily);
+    if (idx!=wxNOT_FOUND) {
+        daily->Close();
+    }
+    idx=main_auinotebook->GetPageIndex(summary);
+    if (idx!=wxNOT_FOUND) {
+        summary->Close();
+    }
+    //delete summary
+    wxMenuItemList z=ProfileMenu->GetMenuItems();
+
+    int i=ProfileMenuID;
+    for (unsigned int j=0;j<z.size();j++) {
+        wxMenuItem *mi=z[j];
+        this->Disconnect(i,wxEVT_COMMAND_MENU_SELECTED,wxCommandEventHandler(SleepyHeadFrame::OnProfileSelected));
+        ProfileMenu->Remove(mi);
+        i++;
+    }
+
+    this->Disconnect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
     Destroy();
 }
 
@@ -241,6 +259,9 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     wxDirDialog dd(this,_("Choose a Directory")); //,wxT(""),wxT(""),style=wxFD_OPEN);
     if (dd.ShowModal()!=wxID_OK) return;
 
+
+    loader_progress=new wxProgressDialog(wxT("SleepyHead"),wxT("Please Wait..."),100,this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_SMOOTH);
+    loader_progress->Hide();
     wxString path=dd.GetPath();
 
     loader_progress->Update(0);
@@ -248,18 +269,8 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     profile->Import(path);
     loader_progress->Update(100);
     loader_progress->Show(false);
-
-    /*//UpdateMachineMenu(); // Also updates cpap_machines list.
-
-    auto q=MachineMenu->GetMenuItems().rbegin();
-    int i=0;
-    Machine *m;
-    if (q!=MachineMenu->GetMenuItems().rend()) {
-        (*q)->Check(true);
-        i=(*q)->GetId()-MachineMenuID;
-    }
-    m=cpap_machines[i];
-    */
+    loader_progress->Destroy();
+    loader_progress=NULL;
 
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
@@ -329,9 +340,9 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,60,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
-    PRESSURE->AddLayer(new gLineChart(pressure,wxBLUE,6192));
+    PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192));
     PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
-    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxGREEN,6192,false,true));
+    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
     PRESSURE->AddLayer(new gXAxis(NULL,wxBLACK));
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
@@ -339,7 +350,7 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,200), wxNO_BORDER);
     LEAK->SetMargins(10,15,60,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
-    LEAK->AddLayer(new gLineChart(leak,wxYELLOW,6192));
+    LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192));
     LEAK->AddLayer(new gXAxis(NULL,wxBLACK));
     fgSizer->Add(LEAK,1,wxEXPAND);
 
@@ -429,18 +440,18 @@ void Summary::OnRBSelect( wxCommandEvent& event )
     if (rbCustomDate->GetValue()) {
         EnableDatePickers(true);
     } else if (rbAll->GetValue()) {
-        start=profile->FirstDay()-wxTimeSpan::Day();
-        end=profile->LastDay();
+        start=profile->FirstDay()+wxTimeSpan::Day();
+        end=profile->LastDay()+wxTimeSpan::Day();
+        EnableDatePickers(false);
     } else if (rbLastMonth->GetValue()) {
-        end=profile->LastDay();
-        start=end-wxTimeSpan::Days(30);
+        end=profile->LastDay()+wxTimeSpan::Day();
+        start=end-wxTimeSpan::Days(30-1);
+        EnableDatePickers(false);
     } else if (rbLastWeek->GetValue()) {
-        end=profile->LastDay();
-        start=end-wxTimeSpan::Days(7);
+        end=profile->LastDay()+wxTimeSpan::Day();
+        start=end-wxTimeSpan::Days(7-1);
+        EnableDatePickers(false);
     }
-
-    if ((start==StartDatePicker->GetValue()) && (end==EndDatePicker->GetValue()))
-        return;
 
     StartDatePicker->SetValue(start);
     EndDatePicker->SetValue(end);
@@ -465,6 +476,10 @@ void Summary::OnEndDateChanged( wxDateEvent& event )
     for (auto h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start,end);
     }
+}
+void Summary::OnClose(wxCloseEvent &event)
+{
+    Destroy();
 }
 
 
@@ -508,14 +523,14 @@ Daily::Daily(wxWindow *win,Profile *p)
     G_AHI->AddLayer(l);
 
     AddData(leakdata=new PressureData(CPAP_Leak,0));
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false));
     LEAK->AddLayer(new gXAxis(NULL,wxBLACK));
 
     AddData(pressure_iap=new PressureData(CPAP_IAP));
     AddData(pressure_eap=new PressureData(CPAP_EAP));
     AddData(prd=new PressureData(CPAP_Pressure));
-    PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true));
@@ -547,10 +562,11 @@ Daily::Daily(wxWindow *win,Profile *p)
     FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
     FRW->AddLayer(new gXAxis(NULL,wxBLACK));
 
-    SF=new gGraphWindow(ScrolledWindow,-1,wxT("Sleep Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
 
     SF->LinkZoom(FRW);
+    FRW->LinkZoom(SF);
     #if defined(__UNIX__)
  //   SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
  //   SF->LinkZoom(LEAK);
@@ -583,8 +599,12 @@ Daily::Daily(wxWindow *win,Profile *p)
 }
 Daily::~Daily()
 {
-
 }
+void Daily::OnClose(wxCloseEvent &event)
+{
+    Destroy();
+}
+
 void Daily::ResetDate()
 {
     foobar_datehack=false; // this exists due to a wxGTK bug.

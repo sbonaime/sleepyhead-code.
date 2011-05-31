@@ -177,6 +177,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_mgr.AddPane( ScrolledWindow, wxAuiPaneInfo() .Center() .Caption( wxT("Overview") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).MinSize( wxSize( 440,400 ) ) );
 	
 	fgSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer->AddGrowableCol( 0 );
 	fgSizer->SetFlexibleDirection( wxVERTICAL );
 	fgSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 	
@@ -190,7 +191,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 	
-	rbAll = new wxRadioButton( m_panel1, wxID_RB, _("Everything"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	rbAll = new wxRadioButton( m_panel1, wxID_ANY, _("Everything"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	bSizer1->Add( rbAll, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
 	rbLastWeek = new wxRadioButton( m_panel1, wxID_ANY, _("Last Week"), wxDefaultPosition, wxDefaultSize, 0 );

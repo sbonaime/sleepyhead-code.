@@ -662,14 +662,22 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     int width=scrx-(start_px+w.GetRightMargin());
     int height=scry-(start_py+w.GetBottomMargin());
 
-    dc.SetPen(*color[0]);
+    wxPen pen=wxPen(*wxBLACK,1,wxSOLID);  //color[0]
+    dc.SetPen(pen);
+    dc.SetTextForeground(*wxBLACK);
+
+    double xx=w.max_x-w.min_x;
 
     //wxDateTime d;
-    wxString fd=wxT("00:00:00:0000");
+    wxString fd;
+    if (xx<1.5) {
+        fd=wxT("00:00:00:0000");
+    } else {
+        fd=wxT("XX XXX");
+    }
     dc.GetTextExtent(fd,&x,&y);
     double max_ticks=(x+25.0)/width; // y+50 for rotated text
     double jj=1/max_ticks;
-    double xx=w.max_x-w.min_x;
     double minor_tick=max_ticks*xx;
     double st2=w.min_x; //double(int(frac*1440.0))/1440.0;
     double st,q;
@@ -729,8 +737,9 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
     int hour,minute,second,millisecond;
     wxDateTime d;
-    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
-        d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
+
+    for (double i=st; i<w.max_x; i+=min_tick) { //600.0/86400.0) {
+        d.Set(i+2400000.5+.000001+1); // JDN vs MJD vs Rounding errors
 
         if (show_time) {
             minute=d.GetMinute();
@@ -746,17 +755,24 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
                 fd=wxString::Format(wxT("%02i:%02i"),hour,minute);
             }
         } else {
-            fd=d.Format(wxT("%e %b"));
+            fd=d.Format(wxT("%d %b"));
+
+            //fd=wxT("ZZ FUNK");
         }
        // dc.GetTextExtent(fd,&x,&y);
 
 //        px=x2p(w,i);
         px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
 		dc.DrawLine(px,py,px,py+6);
+        y=x=0;
+        dc.GetTextExtent(fd,&x,&y); // This doesn't work properly on windows.
 
-        dc.GetTextExtent(fd,&x,&y);
+        // There is a wx2.8 bug in wxMSW that screws up calculating x properly.
+        const int offset=0;
+
         if (!show_time) {
-            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+14, 90);
+            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+16+offset, 90.0);
+
         } else {
             dc.DrawText(fd, px-(x/2), py+y);
         }
@@ -1033,6 +1049,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         dc.DrawRectangle(rect);
 
         str=FormatX(data->point[0][i].x);
+        textX=textY=0;
         dc.GetTextExtent(str, &textX, &textY);
         if (t2>textY) {
             int j=t1+((t2/2)-(textY/2));
@@ -1110,9 +1127,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
    // dc.DrawLine(start_px,start_py,start_px+width,start_py);
     dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1);
 
+
+    // Funky Bar.. move this to it's own layer.
     wxPen pen2(wxDARK_GREY, 1, wxDOT);
     wxPen pen3(*wxGREEN, 2, wxSOLID);
-
     dc.SetPen( pen2 );
     dc.DrawLine(start_px,start_py+height+10,start_px+width,start_py+height+10);
     double rmx=w.rmax_x-w.rmin_x;
@@ -1763,12 +1781,16 @@ void FlagData::Reload(Day *day)
     m_ready=true;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+// HistoryData Implementation
+////////////////////////////////////////////////////////////////////////////////////////////
+
 HistoryData::HistoryData(Profile * _profile)
 :gPointData(1024),profile(_profile)
 {
     AddSegment(max_points);
     if (profile->LastDay().IsValid()) {
-        real_min_x=profile->FirstDay().GetMJD()-1;
+        real_min_x=profile->FirstDay().GetMJD();
         real_max_x=profile->LastDay().GetMJD()+1;
     }
 }
@@ -1778,7 +1800,7 @@ HistoryData::~HistoryData()
 void HistoryData::ResetDateRange()
 {
     if (profile->LastDay().IsValid()) {
-        real_min_x=profile->FirstDay().GetMJD()-1;
+        real_min_x=profile->FirstDay().GetMJD();
         real_max_x=profile->LastDay().GetMJD()+1;
     }
     Reload(NULL);
@@ -1813,14 +1835,14 @@ void HistoryData::Reload(Day *day)
         point[vc][i].x=x;
         point[vc][i].y=y;
         if (first) {
-            max_x=min_x=x;
+          //  max_x=min_x=x;
             max_y=min_y=y;
             first=false;
         }
         if (y>max_y) max_y=y;
         if (y<min_y) min_y=y;
-        if (x<min_x) min_x=x;
-        if (x>max_x) max_x=x;
+        //if (x<min_x) min_x=x;
+        //if (x>max_x) max_x=x;
 
         i++;
         if (i>max_points) {
@@ -1831,9 +1853,11 @@ void HistoryData::Reload(Day *day)
     }
     np[vc]=i;
     vc++;
-    max_x+=1;
-    real_min_x=min_x;
-    real_max_x=max_x;
+    min_x=real_min_x;
+    max_x=real_max_x;
+   // max_x+=1;
+    //real_min_x=min_x;
+    //real_max_x=max_x;
     real_min_y=min_y;
     real_max_y=max_y;
     m_ready=true;
@@ -1849,10 +1873,10 @@ double HistoryData::GetAverage()
 }
 void HistoryData::SetDateRange(wxDateTime start,wxDateTime end)
 {
-    double x1=start.GetMJD()+1;
-    double x2=end.GetMJD()+1;
+    double x1=start.GetMJD()-1;//+1;
+    double x2=end.GetMJD();
     if (x1 < real_min_x) x1=real_min_x;
-    if (x2 > real_max_x) x2=real_max_x;
+    if (x2 > (real_max_x)) x2=(real_max_x);
     min_x=x1;
     max_x=x2;
     for (auto i=notify_layers.begin();i!=notify_layers.end();i++) {
