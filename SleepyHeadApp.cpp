@@ -67,7 +67,7 @@ bool SleepyHeadApp::OnInit()
 int SleepyHeadApp::OnExit()
 {
     //delete loader_progress;
-    wxLogMessage("Closing Profiles...");
+    wxLogMessage(wxT("Closing Profiles..."));
     Profiles::Done();
 
     return true;

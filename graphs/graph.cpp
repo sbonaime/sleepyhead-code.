@@ -668,6 +668,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
     double xx=w.max_x-w.min_x;
 
+    if (xx==0) return;
     //wxDateTime d;
     wxString fd;
     if (xx<1.5) {

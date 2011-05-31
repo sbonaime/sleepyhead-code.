@@ -799,6 +799,10 @@ void Daily::UpdateGraphs(Day *day)
     //if (!day) return;
 
     for (auto g=Data.begin();g!=Data.end();g++) {
+        if (day==NULL)  {
+            (*g)->SetMinX(0);
+            (*g)->SetMaxX(0);
+        }
         (*g)->Update(day);
     }
 };
