@@ -25,12 +25,13 @@ wxColor zwxLIGHT_YELLOW(228,228,168,255);
 wxColor *wxLIGHT_YELLOW=&zwxLIGHT_YELLOW;
 wxColor zwxDARK_GREEN=wxColor(20,128,20,255);
 wxColor *wxDARK_GREEN=&zwxDARK_GREEN;
+wxColor zwxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
+wxColor *wxDARK_GREY=&zwxDARK_GREY;
 
 
 const wxColor *gradient_start_color=wxWHITE, *gradient_end_color=wxLIGHT_YELLOW;
 wxDirection gradient_direction=wxEAST;
 const wxColor *selection_color=wxBLUE; //GREEN2;
-wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
 
 gGraphData::gGraphData(int mp,gDataType t)
 :vc(0),type(t),max_points(mp)
@@ -638,8 +639,8 @@ void gGraphWindow::DataChanged(gLayer *layer)
 }
 
 
-gXAxis::gXAxis(gPointData *d,const wxColor * col)
-:gLayer(d)
+gXAxis::gXAxis(const wxColor * col)
+:gLayer(NULL)
 {
     if (col) {
         color.clear();
@@ -780,8 +781,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 }
 
 
-gYAxis::gYAxis(gPointData *d,const wxColor * col)
-:gLayer(d)
+gYAxis::gYAxis(const wxColor * col)
+:gLayer(NULL)
 {
     if (col) {
         color.clear();
@@ -870,6 +871,46 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
     dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
 }
 
+gFooBar::gFooBar(const wxColor * col,const wxColor * col2)
+:gLayer(NULL)
+{
+    if (col && col2) {
+        color.clear();
+        color.push_back(col);
+        color.push_back(col2);
+    }
+}
+gFooBar::~gFooBar()
+{
+}
+void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
+{
+    if (!m_visible) return;
+
+    double xx=w.max_x-w.min_x;
+    if (xx==0) return;
+
+    int scrx = w.GetScrX();
+    int scry = w.GetScrY();
+
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetTopMargin();
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+
+    wxPen pen2(*color[0], 1, wxDOT);
+    wxPen pen3(*color[1], 2, wxSOLID);
+
+    dc.SetPen( pen2 );
+    dc.DrawLine(start_px, start_py+height+10, start_px+width, start_py+height+10);
+    double rmx=w.rmax_x-w.rmin_x;
+    double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
+    double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
+    dc.SetPen(pen3);
+    dc.DrawLine(start_px+px, start_py+height+10, start_px+py, start_py+height+10);
+    dc.DrawLine(start_px+px, start_py+height+8, start_px+px, start_py+height+12);
+    dc.DrawLine(start_px+py, start_py+height+8, start_px+py, start_py+height+12);
+}
 
 gCandleStick::gCandleStick(gPointData *d,wxOrientation o)
 :gLayer(d)
@@ -965,8 +1006,8 @@ gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
         color.clear();
         color.push_back(col);
     }
-    Xaxis=new gXAxis(NULL,wxBLACK);
-    Yaxis=new gYAxis(NULL,wxBLACK);
+    Xaxis=new gXAxis(wxBLACK);
+    Yaxis=new gYAxis(wxBLACK);
 }
 gBarChart::~gBarChart()
 {
@@ -1055,7 +1096,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
             if (m_direction==wxVERTICAL) {
                 dc.DrawRotatedText(str,start_px-textX-8,j,0);
             } else {
-                dc.DrawRotatedText(str,j,start_py+height+4+textX,90);
+                dc.DrawRotatedText(str,j,start_py+height+16+textX,90);
             }
         } else draw_xticks_instead=true;
 
@@ -1074,13 +1115,15 @@ gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a,bool 
     m_drawlist=new wxPoint [dlsize];
     color.clear();
     color.push_back(col);
-    Yaxis=new gYAxis(NULL,wxBLACK);
+    foobar=new gFooBar();
+    Yaxis=new gYAxis(wxBLACK);
     Yaxis->SetShowMajorLines(true);
     Yaxis->SetShowMinorLines(true);
 }
 gLineChart::~gLineChart()
 {
     delete Yaxis;
+    delete foobar;
     delete [] m_drawlist;
 }
 
@@ -1127,18 +1170,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1);
 
 
-    // Funky Bar.. move this to it's own layer.
-    wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    wxPen pen3(*wxGREEN, 2, wxSOLID);
-    dc.SetPen( pen2 );
-    dc.DrawLine(start_px,start_py+height+10,start_px+width,start_py+height+10);
-    double rmx=w.rmax_x-w.rmin_x;
-    px=((1/rmx)*(w.min_x-w.rmin_x))*width;
-    py=((1/rmx)*(w.max_x-w.rmin_x))*width;
-    dc.SetPen(pen3);
-    dc.DrawLine(start_px+px,start_py+height+10,start_px+py,start_py+height+10);
-    dc.DrawLine(start_px+px,start_py+height+8,start_px+px,start_py+height+12);
-    dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
+    foobar->Plot(dc,w);
 
     if (!m_hide_axes) {
         Yaxis->Plot(dc,w);
@@ -1387,20 +1419,6 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     static wxColor col2=wxColor(0xe0,0xff,0xd0,0x7f);
     static wxBrush linebr1(col1, wxSOLID);
     static wxBrush linebr2(col2, wxSOLID);
-
-    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    static wxPen pen3(*wxGREEN, 2, wxSOLID);
-
-    dc.SetPen( pen2 );
-    dc.DrawLine(start_px,start_py+height+10,start_px+width,start_py+height+10);
-    double rmx=w.rmax_x-w.rmin_x;
-    double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
-    double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
-    dc.SetPen(pen3);
-    dc.DrawLine(start_px+px,start_py+height+10,start_px+py,start_py+height+10);
-    dc.DrawLine(start_px+px,start_py+height+8,start_px+px,start_py+height+12);
-    dc.DrawLine(start_px+py,start_py+height+8,start_px+py,start_py+height+12);
-
 
     wxPen sfp1(*color[0], 1, wxSOLID);
     wxBrush brush(*color[0],wxSOLID); //FDIAGONAL_HATCH);

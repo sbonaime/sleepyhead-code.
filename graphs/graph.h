@@ -19,6 +19,7 @@ extern wxColor *wxPURPLE;
 extern wxColor *wxGREEN2;
 extern wxColor *wxLIGHT_YELLOW;
 extern wxColor *wxDARK_GREEN;
+extern wxColor *wxDARK_GREY;
 
 #define MIN(a,b) (a<b) ? a : b;
 #define MAX(a,b) (a<b) ? b : a;
@@ -312,7 +313,7 @@ class gCandleStick:public gLayer
 class gXAxis:public gLayer
 {
     public:
-        gXAxis(gPointData *d=NULL,const wxColor * col=wxBLACK);
+        gXAxis(const wxColor * col=wxBLACK);
         virtual ~gXAxis();
         virtual void Plot(wxDC & dc, gGraphWindow & w);
     protected:
@@ -321,7 +322,7 @@ class gXAxis:public gLayer
 class gYAxis:public gLayer
 {
     public:
-        gYAxis(gPointData *d=NULL,const wxColor * col=wxBLACK);
+        gYAxis(const wxColor * col=wxBLACK);
         virtual ~gYAxis();
         virtual void Plot(wxDC & dc, gGraphWindow & w);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; };
@@ -334,6 +335,14 @@ class gYAxis:public gLayer
         bool m_show_major_lines;
         bool m_show_minor_lines;
   //      virtual const wxString & Format(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
+};
+class gFooBar:public gLayer
+{
+    public:
+        gFooBar(const wxColor * col=wxDARK_GREY,const wxColor * col2=wxGREEN);
+        virtual ~gFooBar();
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
+    protected:
 };
 
 
@@ -353,6 +362,7 @@ class gLineChart:public gLayer
         bool m_hide_axes;
         wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
         gYAxis * Yaxis;
+        gFooBar *foobar;
 
 };
 
@@ -394,7 +404,6 @@ class gBarChart:public gLayer
 
     protected:
         //virtual void DrawYTicks(wxDC & dc,gGraphWindow &w);
-
 
         wxOrientation m_direction;
 

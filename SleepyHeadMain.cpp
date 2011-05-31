@@ -333,6 +333,7 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
     AHI->SetMargins(10,15,65,80);
     AHI->AddLayer(new gBarChart(ahidata,wxRED));
+    AHI->AddLayer(new gFooBar());
    // AHI->AddLayer(new gXAxis(NULL,wxBLACK));
     //AHI->AddLayer(new gLineChart(ahidata,wxRED));
     fgSizer->Add(AHI,1,wxEXPAND);
@@ -343,7 +344,7 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192));
     PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
     PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
-    PRESSURE->AddLayer(new gXAxis(NULL,wxBLACK));
+    PRESSURE->AddLayer(new gXAxis(wxBLACK));
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
@@ -351,14 +352,15 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192));
-    LEAK->AddLayer(new gXAxis(NULL,wxBLACK));
+    LEAK->AddLayer(new gXAxis(wxBLACK));
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
     USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
     USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
-    //USAGE->AddLayer(new gXAxis(NULL,wxBLACK));
+    USAGE->AddLayer(new gFooBar());
+    //USAGE->AddLayer(new gXAxis(wxBLACK));
 
     //USAGE->AddLayer(new gLineChart(usage,wxGREEN));
     fgSizer->Add(USAGE,1,wxEXPAND);
@@ -525,7 +527,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddData(leakdata=new PressureData(CPAP_Leak,0));
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false));
-    LEAK->AddLayer(new gXAxis(NULL,wxBLACK));
+    LEAK->AddLayer(new gXAxis(wxBLACK));
 
     AddData(pressure_iap=new PressureData(CPAP_IAP));
     AddData(pressure_eap=new PressureData(CPAP_EAP));
@@ -534,7 +536,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true));
-    PRD->AddLayer(new gXAxis(NULL,wxBLACK));
+    PRD->AddLayer(new gXAxis(wxBLACK));
 
     AddData(frw=new FlowData());
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
@@ -560,7 +562,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     FRW->AddLayer(new gLineOverlayBar(flags[3],wxBLUE,wxT("H")));
     FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
     FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
-    FRW->AddLayer(new gXAxis(NULL,wxBLACK));
+    FRW->AddLayer(new gXAxis(wxBLACK));
 
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
@@ -583,8 +585,8 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
     SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
     SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
-    SF->AddLayer(new gXAxis(NULL,wxBLACK));
-
+    SF->AddLayer(new gXAxis(wxBLACK));
+    SF->AddLayer(new gFooBar());
 
     fgSizer->Add(SF,1,wxEXPAND);
     fgSizer->Add(G_AHI,1,wxEXPAND);
