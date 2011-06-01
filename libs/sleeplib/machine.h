@@ -106,6 +106,7 @@ public:
 
     // Note, the following convert to doubles without considering the consequences fully.
     EventDataType summary_avg(MachineCode code);
+    EventDataType summary_sum(MachineCode code);
     EventDataType summary_min(MachineCode code);
     EventDataType summary_max(MachineCode code);
 
@@ -277,6 +278,21 @@ public:
     bool LoadEvents(wxString filename);
     bool LoadWaveforms(wxString filename);
 
+    bool OpenEvents() {
+        if(s_events_loaded)
+            return true;
+        bool b=LoadEvents(s_eventfile);
+        s_events_loaded=b;
+        return b;
+    };
+    bool OpenWaveforms() {
+        if (s_waves_loaded)
+            return true;
+        bool b=LoadWaveforms(s_wavefile);
+        s_waves_loaded=b;
+        return b;
+    };
+
     void TrashEvents();
     void TrashWaveforms();
 
@@ -319,6 +335,8 @@ public:
     map<MachineCode,wxVariant> summary;
     void SetChanged(bool val) {
         s_changed=val;
+        s_events_loaded=val; // dirty hack putting this here
+        s_waves_loaded=val;
     };
     bool IsChanged() {
         return s_changed;
@@ -328,6 +346,9 @@ public:
 
     bool IsLoneSession() { return s_lonesession; };
     void SetLoneSession(bool b) { s_lonesession=b; };
+    void SetEventFile(wxString & filename) { s_eventfile=filename; };
+    void SetWaveFile(wxString & filename) { s_wavefile=filename; };
+
 protected:
     SessionID s_session;
 
@@ -337,6 +358,11 @@ protected:
     float s_hours;
     bool s_changed;
     bool s_lonesession;
+
+    bool s_events_loaded;
+    bool s_waves_loaded;
+    wxString s_eventfile;
+    wxString s_wavefile;
 };
 
 class CPAP:public Machine

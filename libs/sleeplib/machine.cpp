@@ -238,8 +238,11 @@ bool Machine::Load()
             //sess->SetWaveformFile(sessfiles[sess->id()][1]);
             //wxString sx=sess->first().Format()+wxT(" ")+sess->last().Format();
             //	wxPrintf(s+wxT(" O=%i H=%i CA=%i \n"),sess->summary[CPAP_Obstructive].GetLong(),sess->summary[CPAP_Hypopnea].GetLong(),sess->summary[CPAP_ClearAirway].GetLong());
-            sess->LoadEvents(s->second[1]);
-            sess->LoadWaveforms(s->second[2]);
+//            sess->LoadEvents(s->second[1]);
+ //           sess->LoadWaveforms(s->second[2]);
+            sess->SetEventFile(s->second[1]);
+            sess->SetWaveFile(s->second[2]);
+
             AddSession(sess,profile);
         } else {
             delete sess;
@@ -298,6 +301,19 @@ void Day::AddSession(Session *s)
     }
     sessions.push_back(s);
 }
+
+EventDataType Day::summary_sum(MachineCode code)
+{
+    EventDataType val=0;
+    for (auto s=sessions.begin();s!=sessions.end();s++) {
+        Session & sess=*(*s);
+        if (sess.summary.find(code)!=sess.summary.end()) {
+            val+=sess.summary[code].GetDouble();
+        }
+    }
+    return val;
+}
+
 EventDataType Day::summary_max(MachineCode code)
 {
     EventDataType val=0,tmp;
@@ -618,6 +634,10 @@ Session::Session(Machine * m,SessionID session)
     s_machine=m;
     s_session=session;
     s_changed=false;
+    s_events_loaded=false;
+    s_waves_loaded=false;
+    s_wavefile=wxEmptyString;
+    s_eventfile=wxEmptyString;
 }
 Session::~Session()
 {

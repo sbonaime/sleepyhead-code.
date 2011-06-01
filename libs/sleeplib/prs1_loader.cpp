@@ -285,13 +285,13 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
         }
         m->AddSession(sess,profile);
 
-        if (sess->summary.find(CPAP_Obstructive)!=sess->summary.end()) {
+        //if (sess->summary.find(CPAP_Obstructive)==sess->summary.end()) {
             sess->summary[CPAP_Obstructive]=(long)sess->count_events(CPAP_Obstructive);
             sess->summary[CPAP_Hypopnea]=(long)sess->count_events(CPAP_Hypopnea);
             sess->summary[CPAP_ClearAirway]=(long)sess->count_events(CPAP_ClearAirway);
             sess->summary[CPAP_RERA]=(long)sess->count_events(CPAP_RERA);
             sess->summary[CPAP_FlowLimit]=(long)sess->count_events(CPAP_FlowLimit);
-        }
+        //}
 
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
         sess->summary[CPAP_VSnore]=(long)sess->count_events(CPAP_VSnore);

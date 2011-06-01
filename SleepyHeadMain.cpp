@@ -385,16 +385,18 @@ Summary::~Summary()
 void Summary::ResetProfile(Profile *p)
 {
     profile=p;
-    for (auto h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetProfile(p);
-        (*h)->ResetDateRange();
-    }
+
     if (profile->FirstDay().IsValid()) {
         StartDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),profile->LastDay()+wxTimeSpan::Day());
         EndDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),profile->LastDay()+wxTimeSpan::Day());
         StartDatePicker->SetValue(profile->FirstDay()+wxTimeSpan::Day());
         EndDatePicker->SetValue(profile->LastDay()+wxTimeSpan::Day());
+        for (auto h=Data.begin();h!=Data.end();h++) {
+            (*h)->SetProfile(p);
+            (*h)->ResetDateRange();
+        }
     }
+
 }
 void Summary::RefreshData()
 {
@@ -479,7 +481,7 @@ void Summary::OnRBSelect( wxCommandEvent& event )
     EndDatePicker->SetValue(end);
 
     for (auto h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetDateRange(start,end);
+        (*h)->SetDateRange(start-wxTimeSpan::Day(),end);
     }
 }
 
@@ -688,6 +690,14 @@ void Daily::RefreshData()
 
         }
     }
+
+    if (d) {
+        for (auto s=d->begin();s!=d->end();s++) {
+            (*s)->OpenEvents();
+            (*s)->OpenWaveforms();
+        }
+
+    }
     UpdateGraphs(d);
 
     if (d) {
@@ -721,7 +731,6 @@ void Daily::RefreshData()
         float eap90=d->percentile(CPAP_EAP,0,0.9);
         float iap90=d->percentile(CPAP_IAP,0,0.9);
         wxString submodel=_("Unknown Model");
-
 
         wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Machine Information")+wxT("</i></td></tr>\n");

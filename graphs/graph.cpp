@@ -1844,7 +1844,7 @@ void HistoryData::ResetDateRange()
 }
 double HistoryData::Calc(Day *day)
 {
-    return (day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_ClearAirway))/day->hours();
+    return (day->summary_sum(CPAP_Obstructive) + day->summary_sum(CPAP_Hypopnea) + day->summary_sum(CPAP_ClearAirway)) / day->hours();
 }
 
 void HistoryData::Reload(Day *day)
