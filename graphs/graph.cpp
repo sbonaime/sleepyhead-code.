@@ -1115,8 +1115,8 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px,start_py+height,start_px+width,start_py+height);
 }
 
-gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool a,bool _hide_axes)
-:gLayer(d),m_accelerate(a),m_drawlist_size(dlsize),m_hide_axes(_hide_axes)
+gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool _accelerate,bool _hide_axes,bool _square_plot)
+:gLayer(d),m_accelerate(_accelerate),m_drawlist_size(dlsize),m_hide_axes(_hide_axes),m_square_plot(_square_plot)
 {
     m_drawlist=new wxPoint [dlsize];
     color.clear();
@@ -1240,6 +1240,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                     if (i>=sam)  i-=sam;
                 }
                 if (point[i].x < minx) done=true;
+
             }
 
             px=(point[i].x - minx) * xmult;
@@ -1260,6 +1261,14 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 if (py<m_drawlist[z].x) m_drawlist[z].x=py;
                 if (py>m_drawlist[z].y) m_drawlist[z].y=py;
             } else {
+                if (m_square_plot && (dp>0)) { // twice as many points needed
+                    m_drawlist[dp].x=start_px+px;
+                    m_drawlist[dp].y=m_drawlist[dp-1].y;
+                    if (++dp>=m_drawlist_size) {
+                        wxLogWarning(wxT("gLineChart: m_drawlist is too small"));
+                        break;
+                    }
+                }
                 m_drawlist[dp].x=start_px+px;
                 m_drawlist[dp].y=start_py+py;
                 if (++dp>=m_drawlist_size) {
@@ -1555,10 +1564,17 @@ void FlowData::Reload(Day *day)
 
     //double t1=MAX(fabs(min_y),fabs(max_y));
 
-    //max_y=t1;
-    //min_y=-t1;
-    min_y=-90;
-    max_y=90;
+    if (max_y>128) {
+    } else if (max_y>90) {
+        max_y=120;
+        min_y=-120;
+    } else if (max_y>60) {
+        min_y=-90;
+        max_y=90;
+    } else  {
+        min_y=-60;
+        max_y=60;
+    }
 
     real_min_x=min_x;
     real_min_y=min_y;
@@ -1597,14 +1613,14 @@ void PressureData::Reload(Day *day)
         }
 
         int t=0;
-        EventDataType p,lastp=-1;
+        EventDataType p; //,lastp=-1;
         for (auto ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
-            if (lastp>=0) {
+            /*if (lastp>=0) {
                 wxRealPoint r2((*ev)->time().GetMJD(),lastp);
                 point[vc][t++]=r2;
                 assert(t<max_points);
-            }
+            } */
             wxRealPoint r((*ev)->time().GetMJD(),p);
             point[vc][t++]=r;
             assert(t<max_points);
@@ -1616,7 +1632,7 @@ void PressureData::Reload(Day *day)
                 if (r.y>max_y) max_y=r.y;
             }
 
-            lastp=p;
+            //lastp=p;
         }
         np[vc]=t;
         tt+=t;
@@ -1838,7 +1854,7 @@ void HistoryData::Reload(Day *day)
     int i=0;
     bool first=true;
     bool done=false;
-    double y;
+    double y,lasty=0;
     for (int x=real_min_x;x<=real_max_x;x++) {
         date.Set(x+2400000.5);
         date.ResetTime();
@@ -1853,13 +1869,13 @@ void HistoryData::Reload(Day *day)
             z++;
         }
         if (z>1) y /= z;
-        point[vc][i].x=x;
-        point[vc][i].y=y;
         if (first) {
           //  max_x=min_x=x;
-            max_y=min_y=y;
+            lasty=max_y=min_y=y;
             first=false;
         }
+        point[vc][i].x=x;
+        point[vc][i].y=y;
         if (y>max_y) max_y=y;
         if (y<min_y) min_y=y;
         //if (x<min_x) min_x=x;
@@ -1871,6 +1887,7 @@ void HistoryData::Reload(Day *day)
             done=true;
         }
         if (done) break;
+        lasty=y;
     }
     np[vc]=i;
     vc++;

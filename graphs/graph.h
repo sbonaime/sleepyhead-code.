@@ -349,17 +349,19 @@ class gFooBar:public gLayer
 class gLineChart:public gLayer
 {
     public:
-        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool a=false,bool _hide_axes=false);
+        gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool accelerate=false,bool _hide_axes=false,bool _square_plot=false);
         virtual ~gLineChart();
 
         virtual void Plot(wxDC & dc, gGraphWindow & w);
 
-
+        void SetSquarePlot(bool b) { m_square_plot=b; };
+        bool GetSquarePlot() { return m_square_plot; };
     protected:
         bool m_accelerate;
         int m_drawlist_size;
         wxPoint *m_drawlist;
         bool m_hide_axes;
+        bool m_square_plot;
         wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
         gYAxis * Yaxis;
         gFooBar *foobar;

@@ -7785,12 +7785,12 @@
 	"wx/progdlg.h"
 	"wx/dialog.h"
 
-1306802240 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
+1306858490 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
-1306797017 /home/mark/projects/git/sleepyhead/GUIFrame.h
+1306857828 /home/mark/projects/git/sleepyhead/GUIFrame.h
 	<wx/intl.h>
 	<wx/string.h>
 	<wx/bitmap.h>
@@ -7805,10 +7805,10 @@
 	<wx/aui/auibook.h>
 	<wx/frame.h>
 	<wx/aui/aui.h>
+	<wx/calctrl.h>
 	<wx/html/htmlwin.h>
 	<wx/sizer.h>
 	<wx/scrolwin.h>
-	<wx/calctrl.h>
 	<wx/panel.h>
 	<wx/radiobut.h>
 	<wx/stattext.h>
@@ -7831,8 +7831,9 @@
 1305881106 /home/mark/projects/git/sleepyhead/SleepyHeadApp.h
 	<wx/app.h>
 
-1306806202 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
+1306925254 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
 	"SleepyHeadApp.h"
+	<wx/listbox.h>
 	"GUIFrame.h"
 	"sleeplib/machine.h"
 	"graphs/graph.h"
@@ -7871,11 +7872,11 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1306817262 /home/mark/projects/git/sleepyhead/graphs/graph.h
+1306927363 /home/mark/projects/git/sleepyhead/graphs/graph.h
 	<sleeplib/machine.h>
 	<list>
 
-1306842369 /home/mark/projects/git/sleepyhead/version.h
+1306933584 /home/mark/projects/git/sleepyhead/version.h
 
 1306724655 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -7892,7 +7893,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1306838801 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+1306933486 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -7906,11 +7907,12 @@
 	<wx/dcmemory.h>
 	<wx/filedlg.h>
 	<wx/fs_mem.h>
+	<wx/aui/aui.h>
 	"SleepyHeadMain.h"
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1306832286 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
+1306931755 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
@@ -7958,7 +7960,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1306760452 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
+1306926301 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -8113,4 +8115,15 @@
 	"wx/filesys.h"
 	"wx/hashmap.h"
 	"wx/bitmap.h"
+
+1302101440 /usr/include/wx-2.8/wx/collpane.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/gtk/collpane.h"
+	"wx/generic/collpaneg.h"
+
+1302101441 /usr/include/wx-2.8/wx/gtk/collpane.h
+	"wx/generic/collpaneg.h"
+
+1302101440 /usr/include/wx-2.8/wx/generic/collpaneg.h
 

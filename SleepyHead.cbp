@@ -41,12 +41,12 @@
 				<Compiler>
 					<Add option="-march=i686" />
 					<Add option="-O2" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --cflags`" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --cflags`" />
 					<Add option="-std=gnu++0x" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
 				</Linker>
 			</Target>
 		</Build>

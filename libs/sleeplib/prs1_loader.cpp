@@ -331,7 +331,9 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
             }
 
         }
-
+        if (sess->summary[CPAP_Mode]==(long)MODE_CPAP) {
+            sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMin];
+        }
 
         sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
         sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..

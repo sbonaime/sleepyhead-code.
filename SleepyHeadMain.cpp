@@ -27,7 +27,7 @@
 #include <wx/dcmemory.h>
 #include <wx/filedlg.h>
 #include <wx/fs_mem.h>
-
+#include <wx/aui/aui.h>
 
 #include "SleepyHeadMain.h"
 #include "sleeplib/profiles.h"
@@ -211,12 +211,12 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
     wxRect r=GetRect();
 
 #if defined(__UNIX__) // Borrowed.. this need fixing.
-    int cx=r.x, cy=r.y;
+    /*int cx=r.x, cy=r.y;
     ClientToScreen(&cx,&cy);
     int border_width = cx - r.x;
     int title_bar_height = cy - r.y;
     r.width += (border_width * 2);
-    r.height += title_bar_height + border_width;
+    r.height += title_bar_height + border_width; */
 #endif
 
     wxScreenDC sdc;
@@ -250,7 +250,7 @@ void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
 {
     wxString msg = wxbuildinfo(long_f);
-    msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8)+wxT("\nAuthors: Mark Watkins / Troy Schultz\nThis is alpha software is guaranteed to break regularly!\nUse at your own risk."); //,AutoVersion::DATE,AutoVersion::MONTH,AutoVersion::YEAR
+    msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8)+wxT("\nAuthors: Mark Watkins / Troy Schultz\nThis is alpha software is guaranteed to break regularly!\nUse at your own risk.\n\nLicense: GPL"); //,AutoVersion::DATE,AutoVersion::MONTH,AutoVersion::YEAR
 
     wxMessageBox(msg, _("Welcome to..."),0,this);
 }
@@ -322,8 +322,11 @@ Summary::Summary(wxWindow *win,Profile *_profile)
 {
     AddData(ahidata=new HistoryData(profile));
     AddData(pressure=new HistoryCodeData(profile,CPAP_PressureAverage));
-    AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPAverage));
-    AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPAverage));
+    AddData(pressure_min=new HistoryCodeData(profile,CPAP_PressureMinAchieved));
+    AddData(pressure_max=new HistoryCodeData(profile,CPAP_PressureMaxAchieved));
+
+    AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPMax));
+    AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPMin));
 
     AddData(leak=new HistoryCodeData(profile,CPAP_LeakMedian));
     AddData(usage=new UsageHistoryData(profile,UHD_Hours));
@@ -341,18 +344,23 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,65,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
-    PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192));
-    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
-    PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
+    //PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
+    //PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
+    PRESSURE->AddLayer(new gYAxis(wxBLACK));
     PRESSURE->AddLayer(new gXAxis(wxBLACK));
+    PRESSURE->AddLayer(new gLineChart(pressure_max,wxBLUE,6192,false,true,true));
+    PRESSURE->AddLayer(new gLineChart(pressure_min,wxRED,6192,false,true,true));
+//    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxPURPLE,6192,false,true,true));
+    //PRESSURE->AddLayer(new gLineChart(pressure_iap,wxYELLOW,6192,false,true,true));
+    PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192,false,true,true));
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
     LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
-    LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192));
     LEAK->AddLayer(new gXAxis(wxBLACK));
+    LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192,false,false,true));
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
@@ -397,8 +405,10 @@ void Summary::RefreshData()
     wxString submodel=_("Unknown Model");
     double ahi=ahidata->GetAverage();
     double avp=pressure->GetAverage();
-   // double aeap=pressure_eap->GetAverage();
-    //double aiap=pressure_iap->GetAverage();
+    double apmin=pressure_min->GetAverage();
+    double apmax=pressure_max->GetAverage();
+    double aeap=pressure_eap->GetAverage();
+    double aiap=pressure_iap->GetAverage();
     double bt=fmod(bedtime->GetAverage(),12.0);
     double ua=usage->GetAverage();
     double wt=waketime->GetAverage(); //fmod(bt+ua,12.0);
@@ -416,10 +426,20 @@ void Summary::RefreshData()
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=left><i>")+_("Indice Averages")+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),avp)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Mask Leaks")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),leak->GetAverage())+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),avp)+wxT("</td></tr>\n");
+        if (aiap>0) {
+            html=html+wxT("<tr><td><b>")+_("IPAP&nbsp;Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),aiap)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("EPAP&nbsp;Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),aeap)+wxT("</td></tr>\n");
+        } else {
+            if (apmin!=apmax) {
+                html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Min")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),apmin)+wxT("</td></tr>\n");
+                html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Max")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),apmax)+wxT("</td></tr>\n");
+            }
+        }
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td><b>")+_("Mask Leaks")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),leak->GetAverage())+wxT("</td></tr>\n");
 
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Bedtime")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),bt,int(bt*60) % 60)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Waketime")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),wt,int(wt*60) % 60)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Hours/Night")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),ua,int(ua*60)%60)+wxT("</td></tr>\n");
@@ -485,9 +505,33 @@ void Summary::OnClose(wxCloseEvent &event)
 }
 
 
+/*
+
+MyListBox::MyListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, int n, const wxString choices[], long style, const wxValidator& validator, const wxString& name)
+:wxListBox(parent,id,pos,size,n,choices,style,validator,name)
+{
+    InvalidateBestSize();
+    Clear();
+
+}
+
+wxSize MyListBox::DoGetBestSize() const
+{
+    wxSize best(200, 50);
+//    CacheBestSize(best);
+    return best;
+
+}
+*/
+
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
+    //SessionList=new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+    //SessionList->SetMinSize(wxSize(200,50));
+    //SessionList->SetMaxSize(wxSize(200,50));
+
+    //m_mgr.AddPane(SessionList,wxLEFT,wxT("Sessions"));
 
     AddData(tap_eap=new TAPData(CPAP_EAP));
     AddData(tap_iap=new TAPData(CPAP_IAP));
@@ -526,16 +570,16 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     AddData(leakdata=new PressureData(CPAP_Leak,0));
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false));
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));
 
     AddData(pressure_iap=new PressureData(CPAP_IAP));
     AddData(pressure_eap=new PressureData(CPAP_EAP));
     AddData(prd=new PressureData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false));
-    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true));
-    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true));
+    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
+    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
+    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
     PRD->AddLayer(new gXAxis(wxBLACK));
 
     AddData(frw=new FlowData());
@@ -597,10 +641,12 @@ Daily::Daily(wxWindow *win,Profile *p)
     fgSizer->Add(TAP_IAP,1,wxEXPAND);
     fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
+
     ResetDate();
 }
 Daily::~Daily()
 {
+//    delete SessionList;
 }
 void Daily::OnClose(wxCloseEvent &event)
 {
@@ -766,26 +812,70 @@ void Daily::RefreshData()
         }
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
+
+
+        //SessionList->Clear();
+
         for (auto i=d->begin();i!=d->end();i++) {
+            //wxString a=wxString::Format(wxT("Session %i"),(*i)->session());
+            //SessionList->Append(a);
+
             html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->first().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->last().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
         }
-        //PRS1_SystemLockStatus
+        //SessionList->SetSelection(0);
 
         html=html+wxT("</table>");
-      /*  for (auto i=s->summary.begin();i!=s->summary.end();i++) {
-            MachineCode c=(*i).first;
-            wxString name;
-            if (DefaultMCShortNames.find(c)!=DefaultMCShortNames.end()) name=DefaultMCShortNames[c];
-            else name=wxString::Format(wxT("%04i"),(int)c);
-            html+=name+wxT(" = ")+(*i).second.GetString()+wxT("<br/>\n");
-        } */
         html+=wxT("</body></html>");
         HTMLInfo->SetPage(html);
+/*
+        if (d->size()>1) {
+            if (!SessionList->IsShown()) {
+                SessionList->Show(true);
+                SessionList->SetMinSize(wxSize(200,45));
+                SessionList->SetMaxSize(wxSize(200,45));
+                m_mgr.AddPane(SessionList,wxLEFT,wxEmptyString);
+                m_mgr.GetPane(SessionList).MinSize(200,45);
+                m_mgr.GetPane(SessionList).MaxSize(200,45);
+                m_mgr.GetPane(SessionList).CaptionVisible(false);
+                m_mgr.GetPane(Calendar).Position(0);
+                m_mgr.GetPane(SessionList).Position(1);
+                m_mgr.GetPane(HTMLInfo).Position(2);
+                m_mgr.Update();
+                //Refresh();
+            }
+
+        } else {
+            if (SessionList->IsShown()) {
+                m_mgr.DetachPane(SessionList);
+                SessionList->Hide();
+                m_mgr.Update();
+                //Refresh();
+            }
+            //m_mgr.Update();
+        }
+*/
     } else {
         HTMLInfo->SetPage(_("No CPAP Machine Data Available"));
+
+        /*if (SessionList->IsShown()) {
+            m_mgr.DetachPane(SessionList);
+            SessionList->Hide();
+            m_mgr.Update();
+                //Refresh();
+        }*/
     }
 
 }
+void Daily::OnSelectSession( wxCommandEvent& event )
+{
+    if (event.IsSelection()) {
+        int sessid=event.GetSelection();
+
+        wxLogMessage(wxT("Selected:")+wxString::Format(wxT("%i"),sessid));
+    }
+}
+
 ///usr/local/bin/upx ./bin/Windows/SleepyHead
 
 void Daily::OnCalendarDay( wxCalendarEvent& event )

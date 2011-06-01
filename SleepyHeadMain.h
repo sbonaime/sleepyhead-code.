@@ -13,7 +13,7 @@
 
 
 #include "SleepyHeadApp.h"
-
+#include <wx/listbox.h>
 #include "GUIFrame.h"
 #include "sleeplib/machine.h"
 #include "graphs/graph.h"
@@ -33,6 +33,8 @@ public:
 //    void SetProfile(Profile *p);
 
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
+    HistoryData *pressure_min,*pressure_max;
+
     gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
 
     wxBitmap Logo;
@@ -50,6 +52,14 @@ protected:
 };
 
 
+/*class MyListBox:public wxListBox
+{
+ public:
+   // DECLARE_DYNAMIC_CLASS(MyListBox)
+    MyListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, int n = 0, const wxString choices[] = NULL, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxT("listBox"));
+    virtual wxSize DoGetBestSize() const;
+}; */
+
 class Daily:public DailyPanel
 {
 public:
@@ -62,6 +72,8 @@ protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );
 	virtual void OnCalendarMonth( wxCalendarEvent& event );
     virtual void OnClose(wxCloseEvent &event);
+    virtual void OnSelectSession( wxCommandEvent& event );
+
 	void AddData(gPointData *d) { Data.push_back(d);  };
 	void UpdateGraphs(Day *day);
 
@@ -72,6 +84,7 @@ protected:
 
     Profile *profile;
     list<gPointData *> Data;
+    //wxListBox *SessionList;
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();

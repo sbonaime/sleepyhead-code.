@@ -23,10 +23,10 @@
 #include <wx/aui/auibook.h>
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/calctrl.h>
 #include <wx/html/htmlwin.h>
 #include <wx/sizer.h>
 #include <wx/scrolwin.h>
-#include <wx/calctrl.h>
 #include <wx/panel.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
@@ -85,10 +85,10 @@ class DailyPanel : public wxPanel
 	private:
 	
 	protected:
+		wxCalendarCtrl* Calendar;
 		wxHtmlWindow* HTMLInfo;
 		wxScrolledWindow* ScrolledWindow;
 		wxFlexGridSizer* fgSizer;
-		wxCalendarCtrl* Calendar;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnCalendarMonth( wxCalendarEvent& event ) { event.Skip(); }
@@ -97,7 +97,7 @@ class DailyPanel : public wxPanel
 	
 	public:
 		
-		DailyPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 935,573 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
+		DailyPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 935,660 ), long style = wxTAB_TRAVERSAL ); wxAuiManager m_mgr;
 		
 		~DailyPanel();
 	
@@ -115,9 +115,9 @@ class SummaryPanel : public wxPanel
 		wxScrolledWindow* ScrolledWindow;
 		wxFlexGridSizer* fgSizer;
 		wxPanel* m_panel1;
-		wxRadioButton* rbAll;
-		wxRadioButton* rbLastWeek;
 		wxRadioButton* rbLastMonth;
+		wxRadioButton* rbLastWeek;
+		wxRadioButton* rbAll;
 		wxRadioButton* rbCustomDate;
 		wxStaticText* sdLabel;
 		wxDatePickerCtrl* StartDatePicker;

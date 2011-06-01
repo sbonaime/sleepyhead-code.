@@ -129,8 +129,11 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 {
 	m_mgr.SetManagedWindow(this);
 	
+	Calendar = new wxCalendarCtrl( this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxCAL_MONDAY_FIRST|wxCAL_SEQUENTIAL_MONTH_SELECTION|wxCAL_SHOW_SURROUNDING_WEEKS );
+	m_mgr.AddPane( Calendar, wxAuiPaneInfo() .Left() .Caption( wxT("Selected Day") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).PaneBorder( false ).Dock().Fixed().BottomDockable( false ).TopDockable( false ) );
+	
 	HTMLInfo = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Left() .Caption( wxT("Day Summary") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( 200,424 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).MinSize( wxSize( 200,200 ) ).Layer( 0 ) );
+	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Left() .Caption( wxT("Day Summary") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( 208,424 ) ).DockFixed( false ).Row( 0 ).Position( 1 ).MinSize( wxSize( 200,400 ) ).Layer( 0 ) );
 	
 	ScrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	ScrolledWindow->SetScrollRate( 5, 5 );
@@ -144,9 +147,6 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	ScrolledWindow->SetSizer( fgSizer );
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
-	Calendar = new wxCalendarCtrl( this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxCAL_MONDAY_FIRST|wxCAL_SEQUENTIAL_MONTH_SELECTION|wxCAL_SHOW_SURROUNDING_WEEKS );
-	m_mgr.AddPane( Calendar, wxAuiPaneInfo() .Left() .Caption( wxT("Selected Day") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).PaneBorder( false ).Dock().Fixed().BottomDockable( false ).TopDockable( false ) );
-	
 	
 	m_mgr.Update();
 	
@@ -191,14 +191,14 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 	
-	rbAll = new wxRadioButton( m_panel1, wxID_ANY, _("Everything"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-	bSizer1->Add( rbAll, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+	rbLastMonth = new wxRadioButton( m_panel1, wxID_ANY, _("Last Month"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	bSizer1->Add( rbLastMonth, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
 	rbLastWeek = new wxRadioButton( m_panel1, wxID_ANY, _("Last Week"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer1->Add( rbLastWeek, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
-	rbLastMonth = new wxRadioButton( m_panel1, wxID_ANY, _("Last Month"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( rbLastMonth, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+	rbAll = new wxRadioButton( m_panel1, wxID_ANY, _("Everything"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer1->Add( rbAll, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
 	
 	rbCustomDate = new wxRadioButton( m_panel1, wxID_ANY, _("Custom"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer1->Add( rbCustomDate, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
@@ -209,7 +209,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	
 	bSizer1->Add( sdLabel, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
-	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SPIN );
+	StartDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 	StartDatePicker->Enable( false );
 	
 	bSizer1->Add( StartDatePicker, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -220,7 +220,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	
 	bSizer1->Add( edLabel, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
-	EndDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SPIN );
+	EndDatePicker = new wxDatePickerCtrl( m_panel1, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT );
 	EndDatePicker->Enable( false );
 	
 	bSizer1->Add( EndDatePicker, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -232,9 +232,9 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_mgr.Update();
 	
 	// Connect Events
-	rbAll->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
-	rbLastWeek->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	rbLastMonth->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastWeek->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbAll->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	rbCustomDate->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	StartDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
 	EndDatePicker->Connect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
@@ -243,9 +243,9 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 SummaryPanel::~SummaryPanel()
 {
 	// Disconnect Events
-	rbAll->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
-	rbLastWeek->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	rbLastMonth->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbLastWeek->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
+	rbAll->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	rbCustomDate->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( SummaryPanel::OnRBSelect ), NULL, this );
 	StartDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnStartDateChanged ), NULL, this );
 	EndDatePicker->Disconnect( wxEVT_DATE_CHANGED, wxDateEventHandler( SummaryPanel::OnEndDateChanged ), NULL, this );
