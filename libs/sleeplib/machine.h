@@ -112,6 +112,7 @@ public:
 
     // Note, the following convert to doubles without considering the consequences fully.
     EventDataType summary_avg(MachineCode code);
+    EventDataType summary_weighted_avg(MachineCode code);
     EventDataType summary_sum(MachineCode code);
     EventDataType summary_min(MachineCode code);
     EventDataType summary_max(MachineCode code);

@@ -312,7 +312,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
             sess->summary[BIPAP_EAPMax]=sess->max_event_field(CPAP_EAP,0);
         } else {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
-            sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+            //sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
             if (sess->summary.find(CPAP_PressureMin)==sess->summary.end()) {
@@ -445,9 +445,9 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
 
     session->summary[CPAP_PressureMinAchieved]=buffer[0x16]/10.0;
     session->summary[CPAP_PressureMaxAchieved]=buffer[0x17]/10.0;
-    session->summary[CPAP_PressurePercentValue]=buffer[0x18]/10.0;
+    session->summary[CPAP_PressureAverage]=buffer[0x18]/10.0;
+    session->summary[CPAP_PressurePercentValue]=buffer[0x19]/10.0;
     session->summary[CPAP_PressurePercentName]=90.0;
-    session->summary[CPAP_PressureAverage]=buffer[0x19]/10.0;
 
     if (max==0) {
         session->summary[CPAP_PressureAverage]=session->summary[CPAP_PressureMin];

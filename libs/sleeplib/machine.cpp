@@ -13,7 +13,7 @@ extern wxProgressDialog *loader_progress;
 map<MachineType,ChannelCode> MachLastCode;
 
 
-ChannelCode RegisterChannel(MachineType type)
+/* ChannelCode RegisterChannel(MachineType type)
 {
     if (MachLastCode.find(type)==MachLastCode.end()) {
         return MachLastCode[type]=0;
@@ -21,7 +21,7 @@ ChannelCode RegisterChannel(MachineType type)
     return ++(MachLastCode[type]);
 };
 
-const int CPLAP_FLONG=RegisterChannel(MT_CPAP);
+const int CPAP_WHATEVER=RegisterChannel(MT_CPAP); */
 //map<MachineID,Machine *> MachList;
 
 /*map<MachineType,wxString> MachineTypeString= {
@@ -438,6 +438,21 @@ EventDataType Day::summary_avg(MachineCode code)
     val=tmp/EventDataType(cnt);
     return val;
 }
+EventDataType Day::summary_weighted_avg(MachineCode code)
+{
+    double s0=0,s1=0,s2=0;
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        Session & sess=*(*s);
+        if (sess.summary.find(code)!=sess.summary.end()) {
+            s0=sess.hours();
+            s1+=sess.summary[code].GetDouble()*s0;
+            s2+=s0;
+        }
+    }
+    if (s2==0) return 0;
+    return (s1/s2);
+
+}
 
 EventDataType Day::min(MachineCode code,int field)
 {
@@ -500,8 +515,8 @@ EventDataType Day::avg(MachineCode code,int field)
             cnt++;
         }
     }
-    if (cnt==0) cnt=1;
-    return EventDataType(val/cnt);
+    if (cnt==0) return 0;
+    return EventDataType(val/float(cnt));
 }
 
 EventDataType Day::sum(MachineCode code,int field)
@@ -537,21 +552,20 @@ EventDataType Day::count(MachineCode code)
 EventDataType Day::weighted_avg(MachineCode code,int field)
 {
     double val=0;
-    // Cache this?
-    int cnt=0;
-    // Don't assume sessions are in order.
 
     vector<Session *>::iterator s;
 
+    double s0=0,s1=0,s2=0;
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
-            val+=sess.weighted_avg_event_field(code,field);
-            cnt++;
+            s0=sess.hours();
+            s1+=sess.weighted_avg_event_field(code,field)*s0;
+            s2+=s0;
         }
     }
-    if (cnt==0) cnt=1;
-    return EventDataType(val/cnt);
+    if (s2==0) return 0;
+    return (s1/s2);
 }
 wxTimeSpan Day::total_time()
 {
