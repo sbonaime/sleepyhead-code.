@@ -66,6 +66,9 @@ public:
     virtual inline double RealMaxY() { return real_max_y; };
     virtual inline double RealMinY() { return real_min_y; };
 
+    virtual inline void ForceMinY(double v) { force_min_y=v; };
+    virtual inline void ForceMaxY(double v) { force_max_y=v; };
+
     inline void ResetX() { min_x=real_min_x; max_x=real_max_x; };
     inline void ResetY() { min_y=real_min_y; max_y=real_max_y; };
 
@@ -81,6 +84,8 @@ protected:
 
     double real_min_x, real_max_x, real_min_y, real_max_y;
     double min_x, max_x, min_y, max_y;
+
+    double force_min_y,force_max_y;
 
     int vc;
     gDataType type;

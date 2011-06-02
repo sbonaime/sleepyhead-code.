@@ -536,10 +536,13 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             break;
         case 0x0e: // Unknown
         case 0x10: // Unknown
-            data[0]=buffer[pos++];
+            data[0]=buffer[pos++]; // << 8) | buffer[pos];
+            //pos+=2;
             data[1]=buffer[pos++];
             data[2]=buffer[pos++];
+            //tt-=wxTimeSpan::Seconds(data[0]);
             session->AddEvent(new Event(t,cpapcode, data, 3));
+            //wxLogMessage(tt.FormatTime()+wxString::Format(wxT(" %i: %.2f %.2f %.2f"),code,data[0],data[1],data[2]));
             break;
         case 0x0f: // Cheyne Stokes Respiration
             data[0]=buffer[pos+1]<<8 | buffer[pos];

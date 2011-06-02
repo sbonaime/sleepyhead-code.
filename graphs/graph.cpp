@@ -37,7 +37,7 @@ gGraphData::gGraphData(int mp,gDataType t)
 :vc(0),type(t),max_points(mp)
 {
     m_ready=false;
-
+    force_min_y=force_max_y=0;
 }
 gGraphData::~gGraphData()
 {
@@ -1576,6 +1576,11 @@ void FlowData::Reload(Day *day)
         max_y=60;
     }
 
+    if (force_min_y!=force_max_y) {
+        min_y=force_min_y;
+        max_y=force_max_y;
+    }
+
     real_min_x=min_x;
     real_min_y=min_y;
     real_max_x=max_x;
@@ -1657,6 +1662,11 @@ void PressureData::Reload(Day *day)
         if (min_y>1) min_y-=1;
     }
     //}
+    if (force_min_y!=force_max_y) {
+        min_y=force_min_y;
+        max_y=force_max_y;
+    }
+
 
     real_min_x=min_x;
     real_min_y=min_y;
@@ -1828,7 +1838,7 @@ HistoryData::HistoryData(Profile * _profile)
     AddSegment(max_points);
     if (profile->LastDay().IsValid()) {
         real_min_x=profile->FirstDay().GetMJD();
-        real_max_x=profile->LastDay().GetMJD()+0.5;
+        real_max_x=profile->LastDay().GetMJD()+1;
     }
 }
 HistoryData::~HistoryData()
@@ -1838,7 +1848,7 @@ void HistoryData::ResetDateRange()
 {
     if (profile->LastDay().IsValid()) {
         real_min_x=profile->FirstDay().GetMJD();
-        real_max_x=profile->LastDay().GetMJD()+0.5;
+        real_max_x=profile->LastDay().GetMJD()+1;
     }
     Reload(NULL);
 }
@@ -1896,6 +1906,10 @@ void HistoryData::Reload(Day *day)
    // max_x+=1;
     //real_min_x=min_x;
     //real_max_x=max_x;
+    if (force_min_y!=force_max_y) {
+        min_y=force_min_y;
+        max_y=force_max_y;
+    }
     real_min_y=min_y;
     real_max_y=max_y;
     m_ready=true;

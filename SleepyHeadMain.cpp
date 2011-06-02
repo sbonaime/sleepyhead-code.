@@ -571,6 +571,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     G_AHI->AddLayer(l);
 
     AddData(leakdata=new PressureData(CPAP_Leak,0));
+    //leakdata->ForceMinY(0);
+    //leakdata->ForceMaxY(120);
+
+
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));
@@ -692,7 +696,6 @@ void Daily::RefreshData()
     }
 
     UpdateGraphs(d);
-
     if (d) {
         CPAPMode mode=(CPAPMode)d->summary_max(CPAP_Mode);
         if (mode!=MODE_BIPAP) {
