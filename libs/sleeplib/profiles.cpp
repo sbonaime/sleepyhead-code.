@@ -47,7 +47,7 @@ Profile::Profile(wxString path)
 Profile::~Profile()
 {
     for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
-        delete i->second;
+    delete i->second;
     }
 }
 void Profile::LoadMachineData()
@@ -235,6 +235,8 @@ Profile *Get()
 
 void Scan()
 {
+    InitMapsWithoutAwesomeInitializerLists();
+
     p_pref=new Preferences(wxT("Preferences"));
     p_layout=new Preferences(wxT("Layout"));
 

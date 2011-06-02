@@ -12,54 +12,29 @@ extern wxProgressDialog *loader_progress;
 
 map<MachineID,Machine *> MachList;
 
-map<MachineType,wxString> MachineTypeString= {
+/*map<MachineType,wxString> MachineTypeString= {
     {MT_UNKNOWN, 	wxT("Unknown")},
     {MT_CPAP,	 	wxT("CPAP")},
     {MT_OXIMETER,	wxT("Oximeter")},
     {MT_SLEEPSTAGE,	wxT("SleepStage")}
-};
+}; */
 
-map<wxString,MachineType> MachineTypeLookup= {
+/*map<wxString,MachineType> MachineTypeLookup= {
     { MachineTypeString[MT_UNKNOWN].Lower(),	MT_UNKNOWN },
     { MachineTypeString[MT_CPAP].Lower(), 		MT_CPAP },
     { MachineTypeString[MT_OXIMETER].Lower(), 	MT_OXIMETER },
     { MachineTypeString[MT_SLEEPSTAGE].Lower(), MT_SLEEPSTAGE}
-};
-
-// This is technically gui related.. however I have something in mind for it.
-const map<MachineCode,FlagType> DefaultFlagTypes= {
-    {CPAP_Obstructive,	FT_BAR},
-    {CPAP_Hypopnea,		FT_BAR},
-    {CPAP_RERA,			FT_BAR},
-    {CPAP_VSnore,		FT_BAR},
-    {PRS1_VSnore2,		FT_BAR},
-    {CPAP_FlowLimit,	FT_BAR},
-    {CPAP_ClearAirway,	FT_BAR},
-    {CPAP_CSR,			FT_SPAN},
-    {PRS1_PressurePulse,FT_DOT},
-    {CPAP_Pressure,		FT_DOT}
-};
-
-const unsigned char flagalpha=0x80;
-const map<MachineCode,wxColour> DefaultFlagColours= {
-    {CPAP_Obstructive,	wxColour(0x80,0x80,0xff,flagalpha)},
-    {CPAP_Hypopnea,		wxColour(0x00,0x00,0xff,flagalpha)},
-    {CPAP_RERA,			wxColour(0x40,0x80,0xff,flagalpha)},
-    {CPAP_VSnore,		wxColour(0xff,0x20,0x20,flagalpha)},
-    {CPAP_FlowLimit,	wxColour(0x20,0x20,0x20,flagalpha)},
-    {CPAP_ClearAirway,	wxColour(0xff,0x40,0xff,flagalpha)},
-    {CPAP_CSR,			wxColour(0x40,0xff,0x40,flagalpha)},
-    {PRS1_VSnore2,		wxColour(0xff,0x20,0x20,flagalpha)},
-    {PRS1_PressurePulse,wxColour(0xff,0x40,0xff,flagalpha)}
-};
-map<CPAPMode,wxString> CPAPModeNames={
+}; */
+map<CPAPMode,wxString> CPAPModeNames;
+/*={
     {MODE_UNKNOWN,wxT("Undetermined")},
     {MODE_CPAP,wxT("CPAP")},
     {MODE_APAP,wxT("APAP")},
     {MODE_BIPAP,wxT("BIPAP")},
     {MODE_ASV,wxT("ASV")}
-};
-map<PRTypes,wxString> PressureReliefNames={
+};*/
+map<PRTypes,wxString> PressureReliefNames;
+/*={
     {PR_UNKNOWN,_("Undetermined")},
     {PR_NONE,_("None")},
     {PR_CFLEX,wxT("C-Flex")},
@@ -68,10 +43,13 @@ map<PRTypes,wxString> PressureReliefNames={
     {PR_BIFLEX,wxT("Bi-Flex")},
     {PR_EPR,wxT("Exhalation Pressure Relief (EPR)")},
     {PR_SMARTFLEX,wxT("SmartFlex")}
-};
+}; */
+
+
 
 // Master list. Look up local name table first.. then these if not found.
-map<MachineCode,wxString> DefaultMCShortNames= {
+map<MachineCode,wxString> DefaultMCShortNames;
+/*= {
     {CPAP_Obstructive,	wxT("OA")},
     {CPAP_Hypopnea,		wxT("H")},
     {CPAP_RERA,			wxT("RE")},
@@ -102,7 +80,70 @@ map<MachineCode,wxString> DefaultMCLongNames= {
     {CPAP_IAP,			wxT("BIPAP Inhalation Pressure")},
     {PRS1_VSnore2,		wxT("Vibratory Snore")},
     {PRS1_PressurePulse,wxT("Pressue Pulse")}
+}; */
+
+void InitMapsWithoutAwesomeInitializerLists()
+{
+    CPAPModeNames[MODE_UNKNOWN]=wxT("Undetermined");
+    CPAPModeNames[MODE_CPAP]=wxT("CPAP");
+    CPAPModeNames[MODE_APAP]=wxT("APAP");
+    CPAPModeNames[MODE_BIPAP]=wxT("BIPAP");
+    CPAPModeNames[MODE_ASV]=wxT("ASV");
+
+    PressureReliefNames[PR_UNKNOWN]=_("Undetermined");
+    PressureReliefNames[PR_NONE]=_("None");
+    PressureReliefNames[PR_CFLEX]=wxT("C-Flex");
+    PressureReliefNames[PR_CFLEXPLUS]=wxT("C-Flex+");
+    PressureReliefNames[PR_AFLEX]=wxT("A-Flex");
+    PressureReliefNames[PR_BIFLEX]=wxT("Bi-Flex");
+    PressureReliefNames[PR_EPR]=wxT("Exhalation Pressure Relief (EPR)");
+    PressureReliefNames[PR_SMARTFLEX]=wxT("SmartFlex");
+
+    DefaultMCShortNames[CPAP_Obstructive]=wxT("OA");
+    DefaultMCShortNames[CPAP_Hypopnea]=wxT("H");
+    DefaultMCShortNames[CPAP_RERA]=wxT("RE");
+    DefaultMCShortNames[CPAP_ClearAirway]=wxT("CA");
+    DefaultMCShortNames[CPAP_CSR]=wxT("CSR");
+    DefaultMCShortNames[CPAP_VSnore]=wxT("VS");
+    DefaultMCShortNames[CPAP_FlowLimit]=wxT("FL");
+    DefaultMCShortNames[CPAP_Pressure]=wxT("P");
+    DefaultMCShortNames[CPAP_Leak]=wxT("LR");
+    DefaultMCShortNames[CPAP_EAP]=wxT("EAP");
+    DefaultMCShortNames[CPAP_IAP]=wxT("IAP");
+    DefaultMCShortNames[PRS1_VSnore2]=wxT("VS");
+    DefaultMCShortNames[PRS1_PressurePulse]=wxT("PP");
+
+}
+
+
+
+// This is technically gui related.. however I have something in mind for it.
+/*const map<MachineCode,FlagType> DefaultFlagTypes= {
+    {CPAP_Obstructive,	FT_BAR},
+    {CPAP_Hypopnea,		FT_BAR},
+    {CPAP_RERA,			FT_BAR},
+    {CPAP_VSnore,		FT_BAR},
+    {PRS1_VSnore2,		FT_BAR},
+    {CPAP_FlowLimit,	FT_BAR},
+    {CPAP_ClearAirway,	FT_BAR},
+    {CPAP_CSR,			FT_SPAN},
+    {PRS1_PressurePulse,FT_DOT},
+    {CPAP_Pressure,		FT_DOT}
 };
+
+const unsigned char flagalpha=0x80;
+const map<MachineCode,wxColour> DefaultFlagColours= {
+    {CPAP_Obstructive,	wxColour(0x80,0x80,0xff,flagalpha)},
+    {CPAP_Hypopnea,		wxColour(0x00,0x00,0xff,flagalpha)},
+    {CPAP_RERA,			wxColour(0x40,0x80,0xff,flagalpha)},
+    {CPAP_VSnore,		wxColour(0xff,0x20,0x20,flagalpha)},
+    {CPAP_FlowLimit,	wxColour(0x20,0x20,0x20,flagalpha)},
+    {CPAP_ClearAirway,	wxColour(0xff,0x40,0xff,flagalpha)},
+    {CPAP_CSR,			wxColour(0x40,0xff,0x40,flagalpha)},
+    {PRS1_VSnore2,		wxColour(0xff,0x20,0x20,flagalpha)},
+    {PRS1_PressurePulse,wxColour(0xff,0x40,0xff,flagalpha)}
+}; */
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
@@ -611,14 +652,12 @@ void Day::OpenWaveforms()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Event implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
-Event::Event(wxDateTime time,MachineCode code,list<EventDataType> data)
+Event::Event(wxDateTime time,MachineCode code, EventDataType * data, int fields)
     :e_time(time),e_code(code)
 {
-    e_fields=0;
-    list<EventDataType>::iterator i;
-    for (i=data.begin(); i!=data.end(); i++) {
-        e_data.push_back(*i);
-        e_fields++;
+    e_fields=fields;
+    for (int i=0; i<fields; i++) {
+        e_data.push_back(data[i]);
     }
 
 }
@@ -651,7 +690,7 @@ CPAP::CPAP(Profile *p,MachineID id):Machine(p,id)
 {
     m_type=MT_CPAP;
 
-    FlagColours=DefaultFlagColours;
+//    FlagColours=DefaultFlagColours;
 }
 
 CPAP::~CPAP()
@@ -1226,12 +1265,12 @@ bool Session::LoadEvents(wxString filename)
                 if (!f.Unpack(i16)) throw UnpackError();  // Time Delta
                 d+=wxTimeSpan::Seconds(i16);
             }
-            list<EventDataType> ED;
+            EventDataType ED[max_number_event_fields];
             for (int c=0; c<mcfields[mc]; c++) {
                 if (!f.Unpack(fl)); //throw UnpackError();  // Data Fields in float format
-                ED.push_back(fl);
+                ED[c]=fl;
             }
-            Event *ev=new Event(d,mc,ED);
+            Event *ev=new Event(d,mc,ED,mcfields[mc]);
 
             AddEvent(ev);
         }

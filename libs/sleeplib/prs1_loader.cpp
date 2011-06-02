@@ -22,11 +22,7 @@ License: GPL
 
 extern wxProgressDialog *loader_progress;
 
-map<int,wxString> ModelMap= {
-    {34,wxT("RemStar Pro with C-Flex+")},
-    {35,wxT("RemStar Auto with A-Flex")},
-    {37,wxT("RemStar BIPAP Auto with Bi-Flex")}
-};
+map<int,wxString> ModelMap;
 
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
@@ -34,7 +30,7 @@ PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
     properties[wxT("Brand")]=wxT("Philips Respironics");
     properties[wxT("Model")]=wxT("System One");
 
-    SleepFlags= { CPAP_RERA, PRS1_VSnore2, CPAP_FlowLimit, CPAP_Hypopnea, CPAP_Obstructive, CPAP_ClearAirway, CPAP_CSR };
+    //SleepFlags= { CPAP_RERA, PRS1_VSnore2, CPAP_FlowLimit, CPAP_Hypopnea, CPAP_Obstructive, CPAP_ClearAirway, CPAP_CSR };
 }
 PRS1::~PRS1()
 {
@@ -469,11 +465,15 @@ bool PRS1Loader::OpenSummary(Session *session,wxString filename)
 
 bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t timestamp)
 {
-    vector<MachineCode> Codes= {
+    MachineCode Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
         PRS1_Unknown08, PRS1_Unknown09, CPAP_Hypopnea, PRS1_Unknown0B, CPAP_FlowLimit, CPAP_VSnore, PRS1_Unknown0E, CPAP_CSR, PRS1_Unknown10,
         CPAP_Leak, PRS1_Unknown12
     };
+    int ncodes=sizeof(Codes)/sizeof(MachineCode);
+
+    EventDataType data[4];
+
     wxDateTime start;
     start.Set(timestamp);
     wxDateTime t=start;
@@ -496,12 +496,12 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         case 0x00: // Unknown
         case 0x01: // Unknown
         case 0x02: // Pressure
-            data0=buffer[pos++]/10.0;
-            session->AddEvent(new Event(t,cpapcode, {data0}));
+            data[0]=buffer[pos++]/10.0;
+            session->AddEvent(new Event(t,cpapcode, data,1));
             break;
         case 0x04: // Pressure Pulse
-            data0=buffer[pos++];
-            session->AddEvent(new Event(t,cpapcode, {data0}));
+            data[0]=buffer[pos++];
+            session->AddEvent(new Event(t,cpapcode, data,1));
             break;
 
         case 0x05: // RERA
@@ -510,50 +510,50 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         case 0x0a: // Hypopnea
         case 0x0c: // Flow Limitation
             tt-=wxTimeSpan::Seconds((buffer[pos++])); // Subtract Time Offset
-            session->AddEvent(new Event(tt,cpapcode, {}));
+            session->AddEvent(new Event(tt,cpapcode,data,0));
             break;
         case 0x0d: // Vibratory Snore
-            session->AddEvent(new Event(t,cpapcode, {}));
+            session->AddEvent(new Event(t,cpapcode, data,0));
             break;
         case 0x03: // BIPAP Pressure
         case 0x0b: // Unknown
         case 0x11: // Leak Rate
-            data0=buffer[pos++];
-            data1=buffer[pos++];
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++];
             if (code==0x11) {
-                session->AddEvent(new Event(t,cpapcode, {data0}));
-                if (data1>0) {
-                    session->AddEvent(new Event(tt,PRS1_VSnore2, {data1}));
+                session->AddEvent(new Event(t,cpapcode, data,1));
+                if (data[1]>0) {
+                    session->AddEvent(new Event(tt,PRS1_VSnore2, &data[1],1));
                 }
             } else if (code==0x03) {
-                data0/=10.0;
-                data1/=10.0;
-                session->AddEvent(new Event(t,CPAP_EAP, {data1}));
-                session->AddEvent(new Event(t,CPAP_IAP, {data0}));
+                data[0]/=10.0;
+                data[1]/=10.0;
+                session->AddEvent(new Event(t,CPAP_EAP, &data[1], 1));
+                session->AddEvent(new Event(t,CPAP_IAP, data, 1));
             } else {
-                session->AddEvent(new Event(t,cpapcode, {data0,data1}));
+                session->AddEvent(new Event(t,cpapcode, data, 2));
             }
             break;
         case 0x0e: // Unknown
         case 0x10: // Unknown
-            data0=buffer[pos++];
-            data1=buffer[pos++];
-            data2=buffer[pos++];
-            session->AddEvent(new Event(t,cpapcode, {data0,data1,data2}));
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++];
+            data[2]=buffer[pos++];
+            session->AddEvent(new Event(t,cpapcode, data, 3));
             break;
         case 0x0f: // Cheyne Stokes Respiration
-            data0=buffer[pos+1]<<8 | buffer[pos];
+            data[0]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
-            data1=buffer[pos++];
+            data[1]=buffer[pos++];
             tt-=wxTimeSpan::Seconds(data1);
-            session->AddEvent(new Event(tt,cpapcode, {data0,data1}));
+            session->AddEvent(new Event(tt,cpapcode, data, 2));
             break;
         case 0x12: // Summary
-            data0=buffer[pos++];
-            data1=buffer[pos++];
-            data2=buffer[pos+1]<<8 | buffer[pos];
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++];
+            data[2]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
-            session->AddEvent(new Event(t,cpapcode, {data0,data1,data2}));
+            session->AddEvent(new Event(t,cpapcode, data,3));
             break;
         default:
             // ERROR!!!
@@ -729,6 +729,13 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     return true;
 }
 
+void InitModelMap()
+{
+    ModelMap[34]=wxT("RemStar Pro with C-Flex+");
+    ModelMap[35]=wxT("RemStar Auto with A-Flex");
+    ModelMap[37]=wxT("RemStar BIPAP Auto with Bi-Flex");
+};
+
 
 bool initialized=false;
 void PRS1Loader::Register()
@@ -736,6 +743,7 @@ void PRS1Loader::Register()
     if (initialized) return;
     wxLogVerbose(wxT("Registering PRS1Loader"));
     RegisterLoader(new PRS1Loader());
+    InitModelMap();
     initialized=true;
 }
 

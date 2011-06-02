@@ -42,6 +42,7 @@ bool SleepyHeadApp::OnInit()
 
     wxInitAllImageHandlers();
     //wxDateTime::SetCountry(wxDateTime::USA);
+
     SetAppName(_("SleepyHead"));
     PRS1Loader::Register();
     Profiles::Scan();

@@ -28,14 +28,17 @@ typedef long SessionID;
 
 class BoundsError {};
 
-enum MachineType: short { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE };
+const int max_number_event_fields=10;
+
+enum MachineType//: short
+{ MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE };
 // I wish C++ could extend enums.
 // Could be implimented by MachineLoader's register function requesting a block of integer space,
 // and a map to name strings.
 
 // Be cautious when extending these.. add to the end of each groups to preserve file formats.
-enum MachineCode:
-wxInt16 {
+enum MachineCode//:wxInt16
+{
     // General Event Codes
     CPAP_Obstructive=0, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate,
@@ -55,16 +58,17 @@ wxInt16 {
     PRS1_SystemLockStatus, PRS1_SystemResistanceStatus, PRS1_SystemResistanceSetting, PRS1_HoseDiameter, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI,
 
 };
+void InitMapsWithoutAwesomeInitializerLists();
 
-enum FlagType:
-short { FT_BAR, FT_DOT, FT_SPAN };
+enum FlagType//:short
+{ FT_BAR, FT_DOT, FT_SPAN };
 
-enum CPAPMode:
-short {
+enum CPAPMode//:short
+{
     MODE_UNKNOWN=0,MODE_CPAP,MODE_APAP,MODE_BIPAP,MODE_ASV
 };
-enum PRTypes:
-short {
+enum PRTypes//:short
+{
     PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
 };
 
@@ -73,8 +77,8 @@ extern map<PRTypes,wxString> PressureReliefNames;
 extern map<CPAPMode,wxString> CPAPModeNames;
 
 // These are types supported by wxVariant class. To retain compatability, add to the end of this list only..
-enum MCDataType:
-wxInt8 { MC_bool=0, MC_long, MC_float, MC_double, MC_string, MC_datetime };
+enum MCDataType//:wxInt8
+{ MC_bool=0, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
 typedef wxInt16 SampleFormat;
 typedef float EventDataType;
@@ -196,7 +200,7 @@ class Event
 {
     friend class Session;
 public:
-    Event(wxDateTime time,MachineCode code,list<EventDataType> data);
+    Event(wxDateTime time,MachineCode code,EventDataType * data,int fields);
     ~Event();
     const EventDataType operator[](short i) {
         if (i<e_fields) return e_data[i];
