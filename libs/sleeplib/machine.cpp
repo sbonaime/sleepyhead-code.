@@ -6,11 +6,23 @@
 #include "machine.h"
 #include "profiles.h"
 #include <algorithm>
-
+#include <initializer_list>
 
 extern wxProgressDialog *loader_progress;
 
-map<MachineID,Machine *> MachList;
+map<MachineType,ChannelCode> MachLastCode;
+
+
+ChannelCode RegisterChannel(MachineType type)
+{
+    if (MachLastCode.find(type)==MachLastCode.end()) {
+        return MachLastCode[type]=0;
+    }
+    return ++(MachLastCode[type]);
+};
+
+const int CPLAP_FLONG=RegisterChannel(MT_CPAP);
+//map<MachineID,Machine *> MachList;
 
 /*map<MachineType,wxString> MachineTypeString= {
     {MT_UNKNOWN, 	wxT("Unknown")},

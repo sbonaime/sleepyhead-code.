@@ -488,7 +488,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             pos+=2;
             t+=wxTimeSpan::Seconds(size);
         }
-        float data0,data1,data2;
+    //    float data0,data1,data2;
         MachineCode cpapcode=Codes[(int)code];
         wxDateTime tt=t;
         cnt++;
@@ -521,7 +521,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
             if (code==0x11) {
-                session->AddEvent(new Event(t,cpapcode, data,1));
+                session->AddEvent(new Event(t,cpapcode, data,2));
                 if (data[1]>0) {
                     session->AddEvent(new Event(tt,PRS1_VSnore2, &data[1],1));
                 }
@@ -545,7 +545,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             data[0]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
             data[1]=buffer[pos++];
-            tt-=wxTimeSpan::Seconds(data1);
+            tt-=wxTimeSpan::Seconds(data[1]);
             session->AddEvent(new Event(tt,cpapcode, data, 2));
             break;
         case 0x12: // Summary

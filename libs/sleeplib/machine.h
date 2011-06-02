@@ -36,6 +36,8 @@ enum MachineType//: short
 // Could be implimented by MachineLoader's register function requesting a block of integer space,
 // and a map to name strings.
 
+typedef int ChannelCode;
+
 // Be cautious when extending these.. add to the end of each groups to preserve file formats.
 enum MachineCode//:wxInt16
 {
