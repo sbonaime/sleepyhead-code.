@@ -46,13 +46,13 @@ Profile::Profile(wxString path)
 
 Profile::~Profile()
 {
-    for (auto i=machlist.begin(); i!=machlist.end(); i++) {
+    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         delete i->second;
     }
 }
 void Profile::LoadMachineData()
 {
-    for (auto i=machlist.begin(); i!=machlist.end(); i++) {
+    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         i->second->Load();
     }
 }
@@ -106,7 +106,7 @@ void Profile::DelMachine(Machine *m) {
 TiXmlElement * Profile::ExtraSave()
 {
     TiXmlElement *mach=new TiXmlElement("Machines");
-    for (auto i=machlist.begin(); i!=machlist.end(); i++) {
+    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         TiXmlElement *me=new TiXmlElement("Machine");
         Machine *m=i->second;
         //wxString t=wxT("0x")+m->hexid();
@@ -115,7 +115,7 @@ TiXmlElement * Profile::ExtraSave()
         me->SetAttribute("class",m->GetClass().mb_str());
         i->second->properties[wxT("path")]=wxT("{DataFolder}{sep}")+m->hexid();
 
-        for (auto j=i->second->properties.begin(); j!=i->second->properties.end(); j++) {
+        for (map<wxString,wxString>::iterator j=i->second->properties.begin(); j!=i->second->properties.end(); j++) {
             TiXmlElement *mp=new TiXmlElement(j->first.mb_str());
             mp->LinkEndChild(new TiXmlText(j->second.mb_str()));
             me->LinkEndChild(mp);
@@ -138,7 +138,7 @@ void Profile::AddDay(wxDateTime date,Day *day,MachineType mt) {
 
     // Check for any other machines of same type.. Throw an exception if one already exists.
     vector<Day *> & dl=daylist[date];
-    for (auto a=dl.begin();a!=dl.end();a++) {
+    for (vector<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
             throw OneTypePerDay();
         }
@@ -157,7 +157,7 @@ void Profile::Import(wxString path)
     int c=0;
     wxLogMessage(wxT("Importing ")+path);
     list<MachineLoader *>loaders=GetLoaders();
-    for (auto i=loaders.begin(); i!=loaders.end(); i++) {
+    for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         c+=(*i)->Open(path,this);
     }
 }
@@ -194,7 +194,7 @@ void Done()
 {
     pref.Save();
     layout.Save();
-    for (auto i=profiles.begin(); i!=profiles.end(); i++) {
+    for (map<wxString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
         i->second->Save();
         delete i->second;
     }
@@ -268,7 +268,7 @@ void Scan()
         Create(wxGetUserId(),wxGetUserName(),wxT(""));
         return;
     }
-    for (auto i=names.begin(); i!=names.end(); i++) {
+    for (list<wxString>::iterator i=names.begin(); i!=names.end(); i++) {
         wxString newpath=path+wxFileName::GetPathSeparator()+filename;
         Profile *prof=new Profile(newpath);
         prof->Open();

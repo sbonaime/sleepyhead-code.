@@ -121,7 +121,7 @@ void SleepyHeadFrame::UpdateProfiles()
 
     i=ProfileMenuID;
 
-    for (auto p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
+    for (map<wxString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         Profile &pro=*(Profiles::profiles[p->first]);
         wxMenuItem *item=ProfileMenu->AppendRadioItem(i,pro["Realname"],wxEmptyString);
 
@@ -391,7 +391,7 @@ void Summary::ResetProfile(Profile *p)
         EndDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),profile->LastDay()+wxTimeSpan::Day());
         StartDatePicker->SetValue(profile->FirstDay()+wxTimeSpan::Day());
         EndDatePicker->SetValue(profile->LastDay()+wxTimeSpan::Day());
-        for (auto h=Data.begin();h!=Data.end();h++) {
+        for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
             (*h)->SetProfile(p);
             (*h)->ResetDateRange();
         }
@@ -400,7 +400,7 @@ void Summary::ResetProfile(Profile *p)
 }
 void Summary::RefreshData()
 {
-    for (auto h=Data.begin();h!=Data.end();h++) {
+    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->Update();
     }
 
@@ -480,7 +480,7 @@ void Summary::OnRBSelect( wxCommandEvent& event )
     StartDatePicker->SetValue(start);
     EndDatePicker->SetValue(end);
 
-    for (auto h=Data.begin();h!=Data.end();h++) {
+    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start-wxTimeSpan::Day(),end);
     }
 }
@@ -489,7 +489,7 @@ void Summary::OnStartDateChanged( wxDateEvent& event )
 {
     wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
     wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
-    for (auto h=Data.begin();h!=Data.end();h++) {
+    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start,end);
     }
 }
@@ -497,7 +497,7 @@ void Summary::OnEndDateChanged( wxDateEvent& event )
 {
     wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
     wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
-    for (auto h=Data.begin();h!=Data.end();h++) {
+    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start,end);
     }
 }
@@ -818,7 +818,7 @@ void Daily::RefreshData()
 
         //SessionList->Clear();
 
-        for (auto i=d->begin();i!=d->end();i++) {
+        for (vector<Session *>::iterator i=d->begin();i!=d->end();i++) {
             //wxString a=wxString::Format(wxT("Session %i"),(*i)->session());
             //SessionList->Append(a);
 
@@ -896,7 +896,7 @@ void Daily::UpdateGraphs(Day *day)
         day->OpenWaveforms();
     }
 
-    for (auto g=Data.begin();g!=Data.end();g++) {
+    for (list<gPointData *>::iterator g=Data.begin();g!=Data.end();g++) {
         if (day==NULL)  {
             (*g)->SetMinX(0);
             (*g)->SetMaxX(0);

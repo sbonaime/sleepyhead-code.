@@ -20,7 +20,7 @@ void RegisterLoader(MachineLoader *loader)
 }
 void DestroyLoaders()
 {
-    for (auto i=m_loaders.begin(); i!=m_loaders.end(); i++) {
+    for (list<MachineLoader *>::iterator i=m_loaders.begin(); i!=m_loaders.end(); i++) {
         delete (*i);
     }
     m_loaders.clear();

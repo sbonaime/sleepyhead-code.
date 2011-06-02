@@ -49,7 +49,7 @@ PRS1Loader::PRS1Loader()
 
 PRS1Loader::~PRS1Loader()
 {
-    for (auto i=PRS1List.begin(); i!=PRS1List.end(); i++) {
+    for (map<wxString,Machine *>::iterator i=PRS1List.begin(); i!=PRS1List.end(); i++) {
         delete i->second;
     }
     delete [] m_buffer;
@@ -64,7 +64,7 @@ Machine *PRS1Loader::CreateMachine(wxString serial,Profile *profile)
     }
     vector<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
-    for (auto i=ml.begin(); i!=ml.end(); i++) {
+    for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==wxT("PRS1")) && ((*i)->properties[wxT("Serial")]==serial)) {
             PRS1List[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
@@ -172,7 +172,7 @@ bool PRS1Loader::ParseProperties(Machine *m,wxString filename)
         wxLogWarning(wxT("Serial Number in PRS1 properties.txt doesn't match directory structure"));
     } else prop.erase(wxT("SerialNumber")); // already got it stored.
 
-    for (auto i=prop.begin(); i!=prop.end(); i++) {
+    for (map<wxString,wxString>::iterator i=prop.begin(); i!=prop.end(); i++) {
         m->properties[i->first]=i->second;
     }
 
@@ -216,7 +216,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
     map<SessionID,StringList> sessfiles;
     int size=paths.size();
     int cnt=0;
-    for (auto p=paths.begin(); p!=paths.end(); p++) {
+    for (list<wxString>::iterator p=paths.begin(); p!=paths.end(); p++) {
         dir.Open(*p);
         if (!dir.IsOpened()) continue;;
         bool cont=dir.GetFirst(&filename);
@@ -250,7 +250,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
 
     size=sessfiles.size();
     cnt=0;
-    for (auto s=sessfiles.begin(); s!=sessfiles.end(); s++) {
+    for (map<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         session=s->first;
         cnt++;
         if (loader_progress) loader_progress->Update(25.0+(float(cnt)/float(size)*25.0));

@@ -75,7 +75,7 @@ Preferences::~Preferences()
 int Preferences::GetCode(wxString s)
 {
     int prefcode=0;
-    for (auto i=p_codes.begin(); i!=p_codes.end(); i++) {
+    for (std::map<int,wxString>::iterator i=p_codes.begin(); i!=p_codes.end(); i++) {
         if (i->second==s) return i->first;
         prefcode++;
     }
@@ -209,7 +209,7 @@ bool Preferences::Save(wxString filename)
 
     TiXmlElement * msgs = new TiXmlElement(p_name.mb_str());
     root->LinkEndChild(msgs);
-    for (auto i=p_preferences.begin(); i!=p_preferences.end(); i++) {
+    for (std::map<wxString,wxVariant>::iterator i=p_preferences.begin(); i!=p_preferences.end(); i++) {
         msg=new TiXmlElement(i->first.mb_str());
         wxString type=i->second.GetType();
         msg->SetAttribute("type",type.mb_str());

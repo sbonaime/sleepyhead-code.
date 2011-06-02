@@ -45,7 +45,7 @@ gGraphData::~gGraphData()
 void gGraphData::Update(Day *day)
 {
     Reload(day);
-    for (auto i=notify_layers.begin();i!=notify_layers.end();i++) {
+    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
         (*i)->DataChanged(this);
     }
 }
@@ -56,7 +56,7 @@ gPointData::gPointData(int mp)
 }
 gPointData::~gPointData()
 {
-    for (auto i=point.begin();i!=point.end();i++)
+    for (vector<wxRealPoint *>::iterator i=point.begin();i!=point.end();i++)
         delete [] (*i);
 }
 void gPointData::AddSegment(int max_points)
@@ -73,7 +73,7 @@ gPoint3DData::gPoint3DData(int mp)
 }
 gPoint3DData::~gPoint3DData()
 {
-    for (auto i=point.begin();i!=point.end();i++)
+    for (vector<Point3D *>::iterator i=point.begin();i!=point.end();i++)
         delete [] (*i);
 }
 void gPoint3DData::AddSegment(int mp)
@@ -141,7 +141,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
 }
 gGraphWindow::~gGraphWindow()
 {
-    for (auto l=layers.begin();l!=layers.end();l++) delete (*l);
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
     layers.clear();
 }
 
@@ -176,7 +176,7 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
     double rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
-    for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(rx1,rx2);
     }
 
@@ -229,7 +229,7 @@ void gGraphWindow::MoveX(int i)
     double min,max;
     MoveX(i,min,max);
 
-    for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(min,max);
     }
     if (!m_block_zoom) SetXBounds(min,max);
@@ -308,7 +308,7 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
     double zoom_fact=2;
     if (event.ControlDown()) zoom_fact=5.0;
     if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
-        for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->ZoomX(zoom_fact,0);
         }
         if (!m_block_zoom) {
@@ -344,7 +344,7 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     } else {
         double zoom_fact=0.5;
         if (event.ControlDown()) zoom_fact=0.25;
-        for (auto g=link_zoom.begin();g!=link_zoom.end();g++) {
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->ZoomX(zoom_fact,event.GetX());
         }
         if (!m_block_zoom) {
@@ -396,7 +396,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 
     //wxLogMessage(wxT("Paint"));
     //dc.DrawText(m_title,m_marginLeft,3);
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(dc,*this);
     }
 
@@ -426,7 +426,7 @@ double gGraphWindow::MinX()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinX();
             if (!((val==(*l)->MaxX()) && (val==0)))
@@ -449,7 +449,7 @@ double gGraphWindow::MaxX()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxX();
             if (!((val==(*l)->MinX()) && (val==0)))
@@ -472,7 +472,7 @@ double gGraphWindow::MinY()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinY();
             if (!((val==(*l)->MaxY()) && (val==0)))
@@ -494,7 +494,7 @@ double gGraphWindow::MaxY()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxY();
             if (!((val==(*l)->MinY()) && (val==0)))
@@ -517,7 +517,7 @@ double gGraphWindow::RealMinX()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinX();
             if (!((val==(*l)->RealMaxX()) && (val==0)))
@@ -539,7 +539,7 @@ double gGraphWindow::RealMaxX()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxX();
             if (!((val==(*l)->RealMinX()) && (val==0)))
@@ -561,7 +561,7 @@ double gGraphWindow::RealMinY()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinY();
             if (!((val==(*l)->RealMaxY()) && (val==0)))
@@ -583,7 +583,7 @@ double gGraphWindow::RealMaxY()
 
     bool first=true;
     double val,tmp;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxY();
             if (!((val==(*l)->RealMinY()) && (val==0))) // Does this create a loop??
@@ -601,28 +601,28 @@ double gGraphWindow::RealMaxY()
 void gGraphWindow::SetMinX(double v)
 {
     min_x=v;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->SetMinX(v);
     }
 }
 void gGraphWindow::SetMaxX(double v)
 {
     max_x=v;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->SetMaxX(v);
     }
 }
 void gGraphWindow::SetMinY(double v)
 {
     min_y=v;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->SetMinY(v);
     }
 }
 void gGraphWindow::SetMaxY(double v)
 {
     max_y=v;
-    for (auto l=layers.begin();l!=layers.end();l++) {
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->SetMaxY(v);
     }
 }
@@ -1530,9 +1530,9 @@ void FlowData::Reload(Day *day)
     max_x=day->last().GetMJD();
     max_y=0;
     bool first=true;
-    for (auto s=day->begin();s!=day->end(); s++) {
+    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
         if ((*s)->waveforms.find(code)==(*s)->waveforms.end()) continue;
-        for (auto l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
+        for (vector<Waveform *>::iterator l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
             int ps=point.size();
             if (vc>=ps) {
                 AddSegment(max_points); // TODO: Add size limit capabilities.
@@ -1606,7 +1606,7 @@ void PressureData::Reload(Day *day)
     min_y=max_y=0;
     int tt=0;
     bool first=true;
-    for (auto s=day->begin();s!=day->end(); s++) {
+    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         if (vc>=(int)point.size()) {
             AddSegment(max_points);
@@ -1614,7 +1614,7 @@ void PressureData::Reload(Day *day)
 
         int t=0;
         EventDataType p; //,lastp=-1;
-        for (auto ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
+        for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
             /*if (lastp>=0) {
                 wxRealPoint r2((*ev)->time().GetMJD(),lastp);
@@ -1695,10 +1695,10 @@ void TAPData::Reload(Day *day)
 
     int field=0;
 
-    for (auto s=day->begin();s!=day->end();s++) {
+    for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         first=true;
-        for (auto e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
+        for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             val=ev[field]*10.0;
             if (field > ev.fields()) throw BoundsError();
@@ -1785,10 +1785,10 @@ void FlagData::Reload(Day *day)
     min_x=day->first().GetMJD();
     max_x=day->last().GetMJD();
 
-    for (auto s=day->begin();s!=day->end();s++) {
+    for (vector<Session *>::iterator  s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         first=true;
-        for (auto e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
+        for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             v2=v1=ev.time().GetMJD();
             if (offset>=0)
@@ -1863,7 +1863,7 @@ void HistoryData::Reload(Day *day)
         y=0;
         int z=0;
         vector<Day *> & daylist=profile->daylist[date];
-        for (auto dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
+        for (vector<Day *>::iterator dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
             Day *d=(*dd);
             y=Calc(d);
             z++;
@@ -1917,7 +1917,7 @@ void HistoryData::SetDateRange(wxDateTime start,wxDateTime end)
     if (x2 > (real_max_x)) x2=(real_max_x);
     min_x=x1;
     max_x=x2;
-    for (auto i=notify_layers.begin();i!=notify_layers.end();i++) {
+    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
         (*i)->DataChanged(this);
     }    // Do nothing else.. Callers responsibility to Refresh window.
 }

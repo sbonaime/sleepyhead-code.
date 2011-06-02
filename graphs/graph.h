@@ -241,7 +241,7 @@ class gLayer
         virtual gPointData * GetData() { return data; };
 
         virtual void DataChanged(gGraphData *src) {
-            for (auto i=m_graph.begin();i!=m_graph.end();i++)
+            for (list<gGraphWindow *>::iterator i=m_graph.begin();i!=m_graph.end();i++)
                 (*i)->DataChanged(this);
 
         }; // Notify signal sent from gGraphData.. pass on to the graph so it can que a refresh and update stuff.
