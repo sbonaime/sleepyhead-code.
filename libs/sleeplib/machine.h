@@ -126,6 +126,9 @@ public:
     size_t size() { return sessions.size(); };
     Machine *machine;
 
+    void OpenEvents();
+    void OpenWaveforms();
+
 protected:
     vector<Session *> sessions;
     wxDateTime d_first,d_last;

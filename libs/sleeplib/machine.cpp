@@ -551,6 +551,19 @@ const wxDateTime & Day::last(MachineCode code)
     return date;
 }
 
+void Day::OpenEvents()
+{
+    for (auto s=begin();s!=end();s++) {
+        (*s)->OpenEvents();
+    }
+
+}
+void Day::OpenWaveforms()
+{
+    for (auto s=begin();s!=end();s++) {
+        (*s)->OpenWaveforms();
+    }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

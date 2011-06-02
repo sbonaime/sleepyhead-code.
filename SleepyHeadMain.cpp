@@ -691,13 +691,6 @@ void Daily::RefreshData()
         }
     }
 
-    if (d) {
-        for (auto s=d->begin();s!=d->end();s++) {
-            (*s)->OpenEvents();
-            (*s)->OpenWaveforms();
-        }
-
-    }
     UpdateGraphs(d);
 
     if (d) {
@@ -898,6 +891,10 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
 void Daily::UpdateGraphs(Day *day)
 {
     //if (!day) return;
+    if (day) {
+        day->OpenEvents();
+        day->OpenWaveforms();
+    }
 
     for (auto g=Data.begin();g!=Data.end();g++) {
         if (day==NULL)  {
