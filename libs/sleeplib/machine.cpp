@@ -129,7 +129,8 @@ Machine::Machine(Profile *p,MachineID id)
 Machine::~Machine()
 {
     wxLogDebug(wxT("Destroy Machine"));
-    for (auto d=day.begin();d!=day.end();d++) {
+    map<wxDateTime,Day *>::iterator d;
+    for (d=day.begin();d!=day.end();d++) {
         delete d->second;
     }
 }
@@ -215,6 +216,7 @@ bool Machine::Load()
 
     typedef vector<wxString> StringList;
     map<SessionID,StringList> sessfiles;
+    map<SessionID,StringList>::iterator s;
     while (cont) {
         wxString ext_s=filename.AfterLast(wxChar('.'));
         wxString session_s=wxT("0x")+filename.BeforeLast(wxChar('.'));
@@ -231,7 +233,8 @@ bool Machine::Load()
 
         cont=dir.GetNext(&filename);
     }
-    for (auto s=sessfiles.begin(); s!=sessfiles.end(); s++) {
+
+    for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         Session *sess=new Session(this,s->first);
         if (sess->LoadSummary(s->second[0])) {
             //sess->SetEventFile(sessfiles[sess->id()][1]);
@@ -252,14 +255,24 @@ bool Machine::Load()
 }
 bool Machine::Save()
 {
+    map<wxDateTime,Day *>::iterator d;
+    vector<Session *>::iterator s;
+    int size=0;
+    int cnt=0;
 
     wxString path=profile->Get("DataFolder")+wxFileName::GetPathSeparator()+hexid();
-    int size=sessionlist.size();
-    int cnt=0;
-    for (auto s=sessionlist.begin(); s!=sessionlist.end(); s++) {
-        cnt++;
-        if (loader_progress) loader_progress->Update(50+(float(cnt)/float(size)*50.0));
-        if (s->second->IsChanged()) s->second->Store(path);
+
+    // Calculate size for progress bar
+    for (d=day.begin();d!=day.end();d++)
+        size+=d->second->size();
+
+    for (d=day.begin();d!=day.end();d++) {
+
+        for (s=d->second->begin(); s!=d->second->end(); s++) {
+            cnt++;
+            if (loader_progress) loader_progress->Update(50+(float(cnt)/float(size)*50.0));
+            if ((*s)->IsChanged()) (*s)->Store(path);
+        }
     }
     return true;
 }
@@ -275,7 +288,8 @@ Day::Day(Machine *m)
 }
 Day::~Day()
 {
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         delete (*s);
     }
 
@@ -305,7 +319,8 @@ void Day::AddSession(Session *s)
 EventDataType Day::summary_sum(MachineCode code)
 {
     EventDataType val=0;
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.summary.find(code)!=sess.summary.end()) {
             val+=sess.summary[code].GetDouble();
@@ -320,7 +335,8 @@ EventDataType Day::summary_max(MachineCode code)
     bool fir=true;
     // Cache this?
 
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.summary.find(code)!=sess.summary.end()) {
             tmp=sess.summary[code].GetDouble();
@@ -335,7 +351,8 @@ EventDataType Day::summary_min(MachineCode code)
     bool fir=true;
     // Cache this?
 
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.summary.find(code)!=sess.summary.end()) {
             tmp=sess.summary[code].GetDouble();
@@ -357,7 +374,8 @@ EventDataType Day::summary_avg(MachineCode code)
     // Cache this?
 
     int cnt=0;
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.summary.find(code)!=sess.summary.end()) {
             tmp+=sess.summary[code].GetDouble();
@@ -374,7 +392,9 @@ EventDataType Day::min(MachineCode code,int field)
     bool fir=true;
     // Cache this?
 
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             tmp=sess.min_event_field(code,field);
@@ -396,7 +416,8 @@ EventDataType Day::max(MachineCode code,int field)
     // Cache this?
 
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             tmp=sess.max_event_field(code,field);
@@ -416,8 +437,10 @@ EventDataType Day::avg(MachineCode code,int field)
     double val=0;
     // Cache this?
     int cnt=0;
+    vector<Session *>::iterator s;
+
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.avg_event_field(code,field);
@@ -432,7 +455,9 @@ EventDataType Day::sum(MachineCode code,int field)
 {
     // Cache this?
     EventDataType val=0;
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.sum_event_field(code,field);
@@ -445,8 +470,10 @@ EventDataType Day::count(MachineCode code)
 {
     EventDataType val=0;
     // Cache this?
+    vector<Session *>::iterator s;
+
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.count_events(code);
@@ -460,7 +487,10 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
     // Cache this?
     int cnt=0;
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+
+    vector<Session *>::iterator s;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.weighted_avg_event_field(code,field);
@@ -474,8 +504,10 @@ wxTimeSpan Day::total_time()
 {
     //if (d_totaltime>wxTimeSpan::Seconds(0)) return d_totaltime;
 
+    vector<Session *>::iterator s;
+
     d_totaltime=wxTimeSpan::Seconds(0);
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         d_totaltime+=sess.last()-sess.first();
         if (d_totaltime>wxTimeSpan::Hours(15)) {
@@ -489,8 +521,10 @@ EventDataType Day::percentile(MachineCode code,int field,double percent)
     double val=0;
     // Cache this?
     int cnt=0;
+    vector<Session *>::iterator s;
+
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.percentile(code,field,percent);
@@ -508,9 +542,10 @@ const wxDateTime & Day::first(MachineCode code)
     wxDateTime tmp;
     bool fir=true;
     // Cache this?
+    vector<Session *>::iterator s;
 
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             tmp=sess.events[code][0]->time();
@@ -534,10 +569,13 @@ const wxDateTime & Day::last(MachineCode code)
     // Cache this?
 
     // Don't assume sessions are in order.
-    for (auto s=sessions.begin();s!=sessions.end();s++) {
+    vector<Session *>::iterator s;
+    ;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
-            auto i=sess.events[code].rbegin();
+            vector<Event *>::reverse_iterator i=sess.events[code].rbegin();
             assert(i!=sess.events[code].rend());
             tmp=(*i)->time();
             if (fir) {
@@ -553,14 +591,18 @@ const wxDateTime & Day::last(MachineCode code)
 
 void Day::OpenEvents()
 {
-    for (auto s=begin();s!=end();s++) {
+    vector<Session *>::iterator s;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->OpenEvents();
     }
 
 }
 void Day::OpenWaveforms()
 {
-    for (auto s=begin();s!=end();s++) {
+    vector<Session *>::iterator s;
+
+    for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->OpenWaveforms();
     }
 }
@@ -573,7 +615,8 @@ Event::Event(wxDateTime time,MachineCode code,list<EventDataType> data)
     :e_time(time),e_code(code)
 {
     e_fields=0;
-    for (auto i=data.begin(); i!=data.end(); i++) {
+    list<EventDataType>::iterator i;
+    for (i=data.begin(); i!=data.end(); i++) {
         e_data.push_back(*i);
         e_fields++;
     }
@@ -663,7 +706,8 @@ double Session::min_event_field(MachineCode mc,int field)
 
     bool first=true;
     double min;
-    for (auto i=events[mc].begin(); i!=events[mc].end(); i++) {
+    vector<Event *>::iterator i;
+    for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
         if (first) {
             first=false;
@@ -680,7 +724,8 @@ double Session::max_event_field(MachineCode mc,int field)
 
     bool first=true;
     double max;
-    for (auto i=events[mc].begin(); i!=events[mc].end(); i++) {
+    vector<Event *>::iterator i;
+    for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
         if (first) {
             first=false;
@@ -697,7 +742,9 @@ double Session::sum_event_field(MachineCode mc,int field)
     if (events.find(mc)==events.end()) return 0;
 
     double sum=0;
-    for (auto i=events[mc].begin(); i!=events[mc].end(); i++) {
+    vector<Event *>::iterator i;
+
+    for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
         sum+=(*(*i))[field];
     }
@@ -709,7 +756,9 @@ double Session::avg_event_field(MachineCode mc,int field)
 
     double sum=0;
     int cnt=0;
-    for (auto i=events[mc].begin(); i!=events[mc].end(); i++) {
+    vector<Event *>::iterator i;
+
+    for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
         sum+=(*(*i))[field];
         cnt++;
@@ -726,7 +775,9 @@ double Session::percentile(MachineCode mc,int field,double percent)
 
     vector<EventDataType> array;
 
-    for (auto e=events[mc].begin(); e!=events[mc].end(); e++) {
+    vector<Event *>::iterator e;
+
+    for (e=events[mc].begin(); e!=events[mc].end(); e++) {
         Event & ev = *(*e);
         array.push_back(ev[0]);
     }
@@ -758,12 +809,16 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     const int max_slots=2600;
     wxTimeSpan vtime[max_slots]=wxTimeSpan(0);
 
+
     double mult;
     if ((mc==CPAP_Pressure) || (mc==CPAP_EAP) ||  (mc==CPAP_IAP)) {
         mult=10.0;
 
     } else mult=10.0;
-    for (auto i=events[mc].begin(); i!=events[mc].end(); i++) {
+
+    vector<Event *>::iterator i;
+
+    for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         Event & e =(*(*i));
         val=e[field]*mult;
         if (field > e.e_fields) throw BoundsError();
@@ -788,6 +843,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     //double hours=total.GetSeconds().GetLo()/3600.0;
 
     double s0=0,s1=0,s2=0;
+
     for (int i=0; i<max_slots; i++) {
         if (vtime[i]>wxTimeSpan(0)) {
             s0=(vtime[i].GetSeconds().GetLo()/3600.0);
@@ -817,8 +873,10 @@ void Session::AddWaveform(Waveform *w)
 void Session::TrashEvents()
 // Trash this sessions Events and release memory.
 {
-    for (auto i=events.begin(); i!=events.end(); i++) {
-        for (auto j=i->second.begin(); j!=i->second.end(); j++) {
+    map<MachineCode,vector<Event *> >::iterator i;
+    vector<Event *>:: iterator j;
+    for (i=events.begin(); i!=events.end(); i++) {
+        for (j=i->second.begin(); j!=i->second.end(); j++) {
             delete *j;
         }
     }
@@ -827,8 +885,10 @@ void Session::TrashEvents()
 void Session::TrashWaveforms()
 // Trash this sessions Waveforms and release memory.
 {
-    for (auto i=waveforms.begin(); i!=waveforms.end(); i++) {
-        for (auto j=i->second.begin(); j!=i->second.end(); j++) {
+    map<MachineCode,vector<Waveform *> >::iterator i;
+    vector<Waveform *>:: iterator j;
+    for (i=waveforms.begin(); i!=waveforms.end(); i++) {
+        for (j=i->second.begin(); j!=i->second.end(); j++) {
             delete *j;
         }
     }
@@ -918,7 +978,8 @@ bool Session::StoreSummary(wxString filename)
     map<MachineCode,MCDataType> mctype;
 
     // First output the Machine Code and type for each summary record
-    for (auto i=summary.begin(); i!=summary.end(); i++) {
+    map<MachineCode,wxVariant>::iterator i;
+    for (i=summary.begin(); i!=summary.end(); i++) {
         MachineCode mc=i->first;
 
         wxString type=i->second.GetType(); // Urkk.. this is a mess.
@@ -942,7 +1003,7 @@ bool Session::StoreSummary(wxString filename)
         f.Pack((wxInt8)mctype[mc]);
     }
     // Then dump out the actual data, according to format.
-    for (auto i=summary.begin(); i!=summary.end(); i++) {
+    for (i=summary.begin(); i!=summary.end(); i++) {
         MachineCode mc=i->first;
         if (mctype[mc]==MC_bool) {
             f.Pack((wxInt8)i->second.GetBool());
@@ -1059,19 +1120,23 @@ bool Session::StoreEvents(wxString filename)
 
     f.Pack((wxInt16)events.size()); // Number of event categories
 
-    for (auto i=events.begin(); i!=events.end(); i++) {
+
+    map<MachineCode,vector<Event *> >::iterator i;
+    vector<Event *>::iterator j;
+
+    for (i=events.begin(); i!=events.end(); i++) {
         f.Pack((wxInt16)i->first); // MachineID
         f.Pack((wxInt16)i->second.size()); // count of events in this category
-        auto j=i->second.begin();
+        j=i->second.begin();
         f.Pack((wxInt8)(*j)->fields()); 	// number of data fields in this event type
     }
     bool first;
     float tf;
     time_t last,eventtime,delta;
 
-    for (auto i=events.begin(); i!=events.end(); i++) {
+    for (i=events.begin(); i!=events.end(); i++) {
         first=true;
-        for (auto j=i->second.begin(); j!=i->second.end(); j++) {
+        for (j=i->second.begin(); j!=i->second.end(); j++) {
             eventtime=(*j)->time().GetTicks();
             if (first) {
                 f.Pack((*j)->time());
@@ -1168,13 +1233,6 @@ bool Session::LoadEvents(wxString filename)
             }
             Event *ev=new Event(d,mc,ED);
 
-
-/*            wxPrintf(d.Format("%Y-%m-%d %H:%M:%S")+wxT(" %i %i ["),mc,e);
-            for (auto ed=ED.begin();ed!=ED.end();ed++) {
-                wxPrintf(wxT("%.2f "),(*ed));
-            }
-            wxPrintf(wxT("]\n")); */
-
             AddEvent(ev);
         }
     }
@@ -1203,12 +1261,14 @@ bool Session::StoreWaveforms(wxString filename)
 
     f.Pack((wxInt16)waveforms.size());	// Number of different waveforms
 
-    for (auto i=waveforms.begin(); i!=waveforms.end(); i++) {
+    map<MachineCode,vector<Waveform *> >::iterator i;
+    vector<Waveform *>::iterator j;
+    for (i=waveforms.begin(); i!=waveforms.end(); i++) {
         f.Pack((wxInt16)i->first); 		// Machine Code
         t16=i->second.size();
         f.Pack(t16); 					// Number of (hopefully non-linear) waveform chunks
 
-        for (auto j=i->second.begin(); j!=i->second.end(); j++) {
+        for (j=i->second.begin(); j!=i->second.end(); j++) {
 
             Waveform &w=*(*j);
             f.Pack(w.start()); 			// Start time of first waveform chunk

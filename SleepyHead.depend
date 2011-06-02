@@ -7876,7 +7876,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1306985082 /home/mark/projects/git/sleepyhead/version.h
+1306988397 /home/mark/projects/git/sleepyhead/version.h
 
 1306724655 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -7927,7 +7927,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1306985082 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+1306988397 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
