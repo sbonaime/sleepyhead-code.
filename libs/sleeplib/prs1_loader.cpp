@@ -328,6 +328,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
 
         }
         if (sess->summary[CPAP_Mode]==(long)MODE_CPAP) {
+            sess->summary[CPAP_PressureAverage]=sess->summary[CPAP_PressureMin];
             sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMin];
         }
 

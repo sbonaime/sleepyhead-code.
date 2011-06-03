@@ -322,41 +322,42 @@ Summary::Summary(wxWindow *win,Profile *_profile)
 {
     AddData(ahidata=new HistoryData(profile));
     AddData(pressure=new HistoryCodeData(profile,CPAP_PressureAverage));
-    AddData(pressure_min=new HistoryCodeData(profile,CPAP_PressureMinAchieved));
-    AddData(pressure_max=new HistoryCodeData(profile,CPAP_PressureMaxAchieved));
+    AddData(pressure_min=new HistoryCodeData(profile,CPAP_PressureMin));
+    AddData(pressure_max=new HistoryCodeData(profile,CPAP_PressureMax));
 
-    AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPMax));
-    AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPMin));
+    AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPAverage));
+    AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPAverage));
 
+   // pressure->ForceMinY(3);
+   // pressure->ForceMaxY(12);
     AddData(leak=new HistoryCodeData(profile,CPAP_LeakMedian));
     AddData(usage=new UsageHistoryData(profile,UHD_Hours));
     AddData(waketime=new UsageHistoryData(profile,UHD_Waketime));
     AddData(bedtime=new UsageHistoryData(profile,UHD_Bedtime));
 
-    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
     AHI->SetMargins(10,15,65,80);
     AHI->AddLayer(new gBarChart(ahidata,wxRED));
-    AHI->AddLayer(new gFooBar());
    // AHI->AddLayer(new gXAxis(NULL,wxBLACK));
     //AHI->AddLayer(new gLineChart(ahidata,wxRED));
     fgSizer->Add(AHI,1,wxEXPAND);
 
-    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,65,80);
     //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
     //PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
     //PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
     PRESSURE->AddLayer(new gYAxis(wxBLACK));
     PRESSURE->AddLayer(new gXAxis(wxBLACK));
-    PRESSURE->AddLayer(new gLineChart(pressure_max,wxBLUE,6192,false,true,true));
-    PRESSURE->AddLayer(new gLineChart(pressure_min,wxRED,6192,false,true,true));
-//    PRESSURE->AddLayer(new gLineChart(pressure_eap,wxPURPLE,6192,false,true,true));
-    //PRESSURE->AddLayer(new gLineChart(pressure_iap,wxYELLOW,6192,false,true,true));
-    PRESSURE->AddLayer(new gLineChart(pressure,wxDARK_GREEN,6192,false,true,true));
+    PRESSURE->AddLayer(prmax=new gLineChart(pressure_max,wxBLUE,6192,false,true,true));
+    PRESSURE->AddLayer(prmin=new gLineChart(pressure_min,wxRED,6192,false,true,true));
+    PRESSURE->AddLayer(eap=new gLineChart(pressure_eap,wxBLUE,6192,false,true,true));
+    PRESSURE->AddLayer(iap=new gLineChart(pressure_iap,wxRED,6192,false,true,true));
+    PRESSURE->AddLayer(pr=new gLineChart(pressure,wxDARK_GREEN,6192,false,true,true));
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
     LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gXAxis(wxBLACK));
@@ -364,10 +365,9 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
-    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,160), wxNO_BORDER);
+    USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
     USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
-    USAGE->AddLayer(new gFooBar());
     //USAGE->AddLayer(new gXAxis(wxBLACK));
 
     //USAGE->AddLayer(new gLineChart(usage,wxGREEN));
@@ -376,10 +376,11 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     //    Logo.LoadFile(wxT("./pic.png"));
     //wxMemoryFSHandler::AddFile(_T("test.png"), Logo, wxBITMAP_TYPE_PNG);
 //    RefreshData();
-
+    dummyday=new Day(NULL);
 }
 Summary::~Summary()
 {
+    delete dummyday;
 //    wxMemoryFSHandler::RemoveFile(_T("test.png"));
 }
 void Summary::ResetProfile(Profile *p)
@@ -401,7 +402,7 @@ void Summary::ResetProfile(Profile *p)
 void Summary::RefreshData()
 {
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->Update();
+        (*h)->Update(dummyday);
     }
 
     wxString submodel=_("Unknown Model");
@@ -432,10 +433,28 @@ void Summary::RefreshData()
         if (aiap>0) {
             html=html+wxT("<tr><td><b>")+_("IPAP&nbsp;Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),aiap)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("EPAP&nbsp;Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),aeap)+wxT("</td></tr>\n");
+            iap->SetVisible(true);
+            eap->SetVisible(true);
+            prmax->SetVisible(false);
+            prmin->SetVisible(false);
+            pr->SetVisible(false);
         } else {
             if (apmin!=apmax) {
+                prmax->SetVisible(true);
+                prmin->SetVisible(true);
+                pr->SetVisible(true);
+                iap->SetVisible(false);
+                eap->SetVisible(false);
                 html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Min")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),apmin)+wxT("</td></tr>\n");
                 html=html+wxT("<tr><td><b>")+_("Pressure&nbsp;Max")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2fcmH2O"),apmax)+wxT("</td></tr>\n");
+            } else {
+                pr->SetVisible(true);
+                prmax->SetVisible(false);
+                prmin->SetVisible(false);
+                iap->SetVisible(false);
+                eap->SetVisible(false);
+                //prmax->SetVisible(false);
+                //prmin->SetVisible(false);
             }
         }
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
@@ -899,12 +918,7 @@ void Daily::UpdateGraphs(Day *day)
         day->OpenEvents();
         day->OpenWaveforms();
     }
-
     for (list<gPointData *>::iterator g=Data.begin();g!=Data.end();g++) {
-        if (day==NULL)  {
-            (*g)->SetMinX(0);
-            (*g)->SetMaxX(0);
-        }
         (*g)->Update(day);
     }
 };

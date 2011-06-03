@@ -37,6 +37,8 @@ public:
 
     gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
 
+    gLayer *prmax,*prmin,*iap,*eap,*pr;
+
     wxBitmap Logo;
 
 protected:
@@ -49,6 +51,7 @@ protected:
 
     Profile *profile;
     list<HistoryData *> Data;
+    Day *dummyday;
 };
 
 

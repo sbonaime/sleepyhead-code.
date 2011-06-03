@@ -45,8 +45,11 @@ gGraphData::~gGraphData()
 void gGraphData::Update(Day *day)
 {
     Reload(day);
+
     for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
-        (*i)->DataChanged(this);
+        gGraphData *g=this;
+        if (!day) g=NULL;
+        (*i)->DataChanged(g);
     }
 }
 
@@ -632,8 +635,12 @@ void gGraphWindow::DataChanged(gLayer *layer)
     // This is possibly evil.. It needs to push one refresh event for all layers
 
     // Assmption currently is Refresh que does skip
-    MinX(); MinY(); MaxX(); MaxY();
-    RealMinX(); RealMinY(); RealMaxX(); RealMaxY();
+    if (layer) {
+        MinX(); MinY(); MaxX(); MaxY();
+        RealMinX(); RealMinY(); RealMaxX(); RealMaxY();
+    } else {
+        max_x=min_x=0;
+    }
 
     Refresh(false);
 }
@@ -812,6 +819,10 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
     //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
     //dc.DrawText(label,0,0);
 
+    double miny=w.min_y;
+    double maxy=w.max_y;
+    if (((maxy-miny)==0) && (miny==0)) return;
+
     int start_px=w.GetLeftMargin();
     int start_py=w.GetTopMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
@@ -823,8 +834,6 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
     dc.GetTextExtent(fd,&x,&y);
     double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
     double max_yticks=1/max_yticksdiv;
-    double miny=w.min_y;
-    double maxy=w.max_y;
     double yy=w.max_y-w.min_y;
     double ymult=height/yy;
     double major_ytick=max_yticksdiv*yy;
@@ -894,7 +903,8 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     if (!m_visible) return;
 
     double xx=w.max_x-w.min_x;
-    if (xx==0) return;
+    if (xx==0)
+        return;
 
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
@@ -1014,9 +1024,12 @@ gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
     }
     Xaxis=new gXAxis(wxBLACK);
     Yaxis=new gYAxis(wxBLACK);
+    foobar=new gFooBar();
+
 }
 gBarChart::~gBarChart()
 {
+    delete foobar;
     delete Yaxis;
     delete Xaxis;
 }
@@ -1046,6 +1059,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     if (days==0) return;
 
     Yaxis->Plot(dc,w);
+    foobar->Plot(dc,w);
 
     dc.SetPen( *wxBLACK_PEN );
 
@@ -1161,10 +1175,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     double yy=maxy-miny;
     double xmult=width/xx;
     double ymult=height/yy;
-    if (xx<=0)
-        return;
-    if (yy<=0)
-        return;
+    if ((xx<0) || (yy<0)) return;
+    if ((yy==0) && (w.min_y==0)) return;
    // assert(xx>=0);
 
     static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
@@ -1660,6 +1672,9 @@ void PressureData::Reload(Day *day)
         min_y=floor(min_y);
         max_y=ceil(max_y+1);
         if (min_y>1) min_y-=1;
+    } else {
+        min_y=max_y=0;
+        min_x=max_x=0;
     }
     //}
     if (force_min_y!=force_max_y) {
@@ -1903,12 +1918,18 @@ void HistoryData::Reload(Day *day)
     vc++;
     min_x=real_min_x;
     max_x=real_max_x;
+
    // max_x+=1;
     //real_min_x=min_x;
     //real_max_x=max_x;
     if (force_min_y!=force_max_y) {
         min_y=force_min_y;
         max_y=force_max_y;
+    } else {
+        if (!((min_y==max_y) && (min_y==0))) {
+            if (min_y>0) min_y-=1;
+            max_y++;
+        }
     }
     real_min_y=min_y;
     real_max_y=max_y;

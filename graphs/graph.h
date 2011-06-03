@@ -246,8 +246,13 @@ class gLayer
         virtual gPointData * GetData() { return data; };
 
         virtual void DataChanged(gGraphData *src) {
-            for (list<gGraphWindow *>::iterator i=m_graph.begin();i!=m_graph.end();i++)
-                (*i)->DataChanged(this);
+            for (list<gGraphWindow *>::iterator i=m_graph.begin();i!=m_graph.end();i++) {
+                if (src) {
+                    (*i)->DataChanged(this);
+                } else {
+                    (*i)->DataChanged(NULL);
+                }
+            }
 
         }; // Notify signal sent from gGraphData.. pass on to the graph so it can que a refresh and update stuff.
 
@@ -423,7 +428,7 @@ class gBarChart:public gLayer
 
         gXAxis *Xaxis;
         gYAxis *Yaxis;
-
+        gFooBar *foobar;
 };
 
 class FlagData:public gPointData
