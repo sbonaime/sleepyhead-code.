@@ -821,7 +821,9 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
 
     double miny=w.min_y;
     double maxy=w.max_y;
-    if (((maxy-miny)==0) && (miny==0)) return;
+    if (maxy==miny)
+        return;
+    if ((w.max_x-w.min_x)==0) return;
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetTopMargin();
@@ -1617,9 +1619,7 @@ void PressureData::Reload(Day *day)
     }
     min_x=day->first().GetMJD();
     max_x=day->last().GetMJD();
-    if (min_x>max_x) {
-        max_x=max_x;
-    }
+    assert(min_x<max_x);
     min_y=max_y=0;
     int tt=0;
     bool first=true;
@@ -1672,10 +1672,8 @@ void PressureData::Reload(Day *day)
         min_y=floor(min_y);
         max_y=ceil(max_y+1);
         if (min_y>1) min_y-=1;
-    } else {
-        min_y=max_y=0;
-        min_x=max_x=0;
     }
+
     //}
     if (force_min_y!=force_max_y) {
         min_y=force_min_y;
@@ -1827,7 +1825,8 @@ void FlagData::Reload(Day *day)
                 min_y=v1;
                 first=false;
             } else {
-                if (v1<min_x) min_x=v1;
+
+       if (v1<min_x) min_x=v1;
             }
             if (v2>max_x) max_x=v2; */
         }
@@ -1855,6 +1854,7 @@ HistoryData::HistoryData(Profile * _profile)
         real_min_x=profile->FirstDay().GetMJD();
         real_max_x=profile->LastDay().GetMJD()+1;
     }
+    real_min_y=real_max_y=0;
 }
 HistoryData::~HistoryData()
 {
@@ -1865,7 +1865,7 @@ void HistoryData::ResetDateRange()
         real_min_x=profile->FirstDay().GetMJD();
         real_max_x=profile->LastDay().GetMJD()+1;
     }
-    Reload(NULL);
+ //   Reload(NULL);
 }
 double HistoryData::Calc(Day *day)
 {
@@ -1880,6 +1880,8 @@ void HistoryData::Reload(Day *day)
     bool first=true;
     bool done=false;
     double y,lasty=0;
+    min_y=max_y=0;
+    min_x=max_x=0;
     for (int x=real_min_x;x<=real_max_x;x++) {
         date.Set(x+2400000.5);
         date.ResetTime();
@@ -1893,6 +1895,7 @@ void HistoryData::Reload(Day *day)
             y=Calc(d);
             z++;
         }
+        if (!z) continue;
         if (z>1) y /= z;
         if (first) {
           //  max_x=min_x=x;
@@ -1941,6 +1944,7 @@ double HistoryData::GetAverage()
     for (int i=0;i<np[0];i++) {
         val+=point[0][i].y;
     }
+    if (!np[0]) return 0;
     val/=np[0];
     return val;
 }

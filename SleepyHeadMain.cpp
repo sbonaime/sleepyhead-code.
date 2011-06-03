@@ -388,21 +388,33 @@ void Summary::ResetProfile(Profile *p)
     profile=p;
 
     if (profile->FirstDay().IsValid()) {
-        StartDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),profile->LastDay()+wxTimeSpan::Day());
-        EndDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),profile->LastDay()+wxTimeSpan::Day());
-        StartDatePicker->SetValue(profile->FirstDay()+wxTimeSpan::Day());
-        EndDatePicker->SetValue(profile->LastDay()+wxTimeSpan::Day());
+        wxDateTime last=profile->LastDay()+wxTimeSpan::Day();
+        wxDateTime first=profile->FirstDay()+wxTimeSpan::Day();
+        wxDateTime start=last-wxTimeSpan::Days(30);
+
+        StartDatePicker->SetRange(first,last);
+        EndDatePicker->SetRange(first,last);
+        if (start<first) start=first;
+
+        StartDatePicker->SetValue(start);
+        EndDatePicker->SetValue(last);
+
         for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
             (*h)->SetProfile(p);
             (*h)->ResetDateRange();
+            (*h)->Reload(NULL);
         }
     }
 
 }
 void Summary::RefreshData()
 {
+    wxDateTime first=StartDatePicker->GetValue();
+    wxDateTime last=EndDatePicker->GetValue();
+
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->Update(dummyday);
+        //(*h)->Update(dummyday);
+        (*h)->SetDateRange(first,last);
     }
 
     wxString submodel=_("Unknown Model");
@@ -420,6 +432,7 @@ void Summary::RefreshData()
 
     //html=html+wxT("<img src=\"memory:test.png\" width='180'>");
     html=html+wxT("<table cellspacing=2 cellpadding=0>\n");
+    if (avp>0) {
 
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Machine Information has been removed because this page has become machine agnostic. Not sure what to display here.")+wxT("</i></td></tr>\n");
         /*if (machine->properties.find(wxT("SubModel"))!=machine->properties.end())
@@ -465,6 +478,10 @@ void Summary::RefreshData()
         html=html+wxT("<tr><td><b>")+_("Waketime")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),wt,int(wt*60) % 60)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Hours/Night")+wxT("</b></td><td>")+wxString::Format(wxT("%02.0f:%02i"),ua,int(ua*60)%60)+wxT("</td></tr>\n");
         html=html+wxT("</table>");
+    } else {
+        html+=wxT("<div align=center><h1>Welcome</h1><br/>&nbsp;<br/><i>Please import some data</i></div>");
+    }
+
     html+=wxT("</body></html>");
     HTMLInfo->SetPage(html);
 }
@@ -881,7 +898,7 @@ void Daily::RefreshData()
         }
 */
     } else {
-        HTMLInfo->SetPage(_("No CPAP Machine Data Available"));
+        HTMLInfo->SetPage(_("<i>Please import some data</i>"));
 
         /*if (SessionList->IsShown()) {
             m_mgr.DetachPane(SessionList);
