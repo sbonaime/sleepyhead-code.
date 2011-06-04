@@ -789,7 +789,11 @@ void Daily::RefreshData()
                     mcr=mcroot[code];
                 }
                 for (vector<Event *>::iterator e=(*s)->events[code].begin();e!=(*s)->events[code].end();e++) {
-                    EventTree->AppendItem(mcr,(*e)->time().Format(wxT("%Y-%m-%d %H:%M:%S")),-1,-1);
+                    wxDateTime t=(*e)->time();
+                    if (code==CPAP_CSR) {
+                        t-=wxTimeSpan::Seconds((*(*e))[0]/2);
+                    }
+                    EventTree->AppendItem(mcr,t.Format(wxT("%Y-%m-%d %H:%M:%S")),-1,-1);
                 }
             }
         }
