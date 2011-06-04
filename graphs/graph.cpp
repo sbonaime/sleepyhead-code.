@@ -1929,7 +1929,7 @@ void HistoryData::Reload(Day *day)
         max_y=force_max_y;
     } else {
         if (!((min_y==max_y) && (min_y==0))) {
-            if (min_y>0) min_y-=1;
+            if (min_y>1) min_y-=1;
             max_y++;
         }
     }
