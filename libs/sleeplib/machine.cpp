@@ -12,7 +12,6 @@ extern wxProgressDialog *loader_progress;
 
 map<MachineType,ChannelCode> MachLastCode;
 
-
 /* ChannelCode RegisterChannel(MachineType type)
 {
     if (MachLastCode.find(type)==MachLastCode.end()) {
@@ -309,10 +308,6 @@ bool Machine::Load()
     for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         Session *sess=new Session(this,s->first);
         if (sess->LoadSummary(s->second[0])) {
-            //sess->SetEventFile(sessfiles[sess->id()][1]);
-            //sess->SetWaveformFile(sessfiles[sess->id()][1]);
-            //wxString sx=sess->first().Format()+wxT(" ")+sess->last().Format();
-            //	wxPrintf(s+wxT(" O=%i H=%i CA=%i \n"),sess->summary[CPAP_Obstructive].GetLong(),sess->summary[CPAP_Hypopnea].GetLong(),sess->summary[CPAP_ClearAirway].GetLong());
 //            sess->LoadEvents(s->second[1]);
  //           sess->LoadWaveforms(s->second[2]);
             sess->SetEventFile(s->second[1]);
@@ -951,8 +946,6 @@ void Session::AddWaveform(Waveform *w)
     //wxLogMessage(w->start().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+w->end().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %i %.1f"),w->samples(), w->duration()));
 
     // Could parse the flow data for Breaths per minute info here..
-
-
 }
 void Session::TrashEvents()
 // Trash this sessions Events and release memory.
@@ -1000,26 +993,6 @@ int pack(char * buf,T * var)
     }
     return s;
 }
-
-/*bool Session::Load(wxString path) // Not Used..
-// Load Session Data from our format
-// {DataDir}/{MachineID}/{SessionID}.{ext}
-{
-	path=path+wxFileName::GetPathSeparator()+s_machine->hexid();
-	wxString base;
-	base.Printf(wxT("%08x"),s_session);
-	base=path+wxFileName::GetPathSeparator()+base;
-	wxPuts(wxT("Loading Session: ")+base);
-	bool a,b,c;
-	summary.clear();
-	TrashEvents();
-	TrashWaveforms();
-	//try...
-	a=LoadSummary(base+wxT(".000"));
-	b=LoadEvents(base+wxT(".001"));
-	c=LoadWaveforms(base+wxT(".002"));
-	return a;
-}*/
 
 bool Session::Store(wxString path)
 // Storing Session Data in our format

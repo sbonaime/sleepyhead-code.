@@ -82,15 +82,14 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     if (pref.Exists("ShowSerialNumbers")) ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
 
 
-//  wxDisableAsserts();
+    // wxDisableAsserts();
+
     // Create AUINotebook Tabs
     wxCommandEvent dummy;
     OnViewMenuSummary(dummy);   // Summary Page
     OnViewMenuDaily(dummy);     // Daily Page
 
     this->Connect(wxID_ANY, wxEVT_DO_SCREENSHOT, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
-    //this->Connect(wxID_ANY, wxEVT_MACHINE_SELECTED, wxCommandEventHandler(SleepyHeadFrame::OnMachineSelected));
-    //this->Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(SleepyHeadFrame::DoScreenshot));
 
 #if wxUSE_STATUSBAR
     //statusBar->SetStatusText(_("Hello!"), 0);
@@ -100,15 +99,9 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
 
 SleepyHeadFrame::~SleepyHeadFrame()
 {
-    //delete summary;
-
-    //DestroyLoaders();
-
 }
 void SleepyHeadFrame::UpdateProfiles()
 {
-  //  cpap_machines=profile->GetMachines(MT_CPAP);
-
     wxMenuItemList z=ProfileMenu->GetMenuItems();
 
     int i=ProfileMenuID;
@@ -199,8 +192,8 @@ void SleepyHeadFrame::OnScreenshot(wxCommandEvent& event)
     ToolsMenu->UpdateUI();
     //wxWindow::DoUpdateWindowUI();
     wxWindow::UpdateWindowUI();
-    //Refresh(true); // Make sure the menu is closed.. (It pushes the Update event in front of the manual event we push next)
-    //Update(true);
+    // TODO: Make sure the menu is closed.. (It pushes the Update event in front of the manual event we push next)
+
 
     wxCommandEvent MyEvent( wxEVT_DO_SCREENSHOT);
     wxPostEvent(this, MyEvent);
@@ -343,9 +336,6 @@ Summary::Summary(wxWindow *win,Profile *_profile)
 
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
     PRESSURE->SetMargins(10,15,65,80);
-    //PRESSURE->AddLayer(new gBarChart(pressure,wxBLUE));
-    //PRESSURE->AddLayer(new gLineChart(pressure_eap,wxRED,6192,false,true));
-    //PRESSURE->AddLayer(new gLineChart(pressure_iap,wxBLUE,6192,false,true));
     PRESSURE->AddLayer(new gYAxis(wxBLACK));
     PRESSURE->AddLayer(new gXAxis(wxBLACK));
     PRESSURE->AddLayer(prmax=new gLineChart(pressure_max,wxBLUE,6192,false,true,true));
@@ -512,33 +502,28 @@ void Summary::OnRBSelect( wxCommandEvent& event )
         EnableDatePickers(false);
     }
 
+    EndDatePicker->SetRange(start,profile->LastDay()+wxTimeSpan::Day());
+    StartDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),end);
+
     StartDatePicker->SetValue(start);
     EndDatePicker->SetValue(end);
 
     RefreshData();
-    /*for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetDateRange(start-wxTimeSpan::Day(),end);
-    } */
 }
 
 void Summary::OnStartDateChanged( wxDateEvent& event )
 {
+    wxDateTime st=StartDatePicker->GetValue();
+    EndDatePicker->SetRange(st,profile->LastDay()+wxTimeSpan::Day());
+
     RefreshData();
-/*
-    wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
-    wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetDateRange(start,end);
-    } */
 }
 void Summary::OnEndDateChanged( wxDateEvent& event )
 {
+    wxDateTime et=EndDatePicker->GetValue();
+    StartDatePicker->SetRange(profile->FirstDay()+wxTimeSpan::Day(),et);
+
     RefreshData();
-    /*wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
-    wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetDateRange(start,end);
-    } */
 }
 void Summary::OnClose(wxCloseEvent &event)
 {
@@ -546,38 +531,13 @@ void Summary::OnClose(wxCloseEvent &event)
 }
 
 
-/*
-
-MyListBox::MyListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, int n, const wxString choices[], long style, const wxValidator& validator, const wxString& name)
-:wxListBox(parent,id,pos,size,n,choices,style,validator,name)
-{
-    InvalidateBestSize();
-    Clear();
-
-}
-
-wxSize MyListBox::DoGetBestSize() const
-{
-    wxSize best(200, 50);
-//    CacheBestSize(best);
-    return best;
-
-}
-*/
-
-
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
-    //SessionList=new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
-    //SessionList->SetMinSize(wxSize(200,50));
-    //SessionList->SetMaxSize(wxSize(200,50));
-
-    //m_mgr.AddPane(SessionList,wxLEFT,wxT("Sessions"));
 
     HTMLInfo=new wxHtmlWindow(this);
     EventTree=new wxTreeCtrl(this);
-    //Connect(wxID_ANY,EventTree
+
     this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
     Notebook->AddPage(HTMLInfo,wxT("Details"),false,NULL);
     Notebook->AddPage(EventTree,wxT("Events"),false,NULL);
@@ -699,7 +659,6 @@ Daily::Daily(wxWindow *win,Profile *p)
 Daily::~Daily()
 {
     this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
-//    delete SessionList;
 }
 void Daily::OnClose(wxCloseEvent &event)
 {
@@ -854,9 +813,6 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
 
-
-//        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
-//        html=html+wxT("<tr><td colspan=2 align=center><i>Session Informaton</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Mode")+wxT("</b></td><td>")+modestr+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Relief")+wxT("</b></td><td>")+epr+wxT("</td></tr>\n");
         if (mode==MODE_CPAP) {
@@ -918,57 +874,17 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
 
-
-        //SessionList->Clear();
-
         for (vector<Session *>::iterator i=d->begin();i!=d->end();i++) {
-            //wxString a=wxString::Format(wxT("Session %i"),(*i)->session());
-            //SessionList->Append(a);
 
             html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->first().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
             html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->last().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
         }
-        //SessionList->SetSelection(0);
 
         html=html+wxT("</table>");
         html+=wxT("</body></html>");
         HTMLInfo->SetPage(html);
-/*
-        if (d->size()>1) {
-            if (!SessionList->IsShown()) {
-                SessionList->Show(true);
-                SessionList->SetMinSize(wxSize(200,45));
-                SessionList->SetMaxSize(wxSize(200,45));
-                m_mgr.AddPane(SessionList,wxLEFT,wxEmptyString);
-                m_mgr.GetPane(SessionList).MinSize(200,45);
-                m_mgr.GetPane(SessionList).MaxSize(200,45);
-                m_mgr.GetPane(SessionList).CaptionVisible(false);
-                m_mgr.GetPane(Calendar).Position(0);
-                m_mgr.GetPane(SessionList).Position(1);
-                m_mgr.GetPane(HTMLInfo).Position(2);
-                m_mgr.Update();
-                //Refresh();
-            }
-
-        } else {
-            if (SessionList->IsShown()) {
-                m_mgr.DetachPane(SessionList);
-                SessionList->Hide();
-                m_mgr.Update();
-                //Refresh();
-            }
-            //m_mgr.Update();
-        }
-*/
     } else {
         HTMLInfo->SetPage(_("<i>No data available for this day</i>"));
-
-        /*if (SessionList->IsShown()) {
-            m_mgr.DetachPane(SessionList);
-            SessionList->Hide();
-            m_mgr.Update();
-                //Refresh();
-        }*/
     }
 
 }

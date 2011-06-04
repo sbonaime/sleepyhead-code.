@@ -18,9 +18,6 @@
 #include "GUIFrame.h"
 #include "sleeplib/machine.h"
 #include "graphs/graph.h"
-//#include "graphs/sleepflagsgraph.h"
-//#include "graphs/cpap_wavegraph.h"
-//#include "graphs/cpap_pressure.h"
 
 class Summary:public SummaryPanel
 {
@@ -30,8 +27,6 @@ public:
     void RefreshData();
     void ResetProfile(Profile *p);
 	void AddData(HistoryData *d) { Data.push_back(d);  };
-
-//    void SetProfile(Profile *p);
 
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     HistoryData *pressure_min,*pressure_max;
@@ -55,14 +50,6 @@ protected:
     Day *dummyday;
 };
 
-
-/*class MyListBox:public wxListBox
-{
- public:
-   // DECLARE_DYNAMIC_CLASS(MyListBox)
-    MyListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, int n = 0, const wxString choices[] = NULL, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxT("listBox"));
-    virtual wxSize DoGetBestSize() const;
-}; */
 
 class Daily:public DailyPanel
 {
@@ -92,7 +79,6 @@ protected:
     wxHtmlWindow *HTMLInfo;
     wxTreeCtrl *EventTree;
 
-    //wxListBox *SessionList;
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();

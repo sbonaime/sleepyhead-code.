@@ -183,14 +183,10 @@ public:
     const wxDateTime & FirstDay() { return firstday; };
     const wxDateTime & LastDay() { return lastday; };
 
-//    const wxDateTime & MinTime(const wxDateTime & date);
- //   const wxDateTime & MaxTime(const wxDateTime & date);
-
 protected:
     wxDateTime firstday,lastday;
 
     MachineID m_id;
-    //wxString m_filename;
     wxString m_class;
     MachineType m_type;
     wxString m_path;
@@ -381,7 +377,6 @@ class CPAP:public Machine
 public:
     CPAP(Profile *p,MachineID id=0);
     virtual ~CPAP();
-//	virtual bool Open(wxString path);
     map<MachineCode,wxColour> FlagColours;
     map<MachineCode,FlagType> FlagTypes;
     list<MachineCode> SleepFlags;
@@ -392,7 +387,6 @@ class Oximeter:public Machine
 public:
     Oximeter(Profile *p,MachineID id=0);
     virtual ~Oximeter();
-//	virtual bool Open(wxString path){};
 protected:
 };
 
@@ -401,7 +395,6 @@ class SleepStage:public Machine
 public:
     SleepStage(Profile *p,MachineID id=0);
     virtual ~SleepStage();
-//	virtual bool Open(wxString path){};
 protected:
 };
 
