@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="SleepyHead" InternalType="GUI">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="libs">
+    <VirtualDirectory Name="sleeplib">
+      <File Name="../../../src/libs/sleeplib/binary_file.cpp"/>
+      <File Name="../../../src/libs/sleeplib/binary_file.h"/>
+      <File Name="../../../src/libs/sleeplib/machine.cpp"/>
+      <File Name="../../../src/libs/sleeplib/machine.h"/>
+      <File Name="../../../src/libs/sleeplib/machine_loader.cpp"/>
+      <File Name="../../../src/libs/sleeplib/machine_loader.h"/>
+      <File Name="../../../src/libs/sleeplib/preferences.cpp"/>
+      <File Name="../../../src/libs/sleeplib/preferences.h"/>
+      <File Name="../../../src/libs/sleeplib/profiles.cpp"/>
+      <File Name="../../../src/libs/sleeplib/profiles.h"/>
+      <File Name="../../../src/libs/sleeplib/prs1_loader.cpp"/>
+      <File Name="../../../src/libs/sleeplib/prs1_loader.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="tinyxml">
+      <File Name="../../../src/libs/tinyxml/tinystr.cpp"/>
+      <File Name="../../../src/libs/tinyxml/tinystr.h"/>
+      <File Name="../../../src/libs/tinyxml/tinyxml.cpp"/>
+      <File Name="../../../src/libs/tinyxml/tinyxml.h"/>
+      <File Name="../../../src/libs/tinyxml/tinyxmlerror.cpp"/>
+      <File Name="../../../src/libs/tinyxml/tinyxmlparser.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../../../src/GUIFrame.cpp"/>
+    <File Name="../../../src/GUIFrame.h"/>
+    <File Name="../../../src/SleepyHeadApp.cpp"/>
+    <File Name="../../../src/SleepyHeadApp.h"/>
+    <File Name="../../../src/SleepyHeadMain.cpp"/>
+    <File Name="../../../src/SleepyHeadMain.h"/>
+    <File Name="../../../src/version.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="graphs">
+    <File Name="../../../src/graphs/graph.cpp"/>
+    <File Name="../../../src/graphs/graph.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="osx">
+    <File Name="Info.plist"/>
+    <File Name="SleepyHead.icns"/>
+  </VirtualDirectory>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g;$(shell wx-config --cxxflags --unicode=yes --debug=yes);-m32" C_Options="-g;$(shell wx-config --cxxflags --unicode=yes --debug=yes);-m32" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="../../../src"/>
+        <Preprocessor Value="__WX__"/>
+      </Compiler>
+      <Linker Options="-mwindows;$(shell wx-config --debug=yes --libs --unicode=yes);-m32" Required="yes"/>
+      <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).app/Contents/MacOS/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName).app/Contents/MacOS/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist $(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns
+## rule to copy the Info.plist file into the bundle
+$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist: Info.plist
+	mkdir -p '$(IntermediateDirectory)/$(ProjectName).app/Contents' &amp;&amp; cp -f Info.plist '$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist'
+## rule to copy the icon file into the bundle
+$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns: SleepyHead.icns
+	mkdir -p '$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/' &amp;&amp; cp -f SleepyHead.icns '$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns'
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O2;$(shell wx-config --cxxflags --unicode=yes --debug=no)" C_Options="-O2;$(shell wx-config --cxxflags --unicode=yes --debug=no)" Required="yes" PreCompiledHeader="">
+        <Preprocessor Value="__WX__"/>
+      </Compiler>
+      <Linker Options="-mwindows;-s;$(shell wx-config --debug=no --libs --unicode=yes)" Required="yes"/>
+      <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName).app/Contents/MacOS/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName).app/Contents/MacOS/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist $(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns
+## rule to copy the Info.plist file into the bundle
+$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist: Info.plist
+	mkdir -p '$(IntermediateDirectory)/$(ProjectName).app/Contents' &amp;&amp; cp -f Info.plist '$(IntermediateDirectory)/$(ProjectName).app/Contents/Info.plist'
+## rule to copy the icon file into the bundle
+$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns: SleepyHead.icns
+	mkdir -p '$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/' &amp;&amp; cp -f SleepyHead.icns '$(IntermediateDirectory)/$(ProjectName).app/Contents/Resources/SleepyHead.icns'</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="resources">
+    <File Name="../../../src/WxWizFrame.fbp"/>
+  </VirtualDirectory>
+</CodeLite_Project>
