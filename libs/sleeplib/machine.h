@@ -75,6 +75,7 @@ enum PRTypes//:short
 };
 
 extern map<MachineCode,wxString> DefaultMCShortNames;
+extern map<MachineCode,wxString> DefaultMCLongNames;
 extern map<PRTypes,wxString> PressureReliefNames;
 extern map<CPAPMode,wxString> CPAPModeNames;
 

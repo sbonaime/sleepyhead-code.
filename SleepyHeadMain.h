@@ -11,9 +11,10 @@
 #define SLEEPYHEADMAIN_H
 
 
+#include <wx/listbox.h>
+#include <wx/treectrl.h>
 
 #include "SleepyHeadApp.h"
-#include <wx/listbox.h>
 #include "GUIFrame.h"
 #include "sleeplib/machine.h"
 #include "graphs/graph.h"
@@ -76,6 +77,7 @@ protected:
 	virtual void OnCalendarMonth( wxCalendarEvent& event );
     virtual void OnClose(wxCloseEvent &event);
     virtual void OnSelectSession( wxCommandEvent& event );
+    virtual void OnEventTreeSelection( wxTreeEvent& event );
 
 	void AddData(gPointData *d) { Data.push_back(d);  };
 	void UpdateGraphs(Day *day);
@@ -87,6 +89,9 @@ protected:
 
     Profile *profile;
     list<gPointData *> Data;
+    wxHtmlWindow *HTMLInfo;
+    wxTreeCtrl *EventTree;
+
     //wxListBox *SessionList;
 };
 

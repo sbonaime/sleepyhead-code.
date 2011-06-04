@@ -998,7 +998,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
         dc.GradientFillLinear(rect,*color[i % color.size()],*wxLIGHT_GREY,dir);
         dc.DrawRectangle(rect);
         str=wxT("");
-        if (m_names.size()>i) {
+        if ((int)m_names.size()>i) {
             str=m_names[i]+wxT(" ");
         }
         str+=wxString::Format(wxT("%0.2f"),data->point[0][i].x);
@@ -1066,7 +1066,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.SetPen( *wxBLACK_PEN );
 
     float barwidth,pxr;
-    float px,py;
+    float px;//,py;
 
     if (m_direction==wxVERTICAL) {
         barwidth=(height-days)/float(days);
@@ -1086,7 +1086,6 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     wxString str;
     bool draw_xticks_instead=false;
 
-    int cnt=0;
     for (int i=0;i<data->np[0];i++) {
         if (data->point[0][i].x < w.min_x) continue;
         if (data->point[0][i].x >= w.max_x) break;
@@ -1454,7 +1453,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
 
 
     double line_h=(height+1)/double(total_lines);
-    int r=int(height) % total_lines;
+    //int r=int(height) % total_lines;
 
     double line_top=start_py+round(line_num*line_h)-1;
     //double line_bottom=line_top+line_h;

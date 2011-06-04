@@ -289,7 +289,6 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
 void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 {
     int idx=main_auinotebook->GetPageIndex(daily);
-    unsigned int id;
     if (idx==wxNOT_FOUND) {
         daily=new Daily(this,profile);
         main_auinotebook->AddPage(daily,_("Daily"),true);
@@ -305,7 +304,7 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
 {
 
-    int id,idx=main_auinotebook->GetPageIndex(summary);
+    int idx=main_auinotebook->GetPageIndex(summary);
     if (idx==wxNOT_FOUND) {
         summary=new Summary(this,profile);
         main_auinotebook->AddPage(summary,_("Summary"),true);
@@ -562,6 +561,7 @@ wxSize MyListBox::DoGetBestSize() const
 }
 */
 
+
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
@@ -571,6 +571,12 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     //m_mgr.AddPane(SessionList,wxLEFT,wxT("Sessions"));
 
+    HTMLInfo=new wxHtmlWindow(this);
+    EventTree=new wxTreeCtrl(this);
+    //Connect(wxID_ANY,EventTree
+    this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
+    Notebook->AddPage(HTMLInfo,wxT("Details"),false,NULL);
+    Notebook->AddPage(EventTree,wxT("Events"),false,NULL);
     AddData(tap_eap=new TAPData(CPAP_EAP));
     AddData(tap_iap=new TAPData(CPAP_IAP));
     AddData(tap=new TAPData(CPAP_Pressure));
@@ -688,11 +694,25 @@ Daily::Daily(wxWindow *win,Profile *p)
 }
 Daily::~Daily()
 {
+    this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
 //    delete SessionList;
 }
 void Daily::OnClose(wxCloseEvent &event)
 {
     Destroy();
+}
+void Daily::OnEventTreeSelection( wxTreeEvent& event )
+{
+    wxTreeItemId id=event.GetItem();
+
+    if (!EventTree->ItemHasChildren(id)) {
+        wxDateTime d;
+        d.ParseFormat(EventTree->GetItemText(id),wxT("%Y-%m-%d %H:%M:%S"));
+        double st=(d-wxTimeSpan::Seconds(180)).GetMJD();
+        double et=(d+wxTimeSpan::Seconds(180)).GetMJD();
+        FRW->SetXBounds(st,et);
+        wxLogMessage(wxT("Tree Selected:")+d.Format());
+    }
 }
 
 void Daily::ResetDate()
@@ -719,7 +739,6 @@ void Daily::RefreshData()
     date-=wxTimeSpan::Days(1);
 
     Day *d=NULL;
-
     if (profile->daylist.find(date)!=profile->daylist.end()) {
         vector<Day *>::iterator di;
         for (di=profile->daylist[date].begin();di!=profile->daylist[date].end();di++) {
@@ -744,6 +763,39 @@ void Daily::RefreshData()
             TAP_EAP->Show(true);
         }
 
+        EventTree->DeleteAllItems();
+        wxTreeItemId root=EventTree->AddRoot(wxT("Events"));
+        map<MachineCode,wxTreeItemId> mcroot;
+
+        for (vector<Session *>::iterator s=d->begin();s!=d->end();s++) {
+
+            map<MachineCode,vector<Event *> >::iterator m;
+
+            wxTreeItemId ti,sroot;
+
+            for (m=(*s)->events.begin();m!=(*s)->events.end();m++) {
+                MachineCode code=m->first;
+                if (code==CPAP_Leak) continue;
+                if (code==PRS1_Unknown12) continue;
+                wxTreeItemId mcr;
+                if (mcroot.find(code)==mcroot.end()) {
+                    wxString s=DefaultMCLongNames[m->first];
+                    if (s.IsEmpty())  {
+                        s=wxString::Format(wxT("Fixme: %i"),code);
+                    }
+
+                    mcr=mcroot[code]=EventTree->AppendItem(root,s);
+                } else {
+                    mcr=mcroot[code];
+                }
+                for (vector<Event *>::iterator e=(*s)->events[code].begin();e!=(*s)->events[code].end();e++) {
+                    EventTree->AppendItem(mcr,(*e)->time().Format(wxT("%Y-%m-%d %H:%M:%S")),-1,-1);
+                }
+            }
+        }
+        EventTree->SortChildren(root);
+        EventTree->Expand(root);
+
         fgSizer->Layout();
         ScrolledWindow->FitInside();
 
@@ -759,7 +811,7 @@ void Daily::RefreshData()
         float rei=d->count(CPAP_RERA)/d->hours();
         float vsi=d->count(CPAP_VSnore)/d->hours();
         float fli=d->count(CPAP_FlowLimit)/d->hours();
-        float p90=d->percentile(CPAP_Pressure,0,0.9);
+//        float p90=d->percentile(CPAP_Pressure,0,0.9);
         float eap90=d->percentile(CPAP_EAP,0,0.9);
         float iap90=d->percentile(CPAP_IAP,0,0.9);
         wxString submodel=_("Unknown Model");
@@ -898,7 +950,7 @@ void Daily::RefreshData()
         }
 */
     } else {
-        HTMLInfo->SetPage(_("<i>Please import some data</i>"));
+        HTMLInfo->SetPage(_("<i>No data available for this day</i>"));
 
         /*if (SessionList->IsShown()) {
             m_mgr.DetachPane(SessionList);

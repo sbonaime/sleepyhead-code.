@@ -7785,12 +7785,12 @@
 	"wx/progdlg.h"
 	"wx/dialog.h"
 
-1306939868 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
+1307154469 source:/home/mark/projects/git/sleepyhead/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
-1306857828 /home/mark/projects/git/sleepyhead/GUIFrame.h
+1307154004 /home/mark/projects/git/sleepyhead/GUIFrame.h
 	<wx/intl.h>
 	<wx/string.h>
 	<wx/bitmap.h>
@@ -7806,10 +7806,10 @@
 	<wx/frame.h>
 	<wx/aui/aui.h>
 	<wx/calctrl.h>
-	<wx/html/htmlwin.h>
 	<wx/sizer.h>
 	<wx/scrolwin.h>
 	<wx/panel.h>
+	<wx/html/htmlwin.h>
 	<wx/radiobut.h>
 	<wx/stattext.h>
 	<wx/datectrl.h>
@@ -7831,14 +7831,15 @@
 1305881106 /home/mark/projects/git/sleepyhead/SleepyHeadApp.h
 	<wx/app.h>
 
-1307058662 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
-	"SleepyHeadApp.h"
+1307153810 /home/mark/projects/git/sleepyhead/SleepyHeadMain.h
 	<wx/listbox.h>
+	<wx/treectrl.h>
+	"SleepyHeadApp.h"
 	"GUIFrame.h"
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1307038106 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
+1307151648 /home/mark/projects/git/sleepyhead/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -7876,7 +7877,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307088642 /home/mark/projects/git/sleepyhead/version.h
+1307154989 /home/mark/projects/git/sleepyhead/version.h
 
 1306724655 /home/mark/projects/git/sleepyhead/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -7893,7 +7894,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307088511 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
+1307154989 source:/home/mark/projects/git/sleepyhead/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -7912,7 +7913,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307088318 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
+1307151759 source:/home/mark/projects/git/sleepyhead/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
@@ -7927,7 +7928,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1307040615 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
+1307153428 source:/home/mark/projects/git/sleepyhead/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -8127,4 +8128,46 @@
 	"wx/generic/collpaneg.h"
 
 1302101440 /usr/include/wx-2.8/wx/generic/collpaneg.h
+
+1302101441 /usr/include/wx-2.8/wx/dataview.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/textctrl.h"
+	"wx/bitmap.h"
+	"wx/variant.h"
+	"wx/generic/dataview.h"
+	"wx/gtk/dataview.h"
+	"wx/generic/dataview.h"
+
+1302101441 /usr/include/wx-2.8/wx/generic/dataview.h
+	"wx/defs.h"
+	"wx/object.h"
+	"wx/list.h"
+	"wx/control.h"
+	"wx/scrolwin.h"
+	"wx/icon.h"
+
+1302101441 /usr/include/wx-2.8/wx/treectrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/treebase.h"
+	"wx/textctrl.h"
+	"wx/generic/treectlg.h"
+	"wx/palmos/treectrl.h"
+	"wx/msw/treectrl.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+
+1302101441 /usr/include/wx-2.8/wx/treebase.h
+	"wx/defs.h"
+	"wx/window.h"
+	"wx/event.h"
+	"wx/dynarray.h"
+
+1302101440 /usr/include/wx-2.8/wx/generic/treectlg.h
+	"wx/scrolwin.h"
+	"wx/pen.h"
 

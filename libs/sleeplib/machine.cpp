@@ -75,10 +75,11 @@ map<MachineCode,wxString> DefaultMCShortNames;
     {CPAP_IAP,			wxT("IAP")},
     {PRS1_VSnore2,		wxT("VS")},
     {PRS1_PressurePulse,wxT("PP")}
-};
+}; */
 
 // Master list. Look up local name table first.. then these if not found.
-map<MachineCode,wxString> DefaultMCLongNames= {
+map<MachineCode,wxString> DefaultMCLongNames;
+/*= {
     {CPAP_Obstructive,	wxT("Obstructive Apnea")},
     {CPAP_Hypopnea,		wxT("Hypopnea")},
     {CPAP_RERA,			wxT("Respiratory Effort / Arrousal")},
@@ -88,8 +89,8 @@ map<MachineCode,wxString> DefaultMCLongNames= {
     {CPAP_FlowLimit,	wxT("Flow Limitation")},
     {CPAP_Pressure,		wxT("Pressure")},
     {CPAP_Leak,			wxT("Leak Rate")},
-    {CPAP_EAP,			wxT("BIPAP Exhalation Pressure")},
-    {CPAP_IAP,			wxT("BIPAP Inhalation Pressure")},
+    {CPAP_EAP,			wxT("BIPAP EPAP")},
+    {CPAP_IAP,			wxT("BIPAP IPAP")},
     {PRS1_VSnore2,		wxT("Vibratory Snore")},
     {PRS1_PressurePulse,wxT("Pressue Pulse")}
 }; */
@@ -115,15 +116,31 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCShortNames[CPAP_Hypopnea]=wxT("H");
     DefaultMCShortNames[CPAP_RERA]=wxT("RE");
     DefaultMCShortNames[CPAP_ClearAirway]=wxT("CA");
-    DefaultMCShortNames[CPAP_CSR]=wxT("CSR");
+    DefaultMCShortNames[CPAP_CSR]=wxT("CSR/PB");
     DefaultMCShortNames[CPAP_VSnore]=wxT("VS");
     DefaultMCShortNames[CPAP_FlowLimit]=wxT("FL");
     DefaultMCShortNames[CPAP_Pressure]=wxT("P");
     DefaultMCShortNames[CPAP_Leak]=wxT("LR");
-    DefaultMCShortNames[CPAP_EAP]=wxT("EAP");
-    DefaultMCShortNames[CPAP_IAP]=wxT("IAP");
-    DefaultMCShortNames[PRS1_VSnore2]=wxT("VS");
+    DefaultMCShortNames[CPAP_EAP]=wxT("EPAP");
+    DefaultMCShortNames[CPAP_IAP]=wxT("IPAP");
+    DefaultMCShortNames[PRS1_VSnore2]=wxT("VS2");
     DefaultMCShortNames[PRS1_PressurePulse]=wxT("PP");
+
+    DefaultMCLongNames[CPAP_Obstructive]=wxT("Obstructive Apnea");
+    DefaultMCLongNames[CPAP_Hypopnea]=wxT("Hypopnea");
+    DefaultMCLongNames[CPAP_RERA]=wxT("RERA");
+    DefaultMCLongNames[CPAP_ClearAirway]=wxT("Clear Airway Apnea");
+    DefaultMCLongNames[CPAP_CSR]=wxT("Periodic Breathing");
+    DefaultMCLongNames[CPAP_VSnore]=wxT("Vibratory Snore");
+    DefaultMCLongNames[CPAP_FlowLimit]=wxT("Flow Limitation");
+    DefaultMCLongNames[CPAP_Pressure]=wxT("Pressure");
+    DefaultMCLongNames[CPAP_Leak]=wxT("Leak Rate");
+    DefaultMCLongNames[CPAP_EAP]=wxT("BIPAP EPAP");
+    DefaultMCLongNames[CPAP_IAP]=wxT("BIPAP IPAP");
+    DefaultMCLongNames[PRS1_VSnore2]=wxT("Vibratory Snore 2");
+    DefaultMCLongNames[PRS1_PressurePulse]=wxT("Pressue Pulse");
+    DefaultMCLongNames[PRS1_Unknown0E]=wxT("Unknown 0E");
+
 
 }
 
