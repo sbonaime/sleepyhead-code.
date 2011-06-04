@@ -15,7 +15,6 @@ License: GPL
 #include <wx/log.h>
 #include <wx/progdlg.h>
 #include <wx/msgdlg.h>
-#include <initializer_list>
 
 #include "prs1_loader.h"
 

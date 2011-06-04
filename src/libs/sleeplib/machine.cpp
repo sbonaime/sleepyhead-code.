@@ -6,7 +6,6 @@
 #include "machine.h"
 #include "profiles.h"
 #include <algorithm>
-#include <initializer_list>
 
 extern wxProgressDialog *loader_progress;
 
