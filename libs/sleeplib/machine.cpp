@@ -399,8 +399,6 @@ EventDataType Day::summary_sum(MachineCode code)
 EventDataType Day::summary_max(MachineCode code)
 {
     EventDataType val=0,tmp;
-    bool fir=true;
-    // Cache this?
 
     vector<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
@@ -437,8 +435,6 @@ EventDataType Day::summary_min(MachineCode code)
 EventDataType Day::summary_avg(MachineCode code)
 {
     EventDataType val=0,tmp=0;
-    bool fir=true;
-    // Cache this?
 
     int cnt=0;
     vector<Session *>::iterator s;
@@ -551,11 +547,8 @@ EventDataType Day::sum(MachineCode code,int field)
 EventDataType Day::count(MachineCode code)
 {
     EventDataType val=0;
-    // Cache this?
-    vector<Session *>::iterator s;
 
-    // Don't assume sessions are in order.
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.count_events(code);
@@ -565,12 +558,8 @@ EventDataType Day::count(MachineCode code)
 }
 EventDataType Day::weighted_avg(MachineCode code,int field)
 {
-    double val=0;
-
-    vector<Session *>::iterator s;
-
     double s0=0,s1=0,s2=0;
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             s0=sess.hours();
@@ -583,29 +572,19 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
 }
 wxTimeSpan Day::total_time()
 {
-    //if (d_totaltime>wxTimeSpan::Seconds(0)) return d_totaltime;
-
-    vector<Session *>::iterator s;
-
     d_totaltime=wxTimeSpan::Seconds(0);
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         d_totaltime+=sess.last()-sess.first();
-        if (d_totaltime>wxTimeSpan::Hours(15)) {
-            int c=1;
-        }
     }
     return d_totaltime;
 }
 EventDataType Day::percentile(MachineCode code,int field,double percent)
 {
     double val=0;
-    // Cache this?
     int cnt=0;
-    vector<Session *>::iterator s;
 
-    // Don't assume sessions are in order.
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             val+=sess.percentile(code,field,percent);
@@ -622,11 +601,8 @@ const wxDateTime & Day::first(MachineCode code)
     static wxDateTime date;
     wxDateTime tmp;
     bool fir=true;
-    // Cache this?
-    vector<Session *>::iterator s;
 
-    // Don't assume sessions are in order.
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             tmp=sess.events[code][0]->time();
@@ -643,17 +619,11 @@ const wxDateTime & Day::first(MachineCode code)
 
 const wxDateTime & Day::last(MachineCode code)
 {
-    size_t cnt;
     static wxDateTime date;
     wxDateTime tmp;
     bool fir=true;
-    // Cache this?
 
-    // Don't assume sessions are in order.
-    vector<Session *>::iterator s;
-    ;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             vector<Event *>::reverse_iterator i=sess.events[code].rbegin();
@@ -871,8 +841,8 @@ double Session::percentile(MachineCode mc,int field,double percent)
     double a=array[j-1];
     double b=array[j];
     if (a==b) return a;
-    double c=(b-a);
-    double d=c*q;
+    //double c=(b-a);
+    //double d=c*q;
     return array[j]+q;
 }
 

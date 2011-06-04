@@ -101,7 +101,6 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
     wxString filename;
     bool cont=dir.GetFirst(&filename);
 
-    int c=0;
     while (cont) {
         if ((filename[0]=='P') && (isdigit(filename[1])) && (isdigit(filename[2]))) {
             SerialNumbers.push_back(filename);
@@ -483,6 +482,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
     int cnt=0;
     while (pos<size) {
         char code=buffer[pos++];
+        assert(code<ncodes);
         short size;
         if (code!=0x12) {
             size=buffer[pos] | buffer[pos+1] << 8;
