@@ -408,7 +408,7 @@ void Summary::ResetProfile(Profile *p)
 }
 void Summary::RefreshData()
 {
-    wxDateTime first=StartDatePicker->GetValue();
+    wxDateTime first=StartDatePicker->GetValue()-wxTimeSpan::Day();
     wxDateTime last=EndDatePicker->GetValue();
 
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
@@ -515,26 +515,30 @@ void Summary::OnRBSelect( wxCommandEvent& event )
     StartDatePicker->SetValue(start);
     EndDatePicker->SetValue(end);
 
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
+    RefreshData();
+    /*for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start-wxTimeSpan::Day(),end);
-    }
+    } */
 }
 
 void Summary::OnStartDateChanged( wxDateEvent& event )
 {
+    RefreshData();
+/*
     wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
     wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start,end);
-    }
+    } */
 }
 void Summary::OnEndDateChanged( wxDateEvent& event )
 {
-    wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
+    RefreshData();
+    /*wxDateTime start=StartDatePicker->GetValue()-wxTimeSpan::Days(2);
     wxDateTime end=EndDatePicker->GetValue()-wxTimeSpan::Day();
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         (*h)->SetDateRange(start,end);
-    }
+    } */
 }
 void Summary::OnClose(wxCloseEvent &event)
 {
@@ -711,6 +715,9 @@ void Daily::OnEventTreeSelection( wxTreeEvent& event )
         double st=(d-wxTimeSpan::Seconds(180)).GetMJD();
         double et=(d+wxTimeSpan::Seconds(180)).GetMJD();
         FRW->SetXBounds(st,et);
+        SF->SetXBounds(st,et);
+        PRD->SetXBounds(st,et);
+        LEAK->SetXBounds(st,et);
         wxLogMessage(wxT("Tree Selected:")+d.Format());
     }
 }

@@ -140,8 +140,10 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[PRS1_VSnore2]=wxT("Vibratory Snore 2");
     DefaultMCLongNames[PRS1_PressurePulse]=wxT("Pressue Pulse");
     DefaultMCLongNames[PRS1_Unknown0E]=wxT("Unknown 0E");
-
-
+    DefaultMCLongNames[PRS1_Unknown00]=wxT("Unknown 00");
+    DefaultMCLongNames[PRS1_Unknown01]=wxT("Unknown 01");
+    DefaultMCLongNames[PRS1_Unknown0B]=wxT("Unknown 0B");
+    DefaultMCLongNames[PRS1_Unknown10]=wxT("Unknown 10");
 }
 
 
