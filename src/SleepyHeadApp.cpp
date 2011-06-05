@@ -28,6 +28,7 @@
 
 #include "sleeplib/prs1_loader.h"
 #include "sleeplib/loader_plugins/cms50_loader.h"
+#include "sleeplib/loader_plugins/zeo_loader.h"
 
 #include "sleeplib/profiles.h"
 
@@ -57,8 +58,11 @@ bool SleepyHeadApp::OnInit()
     //wxDateTime::SetCountry(wxDateTime::USA);
 
     SetAppName(_("SleepyHead"));
+
     PRS1Loader::Register();
     CMS50Loader::Register();
+    ZEOLoader::Register();
+
     Profiles::Scan();
 
     //loader_progress->Show();

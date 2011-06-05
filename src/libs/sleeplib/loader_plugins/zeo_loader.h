@@ -1,21 +1,21 @@
 /*
-SleepLib CMS50X Loader Header
+SleepLib ZEO Loader Header
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 
-#ifndef CMS50LOADER_H
-#define CMS50LOADER_H
+#ifndef ZEOLOADER_H
+#define ZEOLOADER_H
 
 #include "sleeplib/machine_loader.h"
 
 
-class CMS50Loader : public MachineLoader
+class ZEOLoader : public MachineLoader
 {
     public:
-        CMS50Loader();
-        virtual ~CMS50Loader();
+        ZEOLoader();
+        virtual ~ZEOLoader();
         virtual bool Open(wxString & path,Profile *profile);
         static void Register();
 
@@ -25,4 +25,4 @@ class CMS50Loader : public MachineLoader
     private:
 };
 
-#endif // CMS50LOADER_H
+#endif // ZEOLOADER_H

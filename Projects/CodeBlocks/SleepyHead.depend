@@ -8231,7 +8231,7 @@
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1307273168 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
+1307275348 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
@@ -8243,6 +8243,7 @@
 	"version.h"
 	"sleeplib/prs1_loader.h"
 	"sleeplib/loader_plugins/cms50_loader.h"
+	"sleeplib/loader_plugins/zeo_loader.h"
 	"sleeplib/profiles.h"
 
 1307245704 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
@@ -8378,7 +8379,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
+1307273388 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -8408,10 +8409,14 @@
 	"tinyxml.h"
 	<windows.h>
 
-1307273487 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
-	"../machine_loader.h"
+1307274777 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
+	"sleeplib/machine_loader.h"
 
-1307273113 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
+1307275420 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
 	<wx/log.h>
 	"cms50_loader.h"
+	"sleeplib/machine.h"
+
+1307275207 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.h
+	"sleeplib/machine_loader.h"
 
