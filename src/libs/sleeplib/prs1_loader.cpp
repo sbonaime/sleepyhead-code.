@@ -90,21 +90,27 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
     } else {
         newpath=path+sep+pseries;
     }
+	wxLogDebug( wxT("PRS1Loader::Open newpath=")+newpath );
     wxDir dir;
     dir.Open(newpath);
     if (!dir.IsOpened()) return 0;
 
+	wxLogDebug ( wxT("PRS1Loader::Open dir.IsOpened was true") );
     list<wxString> SerialNumbers;
     list<wxString>::iterator sn;
 
     wxString filename;
     bool cont=dir.GetFirst(&filename);
+	
+	if(!cont) wxLogDebug( wxT("PRS1Loader::Open - Failed to get first directory entry. '") + filename + wxT("'") );
 
     while (cont) {
         if ((filename[0]=='P') && (isdigit(filename[1])) && (isdigit(filename[2]))) {
             SerialNumbers.push_back(filename);
+			wxLogDebug( wxT("Skipping filename ")+filename );
         } else if (filename.Lower()==wxT("last.txt")) { // last.txt points to the current serial number
             wxTextFile f(newpath+sep+filename);
+			wxLogDebug( wxT("Opening filename ")+newpath+sep+filename );
             f.Open();
             last=f.GetFirstLine();
             last.Strip();
