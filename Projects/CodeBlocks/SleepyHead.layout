@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Windows" />
+	<ActiveTarget name="Debug" />
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="509" topLine="0" />
+		<Cursor position="781" topLine="0" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="805" topLine="0" />
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="5611" topLine="196" />
 	</File>
-	<File name="../../src/SleepyHeadMain.h" open="1" top="1" tabpos="3">
+	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="546" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
