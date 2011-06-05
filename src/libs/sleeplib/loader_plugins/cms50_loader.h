@@ -8,7 +8,7 @@ License: GPL
 #ifndef CMS50LOADER_H
 #define CMS50LOADER_H
 
-#include <machine_loader.h>
+#include "../machine_loader.h"
 
 
 class CMS50Loader : public MachineLoader
@@ -18,6 +18,8 @@ class CMS50Loader : public MachineLoader
         virtual ~CMS50Loader();
         virtual bool Open(wxString & path,Profile *profile);
         static void Register();
+
+        Machine *CreateMachine(Profile *profile);
 
     protected:
     private:

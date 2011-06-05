@@ -23,6 +23,7 @@ extern wxProgressDialog *loader_progress;
 
 map<int,wxString> ModelMap;
 
+// This class technically isn't needed now.. as long as m_class, Brand & Model is set, things should be fine.
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
     m_class=wxT("PRS1");
@@ -52,7 +53,7 @@ PRS1Loader::~PRS1Loader()
 Machine *PRS1Loader::CreateMachine(wxString serial,Profile *profile)
 {
     wxLogMessage(wxT("Create Machine ")+serial);
-    if (!profile) {
+    if (!profile) {  // shouldn't happen..
         wxLogMessage(wxT("No Profile!"));
         return NULL;
 
@@ -101,7 +102,7 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
 
     wxString filename;
     bool cont=dir.GetFirst(&filename);
-	
+
 	if(!cont) wxLogDebug( wxT("PRS1Loader::Open - Failed to get first directory entry. '") + filename + wxT("'") );
 
     while (cont) {

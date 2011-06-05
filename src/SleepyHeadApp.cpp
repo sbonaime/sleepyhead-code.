@@ -27,6 +27,8 @@
 #include "version.h"
 
 #include "sleeplib/prs1_loader.h"
+#include "sleeplib/loader_plugins/cms50_loader.h"
+
 #include "sleeplib/profiles.h"
 
 IMPLEMENT_APP(SleepyHeadApp);
@@ -56,6 +58,7 @@ bool SleepyHeadApp::OnInit()
 
     SetAppName(_("SleepyHead"));
     PRS1Loader::Register();
+    CMS50Loader::Register();
     Profiles::Scan();
 
     //loader_progress->Show();
