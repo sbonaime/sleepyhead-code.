@@ -4,14 +4,14 @@
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1042" topLine="21" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="2">
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
 		<Cursor position="9011" topLine="191" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="546" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="53959" topLine="2027" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="9">
+		<Cursor position="52327" topLine="1854" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
 		<Cursor position="15761" topLine="437" />

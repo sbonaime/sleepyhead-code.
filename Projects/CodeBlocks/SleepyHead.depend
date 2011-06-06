@@ -8201,12 +8201,12 @@
 	"wx/treebase.h"
 	"wx/hashmap.h"
 
-1307332633 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/GUIFrame.h
+1307358939 /home/mark/projects/git/sleepyhead/src/GUIFrame.h
 	<wx/intl.h>
 	<wx/string.h>
 	<wx/bitmap.h>
@@ -8231,7 +8231,7 @@
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1307335666 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
@@ -8246,10 +8246,10 @@
 	"sleeplib/loader_plugins/zeo_loader.h"
 	"sleeplib/profiles.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
+1307358939 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
 	<wx/app.h>
 
-1307291151 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
+1307358939 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
 	<wx/listbox.h>
 	<wx/treectrl.h>
 	"SleepyHeadApp.h"
@@ -8257,7 +8257,7 @@
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1307289735 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -8270,7 +8270,7 @@
 	"tinyxml/tinyxml.h"
 	"preferences.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxml.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxml.h
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -8281,38 +8281,38 @@
 	<sstream>
 	"tinystr.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinystr.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinystr.h
 	<assert.h>
 	<string.h>
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/preferences.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/preferences.h
 	<wx/string.h>
 	<wx/variant.h>
 	<map>
 	"tinyxml/tinyxml.h"
 
-1307354721 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1307358939 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
 	<sleeplib/machine.h>
 	<list>
 
-1307354721 /home/mark/projects/git/sleepyhead/src/version.h
+1307369887 /home/mark/projects/git/sleepyhead/src/version.h
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
 	"machine_loader.h"
 	"profiles.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine_loader.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine_loader.h
 	"profiles.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.h
 	<wx/string.h>
 	<map>
 	"machine.h"
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307354717 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8332,22 +8332,22 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307354731 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
 	"graph.h"
 	"sleeplib/profiles.h"
 
-1307336656 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/binary_file.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/binary_file.cpp
 	<wx/filename.h>
 	"binary_file.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/binary_file.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/binary_file.h
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1307336464 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -8357,10 +8357,10 @@
 	"profiles.h"
 	<algorithm>
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine_loader.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine_loader.cpp
 	"machine_loader.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/preferences.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/preferences.cpp
 	<wx/wx.h>
 	<wx/filename.h>
 	<wx/string.h>
@@ -8368,7 +8368,7 @@
 	<wx/stdpaths.h>
 	"preferences.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.cpp
 	<wx/filefn.h>
 	<wx/filename.h>
 	<wx/utils.h>
@@ -8380,7 +8380,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1307336462 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -8392,37 +8392,37 @@
 	<wx/msgdlg.h>
 	"prs1_loader.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinystr.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinystr.cpp
 	"tinystr.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxml.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxml.cpp
 	<ctype.h>
 	<sstream>
 	<iostream>
 	"tinyxml.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxmlerror.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxmlerror.cpp
 	"tinyxml.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxmlparser.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/tinyxml/tinyxmlparser.cpp
 	<ctype.h>
 	<stddef.h>
 	"tinyxml.h"
 	<windows.h>
 
-1307287644 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
 	"sleeplib/machine_loader.h"
 
-1307336371 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
+1307369881 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
 	<wx/log.h>
 	<wx/progdlg.h>
 	"cms50_loader.h"
 	"sleeplib/machine.h"
 
-1307275207 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.h
+1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.h
 	"sleeplib/machine_loader.h"
 
-1307275410 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.cpp
+1307358939 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.cpp
 	<wx/log.h>
 	"zeo_loader.h"
 	"sleeplib/machine.h"

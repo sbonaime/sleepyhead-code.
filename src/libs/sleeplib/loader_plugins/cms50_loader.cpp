@@ -113,13 +113,15 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     f.Read(tmp,16);
 
-    wxString datestr;
-    for (int i=0;i<16;i+=2) {
-        datestr=datestr+(char)tmp[i];
+    for (int i=0;i<8;i++) {
+        tmp[i]=tmp[i << 1];
     }
+    tmp[8]=0;
+    wxString datestr((char *)tmp,wxConvUTF8);
+
     wxDateTime date;
     date.ParseFormat(datestr,wxT("%m/%d/%y"));
-
+    wxLogMessage(datestr);
 
     f.Seek(data_starts,wxFromStart);
     buffer=new char [num_records*2];
