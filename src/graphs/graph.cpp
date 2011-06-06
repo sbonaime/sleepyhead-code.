@@ -1201,6 +1201,17 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     double s1,s2,sr;
     double sfit,sam;
+    if (!data->VC()) {
+        wxString msg=_("No Waveform Available");
+        wxCoord x,y;
+        static wxFont bigfont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
+        dc.SetTextForeground(*wxDARK_GREY);
+        dc.SetFont(bigfont);
+        dc.GetTextExtent(msg,&x,&y);
+        dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
+        dc.SetTextForeground(*wxBLACK);
+        dc.SetFont(*wxNORMAL_FONT);
+    }
     for (int n=0;n<data->VC();n++) {
         dp=0;
         bool done=false;

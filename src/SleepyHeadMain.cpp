@@ -736,7 +736,7 @@ void Daily::RefreshData()
     if (cpap) UpdateCPAPGraphs(cpap);
     if (oxi) UpdateOXIGraphs(oxi);
 
-    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0>\n");
+    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0 width='100%'>\n");
 
     CPAPMode mode;
     if (cpap) {
@@ -863,6 +863,9 @@ void Daily::RefreshData()
         TAP->Show(true);
         SF->Show(true);
     } else {
+        html+=_("<tr><td colspan=2 align=center><i>No CPAP data available</i></td></tr>");
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+
         TAP_EAP->Show(false);
         TAP_IAP->Show(false);
         FRW->Show(false);
@@ -937,9 +940,9 @@ void Daily::RefreshData()
         }
 
     }
-    if (!cpap && !oxi) {
+    /*if (!cpap && !oxi) {
         html+=_("<tr><td colspan=2><i>No data available for this day</i></td></tr>");
-    }
+    } */
     html+=wxT("</table></body></html>");
     HTMLInfo->SetPage(html);
 
