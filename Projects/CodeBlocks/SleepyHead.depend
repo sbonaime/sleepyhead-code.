@@ -8295,7 +8295,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307245704 /home/mark/projects/git/sleepyhead/src/version.h
+1307342695 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307245704 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8312,11 +8312,12 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307333457 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307342349 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
 	<wx/icon.h>
+	<wx/aboutdlg.h>
 	<wx/msgdlg.h>
 	<wx/dirdlg.h>
 	<wx/progdlg.h>
@@ -8425,4 +8426,14 @@
 	<wx/log.h>
 	"zeo_loader.h"
 	"sleeplib/machine.h"
+
+1302101441 /usr/include/wx-2.8/wx/aboutdlg.h
+	"wx/defs.h"
+	"wx/app.h"
+	"wx/icon.h"
+
+1305615469 /opt/mingw/usr/i686-pc-mingw32//include/wx-2.9/wx/aboutdlg.h
+	"wx/defs.h"
+	"wx/app.h"
+	"wx/icon.h"
 

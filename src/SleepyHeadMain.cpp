@@ -18,6 +18,7 @@
 #include "version.h"
 #include <wx/app.h>
 #include <wx/icon.h>
+#include <wx/aboutdlg.h>
 #include <wx/msgdlg.h>
 #include <wx/dirdlg.h>
 #include <wx/progdlg.h>
@@ -242,8 +243,17 @@ void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
 {
-    wxString msg = wxbuildinfo(long_f);
-    msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8)+wxT("\nAuthors: Mark Watkins / Troy Schultz\nThis is alpha software is guaranteed to break regularly!\nUse at your own risk.\n\nLicense: GPL"); //,AutoVersion::DATE,AutoVersion::MONTH,AutoVersion::YEAR
+    // wxAboutBox is fairly useless.
+    wxString day=wxString(AutoVersion::DATE,wxConvUTF8);
+    wxString month=wxString(AutoVersion::MONTH,wxConvUTF8);
+    wxString year=wxString(AutoVersion::YEAR,wxConvUTF8);
+    wxString date=day+wxT("/")+month+wxT("/")+year;
+    wxString msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8)+_(" alpha preview ")+date+_("\n\n")+wxT("\u00a9")+_("2011 Mark Watkins & Troy Schultz\n\n");
+    msg+=_("Website: http://sleepyhead.sourceforge.net\n\n");
+    msg+=_("License: GNU Public License (GPL)\n\n");
+    msg+=_("This software is under active development, and is guaranteed to break and change regularly! Use at your own risk.\n\n");
+    msg+=_("Relying on this softwares' accuracy for making personal medical decisions is probably grounds to get you committed. Please don't do it!\n\n");
+    msg+=_("Combinations of letters which form those of trademarks belong to those who own them.");
 
     wxMessageBox(msg, _("Welcome to..."),0,this);
 }
@@ -253,7 +263,7 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     if (dd.ShowModal()!=wxID_OK) return;
 
 
-    loader_progress=new wxProgressDialog(wxT("SleepyHead"),wxT("Please Wait..."),100,this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_SMOOTH);
+    loader_progress=new wxProgressDialog(_("SleepyHead"),_("Please Wait..."),100,this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_SMOOTH);
     loader_progress->Hide();
     wxString path=dd.GetPath();
 
