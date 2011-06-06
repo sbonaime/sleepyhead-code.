@@ -1601,6 +1601,87 @@ void FlowData::Reload(Day *day)
     m_ready=true;
     //graph->Refresh(false);
 }
+SkipZeroData::SkipZeroData(MachineCode _code,int _field,int _size)
+:gPointData(_size),code(_code),field(_field)
+{
+}
+SkipZeroData::~SkipZeroData()
+{
+}
+void SkipZeroData::Reload(Day *day)
+{
+        vc=0;
+    if (!day) {
+        m_ready=false;
+        return;
+    }
+
+    min_x=day->first().GetMJD();
+    max_x=day->last().GetMJD();
+    assert(min_x<max_x);
+    min_y=max_y=0;
+    int tt=0;
+    bool first=true;
+    EventDataType lastp;
+    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
+        if ((*s)->events.find(code)==(*s)->events.end()) continue;
+        if (vc>=(int)point.size()) {
+            AddSegment(max_points);
+        }
+
+        int t=0;
+        EventDataType p; //,lastp=-1;
+        for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
+            p=(*(*ev))[field];
+            if (p!=0) {
+                wxRealPoint r((*ev)->time().GetMJD(),p);
+                point[vc][t++]=r;
+                assert(t<max_points);
+                if (first) {
+                    max_y=min_y=r.y;
+                    first=false;
+                } else {
+                    if (r.y<min_y) min_y=r.y;
+                    if (r.y>max_y) max_y=r.y;
+                }
+            } else {
+                if (p!=lastp) { // There really should not be consecutive zeros.. just in case..
+                    np[vc]=t;
+                    tt+=t;
+                    t=0;
+                    vc++;
+                    if (vc>=(int)point.size()) {
+                        AddSegment(max_points);
+                    }
+                }
+            }
+            lastp=p;
+        }
+        np[vc]=t;
+        tt+=t;
+        vc++;
+
+    }
+    if (tt>0) {
+        min_y=floor(min_y);
+        max_y=ceil(max_y+1);
+        if (min_y>1) min_y-=1;
+    }
+
+    //}
+    if (force_min_y!=force_max_y) {
+        min_y=force_min_y;
+        max_y=force_max_y;
+    }
+
+
+    real_min_x=min_x;
+    real_min_y=min_y;
+    real_max_x=max_x;
+    real_max_y=max_y;
+    m_ready=true;
+
+}
 
 PressureData::PressureData(MachineCode _code,int _field,int _size)
 :gPointData(_size),code(_code),field(_field)
@@ -1633,11 +1714,6 @@ void PressureData::Reload(Day *day)
         EventDataType p; //,lastp=-1;
         for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
-            /*if (lastp>=0) {
-                wxRealPoint r2((*ev)->time().GetMJD(),lastp);
-                point[vc][t++]=r2;
-                assert(t<max_points);
-            } */
             wxRealPoint r((*ev)->time().GetMJD(),p);
             point[vc][t++]=r;
             assert(t<max_points);

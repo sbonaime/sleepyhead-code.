@@ -576,11 +576,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->color.push_back(wxGREEN2);
     G_AHI->AddLayer(l);
 
-    AddCPAPData(leakdata=new PressureData(CPAP_Leak,0));
-    //leakdata->ForceMinY(0);
-    //leakdata->ForceMaxY(120);
-
-    AddOXIData(pulse=new PressureData(OXI_Pulse,0,32768));
+    AddOXIData(pulse=new SkipZeroData(OXI_Pulse,0,32768));
     pulse->ForceMinY(40);
     pulse->ForceMaxY(120);
 
@@ -588,7 +584,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PULSE->AddLayer(new gLineChart(pulse,wxRED,32768,false,false,true));
     PULSE->AddLayer(new gXAxis(wxBLACK));
 
-    AddOXIData(spo2=new PressureData(OXI_SPO2,0,32768));
+    AddOXIData(spo2=new SkipZeroData(OXI_SPO2,0,32768));
     spo2->ForceMinY(60);
     spo2->ForceMaxY(100);
     SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
@@ -597,6 +593,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     SPO2->LinkZoom(PULSE);
     PULSE->LinkZoom(SPO2);
 
+
+    AddCPAPData(leakdata=new PressureData(CPAP_Leak,0));
+    //leakdata->ForceMinY(0);
+    //leakdata->ForceMaxY(120);
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));

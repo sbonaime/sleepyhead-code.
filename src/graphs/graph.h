@@ -476,6 +476,18 @@ protected:
     int field;
 };
 
+class SkipZeroData:public gPointData
+{
+public:
+    SkipZeroData(MachineCode _code,int _field=0,int _size=4096);
+    virtual ~SkipZeroData();
+    virtual void Reload(Day *day=NULL);
+protected:
+    MachineCode code;
+    int field;
+};
+
+
 class AHIData:public gPointData
 {
 public:
