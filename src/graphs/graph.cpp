@@ -1602,8 +1602,8 @@ void FlowData::Reload(Day *day)
     //graph->Refresh(false);
 }
 
-PressureData::PressureData(MachineCode _code,int _field)
-:gPointData(1024),code(_code),field(_field)
+PressureData::PressureData(MachineCode _code,int _field,int _size)
+:gPointData(_size),code(_code),field(_field)
 {
 }
 PressureData::~PressureData()
@@ -1616,6 +1616,7 @@ void PressureData::Reload(Day *day)
         m_ready=false;
         return;
     }
+
     min_x=day->first().GetMJD();
     max_x=day->last().GetMJD();
     assert(min_x<max_x);

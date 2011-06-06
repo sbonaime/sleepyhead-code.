@@ -2,12 +2,33 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="781" topLine="0" />
+		<Cursor position="781" topLine="2" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="2">
-		<Cursor position="5611" topLine="196" />
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="35342" topLine="822" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
-		<Cursor position="546" topLine="0" />
+		<Cursor position="1968" topLine="43" />
+	</File>
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="42531" topLine="1608" />
+	</File>
+	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="11">
+		<Cursor position="15591" topLine="437" />
+	</File>
+	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="1" tabpos="4">
+		<Cursor position="4412" topLine="127" />
+	</File>
+	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" open="1" top="0" tabpos="7">
+		<Cursor position="579" topLine="0" />
+	</File>
+	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="25229" topLine="825" />
+	</File>
+	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="5">
+		<Cursor position="2133" topLine="25" />
+	</File>
+	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="23295" topLine="610" />
 	</File>
 </CodeBlocks_layout_file>

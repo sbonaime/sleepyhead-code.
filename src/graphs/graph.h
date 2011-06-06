@@ -468,7 +468,7 @@ public:
 class PressureData:public gPointData
 {
 public:
-    PressureData(MachineCode _code,int _field=0);
+    PressureData(MachineCode _code,int _field=0,int _size=4096);
     virtual ~PressureData();
     virtual void Reload(Day *day=NULL);
 protected:

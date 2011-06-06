@@ -73,6 +73,10 @@
 		<Unit filename="../../src/graphs/graph.h" />
 		<Unit filename="../../src/libs/sleeplib/binary_file.cpp" />
 		<Unit filename="../../src/libs/sleeplib/binary_file.h" />
+		<Unit filename="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" />
+		<Unit filename="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" />
+		<Unit filename="../../src/libs/sleeplib/loader_plugins/zeo_loader.cpp" />
+		<Unit filename="../../src/libs/sleeplib/loader_plugins/zeo_loader.h" />
 		<Unit filename="../../src/libs/sleeplib/machine.cpp" />
 		<Unit filename="../../src/libs/sleeplib/machine.h" />
 		<Unit filename="../../src/libs/sleeplib/machine_loader.cpp" />

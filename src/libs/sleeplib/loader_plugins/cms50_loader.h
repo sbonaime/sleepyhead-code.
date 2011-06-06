@@ -22,7 +22,11 @@ class CMS50Loader : public MachineLoader
         Machine *CreateMachine(Profile *profile);
 
     protected:
+        bool OpenCMS50(wxString & path, Profile *profile);
+        bool OpenSPORFile(wxString path, Machine * machine,Profile *profile);
+
     private:
+        char *buffer;
 };
 
 #endif // CMS50LOADER_H

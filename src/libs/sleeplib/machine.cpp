@@ -907,7 +907,7 @@ void Session::AddEvent(Event * e)
 {
     events[e->code()].push_back(e);
     if (e->time()>s_last) s_last=e->time();
-   // wxLogMessage(e->time().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %04i %02i "),e->code(),e->fields()));
+   //  wxLogMessage(e->time().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %04i %02i "),e->code(),e->fields()));
 }
 void Session::AddWaveform(Waveform *w)
 {

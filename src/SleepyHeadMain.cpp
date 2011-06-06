@@ -541,9 +541,9 @@ Daily::Daily(wxWindow *win,Profile *p)
     this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
     Notebook->AddPage(HTMLInfo,wxT("Details"),false,NULL);
     Notebook->AddPage(EventTree,wxT("Events"),false,NULL);
-    AddData(tap_eap=new TAPData(CPAP_EAP));
-    AddData(tap_iap=new TAPData(CPAP_IAP));
-    AddData(tap=new TAPData(CPAP_Pressure));
+    AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
+    AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
+    AddCPAPData(tap=new TAPData(CPAP_Pressure));
 
     TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     TAP->SetMargins(20,15,5,50);
@@ -559,7 +559,7 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT("Event Breakdown"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
     G_AHI->SetMargins(20,15,5,50);
-    AddData(g_ahi=new AHIData());
+    AddCPAPData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
     l->AddName(wxT("H"));
     l->AddName(wxT("OA"));
@@ -576,37 +576,53 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->color.push_back(wxGREEN2);
     G_AHI->AddLayer(l);
 
-    AddData(leakdata=new PressureData(CPAP_Leak,0));
+    AddCPAPData(leakdata=new PressureData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
     //leakdata->ForceMaxY(120);
 
+    AddOXIData(pulse=new PressureData(OXI_Pulse,0,32768));
+    pulse->ForceMinY(40);
+    pulse->ForceMaxY(120);
+
+    PULSE=new gGraphWindow(ScrolledWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    PULSE->AddLayer(new gLineChart(pulse,wxRED,32768,false,false,true));
+    PULSE->AddLayer(new gXAxis(wxBLACK));
+
+    AddOXIData(spo2=new PressureData(OXI_SPO2,0,32768));
+    spo2->ForceMinY(60);
+    spo2->ForceMaxY(100);
+    SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SPO2->AddLayer(new gLineChart(spo2,wxBLUE,32768,false,false,true));
+    SPO2->AddLayer(new gXAxis(wxBLACK));
+    SPO2->LinkZoom(PULSE);
+    PULSE->LinkZoom(SPO2);
 
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));
 
-    AddData(pressure_iap=new PressureData(CPAP_IAP));
-    AddData(pressure_eap=new PressureData(CPAP_EAP));
-    AddData(prd=new PressureData(CPAP_Pressure));
+    AddCPAPData(pressure_iap=new PressureData(CPAP_IAP));
+    AddCPAPData(pressure_eap=new PressureData(CPAP_EAP));
+    AddCPAPData(prd=new PressureData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
     PRD->AddLayer(new gXAxis(wxBLACK));
 
-    AddData(frw=new FlowData());
+    AddCPAPData(frw=new FlowData());
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
 
-    AddData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
-    AddData(flags[1]=new FlagData(CPAP_ClearAirway,6));
-    AddData(flags[2]=new FlagData(CPAP_Obstructive,5));
-    AddData(flags[3]=new FlagData(CPAP_Hypopnea,4));
-    AddData(flags[4]=new FlagData(CPAP_FlowLimit,3));
-    AddData(flags[5]=new FlagData(CPAP_VSnore,2));
-    AddData(flags[6]=new FlagData(CPAP_RERA,1));
-    AddData(flags[7]=new FlagData(PRS1_PressurePulse,1));
-    AddData(flags[8]=new FlagData(PRS1_VSnore2,1));
-    AddData(flags[9]=new FlagData(PRS1_Unknown0E,1));
+    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
+    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
+    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
+    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
+    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
+    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
+    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
+    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
+    AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
+    AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
     FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
     FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
@@ -646,6 +662,8 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     fgSizer->Add(SF,1,wxEXPAND);
     fgSizer->Add(FRW,1,wxEXPAND);
+    fgSizer->Add(PULSE,1,wxEXPAND);
+    fgSizer->Add(SPO2,1,wxEXPAND);
     fgSizer->Add(PRD,1,wxEXPAND);
     fgSizer->Add(LEAK,1,wxEXPAND);
     fgSizer->Add(G_AHI,1,wxEXPAND);
@@ -704,18 +722,22 @@ void Daily::RefreshData()
     date-=wxTimeSpan::Days(1);
 
     Day *d=NULL;
+    Day *oxi=NULL;
     if (profile->daylist.find(date)!=profile->daylist.end()) {
         vector<Day *>::iterator di;
         for (di=profile->daylist[date].begin();di!=profile->daylist[date].end();di++) {
-            if ((*di)->machine_type()==MT_CPAP) {
+            if (!d && ((*di)->machine_type()==MT_CPAP)) {
                 d=(*di);
-                break;
+                UpdateCPAPGraphs(d);
+            }
+            if ((*di)->machine_type()==MT_OXIMETER) {
+                oxi=(*di);
+                UpdateOXIGraphs(oxi);
             }
 
         }
     }
 
-    UpdateGraphs(d);
     if (d) {
         CPAPMode mode=(CPAPMode)d->summary_max(CPAP_Mode);
         if (mode!=MODE_BIPAP) {
@@ -765,8 +787,6 @@ void Daily::RefreshData()
         EventTree->SortChildren(root);
         EventTree->Expand(root);
 
-        fgSizer->Layout();
-        ScrolledWindow->FitInside();
 
         PRTypes pr=(PRTypes)d->summary_max(CPAP_PressureReliefType);
         wxString epr=PressureReliefNames[pr]+wxString::Format(wxT(" x%i"),(int)d->summary_max(CPAP_PressureReliefSetting));
@@ -834,6 +854,25 @@ void Daily::RefreshData()
 
         }
         html=html+wxT("<tr><td><b>")+_("Avg Leak")+wxT("</b></td><td>")+wxString::Format(wxT("%.2f"),d->summary_weighted_avg(CPAP_LeakAverage))+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+
+        if (oxi) {
+            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Oximeter Information")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(OXI_PulseAverage))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(OXI_PulseMin))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(OXI_PulseMax))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(OXI_SPO2Average))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(OXI_SPO2Min))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(OXI_SPO2Max))+wxT("</td></tr>\n");
+            PULSE->Show(true);
+            SPO2->Show(true);
+        } else {
+            PULSE->Show(false);
+            SPO2->Show(false);
+        }
+        fgSizer->Layout();
+//        fgSizer->Layout();
+        ScrolledWindow->FitInside();
 
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
 
@@ -906,17 +945,30 @@ void Daily::OnCalendarDay( wxCalendarEvent& event )
     }
     RefreshData();
 }
-void Daily::UpdateGraphs(Day *day)
+void Daily::UpdateCPAPGraphs(Day *day)
 {
     //if (!day) return;
     if (day) {
         day->OpenEvents();
         day->OpenWaveforms();
     }
-    for (list<gPointData *>::iterator g=Data.begin();g!=Data.end();g++) {
+    for (list<gPointData *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
         (*g)->Update(day);
     }
 };
+
+void Daily::UpdateOXIGraphs(Day *day)
+{
+    //if (!day) return;
+    if (day) {
+        day->OpenEvents();
+        day->OpenWaveforms();
+    }
+    for (list<gPointData *>::iterator g=OXIData.begin();g!=OXIData.end();g++) {
+        (*g)->Update(day);
+    }
+};
+
 
 void Daily::OnCalendarMonth( wxCalendarEvent& event )
 {

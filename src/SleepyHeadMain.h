@@ -66,16 +66,20 @@ protected:
     virtual void OnSelectSession( wxCommandEvent& event );
     virtual void OnEventTreeSelection( wxTreeEvent& event );
 
-	void AddData(gPointData *d) { Data.push_back(d);  };
-	void UpdateGraphs(Day *day);
+	void AddCPAPData(gPointData *d) { CPAPData.push_back(d);  };
+	void AddOXIData(gPointData *d) { OXIData.push_back(d);  };
+	void UpdateCPAPGraphs(Day *day);
+	void UpdateOXIGraphs(Day *day);
 
     bool foobar_datehack;
     gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
+    gPointData *pulse,*spo2;
     gPointData *flags[10];
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2;
 
     Profile *profile;
-    list<gPointData *> Data;
+    list<gPointData *> OXIData;
+    list<gPointData *> CPAPData;
     wxHtmlWindow *HTMLInfo;
     wxTreeCtrl *EventTree;
 

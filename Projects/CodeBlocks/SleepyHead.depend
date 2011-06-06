@@ -8249,7 +8249,7 @@
 1307245704 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
 	<wx/app.h>
 
-1307245704 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
+1307291151 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
 	<wx/listbox.h>
 	<wx/treectrl.h>
 	"SleepyHeadApp.h"
@@ -8257,7 +8257,7 @@
 	"sleeplib/machine.h"
 	"graphs/graph.h"
 
-1307272411 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.h
+1307289735 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.h
 	<wx/string.h>
 	<wx/variant.h>
 	<wx/dir.h>
@@ -8291,7 +8291,7 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1307245704 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1307290670 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
 	<sleeplib/machine.h>
 	<list>
 
@@ -8312,7 +8312,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307252474 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307292874 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8331,7 +8331,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307290767 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
@@ -8346,7 +8346,7 @@
 	<wx/ffile.h>
 	<wx/utils.h>
 
-1307245704 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.cpp
+1307289238 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/machine.cpp
 	<tr1/random>
 	<wx/colour.h>
 	<wx/log.h>
@@ -8409,14 +8409,20 @@
 	"tinyxml.h"
 	<windows.h>
 
-1307274777 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
+1307287644 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
 	"sleeplib/machine_loader.h"
 
-1307275420 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
+1307289931 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
 	<wx/log.h>
+	<wx/progdlg.h>
 	"cms50_loader.h"
 	"sleeplib/machine.h"
 
 1307275207 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.h
 	"sleeplib/machine_loader.h"
+
+1307275410 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/zeo_loader.cpp
+	<wx/log.h>
+	"zeo_loader.h"
+	"sleeplib/machine.h"
 
