@@ -146,6 +146,19 @@ void Profile::AddDay(wxDateTime date,Day *day,MachineType mt) {
 
     daylist[date].push_back(day);
 }
+Day * Profile::GetDay(wxDateTime date,MachineType type)
+{
+    Day *day=NULL;
+    if (profile->daylist.find(date)!=profile->daylist.end()) {
+        for (vector<Day *>::iterator di=profile->daylist[date].begin();di!=profile->daylist[date].end();di++) {
+            if ((*di)->machine_type()==type) {
+                day=(*di);
+                break;
+            }
+        }
+    }
+    return day;
+}
 
 
 /**

@@ -39,6 +39,7 @@ public:
     void Import(wxString path);
 
     void AddDay(wxDateTime date,Day *day,MachineType mt);
+    Day * GetDay(wxDateTime date,MachineType type);
 
     vector<Machine *> GetMachines(MachineType t);
     Machine * GetMachine(MachineType t,wxDateTime date);

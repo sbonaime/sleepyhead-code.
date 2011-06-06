@@ -121,7 +121,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     wxDateTime date;
     date.ParseFormat(datestr,wxT("%m/%d/%y %H:%M:%S"));
-    wxLogMessage(datestr);
+    //wxLogMessage(datestr);
 
     f.Seek(data_starts,wxFromStart);
     buffer=new char [num_records*2];
@@ -146,6 +146,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     int PCnt=0,SCnt=0;
     //wxDateTime
     wxDateTime tt=date;
+    wxDateTime lasttime=date;
     bool first_p=true,first_s=true;
 
     for (int i=2;i<num_records;i+=2) {
@@ -153,6 +154,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
         cs=buffer[i+1];
         if (last_pulse!=cp) {
             sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
+            if (tt>lasttime) lasttime=tt;
             if (cp>0) {
                 if (first_p) {
                     PMin=cp;
@@ -166,6 +168,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
         }
         if (last_spo2!=cs) {
             sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
+            if (tt>lasttime) lasttime=tt;
             if (cs>0) {
                 if (first_s) {
                     SMin=cs;
@@ -183,10 +186,10 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
         if (SMax<cs) SMax=cs;
         tt+=wxTimeSpan::Seconds(1);
     }
-    sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
-    sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
+    if (cp) sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
+    if (cs) sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
 
-    sess->set_last(tt);
+    sess->set_last(lasttime);
     wxTimeSpan t=sess->last()-sess->first();
 
     double hours=(t.GetSeconds().GetLo()/3600.0);
