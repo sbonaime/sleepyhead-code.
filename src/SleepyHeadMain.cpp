@@ -586,7 +586,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->color.push_back(wxGREEN2);
     G_AHI->AddLayer(l);
 
-    AddOXIData(pulse=new SkipZeroData(OXI_Pulse,0,32768));
+    AddOXIData(pulse=new EventData(OXI_Pulse,0,32768,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
 
@@ -594,7 +594,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PULSE->AddLayer(new gLineChart(pulse,wxRED,32768,false,false,true));
     PULSE->AddLayer(new gXAxis(wxBLACK));
 
-    AddOXIData(spo2=new SkipZeroData(OXI_SPO2,0,32768));
+    AddOXIData(spo2=new EventData(OXI_SPO2,0,32768,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
     SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
@@ -604,23 +604,23 @@ Daily::Daily(wxWindow *win,Profile *p)
     PULSE->LinkZoom(SPO2);
 
 
-    AddCPAPData(leakdata=new PressureData(CPAP_Leak,0));
+    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
     //leakdata->ForceMaxY(120);
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));
 
-    AddCPAPData(pressure_iap=new PressureData(CPAP_IAP));
-    AddCPAPData(pressure_eap=new PressureData(CPAP_EAP));
-    AddCPAPData(prd=new PressureData(CPAP_Pressure));
+    AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
+    AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
+    AddCPAPData(prd=new EventData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
     PRD->AddLayer(new gXAxis(wxBLACK));
 
-    AddCPAPData(frw=new FlowData());
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
     FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
 
     AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));

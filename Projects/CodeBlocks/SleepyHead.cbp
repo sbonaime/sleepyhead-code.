@@ -27,6 +27,8 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-pg" />
+					<Add directory="../../src/libs" />
+					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg" />
@@ -56,8 +58,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="`wx-config --version=2.8 --cflags`" />
-			<Add directory="libs" />
-			<Add directory="graphs" />
+			<Add directory="../../src/libs" />
+			<Add directory="../../src" />
 		</Compiler>
 		<Linker>
 			<Add option="`wx-config --version=2.8 --libs aui,xrc,qa,html,adv,core,net,base`" />
@@ -101,7 +103,7 @@
 			<lib_finder disable_auto="1" />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="300" />
-				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="../../src/version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>

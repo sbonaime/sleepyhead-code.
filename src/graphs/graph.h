@@ -457,34 +457,26 @@ public:
 
 };
 
-class FlowData:public gPointData
+class WaveData:public gPointData
 {
 public:
-    FlowData();
-    virtual ~FlowData();
+    WaveData(MachineCode _code,int _size=250000);
+    virtual ~WaveData();
     virtual void Reload(Day *day=NULL);
+protected:
+    MachineCode code;
 };
 
-class PressureData:public gPointData
+class EventData:public gPointData
 {
 public:
-    PressureData(MachineCode _code,int _field=0,int _size=4096);
-    virtual ~PressureData();
+    EventData(MachineCode _code,int _field=0,int _size=4096,bool _skipzero=false);
+    virtual ~EventData();
     virtual void Reload(Day *day=NULL);
 protected:
     MachineCode code;
     int field;
-};
-
-class SkipZeroData:public gPointData
-{
-public:
-    SkipZeroData(MachineCode _code,int _field=0,int _size=4096);
-    virtual ~SkipZeroData();
-    virtual void Reload(Day *day=NULL);
-protected:
-    MachineCode code;
-    int field;
+    bool skipzero;
 };
 
 

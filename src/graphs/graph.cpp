@@ -1523,14 +1523,14 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
 }
 
 
-FlowData::FlowData()
-:gPointData(250000)
+WaveData::WaveData(MachineCode _code, int _size)
+:gPointData(_size),code(_code)
 {
 }
-FlowData::~FlowData()
+WaveData::~WaveData()
 {
 }
-void FlowData::Reload(Day *day)
+void WaveData::Reload(Day *day)
 {
     vc=0;
     if (!day) {
@@ -1538,7 +1538,6 @@ void FlowData::Reload(Day *day)
         return;
     }
     //wxRealPoint *rpl;
-    MachineCode code=CPAP_FlowRate;
     min_x=day->first().GetMJD();
     max_x=day->last().GetMJD();
     max_y=0;
@@ -1576,7 +1575,7 @@ void FlowData::Reload(Day *day)
     max_y=ceil(max_y);
 
     //double t1=MAX(fabs(min_y),fabs(max_y));
-
+    // Get clever here..
     if (max_y>128) {
     } else if (max_y>90) {
         max_y=120;
@@ -1603,15 +1602,14 @@ void FlowData::Reload(Day *day)
 }
 
 
-// This can be merged back in with PressureData (and can be renamed while we are at it)
-SkipZeroData::SkipZeroData(MachineCode _code,int _field,int _size)
-:gPointData(_size),code(_code),field(_field)
+EventData::EventData(MachineCode _code,int _field,int _size,bool _skipzero)
+:gPointData(_size),code(_code),field(_field),skipzero(_skipzero)
 {
 }
-SkipZeroData::~SkipZeroData()
+EventData::~EventData()
 {
 }
-void SkipZeroData::Reload(Day *day)
+void EventData::Reload(Day *day)
 {
         vc=0;
     if (!day) {
@@ -1636,7 +1634,7 @@ void SkipZeroData::Reload(Day *day)
         EventDataType p;
         for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
-            if (p!=0) {
+            if (((p!=0) && skipzero) || !skipzero) {
                 wxRealPoint r((*ev)->time().GetMJD(),p);
                 point[vc][t++]=r;
                 assert(t<max_points);
@@ -1686,90 +1684,6 @@ void SkipZeroData::Reload(Day *day)
 
 }
 
-PressureData::PressureData(MachineCode _code,int _field,int _size)
-:gPointData(_size),code(_code),field(_field)
-{
-}
-PressureData::~PressureData()
-{
-}
-void PressureData::Reload(Day *day)
-{
-    vc=0;
-    if (!day) {
-        m_ready=false;
-        return;
-    }
-
-    min_x=day->first().GetMJD();
-    max_x=day->last().GetMJD();
-    assert(min_x<max_x);
-    min_y=max_y=0;
-    int tt=0;
-    bool first=true;
-    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
-        if ((*s)->events.find(code)==(*s)->events.end()) continue;
-        if (vc>=(int)point.size()) {
-            AddSegment(max_points);
-        }
-
-        int t=0;
-        EventDataType p; //,lastp=-1;
-        for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
-            p=(*(*ev))[field];
-            wxRealPoint r((*ev)->time().GetMJD(),p);
-            point[vc][t++]=r;
-            assert(t<max_points);
-            if (first) {
-                max_y=min_y=r.y;
-                first=false;
-            } else {
-                if (r.y<min_y) min_y=r.y;
-                if (r.y>max_y) max_y=r.y;
-            }
-
-            //lastp=p;
-        }
-        np[vc]=t;
-        tt+=t;
-        vc++;
-
-    }
-    /*if ((code==CPAP_Pressure) || (code==CPAP_EAP) || (code==CPAP_IAP)) {
-        if (day->summary_max(CPAP_Mode)==MODE_CPAP) {
-            min_y=4;
-            max_y=ceil(max_y+1);
-        } else {
-            if (min_y>day->summary_min(CPAP_PressureMin)) min_y=day->summary_min(CPAP_PressureMin);
-            if (max_y<day->summary_max(CPAP_PressureMax)) max_y=day->summary_min(CPAP_PressureMax);
-        //max_y=ceil(day->summary_max(CPAP_PressureMax));
-            min_y=floor(min_y);
-            max_y=ceil(max_y);
-        }
-    } else { */
-    if (tt>0) {
-        min_y=floor(min_y);
-        max_y=ceil(max_y+1);
-        if (min_y>1) min_y-=1;
-    }
-
-    //}
-    if (force_min_y!=force_max_y) {
-        min_y=force_min_y;
-        max_y=force_max_y;
-    }
-
-
-    real_min_x=min_x;
-    real_min_y=min_y;
-    real_max_x=max_x;
-    real_max_y=max_y;
-    m_ready=true;
-
-    //max_y=25;
-    //max_y=max_y/25)*25;
-    //graph->Refresh(false);
-}
 
 TAPData::TAPData(MachineCode _code)
 :gPointData(256),code(_code)

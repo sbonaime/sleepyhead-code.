@@ -2,33 +2,36 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="781" topLine="2" />
+		<Cursor position="1042" topLine="21" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="35342" topLine="822" />
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="9011" topLine="191" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
-		<Cursor position="1968" topLine="43" />
+		<Cursor position="546" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="8">
-		<Cursor position="42531" topLine="1608" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="53959" topLine="2027" />
 	</File>
-	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="11">
-		<Cursor position="15591" topLine="437" />
+	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
+		<Cursor position="15761" topLine="437" />
 	</File>
-	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="1" tabpos="4">
-		<Cursor position="4412" topLine="127" />
+	<File name="../../src/libs/sleeplib/binary_file.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="7148" topLine="269" />
+	</File>
+	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="3214" topLine="116" />
 	</File>
 	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" open="1" top="0" tabpos="7">
 		<Cursor position="579" topLine="0" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="25229" topLine="825" />
+	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="22029" topLine="747" />
 	</File>
 	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="5">
 		<Cursor position="2133" topLine="25" />
 	</File>
 	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="6">
-		<Cursor position="23295" topLine="610" />
+		<Cursor position="24147" topLine="688" />
 	</File>
 </CodeBlocks_layout_file>
