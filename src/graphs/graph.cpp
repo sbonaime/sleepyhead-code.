@@ -1137,6 +1137,7 @@ gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool _accele
     color.clear();
     color.push_back(col);
     foobar=new gFooBar();
+    m_report_empty=false;
     Yaxis=new gYAxis(wxBLACK);
     Yaxis->SetShowMajorLines(true);
     Yaxis->SetShowMinorLines(true);
@@ -1201,17 +1202,25 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     double s1,s2,sr;
     double sfit,sam;
-    if (!data->VC()) {
-        wxString msg=_("No Waveform Available");
-        wxCoord x,y;
-        static wxFont bigfont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
-        dc.SetTextForeground(*wxDARK_GREY);
-        dc.SetFont(bigfont);
-        dc.GetTextExtent(msg,&x,&y);
-        dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
-        dc.SetTextForeground(*wxBLACK);
-        dc.SetFont(*wxNORMAL_FONT);
+
+    if (m_report_empty) {
+        int cnt=0;
+        for (int z=0;z<data->VC();z++) cnt+=data->np[z];
+
+        if (!cnt) {
+            wxString msg=_("No Waveform Available");
+            wxCoord x,y;
+            static wxFont bigfont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
+            dc.SetTextForeground(*wxDARK_GREY);
+            dc.SetFont(bigfont);
+            dc.GetTextExtent(msg,&x,&y);
+            dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
+            dc.SetTextForeground(*wxBLACK);
+            dc.SetFont(*wxNORMAL_FONT);
+        }
     }
+
+
     for (int n=0;n<data->VC();n++) {
         dp=0;
         bool done=false;
@@ -1325,6 +1334,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         }
     }
     dc.DestroyClippingRegion();
+
     //dc.SetClippingRegion(start_px-1,start_py+height,width+1,w.GetBottomMargin());
     //dc.DestroyClippingRegion();
 }

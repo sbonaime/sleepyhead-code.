@@ -366,9 +366,13 @@ class gLineChart:public gLayer
 
         void SetSquarePlot(bool b) { m_square_plot=b; };
         bool GetSquarePlot() { return m_square_plot; };
+        void ReportEmpty(bool b) { m_report_empty=b; };
+        bool GetReportEmpty() { return m_report_empty; };
+
     protected:
         bool m_accelerate;
         int m_drawlist_size;
+        bool m_report_empty;
         wxPoint *m_drawlist;
         bool m_hide_axes;
         bool m_square_plot;

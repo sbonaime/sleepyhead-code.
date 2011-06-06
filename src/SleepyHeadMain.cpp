@@ -615,6 +615,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
     PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+
     PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
@@ -634,8 +635,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
     AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
+    gLineChart *g;
     FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
-    FRW->AddLayer(new gLineChart(frw,wxBLACK,200000,true));
+    FRW->AddLayer(g=new gLineChart(frw,wxBLACK,200000,true));
+    g->ReportEmpty(true);
     FRW->AddLayer(new gLineOverlayBar(flags[7],wxRED,wxT("PR"),LOT_Dot));
     FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
     FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
