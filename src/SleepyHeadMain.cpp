@@ -586,19 +586,19 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->color.push_back(wxGREEN2);
     G_AHI->AddLayer(l);
 
-    AddOXIData(pulse=new EventData(OXI_Pulse,0,32768,true));
+    AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
 
     PULSE=new gGraphWindow(ScrolledWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    PULSE->AddLayer(new gLineChart(pulse,wxRED,32768,false,false,true));
+    PULSE->AddLayer(new gLineChart(pulse,wxRED,65536,false,false,true));
     PULSE->AddLayer(new gXAxis(wxBLACK));
 
-    AddOXIData(spo2=new EventData(OXI_SPO2,0,32768,true));
+    AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
     SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    SPO2->AddLayer(new gLineChart(spo2,wxBLUE,32768,false,false,true));
+    SPO2->AddLayer(new gLineChart(spo2,wxBLUE,65536,false,false,true));
     SPO2->AddLayer(new gXAxis(wxBLACK));
     SPO2->LinkZoom(PULSE);
     PULSE->LinkZoom(SPO2);
