@@ -115,7 +115,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     wxString datestr;
     for (int i=0;i<16;i+=2) {
-        datestr=datestr+tmp[i];
+        datestr=datestr+(char)tmp[i];
     }
     wxDateTime date;
     date.ParseFormat(datestr,wxT("%m/%d/%y"));
