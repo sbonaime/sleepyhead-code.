@@ -1601,6 +1601,9 @@ void FlowData::Reload(Day *day)
     m_ready=true;
     //graph->Refresh(false);
 }
+
+
+// This can be merged back in with PressureData (and can be renamed while we are at it)
 SkipZeroData::SkipZeroData(MachineCode _code,int _field,int _size)
 :gPointData(_size),code(_code),field(_field)
 {
@@ -1622,7 +1625,7 @@ void SkipZeroData::Reload(Day *day)
     min_y=max_y=0;
     int tt=0;
     bool first=true;
-    EventDataType lastp;
+    EventDataType lastp=0;
     for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         if (vc>=(int)point.size()) {
@@ -1630,7 +1633,7 @@ void SkipZeroData::Reload(Day *day)
         }
 
         int t=0;
-        EventDataType p; //,lastp=-1;
+        EventDataType p;
         for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
             if (p!=0) {
@@ -1639,6 +1642,7 @@ void SkipZeroData::Reload(Day *day)
                 assert(t<max_points);
                 if (first) {
                     max_y=min_y=r.y;
+                    //lastp=p;
                     first=false;
                 } else {
                     if (r.y<min_y) min_y=r.y;
@@ -1668,7 +1672,6 @@ void SkipZeroData::Reload(Day *day)
         if (min_y>1) min_y-=1;
     }
 
-    //}
     if (force_min_y!=force_max_y) {
         min_y=force_min_y;
         max_y=force_max_y;

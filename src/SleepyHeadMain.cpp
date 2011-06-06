@@ -577,16 +577,16 @@ Daily::Daily(wxWindow *win,Profile *p)
     G_AHI->AddLayer(l);
 
     AddOXIData(pulse=new SkipZeroData(OXI_Pulse,0,32768));
-    pulse->ForceMinY(40);
-    pulse->ForceMaxY(120);
+    //pulse->ForceMinY(40);
+    //pulse->ForceMaxY(120);
 
     PULSE=new gGraphWindow(ScrolledWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PULSE->AddLayer(new gLineChart(pulse,wxRED,32768,false,false,true));
     PULSE->AddLayer(new gXAxis(wxBLACK));
 
     AddOXIData(spo2=new SkipZeroData(OXI_SPO2,0,32768));
-    spo2->ForceMinY(60);
-    spo2->ForceMaxY(100);
+    //spo2->ForceMinY(60);
+    //spo2->ForceMaxY(100);
     SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     SPO2->AddLayer(new gLineChart(spo2,wxBLUE,32768,false,false,true));
     SPO2->AddLayer(new gXAxis(wxBLACK));
@@ -858,12 +858,12 @@ void Daily::RefreshData()
 
         if (oxi) {
             html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Oximeter Information")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Pulse Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(OXI_PulseAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Pulse Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(OXI_PulseMin))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Pulse Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(OXI_PulseMax))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("SpO2 Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_avg(OXI_SPO2Average))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("SpO2 Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_min(OXI_SPO2Min))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("SpO2 Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),d->summary_max(OXI_SPO2Max))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_avg(OXI_PulseAverage))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_min(OXI_PulseMin))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Pulse Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_max(OXI_PulseMax))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_avg(OXI_SPO2Average))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_min(OXI_SPO2Min))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SpO2 Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),oxi->summary_max(OXI_SPO2Max))+wxT("</td></tr>\n");
             PULSE->Show(true);
             SPO2->Show(true);
         } else {

@@ -127,35 +127,62 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     if (br!=num_records) {
         wxLogDebug(wxT("Short .spoR File: ")+path);
     }
-    char last_pulse=buffer[0];
-    char last_spo2=buffer[1];
-    EventDataType data[2];
+
     wxDateTime last_pulse_time=date;
     wxDateTime last_spo2_time=date;
-    data[0]=last_pulse;
-    data[1]=last_spo2;
+
+    EventDataType last_pulse=buffer[0];
+    EventDataType last_spo2=buffer[1];
+    EventDataType cp,cs;
 
     Session *sess=new Session(mach,sessid);
     sess->set_first(date);
-    sess->AddEvent(new Event(date,OXI_Pulse,data,1));
-    sess->AddEvent(new Event(date,OXI_SPO2,&data[1],1));
+    sess->AddEvent(new Event(date,OXI_Pulse,&last_pulse,1));
+    sess->AddEvent(new Event(date,OXI_SPO2,&last_spo2,1));
+
+    EventDataType PMin,PMax=0,SMin,SMax=0,PAvg=0,SAvg=0;
+    int PCnt=0,SCnt=0;
     //wxDateTime
     wxDateTime tt=date;
+    bool first_p=true,first_s=true;
+
     for (int i=2;i<num_records;i+=2) {
-        if (last_pulse!=buffer[i]) {
-            data[0]=buffer[i];
-            sess->AddEvent(new Event(tt,OXI_Pulse,data,1));
+        cp=buffer[i];
+        cs=buffer[i+1];
+        if (last_pulse!=cp) {
+            sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
+            if (cp>0) {
+                if (first_p) {
+                    PMin=cp;
+                    first_p=false;
+                } else {
+                    if (PMin>cp) PMin=cp;
+                }
+                PAvg+=cp;
+                PCnt++;
+            }
         }
-        if (last_spo2!=buffer[i+1]) {
-            data[1]=buffer[i+1];
-            sess->AddEvent(new Event(tt,OXI_SPO2,&data[1],1));
+        if (last_spo2!=cs) {
+            sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
+            if (cs>0) {
+                if (first_s) {
+                    SMin=cs;
+                    first_s=false;
+                } else {
+                    if (SMin>cs) SMin=cs;
+                }
+                SAvg+=cs;
+                SCnt++;
+            }
         }
-        last_pulse=buffer[i];
-        last_spo2=buffer[i+1];
+        last_pulse=cp;
+        last_spo2=cs;
+        if (PMax<cp) PMax=cp;
+        if (SMax<cs) SMax=cs;
         tt+=wxTimeSpan::Seconds(1);
     }
-    sess->AddEvent(new Event(tt,OXI_Pulse,data,1));
-    sess->AddEvent(new Event(tt,OXI_SPO2,&data[1],1));
+    sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
+    sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
 
     sess->set_last(tt);
     wxTimeSpan t=sess->last()-sess->first();
@@ -163,12 +190,15 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     double hours=(t.GetSeconds().GetLo()/3600.0);
     sess->set_hours(hours);
 
-    sess->summary[OXI_PulseAverage]=sess->weighted_avg_event_field(OXI_Pulse,0);
-    sess->summary[OXI_PulseMin]=sess->min_event_field(OXI_Pulse,0);
-    sess->summary[OXI_PulseMax]=sess->max_event_field(OXI_Pulse,0);
-    sess->summary[OXI_SPO2Average]=sess->weighted_avg_event_field(OXI_SPO2,0);
-    sess->summary[OXI_SPO2Min]=sess->min_event_field(OXI_SPO2,0);
-    sess->summary[OXI_SPO2Max]=sess->max_event_field(OXI_SPO2,0);
+    EventDataType pa=0,sa=0;
+    if (PCnt>0) pa=PAvg/double(PCnt);
+    if (SCnt>0) sa=SAvg/double(SCnt);
+    sess->summary[OXI_PulseAverage]=pa;
+    sess->summary[OXI_PulseMin]=PMin;
+    sess->summary[OXI_PulseMax]=PMax;
+    sess->summary[OXI_SPO2Average]=sa;
+    sess->summary[OXI_SPO2Min]=SMin;
+    sess->summary[OXI_SPO2Max]=SMax;
 
     mach->AddSession(sess,profile);
     sess->SetChanged(true);

@@ -27,7 +27,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	menubar = new wxMenuBar( 0 );
 	FileMenu = new wxMenu();
 	wxMenuItem* FileMenuImportSD;
-	FileMenuImportSD = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Import SD") ) + wxT('\t') + wxT("F9"), wxEmptyString, wxITEM_NORMAL );
+	FileMenuImportSD = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Import Data") ) + wxT('\t') + wxT("F9"), wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuImportSD );
 	
 	wxMenuItem* FileMenuPreferences;

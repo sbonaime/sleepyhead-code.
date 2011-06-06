@@ -208,7 +208,7 @@
                         <property name="help"></property>
                         <property name="id">wxID_ANY</property>
                         <property name="kind">wxITEM_NORMAL</property>
-                        <property name="label">&amp;Import SD</property>
+                        <property name="label">&amp;Import Data</property>
                         <property name="name">FileMenuImportSD</property>
                         <property name="permission">none</property>
                         <property name="shortcut">F9</property>
