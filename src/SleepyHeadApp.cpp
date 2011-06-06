@@ -38,15 +38,11 @@ bool SleepyHeadApp::OnInit()
 {
     // Initialize the logger
 
-#if defined(wxUSE_STD_IOSTREAM)
-    // Standard bottled linux build, plus my WXMSW build needs it
-    wxLog *logger=new wxLogStream(&std::cout);
+
+    // It helps to allocate the logger on the heap.. This show work for all platforms now :)
+
+    wxLog *logger=new wxLogStderr(NULL); //LogWindow(NULL,wxT("Debug"),true,true);
     wxLog::SetActiveTarget(logger);
-#else
-	// wxLogStream requires wxWidgets to be built with wxUSE_STD_IOSTREAM which is not default
-	// use STDERR for wxLogging for better portability for now
-	wxLogStderr(NULL);
-#endif
 
 	wxLogDebug( wxVERSION_STRING );
 	wxLogDebug( wxT("Application Initialze...") );
