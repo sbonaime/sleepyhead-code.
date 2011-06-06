@@ -428,7 +428,7 @@ double gGraphWindow::MinX()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinX();
@@ -451,7 +451,7 @@ double gGraphWindow::MaxX()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxX();
@@ -474,7 +474,7 @@ double gGraphWindow::MinY()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MinY();
@@ -496,7 +496,7 @@ double gGraphWindow::MaxY()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->MaxY();
@@ -519,7 +519,7 @@ double gGraphWindow::RealMinX()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinX();
@@ -541,7 +541,7 @@ double gGraphWindow::RealMaxX()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxX();
@@ -563,7 +563,7 @@ double gGraphWindow::RealMinY()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMinY();
@@ -585,7 +585,7 @@ double gGraphWindow::RealMaxY()
     //f=false;
 
     bool first=true;
-    double val,tmp;
+    double val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (first) {
             val=(*l)->RealMaxY();
@@ -1793,7 +1793,7 @@ void TAPData::Reload(Day *day)
 
     bool first;
     wxDateTime last;
-    int lastval,val;
+    int lastval=0,val;
 
     int field=0;
 
@@ -1805,7 +1805,7 @@ void TAPData::Reload(Day *day)
             val=ev[field]*10.0;
             if (field > ev.fields()) throw BoundsError();
             if (first) {
-                first=false;
+                first=false; // only bother setting lastval (below) this time.
             } else {
                 wxTimeSpan d=ev.time()-last;
                 if (lastval>max_slots) throw BoundsError();
@@ -1971,8 +1971,10 @@ void HistoryData::Reload(Day *day)
         vector<Day *> & daylist=profile->daylist[date];
         for (vector<Day *>::iterator dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
             Day *d=(*dd);
-            y=Calc(d);
-            z++;
+            if (d->machine_type()==MT_CPAP) {
+                y=Calc(d);
+                z++;
+            }
         }
         if (!z) continue;
         if (z>1) y /= z;

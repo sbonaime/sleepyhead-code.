@@ -712,7 +712,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,wxString filename)
     // Convert to SampleFormat
     SampleFormat *data=new SampleFormat [samples];
 
-    SampleFormat min,max;
+    SampleFormat min=0,max=0;
     bool first=true;
 
     SampleFormat c;

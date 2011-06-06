@@ -753,7 +753,7 @@ double Session::min_event_field(MachineCode mc,int field)
     if (events.find(mc)==events.end()) return 0;
 
     bool first=true;
-    double min;
+    double min=0;
     vector<Event *>::iterator i;
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
@@ -771,7 +771,7 @@ double Session::max_event_field(MachineCode mc,int field)
     if (events.find(mc)==events.end()) return 0;
 
     bool first=true;
-    double max;
+    double max=0;
     vector<Event *>::iterator i;
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         if (field>(*i)->e_fields) throw BoundsError();
@@ -853,7 +853,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 
     bool first=true;
     wxDateTime last;
-    int lastval,val;
+    int lastval=0,val;
     const int max_slots=2600;
     wxTimeSpan vtime[max_slots]=wxTimeSpan(0);
 
@@ -1158,7 +1158,7 @@ bool Session::StoreEvents(wxString filename)
     }
     bool first;
     float tf;
-    time_t last,eventtime,delta;
+    time_t last=0,eventtime,delta;
 
     for (i=events.begin(); i!=events.end(); i++) {
         first=true;

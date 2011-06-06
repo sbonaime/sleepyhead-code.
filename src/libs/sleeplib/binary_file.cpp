@@ -175,7 +175,7 @@ bool BinaryFile::Unpack(float & data)
         for (int i=0; i<4; i++) {
             b[3-i]=buffer[pos+i];
         }
-        data=*((float *)(b));
+        data=*((float *)b);
         pos+=4;
     }
 
@@ -192,7 +192,7 @@ bool BinaryFile::Unpack(double & data)
         for (int i=0; i<8; i++) {
             b[7-i]=buffer[pos+i];
         }
-        data=*((double *)(b));
+        data=*((double *)b);
         pos+=8;
     }
 

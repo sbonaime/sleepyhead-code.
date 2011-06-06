@@ -140,7 +140,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     sess->AddEvent(new Event(date,OXI_Pulse,&last_pulse,1));
     sess->AddEvent(new Event(date,OXI_SPO2,&last_spo2,1));
 
-    EventDataType PMin,PMax=0,SMin,SMax=0,PAvg=0,SAvg=0;
+    EventDataType PMin=0,PMax=0,SMin=0,SMax=0,PAvg=0,SAvg=0;
     int PCnt=0,SCnt=0;
     //wxDateTime
     wxDateTime tt=date;
