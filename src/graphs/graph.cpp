@@ -375,14 +375,42 @@ void gGraphWindow::SetMargins(int top, int right, int bottom, int left)
     m_marginRight=right;
 }
 
+wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
+{
+    wxMemoryDC dc;
+    m_scrX=width;
+    m_scrY=height;
+
+    wxBitmap *bmp=new wxBitmap(width, height,-1);
+    dc.SelectObject(*bmp);
+
+    dc.SetPen( *wxTRANSPARENT_PEN );
+
+	dc.SetTextForeground(m_fgColour);
+
+    wxRect r=wxRect(0,0,width,height);
+
+//	dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
+    wxBrush brush( GetBackgroundColour() );
+    dc.SetBrush( brush );
+	dc.DrawRectangle(r);
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        (*l)->Plot(dc,*this);
+    }
+
+    dc.SelectObject(wxNullBitmap);
+    return bmp;
+}
 
 void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
-    #if defined(__WXMSW__)
+#if defined(__WXMSW__)
     wxAutoBufferedPaintDC dc(this);
-    #else
+#elif defined (__WXMAC__)
+    wxGCDC(this);
+#else
     wxPaintDC dc(this);
-    #endif
+#endif
     GetClientSize(&m_scrX, &m_scrY);
 
     dc.SetPen( *wxTRANSPARENT_PEN );

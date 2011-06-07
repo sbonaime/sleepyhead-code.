@@ -47,10 +47,8 @@ bool SleepyHeadApp::OnInit()
 	wxLogDebug( wxVERSION_STRING );
 	wxLogDebug( wxT("Application Initialze...") );
 
-
-   // wxFileSystem::AddHandler(new wxMemoryFSHandler);
-
     wxInitAllImageHandlers();
+    wxFileSystem::AddHandler(new wxMemoryFSHandler);  // This is damn handy..
     //wxDateTime::SetCountry(wxDateTime::USA);
 
     SetAppName(_("SleepyHead"));

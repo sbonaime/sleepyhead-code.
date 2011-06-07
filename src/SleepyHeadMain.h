@@ -83,6 +83,8 @@ protected:
     wxHtmlWindow *HTMLInfo;
     wxTreeCtrl *EventTree;
 
+    wxBitmap *ahi_bmp;
+
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();

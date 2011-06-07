@@ -546,7 +546,7 @@ void Summary::OnClose(wxCloseEvent &event)
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
-
+    ahi_bmp=NULL;
     HTMLInfo=new wxHtmlWindow(this);
     EventTree=new wxTreeCtrl(this);
 
@@ -569,8 +569,8 @@ Daily::Daily(wxWindow *win,Profile *p)
     TAP_EAP->SetMargins(20,15,5,50);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
-    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT("Event Breakdown"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
-    G_AHI->SetMargins(20,15,5,50);
+    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,60), wxNO_BORDER); //Event Breakdown")
+    G_AHI->SetMargins(0,2,0,2);
     AddCPAPData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
     l->AddName(wxT("H"));
@@ -681,7 +681,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     fgSizer->Add(LEAK,1,wxEXPAND);
     fgSizer->Add(PULSE,1,wxEXPAND);
     fgSizer->Add(SPO2,1,wxEXPAND);
-    fgSizer->Add(G_AHI,1,wxEXPAND);
+    //fgSizer->Add(G_AHI,1,wxEXPAND);
     fgSizer->Add(TAP,1,wxEXPAND);
     fgSizer->Add(TAP_IAP,1,wxEXPAND);
     fgSizer->Add(TAP_EAP,1,wxEXPAND);
@@ -691,6 +691,11 @@ Daily::Daily(wxWindow *win,Profile *p)
 }
 Daily::~Daily()
 {
+    if (ahi_bmp) {
+        wxMemoryFSHandler::RemoveFile(_T("ahi.png"));
+        delete ahi_bmp;
+    }
+
     this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
 }
 void Daily::OnClose(wxCloseEvent &event)
@@ -741,7 +746,7 @@ void Daily::RefreshData()
     if (cpap) UpdateCPAPGraphs(cpap);
     if (oxi) UpdateOXIGraphs(oxi);
 
-    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=2 cellpadding=0 width='100%'>\n");
+    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
 
     CPAPMode mode;
     if (cpap) {
@@ -784,6 +789,15 @@ void Daily::RefreshData()
         EventTree->SortChildren(root);
         EventTree->Expand(root);
 
+        //Logo.LoadFile(wxT("./pic.png"));
+        if (ahi_bmp) {
+            wxMemoryFSHandler::RemoveFile(_T("ahi.png"));
+            delete ahi_bmp;
+        }
+        ahi_bmp=G_AHI->RenderBitmap(180,40);
+        //delete ahi_bmp;
+        wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
+
 
         PRTypes pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
         wxString epr=PressureReliefNames[pr]+wxString::Format(wxT(" x%i"),(int)cpap->summary_max(CPAP_PressureReliefSetting));
@@ -817,6 +831,8 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td><b>")+_("Wake")+wxT("</b></td><td>")+cpap->last().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Total Time")+wxT("</b></td><td><i>")+cpap->total_time().Format(wxT("%H:%M&nbsp;hours"))+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Indices")+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");

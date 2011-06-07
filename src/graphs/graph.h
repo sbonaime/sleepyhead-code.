@@ -124,6 +124,8 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         gGraphWindow() {};
         gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title=wxT("Graph"),const wxPoint &pos = wxDefaultPosition,const wxSize &size = wxDefaultSize,long flags = 0);
 
+        wxBitmap * RenderBitmap(int width,int height);
+
         virtual ~gGraphWindow();
         virtual void OnPaint(wxPaintEvent & event);
         virtual void OnSize(wxSizeEvent & event);
