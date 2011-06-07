@@ -7,6 +7,7 @@
         <property name="disconnect_events">1</property>
         <property name="disconnect_mode">source_name</property>
         <property name="disconnect_python_events">0</property>
+        <property name="embedded_files_path">res</property>
         <property name="encoding">UTF-8</property>
         <property name="event_generation">connect</property>
         <property name="file">GUIFrame</property>
@@ -221,7 +222,7 @@
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_PREFERENCES</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">&amp;Preferences</property>
                         <property name="name">FileMenuPreferences</property>
@@ -240,7 +241,7 @@
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_QUIT</property>
+                        <property name="id">wxID_EXIT</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">E&amp;xit</property>
                         <property name="name">FileMenuExit</property>
@@ -358,7 +359,7 @@
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_ABOUT</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">&amp;About</property>
                         <property name="name">HelpMenuAbout</property>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version May  5 2011)
+// C++ code generated with wxFormBuilder (version Jun  6 2011)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -31,14 +31,14 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	FileMenu->Append( FileMenuImportSD );
 	
 	wxMenuItem* FileMenuPreferences;
-	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Preferences") ) + wxT('\t') + wxT("F10"), wxEmptyString, wxITEM_NORMAL );
+	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_PREFERENCES, wxString( _("&Preferences") ) + wxT('\t') + wxT("F10"), wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuPreferences );
 	
 	wxMenuItem* m_separator1;
 	m_separator1 = FileMenu->AppendSeparator();
 	
 	wxMenuItem* FileMenuExit;
-	FileMenuExit = new wxMenuItem( FileMenu, wxID_QUIT, wxString( _("E&xit") ) , wxEmptyString, wxITEM_NORMAL );
+	FileMenuExit = new wxMenuItem( FileMenu, wxID_EXIT, wxString( _("E&xit") ) , wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuExit );
 	
 	menubar->Append( FileMenu, _("&File") ); 
@@ -79,7 +79,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	HelpMenu = new wxMenu();
 	wxMenuItem* HelpMenuAbout;
-	HelpMenuAbout = new wxMenuItem( HelpMenu, wxID_ANY, wxString( _("&About") ) , wxEmptyString, wxITEM_NORMAL );
+	HelpMenuAbout = new wxMenuItem( HelpMenu, wxID_ABOUT, wxString( _("&About") ) , wxEmptyString, wxITEM_NORMAL );
 	HelpMenu->Append( HelpMenuAbout );
 	
 	menubar->Append( HelpMenu, _("&Help") ); 
@@ -112,14 +112,14 @@ GUIFrame::~GUIFrame()
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GUIFrame::OnClose ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnImportSD ) );
-	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnPreferencesClicked ) );
-	this->Disconnect( wxID_QUIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
+	this->Disconnect( wxID_PREFERENCES, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnPreferencesClicked ) );
+	this->Disconnect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnShowSerial ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
-	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
+	this->Disconnect( wxID_ABOUT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
 	
 	m_mgr.UnInit();
 	

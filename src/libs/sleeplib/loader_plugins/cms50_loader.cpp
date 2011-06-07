@@ -59,8 +59,6 @@ bool CMS50Loader::OpenCMS50(wxString & path, Profile *profile)
         loader_progress->Update(0);
     }
 
-
-
     bool cont=dir.GetFirst(&filename);
 
     while (cont) {
@@ -126,6 +124,8 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     br=f.Read(tmp,2);
     if (br!=2) return false;
     num_records=tmp[0] | (tmp[1] << 8);
+    if (num_records<300) return false; // dont bother.
+
     num_records <<= 1;
 
     br=f.Read(tmp,2);
@@ -152,6 +152,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     br=f.Read(buffer,num_records);
     if (br!=num_records) {
         wxLogError(wxT("Short .spoR File: ")+path);
+        delete [] buffer;
         return false;
     }
 
@@ -232,7 +233,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     mach->AddSession(sess,profile);
     sess->SetChanged(true);
-    delete buffer;
+    delete [] buffer;
 
     return true;
 }
