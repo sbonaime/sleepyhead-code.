@@ -204,13 +204,11 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
 {
     wxRect r=GetRect();
 
-#if defined(__UNIX__) // Borrowed.. this need fixing.
-/*    int cx=r.x, cy=r.y;
-    ClientToScreen(&cx,&cy);
-    int border_width = cx - r.x;
-    int title_bar_height = cy - r.y;
-    r.width += (border_width * 2);
-    r.height += title_bar_height; // + border_width; */
+#if defined(__UNIX__)
+    // Height of statusbar needs adding in
+    wxRect j=statusBar->GetRect();
+
+    r.height += j.height;
 #endif
 
     wxScreenDC sdc;
