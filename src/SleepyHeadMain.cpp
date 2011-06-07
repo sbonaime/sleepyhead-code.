@@ -805,6 +805,7 @@ void Daily::RefreshData()
             for (m=(*s)->events.begin();m!=(*s)->events.end();m++) {
                 MachineCode code=m->first;
                 if (code==CPAP_Leak) continue;
+                if (code==CPAP_SnoreGraph) continue;
                 if (code==PRS1_Unknown12) continue;
                 wxTreeItemId mcr;
                 if (mcroot.find(code)==mcroot.end()) {
