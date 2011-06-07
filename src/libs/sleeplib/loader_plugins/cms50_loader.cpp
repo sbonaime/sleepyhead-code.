@@ -32,6 +32,7 @@ bool CMS50Loader::Open(wxString & path,Profile *profile)
     // Data Folder
     // SpO2 Review.ini
     // SpO2.ini
+    assert(profile!=NULL);
 
     wxString tmp=path+wxFileName::GetPathSeparator()+wxT("Data");
     if ((wxFileExists(path+wxFileName::GetPathSeparator()+wxT("SpO2 Review.ini")))
@@ -48,11 +49,17 @@ bool CMS50Loader::Open(wxString & path,Profile *profile)
 }
 bool CMS50Loader::OpenCMS50(wxString & path, Profile *profile)
 {
-    wxDir dir;
-    if (!dir.Open(path)) return false;
-    list<wxString> files;
-
     wxString filename,pathname;
+    list<wxString> files;
+    wxDir dir;
+
+    if (!dir.Open(path)) return false;
+
+    if(loader_progress) {
+        loader_progress->Update(0);
+    }
+
+
 
     bool cont=dir.GetFirst(&filename);
 
@@ -62,6 +69,8 @@ bool CMS50Loader::OpenCMS50(wxString & path, Profile *profile)
             files.push_back(pathname);
         }
         cont=dir.GetNext(&filename);
+        if (loader_progress) loader_progress->Pulse();
+
     }
     int size=files.size();
     if (size==0) return false;
@@ -69,17 +78,31 @@ bool CMS50Loader::OpenCMS50(wxString & path, Profile *profile)
     Machine *mach=CreateMachine(profile);
     int cnt=0;
     for (list<wxString>::iterator n=files.begin();n!=files.end();n++,++cnt) {
-        if (loader_progress) loader_progress->Update((float(cnt)/float(size)*100.0));
+        if (loader_progress) loader_progress->Update((float(cnt)/float(size)*50.0));
         OpenSPORFile((*n),mach,profile);
     }
     mach->Save();
+    if (loader_progress) loader_progress->Update(100);
     return true;
 }
 bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 {
+    assert(mach!=NULL);
+    assert(profile!=NULL);
+
     wxFFile f;
     unsigned char tmp[256];
-    if (!f.Open(path,wxT("rb"))) return false;
+
+    __int16_t data_starts;
+    __int16_t some_code;
+    __int16_t some_more_code;
+    int num_records;
+    int br;
+
+    if (!f.Open(path,wxT("rb")))
+        return false;
+
+    // Find everything after the last _
 
     wxString str=path.AfterLast(wxChar('_'));
     wxString id=str.BeforeFirst(wxChar('.'));
@@ -90,14 +113,6 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     if (mach->SessionExists(sessid))
         return false; // Already imported
-
-    // Find everything after the last _
-    short data_starts;
-    short some_code;
-    int num_records;
-    short some_more_code;
-    int br;
-
 
 
     br=f.Read(tmp,2);
@@ -223,10 +238,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 }
 Machine *CMS50Loader::CreateMachine(Profile *profile)
 {
-    if (!profile) {  // shouldn't happen..
-        wxLogError(wxT("No Profile!"));
-        return NULL;
-    }
+    assert(profile!=NULL);
 
     // NOTE: This only allows for one CMS50 machine per profile..
     // Upgrading their oximeter will use this same record..

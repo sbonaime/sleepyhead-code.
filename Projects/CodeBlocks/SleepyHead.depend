@@ -8295,7 +8295,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307412369 /home/mark/projects/git/sleepyhead/src/version.h
+1307413369 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8413,7 +8413,7 @@
 1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
 	"sleeplib/machine_loader.h"
 
-1307412363 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
+1307413299 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
 	<wx/log.h>
 	<wx/progdlg.h>
 	"cms50_loader.h"
