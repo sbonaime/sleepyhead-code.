@@ -91,9 +91,9 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     wxFFile f;
     unsigned char tmp[256];
 
-    __int16_t data_starts;
-    __int16_t some_code;
-    __int16_t some_more_code;
+    wxInt16 data_starts;
+    wxInt16 some_code;
+    wxInt16 some_more_code;
     int num_records;
     int br;
 
