@@ -815,22 +815,27 @@ void Daily::RefreshData()
         if (tiap_bmp) {
             wxMemoryFSHandler::RemoveFile(_T("tiap.png"));
             delete tiap_bmp;
+            tiap_bmp=NULL;
         }
         if (teap_bmp) {
             wxMemoryFSHandler::RemoveFile(_T("teap.png"));
             delete teap_bmp;
+            teap_bmp=NULL;
         }
         wxRect r=HTMLInfo->GetRect();
         int w=r.width-25;
         ahi_bmp=G_AHI->RenderBitmap(w,25);
         tap_bmp=TAP->RenderBitmap(w,25);
-        teap_bmp=TAP_EAP->RenderBitmap(w,25);
-        tiap_bmp=TAP_IAP->RenderBitmap(w,25);
-
         wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
         wxMemoryFSHandler::AddFile(_T("tap.png"), *tap_bmp, wxBITMAP_TYPE_PNG);
-        wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
-        wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
+
+        if (mode==MODE_BIPAP) {
+            teap_bmp=TAP_EAP->RenderBitmap(w,25);
+            tiap_bmp=TAP_IAP->RenderBitmap(w,25);
+            wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
+            wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
+        }
+
 
 
         PRTypes pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
