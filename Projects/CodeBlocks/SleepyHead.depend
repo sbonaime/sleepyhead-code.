@@ -8295,7 +8295,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307409339 /home/mark/projects/git/sleepyhead/src/version.h
+1307412369 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8312,7 +8312,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307376956 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307409337 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8368,7 +8368,7 @@
 	<wx/stdpaths.h>
 	"preferences.h"
 
-1307372029 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.cpp
+1307411755 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/profiles.cpp
 	<wx/filefn.h>
 	<wx/filename.h>
 	<wx/utils.h>
@@ -8413,7 +8413,7 @@
 1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.h
 	"sleeplib/machine_loader.h"
 
-1307372542 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
+1307412363 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/loader_plugins/cms50_loader.cpp
 	<wx/log.h>
 	<wx/progdlg.h>
 	"cms50_loader.h"

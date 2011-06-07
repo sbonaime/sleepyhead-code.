@@ -171,7 +171,7 @@ void Profile::Import(wxString path)
     wxLogMessage(wxT("Importing ")+path);
     list<MachineLoader *>loaders=GetLoaders();
     for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
-        c+=(*i)->Open(path,this);
+        if (c+=(*i)->Open(path,this)) break;
     }
 }
 

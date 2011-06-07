@@ -57,7 +57,7 @@ bool CMS50Loader::OpenCMS50(wxString & path, Profile *profile)
     bool cont=dir.GetFirst(&filename);
 
     while (cont) {
-        if (filename.EndsWith(wxT(".spoR"))) {
+        if (filename.Lower().EndsWith(wxT(".spor"))) {
             pathname=path+wxFileName::GetPathSeparator()+filename;
             files.push_back(pathname);
         }
@@ -100,19 +100,27 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
 
 
-    f.Read(tmp,2);
+    br=f.Read(tmp,2);
+    if (br!=2) return false;
     data_starts=tmp[0] | (tmp[1] << 8);
-    f.Read(tmp,2);
+
+    br=f.Read(tmp,2);
+    if (br!=2) return false;
     some_code=tmp[0] | (tmp[1] << 8); // == 512
-    f.Read(tmp,2);
+
+    br=f.Read(tmp,2);
+    if (br!=2) return false;
     num_records=tmp[0] | (tmp[1] << 8);
     num_records <<= 1;
 
-    f.Read(tmp,2);
-    some_more_code=tmp[0] | (tmp[1] << 8); // == 512
+    br=f.Read(tmp,2);
+    if (br!=2) return false;
+    some_more_code=tmp[0] | (tmp[1] << 8);  // == 0
 
-    f.Read(tmp,34);
+    br=f.Read(tmp,34);
+    if (br!=34) return false;
 
+    // Widechar date string in format 'DD/MM/YY HH:MM:SS'
     for (int i=0;i<17;i++) {
         tmp[i]=tmp[i << 1];
     }
@@ -124,10 +132,12 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
     //wxLogMessage(datestr);
 
     f.Seek(data_starts,wxFromStart);
-    buffer=new char [num_records*2];
+
+    buffer=new char [num_records];
     br=f.Read(buffer,num_records);
     if (br!=num_records) {
-        wxLogDebug(wxT("Short .spoR File: ")+path);
+        wxLogError(wxT("Short .spoR File: ")+path);
+        return false;
     }
 
     wxDateTime last_pulse_time=date;
