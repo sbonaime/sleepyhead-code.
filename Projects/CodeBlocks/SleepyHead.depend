@@ -8295,7 +8295,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307376195 /home/mark/projects/git/sleepyhead/src/version.h
+1307409339 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307358939 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8312,7 +8312,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307376195 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307376956 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>

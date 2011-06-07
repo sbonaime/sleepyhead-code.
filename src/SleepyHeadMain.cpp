@@ -655,8 +655,8 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->LinkZoom(FRW);
     FRW->LinkZoom(SF);
     #if defined(__UNIX__)
- //   SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
- //   SF->LinkZoom(LEAK);
+    SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
+    SF->LinkZoom(LEAK);
     #endif
 
     const int sfc=9;
@@ -675,10 +675,10 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     fgSizer->Add(SF,1,wxEXPAND);
     fgSizer->Add(FRW,1,wxEXPAND);
-    fgSizer->Add(PULSE,1,wxEXPAND);
-    fgSizer->Add(SPO2,1,wxEXPAND);
     fgSizer->Add(PRD,1,wxEXPAND);
     fgSizer->Add(LEAK,1,wxEXPAND);
+    fgSizer->Add(PULSE,1,wxEXPAND);
+    fgSizer->Add(SPO2,1,wxEXPAND);
     fgSizer->Add(G_AHI,1,wxEXPAND);
     fgSizer->Add(TAP,1,wxEXPAND);
     fgSizer->Add(TAP_IAP,1,wxEXPAND);
@@ -775,7 +775,7 @@ void Daily::RefreshData()
                     if (code==CPAP_CSR) {
                         t-=wxTimeSpan::Seconds((*(*e))[0]/2);
                     }
-                    EventTree->AppendItem(mcr,t.Format(wxT("%Y-%m-%cpap %H:%M:%S")),-1,-1);
+                    EventTree->AppendItem(mcr,t.Format(wxT("%Y-%m-%d %H:%M:%S")),-1,-1);
                 }
             }
         }
