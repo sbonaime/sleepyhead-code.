@@ -1002,7 +1002,12 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawText(w.Title(),start_px,0);
 
     double t1,t2;
-    int barwidth=25;
+    int barwidth;
+    if (m_direction==wxVERTICAL) {
+        barwidth=width;
+    } else {
+        barwidth=height;
+    }
     int textX, textY;
 
     wxString str;
@@ -1029,9 +1034,9 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
         if ((int)m_names.size()>i) {
             str=m_names[i]+wxT(" ");
         }
-        str+=wxString::Format(wxT("%0.2f"),data->point[0][i].x);
+        str+=wxString::Format(wxT("%0.1f"),data->point[0][i].x);
         dc.GetTextExtent(str, &textX, &textY);
-        textX+=10;
+        textX+=5;
         if (t2>(textX)) {
             int j=t1+((t2/2)-(textX/2));
             if (m_direction==wxVERTICAL) {

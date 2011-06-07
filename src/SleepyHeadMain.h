@@ -83,7 +83,7 @@ protected:
     wxHtmlWindow *HTMLInfo;
     wxTreeCtrl *EventTree;
 
-    wxBitmap *ahi_bmp;
+    wxBitmap *ahi_bmp,*tap_bmp,*teap_bmp,*tiap_bmp;
 
 };
 

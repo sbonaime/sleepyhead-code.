@@ -546,8 +546,9 @@ void Summary::OnClose(wxCloseEvent &event)
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
-    ahi_bmp=NULL;
+    tiap_bmp=teap_bmp=tap_bmp=ahi_bmp=NULL;
     HTMLInfo=new wxHtmlWindow(this);
+    HTMLInfo->SetBorders(4);
     EventTree=new wxTreeCtrl(this);
 
     this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
@@ -557,20 +558,21 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
     AddCPAPData(tap=new TAPData(CPAP_Pressure));
 
-    TAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@Pressure"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
-    TAP->SetMargins(20,15,5,50);
+    TAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER);  //Time@Pressure
+    //TAP->SetMargins(20,15,5,50);
+    TAP->SetMargins(0,1,0,1);
     TAP->AddLayer(new gCandleStick(tap));
 
-    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@IPAP"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
-    TAP_IAP->SetMargins(20,15,5,50);
+    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
+    TAP_IAP->SetMargins(0,1,0,1);
     TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
-    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT("Time@EPAP"),wxPoint(0,0), wxSize(600,60), wxNO_BORDER);
-    TAP_EAP->SetMargins(20,15,5,50);
+    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@EPAP
+    TAP_EAP->SetMargins(0,1,0,1);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
-    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,60), wxNO_BORDER); //Event Breakdown")
-    G_AHI->SetMargins(0,2,0,2);
+    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Event Breakdown")
+    G_AHI->SetMargins(0,1,0,1);
     AddCPAPData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
     l->AddName(wxT("H"));
@@ -682,9 +684,9 @@ Daily::Daily(wxWindow *win,Profile *p)
     fgSizer->Add(PULSE,1,wxEXPAND);
     fgSizer->Add(SPO2,1,wxEXPAND);
     //fgSizer->Add(G_AHI,1,wxEXPAND);
-    fgSizer->Add(TAP,1,wxEXPAND);
-    fgSizer->Add(TAP_IAP,1,wxEXPAND);
-    fgSizer->Add(TAP_EAP,1,wxEXPAND);
+    //fgSizer->Add(TAP,1,wxEXPAND);
+    //fgSizer->Add(TAP_IAP,1,wxEXPAND);
+    //fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
 
     ResetDate();
@@ -694,6 +696,18 @@ Daily::~Daily()
     if (ahi_bmp) {
         wxMemoryFSHandler::RemoveFile(_T("ahi.png"));
         delete ahi_bmp;
+    }
+    if (tap_bmp) {
+        wxMemoryFSHandler::RemoveFile(_T("tap.png"));
+        delete tap_bmp;
+    }
+    if (tiap_bmp) {
+        wxMemoryFSHandler::RemoveFile(_T("tiap.png"));
+        delete tiap_bmp;
+    }
+    if (teap_bmp) {
+        wxMemoryFSHandler::RemoveFile(_T("teap.png"));
+        delete teap_bmp;
     }
 
     this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
@@ -794,9 +808,29 @@ void Daily::RefreshData()
             wxMemoryFSHandler::RemoveFile(_T("ahi.png"));
             delete ahi_bmp;
         }
-        ahi_bmp=G_AHI->RenderBitmap(180,40);
-        //delete ahi_bmp;
+        if (tap_bmp) {
+            wxMemoryFSHandler::RemoveFile(_T("tap.png"));
+            delete tap_bmp;
+        }
+        if (tiap_bmp) {
+            wxMemoryFSHandler::RemoveFile(_T("tiap.png"));
+            delete tiap_bmp;
+        }
+        if (teap_bmp) {
+            wxMemoryFSHandler::RemoveFile(_T("teap.png"));
+            delete teap_bmp;
+        }
+        wxRect r=HTMLInfo->GetRect();
+        int w=r.width-25;
+        ahi_bmp=G_AHI->RenderBitmap(w,25);
+        tap_bmp=TAP->RenderBitmap(w,25);
+        teap_bmp=TAP_EAP->RenderBitmap(w,25);
+        tiap_bmp=TAP_IAP->RenderBitmap(w,25);
+
         wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
+        wxMemoryFSHandler::AddFile(_T("tap.png"), *tap_bmp, wxBITMAP_TYPE_PNG);
+        wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
+        wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
 
 
         PRTypes pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
@@ -831,8 +865,7 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td><b>")+_("Wake")+wxT("</b></td><td>")+cpap->last().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Total Time")+wxT("</b></td><td><i>")+cpap->total_time().Format(wxT("%H:%M&nbsp;hours"))+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
+
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Indices")+wxT("</i></td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
@@ -843,6 +876,10 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td><b>")+_("Vsnore")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("CSR")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
 
         html=html+wxT("<tr><td><b>")+_("Mode")+wxT("</b></td><td>")+modestr+wxT("</td></tr>\n");
@@ -868,6 +905,20 @@ void Daily::RefreshData()
         }
         html=html+wxT("<tr><td><b>")+_("Avg Leak")+wxT("</b></td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+
+        if (mode==MODE_BIPAP) {
+            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:tiap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:teap.png\" ></td></tr>\n");
+        } else { //if (mode==MODE_APAP) {
+            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:tap.png\" ></td></tr>\n");
+        }
+
+
+
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         if (mode!=MODE_BIPAP) {
             TAP_EAP->Show(false);
             TAP_IAP->Show(false);
@@ -881,7 +932,7 @@ void Daily::RefreshData()
         PRD->Show(true);
         G_AHI->Show(true);
         LEAK->Show(true);
-        TAP->Show(true);
+        //TAP->Show(true);
         SF->Show(true);
     } else {
         html+=_("<tr><td colspan=2 align=center><i>No CPAP data available</i></td></tr>");
@@ -904,6 +955,7 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td><b>")+_("SpO2 Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_avg(OXI_SPO2Average))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("SpO2 Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_min(OXI_SPO2Min))+wxT("</td></tr>\n");
         html=html+wxT("<tr><td><b>")+_("SpO2 Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_max(OXI_SPO2Max))+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         PULSE->Show(true);
         SPO2->Show(true);
     } else {
@@ -915,8 +967,6 @@ void Daily::RefreshData()
 
     if (cpap) {
 //        fgSizer->Layout();
-
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
 
         if (cpap->summary_avg(CPAP_BrokenSummary)==1) {
             html=html+wxT("<tr><td colspan=2 align=center><i>")+_("No System Settings Recorded")+wxT("</i></td></tr>\n");
