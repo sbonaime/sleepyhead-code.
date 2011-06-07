@@ -615,7 +615,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SPO2->LinkZoom(PULSE);
     PULSE->LinkZoom(SPO2);
 
-    AddCPAPData(snore=new EventData(PRS1_VSnoreGraph,0));
+    AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
     //snore->ForceMinY(0);
     //snore->ForceMaxY(15);
 
@@ -749,6 +749,7 @@ void Daily::OnEventTreeSelection( wxTreeEvent& event )
         SF->SetXBounds(st,et);
         PRD->SetXBounds(st,et);
         LEAK->SetXBounds(st,et);
+        SNORE->SetXBounds(st,et);
     }
 }
 
@@ -993,6 +994,7 @@ void Daily::RefreshData()
         PRD->Show(true);
         LEAK->Show(true);
         SF->Show(true);
+        SNORE->Show(true);
     } else {
         html+=_("<tr><td colspan=2 align=center><i>No CPAP data available</i></td></tr>");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
@@ -1004,6 +1006,7 @@ void Daily::RefreshData()
         PRD->Show(false);
         LEAK->Show(false);
         SF->Show(false);
+        SNORE->Show(false);
     }
     if (oxi) {
         html=html+wxT("<tr><td>Pulse");
