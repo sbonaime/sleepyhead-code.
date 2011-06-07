@@ -48,6 +48,7 @@ class GUIFrame : public wxFrame
 		wxMenu* FileMenu;
 		wxMenu* ViewMenu;
 		wxMenuItem* ViewMenuSerial;
+		wxMenuItem* ViewMenuFruitsalad;
 		wxMenu* ProfileMenu;
 		wxMenu* ToolsMenu;
 		wxMenu* HelpMenu;
@@ -61,6 +62,7 @@ class GUIFrame : public wxFrame
 		virtual void OnViewMenuSummary( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnViewMenuDaily( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowSerial( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFruitsalad( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFullscreen( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScreenshot( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }

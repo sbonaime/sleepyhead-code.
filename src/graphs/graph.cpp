@@ -381,19 +381,18 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     m_scrX=width;
     m_scrY=height;
 
-    wxBitmap *bmp=new wxBitmap(width, height,-1);
+    wxBitmap *bmp=new wxBitmap(width, height,24);
     dc.SelectObject(*bmp);
 
-    dc.SetPen( *wxTRANSPARENT_PEN );
-
-	dc.SetTextForeground(m_fgColour);
+  //  dc.SetPen( *wxTRANSPARENT_PEN );
+//	dc.SetTextForeground(m_fgColour);
 
     wxRect r=wxRect(0,0,width,height);
 
-//	dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
-    wxBrush brush( GetBackgroundColour() );
-    dc.SetBrush( brush );
-	dc.DrawRectangle(r);
+	dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
+    //wxBrush brush( GetBackgroundColour() );
+    //dc.SetBrush( brush );
+//	dc.DrawRectangle(r);
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(dc,*this);
     }

@@ -109,6 +109,8 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnViewMenuSummary(wxCommandEvent& event);
         virtual void OnShowSerial(wxCommandEvent& event);
         virtual void OnProfileSelected(wxCommandEvent& event);
+        virtual void OnFruitsalad(wxCommandEvent& event);
+
 
         virtual void UpdateProfiles();
 

@@ -81,6 +81,7 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     UpdateProfiles();
 
     if (pref.Exists("ShowSerialNumbers")) ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
+    if (pref.Exists("fruitsalad")) ViewMenuFruitsalad->Check(pref["fruitsalad"]); else pref["fruitsalad"]=true;
 
 
     // wxDisableAsserts();
@@ -241,6 +242,10 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
 void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 {
     pref["ShowSerialNumbers"]=event.IsChecked();
+}
+void SleepyHeadFrame::OnFruitsalad(wxCommandEvent& event)
+{
+    pref["fruitsalad"]=event.IsChecked();
 }
 
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
@@ -683,6 +688,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     fgSizer->Add(LEAK,1,wxEXPAND);
     fgSizer->Add(PULSE,1,wxEXPAND);
     fgSizer->Add(SPO2,1,wxEXPAND);
+    G_AHI->Hide();
+    TAP->Hide();
+    TAP_IAP->Hide();
+    TAP_EAP->Hide();
     //fgSizer->Add(G_AHI,1,wxEXPAND);
     //fgSizer->Add(TAP,1,wxEXPAND);
     //fgSizer->Add(TAP_IAP,1,wxEXPAND);
@@ -828,7 +837,7 @@ void Daily::RefreshData()
             teap_bmp=NULL;
         }
         wxRect r=HTMLInfo->GetRect();
-        int w=r.width-30;
+        int w=r.width-27;
         ahi_bmp=G_AHI->RenderBitmap(w,25);
         tap_bmp=TAP->RenderBitmap(w,25);
         wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
@@ -881,22 +890,37 @@ void Daily::RefreshData()
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
-        html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-        html=html+wxT("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#afbfff'><b>")+_("Obstructive")+wxT("</b></td><td bgcolor='#afbfff'>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+_("Hypopnea")+wxT("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</font></td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#ff80ff'><b>")+_("ClearAirway")+wxT("</b></td><td bgcolor='#ff80ff'>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
-        html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-        html=html+wxT("<tr><td align='right' bgcolor='#ffff80'><b>")+_("RERA")+wxT("</b></td><td bgcolor='#ffff80'>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#404040'><b><font color='white'>")+_("FlowLimit")+wxT("</font></b></td><td bgcolor='#404040'><font color='white'>")+wxString::Format(wxT("%0.2f"),fli)+wxT("</font></td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#ff4040'><b>")+_("Vsnore")+wxT("</b></td><td bgcolor='#ff4040'>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td align='right' bgcolor='#80ff80'><b>")+_("CSR")+wxT("</b></td><td bgcolor='#80ff80'>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
-        html=html+wxT("</table></td></tr>");
+        //pref["fruitsalad"]=false;
+        if (pref.Exists("fruitsalad") && pref["fruitsalad"]) {
+            html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+            html=html+wxT("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#afbfff'><b>")+_("Obstructive")+wxT("</b></td><td bgcolor='#afbfff'>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+_("Hypopnea")+wxT("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</font></td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#ff80ff'><b>")+_("ClearAirway")+wxT("</b></td><td bgcolor='#ff80ff'>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
+            html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+            html=html+wxT("<tr><td align='right' bgcolor='#ffff80'><b>")+_("RERA")+wxT("</b></td><td bgcolor='#ffff80'>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#404040'><b><font color='white'>")+_("FlowLimit")+wxT("</font></b></td><td bgcolor='#404040'><font color='white'>")+wxString::Format(wxT("%0.2f"),fli)+wxT("</font></td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#ff4040'><b>")+_("Vsnore")+wxT("</b></td><td bgcolor='#ff4040'>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#80ff80'><b>")+_("PB/CSR")+wxT("</b></td><td bgcolor='#80ff80'>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
+            html=html+wxT("</table></td></tr>");
+        } else {
+            html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+            html=html+wxT("<tr><td align='right'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("Hypopnea")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("ClearAirway")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
+            html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+            html=html+wxT("<tr><td align='right'><b>")+_("RERA")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("FlowLimit")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),fli)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("Vsnore")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("PB/CSR")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
+            html=html+wxT("</table></td></tr>");
+        }
 
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:ahi.png\" ></td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         //html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
@@ -944,7 +968,7 @@ void Daily::RefreshData()
 
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
-        if (mode!=MODE_BIPAP) {
+        /*if (mode!=MODE_BIPAP) {
             TAP_EAP->Show(false);
             TAP_IAP->Show(false);
             TAP->Show(true);
@@ -952,24 +976,22 @@ void Daily::RefreshData()
             TAP->Show(false);
             TAP_IAP->Show(true);
             TAP_EAP->Show(true);
-        }
+        } */
+        //G_AHI->Show(true);
         FRW->Show(true);
         PRD->Show(true);
-        G_AHI->Show(true);
         LEAK->Show(true);
-        //TAP->Show(true);
         SF->Show(true);
     } else {
         html+=_("<tr><td colspan=2 align=center><i>No CPAP data available</i></td></tr>");
         html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
 
-        TAP_EAP->Show(false);
-        TAP_IAP->Show(false);
+        //TAP_EAP->Show(false);
+        //TAP_IAP->Show(false);
+        //G_AHI->Show(false);
         FRW->Show(false);
         PRD->Show(false);
-        G_AHI->Show(false);
         LEAK->Show(false);
-        TAP->Show(false);
         SF->Show(false);
     }
     if (oxi) {
@@ -1000,12 +1022,12 @@ void Daily::RefreshData()
         if (mode==MODE_BIPAP) {
 
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tiap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:tiap.png\"  ></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:teap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:teap.png\" ></td></tr>\n");
         } else if (mode==MODE_APAP) {
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:tap.png\"></td></tr>\n");
         }
 
         html=html+wxT("</table><hr>");
@@ -1046,7 +1068,7 @@ void Daily::RefreshData()
             } else str=wxT("No");
             html=html+wxT("<tr><td><b>")+_("Sys-Resist.")+wxT("</b></td><td>")+str+wxT("</td></tr>\n");
         }
-        html=html+wxT("</table><hr>");
+        html=html+wxT("</table><hr><div align=center>");
         html=html+wxT("<table cellspacing=0 cellpadding=0 border=0>\n");
             //html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         //html=html+wxT("<tr><td colspan=2 align=center><hr></td></tr>\n");
