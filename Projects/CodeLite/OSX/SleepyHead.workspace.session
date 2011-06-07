@@ -5,14 +5,26 @@
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/SleepyHeadMain.cpp" Name="FileName"/>
-      <int Value="105" Name="FirstVisibleLine"/>
-      <int Value="124" Name="CurrentLine"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="87" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/SleepyHeadApp.cpp" Name="FileName"/>
-      <int Value="45" Name="FirstVisibleLine"/>
+      <int Value="35" Name="FirstVisibleLine"/>
       <int Value="36" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/libs/sleeplib/profiles.h" Name="FileName"/>
+      <int Value="37" Name="FirstVisibleLine"/>
+      <int Value="38" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/libs/sleeplib/profiles.cpp" Name="FileName"/>
+      <int Value="243" Name="FirstVisibleLine"/>
+      <int Value="258" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

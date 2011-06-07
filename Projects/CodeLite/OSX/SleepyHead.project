@@ -19,6 +19,12 @@
       <File Name="../../../src/libs/sleeplib/profiles.h"/>
       <File Name="../../../src/libs/sleeplib/prs1_loader.cpp"/>
       <File Name="../../../src/libs/sleeplib/prs1_loader.h"/>
+      <VirtualDirectory Name="plugins">
+        <File Name="../../../src/libs/sleeplib/loader_plugins/zeo_loader.h"/>
+        <File Name="../../../src/libs/sleeplib/loader_plugins/zeo_loader.cpp"/>
+        <File Name="../../../src/libs/sleeplib/loader_plugins/cms50_loader.h"/>
+        <File Name="../../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp"/>
+      </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="tinyxml">
       <File Name="../../../src/libs/tinyxml/tinystr.cpp"/>
