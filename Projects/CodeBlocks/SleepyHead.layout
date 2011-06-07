@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
+	<File name="../../src/GUIFrame.cpp" open="1" top="0" tabpos="14">
+		<Cursor position="1300" topLine="24" />
+	</File>
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1042" topLine="7" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="2">
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
 		<Cursor position="28432" topLine="739" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="546" topLine="42" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="31458" topLine="1176" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="9">
+		<Cursor position="44361" topLine="1657" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
 		<Cursor position="12935" topLine="338" />
@@ -20,7 +23,7 @@
 		<Cursor position="7148" topLine="269" />
 	</File>
 	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="6650" topLine="205" />
+		<Cursor position="2222" topLine="82" />
 	</File>
 	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" open="1" top="0" tabpos="5">
 		<Cursor position="579" topLine="0" />

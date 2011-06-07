@@ -1222,6 +1222,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
 
     for (int n=0;n<data->VC();n++) {
+        if (!data->np[n]) continue;
         dp=0;
         bool done=false;
         bool first=true;
@@ -1668,7 +1669,7 @@ void EventData::Reload(Day *day)
                     if (r.y>max_y) max_y=r.y;
                 }
             } else {
-                if (p!=lastp) { // There really should not be consecutive zeros.. just in case..
+                if ((p!=lastp) && (t>0)) { // There really should not be consecutive zeros.. just in case..
                     np[vc]=t;
                     tt+=t;
                     t=0;
