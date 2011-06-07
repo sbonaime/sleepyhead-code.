@@ -516,8 +516,9 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         case 0x07: // Clear Airway
         case 0x0a: // Hypopnea
         case 0x0c: // Flow Limitation
+            data[0]=buffer[pos];
             tt-=wxTimeSpan::Seconds((buffer[pos++])); // Subtract Time Offset
-            session->AddEvent(new Event(tt,cpapcode,data,0));
+            session->AddEvent(new Event(tt,cpapcode,data,1));
             break;
         case 0x0d: // Vibratory Snore
             session->AddEvent(new Event(t,cpapcode, data,0));
@@ -528,9 +529,10 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
             if (code==0x11) {
-                session->AddEvent(new Event(t,cpapcode, data,2));
+                session->AddEvent(new Event(t,cpapcode, data,1));
+                session->AddEvent(new Event(t,PRS1_VSnoreGraph,&data[1],1));
                 if (data[1]>0) {
-                    session->AddEvent(new Event(tt,PRS1_VSnore2, &data[1],1));
+                    session->AddEvent(new Event(t,PRS1_VSnore2, &data[1],1));
                 }
             } else if (code==0x03) {
                 data[0]/=10.0;

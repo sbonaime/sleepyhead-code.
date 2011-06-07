@@ -72,10 +72,10 @@ protected:
 	void UpdateOXIGraphs(Day *day);
 
     bool foobar_datehack;
-    gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap;
+    gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap,*snore;
     gPointData *pulse,*spo2;
     gPointData *flags[10];
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE;
 
     Profile *profile;
     list<gPointData *> OXIData;

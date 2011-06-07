@@ -80,8 +80,11 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     }
     UpdateProfiles();
 
-    if (pref.Exists("ShowSerialNumbers")) ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
-    if (pref.Exists("fruitsalad")) ViewMenuFruitsalad->Check(pref["fruitsalad"]); else pref["fruitsalad"]=true;
+    if (!pref.Exists("ShowSerialNumbers")) pref["ShowSerialNumbers"]=false;
+    if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
+
+    ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
+    ViewMenuFruitsalad->Check(pref["fruitsalad"]);
 
 
     // wxDisableAsserts();
@@ -612,6 +615,13 @@ Daily::Daily(wxWindow *win,Profile *p)
     SPO2->LinkZoom(PULSE);
     PULSE->LinkZoom(SPO2);
 
+    AddCPAPData(snore=new EventData(PRS1_VSnoreGraph,0));
+    //snore->ForceMinY(0);
+    //snore->ForceMaxY(15);
+
+    SNORE=new gGraphWindow(ScrolledWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SNORE->AddLayer(new gLineChart(snore,wxDARK_GREY,4096,false,false,true));
+    SNORE->AddLayer(new gXAxis(wxBLACK));
 
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
@@ -686,6 +696,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     fgSizer->Add(FRW,1,wxEXPAND);
     fgSizer->Add(PRD,1,wxEXPAND);
     fgSizer->Add(LEAK,1,wxEXPAND);
+    fgSizer->Add(SNORE,1,wxEXPAND);
     fgSizer->Add(PULSE,1,wxEXPAND);
     fgSizer->Add(SPO2,1,wxEXPAND);
     G_AHI->Hide();
