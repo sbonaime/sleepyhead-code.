@@ -1046,8 +1046,7 @@ void Daily::RefreshData()
             } else if (mode==MODE_APAP) {
                 html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH20 Min<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O Max"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             } else if (mode==MODE_BIPAP) {
-                html=html+wxT("<tr><td><b>")+_("IPAP&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f cmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
-                html=html+wxT("<tr><td><b>")+_("EPAP&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
+                html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O IPAP<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O EPAP"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             }
             html=html+wxT("<tr><td><b>")+_("Ramp")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_min(CPAP_RampStartingPressure))+wxString::Format(wxT(" @ %imin"),(int)cpap->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
 

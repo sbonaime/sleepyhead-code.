@@ -405,8 +405,6 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 #if defined(__WXMSW__)
     wxAutoBufferedPaintDC dc(this);
-#elif defined (__WXMAC__)
-    wxGCDC(this);
 #else
     wxPaintDC dc(this);
 #endif
