@@ -766,6 +766,8 @@ void Daily::RefreshData()
     CPAPMode mode;
     PRTypes pr;
     wxString epr,modestr;
+    float iap90,eap90;
+
     if (cpap) {
         mode=(CPAPMode)cpap->summary_max(CPAP_Mode);
 
@@ -854,8 +856,8 @@ void Daily::RefreshData()
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
 //        float p90=cpap->percentile(CPAP_Pressure,0,0.9);
-        float eap90=cpap->percentile(CPAP_EAP,0,0.9);
-        float iap90=cpap->percentile(CPAP_IAP,0,0.9);
+        eap90=cpap->percentile(CPAP_EAP,0,0.9);
+        iap90=cpap->percentile(CPAP_IAP,0,0.9);
         wxString submodel=_("Unknown Model");
 
 
@@ -906,27 +908,33 @@ void Daily::RefreshData()
         html=html+wxT("<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n");
         //html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
 
-        html=html+wxT("<tr><td><b>What</b></td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
 
-        if (mode==MODE_CPAP) {
-            html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
+        if (mode==MODE_BIPAP) {
+            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;IPAP ")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;EPAP ")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n");
         } else if (mode==MODE_APAP) {
+            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;Pressure ")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_weighted_avg(CPAP_PressurePercentValue))+wxT("</i></td></tr>\n");
+        } else if (mode==MODE_CPAP) {
+            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("Pressure ")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</i></td></tr>\n");
+        }
+        html=html+wxT("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
+
+        html=html+wxT("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
+
+        if (mode==MODE_APAP) {
             html=html+wxT("<tr><td>Pressure</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(CPAP_PressureMinAchieved));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_PressureAverage));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>");
 
-            /*html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_weighted_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
           //  html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
             html=html+wxT("<tr><td>IPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_IAPMin));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_IAPAverage));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_IAPMax))+wxT("</td></tr>");
+
             html=html+wxT("<tr><td>EPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_EAPMin));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_EAPAverage));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_EAPMax))+wxT("</td></tr>");
-
-            html=html+wxT("<tr><td><b>")+_("90%&nbsp;IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("90%&nbsp;EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n"); */
 
         }
         html=html+wxT("<tr><td>Leak"); //</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))
@@ -988,16 +996,17 @@ void Daily::RefreshData()
 
     if (cpap) {
 
+
         if (mode==MODE_BIPAP) {
+
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tiap.png\" ></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:teap.png\" ></td></tr>\n");
-        } else { //if (mode==MODE_APAP) {
+        } else if (mode==MODE_APAP) {
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tap.png\" ></td></tr>\n");
         }
-
 
         html=html+wxT("</table><hr>");
         html=html+wxT("<div align=left>");
