@@ -1031,7 +1031,8 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
         }
         str+=wxString::Format(wxT("%0.2f"),data->point[0][i].x);
         dc.GetTextExtent(str, &textX, &textY);
-        if (t2>textX+5) {
+        textX+=10;
+        if (t2>(textX)) {
             int j=t1+((t2/2)-(textX/2));
             if (m_direction==wxVERTICAL) {
                 dc.DrawRotatedText(str,start_px+barwidth+2+textY,j,270);
