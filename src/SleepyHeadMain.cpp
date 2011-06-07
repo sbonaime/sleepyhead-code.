@@ -211,6 +211,9 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
     r.height += j.height;
 #endif
 
+#if defined(__WXMAC__)
+    wxMessageBox(wxT("Sorry.. Screenshots don't work on your platform.\n\nPlease use your Mac's screenshot capability instead."),wxT("Naughty Apple!"),wxICON_EXCLAMATION,this);
+#else
     wxScreenDC sdc;
     wxMemoryDC mdc;
 
@@ -233,6 +236,7 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
             wxLogError(wxT("Couldn't save screenshot ")+filename);
         }
     }
+#endif
 }
 void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 {
