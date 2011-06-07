@@ -145,7 +145,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
 	Notebook = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT );
-	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .CaptionVisible( false ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( false ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).Position( 1 ).MinSize( wxSize( 220,-1 ) ) );
+	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .CaptionVisible( false ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( false ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).Position( 1 ).MinSize( wxSize( 260,-1 ) ) );
 	
 	
 	

@@ -97,7 +97,7 @@ void InitMapsWithoutAwesomeInitializerLists()
 {
     CPAPModeNames[MODE_UNKNOWN]=wxT("Undetermined");
     CPAPModeNames[MODE_CPAP]=wxT("CPAP");
-    CPAPModeNames[MODE_APAP]=wxT("APAP");
+    CPAPModeNames[MODE_APAP]=wxT("Auto");
     CPAPModeNames[MODE_BIPAP]=wxT("BIPAP");
     CPAPModeNames[MODE_ASV]=wxT("ASV");
 

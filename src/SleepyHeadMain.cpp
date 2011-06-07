@@ -760,9 +760,12 @@ void Daily::RefreshData()
     if (cpap) UpdateCPAPGraphs(cpap);
     if (oxi) UpdateOXIGraphs(oxi);
 
-    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0><table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
+    wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>");
+    html=html+wxT("<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n");
 
     CPAPMode mode;
+    PRTypes pr;
+    wxString epr,modestr;
     if (cpap) {
         mode=(CPAPMode)cpap->summary_max(CPAP_Mode);
 
@@ -823,7 +826,7 @@ void Daily::RefreshData()
             teap_bmp=NULL;
         }
         wxRect r=HTMLInfo->GetRect();
-        int w=r.width-25;
+        int w=r.width-30;
         ahi_bmp=G_AHI->RenderBitmap(w,25);
         tap_bmp=TAP->RenderBitmap(w,25);
         wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
@@ -836,11 +839,11 @@ void Daily::RefreshData()
             wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
         }
 
-
-
-        PRTypes pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
-        wxString epr=PressureReliefNames[pr]+wxString::Format(wxT(" x%i"),(int)cpap->summary_max(CPAP_PressureReliefSetting));
-        wxString modestr=CPAPModeNames[mode];
+        pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
+        if (pr==PR_NONE)
+            epr=_(" No Pressure Relief");
+        else epr=PressureReliefNames[pr]+wxString::Format(wxT(" x%i"),(int)cpap->summary_max(CPAP_PressureReliefSetting));
+        modestr=CPAPModeNames[mode];
 
         float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway))/cpap->hours();
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
@@ -856,74 +859,83 @@ void Daily::RefreshData()
         wxString submodel=_("Unknown Model");
 
 
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Machine Information")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Machine Information")+wxT("</i></td></tr>\n");
         if (cpap->machine->properties.find(wxT("SubModel"))!=cpap->machine->properties.end())
             submodel=wxT(" <br>")+cpap->machine->properties[wxT("SubModel")];
-        html=html+wxT("<tr><td colspan=2 align=center><b>")+cpap->machine->properties[wxT("Brand")]+wxT("</b> <br>")+cpap->machine->properties[wxT("Model")]+wxT(" ")+cpap->machine->properties[wxT("ModelNumber")]+submodel+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><b>")+cpap->machine->properties[wxT("Brand")]+wxT("</b> <br>")+cpap->machine->properties[wxT("Model")]+wxT(" ")+cpap->machine->properties[wxT("ModelNumber")]+submodel+wxT("</td></tr>\n");
         if (pref.Exists("ShowSerialNumbers") && pref["ShowSerialNumbers"]) {
-            html=html+wxT("<tr><td colspan=2 align=center>")+cpap->machine->properties[wxT("Serial")]+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center>")+cpap->machine->properties[wxT("Serial")]+wxT("</td></tr>\n");
         }
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Sleep Times")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Date")+wxT("</b></td><td>")+cpap->first().Format(wxT("%x"))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Sleep")+wxT("</b></td><td>")+cpap->first().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Wake")+wxT("</b></td><td>")+cpap->last().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Total Time")+wxT("</b></td><td><i>")+cpap->total_time().Format(wxT("%H:%M&nbsp;hours"))+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4><hr></td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Sleep Times")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td align='center'><b>Date</b></td><td align='center'><b>Sleep</b></td><td align='center'><b>Wake</b></td><td align='center'><b>Hours</b></td></tr>");
+        //html=html+wxT("<tr><td><b>")+_("Date")+wxT("</b></td><td>")+cpap->first().Format(wxT("%x"))+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td align='center'>")+cpap->first().Format(wxT("%x"))+wxT("</td><td align='center'>")+cpap->first().Format(wxT("%H:%M"))+wxT("</td><td align='center'>")+cpap->last().Format(wxT("%H:%M"))+wxT("</td><td align='center'>")+cpap->total_time().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
 
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Indices")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("AHI")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Hypopnea")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("ClearAirway")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("RERA")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("FlowLimit")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),fli)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Vsnore")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("CSR")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+//        html=html+wxT("<tr><td><b>")+_("Sleep")+wxT("</b></td><td>")+cpap->first().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
+        //html=html+wxT("<tr><td><b>")+_("Wake")+wxT("</b></td><td>")+cpap->last().Format(wxT("%H:%M"))+wxT("</td></tr>\n");
+//        html=html+wxT("<tr><td><b>")+_("Total Time")+wxT("</b></td><td colspan=3><i>")+cpap->total_time().Format(wxT("%H:%M&nbsp;hours"))+wxT("</i></td></tr>\n");
+       // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
+        html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+        html=html+wxT("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#afbfff'><b>")+_("Obstructive")+wxT("</b></td><td bgcolor='#afbfff'>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+_("Hypopnea")+wxT("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</font></td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#ff80ff'><b>")+_("ClearAirway")+wxT("</b></td><td bgcolor='#ff80ff'>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
+        html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+        html=html+wxT("<tr><td align='right' bgcolor='#ffff80'><b>")+_("RERA")+wxT("</b></td><td bgcolor='#ffff80'>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#404040'><b><font color='white'>")+_("FlowLimit")+wxT("</font></b></td><td bgcolor='#404040'><font color='white'>")+wxString::Format(wxT("%0.2f"),fli)+wxT("</font></td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#ff4040'><b>")+_("Vsnore")+wxT("</b></td><td bgcolor='#ff4040'>")+wxString::Format(wxT("%0.2f"),vsi)+wxT("</td></tr>\n");
+        html=html+wxT("<tr><td align='right' bgcolor='#80ff80'><b>")+_("CSR")+wxT("</b></td><td bgcolor='#80ff80'>")+wxString::Format(wxT("%0.2f%%"),csr)+wxT("</td></tr>\n");
+        html=html+wxT("</table></td></tr>");
 
-        html=html+wxT("<tr><td><b>")+_("Mode")+wxT("</b></td><td>")+modestr+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Relief")+wxT("</b></td><td>")+epr+wxT("</td></tr>\n");
+       // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:ahi.png\" ></td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+
+        //html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
+
+        html=html+wxT("</table>");
+
+        html=html+wxT("<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
+        //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n");
+        //html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
+
+        html=html+wxT("<tr><td><b>What</b></td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
+
         if (mode==MODE_CPAP) {
             html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
         } else if (mode==MODE_APAP) {
-            html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_weighted_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Avg&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_weighted_avg(CPAP_PressureAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Min&nbsp;Reached")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMinAchieved))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Max&nbsp;Reached")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td>Pressure</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(CPAP_PressureMinAchieved));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_PressureAverage));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(CPAP_PressureMaxAchieved))+wxT("</td></tr>");
+
+            /*html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_weighted_avg(CPAP_PressurePercentValue))+wxT("</td></tr>\n");
           //  html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
-            html=html+wxT("<tr><td><b>")+_("Avg IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_avg(BIPAP_IAPAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Avg EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_avg(BIPAP_EAPAverage))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Min IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_min(BIPAP_IAPMin))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Max IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(BIPAP_IAPMax))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Min EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(BIPAP_EAPMin))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Max EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(BIPAP_EAPMax))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td>IPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_IAPMin));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_IAPAverage));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_IAPMax))+wxT("</td></tr>");
+            html=html+wxT("<tr><td>EPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_EAPMin));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_EAPAverage));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_EAPMax))+wxT("</td></tr>");
+
             html=html+wxT("<tr><td><b>")+_("90%&nbsp;IPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("90%&nbsp;EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("90%&nbsp;EPAP")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n"); */
 
         }
-        html=html+wxT("<tr><td><b>")+_("Avg Leak")+wxT("</b></td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td>Leak"); //</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(CPAP_LeakMinimum));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(CPAP_LeakMaximum))+wxT("</td><tr>");
 
-        if (mode==MODE_BIPAP) {
-            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:tiap.png\" ></td></tr>\n");
-            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:teap.png\" ></td></tr>\n");
-        } else { //if (mode==MODE_APAP) {
-            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=2 align=center cellspacing=0 cellpadding=0><img src=\"memory:tap.png\" ></td></tr>\n");
-        }
+       // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
-
-
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
         if (mode!=MODE_BIPAP) {
             TAP_EAP->Show(false);
             TAP_IAP->Show(false);
@@ -953,14 +965,18 @@ void Daily::RefreshData()
         SF->Show(false);
     }
     if (oxi) {
-        html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Oximeter Information")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Pulse Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fbpm"),oxi->summary_avg(OXI_PulseAverage))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Pulse Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fbpm"),oxi->summary_min(OXI_PulseMin))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("Pulse Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fbpm"),oxi->summary_max(OXI_PulseMax))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("SpO2 Avg")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_avg(OXI_SPO2Average))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("SpO2 Min")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_min(OXI_SPO2Min))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td><b>")+_("SpO2 Max")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f%%"),oxi->summary_max(OXI_SPO2Max))+wxT("</td></tr>\n");
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("<tr><td>Pulse");
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2fbpm"),oxi->summary_min(OXI_PulseMin));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2fbpm"),oxi->summary_avg(OXI_PulseAverage));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2fbpm"),oxi->summary_max(OXI_PulseMax))+wxT("</td><tr>");
+
+        html=html+wxT("<tr><td>SpO2");
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f%%"),oxi->summary_min(OXI_SPO2Min));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f%%"),oxi->summary_avg(OXI_SPO2Average));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f%%"),oxi->summary_max(OXI_SPO2Max))+wxT("</td><tr>");
+
+        //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+
         PULSE->Show(true);
         SPO2->Show(true);
     } else {
@@ -971,32 +987,47 @@ void Daily::RefreshData()
     ScrolledWindow->FitInside();
 
     if (cpap) {
+
+        if (mode==MODE_BIPAP) {
+            html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tiap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:teap.png\" ></td></tr>\n");
+        } else { //if (mode==MODE_APAP) {
+            html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=left cellspacing=0 cellpadding=0><img src=\"memory:tap.png\" ></td></tr>\n");
+        }
+
+
+        html=html+wxT("</table><hr>");
+        html=html+wxT("<div align=left>");
+        html=html+wxT("<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
 //        fgSizer->Layout();
 
         if (cpap->summary_avg(CPAP_BrokenSummary)==1) {
             html=html+wxT("<tr><td colspan=2 align=center><i>")+_("No System Settings Recorded")+wxT("</i></td></tr>\n");
         } else {
-            html=html+wxT("<tr><td colspan=2 align=center><i>")+_("System Settings")+wxT("</i></td></tr>\n");
+            //html=html+wxT("<tr><td colspan=2 align=center><i>")+_("System Settings")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td><b>Mode</b></td><td><b>")+modestr+wxT("</b> with ")+epr+wxT("</td></tr>\n");
 
             if (mode==MODE_CPAP) {
                 html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
             } else if (mode==MODE_APAP) {
-                html=html+wxT("<tr><td><b>")+_("Min&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
-                html=html+wxT("<tr><td><b>")+_("Max&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
+                html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH20 Min<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O Max"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             } else if (mode==MODE_BIPAP) {
-                html=html+wxT("<tr><td><b>")+_("IPAP&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
+                html=html+wxT("<tr><td><b>")+_("IPAP&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1f cmH2O"),cpap->summary_min(CPAP_PressureMin))+wxT("</td></tr>\n");
                 html=html+wxT("<tr><td><b>")+_("EPAP&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             }
-            html=html+wxT("<tr><td><b>")+_("Ramp-Time")+wxT("</b></td><td>")+wxString::Format(wxT("%imin"),(int)cpap->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("Ramp-Prs.")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),cpap->summary_min(CPAP_RampStartingPressure))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("Ramp")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_min(CPAP_RampStartingPressure))+wxString::Format(wxT(" @ %imin"),(int)cpap->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
 
+            html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
             // check HumidiferStatus..
             wxString str;
             if (bool(cpap->summary_max(CPAP_HumidifierStatus))) {
                 str=wxString::Format(wxT("x%i"),(int)cpap->summary_max(CPAP_HumidifierSetting));
             } else str=wxT("No");
             html=html+wxT("<tr><td><b>")+_("Humidifier")+wxT("</b></td><td>")+str+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td><b>")+_("System-Lock")+wxT("</b></td><td>")+(bool(cpap->summary_max(PRS1_SystemLockStatus)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td><b>")+_("SystemLock")+wxT("</b></td><td>")+(bool(cpap->summary_max(PRS1_SystemLockStatus)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Auto-Off")+wxT("</b></td><td>")+(bool(cpap->summary_max(PRS1_AutoOff)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Mask-Alert")+wxT("</b></td><td>")+(bool(cpap->summary_max(PRS1_MaskAlert)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
             html=html+wxT("<tr><td><b>")+_("Show-AHI")+wxT("</b></td><td>")+(bool(cpap->summary_max(PRS1_ShowAHI)) ? _("On") : _("Off"))+wxT("</td></tr>\n");
@@ -1006,20 +1037,23 @@ void Daily::RefreshData()
             } else str=wxT("No");
             html=html+wxT("<tr><td><b>")+_("Sys-Resist.")+wxT("</b></td><td>")+str+wxT("</td></tr>\n");
         }
-        html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        html=html+wxT("</table><hr>");
+        html=html+wxT("<table cellspacing=0 cellpadding=0 border=0>\n");
+            //html=html+wxT("<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n");
+        //html=html+wxT("<tr><td colspan=2 align=center><hr></td></tr>\n");
+
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
 
         for (vector<Session *>::iterator i=cpap->begin();i!=cpap->end();i++) {
 
-            html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->first().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
-            html=html+wxT("<tr><td colspan=2 align=center>")+(*i)->last().Format(wxT("%d-%m-%Y %H:%M:%S"))+wxT(" ")+wxString::Format(wxT("%05i"),(*i)->session())+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=left>")+(*i)->first().Format(wxT("%d-%m-%Y&nbsp;%H:%M"))+wxT("&nbsp;")+(*i)->last().Format(wxT("%H:%M"))+wxT("&nbsp;")+wxString::Format(wxT("#%06i"),(*i)->session())+wxT("</td></tr>\n");
         }
 
     }
     /*if (!cpap && !oxi) {
         html+=_("<tr><td colspan=2><i>No data available for this day</i></td></tr>");
     } */
-    html+=wxT("</table></body></html>");
+    html+=wxT("</table></div></body></html>");
     HTMLInfo->SetPage(html);
 
 }
