@@ -1682,8 +1682,10 @@ void EventData::Reload(Day *day)
             lastp=p;
         }
         np[vc]=t;
-        tt+=t;
-        vc++;
+        if (t>0) {
+            tt+=t;
+            vc++;
+        }
 
     }
     if (tt>0) {
