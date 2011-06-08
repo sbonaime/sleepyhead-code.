@@ -144,7 +144,9 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
 
     wxDateTime date;
     date.ParseFormat(datestr,wxT("%m/%d/%y %H:%M:%S"));
-    //wxLogMessage(datestr);
+    if (!date.IsValid()) {
+        wxLogMessage(datestr);
+    }
 
     f.Seek(data_starts,wxFromStart);
 
@@ -210,7 +212,7 @@ bool CMS50Loader::OpenSPORFile(wxString path,Machine *mach,Profile *profile)
         last_spo2=cs;
         if (PMax<cp) PMax=cp;
         if (SMax<cs) SMax=cs;
-        tt+=wxTimeSpan::Seconds(1);
+        tt+=wxTimeSpan::Seconds(1); // An educated guess. Verified by gcz@cpaptalk
     }
     if (cp) sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
     if (cs) sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));

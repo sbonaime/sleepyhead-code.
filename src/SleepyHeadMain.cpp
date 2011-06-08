@@ -265,7 +265,7 @@ void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
     msg+=_("Relying on this softwares' accuracy for making personal medical decisions is probably grounds to get you committed. Please don't do it!\n\n");
     msg+=_("Combinations of letters which form those of trademarks belong to those who own them.");
 
-    wxMessageBox(msg, _("Welcome to..."),0,this);
+    wxMessageBox(msg, _("Welcome to..."),wxOK,this);
 }
 void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
 {
