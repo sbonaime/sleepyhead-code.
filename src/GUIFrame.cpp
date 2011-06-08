@@ -31,7 +31,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	FileMenu->Append( FileMenuImportSD );
 	
 	wxMenuItem* FileMenuPreferences;
-	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_PREFERENCES, wxString( _("&Preferences") ) + wxT('\t') + wxT("F10"), wxEmptyString, wxITEM_NORMAL );
+	FileMenuPreferences = new wxMenuItem( FileMenu, wxID_ANY, wxString( _("&Preferences") ) + wxT('\t') + wxT("F10"), wxEmptyString, wxITEM_NORMAL );
 	FileMenu->Append( FileMenuPreferences );
 	
 	wxMenuItem* m_separator1;
@@ -116,7 +116,7 @@ GUIFrame::~GUIFrame()
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GUIFrame::OnClose ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnImportSD ) );
-	this->Disconnect( wxID_PREFERENCES, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnPreferencesClicked ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnPreferencesClicked ) );
 	this->Disconnect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnQuit ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuSummary ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewMenuDaily ) );
@@ -150,7 +150,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
 	Notebook = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT );
-	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .CaptionVisible( false ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( false ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).Position( 1 ).MinSize( wxSize( 260,-1 ) ) );
+	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .CaptionVisible( false ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( false ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).Position( 1 ).MinSize( wxSize( 280,-1 ) ) );
 	
 	
 	

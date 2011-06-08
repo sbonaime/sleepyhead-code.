@@ -979,6 +979,11 @@ void Daily::RefreshData()
         html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage));
         html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(CPAP_LeakMaximum))+wxT("</td><tr>");
 
+        html=html+wxT("<tr><td>Snore"); //</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(CPAP_SnoreMinimum));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_avg(CPAP_SnoreAverage));
+        html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(CPAP_SnoreMaximum))+wxT("</td><tr>");
+
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         /*if (mode!=MODE_BIPAP) {
