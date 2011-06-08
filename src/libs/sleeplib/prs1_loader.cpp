@@ -309,12 +309,14 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_IAP,0);
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_EAP,0);
 
-            sess->summary[BIPAP_IAPAverage]=sess->weighted_avg_event_field(CPAP_IAP,0);
-            sess->summary[BIPAP_IAPMin]=sess->min_event_field(CPAP_IAP,0);
-            sess->summary[BIPAP_IAPMax]=sess->max_event_field(CPAP_IAP,0);
             sess->summary[BIPAP_EAPAverage]=sess->weighted_avg_event_field(CPAP_EAP,0);
             sess->summary[BIPAP_EAPMin]=sess->min_event_field(CPAP_EAP,0);
             sess->summary[BIPAP_EAPMax]=sess->max_event_field(CPAP_EAP,0);
+
+            sess->summary[BIPAP_IAPAverage]=sess->weighted_avg_event_field(CPAP_IAP,0);
+            sess->summary[BIPAP_IAPMin]=sess->min_event_field(CPAP_IAP,0);
+            sess->summary[BIPAP_IAPMax]=sess->max_event_field(CPAP_IAP,0);
+
         } else {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
             //sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
@@ -542,8 +544,8 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
             } else if (code==0x03) {
                 data[0]/=10.0;
                 data[1]/=10.0;
-                session->AddEvent(new Event(t,CPAP_EAP, &data[1], 1));
-                session->AddEvent(new Event(t,CPAP_IAP, data, 1));
+                session->AddEvent(new Event(t,CPAP_EAP, data, 1));
+                session->AddEvent(new Event(t,CPAP_IAP, &data[1], 1));
             } else {
                 session->AddEvent(new Event(t,cpapcode, data, 2));
             }

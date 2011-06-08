@@ -571,13 +571,13 @@ Daily::Daily(wxWindow *win,Profile *p)
     TAP->SetMargins(0,1,0,1);
     TAP->AddLayer(new gCandleStick(tap));
 
-    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
-    TAP_IAP->SetMargins(0,1,0,1);
-    TAP_IAP->AddLayer(new gCandleStick(tap_iap));
-
     TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@EPAP
     TAP_EAP->SetMargins(0,1,0,1);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
+
+    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
+    TAP_IAP->SetMargins(0,1,0,1);
+    TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
     G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Event Breakdown")
     G_AHI->SetMargins(0,1,0,1);
@@ -626,7 +626,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
     //leakdata->ForceMaxY(120);
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
     LEAK->AddLayer(new gXAxis(wxBLACK));
 
@@ -859,8 +859,8 @@ void Daily::RefreshData()
         if (mode==MODE_BIPAP) {
             teap_bmp=TAP_EAP->RenderBitmap(w,25);
             tiap_bmp=TAP_IAP->RenderBitmap(w,25);
-            wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
             wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
+            wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
         }
 
         pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
@@ -907,8 +907,8 @@ void Daily::RefreshData()
         if (pref.Exists("fruitsalad") && pref["fruitsalad"]) {
             html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
             html=html+wxT("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
-            html=html+wxT("<tr><td align='right' bgcolor='#afbfff'><b>")+_("Obstructive")+wxT("</b></td><td bgcolor='#afbfff'>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+_("Hypopnea")+wxT("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</font></td></tr>\n");
+            html=html+wxT("<tr><td align='right' bgcolor='#40afbf'><b>")+_("Obstructive")+wxT("</b></td><td bgcolor='#40afbf'>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td align='right' bgcolor='#ff80ff'><b>")+_("ClearAirway")+wxT("</b></td><td bgcolor='#ff80ff'>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
             html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
             html=html+wxT("<tr><td align='right' bgcolor='#ffff80'><b>")+_("RERA")+wxT("</b></td><td bgcolor='#ffff80'>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
@@ -919,8 +919,8 @@ void Daily::RefreshData()
         } else {
             html=html+wxT("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
             html=html+wxT("<tr><td align='right'><b><font color='black'>")+_("AHI")+wxT("</font></b></td><td><b><font color='black'>")+wxString::Format(wxT("%0.2f"),ahi)+wxT("</font></b></td></tr>\n");
-            html=html+wxT("<tr><td align='right'><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td align='right'><b>")+_("Hypopnea")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),hi)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td align='right'><b>")+_("Obstructive")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),oai)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td align='right'><b>")+_("ClearAirway")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),cai)+wxT("</td></tr>\n");
             html=html+wxT("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
             html=html+wxT("<tr><td align='right'><b>")+_("RERA")+wxT("</b></td><td>")+wxString::Format(wxT("%0.2f"),rei)+wxT("</td></tr>\n");
@@ -947,8 +947,8 @@ void Daily::RefreshData()
 
 
         if (mode==MODE_BIPAP) {
-            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;IPAP ")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;EPAP ")+wxString::Format(wxT("%.1fcmH2O"),eap90)+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;IPAP ")+wxString::Format(wxT("%.1fcmH2O"),iap90)+wxT("</td></tr>\n");
         } else if (mode==MODE_APAP) {
             html=html+wxT("<tr><td colspan=4 align='center'><i>")+_("90%&nbsp;Pressure ")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_weighted_avg(CPAP_PressurePercentValue))+wxT("</i></td></tr>\n");
         } else if (mode==MODE_CPAP) {
@@ -965,13 +965,13 @@ void Daily::RefreshData()
 
           //  html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
-            html=html+wxT("<tr><td>IPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_IAPMin));
-            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_IAPAverage));
-            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_IAPMax))+wxT("</td></tr>");
-
             html=html+wxT("<tr><td>EPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_EAPMin));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_EAPAverage));
             html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_EAPMax))+wxT("</td></tr>");
+
+            html=html+wxT("<tr><td>IPAP</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_min(BIPAP_IAPMin));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(BIPAP_IAPAverage));
+            html=html+wxT("</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_max(BIPAP_IAPMax))+wxT("</td></tr>");
 
         }
         html=html+wxT("<tr><td>Leak"); //</td><td>")+wxString::Format(wxT("%.2f"),cpap->summary_weighted_avg(CPAP_LeakAverage))
@@ -1040,11 +1040,11 @@ void Daily::RefreshData()
 
 
         if (mode==MODE_BIPAP) {
-
-            html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
-            html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:tiap.png\"  ></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@EPAP")+wxT("</i></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:teap.png\" ></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@IPAP")+wxT("</i></td></tr>\n");
+            html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:tiap.png\"  ></td></tr>\n");
+
         } else if (mode==MODE_APAP) {
             html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Time@Pressure")+wxT("</i></td></tr>\n");
             html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:tap.png\"></td></tr>\n");
@@ -1066,7 +1066,7 @@ void Daily::RefreshData()
             } else if (mode==MODE_APAP) {
                 html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH20 Min<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O Max"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             } else if (mode==MODE_BIPAP) {
-                html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O IPAP<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O EPAP"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
+                html=html+wxT("<tr><td><b>")+_("Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O EPAP<br>"),cpap->summary_min(CPAP_PressureMin))+wxString::Format(wxT("%.2fcmH2O IPAP"),cpap->summary_max(CPAP_PressureMax))+wxT("</td></tr>\n");
             }
             html=html+wxT("<tr><td><b>")+_("Ramp")+wxT("</b></td><td>")+wxString::Format(wxT("%.2fcmH2O"),cpap->summary_min(CPAP_RampStartingPressure))+wxString::Format(wxT(" @ %imin"),(int)cpap->summary_max(CPAP_RampTime))+wxT("</td></tr>\n");
 

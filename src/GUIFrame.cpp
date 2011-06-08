@@ -135,7 +135,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	m_mgr.SetManagedWindow(this);
 	
 	Calendar = new wxCalendarCtrl( this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxCAL_MONDAY_FIRST|wxCAL_SEQUENTIAL_MONTH_SELECTION|wxCAL_SHOW_SURROUNDING_WEEKS );
-	m_mgr.AddPane( Calendar, wxAuiPaneInfo() .Left() .Caption( wxT("Selected Day") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).PaneBorder( false ).Dock().Fixed().BottomDockable( false ).TopDockable( false ) );
+	m_mgr.AddPane( Calendar, wxAuiPaneInfo() .Left() .Caption( wxT("Selected Day") ).PaneBorder( false ).Dock().Fixed().BottomDockable( false ).TopDockable( false ) );
 	
 	ScrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	ScrolledWindow->SetScrollRate( 5, 5 );
@@ -150,7 +150,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
 	Notebook = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT );
-	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .CaptionVisible( false ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( false ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).Position( 1 ).MinSize( wxSize( 280,-1 ) ) );
+	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .Caption( wxT("Summary") ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxSize( 280,-1 ) ).DockFixed( false ).Position( 1 ).BestSize( wxSize( 280,-1 ) ) );
 	
 	
 	
