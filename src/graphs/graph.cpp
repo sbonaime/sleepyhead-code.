@@ -297,11 +297,13 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 }
 void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 {
-    m_mouseRClick.x = event.GetX();
-    m_mouseRClick.y = event.GetY();
+    if ( (event.GetY()>=GetTopMargin()) && (event.GetY()<=m_scrY-GetBottomMargin())) {
+        m_mouseRClick.x = event.GetX();
+        m_mouseRClick.y = event.GetY();
 
-    m_mouseRClick_start=m_mouseRClick;
-    m_mouseRDown=true;
+        m_mouseRClick_start=m_mouseRClick;
+        m_mouseRDown=true;
+    }
 
     event.Skip();
 }
@@ -309,13 +311,15 @@ void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 {
     double zoom_fact=2;
-    if (event.ControlDown()) zoom_fact=5.0;
-    if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->ZoomX(zoom_fact,0);
-        }
-        if (!m_block_zoom) {
-            ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+    if ( (event.GetY()>=GetTopMargin()) && (event.GetY()<=m_scrY-GetBottomMargin())) {
+        if (event.ControlDown()) zoom_fact=5.0;
+        if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->ZoomX(zoom_fact,0);
+            }
+            if (!m_block_zoom) {
+                ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+            }
         }
     }
     m_mouseRDown=false;
@@ -324,14 +328,22 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 }
 void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 {
-    m_mouseLClick.x = event.GetX();
-    m_mouseLClick.y = event.GetY();
+    int y=event.GetY();
+    int top=GetTopMargin();
+    if ((y>=top) && (y<=m_scrY-GetBottomMargin())) {
+        m_mouseLClick.x = event.GetX();
+        m_mouseLClick.y = y;
 
-    m_mouseLDown=true;
-    event.Skip();
+        m_mouseLDown=true;
+        event.Skip();
+    }
 }
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
+    if ( (event.GetY()<GetTopMargin()) || (event.GetY()>m_scrY-GetBottomMargin())) {
+        return;
+    }
+
     wxPoint release(event.GetX(), m_scrY-m_marginBottom);
     wxPoint press(m_mouseLClick.x, m_marginTop);
     m_mouseLDown=false;
