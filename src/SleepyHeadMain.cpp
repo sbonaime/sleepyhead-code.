@@ -674,8 +674,12 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->LinkZoom(FRW);
     FRW->LinkZoom(SF);
     #if defined(__UNIX__)
+    FRW->LinkZoom(PRD);
+    FRW->LinkZoom(LEAK);
+    FRW->LinkZoom(SNORE);
     SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
     SF->LinkZoom(LEAK);
+    SF->LinkZoom(SNORE);
     #endif
 
     const int sfc=9;

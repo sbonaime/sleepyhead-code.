@@ -139,7 +139,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     SetMargins(10, 15, 46, 80);
     m_block_move=false;
     m_block_zoom=false;
-
+    m_drag_foobar=false;
 
 }
 gGraphWindow::~gGraphWindow()
@@ -272,6 +272,43 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 {
 //    static bool first=true;
     static wxRect last;
+    if (m_drag_foobar) {
+        int y=event.GetY();
+        int x=event.GetX();
+        if (x<GetLeftMargin()) return;
+        int x1=x-GetLeftMargin();
+
+        int width=m_scrX-GetRightMargin()-GetLeftMargin();
+        int height=m_scrY-GetBottomMargin()-GetTopMargin();
+
+        if (x>m_scrX-GetRightMargin()) return;
+
+        double mx=double(x1)/double(width);
+
+        double rminx=RealMinX();
+        double rmaxx=RealMaxX();
+        double rx=rmaxx-rminx;
+
+        double qx=rx*mx;
+        qx+=rminx;
+
+        // qx is centerpoint of new zoom area.
+
+        double dx=MaxX()-MinX(); // zoom rect width;
+        double gx=dx/2.0;
+
+        qx-=gx;
+        if (qx<rminx) qx=rminx;
+
+        double ex=qx+dx;
+
+        if ((qx+dx)>rmaxx) {
+            ex=rmaxx;
+            qx=ex-dx;
+        }
+        SetXBounds(qx,ex);
+
+    } else
     if (event.m_rightDown) {
         MoveX(event.GetX() - m_mouseRClick.x);
         m_mouseRClick.x=event.GetX();
@@ -297,31 +334,45 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 }
 void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 {
-    if ( (event.GetY()>=GetTopMargin()) && (event.GetY()<=m_scrY-GetBottomMargin())) {
-        m_mouseRClick.x = event.GetX();
-        m_mouseRClick.y = event.GetY();
+    if (event.GetY()<GetTopMargin()) // before top margin
+        return;
+    //else if (event.GetY()>m_scrY-GetBottomMargin()) {  // after top margin
+    //    return;
+    //}
 
-        m_mouseRClick_start=m_mouseRClick;
-        m_mouseRDown=true;
-    }
+
+    // inside the margin area..
+    m_mouseRClick.x = event.GetX();
+    m_mouseRClick.y = event.GetY();
+
+    m_mouseRClick_start=m_mouseRClick;
+    m_mouseRDown=true;
 
     event.Skip();
 }
-//voiid ZoomX
+
 void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 {
+    // Do this properly with real hotspots later..
+
+
     double zoom_fact=2;
-    if ( (event.GetY()>=GetTopMargin()) && (event.GetY()<=m_scrY-GetBottomMargin())) {
-        if (event.ControlDown()) zoom_fact=5.0;
-        if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->ZoomX(zoom_fact,0);
-            }
-            if (!m_block_zoom) {
-                ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
-            }
+    if (event.GetY()<GetTopMargin())
+        return;
+    //else if (event.GetY()>m_scrY-GetBottomMargin()) {
+    //    return;
+    //}
+
+    if (event.ControlDown()) zoom_fact=5.0;
+    if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->ZoomX(zoom_fact,0);
+        }
+        if (!m_block_zoom) {
+            ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
         }
     }
+
     m_mouseRDown=false;
 
     event.Skip();
@@ -329,48 +380,101 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 {
     int y=event.GetY();
-    int top=GetTopMargin();
-    if ((y>=top) && (y<=m_scrY-GetBottomMargin())) {
-        m_mouseLClick.x = event.GetX();
-        m_mouseLClick.y = y;
+    int x=event.GetX();
+    int width=m_scrX-GetRightMargin()-GetLeftMargin();
+    int height=m_scrY-GetBottomMargin()-GetTopMargin();
+    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
+    // if (HasFoobar()) {
 
+    if (hot1.Contains(x,y)) {
+        m_mouseLClick.x = x;
+        m_mouseLClick.y = y;
         m_mouseLDown=true;
-        event.Skip();
+    } else if ((y>(m_scrY-GetBottomMargin())+5) && (y<(m_scrY-GetBottomMargin())+15)) {
+        double rx=RealMaxX()-RealMinX();
+        double qx=double(width)/rx;
+        double minx=MinX()-RealMinX();
+        double maxx=MaxX()-RealMinX();;
+
+        int x1=(qx*minx);
+        int x2=(qx*maxx);  // length in pixels
+
+        x1+=GetLeftMargin();
+        x2+=GetLeftMargin();
+
+        if ((x>x1) && (x<x2)) {
+            m_drag_foobar=true;
+         //   wxLogMessage("Foobar Area Pushed");
+        }
     }
+
+    event.Skip();
+
 }
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
-    if ( (event.GetY()<GetTopMargin()) || (event.GetY()>m_scrY-GetBottomMargin())) {
-        return;
-    }
+    int y=event.GetY();
+    int x=event.GetX();
+    int width=m_scrX-GetRightMargin()-GetLeftMargin();
+    int height=m_scrY-GetBottomMargin()-GetTopMargin();
+    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
-    wxPoint release(event.GetX(), m_scrY-m_marginBottom);
-    wxPoint press(m_mouseLClick.x, m_marginTop);
-    m_mouseLDown=false;
-    wxDateTime a,b;
-    int x1=m_mouseRBrect.x;
-    int x2=x1+m_mouseRBrect.width;
-    int t1=MIN(x1,x2);
-    int t2=MAX(x1,x2);
+    if (!hot1.Contains(x,y)) {
+        double rx=RealMaxX()-RealMinX();
+        double qx=double(width)/rx;
 
-    wxRect r;
-    if ((t2-t1)>3) {
-        ZoomXPixels(t1,t2);
+        double minx=MinX()-RealMinX();
+        double maxx=MaxX()-RealMinX();;
+
+        int x1=(qx*minx);
+        int x2=(qx*maxx);  // length in pixels
+
+        x1+=GetLeftMargin();
+        x2+=GetLeftMargin();
+
+
+        if ((x>x1) && (x<x2)) {
+      //      wxLogMessage("Foobar Area Pushed");
+        }
     } else {
-        double zoom_fact=0.5;
-        if (event.ControlDown()) zoom_fact=0.25;
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->ZoomX(zoom_fact,event.GetX());
+        wxPoint release(event.GetX(), m_scrY-m_marginBottom);
+        wxPoint press(m_mouseLClick.x, m_marginTop);
+        m_mouseLDown=false;
+        wxDateTime a,b;
+        int x1=m_mouseRBrect.x;
+        int x2=x1+m_mouseRBrect.width;
+        int t1=MIN(x1,x2);
+        int t2=MAX(x1,x2);
+
+        wxRect r;
+        if ((t2-t1)>3) {
+            ZoomXPixels(t1,t2);
+        } else {
+            double zoom_fact=0.5;
+            if (event.ControlDown()) zoom_fact=0.25;
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->ZoomX(zoom_fact,event.GetX());
+            }
+            if (!m_block_zoom) {
+                ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+            }
         }
-        if (!m_block_zoom) {
-            ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
-        }
+
+        r=wxRect(0, 0, 0, 0);
+
+
+        m_mouseRBrect=r;
     }
+    if (m_drag_foobar) {
+       // wxLogMessage("Foobar Released");
+        double min=MinX();
+        double max=MaxX();
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->SetXBounds(min,max);
+        }
 
-    r=wxRect(0, 0, 0, 0);
-
-
-    m_mouseRBrect=r;
+    }
+    m_drag_foobar=false;
     event.Skip();
 }
 
