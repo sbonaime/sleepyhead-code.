@@ -179,7 +179,6 @@ const map<MachineCode,wxColour> DefaultFlagColours= {
 //////////////////////////////////////////////////////////////////////////////////////////
 Machine::Machine(Profile *p,MachineID id)
 {
-    wxLogDebug(wxT("Create Machine"));
     profile=p;
     if (!id) {
         std::tr1::minstd_rand gen;
@@ -193,6 +192,7 @@ Machine::Machine(Profile *p,MachineID id)
         m_id=temp;
 
     } else m_id=id;
+    wxLogDebug(wxString::Format(wxT("Create Machine %lx"),m_id));
     m_type=MT_UNKNOWN;
     firstsession=true;
 }
@@ -277,7 +277,7 @@ bool Machine::Load()
 {
     wxString path=profile->Get("DataFolder")+wxFileName::GetPathSeparator()+hexid();
     wxDir dir;
-    wxLogMessage(wxT("Loading ")+path);
+    wxLogDebug(wxT("Loading ")+path);
     dir.Open(path);
     if (!dir.IsOpened()) return false;
 

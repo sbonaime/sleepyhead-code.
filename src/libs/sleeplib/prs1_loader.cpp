@@ -52,7 +52,7 @@ PRS1Loader::~PRS1Loader()
 }
 Machine *PRS1Loader::CreateMachine(wxString serial,Profile *profile)
 {
-    wxLogMessage(wxT("Create Machine ")+serial);
+    wxLogDebug(wxT("Create Machine ")+serial);
     if (!profile) {  // shouldn't happen..
         wxLogMessage(wxT("No Profile!"));
         return NULL;

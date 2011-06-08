@@ -34,8 +34,6 @@
 
 IMPLEMENT_APP(SleepyHeadApp);
 
-wxLogWindow *logger;
-
 bool SleepyHeadApp::OnInit()
 {
     // Initialize the logger
@@ -43,8 +41,9 @@ bool SleepyHeadApp::OnInit()
 
     // It helps to allocate the logger on the heap.. This show work for all platforms now :)
 
-    logger=new wxLogWindow(NULL,wxT("Debug"),true,true); //new wxLogStderr(NULL); //
+    wxLog *logger=new wxLogStderr(NULL); //new wxLogWindow(NULL,wxT("Debug"),true,false); //new wxLogStderr(NULL); //
     wxLog::SetActiveTarget(logger);
+    //wxLog::SetLogLevel(wxLOG_Max);
 
 	wxLogDebug( wxVERSION_STRING );
 	wxLogDebug( wxT("Application Initialze...") );
@@ -74,8 +73,8 @@ bool SleepyHeadApp::OnInit()
 
     SleepyHeadFrame* frame = new SleepyHeadFrame(0L);
 
+    //logger->GetFrame()->Reparent(frame);
     frame->Show();
-    //logger->Show(false);
 
     return true;
 }
@@ -83,8 +82,8 @@ bool SleepyHeadApp::OnInit()
 int SleepyHeadApp::OnExit()
 {
     //delete loader_progress;
-    wxLogMessage(wxT("Closing Profiles..."));
+    wxLogDebug(wxT("Closing Profiles..."));
     Profiles::Done();
-
+//    wxLog::SetActiveTarget(NULL);
     return true;
 }
