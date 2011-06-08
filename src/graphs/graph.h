@@ -218,6 +218,7 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         bool m_block_move;
         bool m_block_zoom;
         bool m_drag_foobar;
+        double m_foobar_pos;
         std::list<gLayer *> layers;
         wxColour m_bgColour;	//!< Background Colour
         wxColour m_fgColour;	//!< Foreground Colour
