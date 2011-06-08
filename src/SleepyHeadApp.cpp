@@ -34,6 +34,8 @@
 
 IMPLEMENT_APP(SleepyHeadApp);
 
+wxLogWindow *logger;
+
 bool SleepyHeadApp::OnInit()
 {
     // Initialize the logger
@@ -41,7 +43,7 @@ bool SleepyHeadApp::OnInit()
 
     // It helps to allocate the logger on the heap.. This show work for all platforms now :)
 
-    wxLog *logger=new wxLogStderr(NULL); //LogWindow(NULL,wxT("Debug"),true,true);
+    logger=new wxLogWindow(NULL,wxT("Debug"),true,true); //new wxLogStderr(NULL); //
     wxLog::SetActiveTarget(logger);
 
 	wxLogDebug( wxVERSION_STRING );
@@ -73,6 +75,7 @@ bool SleepyHeadApp::OnInit()
     SleepyHeadFrame* frame = new SleepyHeadFrame(0L);
 
     frame->Show();
+    //logger->Show(false);
 
     return true;
 }
