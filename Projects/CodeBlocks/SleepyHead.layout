@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Windows" />
+	<ActiveTarget name="Debug" />
 	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="14">
 		<Cursor position="1300" topLine="24" />
 	</File>
@@ -11,13 +11,13 @@
 		<Cursor position="1042" topLine="7" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="45006" topLine="1004" />
+		<Cursor position="35219" topLine="888" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
-		<Cursor position="2540" topLine="75" />
+		<Cursor position="2209" topLine="51" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="9">
-		<Cursor position="9786" topLine="365" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
 		<Cursor position="12935" topLine="338" />
@@ -32,10 +32,10 @@
 		<Cursor position="579" topLine="0" />
 	</File>
 	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="8">
-		<Cursor position="22029" topLine="747" />
+		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="6">
-		<Cursor position="2133" topLine="25" />
+		<Cursor position="1712" topLine="36" />
 	</File>
 	<File name="../../src/libs/sleeplib/profiles.cpp" open="0" top="0" tabpos="12">
 		<Cursor position="4619" topLine="141" />
@@ -43,7 +43,7 @@
 	<File name="../../src/libs/sleeplib/profiles.h" open="0" top="0" tabpos="13">
 		<Cursor position="757" topLine="15" />
 	</File>
-	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="24147" topLine="688" />
+	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="1" tabpos="7">
+		<Cursor position="12527" topLine="329" />
 	</File>
 </CodeBlocks_layout_file>

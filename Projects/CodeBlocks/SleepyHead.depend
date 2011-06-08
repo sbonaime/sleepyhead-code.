@@ -8201,7 +8201,7 @@
 	"wx/treebase.h"
 	"wx/hashmap.h"
 
-1307516814 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
+1307521170 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
@@ -8295,7 +8295,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307518841 /home/mark/projects/git/sleepyhead/src/version.h
+1307522091 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307418393 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8312,7 +8312,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307518564 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307518841 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8380,7 +8380,7 @@
 	"machine_loader.h"
 	"tinyxml/tinyxml.h"
 
-1307515453 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
+1307522085 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.cpp
 	<wx/dir.h>
 	<wx/filename.h>
 	<wx/ffile.h>
@@ -8662,4 +8662,33 @@
 	<stddef.h>
 	"tinyxml.h"
 	<windows.h>
+
+1305215600 /usr/include/wx-2.9/wx/treectrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/treebase.h"
+	"wx/textctrl.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/msw/treectrl.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+
+1305215600 /usr/include/wx-2.9/wx/treebase.h
+	"wx/defs.h"
+	"wx/window.h"
+	"wx/event.h"
+	"wx/dynarray.h"
+
+1305215599 /usr/include/wx-2.9/wx/generic/treectlg.h
+	"wx/scrolwin.h"
+	"wx/pen.h"
+
+1305215600 /usr/include/wx-2.9/wx/aboutdlg.h
+	"wx/defs.h"
+	"wx/app.h"
+	"wx/icon.h"
 

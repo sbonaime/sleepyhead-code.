@@ -347,7 +347,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
         sess->summary[CPAP_SnoreMinimum]=sess->min_event_field(CPAP_SnoreGraph,0);
         sess->summary[CPAP_SnoreMaximum]=sess->max_event_field(CPAP_SnoreGraph,0);
         sess->summary[CPAP_SnoreMedian]=sess->avg_event_field(CPAP_SnoreGraph,0);
-        sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(CPAP_SnoreGraph,0);
+        sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(PRS1_VSnore2,0);
 
         //wxPrintf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);

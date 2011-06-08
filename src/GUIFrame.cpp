@@ -150,7 +150,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	ScrolledWindow->Layout();
 	fgSizer->Fit( ScrolledWindow );
 	Notebook = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT );
-	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .Caption( wxT("Summary") ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxSize( 280,-1 ) ).DockFixed( false ).Position( 1 ).BestSize( wxSize( 280,-1 ) ) );
+	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .Caption( wxT("Summary") ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxSize( 280,480 ) ).DockFixed( false ).Position( 1 ).BestSize( wxSize( 280,480 ) ) );
 	
 	
 	
