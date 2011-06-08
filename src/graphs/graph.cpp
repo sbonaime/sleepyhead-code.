@@ -398,7 +398,7 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
         m_mouseLClick.x = x;
         m_mouseLClick.y = y;
         m_mouseLDown=true;
-    } else if ((y>(m_scrY-GetBottomMargin())+5) && (y<(m_scrY-GetBottomMargin())+20)) {
+    } else if ((y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20)) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -439,6 +439,8 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         m_drag_foobar=false;
 
     } else {
+        if (event.GetY()>m_scrY-GetBottomMargin()+20)
+            return;
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
         wxPoint press(m_mouseLClick.x, m_marginTop);
         //wxDateTime a,b;
