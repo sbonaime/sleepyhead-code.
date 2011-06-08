@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
+	<ActiveTarget name="Debug-wx29" />
 	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="14">
 		<Cursor position="1300" topLine="24" />
 	</File>
@@ -44,6 +44,6 @@
 		<Cursor position="757" topLine="15" />
 	</File>
 	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="12527" topLine="329" />
+		<Cursor position="11668" topLine="329" />
 	</File>
 </CodeBlocks_layout_file>

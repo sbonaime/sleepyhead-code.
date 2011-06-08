@@ -8304,7 +8304,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307543626 /home/mark/projects/git/sleepyhead/src/version.h
+1307547046 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307418393 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8341,7 +8341,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307543431 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307545866 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>

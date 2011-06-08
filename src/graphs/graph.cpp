@@ -232,9 +232,9 @@ void gGraphWindow::MoveX(int i)
     double min,max;
     MoveX(i,min,max);
 
-    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+/*    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(min,max);
-    }
+    } */
     if (!m_block_zoom) SetXBounds(min,max);
 }
 void gGraphWindow::ZoomX(double mult,int origin_px)
@@ -374,6 +374,12 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
         if (!m_block_zoom) {
             ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
         }
+    } else {
+        double min=MinX();
+        double max=MaxX();
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->SetXBounds(min,max);
+        }
     }
 
     m_mouseRDown=false;
@@ -417,11 +423,11 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 }
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
-/*    int y=event.GetY();
+   int y=event.GetY();
     int x=event.GetX();
     int width=m_scrX-GetRightMargin()-GetLeftMargin();
     int height=m_scrY-GetBottomMargin()-GetTopMargin();
-    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area. */
+    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
     if (m_drag_foobar) {
        // wxLogMessage("Foobar Released");
@@ -443,17 +449,23 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 
         m_mouseLDown=false;
         m_mouseRBrect=wxRect(0, 0, 0, 0);
+
         if ((t2-t1)>3) {
-            ZoomXPixels(t1,t2);
+            //if (hot1.Contains(x,y)) {
+                ZoomXPixels(t1,t2);
+            //} else {
+                //Refresh();
+            //}
         } else {
-            double zoom_fact=0.5;
-            if (event.ControlDown()) zoom_fact=0.25;
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->ZoomX(zoom_fact,event.GetX());
-            }
-            if (!m_block_zoom) {
-                ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
-            }
+                double zoom_fact=0.5;
+                if (event.ControlDown()) zoom_fact=0.25;
+                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                    (*g)->ZoomX(zoom_fact,event.GetX());
+                }
+                if (!m_block_zoom) {
+                    ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+                }
+
         }
 
     }
