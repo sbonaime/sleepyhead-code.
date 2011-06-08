@@ -304,7 +304,7 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx==wxNOT_FOUND) {
         daily=new Daily(this,profile);
-        main_auinotebook->AddPage(daily,_("Daily"),true);
+        main_auinotebook->AddPage(daily,_("Daily"),true,wxNullBitmap);
         daily->RefreshData();
         daily->Refresh();
 
@@ -320,7 +320,7 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
     int idx=main_auinotebook->GetPageIndex(summary);
     if (idx==wxNOT_FOUND) {
         summary=new Summary(this,profile);
-        main_auinotebook->AddPage(summary,_("Summary"),true);
+        main_auinotebook->AddPage(summary,_("Summary"),true,wxNullBitmap);
         summary->ResetProfile(profile);
         summary->RefreshData();
         summary->Refresh();
@@ -560,8 +560,8 @@ Daily::Daily(wxWindow *win,Profile *p)
     EventTree=new wxTreeCtrl(this);
 
     this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
-    Notebook->AddPage(HTMLInfo,wxT("Details"),false,NULL);
-    Notebook->AddPage(EventTree,wxT("Events"),false,NULL);
+    Notebook->AddPage(HTMLInfo,wxT("Details"),false,wxNullBitmap);
+    Notebook->AddPage(EventTree,wxT("Events"),false,wxNullBitmap);
     AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
     AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
     AddCPAPData(tap=new TAPData(CPAP_Pressure));
@@ -1095,8 +1095,9 @@ void Daily::RefreshData()
         html=html+wxT("<tr><td colspan=2 align=center><i>")+_("Session Files")+wxT("</i></td></tr>\n");
 
         for (vector<Session *>::iterator i=cpap->begin();i!=cpap->end();i++) {
-
-            html=html+wxT("<tr><td colspan=2 align=left>")+(*i)->first().Format(wxT("%d-%m-%Y&nbsp;%H:%M"))+wxT("&nbsp;")+(*i)->last().Format(wxT("%H:%M"))+wxT("&nbsp;")+wxString::Format(wxT("#%06i"),(*i)->session())+wxT("</td></tr>\n");
+            html=html+wxT("<tr><td colspan=2 align=left>")+(*i)->first().Format(wxT("%d-%m-%Y&nbsp;%H:%M"))+wxT("&nbsp;");
+            html=html+(*i)->last().Format(wxT("%H:%M"))+wxT("&nbsp;");
+            html=html+wxString::Format(wxT("#%06li"),(*i)->session())+wxT("</td></tr>\n");
         }
 
     }
