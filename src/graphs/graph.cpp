@@ -1561,12 +1561,12 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             py=height - ((point[i].y - miny) * ymult);
 
             // Can't avoid this.. SetClippingRegion does not work without crashing.. need to find a workaround:(
-           /* if (px<0) {
+            if (px<0) {
                 px=0;
             }
             if (px>width) {
                 px=width;
-            } */
+            }
 
             if (accel) {
                 int z=round(px);
