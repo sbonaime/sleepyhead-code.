@@ -461,7 +461,7 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 
     if (hot1.Contains(x,y)) {
         m_mouseLDown=true;
-    } else if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20)) {
+    } else if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20) ) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -527,11 +527,10 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         int x1=m_mouseRBrect.x;
         int x2=x1+m_mouseRBrect.width;
 
-        m_mouseLDown=false;
         m_mouseRBrect=wxRect(0, 0, 0, 0);
 
 
-        if (hot1.Contains(x,y) && !m_drag_foobar) {
+        if (m_mouseLDown && !m_drag_foobar) { //hot1.Contains(x,y) &&
             int t1=MIN(x1,x2);
             int t2=MAX(x1,x2);
 
@@ -556,6 +555,7 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 
     }
     m_drag_foobar=false;
+    m_mouseLDown=false;
     event.Skip();
 }
 
