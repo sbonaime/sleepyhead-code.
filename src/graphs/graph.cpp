@@ -328,11 +328,17 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
     }
     SetXBounds(min,max);
 }
+gGraphWindow *LastGraphLDown=NULL;
 
 void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 {
 //    static bool first=true;
     static wxRect last;
+    if (LastGraphLDown && (LastGraphLDown!=this)) {
+        LastGraphLDown->OnMouseMove(event);
+        return;
+    }
+
     if (foobar && m_drag_foobar) {
         int y=event.GetY();
         int x=event.GetX();
@@ -449,7 +455,6 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 
     event.Skip();
 }
-gGraphWindow *LastGraphLDown=NULL;
 void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 {
     int y=event.GetY();
@@ -461,6 +466,9 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
     m_mouseLClick.y = y;
 
 
+    //if (LastGraphLDown) { // Windows retransmits this crap.
+        //return;
+    //}
     if (hot1.Contains(x,y)) {
         m_mouseLDown=true;
 
@@ -492,7 +500,9 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
     if (LastGraphLDown && (LastGraphLDown!=this)) { // Same graph that initiated the click??
-        LastGraphLDown->OnMouseLeftDown(event);  // Nope.. Give it the event.
+        //m_mouseLDown=false;
+        //m_drag_foobar=false;
+        LastGraphLDown->OnMouseLeftRelease(event);  // Nope.. Give it the event.
         return;
     }
 
@@ -505,7 +515,7 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     bool zoom_in=false;
     bool did_draw=false;
     // Finished Dragging the FooBar?
-    if (foobar && m_drag_foobar) {
+  //  if (foobar && m_drag_foobar) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -518,7 +528,10 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         x1+=GetLeftMargin();
         x2+=GetLeftMargin();
         if ((x>x1) && (x<x2)) {
-            if (foobar && m_foobar_moved==0) zoom_in=true;
+            if (foobar && m_foobar_moved<2) {
+                zoom_in=true;
+                m_foobar_moved=0;
+            }
         }
 
         // wxLogMessage("Foobar Released");
@@ -530,7 +543,7 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
       //  did_draw=true;
 
        // goto end;
-    } else
+    //}
 
     if (!zoom_in && m_mouseLDown) { // && !m_drag_foobar)  {
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
@@ -542,7 +555,7 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
             int t1=MIN(x1,x2);
             int t2=MAX(x1,x2);
 
-            if ((t2-t1)>3) {
+            if ((t2-t1)>4) {
                 // Range Selected
                 ZoomXPixels(t1,t2);
                 did_draw=true;
@@ -550,18 +563,17 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 
         }
         //goto end;
-
     }
 
 
-    if (!did_draw && (m_mouseLDown && (hot1.Contains(x,y)) || zoom_in)) {
-        int xp=event.GetX();
+    if ((!did_draw && hot1.Contains(x,y)) || zoom_in) {
+        int xp=x;
         if (zoom_in) xp=0;
         double zoom_fact=0.5;
         if (event.ControlDown()) zoom_fact=0.25;
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->ZoomX(zoom_fact,xp);
-        }
+        //for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+        //    (*g)->ZoomX(zoom_fact,xp);
+        //}
         if (!m_block_zoom) {
             ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.
         }
@@ -570,12 +582,12 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     }
 
     m_mouseRBrect=wxRect(0, 0, 0, 0);
-    if (m_mouseLDown && !did_draw) {
+    m_mouseLDown=false;
+    m_drag_foobar=false;
+    if (!did_draw) {
         Refresh();
     }
-end:
-    m_drag_foobar=false;
-    m_mouseLDown=false;
+    LastGraphLDown=NULL;
     event.Skip();
 }
 
