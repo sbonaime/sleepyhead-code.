@@ -28,6 +28,29 @@ wxColor *wxDARK_GREEN=&zwxDARK_GREEN;
 wxColor zwxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
 wxColor *wxDARK_GREY=&zwxDARK_GREY;
 
+wxFont *smallfont=NULL,*bigfont=NULL,*boldfont=NULL;
+bool gfont_init=false;
+
+// Must be called from a thread inside the application.
+void GraphInit()
+{
+    if (!gfont_init) {
+        bigfont=new wxFont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
+        boldfont=new wxFont(12,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD);
+        smallfont=new wxFont(10,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
+        gfont_init=true;
+    }
+}
+void GraphDone()
+{
+    if (gfont_init) {
+        delete smallfont;
+        delete boldfont;
+        delete bigfont;
+        gfont_init=false;
+    }
+}
+
 
 const wxColor *gradient_start_color=wxWHITE, *gradient_end_color=wxLIGHT_YELLOW;
 wxDirection gradient_direction=wxEAST;
@@ -130,18 +153,23 @@ END_EVENT_TABLE()
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
 : wxWindow( parent, id, pos, size, flags, title )
 {
+    //GraphInit();
     m_scrX   = m_scrY   = 64;
     m_title=title;
     m_mouseRDown=m_mouseLDown=false;
     SetBackgroundColour( *wxWHITE );
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
-    SetMargins(10, 15, 46, 80);
+    SetMargins(5, 5, 0, 0);
     m_block_move=false;
     m_block_zoom=false;
     m_drag_foobar=false;
     m_foobar_pos=0;
     m_foobar_moved=0;
+    gtitle=foobar=xaxis=yaxis=NULL;
+
+    AddLayer(new gGraphTitle(title,wxVERTICAL,boldfont));
+
 }
 gGraphWindow::~gGraphWindow()
 {
@@ -152,6 +180,38 @@ gGraphWindow::~gGraphWindow()
 
 void gGraphWindow::AddLayer(gLayer *l) {
     if (l) {
+        if (dynamic_cast<gXAxis *>(l)) {
+            if (xaxis) {
+                wxLogError(wxT("Can only have one gXAxis per graph"));
+                return;
+            }
+            if (m_marginBottom<gXAxis::Margin) m_marginBottom+=gXAxis::Margin;
+            xaxis=l;
+        }
+        if (dynamic_cast<gFooBar *>(l)) {
+            if (foobar) {
+                wxLogError(wxT("Can only have one gFooBar per graph"));
+                return;
+            }
+            if (m_marginBottom<gFooBar::Margin) m_marginBottom+=gFooBar::Margin;
+            foobar=l;
+        }
+        if (dynamic_cast<gYAxis *>(l)) {
+            if (yaxis) {
+                wxLogError(wxT("Can only have one gYAxis per graph"));
+                return;
+            }
+            if (m_marginLeft<gYAxis::Margin) m_marginLeft+=gYAxis::Margin;
+            yaxis=l;
+        }
+        if (dynamic_cast<gGraphTitle *>(l)) {
+            if (gtitle) {
+                wxLogError(wxT("Can only have one gGraphTitle per graph"));
+                return;
+            }
+            if (m_marginLeft<gGraphTitle::Margin) m_marginLeft+=gGraphTitle::Margin;
+            gtitle=l;
+        }
         l->NotifyGraphWindow(this);
         layers.push_back(l);
     }
@@ -273,7 +333,7 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 {
 //    static bool first=true;
     static wxRect last;
-    if (m_drag_foobar) {
+    if (foobar && m_drag_foobar) {
         int y=event.GetY();
         int x=event.GetX();
         if (x<GetLeftMargin()) return;
@@ -365,9 +425,9 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
     double zoom_fact=2;
     if (event.GetY()<GetTopMargin())
         return;
-    //else if (event.GetY()>m_scrY-GetBottomMargin()) {
-    //    return;
-    //}
+    else if (event.GetY()>m_scrY-GetBottomMargin()) {
+        if (!foobar) return;
+    }
 
     if (event.ControlDown()) zoom_fact=5.0;
     if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
@@ -401,7 +461,7 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 
     if (hot1.Contains(x,y)) {
         m_mouseLDown=true;
-    } else if ((y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20)) {
+    } else if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20)) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -427,69 +487,69 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 }
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
-   int y=event.GetY();
+    int y=event.GetY();
     int x=event.GetX();
     int width=m_scrX-GetRightMargin()-GetLeftMargin();
     int height=m_scrY-GetBottomMargin()-GetTopMargin();
     wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
     bool zoom_in=false;
-    double rx=RealMaxX()-RealMinX();
-    double qx=double(width)/rx;
-    double minx=MinX()-RealMinX();
-    double maxx=MaxX()-RealMinX();;
 
-    int x1=(qx*minx);
-    int x2=(qx*maxx);  // length in pixels
-    int xw=x2-x1;
+    if (foobar) {
+        double rx=RealMaxX()-RealMinX();
+        double qx=double(width)/rx;
+        double minx=MinX()-RealMinX();
+        double maxx=MaxX()-RealMinX();;
 
-    x1+=GetLeftMargin();
-    x2+=GetLeftMargin();
-    if ((x>x1) && (x<x2)) {
-        if (m_foobar_moved==0) zoom_in=true;
-    }
+        int x1=(qx*minx);   // First x pixel
+        int x2=(qx*maxx);   // Last x pixel
+        int xw=x2-x1;       // Length in pixels
 
-    if (m_drag_foobar) {
-       // wxLogMessage("Foobar Released");
-        double min=MinX();
-        double max=MaxX();
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->SetXBounds(min,max);
+        x1+=GetLeftMargin();
+        x2+=GetLeftMargin();
+        if ((x>x1) && (x<x2)) {
+            if (foobar && m_foobar_moved==0) zoom_in=true;
+        }
+
+        if (m_drag_foobar) {
+            // wxLogMessage("Foobar Released");
+            double min=MinX();
+            double max=MaxX();
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
         }
 
     }
-    if ((!m_drag_foobar && hot1.Contains(x,y)) || zoom_in) {
+    if (!m_drag_foobar || zoom_in) {
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
         wxPoint press(m_mouseLClick.x, m_marginTop);
-        //wxDateTime a,b;
         int x1=m_mouseRBrect.x;
         int x2=x1+m_mouseRBrect.width;
-        int t1=MIN(x1,x2);
-        int t2=MAX(x1,x2);
 
         m_mouseLDown=false;
         m_mouseRBrect=wxRect(0, 0, 0, 0);
 
-        if ((t2-t1)>3) {
-            //if (hot1.Contains(x,y)) {
-                ZoomXPixels(t1,t2);
-            //} else {
-                //Refresh();
-            //}
+        if (hot1.Contains(x,y) || zoom_in) {
+            int t1=MIN(x1,x2);
+            int t2=MAX(x1,x2);
+            if ((t2-t1)>3) {
+                ZoomXPixels(t1,t2); // Range Selected
+            } else {
+                double zoom_fact=0.5;
+                if (event.ControlDown()) zoom_fact=0.25;
+                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                    (*g)->ZoomX(zoom_fact,event.GetX());
+                }
+                if (!m_block_zoom) {
+                    ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+                }
+            }
         } else {
-            double zoom_fact=0.5;
-            if (event.ControlDown()) zoom_fact=0.25;
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->ZoomX(zoom_fact,event.GetX());
-            }
-            if (!m_block_zoom) {
-                ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
-            }
-
+            Refresh();
         }
 
     }
-
     m_drag_foobar=false;
     event.Skip();
 }
@@ -831,6 +891,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
     wxPen pen=wxPen(*wxBLACK,1,wxSOLID);  //color[0]
     dc.SetPen(pen);
+    dc.SetFont(*smallfont);
+
     dc.SetTextForeground(*wxBLACK);
 
     double xx=w.max_x-w.min_x;
@@ -988,6 +1050,7 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     dc.SetPen(*wxBLACK_PEN);
+    dc.SetFont(*smallfont);
 
     wxString fd=wxT("0");
     dc.GetTextExtent(fd,&x,&y);
@@ -1041,17 +1104,45 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
         if (m_show_major_lines && (i > w.min_y))
             dc.DrawLine(start_px+1,h,start_px+width,h);
 	}
-	dc.GetTextExtent(w.Title(),&x,&y);
-    dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
+	//dc.GetTextExtent(w.Title(),&x,&y);
+    //dc.DrawRotatedText(w.Title(), start_px-8-labelW - y, start_py+((height + x)>>1), 90);
 }
 
-gFooBar::gFooBar(const wxColor * col,const wxColor * col2)
+gGraphTitle::gGraphTitle(const wxString & _title,wxOrientation o,const wxFont * font, const wxColor * color)
+:gLayer(NULL),m_title(_title),m_orientation(o),m_font((wxFont*)font),m_color((wxColor *)color)
+{
+    m_textheight=m_textwidth=0;
+}
+gGraphTitle::~gGraphTitle()
+{
+}
+void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
+{
+    if (!m_visible) return;
+    int scrx = w.GetScrX();
+    int scry = w.GetScrY()-w.GetBottomMargin();
+
+    dc.SetFont(*m_font);
+    dc.SetTextForeground(*m_color);
+    wxCoord x,y;
+
+    if (m_orientation==wxHORIZONTAL) {
+        dc.DrawText(m_title,4,2);
+    } else {
+        dc.GetTextExtent(m_title,&m_textwidth,&m_textheight);
+        dc.DrawRotatedText(m_title,4,scry/2+m_textwidth/2,90.0);
+    }
+
+}
+
+
+gFooBar::gFooBar(const wxColor * col1,const wxColor * col2)
 :gLayer(NULL)
 {
-    if (col && col2) {
+    if (col1 && col2) {
         color.clear();
-        color.push_back(col);
         color.push_back(col2);
+        color.push_back(col1);
     }
 }
 gFooBar::~gFooBar()
@@ -1104,6 +1195,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
     dc.SetPen( *wxBLACK_PEN );
+    dc.SetFont(*smallfont);
     //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
     //dc.DrawText(label,0,0);
 
@@ -1188,14 +1280,9 @@ gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
         color.push_back(col);
     }
     Xaxis=new gXAxis(wxBLACK);
-    Yaxis=new gYAxis(wxBLACK);
-    foobar=new gFooBar();
-
 }
 gBarChart::~gBarChart()
 {
-    delete foobar;
-    delete Yaxis;
     delete Xaxis;
 }
 
@@ -1222,9 +1309,6 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
        if ((data->point[0][i].x >= w.min_x) && (data->point[0][i].x<w.max_x)) days+=1;
     }
     if (days==0) return;
-
-    Yaxis->Plot(dc,w);
-    foobar->Plot(dc,w);
 
     dc.SetPen( *wxBLACK_PEN );
 
@@ -1299,16 +1383,16 @@ gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool _accele
     m_drawlist=new wxPoint [dlsize];
     color.clear();
     color.push_back(col);
-    foobar=new gFooBar();
+    //foobar=new gFooBar();
     m_report_empty=false;
-    Yaxis=new gYAxis(wxBLACK);
-    Yaxis->SetShowMajorLines(true);
-    Yaxis->SetShowMinorLines(true);
+    //Yaxis=new gYAxis(wxBLACK);
+    //Yaxis->SetShowMajorLines(true);
+    //Yaxis->SetShowMinorLines(true);
 }
 gLineChart::~gLineChart()
 {
-    delete Yaxis;
-    delete foobar;
+    //delete Yaxis;
+    //delete foobar;
     delete [] m_drawlist;
 }
 
@@ -1353,11 +1437,11 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1);
 
 
-    foobar->Plot(dc,w);
+    //foobar->Plot(dc,w);
 
-    if (!m_hide_axes) {
+    /*if (!m_hide_axes) {
         Yaxis->Plot(dc,w);
-    }
+    } */
 
     wxPen pen(*color[0], 1, wxSOLID);
     dc.SetPen(pen);
@@ -1373,9 +1457,9 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         if (!cnt) {
             wxString msg=_("No Waveform Available");
             wxCoord x,y;
-            static wxFont bigfont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
             dc.SetTextForeground(*wxDARK_GREY);
-            dc.SetFont(bigfont);
+
+            dc.SetFont(*bigfont);
             dc.GetTextExtent(msg,&x,&y);
             dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
             dc.SetTextForeground(*wxBLACK);
@@ -1385,11 +1469,12 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
 
     for (int n=0;n<data->VC();n++) {
-        if (!data->np[n]) continue;
         dp=0;
+        int siz=data->np[n];
+        if (!siz) continue;
         bool done=false;
         bool first=true;
-        wxRealPoint *point=data->point[n];
+        wxRealPoint * point=data->point[n];
         if (accel) {
             s1=point[0].x;
             s2=point[1].x;
@@ -1409,7 +1494,6 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
         } else sam=1;
 
-        int siz=data->np[n];
         if (accel) {
             for (int i=0;i<width;i++) {
                 m_drawlist[i].x=height;
@@ -1491,10 +1575,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 dp++;
                 //dc.DrawLine(start_px+i, start_py+, start_px+i, start_py+m_drawlist[i].y);
             }
-            if (dp) dc.DrawLines(dp,screen);
+            if (dp>0) dc.DrawLines(dp,screen);
 
         } else {
-            if (dp) dc.DrawLines(dp,m_drawlist);
+            if (dp>0) dc.DrawLines(dp,m_drawlist);
         }
     }
     dc.DestroyClippingRegion();
@@ -1635,6 +1719,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
 
     wxPen sfp1(*color[0], 1, wxSOLID);
     wxBrush brush(*color[0],wxSOLID); //FDIAGONAL_HATCH);
+    dc.SetFont(*smallfont);
 
 
     double line_h=(height+1)/double(total_lines);
@@ -1654,11 +1739,11 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     dc.GetTextExtent(label,&x,&y);
     dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
-    if (line_num==0) {  // first lines responsibility to draw the title.
+    /*if (line_num==0) {  // first lines responsibility to draw the title.
         int lw=x;
         dc.GetTextExtent(w.Title(),&x,&y);
         dc.DrawRotatedText(w.Title(), start_px-8-lw - y, start_py+((height + x)>>1), 90);
-    }
+    } */
     dc.SetBrush(brush);
     int x1,x2;
     for (int n=0;n<data->VC();n++) {

@@ -145,6 +145,10 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         int GetBottomMargin(void) const { return m_marginBottom; };
         int GetLeftMargin(void) const { return m_marginLeft; };
         int GetRightMargin(void) const { return m_marginRight; };
+        void SetTopMargin(int i) { m_marginTop=i; };
+        void SetBottomMargin(int i) { m_marginBottom=i; };
+        void SetLeftMargin(int i) { m_marginLeft=i; };
+        void SetRightMargin(int i) { m_marginRight=i; };
 
         inline int Width() { return m_scrX-m_marginLeft-m_marginRight; };
         inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };
@@ -233,6 +237,10 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         wxRect m_mouseRBrect,m_mouseRBlast;
         bool m_mouseLDown,m_mouseRDown,m_datarefresh;
 
+        gLayer *foobar;
+        gLayer *xaxis;
+        gLayer *yaxis;
+        gLayer *gtitle;
         DECLARE_DYNAMIC_CLASS(gGraphWindow)
         DECLARE_EVENT_TABLE()
 };
@@ -309,6 +317,24 @@ class gLayer
         list<gGraphWindow *> m_graph; // notify list of graphs that attach this layer.
 };
 
+class gGraphTitle:public gLayer
+{
+    public:
+        gGraphTitle(const wxString & _title,wxOrientation o=wxVERTICAL,const wxFont * font=wxNORMAL_FONT,const wxColor * color=wxBLACK);
+        virtual ~gGraphTitle();
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        wxOrientation Orientation() { return m_orientation; };
+        static const int Margin=20;
+
+    protected:
+        wxOrientation m_orientation;
+        wxFont *m_font;
+        wxColor *m_color;
+        wxString m_title;
+        wxCoord m_textheight;
+        wxCoord m_textwidth;
+};
+
 class gCandleStick:public gLayer
 {
     public:
@@ -330,6 +356,7 @@ class gXAxis:public gLayer
         gXAxis(const wxColor * col=wxBLACK);
         virtual ~gXAxis();
         virtual void Plot(wxDC & dc, gGraphWindow & w);
+        static const int Margin=40; // How much room does this take up. (Bottom margin)
     protected:
 //        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
 };
@@ -344,7 +371,7 @@ class gYAxis:public gLayer
         bool ShowMinorLines() { return m_show_minor_lines; };
         bool ShowMajorLines() { return m_show_major_lines; };
         virtual const wxString & Format(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
-
+        static const int Margin=50; // Left margin space
     protected:
         bool m_show_major_lines;
         bool m_show_minor_lines;
@@ -353,9 +380,10 @@ class gYAxis:public gLayer
 class gFooBar:public gLayer
 {
     public:
-        gFooBar(const wxColor * col=wxDARK_GREY,const wxColor * col2=wxGREEN);
+        gFooBar(const wxColor * color1=wxGREEN,const wxColor * color2=wxDARK_GREY);
         virtual ~gFooBar();
         virtual void Plot(wxDC & dc, gGraphWindow & w);
+        static const int Margin=15;
     protected:
 };
 
@@ -381,8 +409,8 @@ class gLineChart:public gLayer
         bool m_hide_axes;
         bool m_square_plot;
         wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
-        gYAxis * Yaxis;
-        gFooBar *foobar;
+        //gYAxis * Yaxis;
+        //gFooBar *foobar;
 
 };
 
@@ -435,8 +463,6 @@ class gBarChart:public gLayer
         virtual const wxString & FormatY(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
 
         gXAxis *Xaxis;
-        gYAxis *Yaxis;
-        gFooBar *foobar;
 };
 
 class FlagData:public gPointData
@@ -536,5 +562,8 @@ public:
 protected:
     T_UHD uhd;
 };
+
+void GraphInit();
+extern void GraphDone();
 
 #endif // GRAPH_H

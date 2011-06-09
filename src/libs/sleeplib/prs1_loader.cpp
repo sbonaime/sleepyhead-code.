@@ -226,23 +226,24 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
             wxString ext_s=filename.AfterLast(wxChar('.'));
             wxString session_s=filename.BeforeLast(wxChar('.'));
 
-            if (!ext_s.IsNumber()) continue;
-            if (!session_s.IsNumber()) continue;
+            if (ext_s.IsNumber() && session_s.IsNumber()) { // Good catch Troy.. Pays not to skip the GetNext in a while loop
 
-            session_s.ToLong(&session);
-            ext_s.ToLong(&ext);
-            if (sessfiles[session].capacity()==0) sessfiles[session].resize(3);
+                session_s.ToLong(&session);
+                ext_s.ToLong(&ext);
+                if (sessfiles[session].capacity()==0) sessfiles[session].resize(3);
 
-            wxString fullname=*p+wxFileName::GetPathSeparator()+filename;
-            if (ext==1) {
-                sessfiles[session][0]=fullname;
-            } else if (ext==2) {
-                sessfiles[session][1]=fullname;
-            } else if (ext==5) {
-                sessfiles[session][2]=fullname;
+                wxString fullname=*p+wxFileName::GetPathSeparator()+filename;
+                if (ext==1) {
+                    sessfiles[session][0]=fullname;
+                } else if (ext==2) {
+                    sessfiles[session][1]=fullname;
+                } else if (ext==5) {
+                    sessfiles[session][2]=fullname;
+                }
+                cnt++;
             }
-            cnt++;
             if (loader_progress) loader_progress->Pulse(); //Update((float(cnt)/float(size)*25));
+
             //if (loader_progress) loader_progress->Update((float(cnt)/float(size)*25.0));
             cont=dir.GetNext(&filename);
         }

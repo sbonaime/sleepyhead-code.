@@ -16,11 +16,11 @@
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="2209" topLine="51" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="0" topLine="0" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="9">
+		<Cursor position="11516" topLine="447" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
-		<Cursor position="12935" topLine="338" />
+		<Cursor position="7161" topLine="200" />
 	</File>
 	<File name="../../src/libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="7148" topLine="269" />
@@ -43,7 +43,7 @@
 	<File name="../../src/libs/sleeplib/profiles.h" open="0" top="0" tabpos="13">
 		<Cursor position="757" topLine="15" />
 	</File>
-	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="11668" topLine="329" />
+	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="12567" topLine="248" />
 	</File>
 </CodeBlocks_layout_file>
