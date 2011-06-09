@@ -132,6 +132,7 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         //virtual void OnMouseWheel(wxMouseEvent &event);
         virtual void OnMouseMove(wxMouseEvent &event);
         virtual void OnMouseLeftDown(wxMouseEvent &event);
+        virtual void OnMouseLeftDClick(wxMouseEvent &event);
         virtual void OnMouseLeftRelease (wxMouseEvent  &event);
         virtual void OnMouseRightDown(wxMouseEvent &event);
         virtual void OnMouseRightRelease(wxMouseEvent &event);
@@ -371,7 +372,7 @@ class gYAxis:public gLayer
         bool ShowMinorLines() { return m_show_minor_lines; };
         bool ShowMajorLines() { return m_show_major_lines; };
         virtual const wxString & Format(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
-        static const int Margin=50; // Left margin space
+        static const int Margin=40; // Left margin space
     protected:
         bool m_show_major_lines;
         bool m_show_minor_lines;

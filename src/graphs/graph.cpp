@@ -140,6 +140,7 @@ BEGIN_EVENT_TABLE(gGraphWindow, wxWindow)
     EVT_SIZE        (gGraphWindow::OnSize)
     EVT_MOTION      (gGraphWindow::OnMouseMove )
     EVT_LEFT_DOWN   (gGraphWindow::OnMouseLeftDown)
+    EVT_LEFT_DCLICK (gGraphWindow::OnMouseLeftDClick)
     EVT_LEFT_UP     (gGraphWindow::OnMouseLeftRelease)
     EVT_RIGHT_DOWN  (gGraphWindow::OnMouseRightDown)
     EVT_RIGHT_UP    (gGraphWindow::OnMouseRightRelease)
@@ -160,7 +161,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     SetBackgroundColour( *wxWHITE );
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
-    SetMargins(5, 5, 0, 0);
+    SetMargins(5, 15, 0, 0);
     m_block_move=false;
     m_block_zoom=false;
     m_drag_foobar=false;
@@ -455,6 +456,14 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 
     event.Skip();
 }
+
+void gGraphWindow::OnMouseLeftDClick(wxMouseEvent &event)
+{
+   //wxLogMessage(wxT("WTF?? STUPID MOUSEz"));
+   OnMouseLeftDown(event);
+
+}
+
 void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 {
     int y=event.GetY();
@@ -465,14 +474,7 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
     m_mouseLClick.x = x;
     m_mouseLClick.y = y;
 
-
-    //if (LastGraphLDown) { // Windows retransmits this crap.
-        //return;
-    //}
-    if (hot1.Contains(x,y)) {
-        m_mouseLDown=true;
-
-    } else if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20) ) {
+    if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20) ) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -485,12 +487,14 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
         x1+=GetLeftMargin();
         x2+=GetLeftMargin();
         if ((x>x1) && (x<x2)) {
-            x-=x1;
-            m_foobar_pos=(1.0/double(xw))*double(x); // where along the foobar the user clicked.
+            double xj=x-x1;
+            m_foobar_pos=(1.0/double(xw))*xj; // where along the foobar the user clicked.
             m_foobar_moved=0;
             m_drag_foobar=true;
          //   wxLogMessage("Foobar Area Pushed");
-        }
+        } else m_drag_foobar=false;
+    } else if (hot1.Contains(x,y)) {
+        m_mouseLDown=true;
     }
     LastGraphLDown=this;
 
@@ -500,8 +504,6 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
 void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 {
     if (LastGraphLDown && (LastGraphLDown!=this)) { // Same graph that initiated the click??
-        //m_mouseLDown=false;
-        //m_drag_foobar=false;
         LastGraphLDown->OnMouseLeftRelease(event);  // Nope.. Give it the event.
         return;
     }
@@ -514,44 +516,27 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 
     bool zoom_in=false;
     bool did_draw=false;
+
     // Finished Dragging the FooBar?
-  //  if (foobar && m_drag_foobar) {
-        double rx=RealMaxX()-RealMinX();
-        double qx=double(width)/rx;
-        double minx=MinX()-RealMinX();
-        double maxx=MaxX()-RealMinX();
-
-        int x1=(qx*minx);   // First x pixel
-        int x2=(qx*maxx);   // Last x pixel
-        int xw=x2-x1;       // Length in pixels
-
-        x1+=GetLeftMargin();
-        x2+=GetLeftMargin();
-        if ((x>x1) && (x<x2)) {
-            if (foobar && m_foobar_moved<2) {
-                zoom_in=true;
-                m_foobar_moved=0;
+    if (foobar && m_drag_foobar) {
+        if (m_foobar_moved<5) {
+            double zoom_fact=0.5;
+            if (event.ControlDown()) zoom_fact=0.25;
+            if (!m_block_zoom) {
+                ZoomX(zoom_fact,0);
             }
+            m_foobar_moved=0;
+            did_draw=true;
         }
+    }
 
-        // wxLogMessage("Foobar Released");
-        //double min=MinX();
-        //double max=MaxX();
-        //for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-        //    (*g)->SetXBounds(min,max);
-       // }
-      //  did_draw=true;
-
-       // goto end;
-    //}
-
-    if (!zoom_in && m_mouseLDown) { // && !m_drag_foobar)  {
+    if (!did_draw && !zoom_in && m_mouseLDown) { // && !m_drag_foobar)  {
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
         wxPoint press(m_mouseLClick.x, m_marginTop);
         int x1=m_mouseRBrect.x;
         int x2=x1+m_mouseRBrect.width;
 
-        if (m_mouseLDown && !m_drag_foobar) { //hot1.Contains(x,y) &&
+        //if (m_mouseLDown && !m_drag_foobar) { //hot1.Contains(x,y) &&
             int t1=MIN(x1,x2);
             int t2=MAX(x1,x2);
 
@@ -561,12 +546,12 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
                 did_draw=true;
             }
 
-        }
+        //}
         //goto end;
     }
 
 
-    if ((!did_draw && hot1.Contains(x,y)) || zoom_in) {
+    if (!did_draw && hot1.Contains(x,y) && !m_drag_foobar && m_mouseLDown) {
         int xp=x;
         if (zoom_in) xp=0;
         double zoom_fact=0.5;
@@ -581,11 +566,14 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         //goto end;
     }
 
+    m_drag_foobar=false;
+    wxRect r=m_mouseRBrect;
     m_mouseRBrect=wxRect(0, 0, 0, 0);
     m_mouseLDown=false;
     m_drag_foobar=false;
-    if (!did_draw) {
-        Refresh();
+    if (!did_draw) { // Should never happen.
+        if (r!=m_mouseRBrect)
+            Refresh();
     }
     LastGraphLDown=NULL;
     event.Skip();
@@ -1163,12 +1151,18 @@ void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
     dc.SetFont(*m_font);
     dc.SetTextForeground(*m_color);
     wxCoord x,y;
+    wxAlignment m_alignment=wxALIGN_LEFT;
 
+    int xp;
     if (m_orientation==wxHORIZONTAL) {
         dc.DrawText(m_title,4,2);
     } else {
         dc.GetTextExtent(m_title,&m_textwidth,&m_textheight);
-        dc.DrawRotatedText(m_title,4,scry/2+m_textwidth/2,90.0);
+
+        int xp=4;
+        if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-m_textheight;
+
+        dc.DrawRotatedText(m_title,xp,scry/2+m_textwidth/2,90.0);
     }
 
 }
@@ -1505,6 +1499,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         }
     }
 
+    dc.SetClippingRegion(start_px+1,start_py,width,height);
 
     for (int n=0;n<data->VC();n++) {
         dp=0;
@@ -1566,12 +1561,12 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             py=height - ((point[i].y - miny) * ymult);
 
             // Can't avoid this.. SetClippingRegion does not work without crashing.. need to find a workaround:(
-            if (px<0) {
+           /* if (px<0) {
                 px=0;
             }
             if (px>width) {
                 px=width;
-            }
+            } */
 
             if (accel) {
                 int z=round(px);
@@ -1585,6 +1580,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                     m_drawlist[dp].y=m_drawlist[dp-1].y;
                     if (++dp>=m_drawlist_size) {
                         wxLogWarning(wxT("gLineChart: m_drawlist is too small"));
+                        done=true;
                         break;
                     }
                 }
@@ -1592,23 +1588,24 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 m_drawlist[dp].y=start_py+py;
                 if (++dp>=m_drawlist_size) {
                     wxLogWarning(wxT("gLineChart: m_drawlist is too small"));
+                    done=true;
                     break;
                 }
             }
             if (done) break;
         }
 
-        dc.SetClippingRegion(start_px+1,start_py-1,width,height+2);
         if (accel) {
             // dc.DrawLine(1, 1, 1, height);
             dp=0;
-            for (int i=minz;i<=maxz;i++) {
+            for (int i=minz;i<maxz;i++) {
                 int y1=m_drawlist[i].x;
                 int y2=m_drawlist[i].y;
-                screen[dp].x=start_px+i;
+                //if (i>width) break;
+                screen[dp].x=start_px+i+1;
                 screen[dp].y=start_py+y1;
                 dp++;
-                screen[dp].x=start_px+i;
+                screen[dp].x=start_px+i+1;
                 screen[dp].y=start_py+y2;
                 dp++;
                 //dc.DrawLine(start_px+i, start_py+, start_px+i, start_py+m_drawlist[i].y);
@@ -1620,9 +1617,6 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         }
     }
     dc.DestroyClippingRegion();
-
-    //dc.SetClippingRegion(start_px-1,start_py+height,width+1,w.GetBottomMargin());
-    //dc.DestroyClippingRegion();
 }
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
@@ -1655,6 +1649,8 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
+
+    dc.SetClippingRegion(start_px+1,start_py,width,height);
 
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
@@ -1718,6 +1714,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
         if (done) break;
     }
+    dc.DestroyClippingRegion();
 }
 
 gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _line_num,int _total_lines)

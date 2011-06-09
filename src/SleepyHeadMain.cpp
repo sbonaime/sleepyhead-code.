@@ -647,7 +647,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     LEAK->AddLayer(new gXAxis(wxBLACK));
     LEAK->AddLayer(new gYAxis(wxBLACK));
     LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
@@ -657,7 +657,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PRD->AddLayer(new gXAxis(wxBLACK));
     PRD->AddLayer(new gYAxis(wxBLACK));
     PRD->AddLayer(new gFooBar());
-    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
+    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,false));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
 
@@ -708,7 +708,7 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     const int sfc=9;
 
-    SF->SetLeftMargin(70);
+    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
     SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
     SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
