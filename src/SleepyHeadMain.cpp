@@ -695,7 +695,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
 
-    SF->LinkZoom(FRW);
+/*    SF->LinkZoom(FRW);
     FRW->LinkZoom(SF);
     #if defined(__UNIX__)
     FRW->LinkZoom(PRD);
@@ -704,7 +704,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
     SF->LinkZoom(LEAK);
     SF->LinkZoom(SNORE);
-    #endif
+    #endif */
 
     const int sfc=9;
 
