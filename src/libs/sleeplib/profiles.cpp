@@ -61,8 +61,8 @@ void Profile::LoadMachineData()
             long v=loader->Version();
             long cv=0;
             if (m->properties.find(wxT("DataVersion"))==m->properties.end())
-                m->properties[wxT("DataVersion")]=wxString::Format("%i",0);
-            m->properties["DataVersion"].ToLong(&cv);
+                m->properties[wxT("DataVersion")]=wxString::Format(wxT("%i"),0);
+            m->properties[wxT("DataVersion")].ToLong(&cv);
             if (cv<v) {
                 wxString msg=wxT("Software changes have been made that require the reimporting of the following machines data:\n\n");
                 msg=msg+m->properties[wxT("Brand")]+wxT(" ")+m->properties[wxT("Model")]+wxT(" ")+m->properties[wxT("Serial")];
@@ -73,7 +73,7 @@ void Profile::LoadMachineData()
                 if (wxMessageBox(msg,wxT("Machine Database Changes"),wxYES_NO,NULL)==wxYES) {
 
                     if (m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
-                        m->properties["DataVersion"]=wxString::Format("%li",v); // Dont need to nag again if they are too lazy.
+                        m->properties[wxT("DataVersion")]=wxString::Format(wxT("%li"),v); // Dont need to nag again if they are too lazy.
                     }
                 }
             } else  m->Load();

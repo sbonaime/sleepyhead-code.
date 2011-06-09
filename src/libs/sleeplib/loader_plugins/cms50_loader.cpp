@@ -268,7 +268,7 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     m->SetClass(cms50_class_name);
     m->properties[wxT("Brand")]=wxT("Contec");
     m->properties[wxT("Model")]=wxT("CMS50X");
-    m->properties[wxT("DataVersion")]=wxString::Format("%li",cms50_data_version);
+    m->properties[wxT("DataVersion")]=wxString::Format(wxT("%i"),cms50_data_version);
     profile->AddMachine(m);
 
     return m;

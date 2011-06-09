@@ -15,6 +15,16 @@ License: GPL
 #include "machine_loader.h"
 #include "profiles.h"
 
+
+//********************************************************************************************
+/// IMPORTANT!!!
+//********************************************************************************************
+// Please INCREMENT the following value when making changes to this loaders implementation.
+//
+const int prs1_data_version=1;
+//
+//********************************************************************************************
+
 class PRS1:public CPAP
 {
 public:
@@ -25,7 +35,6 @@ public:
 
 const int max_load_buffer_size=384*1024;
 
-const int prs1_data_version=1;
 
 const wxString prs1_class_name=wxT("PRS1");
 

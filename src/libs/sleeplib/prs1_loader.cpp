@@ -360,7 +360,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
         //wxPrintf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);
     }
-    m->properties["DataVersion"]=wxString::Format("%i",prs1_data_version);
+    m->properties[wxT("DataVersion")]=wxString::Format(wxT("%i"),prs1_data_version);
     m->Save(); // Save any new sessions to disk in our format
     if (loader_progress) loader_progress->Update(100);
     return true;

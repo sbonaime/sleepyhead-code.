@@ -649,8 +649,12 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 
     wxRect r=wxRect(0,0,m_scrX,m_scrY);
 
-	dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
-	//dc.DrawRectangle(0,0,m_scrX,m_scrY);
+    bool fruit=pref["fruitsalad"];
+    if (fruit) {
+        dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
+    } else {
+        dc.DrawRectangle(0,0,m_scrX,m_scrY);
+    }
 
     //wxLogMessage(wxT("Paint"));
     //dc.DrawText(m_title,m_marginLeft,3);
@@ -659,13 +663,16 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
     }
 
     static wxPen pen(*wxDARK_GREY, 1, wxDOT);
-    static wxColor sel(40,40,40,128);
+    static wxColor sel(128,128,128,128);
     static wxBrush brush2(sel,wxFDIAGONAL_HATCH);
 
     if (m_mouseLDown) {
         dc.SetPen(pen);
-        dc.SetBrush(brush2);
-        //dc.SetBrush(*wxTRANSPARENT_BRUSH);
+        if (fruit) {
+            dc.SetBrush(brush2);
+        } else {
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+        }
         if (m_mouseRBrect.width>0)
             dc.DrawRectangle(m_mouseRBrect);
     }

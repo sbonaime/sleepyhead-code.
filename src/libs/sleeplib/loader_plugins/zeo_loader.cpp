@@ -57,7 +57,7 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
     m->SetClass(zeo_class_name);
     m->properties[wxT("Brand")]=wxT("ZEO");
     m->properties[wxT("Model")]=wxT("Personal Sleep Coach");
-    m->properties[wxT("DataVersion")]=wxString::Format("%li",zeo_data_version);
+    m->properties[wxT("DataVersion")]=wxString::Format(wxT("%i"),zeo_data_version);
 
     profile->AddMachine(m);
 
