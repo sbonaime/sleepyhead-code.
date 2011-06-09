@@ -530,20 +530,25 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         m_mouseLDown=false;
         m_mouseRBrect=wxRect(0, 0, 0, 0);
 
-        if (hot1.Contains(x,y) || zoom_in) {
+
+        if (hot1.Contains(x,y) && !m_drag_foobar) {
             int t1=MIN(x1,x2);
             int t2=MAX(x1,x2);
+
             if ((t2-t1)>3) {
-                ZoomXPixels(t1,t2); // Range Selected
-            } else {
-                double zoom_fact=0.5;
-                if (event.ControlDown()) zoom_fact=0.25;
-                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                    (*g)->ZoomX(zoom_fact,event.GetX());
-                }
-                if (!m_block_zoom) {
-                    ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
-                }
+                // Range Selected
+                ZoomXPixels(t1,t2);
+            }
+
+        }
+        if (hot1.Contains(x,y) || zoom_in) {
+            double zoom_fact=0.5;
+            if (event.ControlDown()) zoom_fact=0.25;
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->ZoomX(zoom_fact,event.GetX());
+            }
+            if (!m_block_zoom) {
+                ZoomX(zoom_fact,event.GetX()); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
             }
         } else {
             Refresh();
@@ -1416,7 +1421,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     int start_px=w.GetLeftMargin();
     int start_py=w.GetTopMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-1;
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     double minx=w.min_x,miny=w.min_y;
     double maxx=w.max_x,maxy=w.max_y;
@@ -1431,10 +1436,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
 
     dc.SetPen( *wxBLACK_PEN );
-    dc.DrawLine(start_px,start_py,start_px,start_py+height+1);
-    dc.DrawLine(start_px,start_py+height+1,start_px+width+1,start_py+height+1);
+    dc.DrawLine(start_px,start_py,start_px,start_py+height);
+    dc.DrawLine(start_px,start_py+height,start_px+width+1,start_py+height);
    // dc.DrawLine(start_px,start_py,start_px+width,start_py);
-    dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1);
+    dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height);
 
 
     //foobar->Plot(dc,w);
@@ -1722,11 +1727,18 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     dc.SetFont(*smallfont);
 
 
-    double line_h=(height+1)/double(total_lines);
-    //int r=int(height) % total_lines;
+    double line_h=floor(double(height-2)/double(total_lines));
+    double r=fmod(height-2,total_lines);
+    line_h=round(line_h)+1;
+    double line_top=start_py+line_num*line_h;
 
-    double line_top=start_py+round(line_num*line_h)-1;
-    //double line_bottom=line_top+line_h;
+
+    if ((line_num==total_lines-1) && (r>0)) {  // first lines responsibility to draw the title.
+        //double q=ceil(r);
+        //if (q>1) q-=2;
+        line_h-=1;
+    } //else ceil(line_h);
+
 
     dc.SetPen(*wxBLACK);
     if (line_num & 1) {
@@ -1734,13 +1746,12 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     } else {
         dc.SetBrush(linebr2);
     }
-    dc.DrawRectangle(start_px,line_top,width+1,round(line_h+1));
+    dc.DrawRectangle(start_px,line_top,width+1,line_h+1);
     int x,y;
     dc.GetTextExtent(label,&x,&y);
     dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
-    /*if (line_num==0) {  // first lines responsibility to draw the title.
-        int lw=x;
+        /*int lw=x;
         dc.GetTextExtent(w.Title(),&x,&y);
         dc.DrawRotatedText(w.Title(), start_px-8-lw - y, start_py+((height + x)>>1), 90);
     } */
