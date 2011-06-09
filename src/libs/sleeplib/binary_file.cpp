@@ -40,7 +40,7 @@ bool BinaryFile::Open(wxString filename,BFOpenMode mode)
     if (wxFileExists(filename)) {
         if (mode==BF_WRITE) {
             // hmm.. file exists. unsure of best course of action here..
-            return false;
+          //  return false;
         }
         size=wxFileName::GetSize(filename).GetLo();
     }

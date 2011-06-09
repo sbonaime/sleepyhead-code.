@@ -162,6 +162,7 @@ public:
 
     bool Load();
     bool Save();
+    bool Purge(int secret);
 
     map<wxDateTime,Day *> day;
     map<SessionID,Session *> sessionlist;

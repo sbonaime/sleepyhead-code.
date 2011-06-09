@@ -13,6 +13,7 @@ License: GPL
 #include <wx/string.h>
 #include <map>
 #include "machine.h"
+#include "machine_loader.h"
 #include "preferences.h"
 #include "tinyxml/tinyxml.h"
 
@@ -54,6 +55,9 @@ protected:
     wxDateTime m_first,m_last;
 
 };
+
+class MachineLoader;
+extern MachineLoader * GetLoader(wxString name);
 
 extern Preferences *p_pref;
 extern Preferences *p_layout;

@@ -22,7 +22,12 @@ public:
     virtual ~PRS1();
 };
 
+
 const int max_load_buffer_size=384*1024;
+
+const int prs1_data_version=1;
+
+const wxString prs1_class_name=wxT("PRS1");
 
 class PRS1Loader : public MachineLoader
 {
@@ -30,7 +35,8 @@ public:
     PRS1Loader();
     virtual ~PRS1Loader();
     virtual bool Open(wxString & path,Profile *profile);
-
+    virtual int Version() { return prs1_data_version; };
+    virtual const wxString & ClassName() { return prs1_class_name; };
     Machine *CreateMachine(wxString serial,Profile *profile);
 
     static void Register();

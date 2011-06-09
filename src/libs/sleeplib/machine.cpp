@@ -2,6 +2,7 @@
 #include <wx/colour.h>
 #include <wx/log.h>
 #include <wx/progdlg.h>
+#include <wx/msgdlg.h>
 #include "binary_file.h"
 #include "machine.h"
 #include "profiles.h"
@@ -273,6 +274,45 @@ Day *Machine::AddSession(Session *s,Profile *p)
     return day[date];
 }
 
+// This functions purpose is murder and mayhem... It deletes all of a machines data.
+// Therefore this is the most dangerous function in this software..
+bool Machine::Purge(int secret)
+{
+    // Boring api key to stop this function getting called by accident :)
+    if (secret!=3478216) return false;
+
+
+    // It would be joyous if this function screwed up..
+    wxString path=profile->Get("DataFolder")+wxFileName::GetPathSeparator()+hexid();
+
+    wxDir dir;
+    wxLogDebug(wxT("Purging ")+path);
+    dir.Open(path);
+    if (!dir.IsOpened()) return false;
+
+    wxString filename;
+    bool cont=dir.GetFirst(&filename);
+
+    int could_not_kill=0;
+    while (cont) {
+        // KILL KILL KILL..
+        wxString fullpath=path+wxFileName::GetPathSeparator()+filename;
+        wxString ext_s=filename.AfterLast(wxChar('.'));
+        long ext;
+        // But only files with numerical extensions.
+        if (ext_s.ToLong(&ext)) {
+            if (!wxRemoveFile(fullpath)) could_not_kill++;
+        }
+
+        cont=dir.GetNext(&filename);
+    }
+    if (could_not_kill>0) {
+        wxMessageBox(wxT("Could not purge path\n")+path+wxT("\n\n")+wxString::Format(wxT("%i"),could_not_kill)+wxT(" file(s) remain.. Suggest manually deleting this path"),wxT("Purge Error"),wxOK,NULL);
+        return false;
+    }
+
+    return true;
+}
 bool Machine::Load()
 {
     wxString path=profile->Get("DataFolder")+wxFileName::GetPathSeparator()+hexid();

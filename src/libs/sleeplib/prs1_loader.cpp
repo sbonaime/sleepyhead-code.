@@ -18,6 +18,13 @@ License: GPL
 
 #include "prs1_loader.h"
 
+//********************************************************************************************
+/// IMPORTANT!!!
+//********************************************************************************************
+// Please INCREMENT the prs1_data_version in prs1_loader.h when making changes to this loader
+// that change loader behaviour or modify channels.
+//********************************************************************************************
+
 
 extern wxProgressDialog *loader_progress;
 
@@ -26,7 +33,7 @@ map<int,wxString> ModelMap;
 // This class technically isn't needed now.. as long as m_class, Brand & Model is set, things should be fine.
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
-    m_class=wxT("PRS1");
+    m_class=prs1_class_name;
     properties[wxT("Brand")]=wxT("Philips Respironics");
     properties[wxT("Model")]=wxT("System One");
 
@@ -353,6 +360,7 @@ int PRS1Loader::OpenMachine(Machine *m,wxString path,Profile *profile)
         //wxPrintf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);
     }
+    m->properties["DataVersion"]=wxString::Format("%i",prs1_data_version);
     m->Save(); // Save any new sessions to disk in our format
     if (loader_progress) loader_progress->Update(100);
     return true;

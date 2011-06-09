@@ -5,6 +5,14 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 
+//********************************************************************************************
+/// IMPORTANT!!!
+//********************************************************************************************
+// Please INCREMENT the zeo_data_version in zel_loader.h when making changes to this loader
+// that change loader behaviour or modify channels.
+//********************************************************************************************
+
+
 #include <wx/log.h>
 #include "zeo_loader.h"
 #include "sleeplib/machine.h"
@@ -37,7 +45,7 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
     vector<Machine *> ml=profile->GetMachines(MT_SLEEPSTAGE);
 
     for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
-        if ((*i)->GetClass()==wxT("ZEO"))  {
+        if ((*i)->GetClass()==zeo_class_name)  {
             return (*i);
             break;
         }
@@ -46,9 +54,10 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
     wxLogDebug(wxT("Create ZEO Machine Record"));
 
     Machine *m=new SleepStage(profile,0);
-    m->SetClass(wxT("ZEO"));
+    m->SetClass(zeo_class_name);
     m->properties[wxT("Brand")]=wxT("ZEO");
     m->properties[wxT("Model")]=wxT("Personal Sleep Coach");
+    m->properties[wxT("DataVersion")]=wxString::Format("%li",zeo_data_version);
 
     profile->AddMachine(m);
 

@@ -5,6 +5,13 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 
+//********************************************************************************************
+/// IMPORTANT!!!
+//********************************************************************************************
+// Please INCREMENT the cms50_data_version in cms50_loader.h when making changes to this loader
+// that change loader behaviour or modify channels.
+//********************************************************************************************
+
 #include <wx/log.h>
 #include <wx/progdlg.h>
 #include "cms50_loader.h"
@@ -249,7 +256,7 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     vector<Machine *> ml=profile->GetMachines(MT_OXIMETER);
 
     for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
-        if ((*i)->GetClass()==wxT("CMS50"))  {
+        if ((*i)->GetClass()==cms50_class_name)  {
             return (*i);
             break;
         }
@@ -258,10 +265,10 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     wxLogDebug(wxT("Create CMS50 Machine Record"));
 
     Machine *m=new Oximeter(profile,0);
-    m->SetClass(wxT("CMS50"));
+    m->SetClass(cms50_class_name);
     m->properties[wxT("Brand")]=wxT("Contec");
     m->properties[wxT("Model")]=wxT("CMS50X");
-
+    m->properties[wxT("DataVersion")]=wxString::Format("%li",cms50_data_version);
     profile->AddMachine(m);
 
     return m;

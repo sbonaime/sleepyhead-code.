@@ -66,6 +66,7 @@ wxString wxbuildinfo(wxbuildinfoformat format)
     return wxbuild;
 }
 
+const long profile_version=0;
 
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
@@ -83,10 +84,22 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
 
     if (!pref.Exists("ShowSerialNumbers")) pref["ShowSerialNumbers"]=false;
     if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
+    if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
+    if (!pref.Exists("ProfileVersion")) pref["ProfileVersion"]=(long)0;
+
+    if (pref["ProfileVersion"].GetInteger()<profile_version) {
+        if (wxMessageBox(title+wxT("\n\nChanges have been made that require the profiles database to be recreated\n\nWould you like to do this right now?"),wxT("Profile Database Changes"),wxYES_NO,this)==wxYES) {
+            // Delete all machines from memory.
+            pref["ProfileVersion"]=profile_version;
+
+
+           // assert(1==0);
+        }
+    }
 
     ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
     ViewMenuFruitsalad->Check(pref["fruitsalad"]);
-
+    ViewMenuLinkGraph->Check(pref["LinkGraphMovement"]);
 
     // wxDisableAsserts();
 
@@ -243,6 +256,10 @@ void SleepyHeadFrame::DoScreenshot( wxCommandEvent &event )
         }
     }
 #endif
+}
+void SleepyHeadFrame::OnLinkGraphs( wxCommandEvent& event )
+{
+    pref["LinkGraphMovement"]=event.IsChecked();
 }
 void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 {
@@ -647,7 +664,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     LEAK->AddLayer(new gXAxis(wxBLACK));
     LEAK->AddLayer(new gYAxis(wxBLACK));
     LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
@@ -695,16 +712,29 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
 
-    SF->LinkZoom(FRW);
+//    #if defined(__UNIX__)
     FRW->LinkZoom(SF);
-    #if defined(__UNIX__)
     FRW->LinkZoom(PRD);
     FRW->LinkZoom(LEAK);
     FRW->LinkZoom(SNORE);
+    SF->LinkZoom(FRW);
     SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
     SF->LinkZoom(LEAK);
     SF->LinkZoom(SNORE);
-    #endif
+    PRD->LinkZoom(SF);
+    PRD->LinkZoom(FRW);
+    PRD->LinkZoom(LEAK);
+    PRD->LinkZoom(SNORE);
+    LEAK->LinkZoom(SF);
+    LEAK->LinkZoom(FRW);
+    LEAK->LinkZoom(PRD);
+    LEAK->LinkZoom(SNORE);
+    SNORE->LinkZoom(SF);
+    SNORE->LinkZoom(FRW);
+    SNORE->LinkZoom(PRD);
+    SNORE->LinkZoom(LEAK);
+
+  //  #endif
 
     const int sfc=9;
 

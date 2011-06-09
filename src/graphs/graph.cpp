@@ -380,11 +380,22 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         }
         m_foobar_moved+=fabs((qx-minx))+fabs((m_mouseLClick.x-x))+fabs((m_mouseLClick.y-y));
         SetXBounds(qx,ex);
-
+        if (pref["LinkGraphMovement"]) {
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(qx,ex);
+            }
+        }
     } else
     if (event.m_rightDown) {
         MoveX(event.GetX() - m_mouseRClick.x);
         m_mouseRClick.x=event.GetX();
+        double min=MinX();
+        double max=MaxX();
+        if (pref["LinkGraphMovement"]) {
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
+        }
     } else
     if (event.m_leftDown) {
 
@@ -530,24 +541,20 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         }
     }
 
-    if (!did_draw && !zoom_in && m_mouseLDown) { // && !m_drag_foobar)  {
+    if (!did_draw && !zoom_in && m_mouseLDown) {
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
         wxPoint press(m_mouseLClick.x, m_marginTop);
         int x1=m_mouseRBrect.x;
         int x2=x1+m_mouseRBrect.width;
+        int t1=MIN(x1,x2);
+        int t2=MAX(x1,x2);
 
-        //if (m_mouseLDown && !m_drag_foobar) { //hot1.Contains(x,y) &&
-            int t1=MIN(x1,x2);
-            int t2=MAX(x1,x2);
+        if ((t2-t1)>4) {
+            // Range Selected
+            ZoomXPixels(t1,t2);
+            did_draw=true;
+        }
 
-            if ((t2-t1)>4) {
-                // Range Selected
-                ZoomXPixels(t1,t2);
-                did_draw=true;
-            }
-
-        //}
-        //goto end;
     }
 
 
@@ -563,7 +570,6 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
             ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.
         }
         did_draw=true;
-        //goto end;
     }
 
     m_drag_foobar=false;
@@ -574,7 +580,14 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     if (!did_draw) { // Should never happen.
         if (r!=m_mouseRBrect)
             Refresh();
+    //} else { // Update any linked graphs..
     }
+        double min=MinX();
+        double max=MaxX();
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->SetXBounds(min,max);
+        }
+    //}
     LastGraphLDown=NULL;
     event.Skip();
 }

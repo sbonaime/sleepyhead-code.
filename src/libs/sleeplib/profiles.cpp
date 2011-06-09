@@ -11,6 +11,7 @@ License: GPL
 #include <wx/utils.h>
 #include <wx/dir.h>
 #include <wx/log.h>
+#include <wx/msgdlg.h>
 
 #include "preferences.h"
 #include "profiles.h"
@@ -53,7 +54,30 @@ Profile::~Profile()
 void Profile::LoadMachineData()
 {
     for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
-        i->second->Load();
+        Machine *m=i->second;
+
+        MachineLoader *loader=GetLoader(m->GetClass());
+        if (loader) {
+            long v=loader->Version();
+            long cv=0;
+            if (m->properties.find(wxT("DataVersion"))==m->properties.end())
+                m->properties[wxT("DataVersion")]=wxString::Format("%i",0);
+            m->properties["DataVersion"].ToLong(&cv);
+            if (cv<v) {
+                wxString msg=wxT("Software changes have been made that require the reimporting of the following machines data:\n\n");
+                msg=msg+m->properties[wxT("Brand")]+wxT(" ")+m->properties[wxT("Model")]+wxT(" ")+m->properties[wxT("Serial")];
+                msg=msg+wxT("\n\nNo attempt will be made to load previous data.\n\n");
+                msg=msg+wxT("Importing ALL of your data for this machine again will rectify this problem.\n\n");
+                msg=msg+wxT("However, if you have more than one seperate datacard/stash for this machine, it would be best if the machine data was purged first.\n\nWould you like me to do this for you?");
+
+                if (wxMessageBox(msg,wxT("Machine Database Changes"),wxYES_NO,NULL)==wxYES) {
+
+                    if (m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
+                        m->properties["DataVersion"]=wxString::Format("%li",v); // Dont need to nag again if they are too lazy.
+                    }
+                }
+            } else  m->Load();
+        }
     }
 }
 
@@ -175,6 +199,19 @@ void Profile::Import(wxString path)
     }
 }
 
+MachineLoader * GetLoader(wxString name)
+{
+    MachineLoader *l=NULL;
+    list<MachineLoader *>loaders=GetLoaders();
+    for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
+        if ((*i)->ClassName()==name) {
+            l=*i;
+            break;
+        }
+    }
+    return l;
+}
+
 
 vector<Machine *> Profile::GetMachines(MachineType t)
 // Returns a vector containing all machine objects regisered of type t
@@ -240,12 +277,12 @@ Profile *Get()
 {
     return profile;
 }
+
+
+
 /**
  * @brief Scan Profile directory loading user profiles
  */
-
-
-
 void Scan()
 {
     InitMapsWithoutAwesomeInitializerLists();

@@ -110,6 +110,7 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnShowSerial(wxCommandEvent& event);
         virtual void OnProfileSelected(wxCommandEvent& event);
         virtual void OnFruitsalad(wxCommandEvent& event);
+		virtual void OnLinkGraphs( wxCommandEvent& event );
 
 
         virtual void UpdateProfiles();
