@@ -664,7 +664,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     LEAK->AddLayer(new gXAxis(wxBLACK));
     LEAK->AddLayer(new gYAxis(wxBLACK));
     LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,true));
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
@@ -674,7 +674,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PRD->AddLayer(new gXAxis(wxBLACK));
     PRD->AddLayer(new gYAxis(wxBLACK));
     PRD->AddLayer(new gFooBar());
-    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
+    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,false));
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
 
@@ -713,7 +713,7 @@ Daily::Daily(wxWindow *win,Profile *p)
   //  SF->SetMargins(10,15,20,80);
 
 //    #if defined(__UNIX__)
- /*   FRW->LinkZoom(SF);
+    FRW->LinkZoom(SF);
     FRW->LinkZoom(PRD);
     FRW->LinkZoom(LEAK);
     FRW->LinkZoom(SNORE);
@@ -732,7 +732,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
     SNORE->LinkZoom(PRD);
-    SNORE->LinkZoom(LEAK); */
+    SNORE->LinkZoom(LEAK);
 
   //  #endif
 

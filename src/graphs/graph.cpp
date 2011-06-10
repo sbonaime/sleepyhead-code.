@@ -8,6 +8,7 @@ License: LGPL
 #include <wx/settings.h>
 #include <wx/dcbuffer.h>
 #include <wx/log.h>
+#include <math.h>
 #include "graph.h"
 #include "sleeplib/profiles.h"
 
@@ -1451,87 +1452,87 @@ gLineChart::~gLineChart()
 // Time Domain Line Chart
 void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 {
-    int dp;
-    double px,py;
-
 
     if (!m_visible) return;
     if (!data) return;
     if (!data->IsReady()) return;
-    //if (!data->NP()) return;
 
-    int scrx = w.GetScrX();
-    int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
+    int scrx = w.GetScrX(), scry = w.GetScrY();
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
+    int start_px=w.GetLeftMargin(), start_py=w.GetTopMargin();
+
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    double minx=w.min_x,miny=w.min_y;
-    double maxx=w.max_x,maxy=w.max_y;
-    double xx=maxx-minx;
-    double yy=maxy-miny;
-    double xmult=width/xx;
-    double ymult=height/yy;
+    wxRect bounds(start_px+1,start_py,width-1,height);
+
+    double minx=w.min_x, miny=w.min_y, maxx=w.max_x, maxy=w.max_y;
+    double xx=maxx-minx, yy=maxy-miny;
+    double xmult=width/xx, ymult=height/yy;   // time to pixel conversion multiplier
+
+    // Return on screwy min/max conditions
     if ((xx<0) || (yy<0)) return;
-    if ((yy==0) && (w.min_y==0)) return;
-   // assert(xx>=0);
+    if ((yy==0) && (miny==0)) return;
 
-    static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
-
-    dc.SetPen( *wxBLACK_PEN );
-    dc.DrawLine(start_px,start_py,start_px,start_py+height);
-    dc.DrawLine(start_px,start_py+height,start_px+width+1,start_py+height);
-   // dc.DrawLine(start_px,start_py,start_px+width,start_py);
-    dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height);
+    int num_points=0;
+    for (int z=0;z<data->VC();z++) num_points+=data->np[z]; // how many points all up?
 
 
-    //foobar->Plot(dc,w);
+    // Draw bounding box if something else will be drawn.
+    if (!(!m_report_empty && !num_points)) {
+        dc.SetPen( *wxBLACK_PEN );
+        dc.DrawLine(start_px,start_py,start_px,start_py+height);  // Left Border
+        dc.DrawLine(start_px,start_py+height,start_px+width+1,start_py+height); // Bottom Border
+        dc.DrawLine(start_px+width+1,start_py,start_px+width+1,start_py+height+1); // Right Border
+    // dc.DrawLine(start_px,start_py,start_px+width,start_py);
+    }
 
-    /*if (!m_hide_axes) {
-        Yaxis->Plot(dc,w);
-    } */
-
-    wxPen pen(*color[0], 1, wxSOLID);
-    dc.SetPen(pen);
-    bool accel=m_accelerate;
-
-    double s1,s2,sr;
-    double sfit,sam;
-
-    if (m_report_empty) {
-        int cnt=0;
-        for (int z=0;z<data->VC();z++) cnt+=data->np[z];
-
-        if (!cnt) {
+    width--;
+    if (!num_points) { // No Data?
+        if (m_report_empty) {
             wxString msg=_("No Waveform Available");
             wxCoord x,y;
             dc.SetTextForeground(*wxDARK_GREY);
-
             dc.SetFont(*bigfont);
             dc.GetTextExtent(msg,&x,&y);
             dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
+
+            // Restore the default font in case we screw up somewhere else
             dc.SetTextForeground(*wxBLACK);
             dc.SetFont(*wxNORMAL_FONT);
         }
+        return;
     }
 
-    dc.SetClippingRegion(start_px+1,start_py,width,height);
+
+    // Selected the plot line color
+    wxPen pen(*color[0], 1, wxSOLID);
+    dc.SetPen(pen);
+
+    bool accel=m_accelerate;
+    double px,py;
+    double s1,s2,sr;
+    double sfit,sam;
+    int dp;
+
+    //dc.SetClippingRegion(bounds); //start_px+1,start_py,width,height);
+
+
+    // Now, run through the list of plot segments and draw them
 
     for (int n=0;n<data->VC();n++) {
         dp=0;
-        int siz=data->np[n];
-        if (!siz) continue;
+        int & siz=data->np[n];
+        // Don't bother drawing 1 point or less.
+        if (siz<=1) continue;
+
         bool done=false;
         bool first=true;
         wxRealPoint * point=data->point[n];
+
+        // Calculate the number of points to skip when too much data.
         if (accel) {
-            s1=point[0].x;
-            s2=point[1].x;
-            sr=s2-s1;
+            sr=point[1].x-point[0].x; // Time distance between points
             sfit=xx/sr;
             sam=sfit/width;
             if (sam<=8) { // Don't accelerate if threshold less than this.
@@ -1541,12 +1542,13 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 sam/=25;   // lower this number the more data is skipped over (and the faster things run)
                 if (sam<=1) {
                     sam=1;
-                 //accel=false;
+                    accel=false;
                 }
             }
 
         } else sam=1;
 
+        // Prepare the min max y values if we still are accelerating this plot
         if (accel) {
             for (int i=0;i<width;i++) {
                 m_drawlist[i].x=height;
@@ -1555,57 +1557,84 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         }
         int minz=width,maxz=0;
 
-        bool reverse=false;
-        if (point[0].x>point[siz-1].x) reverse=true;
+        // Technically shouldn't never ever get fed reverse data. So I'm disabling this stuff.
+        // Leaving the code here just in case.
+
+        //bool reverse=false;
+        //if (point[0].x > point[siz-1].x) reverse=true;
+
+        // Here is a test to make sure for now anyway.
+        assert(point[0].x < point[siz-1].x);
 
         for (int i=0;i<siz;i+=sam) { //,done==false
-            if (!reverse) {
-                if (point[i].x < minx) continue;
+
+
+            //if (!reverse) {
+
+                if (point[i].x < minx) continue; // Skip stuff before the start of our data window
+
                 if (first) {
                     first=false;
-                    if (i>=sam)  i-=sam;
+                    if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
                 }
 
-                if (point[i].x > maxx) done=true;
-            } else {
+                if (point[i].x > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
+
+            /*} else {
                 if (point[i].x > maxx) continue;
-                if (first) {
+
+                if (first) {  //For the first plot of each segment..
                     first=false;
-                    if (i>=sam)  i-=sam;
+                    if (i>=sam)  i-=sam; // start with the previous sample (which is in the clipping range)
                 }
                 if (point[i].x < minx) done=true;
 
-            }
+            } */
 
-            px=(point[i].x - minx) * xmult;
-            py=height - ((point[i].y - miny) * ymult);
+            px=1+(point[i].x - minx) * xmult;   // Scale the time scale X to pixel scale X
+            py=height-1 - ((point[i].y - miny) * ymult); // Same for Y scale, but reverse (0 at the bottom)
 
-            // Can't avoid this.. SetClippingRegion does not work without crashing.. need to find a workaround:(
-            if (px<0) {
-                px=0;
-            }
-            if (px>width) {
-                px=width;
-            }
+
 
             if (accel) {
+                // Just clip ugly in accel mode.. Too darn complicated otherwise
+                if (px<0) {
+                    px=0;
+                }
+                if (px>width) {
+                    px=width;
+                }
+                // In accel mode, each pixel has a min/max Y value.
+                // m_drawlist's index is the pixel index for the X pixel axis.
+
                 int z=round(px);
-                if (z<minz) minz=z;
-                if (z>maxz) maxz=z;
+                if (z<minz) minz=z;  // minz=First pixel
+                if (z>maxz) maxz=z;  // maxz=Last pixel
+
+                // Update the Y pixel bounds.
                 if (py<m_drawlist[z].x) m_drawlist[z].x=py;
                 if (py>m_drawlist[z].y) m_drawlist[z].y=py;
+
             } else {
-                if (m_square_plot && (dp>0)) { // twice as many points needed
-                    m_drawlist[dp].x=start_px+px;
-                    m_drawlist[dp].y=m_drawlist[dp-1].y;
+
+                // Square plot mode adds the extra points to convert the graph to a  square wave.
+                // Twice as many points are needed to do this.
+                if (m_square_plot && (dp>0)) {
+
+                    m_drawlist[dp].x=start_px+px;        // This points X position
+                    m_drawlist[dp].y=m_drawlist[dp-1].y; // But with last points Y position
+
                     if (++dp>=m_drawlist_size) {
                         wxLogWarning(wxT("gLineChart: m_drawlist is too small"));
                         done=true;
                         break;
                     }
                 }
+
+
                 m_drawlist[dp].x=start_px+px;
                 m_drawlist[dp].y=start_py+py;
+
                 if (++dp>=m_drawlist_size) {
                     wxLogWarning(wxT("gLineChart: m_drawlist is too small"));
                     done=true;
@@ -1615,12 +1644,15 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             if (done) break;
         }
 
+
+
         if (accel) {
-            // dc.DrawLine(1, 1, 1, height);
+            // dc.DrawLine(1, 1, 1, height); // a little marker for debugging when in accel mode.
             dp=0;
             for (int i=minz;i<maxz;i++) {
-                int y1=m_drawlist[i].x;
-                int y2=m_drawlist[i].y;
+                int y1=m_drawlist[i].x;  // x= Min y pixel in this case.
+                int y2=m_drawlist[i].y;  // y= Max y pixel
+
                 //if (i>width) break;
                 screen[dp].x=start_px+i+1;
                 screen[dp].y=start_py+y1;
@@ -1632,11 +1664,51 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
             }
             if (dp>1) dc.DrawLines(dp,screen);     // need at least two points
 
-        } else {
+        } else if (dp>1) {
+            // Only the first point and last point should be in clipping range.
+
+            if (m_drawlist[0].x<=start_px) { // in clipping range?
+              //  if (!m_square_plot) {
+                    double x1=m_drawlist[0].x - (start_px+1);
+                    double x2=m_drawlist[1].x - (start_px+1);
+
+                    double y1=m_drawlist[0].y;
+                    double y2=m_drawlist[1].y;
+
+                    y1+=-x1 * ((y2-y1)/(x2-x1));
+                    m_drawlist[0].y=y1;
+                    m_drawlist[0].x=start_px+1;
+                //}
+            }
+
+            int endpx=scrx-w.GetRightMargin();
+            if (m_drawlist[dp-1].x > endpx) {
+                if (!m_square_plot) {
+                    double x1=m_drawlist[dp-2].x;
+                    double x2=m_drawlist[dp-1].x;
+
+                    double y1=m_drawlist[dp-2].y;
+                    double y2=m_drawlist[dp-1].y;
+
+                    y2-=(x2-endpx) * ((y2-y1)/(x2-x1));
+
+                    m_drawlist[dp-1].y=y2;
+                } else {
+                    m_drawlist[dp-1].y=m_drawlist[dp-2].y;
+                    m_drawlist[dp-2].x=endpx;
+                }
+                m_drawlist[dp-1].x=endpx;
+
+            }
+
+
+
+
+            assert(siz>1);
             if (dp>1) dc.DrawLines(dp,m_drawlist); // need at least two points
         }
     }
-    dc.DestroyClippingRegion();
+   // dc.DestroyClippingRegion();
 }
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
