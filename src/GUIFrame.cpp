@@ -64,6 +64,9 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	ViewMenuFruitsalad = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("Fruit Salad") ) , wxEmptyString, wxITEM_CHECK );
 	ViewMenu->Append( ViewMenuFruitsalad );
 	
+	ViewMenuAntiAliasing = new wxMenuItem( ViewMenu, wxID_ANY, wxString( _("Try Anti-Aliasing") ) , wxEmptyString, wxITEM_CHECK );
+	ViewMenu->Append( ViewMenuAntiAliasing );
+	
 	wxMenuItem* m_separator2;
 	m_separator2 = ViewMenu->AppendSeparator();
 	
@@ -110,6 +113,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( ViewMenuSerial->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnShowSerial ) );
 	this->Connect( ViewMenuLinkGraph->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnLinkGraphs ) );
 	this->Connect( ViewMenuFruitsalad->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFruitsalad ) );
+	this->Connect( ViewMenuAntiAliasing->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAntiAliasing ) );
 	this->Connect( ViewMenuFullscreen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Connect( ToolsMenuScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Connect( HelpMenuAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
@@ -127,6 +131,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnShowSerial ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnLinkGraphs ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFruitsalad ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAntiAliasing ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Disconnect( wxID_ABOUT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );

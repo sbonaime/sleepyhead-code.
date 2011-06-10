@@ -4134,7 +4134,7 @@
 	"sleeplib/machine.h"
 	"graph.h"
 
-1305215599 /usr/include/wx-2.9/wx/dcgraph.h
+1307528666 /usr/include/wx-2.9/wx/dcgraph.h
 	"wx/dc.h"
 	"wx/geometry.h"
 	"wx/graphics.h"
@@ -4145,7 +4145,7 @@
 	"wx/gdicmn.h"
 	"wx/math.h"
 
-1305215599 /usr/include/wx-2.9/wx/graphics.h
+1307528666 /usr/include/wx-2.9/wx/graphics.h
 	"wx/defs.h"
 	"wx/geometry.h"
 	"wx/dynarray.h"
@@ -8210,12 +8210,12 @@
 	"wx/treebase.h"
 	"wx/hashmap.h"
 
-1307618682 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
+1307708368 source:/home/mark/projects/git/sleepyhead/src/GUIFrame.cpp
 	"wx/wxprec.h"
 	<wx/wx.h>
 	"GUIFrame.h"
 
-1307618682 /home/mark/projects/git/sleepyhead/src/GUIFrame.h
+1307708368 /home/mark/projects/git/sleepyhead/src/GUIFrame.h
 	<wx/intl.h>
 	<wx/string.h>
 	<wx/bitmap.h>
@@ -8258,7 +8258,7 @@
 1307418393 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
 	<wx/app.h>
 
-1307618623 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
+1307708712 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
 	<wx/listbox.h>
 	<wx/treectrl.h>
 	"SleepyHeadApp.h"
@@ -8304,7 +8304,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307704847 /home/mark/projects/git/sleepyhead/src/version.h
+1307708812 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8322,7 +8322,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307698043 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307708727 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8342,10 +8342,11 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307704772 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307708472 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/log.h>
+	<wx/dcgraph.h>
 	<math.h>
 	"graph.h"
 	"sleeplib/profiles.h"

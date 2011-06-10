@@ -8,6 +8,7 @@ License: LGPL
 #include <wx/settings.h>
 #include <wx/dcbuffer.h>
 #include <wx/log.h>
+#include <wx/dcgraph.h>
 #include <math.h>
 #include "graph.h"
 #include "sleeplib/profiles.h"
@@ -634,11 +635,18 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
 void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
+    wxDC *pdc;
+    if (pref["UseAntiAliasing"]) {
+        pdc=new wxGCDC(this);
+    } else {
 #if defined(__WXMSW__)
-    wxAutoBufferedPaintDC dc(this);
+        pdc=new wxAutoBufferedPaintDC(this);
 #else
-    wxPaintDC dc(this);
+        pdc=new wxPaintDC(this);
 #endif
+    }
+    wxDC &dc=*pdc;
+
     GetClientSize(&m_scrX, &m_scrY);
 
     dc.SetPen( *wxTRANSPARENT_PEN );
@@ -677,7 +685,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
         if (m_mouseRBrect.width>0)
             dc.DrawRectangle(m_mouseRBrect);
     }
-
+    delete pdc;
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {

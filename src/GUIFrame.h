@@ -50,6 +50,7 @@ class GUIFrame : public wxFrame
 		wxMenuItem* ViewMenuSerial;
 		wxMenuItem* ViewMenuLinkGraph;
 		wxMenuItem* ViewMenuFruitsalad;
+		wxMenuItem* ViewMenuAntiAliasing;
 		wxMenu* ProfileMenu;
 		wxMenu* ToolsMenu;
 		wxMenu* HelpMenu;
@@ -65,6 +66,7 @@ class GUIFrame : public wxFrame
 		virtual void OnShowSerial( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLinkGraphs( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFruitsalad( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAntiAliasing( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFullscreen( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScreenshot( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }

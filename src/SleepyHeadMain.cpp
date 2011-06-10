@@ -85,6 +85,7 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     if (!pref.Exists("ShowSerialNumbers")) pref["ShowSerialNumbers"]=false;
     if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
+    if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
     if (!pref.Exists("ProfileVersion")) pref["ProfileVersion"]=(long)0;
 
     if (pref["ProfileVersion"].GetInteger()<profile_version) {
@@ -100,6 +101,7 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     ViewMenuSerial->Check(pref["ShowSerialNumbers"]);
     ViewMenuFruitsalad->Check(pref["fruitsalad"]);
     ViewMenuLinkGraph->Check(pref["LinkGraphMovement"]);
+    ViewMenuAntiAliasing->Check(pref["UseAntiAliasing"]);
 
     // wxDisableAsserts();
 
@@ -268,6 +270,13 @@ void SleepyHeadFrame::OnShowSerial(wxCommandEvent& event)
 void SleepyHeadFrame::OnFruitsalad(wxCommandEvent& event)
 {
     pref["fruitsalad"]=event.IsChecked();
+    Refresh();
+}
+void SleepyHeadFrame::OnAntiAliasing( wxCommandEvent& event )
+{
+    pref["UseAntiAliasing"]=event.IsChecked();
+    Refresh();
+
 }
 
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
