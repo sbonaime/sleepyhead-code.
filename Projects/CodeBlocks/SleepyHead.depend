@@ -4152,12 +4152,12 @@
 	"wx/dc.h"
 	"wx/vector.h"
 
-1305615467 /opt/mingw/usr/i686-pc-mingw32//include/wx-2.9/wx/dcgraph.h
+1307524765 /opt/mingw/usr/i686-pc-mingw32//include/wx-2.9/wx/dcgraph.h
 	"wx/dc.h"
 	"wx/geometry.h"
 	"wx/graphics.h"
 
-1305615468 /opt/mingw/usr/i686-pc-mingw32//include/wx-2.9/wx/graphics.h
+1307524765 /opt/mingw/usr/i686-pc-mingw32//include/wx-2.9/wx/graphics.h
 	"wx/defs.h"
 	"wx/geometry.h"
 	"wx/dynarray.h"
@@ -8300,11 +8300,12 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1307612486 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1307719537 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+	<wx/dcgraph.h>
 	<sleeplib/machine.h>
 	<list>
 
-1307708812 /home/mark/projects/git/sleepyhead/src/version.h
+1307720151 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8322,7 +8323,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307708727 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1307711811 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8342,11 +8343,11 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307708472 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307720115 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
+	<wx/graphics.h>
 	<wx/log.h>
-	<wx/dcgraph.h>
 	<math.h>
 	"graph.h"
 	"sleeplib/profiles.h"

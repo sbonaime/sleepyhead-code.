@@ -34,9 +34,13 @@
 #include "sleeplib/profiles.h"
 #include "sleeplib/machine_loader.h"
 
-#if defined(__WXMSW__)
-extern "C" void *_GdipStringFormatCachedGenericTypographic = NULL;
-#endif
+// Gets rid of the GDIPLUS requirement
+// But does it screw up windows drawing abilities?
+
+//#if defined(__WXMSW__)
+//extern "C" void *_GdipStringFormatCachedGenericTypographic = NULL;
+//#endif
+
 wxProgressDialog *loader_progress;
 //helper functions
 enum wxbuildinfoformat {
@@ -852,7 +856,7 @@ void Daily::RefreshData()
     wxString html=wxT("<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>");
     html=html+wxT("<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n");
 
-    CPAPMode mode;
+    CPAPMode mode=MODE_UNKNOWN;
     PRTypes pr;
     wxString epr,modestr;
     float iap90,eap90;

@@ -52,6 +52,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
+					<Add option="-lgdiplus" />
 				</Linker>
 			</Target>
 			<Target title="Debug-wx29">

@@ -7,8 +7,8 @@ License: LGPL
 
 #include <wx/settings.h>
 #include <wx/dcbuffer.h>
+#include <wx/graphics.h>
 #include <wx/log.h>
-#include <wx/dcgraph.h>
 #include <math.h>
 #include "graph.h"
 #include "sleeplib/profiles.h"
@@ -84,14 +84,14 @@ gPointData::gPointData(int mp)
 }
 gPointData::~gPointData()
 {
-    for (vector<wxRealPoint *>::iterator i=point.begin();i!=point.end();i++)
+    for (vector<wxPoint2DDouble *>::iterator i=point.begin();i!=point.end();i++)
         delete [] (*i);
 }
 void gPointData::AddSegment(int max_points)
 {
     maxsize.push_back(max_points);
     np.push_back(0);
-    wxRealPoint *p=new wxRealPoint [max_points];
+    wxPoint2DDouble *p=new wxPoint2DDouble [max_points];
     point.push_back(p);
 }
 
@@ -129,7 +129,7 @@ gLayer::~gLayer()
 
 }
 
-void gLayer::Plot(wxDC & dc, gGraphWindow & w)
+void gLayer::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
 }
 
@@ -349,7 +349,7 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         int x1=x-GetLeftMargin();
 
         int width=m_scrX-GetRightMargin()-GetLeftMargin();
-        int height=m_scrY-GetBottomMargin()-GetTopMargin();
+        //int height=m_scrY-GetBottomMargin()-GetTopMargin();
 
         if (x>m_scrX-GetRightMargin()) return;
 
@@ -625,36 +625,45 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     //wxBrush brush( GetBackgroundColour() );
     //dc.SetBrush( brush );
 //	dc.DrawRectangle(r);
+    wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->Plot(dc,*this);
+        (*l)->Plot(dc,*gc,*this);
     }
 
     dc.SelectObject(wxNullBitmap);
     return bmp;
 }
 
-void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
+void gGraphWindow::OnPaint(wxPaintEvent& event)
 {
-    wxDC *pdc;
-    if (pref["UseAntiAliasing"]) {
-        pdc=new wxGCDC(this);
-    } else {
+
 #if defined(__WXMSW__)
-        pdc=new wxAutoBufferedPaintDC(this);
+    wxAutoBufferedPaintDC dc(this);
 #else
-        pdc=new wxPaintDC(this);
+    wxPaintDC dc(this);
 #endif
-    }
-    wxDC &dc=*pdc;
+
+
+    // Create graphics context from it
+    wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
+
+
+    /*if (pref["UseAntiAliasing"]) {
+        gc->SetAntialiasMode(wxANTIALIAS_DEFAULT);
+    } else {
+        gc->SetAntialiasMode(wxANTIALIAS_NONE);
+    } */
+    //gc->SetAntialiasMode(wxANTIALIAS_NONE);
+    //->SetInterpolationQuality(wxINTERPOLATION_FAST);
 
     GetClientSize(&m_scrX, &m_scrY);
 
-    dc.SetPen( *wxTRANSPARENT_PEN );
+    gc->SetPen( *wxTRANSPARENT_PEN );
 
     wxBrush brush( GetBackgroundColour() );
-    dc.SetBrush( brush );
+    gc->SetBrush( brush );
 
-	dc.SetTextForeground(m_fgColour);
+	//gc->SetTextForeground(m_fgColour);
 
     wxRect r=wxRect(0,0,m_scrX,m_scrY);
 
@@ -662,30 +671,34 @@ void gGraphWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
     if (fruit) {
         dc.GradientFillLinear(r,*gradient_start_color,*gradient_end_color,gradient_direction);
     } else {
-        dc.DrawRectangle(0,0,m_scrX,m_scrY);
+        gc->DrawRectangle(0,0,m_scrX,m_scrY);
     }
 
+//    gc->DrawRectangle(0,0,m_scrX,m_scrY);
     //wxLogMessage(wxT("Paint"));
     //dc.DrawText(m_title,m_marginLeft,3);
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->Plot(dc,*this);
+        (*l)->Plot(dc,*gc,*this);
     }
 
-    static wxPen pen(*wxDARK_GREY, 1, wxDOT);
+    static wxPen pen(*wxDARK_GREY, 1, wxSOLID);
     static wxColor sel(128,128,128,128);
-    static wxBrush brush2(sel,wxFDIAGONAL_HATCH);
+    static wxBrush brush2(sel,wxALPHA_TRANSPARENT) ;//*wxTRANSPARENT_BRUSH); //wxFDIAGONAL_HATCH);
 
     if (m_mouseLDown) {
-        dc.SetPen(pen);
-        if (fruit) {
-            dc.SetBrush(brush2);
-        } else {
-            dc.SetBrush(*wxTRANSPARENT_BRUSH);
-        }
+        gc->SetPen(pen);
+        //if (fruit) {
+        gc->SetBrush(brush2);
+        //} else {
+        //    gc->SetBrush(*wxTRANSPARENT_BRUSH);
+        //}
         if (m_mouseRBrect.width>0)
-            dc.DrawRectangle(m_mouseRBrect);
+            gc->DrawRoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-2,m_mouseRBrect.height,10);
     }
-    delete pdc;
+    //if (pref["UseAntiAliasing"]) {
+        //delete dcp;
+    //}
+    //event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {
@@ -929,10 +942,10 @@ gXAxis::gXAxis(const wxColor * col)
 gXAxis::~gXAxis()
 {
 }
-void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
+void gXAxis::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     float px,py;
-    wxCoord x,y;
+    //wxCoord x,y;
 
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
@@ -947,7 +960,6 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     wxPen pen=wxPen(*wxBLACK,1,wxSOLID);  //color[0]
     dc.SetPen(pen);
     dc.SetFont(*smallfont);
-
     dc.SetTextForeground(*wxBLACK);
 
     double xx=w.max_x-w.min_x;
@@ -960,7 +972,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     } else {
         fd=wxT("XX XXX");
     }
-    dc.GetTextExtent(fd,&x,&y);
+    wxCoord x,y;//,descent,leading;
+    dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
     double max_ticks=(x+25.0)/width; // y+50 for rotated text
     double jj=1/max_ticks;
     double minor_tick=max_ticks*xx;
@@ -1001,7 +1014,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
    // dc.SetPen(*wxBLACK_PEN);
 
 
-    dc.SetClippingRegion(start_px-10,start_py+height,width+20,w.GetBottomMargin());
+    //.Clip(start_px-10,start_py+height,width+20,w.GetBottomMargin());
     double st3=st;
     while (st3>w.min_x) {
         st3-=min_tick/10.0;
@@ -1050,7 +1063,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 		dc.DrawLine(px,py,px,py+6);
 		//dc.DrawLine(px+1,py,px+1,py+6);
         y=x=0;
-        dc.GetTextExtent(fd,&x,&y); // This doesn't work properly on windows.
+        dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
 
         // There is a wx2.8 bug in wxMSW that screws up calculating x properly.
         const int offset=0;
@@ -1063,7 +1076,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
         }
 
     }
-    dc.DestroyClippingRegion();
+    //gc.ResetClip();
 
 }
 
@@ -1081,12 +1094,13 @@ gYAxis::gYAxis(const wxColor * col)
 gYAxis::~gYAxis()
 {
 }
-void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
+void gYAxis::Plot(wxDC & dc, wxGraphicsContext & gc,gGraphWindow &w)
 {
     static wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
     static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
     static wxPen pen2(wxDARK_GREY, 1, wxDOT);
-    wxCoord x,y,labelW=0;
+    wxCoord x,y; //,descent,leading;
+    int labelW=0;
 
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
@@ -1106,9 +1120,10 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
 
     dc.SetPen(*wxBLACK_PEN);
     dc.SetFont(*smallfont);
+    dc.SetTextForeground(*wxBLACK);
 
     wxString fd=wxT("0");
-    dc.GetTextExtent(fd,&x,&y);
+    dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
     double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
     double max_yticks=1/max_yticksdiv;
     double yy=w.max_y-w.min_y;
@@ -1149,7 +1164,7 @@ void gYAxis::Plot(wxDC & dc,gGraphWindow &w)
     for (double i=w.min_y; i<=w.max_y; i+=min_ytick) {
 		ty=(i - w.min_y) * ymult;
         fd=Format(i); // Override this as a function.
-        dc.GetTextExtent(fd,&x,&y);
+        dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
         if (x>labelW) labelW=x;
         h=(start_py+height)-ty;
         dc.DrawText(fd,start_px-8-x,h - (y / 2));
@@ -1171,7 +1186,7 @@ gGraphTitle::gGraphTitle(const wxString & _title,wxOrientation o,const wxFont * 
 gGraphTitle::~gGraphTitle()
 {
 }
-void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
+void gGraphTitle::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     if (!m_visible) return;
     int scrx = w.GetScrX();
@@ -1179,19 +1194,19 @@ void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
 
     dc.SetFont(*m_font);
     dc.SetTextForeground(*m_color);
-    wxCoord x,y;
+    //wxCoord x,y;
     wxAlignment m_alignment=wxALIGN_LEFT;
 
-    int xp;
+    //int xp;
     if (m_orientation==wxHORIZONTAL) {
         dc.DrawText(m_title,4,2);
     } else {
-        dc.GetTextExtent(m_title,&m_textwidth,&m_textheight);
+        dc.GetTextExtent(m_title,&m_textwidth,&m_textheight); //,&m_descent,&m_leading);
 
         int xp=4;
         if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-m_textheight;
 
-        dc.DrawRotatedText(m_title,xp,scry/2+m_textwidth/2,90.0);
+        dc.DrawRotatedText(m_title,xp,scry/2+m_textwidth/2, 90.0);
     }
 
 }
@@ -1209,7 +1224,7 @@ gFooBar::gFooBar(const wxColor * col1,const wxColor * col2)
 gFooBar::~gFooBar()
 {
 }
-void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
+void gFooBar::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     if (!m_visible) return;
 
@@ -1247,7 +1262,7 @@ gCandleStick::gCandleStick(gPointData *d,wxOrientation o)
 gCandleStick::~gCandleStick()
 {
 }
-void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
+void gCandleStick::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     if (!m_visible) return;
     if (!data) return;
@@ -1257,6 +1272,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     int scry = w.GetScrY();
     dc.SetPen( *wxBLACK_PEN );
     dc.SetFont(*smallfont);
+    dc.SetTextForeground(*wxBLACK);
     //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
     //dc.DrawText(label,0,0);
 
@@ -1267,7 +1283,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
 
     float sum=0;
     for (int i=0;i<data->np[0];i++)
-        sum+=data->point[0][i].y;
+        sum+=data->point[0][i].m_y;
 
     float pxr;
     float px;
@@ -1279,9 +1295,10 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
         px=start_px;
     }
 
-    int x,y;
-    dc.GetTextExtent(w.Title(),&x,&y);
-    dc.DrawText(w.Title(),start_px,0);
+    wxCoord x,y;
+    //,descent,leading;
+    //gc.GetTextExtent(w.Title(),&x,&y,&descent,&leading);
+    //gc.DrawText(w.Title(),start_px,0);
 
     double t1,t2;
     int barwidth;
@@ -1290,13 +1307,13 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     } else {
         barwidth=height;
     }
-    int textX, textY;
+   // int textX, textY;
 
     wxString str;
     for (int i=0;i<data->np[0];i++) {
         dc.SetBrush(*wxTRANSPARENT_BRUSH);
         t1=floor(px);
-        t2=data->point[0][i].y*pxr;
+        t2=data->point[0][i].m_y*pxr;
         px+=t2;
         t2=ceil(t2)+1;
         wxRect rect;
@@ -1308,28 +1325,26 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
             rect=wxRect(t1,start_py,t2,barwidth);
             dir=wxSOUTH;
         }
-        dc.SetTextForeground(*wxBLACK);
         dc.SetPen(*wxBLACK_PEN);
         dc.GradientFillLinear(rect,*color[i % color.size()],*wxLIGHT_GREY,dir);
-        dc.DrawRectangle(rect);
+        dc.DrawRectangle(rect.x,rect.y,rect.width,rect.height);
         str=wxT("");
         if ((int)m_names.size()>i) {
             str=m_names[i]+wxT(" ");
         }
-        str+=wxString::Format(wxT("%0.1f"),data->point[0][i].x);
-        dc.GetTextExtent(str, &textX, &textY);
-        textX+=5;
-        if (t2>(textX)) {
-            int j=t1+((t2/2)-(textX/2));
+        str+=wxString::Format(wxT("%0.1f"),data->point[0][i].m_x);
+        dc.GetTextExtent(str, &x, &y);//,&descent,&leading);
+        x+=5;
+        if (t2>x) {
+            int j=t1+((t2/2)-(x/2));
             if (m_direction==wxVERTICAL) {
-                dc.DrawRotatedText(str,start_px+barwidth+2+textY,j,270);
+                dc.DrawRotatedText(str,start_px+barwidth+2+y,j,270);
             } else {
-                dc.DrawText(str,j,start_py+(barwidth/2)-(textY/2));
+                dc.DrawText(str,j,start_py+(barwidth/2)-(y/2));
             }
         }
 
     }
-    dc.SetTextForeground(*wxBLACK); //WHITE_PEN);
 
 }
 
@@ -1347,7 +1362,7 @@ gBarChart::~gBarChart()
     delete Xaxis;
 }
 
-void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
+void gBarChart::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     if (!m_visible) return;
     if (!data) return;
@@ -1367,7 +1382,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 
     days=0;
     for (int i=0;i<data->np[0];i++) {
-       if ((data->point[0][i].x >= w.min_x) && (data->point[0][i].x<w.max_x)) days+=1;
+       if ((data->point[0][i].m_x >= w.min_x) && (data->point[0][i].m_x<w.max_x)) days+=1;
     }
     if (days==0) return;
 
@@ -1388,15 +1403,16 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     px+=1;
     int t1,t2;
     int u1,u2;
-    int textX, textY;
+    wxCoord textX, textY;
+    //,descent,leading;
 
 
     wxString str;
     bool draw_xticks_instead=false;
 
     for (int i=0;i<data->np[0];i++) {
-        if (data->point[0][i].x < w.min_x) continue;
-        if (data->point[0][i].x >= w.max_x) break;
+        if (data->point[0][i].m_x < w.min_x) continue;
+        if (data->point[0][i].m_x >= w.max_x) break;
         dc.SetBrush(*wxTRANSPARENT_BRUSH);
         t1=px;
         px+=barwidth+1;
@@ -1405,7 +1421,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         wxRect rect;
         wxDirection dir;
 
-        u2=data->point[0][i].y*pxr;
+        u2=data->point[0][i].m_y*pxr;
         u1=(start_py+height)-u2;
 
         if (m_direction==wxVERTICAL) {
@@ -1415,15 +1431,15 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         }
         dir=wxEAST;
         dc.GradientFillLinear(rect,*color[0],*wxLIGHT_GREY,dir);
-        dc.DrawRectangle(rect);
+        dc.DrawRectangle(rect.x,rect.y,rect.width,rect.height);
 
-        str=FormatX(data->point[0][i].x);
+        str=FormatX(data->point[0][i].m_x);
         textX=textY=0;
-        dc.GetTextExtent(str, &textX, &textY);
+        dc.GetTextExtent(str, &textX, &textY); //,&descent,&leading);
         if (t2>textY) {
             int j=t1+((t2/2)-(textY/2));
             if (m_direction==wxVERTICAL) {
-                dc.DrawRotatedText(str,start_px-textX-8,j,0);
+                dc.DrawText(str,start_px-textX-8,j);
             } else {
                 dc.DrawRotatedText(str,j,start_py+height+16+textX,90);
             }
@@ -1431,7 +1447,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
 
     }
     if (draw_xticks_instead)
-        Xaxis->Plot(dc,w);
+        Xaxis->Plot(dc,gc,w);
 
     dc.DrawLine(start_px,start_py,start_px,start_py+height);
 
@@ -1458,7 +1474,7 @@ gLineChart::~gLineChart()
 }
 
 // Time Domain Line Chart
-void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
+void gLineChart::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
 
     if (!m_visible) return;
@@ -1499,15 +1515,15 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     if (!num_points) { // No Data?
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
-            wxCoord x,y;
+            wxCoord x,y; //,descent,leading;
+            dc.SetFont(*bigfont);//,*wxDARK_GREY);
             dc.SetTextForeground(*wxDARK_GREY);
-            dc.SetFont(*bigfont);
-            dc.GetTextExtent(msg,&x,&y);
+            dc.GetTextExtent(msg,&x,&y);//,&descent,&leading);
             dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
 
             // Restore the default font in case we screw up somewhere else
-            dc.SetTextForeground(*wxBLACK);
             dc.SetFont(*wxNORMAL_FONT);
+            dc.SetTextForeground(*wxBLACK);
         }
         return;
     }
@@ -1519,8 +1535,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     bool accel=m_accelerate;
     double px,py;
-    double s1,s2,sr;
-    double sfit,sam;
+    //double s1,s2;
+    double sfit,sam,sr;
     int dp;
 
     //dc.SetClippingRegion(bounds); //start_px+1,start_py,width,height);
@@ -1536,11 +1552,11 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
         bool done=false;
         bool first=true;
-        wxRealPoint * point=data->point[n];
+        wxPoint2DDouble * point=data->point[n];
 
         // Calculate the number of points to skip when too much data.
         if (accel) {
-            sr=point[1].x-point[0].x; // Time distance between points
+            sr=point[1].m_x-point[0].m_x; // Time distance between points
             sfit=xx/sr;
             sam=sfit/width;
             if (sam<=8) { // Don't accelerate if threshold less than this.
@@ -1572,21 +1588,21 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         //if (point[0].x > point[siz-1].x) reverse=true;
 
         // Here is a test to make sure for now anyway.
-        assert(point[0].x < point[siz-1].x);
+        assert(point[0].m_x < point[siz-1].m_x);
 
         for (int i=0;i<siz;i+=sam) { //,done==false
 
 
             //if (!reverse) {
 
-                if (point[i].x < minx) continue; // Skip stuff before the start of our data window
+                if (point[i].m_x < minx) continue; // Skip stuff before the start of our data window
 
                 if (first) {
                     first=false;
                     if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
                 }
 
-                if (point[i].x > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
+                if (point[i].m_x > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             /*} else {
                 if (point[i].x > maxx) continue;
@@ -1599,8 +1615,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
             } */
 
-            px=1+(point[i].x - minx) * xmult;   // Scale the time scale X to pixel scale X
-            py=height-1 - ((point[i].y - miny) * ymult); // Same for Y scale, but reverse (0 at the bottom)
+            px=1+(point[i].m_x - minx) * xmult;   // Scale the time scale X to pixel scale X
+            py=height-1 - ((point[i].m_y - miny) * ymult); // Same for Y scale, but reverse (0 at the bottom)
 
 
 
@@ -1729,7 +1745,7 @@ gLineOverlayBar::~gLineOverlayBar()
 {
 }
 
-void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
+void gLineOverlayBar::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     double x1,x2;
 
@@ -1750,7 +1766,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
 
-    dc.SetClippingRegion(start_px+1,start_py,width,height);
+    //gc.Clip(start_px+1,start_py,width,height);
 
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
@@ -1759,22 +1775,22 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     wxPen sfp1(*color[0], 1, wxSOLID);
 
     wxBrush brush(*color[0],wxFDIAGONAL_HATCH);
-    dc.SetBrush(brush);
+    gc.SetBrush(brush);
 
     for (int n=0;n<data->VC();n++) {
 
         bool done=false;
         bool first=true;
         for (int i=0;i<data->np[n];i++) { //,done==false
-            if (data->point[n][i].y < w.min_x) continue;
+            if (data->point[n][i].m_y < w.min_x) continue;
             if (first) {
                 first=false;
                 if (i>0)  i--;
             }
 
-            wxRealPoint & rp=data->point[n][i];
-            x1=w.x2p(rp.x);
-            x2=w.x2p(rp.y);
+            wxPoint2DDouble & rp=data->point[n][i];
+            x1=w.x2p(rp.m_x);
+            x2=w.x2p(rp.m_y);
 
             // point z is marker code
 
@@ -1787,12 +1803,12 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
             if (x2>=start_px+width+1) x2=start_px+width+1;
             double w1=x2-x1;
             dc.SetPen(sfp1);
-            int x,y;
+            wxCoord x,y;//,descent,leading;
             if (lo_type==LOT_Bar) {
-                if (rp.x==rp.y) {
+                if (rp.m_x==rp.m_y) {
                     if (xx<(1800.0/86400)) {
                         //dc.SetTextForeground(*color[0]);
-                        dc.GetTextExtent(label,&x,&y);
+                        dc.GetTextExtent(label,&x,&y); //,&descent,&leading);
                         dc.DrawText(label,x1-(x/2),start_py+20-y);
                     }
                     dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
@@ -1800,7 +1816,8 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     dc.DrawLine(x1,start_py+25,x1,start_py+25);
                 } else {
             //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
-                    dc.DrawRectangle(x1,start_py,w1,height);
+                    gc.SetPen(sfp1);
+                    gc.DrawRectangle(x1,start_py,w1,height);
                 }
             } else if (lo_type==LOT_Dot) {
                 dc.SetPen(sfp3);
@@ -1814,7 +1831,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
         if (done) break;
     }
-    dc.DestroyClippingRegion();
+    //gc.ResetClip();
 }
 
 gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _line_num,int _total_lines)
@@ -1827,7 +1844,7 @@ gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _li
 gFlagsLine::~gFlagsLine()
 {
 }
-void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
+void gFlagsLine::Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w)
 {
     if (!m_visible) return;
     if (!data) return;
@@ -1855,6 +1872,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     wxPen sfp1(*color[0], 1, wxSOLID);
     wxBrush brush(*color[0],wxSOLID); //FDIAGONAL_HATCH);
     dc.SetFont(*smallfont);
+    dc.SetTextForeground(*wxBLACK);
 
 
     double line_h=floor(double(height-2)/double(total_lines));
@@ -1877,30 +1895,31 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
         dc.SetBrush(linebr2);
     }
     dc.DrawRectangle(start_px,line_top,width+1,line_h+1);
-    int x,y;
-    dc.GetTextExtent(label,&x,&y);
+    wxCoord x,y; //,descent,leading;
+    dc.GetTextExtent(label,&x,&y);//,&leading,&descent);
     dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
         /*int lw=x;
         dc.GetTextExtent(w.Title(),&x,&y);
         dc.DrawRotatedText(w.Title(), start_px-8-lw - y, start_py+((height + x)>>1), 90);
     } */
-    dc.SetBrush(brush);
     int x1,x2;
+    dc.SetBrush(brush);
+    dc.SetPen(sfp1);
     for (int n=0;n<data->VC();n++) {
 
         bool done=false;
         bool first=true;
         for (int i=0;i<data->np[n];i++) { //,done==false
-            if (data->point[n][i].y < w.min_x) continue;
+            if (data->point[n][i].m_y < w.min_x) continue;
             if (first) {
                 first=false;
                 if (i>0)  i--;
             }
 
-            wxRealPoint & rp=data->point[n][i];
-            x1=w.x2p(rp.x);
-            x2=w.x2p(rp.y);
+            wxPoint2DDouble & rp=data->point[n][i];
+            x1=w.x2p(rp.m_x);
+            x2=w.x2p(rp.m_y);
 
             // point z is marker code
 
@@ -1912,13 +1931,14 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
             }
             if (x2>=start_px+width+1) x2=start_px+width+1;
             double w1=x2-x1;
-            dc.SetPen(sfp1);
-            if (rp.x==rp.y) {
+            if (rp.m_x==rp.m_y) {
+
                 dc.DrawLine(x1,line_top+4,x1,line_top+line_h-3);
                 //dc.SetPen(sfp2);
                 //dc.DrawLine(x1,w.GetTopMargin()+25,x1,w.GetTopMargin()+25);
             } else {
          //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
+                //gc.SetPen(sfp1);
                 dc.DrawRectangle(x1,line_top+4,w1,line_h-6);
             }
 
@@ -1948,7 +1968,6 @@ void WaveData::Reload(Day *day)
         m_ready=false;
         return;
     }
-    //wxRealPoint *rpl;
     min_x=day->first().GetMJD();
     max_x=day->last().GetMJD();
     max_y=0;
@@ -1966,17 +1985,17 @@ void WaveData::Reload(Day *day)
             double st=w->start().GetMJD();
             double rate=(w->duration()/w->samples())/86400.0;
             for (int i=0;i<w->samples();i++) {
-                wxRealPoint r(st,(*w)[i]);
+                wxPoint2DDouble r(st,(*w)[i]);
                 st+=rate;
                 point[vc][t++]=r;
                 assert(t<max_points);
                 if (first) {
-                    min_y=r.y;
+                    min_y=r.m_y;
                     first=false;
                 } else {
-                    if (r.y<min_y) min_y=r.y;
+                    if (r.m_y<min_y) min_y=r.m_y;
                 }
-                if (r.y>max_y) max_y=r.y;
+                if (r.m_y>max_y) max_y=r.m_y;
             }
             np[vc]=t;
             vc++;
@@ -2046,16 +2065,16 @@ void EventData::Reload(Day *day)
         for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
             if (((p!=0) && skipzero) || !skipzero) {
-                wxRealPoint r((*ev)->time().GetMJD(),p);
+                wxPoint2DDouble r((*ev)->time().GetMJD(),p);
                 point[vc][t++]=r;
                 assert(t<max_points);
                 if (first) {
-                    max_y=min_y=r.y;
+                    max_y=min_y=r.m_y;
                     //lastp=p;
                     first=false;
                 } else {
-                    if (r.y<min_y) min_y=r.y;
-                    if (r.y>max_y) max_y=r.y;
+                    if (r.m_y<min_y) min_y=r.m_y;
+                    if (r.m_y>max_y) max_y=r.m_y;
                 }
             } else {
                 if ((p!=lastp) && (t>0)) { // There really should not be consecutive zeros.. just in case..
@@ -2152,8 +2171,8 @@ void TAPData::Reload(Day *day)
     int seconds=TotalTime.GetSeconds().GetLo();
     for (int i=0; i<max_slots; i++) {
         if (pTime[i]>wxTimeSpan::Seconds(0)) {
-            point[0][jj].x=i/10.0;
-            point[0][jj].y=(100.0/seconds)*pTime[i].GetSeconds().GetLo();
+            point[0][jj].m_x=i/10.0;
+            point[0][jj].m_y=(100.0/seconds)*pTime[i].GetSeconds().GetLo();
             jj++;
         }
     }
@@ -2176,18 +2195,18 @@ void AHIData::Reload(Day *day)
         m_ready=false;
         return;
     }
-    point[0][0].y=day->count(CPAP_Hypopnea)/day->hours();
-    point[0][0].x=point[0][0].y;
-    point[0][1].y=day->count(CPAP_Obstructive)/day->hours();
-    point[0][1].x=point[0][1].y;
-    point[0][2].y=day->count(CPAP_ClearAirway)/day->hours();
-    point[0][2].x=point[0][2].y;
-    point[0][3].y=day->count(CPAP_RERA)/day->hours();
-    point[0][3].x=point[0][3].y;
-    point[0][4].y=day->count(CPAP_FlowLimit)/day->hours();
-    point[0][4].x=point[0][4].y;
-    point[0][5].y=(100.0/day->hours())*(day->sum(CPAP_CSR)/3600.0);
-    point[0][5].x=point[0][5].y;
+    point[0][0].m_y=day->count(CPAP_Hypopnea)/day->hours();
+    point[0][0].m_x=point[0][0].m_y;
+    point[0][1].m_y=day->count(CPAP_Obstructive)/day->hours();
+    point[0][1].m_x=point[0][1].m_y;
+    point[0][2].m_y=day->count(CPAP_ClearAirway)/day->hours();
+    point[0][2].m_x=point[0][2].m_y;
+    point[0][3].m_y=day->count(CPAP_RERA)/day->hours();
+    point[0][3].m_x=point[0][3].m_y;
+    point[0][4].m_y=day->count(CPAP_FlowLimit)/day->hours();
+    point[0][4].m_x=point[0][4].m_y;
+    point[0][5].m_y=(100.0/day->hours())*(day->sum(CPAP_CSR)/3600.0);
+    point[0][5].m_x=point[0][5].m_y;
     np[0]=6;
     m_ready=true;
     //REFRESH??
@@ -2222,8 +2241,8 @@ void FlagData::Reload(Day *day)
             v2=v1=ev.time().GetMJD();
             if (offset>=0)
                 v1-=ev[offset]/86400.0;
-            point[vc][c].x=v1;
-            point[vc][c].y=v2;
+            point[vc][c].m_x=v1;
+            point[vc][c].m_y=v2;
             //point[vc][c].z=value;
             c++;
             assert(c<max_points);
@@ -2310,8 +2329,8 @@ void HistoryData::Reload(Day *day)
             lasty=max_y=min_y=y;
             first=false;
         }
-        point[vc][i].x=x;
-        point[vc][i].y=y;
+        point[vc][i].m_x=x;
+        point[vc][i].m_y=y;
         if (y>max_y) max_y=y;
         if (y<min_y) min_y=y;
         //if (x<min_x) min_x=x;
@@ -2351,9 +2370,9 @@ double HistoryData::GetAverage()
     double x,val=0;
     int cnt=0;
     for (int i=0;i<np[0];i++) {
-        x=point[0][i].x;
+        x=point[0][i].m_x;
         if ((x<min_x) || (x>max_x)) continue;
-        val+=point[0][i].y;
+        val+=point[0][i].m_y;
         cnt++;
     }
     if (!cnt) return 0;
