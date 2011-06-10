@@ -1630,10 +1630,10 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 dp++;
                 //dc.DrawLine(start_px+i, start_py+, start_px+i, start_py+m_drawlist[i].y);
             }
-            if (dp>0) dc.DrawLines(dp,screen);
+            if (dp>1) dc.DrawLines(dp,screen);     // need at least two points
 
         } else {
-            if (dp>0) dc.DrawLines(dp,m_drawlist);
+            if (dp>1) dc.DrawLines(dp,m_drawlist); // need at least two points
         }
     }
     dc.DestroyClippingRegion();
