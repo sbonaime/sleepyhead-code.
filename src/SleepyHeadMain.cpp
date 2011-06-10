@@ -713,7 +713,7 @@ Daily::Daily(wxWindow *win,Profile *p)
   //  SF->SetMargins(10,15,20,80);
 
 //    #if defined(__UNIX__)
-    FRW->LinkZoom(SF);
+ /*   FRW->LinkZoom(SF);
     FRW->LinkZoom(PRD);
     FRW->LinkZoom(LEAK);
     FRW->LinkZoom(SNORE);
@@ -732,7 +732,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
     SNORE->LinkZoom(PRD);
-    SNORE->LinkZoom(LEAK);
+    SNORE->LinkZoom(LEAK); */
 
   //  #endif
 

@@ -4,46 +4,55 @@
 	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="14">
 		<Cursor position="1300" topLine="24" />
 	</File>
-	<File name="../../src/GUIFrame.h" open="1" top="0" tabpos="11">
+	<File name="../../src/GUIFrame.h" open="1" top="0" tabpos="9">
 		<Cursor position="0" topLine="33" />
 	</File>
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1042" topLine="7" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="35219" topLine="888" />
+		<Cursor position="24637" topLine="631" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="2209" topLine="51" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="9">
-		<Cursor position="11516" topLine="447" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="17536" topLine="634" />
 	</File>
-	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="10">
+	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
 		<Cursor position="7161" topLine="200" />
 	</File>
 	<File name="../../src/libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="7148" topLine="269" />
 	</File>
-	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="2222" topLine="82" />
+	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" open="1" top="0" tabpos="12">
+		<Cursor position="7484" topLine="237" />
 	</File>
-	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" open="1" top="0" tabpos="5">
+	<File name="../../src/libs/sleeplib/loader_plugins/cms50_loader.h" open="0" top="0" tabpos="5">
 		<Cursor position="579" topLine="0" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="8">
-		<Cursor position="0" topLine="0" />
+	<File name="../../src/libs/sleeplib/loader_plugins/zeo_loader.cpp" open="1" top="0" tabpos="14">
+		<Cursor position="1662" topLine="27" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="6">
-		<Cursor position="1712" topLine="36" />
+	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="9760" topLine="283" />
 	</File>
-	<File name="../../src/libs/sleeplib/profiles.cpp" open="0" top="0" tabpos="12">
-		<Cursor position="4619" topLine="141" />
+	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="4">
+		<Cursor position="5047" topLine="119" />
+	</File>
+	<File name="../../src/libs/sleeplib/machine_loader.h" open="1" top="1" tabpos="15">
+		<Cursor position="222" topLine="0" />
+	</File>
+	<File name="../../src/libs/sleeplib/profiles.cpp" open="1" top="0" tabpos="10">
+		<Cursor position="2681" topLine="49" />
 	</File>
 	<File name="../../src/libs/sleeplib/profiles.h" open="0" top="0" tabpos="13">
 		<Cursor position="757" topLine="15" />
 	</File>
-	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="12567" topLine="248" />
+	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="13397" topLine="309" />
+	</File>
+	<File name="../../src/libs/sleeplib/prs1_loader.h" open="1" top="0" tabpos="11">
+		<Cursor position="622" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

@@ -16,9 +16,9 @@ class MachineLoader
 public:
     MachineLoader();
     virtual ~MachineLoader();
-    virtual bool Open(wxString &,Profile *profile){};
-    virtual int Version(){};
-    virtual const wxString & ClassName(){};
+    virtual bool Open(wxString &,Profile *profile)=0;
+    virtual int Version()=0;
+    virtual const wxString & ClassName()=0;
 
 };
 
