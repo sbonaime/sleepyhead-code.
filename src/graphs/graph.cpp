@@ -10,6 +10,7 @@ License: LGPL
 #include <wx/graphics.h>
 #include <wx/glcanvas.h>
 #include <wx/log.h>
+#include <FTGL/ftgl.h>
 #include <math.h>
 #include "graph.h"
 #include "sleeplib/profiles.h"
@@ -43,11 +44,26 @@ wxColor *wxDARK_GREY=&zwxDARK_GREY;
 wxFont *smallfont=NULL,*bigfont=NULL,*boldfont=NULL;
 bool gfont_init=false;
 
+FTGLPixmapFont *normalfont=NULL;
+FTGLTextureFont *rotfont=NULL;
 
 // Must be called from a thread inside the application.
 void GraphInit()
 {
     if (!gfont_init) {
+        const char *fontfile="/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+        normalfont=new FTGLPixmapFont(fontfile);
+        rotfont=new FTGLTextureFont(fontfile);
+        if (normalfont->Error()) {
+            delete normalfont;
+            normalfont=NULL;
+        }
+        if (rotfont->Error()) {
+            delete rotfont;
+            rotfont=NULL;
+        }
+        rotfont->FaceSize(14);
+        normalfont->FaceSize(14);
         bigfont=new wxFont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
         boldfont=new wxFont(12,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD);
         smallfont=new wxFont(10,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
@@ -60,8 +76,62 @@ void GraphDone()
         delete smallfont;
         delete boldfont;
         delete bigfont;
+        delete rotfont;
+        delete normalfont;
         gfont_init=false;
     }
+}
+
+void GetTextExtent(wxString text, float & width, float & height,float pointsize=14)
+{
+    FTBBox box=normalfont->BBox(text.mb_str(),-1);
+    width = box.Upper().X() - box.Lower().X();
+    height = normalfont->Ascender();
+}
+void GetTextExtentB(wxString text, float & width, float & height,float pointsize=14)
+{
+    FTBBox box=rotfont->BBox(text.mb_str(),-1);
+    width = box.Upper().X() - box.Lower().X();
+    height = rotfont->Ascender();
+}
+
+void DrawText(wxString text, float x, float y, float angle=0, float pointsize=14, const wxColor & color=*wxBLACK)
+{
+    if (angle==0) {
+        if (!normalfont) {
+            wxLogError(wxT("Font Problem. Forgot to call GraphInit() ?"));
+            abort();
+            return;
+        }
+        glPixelTransferf(GL_RED_BIAS, -1.0f);
+        glPixelTransferf(GL_GREEN_BIAS, -1.0f);
+        glPixelTransferf(GL_BLUE_BIAS, -1.0f);
+        //Dark red textglPixelTransferf(GL_RED_BIAS, -0.5f);glPixelTransferf(GL_GREEN_BIAS, -1.0f);glPixelTransferf(GL_BLUE_BIAS, -1.0f);
+
+        //normalfont->FaceSize(pointsize);
+        normalfont->Render(text.mb_str(),-1,FTPoint(x,y)); //,x,y);
+        return;
+    }
+    if (!rotfont) {
+        wxLogError(wxT("Font Problem. Forgot to call GraphInit() ?"));
+        abort();
+        return;
+    }
+
+    glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
+
+    //normalfont->FaceSize(pointsize);
+    float w,h;
+    GetTextExtentB(text, w, h,pointsize);
+
+    glPushMatrix();
+//    glLoadIdentity();
+    glTranslatef(x,y,0);
+    glRotatef(90.0, 0.0f, 0.0f, 1.0f);
+    rotfont->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
+    glTranslatef(-x,-y,0);
+    glPopMatrix();
+
 }
 
 
@@ -175,7 +245,7 @@ gGraphWindow::gGraphWindow()
 }
 
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
-: wxGLCanvas( parent, (wxGLCanvas *)NULL, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
+: wxGLCanvas( parent, (wxGLContext *)NULL, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
 {
     //GraphInit();
     m_scrX   = m_scrY   = 64;
@@ -193,6 +263,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     gtitle=foobar=xaxis=yaxis=NULL;
 
     gl_context=new wxGLContext(this,NULL);
+    rotfont->FaceSize(14);
 
     AddLayer(new gGraphTitle(title,wxVERTICAL,boldfont));
 
@@ -433,12 +504,11 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         if (t1<=m_marginLeft) t1=m_marginLeft+1;
         if (t2>(m_scrX-m_marginRight)) t2=m_scrX-m_marginRight;
 
-        wxRect r(t1, m_marginTop, t2-t1, m_scrY-m_marginBottom-m_marginTop);
+        wxRect r(t1, m_marginBottom, t2-t1, m_scrY-m_marginBottom-m_marginTop);
 
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;
-
-        RefreshRect(r.Union(m_mouseRBlast),false);
+        RefreshRect(r.Union(m_mouseRBlast),true);
 
     }
     event.Skip();
@@ -729,7 +799,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    glOrtho(0, m_scrX, m_scrY, 0, -1, 1);
+    glOrtho(0, m_scrX, 0, m_scrY, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -1083,13 +1153,13 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetTopMargin();
-    int width=scrx-(start_px+w.GetRightMargin());
-    int height=scry-(start_py+w.GetBottomMargin());
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    wxPen pen=wxPen(*wxBLACK,1,wxSOLID);  //color[0]
-    dc.SetPen(pen);
-    dc.SetFont(*smallfont);
-    dc.SetTextForeground(*wxBLACK);
+    //wxPen pen=wxPen(*wxBLACK,1,wxSOLID);  //color[0]
+    //dc.SetPen(pen);
+    //dc.SetFont(*smallfont);
+    //dc.SetTextForeground(*wxBLACK);
 
     double xx=w.max_x-w.min_x;
 
@@ -1101,8 +1171,8 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     } else {
         fd=wxT("XX XXX");
     }
-    wxCoord x,y;//,descent,leading;
-    dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
+    float x,y;//,descent,leading;
+    GetTextExtent(fd,x,y); //,&descent,&leading);
     double max_ticks=(x+25.0)/width; // y+50 for rotated text
     double jj=1/max_ticks;
     double minor_tick=max_ticks*xx;
@@ -1150,7 +1220,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
     }
     st3+=min_tick/10.0;
 
-    py=start_py+height;
+    py=w.GetBottomMargin();
 
     glLineWidth(0.25);
     glColor3f(0,0,0);
@@ -1160,7 +1230,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
         px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
         glBegin(GL_LINES);
         glVertex2f(px,py);
-        glVertex2f(px,py+4);
+        glVertex2f(px,py-4);
         glEnd();
 		//dc.DrawLine(px,py,px,py+4);
     }
@@ -1198,22 +1268,21 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
         glColor3f(0,0,0);
         glBegin(GL_LINES);
         glVertex2f(px,py);
-        glVertex2f(px,py+6);
+        glVertex2f(px,py-6);
         glEnd();
 
 		//dc.DrawLine(px,py,px,py+6);
 		//dc.DrawLine(px+1,py,px+1,py+6);
-        y=x=0;
-        dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
+        GetTextExtent(fd,x,y); //,&descent,&leading);
 
         // There is a wx2.8 bug in wxMSW that screws up calculating x properly.
         const int offset=0;
 
         if (!show_time) {
-            dc.DrawRotatedText(fd, px-(y/2)+2, py+x+16+offset, 90.0);
+            DrawText(fd, px-(y/2)-2, py-(x/2)-14+offset, 90.0);
 
         } else {
-            dc.DrawText(fd, px-(x/2), py+y);
+            DrawText(fd, px-(x/2), py-14-y);
         }
 
     }
@@ -1255,7 +1324,7 @@ void gYAxis::Plot(wxDC & dc, gGraphWindow &w)
     if ((w.max_x-w.min_x)==0) return;
 
     int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
+    int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
@@ -1309,7 +1378,7 @@ void gYAxis::Plot(wxDC & dc, gGraphWindow &w)
     glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
     for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
 		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
+        h=start_py+ty;
         if (m_show_minor_lines && (i > w.min_y)) {
             glBegin(GL_LINES);
             glVertex2f(start_px+1, h);
@@ -1325,8 +1394,8 @@ void gYAxis::Plot(wxDC & dc, gGraphWindow &w)
         fd=Format(i); // Override this as a function.
         dc.GetTextExtent(fd,&x,&y); //,&descent,&leading);
         if (x>labelW) labelW=x;
-        h=(start_py+height)-ty;
-        dc.DrawText(fd,start_px-8-x,h - (y / 2));
+        h=start_py+ty;
+        DrawText(fd,start_px-8-x,h - (y / 2));
         //dc.SetPen(*wxBLACK_PEN);
 
         glColor3f(0,0,0);
@@ -1367,19 +1436,19 @@ void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
 
     dc.SetFont(*m_font);
     dc.SetTextForeground(*m_color);
-    //wxCoord x,y;
+
     wxAlignment m_alignment=wxALIGN_LEFT;
 
-    //int xp;
+    float width,height;
     if (m_orientation==wxHORIZONTAL) {
-        dc.DrawText(m_title,4,2);
+        GetTextExtent(m_title,width,height,15);
+        DrawText(m_title,4,scrx-height,0,15);
     } else {
-        dc.GetTextExtent(m_title,&m_textwidth,&m_textheight); //,&m_descent,&m_leading);
-
-        int xp=4;
-        if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-m_textheight;
-
-        dc.DrawRotatedText(m_title,xp,scry/2+m_textwidth/2, 90.0);
+        GetTextExtentB(m_title,width,height,18);
+        int xp=(height/2)+5;
+        if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-height;
+        DrawText(m_title,xp,w.GetBottomMargin()+((scry-w.GetBottomMargin())/2.0)+(height/2),90.0,18);
+        //DrawText(m_title,scrx/2.0,scry/2.0,90.0,18);
     }
 
 }
@@ -1402,6 +1471,7 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     if (!m_visible) return;
 
     double xx=w.max_x-w.min_x;
+
     if (xx==0)
         return;
 
@@ -1409,19 +1479,19 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     int scry = w.GetScrY();
 
     int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
     int width=scrx - (w.GetLeftMargin() + w.GetRightMargin());
     int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
 
     wxColor & col1=color[0];
     wxColor & col2=color[1];
 
+    float h=w.GetBottomMargin()-10;
     glColor4ub(col1.Red(),col1.Green(),col1.Blue(),col1.Alpha());
 
     glLineWidth(1);
     glBegin(GL_LINES);
-    glVertex2f(start_px, start_py+height+10);
-    glVertex2f(start_px+width, start_py+height+10);
+    glVertex2f(start_px, h);
+    glVertex2f(start_px+width, h);
     glEnd();
 
     double rmx=w.rmax_x-w.rmin_x;
@@ -1431,8 +1501,8 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     glColor4ub(col2.Red(),col2.Green(),col2.Blue(),col2.Alpha());
     glLineWidth(4);
     glBegin(GL_LINES);
-    glVertex2f(start_px+px, start_py+height+10);
-    glVertex2f(start_px+py, start_py+height+10);
+    glVertex2f(start_px+px,h);
+    glVertex2f(start_px+py,h);
     glEnd();
 }
 
@@ -1456,7 +1526,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     dc.SetFont(*smallfont);
     dc.SetTextForeground(*wxBLACK);
     //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
+    //DrawText(label,0,0);
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetTopMargin();
@@ -1480,7 +1550,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
     wxCoord x,y;
     //,descent,leading;
     //gc.GetTextExtent(w.Title(),&x,&y,&descent,&leading);
-    //gc.DrawText(w.Title(),start_px,0);
+    //DrawText(w.Title(),start_px,0);
 
     double t1,t2;
     int barwidth;
@@ -1520,9 +1590,9 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
         if (t2>x) {
             int j=t1+((t2/2)-(x/2));
             if (m_direction==wxVERTICAL) {
-                dc.DrawRotatedText(str,start_px+barwidth+2+y,j,270);
+                DrawText(str,start_px+barwidth+2+y,j,270.0);
             } else {
-                dc.DrawText(str,j,start_py+(barwidth/2)-(y/2));
+                DrawText(str,j,start_py+(barwidth/2)-(y/2));
             }
         }
 
@@ -1554,7 +1624,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     int scry = w.GetScrY();
 
     int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
+    int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
@@ -1567,8 +1637,6 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
        if ((data->point[0][i].m_x >= w.min_x) && (data->point[0][i].m_x<w.max_x)) days+=1;
     }
     if (days==0) return;
-
-    dc.SetPen( *wxBLACK_PEN );
 
     float barwidth,pxr;
     float px;//,py;
@@ -1585,10 +1653,8 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     px+=1;
     int t1,t2;
     int u1,u2;
-    wxCoord textX, textY;
+    float textX, textY;
     //,descent,leading;
-
-
     wxString str;
     bool draw_xticks_instead=false;
 
@@ -1604,7 +1670,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         wxDirection dir;
 
         u2=data->point[0][i].m_y*pxr;
-        u1=(start_py+height)-u2;
+        u1=start_py;
 
         if (m_direction==wxVERTICAL) {
             rect=wxRect(start_px,t1,u2,t2);
@@ -1614,7 +1680,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         dir=wxEAST;
         //RoundedRectangle(rect.x,rect.y,rect.width,rect.height,1,color[0]); //,*wxLIGHT_GREY,dir);
 
-
+        // TODO: Put this in a function..
         wxColor & col1=color[0];
         wxColor & col2=*((wxColor *)wxLIGHT_GREY);
         glBegin(GL_QUADS);
@@ -1634,14 +1700,14 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
         //DrawRectangle(rect.x,rect.y,rect.width,rect.height);
 
         str=FormatX(data->point[0][i].m_x);
-        textX=textY=0;
-        dc.GetTextExtent(str, &textX, &textY); //,&descent,&leading);
+
+        GetTextExtent(str, textX, textY);
         if (t2>textY) {
             int j=t1+((t2/2)-(textY/2));
             if (m_direction==wxVERTICAL) {
-                dc.DrawText(str,start_px-textX-8,j);
+                DrawText(str,start_px-textX-8,j);
             } else {
-                dc.DrawRotatedText(str,j,start_py+height+16+textX,90);
+                DrawText(str,j,start_py-16-(textX/2),90);
             }
         } else draw_xticks_instead=true;
 
@@ -1649,9 +1715,15 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
     if (draw_xticks_instead)
         Xaxis->Plot(dc,w);
 
-    dc.DrawLine(start_px,start_py,start_px,start_py+height);
+    glColor3f (0.1F, 0.1F, 0.1F);
+    glLineWidth (1);
+    glBegin (GL_LINES);
+    glVertex2f (start_px, start_py);
+    glVertex2f (start_px, start_py+height);
+    glVertex2f (start_px,start_py);
+    glVertex2f (start_px+width, start_py);
+    glEnd ();
 
-    dc.DrawLine(start_px,start_py+height,start_px+width,start_py+height);
 }
 
 gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool _accelerate,bool _hide_axes,bool _square_plot)
@@ -1683,7 +1755,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     int scrx = w.GetScrX(), scry = w.GetScrY();
 
-    int start_px=w.GetLeftMargin(), start_py=w.GetTopMargin();
+    int start_px=w.GetLeftMargin(), start_py=w.GetBottomMargin();
 
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
@@ -1723,15 +1795,9 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
     if (!num_points) { // No Data?
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
-            wxCoord x,y; //,descent,leading;
-            dc.SetFont(*bigfont);//,*wxDARK_GREY);
-            dc.SetTextForeground(*wxDARK_GREY);
-            dc.GetTextExtent(msg,&x,&y);//,&descent,&leading);
-            dc.DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0));
-
-            // Restore the default font in case we screw up somewhere else
-            dc.SetFont(*wxNORMAL_FONT);
-            dc.SetTextForeground(*wxBLACK);
+            float x,y; //,descent,leading;
+            GetTextExtent(msg,x,y,40);//,&descent,&leading);
+            DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,40,*wxDARK_GREY);
         }
         return;
     }
@@ -1824,10 +1890,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
             } */
 
-            px=1+(point[i].m_x - minx) * xmult;   // Scale the time scale X to pixel scale X
-            py=height-1 - ((point[i].m_y - miny) * ymult); // Same for Y scale, but reverse (0 at the bottom)
-
-
+            px=1+((point[i].m_x - minx) * xmult);   // Scale the time scale X to pixel scale X
+            py=1+((point[i].m_y - miny) * ymult);   // Same for Y scale
 
             if (accel) {
                 // Just clip ugly in accel mode.. Too darn complicated otherwise
@@ -2001,35 +2065,22 @@ gLineOverlayBar::~gLineOverlayBar()
 
 void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 {
-    double x1,x2;
-
-
     if (!m_visible) return;
     if (!data) return;
     if (!data->IsReady()) return;
-    //if (!data->NP()) return;
 
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
 
     int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
+    int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-
-    //gc.Clip(start_px+1,start_py,width,height);
-
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
-    //wxPen sfp3(*color[0], 4, wxSOLID);
-    //wxPen sfp2(*color[0], 5, wxSOLID);
-    //wxPen sfp1(*color[0], 1, wxSOLID);
 
-    //wxBrush brush(*color[0],wxFDIAGONAL_HATCH);
-    //dc.SetBrush(brush);
+    double x1,x2;
 
     glEnable(GL_POINT_SMOOTH);
     glEnable( GL_BLEND );
@@ -2060,14 +2111,12 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
             }
             if (x2>=start_px+width+1) x2=start_px+width+1;
             double w1=x2-x1;
-            //dc.SetPen(sfp1);
-            wxCoord x,y;//,descent,leading;
+            float x,y;//,descent,leading;
             if (lo_type==LOT_Bar) {
                 if (rp.m_x==rp.m_y) {
                     if (xx<(1800.0/86400)) {
-                        //dc.SetTextForeground(*color[0]);
-                        dc.GetTextExtent(label,&x,&y); //,&descent,&leading);
-                        dc.DrawText(label,x1-(x/2),start_py+20-y);
+                        GetTextExtent(label,x,y);
+                        DrawText(label,x1-(x/2),start_py+height-30+y);
                     }
                     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
 
@@ -2076,30 +2125,21 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     glVertex2f(x1,start_py+25);
                     glVertex2f(x1,start_py+height-25);
                     glEnd();
-                    //dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
 
                     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
                     glPointSize(6);
                     glBegin(GL_POINTS);
-                    glVertex2f(x1,start_py+25);
+                    glVertex2f(x1,start_py+height-25);
                     glEnd();
-
-                    //dc.DrawLine(x1,start_py+25,x1,start_py+25);
                 } else {
-            //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
-
-                    //dc.SetPen(sfp1);
                     RoundedRectangle(x1,start_py,w1,height,2,col);
                 }
             } else if (lo_type==LOT_Dot) {
                 glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
                 glPointSize(4);
                 glBegin(GL_POINTS);
-                //glVertex2f(x1,start_py+(height/2)-10);
-                glVertex2f(x1,start_py+(height/2)-14);
+                glVertex2f(x1,start_py+(height/2)+14);
                 glEnd();
-                //dc.SetPen(sfp3);
-                //dc.DrawLine(x1,start_py+(height/2)-10,x1,start_py+(height/2)-10);
             }
 
 
@@ -2109,7 +2149,6 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
         if (done) break;
     }
-    //gc.ResetClip();
 }
 
 gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _line_num,int _total_lines)
@@ -2138,39 +2177,31 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     //dc.DrawText(label,0,0);
 
     int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
+    int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    static wxColor col1=wxColor(0xff,0xf0,0xd0,0xff);
-    static wxColor col2=wxColor(0xe0,0xff,0xd0,0xff);
-    //static wxBrush linebr1(col1, wxSOLID);
-    //static wxBrush linebr2(col2, wxSOLID);
-
-    //wxPen sfp1(*color[0], 1, wxSOLID);
-    //wxBrush brush(*color[0],wxSOLID); //FDIAGONAL_HATCH);
+    static wxColor col1=wxColor(0xd0,0xff,0xd0,0xff);
+//    static wxColor col2=wxColor(0xe0,0xe0,0xff,0xff);
+    static wxColor col2=wxColor(0xff,0xff,0xff,0xff);
 
     dc.SetFont(*smallfont);
     dc.SetTextForeground(*wxBLACK);
 
 
-    double line_h=floor(double(height-2)/double(total_lines));
-    double r=fmod(height-2,total_lines);
-    line_h=round(line_h)+1;
-    double line_top=start_py+line_num*line_h;
+    float line_h=float(height-2)/float(total_lines);
+    line_h=line_h;
+    float line_top=(start_py+height-line_h)-line_num*line_h;
 
 
-    if ((line_num==total_lines-1) && (r>0)) {  // last lines responsibility to draw the title.
-        //double q=ceil(r);
-        //if (q>1) q-=2;
-        line_h-=1;
+    if ((line_num==total_lines-1)) { // last lines responsibility to draw the title.
 
         glColor3f (0.1F, 0.1F, 0.1F);
         glLineWidth (1);
         glBegin (GL_LINE_LOOP);
         glVertex2f (start_px-1, start_py);
-        glVertex2f (start_px-1, start_py+height+1);
-        glVertex2f (start_px+width,start_py+height+1);
+        glVertex2f (start_px-1, start_py+height);
+        glVertex2f (start_px+width,start_py+height);
         glVertex2f (start_px+width, start_py);
         glEnd ();
 
@@ -2178,23 +2209,16 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     } //else ceil(line_h);
 
 
-    //dc.SetPen(*wxBLACK);
     wxColor *barcol=&col2;
     if (line_num & 1) {
         barcol=&col1;
     }
-    RoundedRectangle(start_px,line_top,width-1,line_h+1,3,*barcol);
-    wxCoord x,y; //,descent,leading;
-    dc.GetTextExtent(label,&x,&y);//,&leading,&descent);
-    dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
+    RoundedRectangle(start_px,line_top,width-1,line_h+1,0,*barcol);
+    float x,y;
+    GetTextExtent(label,x,y,12);
+    DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
-        /*int lw=x;
-        dc.GetTextExtent(w.Title(),&x,&y);
-        dc.DrawRotatedText(w.Title(), start_px-8-lw - y, start_py+((height + x)>>1), 90);
-    } */
     int x1,x2;
-    //dc.SetBrush(brush);
-    //dc.SetPen(sfp1);
 
     wxColor & col=color[0];
     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());

@@ -8306,7 +8306,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307791312 /home/mark/projects/git/sleepyhead/src/version.h
+1307815721 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8344,12 +8344,13 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307791311 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1307815384 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/graphics.h>
 	<wx/glcanvas.h>
 	<wx/log.h>
+	<FTGL/ftgl.h>
 	<math.h>
 	"graph.h"
 	"sleeplib/profiles.h"
@@ -10866,4 +10867,24 @@
 	"wx/dcmemory.h"
 	"wx/dcclient.h"
 	"wx/window.h"
+
+1307794340 source:/home/mark/projects/git/sleepyhead/src/libs/oglft/OGLFT.cpp
+	<iostream>
+	<iomanip>
+	<config.h>
+	<qregexp.h>
+	"./OGLFT.h"
+
+1307794239 /home/mark/projects/git/sleepyhead/src/libs/oglft/OGLFT.h
+	<cmath>
+	<map>
+	<list>
+	<vector>
+	<mpdebug.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/gle.h>
+	<qstring.h>
+	<qcolor.h>
+	<ft2build.h>
 
