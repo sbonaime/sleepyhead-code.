@@ -643,16 +643,20 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     wxPaintDC dc(this);
 #endif
 
-
+//#if defined(__WXMSW)
+  //  wxGraphicsRenderer *render=wxGraphicsRenderer::GetDefaultRenderer();
     // Create graphics context from it
-    wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
+//    wxGraphicsContext *gc = render->CreateContextFromNativeWindow(this); //::Create(dc);
+//#else
+    wxGraphicsContext *gc = wxGraphicsContext::Create(dc); //::Create(dc);
 
+//#endif
 
-    /*if (pref["UseAntiAliasing"]) {
+    if (pref["UseAntiAliasing"]) {
         gc->SetAntialiasMode(wxANTIALIAS_DEFAULT);
     } else {
         gc->SetAntialiasMode(wxANTIALIAS_NONE);
-    } */
+    }
     //gc->SetAntialiasMode(wxANTIALIAS_NONE);
     //->SetInterpolationQuality(wxINTERPOLATION_FAST);
 
@@ -693,7 +697,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
         //    gc->SetBrush(*wxTRANSPARENT_BRUSH);
         //}
         if (m_mouseRBrect.width>0)
-            gc->DrawRoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-2,m_mouseRBrect.height,10);
+            gc->DrawRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-2,m_mouseRBrect.height);
     }
     //if (pref["UseAntiAliasing"]) {
         //delete dcp;
