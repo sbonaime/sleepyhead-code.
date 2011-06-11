@@ -240,7 +240,7 @@ END_EVENT_TABLE()
 static int wx_gl_attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, 0};
 
 gGraphWindow::gGraphWindow()
-: wxGLCanvas( NULL,wxID_ANY,NULL )
+: wxGLCanvas( (wxWindow *)NULL,(wxGLContext *)NULL,wxID_ANY) //,wxDefaultPosition,wxDefaultSize,wxT("GLContext"),(int *)wx_gl_attribs,wxNullPalette)
 {
 }
 
@@ -793,7 +793,11 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 //#endif
     GetClientSize(&m_scrX, &m_scrY);
 
+#if !defined(__WXMAC__)
     gl_context->SetCurrent(*this);   // A generic Context needs to be used.. Not one per graph window
+#else
+    gl_context->SetCurrent();
+#endif
 
     glViewport(0, 0, m_scrX, m_scrY);
     glMatrixMode(GL_PROJECTION);
