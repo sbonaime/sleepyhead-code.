@@ -1612,7 +1612,23 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
             rect=wxRect(t1,u1,t2,u2);
         }
         dir=wxEAST;
-        RoundedRectangle(rect.x,rect.y,rect.width,rect.height,1,color[0]); //,*wxLIGHT_GREY,dir);
+        //RoundedRectangle(rect.x,rect.y,rect.width,rect.height,1,color[0]); //,*wxLIGHT_GREY,dir);
+
+
+        wxColor & col1=color[0];
+        wxColor & col2=*((wxColor *)wxLIGHT_GREY);
+        glBegin(GL_QUADS);
+        //red color
+        glColor4ub(col1.Red(),col1.Green(),col1.Blue(),col1.Alpha());
+        glVertex2f(rect.x, rect.y+rect.height);
+        glVertex2f(rect.x, rect.y);
+        //blue color
+        glColor4ub(col2.Red(),col2.Green(),col2.Blue(),col2.Alpha());
+        glVertex2f(rect.x+rect.width,rect.y);
+        glVertex2f(rect.x+rect.width, rect.y+rect.height);
+        glEnd();
+
+
         wxColor c(0,0,0,255);
         LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
         //DrawRectangle(rect.x,rect.y,rect.width,rect.height);
