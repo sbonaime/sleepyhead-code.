@@ -2015,6 +2015,8 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     //wxBrush brush(*color[0],wxFDIAGONAL_HATCH);
     //dc.SetBrush(brush);
 
+    glEnable(GL_POINT_SMOOTH);
+    glEnable( GL_BLEND );
 
     wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
@@ -2061,10 +2063,9 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     //dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
 
                     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-                    glLineWidth (4);
-                    glBegin(GL_LINES);
-                    glVertex2f(x1,start_py+27);
-                    glVertex2f(x1,start_py+23);
+                    glPointSize(6);
+                    glBegin(GL_POINTS);
+                    glVertex2f(x1,start_py+25);
                     glEnd();
 
                     //dc.DrawLine(x1,start_py+25,x1,start_py+25);
@@ -2076,9 +2077,9 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                 }
             } else if (lo_type==LOT_Dot) {
                 glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-                glLineWidth (4);
-                glBegin(GL_LINES);
-                glVertex2f(x1,start_py+(height/2)-10);
+                glPointSize(4);
+                glBegin(GL_POINTS);
+                //glVertex2f(x1,start_py+(height/2)-10);
                 glVertex2f(x1,start_py+(height/2)-14);
                 glEnd();
                 //dc.SetPen(sfp3);
