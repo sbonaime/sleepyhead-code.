@@ -132,8 +132,8 @@ gLayer::gLayer(gPointData *d,wxString title)
     }
     m_visible = true;
     m_movable = false;
-    color.push_back(wxRED);
-    color.push_back(wxGREEN);
+    color.push_back(*wxRED);
+    color.push_back(*wxGREEN);
 }
 gLayer::~gLayer()
 {
@@ -770,7 +770,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     if (m_mouseLDown) {
         if (m_mouseRBrect.width>0)
 
-            RoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-2,m_mouseRBrect.height,5,*wxGREEN2);
+            RoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-1,m_mouseRBrect.height,5,*wxDARK_GREY);
     }
 
     //glEnable(GL_DEPTH_TEST);
@@ -1065,7 +1065,7 @@ gXAxis::gXAxis(const wxColor * col)
 {
     if (col) {
         color.clear();
-        color.push_back(col);
+        color.push_back(*col);
     }
 }
 gXAxis::~gXAxis()
@@ -1227,7 +1227,7 @@ gYAxis::gYAxis(const wxColor * col)
 {
     if (col) {
         color.clear();
-        color.push_back(col);
+        color.push_back(*col);
     }
     m_show_major_lines=true;
     m_show_minor_lines=true;
@@ -1306,7 +1306,7 @@ void gYAxis::Plot(wxDC & dc, gGraphWindow &w)
     	//dc.DrawLine(start_px-4, h, start_px, h);
     }
     //dc.SetPen(pen1);
-    glColor3f(linecol1.Red()/256.0, linecol1.Green()/256.0, linecol1.Blue()/256.0);
+    glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
     for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
 		ty=(i - w.min_y) * ymult;
         h=(start_py+height)-ty;
@@ -1338,7 +1338,7 @@ void gYAxis::Plot(wxDC & dc, gGraphWindow &w)
 		//dc.DrawLine(start_px-6,h,start_px,h);
         //dc.SetPen(pen2);
         if (m_show_major_lines && (i > w.min_y)) {
-            glColor3f(linecol1.Red()/256.0, linecol1.Green()/256.0, linecol1.Blue()/256.0);
+            glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
 
             glBegin(GL_LINES);
             glVertex2f(start_px+1, h);
@@ -1390,8 +1390,8 @@ gFooBar::gFooBar(const wxColor * col1,const wxColor * col2)
 {
     if (col1 && col2) {
         color.clear();
-        color.push_back(col2);
-        color.push_back(col1);
+        color.push_back(*col2);
+        color.push_back(*col1);
     }
 }
 gFooBar::~gFooBar()
@@ -1413,10 +1413,11 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     int width=scrx - (w.GetLeftMargin() + w.GetRightMargin());
     int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
 
-    const wxColor & col1=*color[0];
-    const wxColor & col2=*color[1];
+    wxColor & col1=color[0];
+    wxColor & col2=color[1];
 
-    glColor3f(col1.Red()/256.0, col1.Green()/256.0, col1.Blue()/256.0);
+    glColor4ub(col1.Red(),col1.Green(),col1.Blue(),col1.Alpha());
+
     glLineWidth(1);
     glBegin(GL_LINES);
     glVertex2f(start_px, start_py+height+10);
@@ -1427,7 +1428,7 @@ void gFooBar::Plot(wxDC & dc, gGraphWindow & w)
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
-    glColor3f (col2.Red()/256.0, col2.Green()/256.0, col2.Blue()/256.0);
+    glColor4ub(col2.Red(),col2.Green(),col2.Blue(),col2.Alpha());
     glLineWidth(4);
     glBegin(GL_LINES);
     glVertex2f(start_px+px, start_py+height+10);
@@ -1507,7 +1508,7 @@ void gCandleStick::Plot(wxDC & dc, gGraphWindow & w)
             dir=wxSOUTH;
         }
         dc.SetPen(*wxBLACK_PEN);
-        dc.GradientFillLinear(rect,*color[i % color.size()],*wxLIGHT_GREY,dir);
+        dc.GradientFillLinear(rect,color[i % color.size()],*wxLIGHT_GREY,dir);
         dc.DrawRectangle(rect.x,rect.y,rect.width,rect.height);
         str=wxT("");
         if ((int)m_names.size()>i) {
@@ -1534,7 +1535,7 @@ gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
 {
     if (col) {
         color.clear();
-        color.push_back(col);
+        color.push_back(*col);
     }
     Xaxis=new gXAxis(wxBLACK);
 }
@@ -1611,7 +1612,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
             rect=wxRect(t1,u1,t2,u2);
         }
         dir=wxEAST;
-        RoundedRectangle(rect.x,rect.y,rect.width,rect.height,1,*color[0]); //,*wxLIGHT_GREY,dir);
+        RoundedRectangle(rect.x,rect.y,rect.width,rect.height,1,color[0]); //,*wxLIGHT_GREY,dir);
         wxColor c(0,0,0,255);
         LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
         //DrawRectangle(rect.x,rect.y,rect.width,rect.height);
@@ -1642,7 +1643,7 @@ gLineChart::gLineChart(gPointData *d,const wxColor * col,int dlsize,bool _accele
 {
     m_drawlist=new wxPoint [dlsize];
     color.clear();
-    color.push_back(col);
+    color.push_back(*col);
     //foobar=new gFooBar();
     m_report_empty=false;
     //Yaxis=new gYAxis(wxBLACK);
@@ -1722,8 +1723,9 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     // Selected the plot line color
 
-    const wxColor & col=*color[0];
-    glColor3f (col.Red()/256.0, col.Green()/256.0, col.Blue()/256.0);
+    wxColor & col=color[0];
+    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+
     bool accel=m_accelerate;
     double px,py;
     //double s1,s2;
@@ -1975,7 +1977,7 @@ gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _lab
 :gLayer(d),label(_label),lo_type(_lot)
 {
     color.clear();
-    color.push_back(col);
+    color.push_back(*col);
 }
 gLineOverlayBar::~gLineOverlayBar()
 {
@@ -2014,7 +2016,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     //dc.SetBrush(brush);
 
 
-    const wxColor & col=*color[0];
+    wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
 
         bool done=false;
@@ -2049,8 +2051,8 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                         dc.GetTextExtent(label,&x,&y); //,&descent,&leading);
                         dc.DrawText(label,x1-(x/2),start_py+20-y);
                     }
+                    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
 
-                    glColor3f (col.Red(), col.Green(), col.Blue());
                     glLineWidth (0.25);
                     glBegin(GL_LINES);
                     glVertex2f(x1,start_py+25);
@@ -2058,7 +2060,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     glEnd();
                     //dc.DrawLine(x1,start_py+25,x1,start_py+height-25);
 
-                    glColor3f (col.Red(), col.Green(), col.Blue());
+                    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
                     glLineWidth (4);
                     glBegin(GL_LINES);
                     glVertex2f(x1,start_py+27);
@@ -2073,7 +2075,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     RoundedRectangle(x1,start_py,w1,height,2,col);
                 }
             } else if (lo_type==LOT_Dot) {
-                glColor3f (col.Red(), col.Green(), col.Blue());
+                glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
                 glLineWidth (4);
                 glBegin(GL_LINES);
                 glVertex2f(x1,start_py+(height/2)-10);
@@ -2097,7 +2099,7 @@ gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _li
 :gLayer(d),label(_label),line_num(_line_num),total_lines(_total_lines)
 {
     color.clear();
-    color.push_back(col);
+    color.push_back(*col);
 
 }
 gFlagsLine::~gFlagsLine()
@@ -2141,10 +2143,21 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     double line_top=start_py+line_num*line_h;
 
 
-    if ((line_num==total_lines-1) && (r>0)) {  // first lines responsibility to draw the title.
+    if ((line_num==total_lines-1) && (r>0)) {  // last lines responsibility to draw the title.
         //double q=ceil(r);
         //if (q>1) q-=2;
         line_h-=1;
+
+        glColor3f (0.1F, 0.1F, 0.1F);
+        glLineWidth (1);
+        glBegin (GL_LINE_LOOP);
+        glVertex2f (start_px-1, start_py);
+        glVertex2f (start_px-1, start_py+height+1);
+        glVertex2f (start_px+width,start_py+height+1);
+        glVertex2f (start_px+width, start_py);
+        glEnd ();
+
+
     } //else ceil(line_h);
 
 
@@ -2153,7 +2166,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     if (line_num & 1) {
         barcol=&col1;
     }
-    RoundedRectangle(start_px,line_top,width+1,line_h+1,3,*barcol);
+    RoundedRectangle(start_px,line_top,width-1,line_h+1,3,*barcol);
     wxCoord x,y; //,descent,leading;
     dc.GetTextExtent(label,&x,&y);//,&leading,&descent);
     dc.DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
@@ -2166,8 +2179,8 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     //dc.SetBrush(brush);
     //dc.SetPen(sfp1);
 
-    const wxColor & col=*color[0];
-    glColor3f (col.Red(), col.Green(), col.Blue());
+    wxColor & col=color[0];
+    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
     glLineWidth (1);
 
     for (int n=0;n<data->VC();n++) {
@@ -2207,7 +2220,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
             } else {
          //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
                 //gc.SetPen(sfp1);
-                RoundedRectangle(x1,line_top+4,w1,line_h-6,0,*color[0]);
+                RoundedRectangle(x1,line_top+4,w1,line_h-6,0,color[0]);
             }
 
 

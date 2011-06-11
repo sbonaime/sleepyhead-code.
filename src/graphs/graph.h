@@ -265,7 +265,7 @@ class gLayer
         virtual ~gLayer();
         //virtual void Update() { data=gd; };
         virtual void Plot(wxDC & dc, gGraphWindow & w);
-        vector<const wxColor *> color;
+        vector<wxColor> color;
 
         virtual void SetData(gPointData * gd) { data=gd; };
         virtual gPointData * GetData() { return data; };

@@ -631,12 +631,12 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->AddName(wxT("FL"));
     l->AddName(wxT("CSR"));
     l->color.clear();
-    l->color.push_back(wxBLUE);
-    l->color.push_back(wxAQUA);
-    l->color.push_back(wxPURPLE);
-    l->color.push_back(wxYELLOW);
-    l->color.push_back(wxBLACK);
-    l->color.push_back(wxGREEN2);
+    l->color.push_back(*wxBLUE);
+    l->color.push_back(*wxAQUA);
+    l->color.push_back(wxColor(0xff,0x40,0xff,0xff)); //wxPURPLE);
+    l->color.push_back(*wxYELLOW);
+    l->color.push_back(*wxBLACK);
+    l->color.push_back(*wxGREEN2);
     G_AHI->AddLayer(l);
 
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
