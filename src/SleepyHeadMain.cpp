@@ -41,6 +41,7 @@
 //extern "C" void *_GdipStringFormatCachedGenericTypographic = NULL;
 //#endif
 
+
 wxProgressDialog *loader_progress;
 //helper functions
 enum wxbuildinfoformat {

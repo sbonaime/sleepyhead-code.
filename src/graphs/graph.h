@@ -8,6 +8,7 @@ License: LGPL
 #define GRAPH_H
 
 #include <wx/dcgraph.h>
+#include <wx/glcanvas.h>
 #include <sleeplib/machine.h>
 #include <list>
 
@@ -119,10 +120,10 @@ public:
 
 
 
-class gGraphWindow:public wxWindow // rename to gGraphWindow
+class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
 {
     public:
-        gGraphWindow() {};
+        gGraphWindow();
         gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title=wxT("Graph"),const wxPoint &pos = wxDefaultPosition,const wxSize &size = wxDefaultSize,long flags = 0);
 
         wxBitmap * RenderBitmap(int width,int height);
@@ -141,19 +142,24 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         int GetScrX(void) const { return m_scrX; };
         int GetScrY(void) const { return m_scrY; };
 
-        void SetMargins(int top, int right, int bottom, int left);
-        const wxString & Title(void ) { return m_title; };
-        int GetTopMargin(void) const { return m_marginTop; };
-        int GetBottomMargin(void) const { return m_marginBottom; };
-        int GetLeftMargin(void) const { return m_marginLeft; };
-        int GetRightMargin(void) const { return m_marginRight; };
-        void SetTopMargin(int i) { m_marginTop=i; };
-        void SetBottomMargin(int i) { m_marginBottom=i; };
-        void SetLeftMargin(int i) { m_marginLeft=i; };
-        void SetRightMargin(int i) { m_marginRight=i; };
+        // For mouse to screen use only.. work in OpenGL points where possible
 
-        inline int Width() { return m_scrX-m_marginLeft-m_marginRight; };
-        inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };
+        const wxString & Title(void ) { return m_title; };
+
+        void SetMargins(float top, float right, float bottom, float left);  // OpenGL width of each corners margin
+
+        float GetTopMargin(void) const { return m_marginTop; };
+        float GetBottomMargin(void) const { return m_marginBottom; };
+        float GetLeftMargin(void) const { return m_marginLeft; };
+        float GetRightMargin(void) const { return m_marginRight; };
+
+        void SetTopMargin(float i) { m_marginTop=i; };
+        void SetBottomMargin(float i) { m_marginBottom=i; };
+        void SetLeftMargin(float i) { m_marginLeft=i; };
+        void SetRightMargin(float i) { m_marginRight=i; };
+
+        inline float Width() { return m_scrX-m_marginLeft-m_marginRight; };  // Width of OpenGL main drawing area
+        inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };   // Height of ""...
 
         void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); }; // Linking graphs changes zoom behaviour..
         void LinkMove(gGraphWindow *g) { link_move.push_back(g); }; // Linking graphs changes zoom behaviour..
@@ -176,18 +182,19 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         virtual void ResetXBounds();
         virtual void SetXBounds(double minx, double maxx);
         virtual void ZoomX(double mult,int origin_px);
+
         virtual void ZoomXPixels(int x1, int x2);           // Zoom between two selected points on screen
         virtual void ZoomXPixels(int x1,int x2,double &rx1,double &rx2);
 
         virtual void MoveX(int i);                          // Move x bounds by i Pixels
         virtual void MoveX(int i,double &min, double & max);
 
-        inline int x2p(double x) {
+        inline float x2p(double x) {
             double xx=max_x-min_x;
-            double w=(Width()/xx)*(x-min_x);
+            double w=((Width()/xx)*(x-min_x));
             return w+GetLeftMargin();
         };
-        inline double p2x(int px) {
+        inline double p2x(float px) {
             double xx=max_x-min_x;
             double wx=px-GetLeftMargin();
             double ww=wx/Width();
@@ -198,7 +205,7 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
             double h=(Height()/yy)*(y-min_y);
             return h+GetTopMargin();
         };
-        inline double p2y(int py) {
+        inline double p2y(float py) {
             double yy=max_y-min_y;
             double hy=py-GetTopMargin();
             double hh=hy/Height();
@@ -217,6 +224,9 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         void SetBlockZoom(bool b) { m_block_zoom=b; };
         void SetBlockMove(bool b) { m_block_move=b; };
 
+        wxGLContext *gl_context;
+
+
     protected:
         list<gGraphWindow *>link_zoom;
         list<gGraphWindow *>link_move;
@@ -234,7 +244,7 @@ class gGraphWindow:public wxWindow // rename to gGraphWindow
         int    m_scrY;      //!< Current view's Y dimension
         wxPoint m_mouseLClick,m_mouseRClick,m_mouseRClick_start;
 
-        int m_marginTop, m_marginRight, m_marginBottom, m_marginLeft;
+        float m_marginTop, m_marginRight, m_marginBottom, m_marginLeft;
 
         wxRect m_mouseRBrect,m_mouseRBlast;
         bool m_mouseLDown,m_mouseRDown,m_datarefresh;
@@ -254,8 +264,9 @@ class gLayer
         gLayer(gPointData *g=NULL,wxString title=wxT(""));
         virtual ~gLayer();
         //virtual void Update() { data=gd; };
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         vector<const wxColor *> color;
+
         virtual void SetData(gPointData * gd) { data=gd; };
         virtual gPointData * GetData() { return data; };
 
@@ -285,7 +296,7 @@ class gLayer
         virtual void SetMinY(double v) { if (data) data->SetMinY(v); };
         virtual void SetMaxY(double v) { if (data) data->SetMaxY(v); };
 
-        virtual inline int x2p(gGraphWindow & g,double x) {
+        /*virtual inline int x2p(gGraphWindow & g,double x) {
             double xx=data->MaxX()-data->MinX();
             double w=(g.Width()/xx)*(x-data->MinX());
             return w+g.GetLeftMargin();
@@ -306,7 +317,7 @@ class gLayer
             double hy=py-g.GetTopMargin();
             double hh=hy/g.Height();
             return data->MinY()+(yy*hh);
-        };
+        }; */
         void NotifyGraphWindow(gGraphWindow *g) { m_graph.push_back(g); };
         void SetVisible(bool v) { m_visible=v; };
         bool IsVisible() { return m_visible; };
@@ -324,7 +335,7 @@ class gGraphTitle:public gLayer
     public:
         gGraphTitle(const wxString & _title,wxOrientation o=wxVERTICAL,const wxFont * font=wxNORMAL_FONT,const wxColor * color=wxBLACK);
         virtual ~gGraphTitle();
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         wxOrientation Orientation() { return m_orientation; };
         static const int Margin=20;
 
@@ -342,7 +353,7 @@ class gCandleStick:public gLayer
         gCandleStick(gPointData *d=NULL,wxOrientation o=wxHORIZONTAL);
         virtual ~gCandleStick();
 
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         void AddName(wxString name) { m_names.push_back(name); };
 
     protected:
@@ -356,7 +367,7 @@ class gXAxis:public gLayer
     public:
         gXAxis(const wxColor * col=wxBLACK);
         virtual ~gXAxis();
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         static const int Margin=40; // How much room does this take up. (Bottom margin)
     protected:
 //        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
@@ -366,7 +377,7 @@ class gYAxis:public gLayer
     public:
         gYAxis(const wxColor * col=wxBLACK);
         virtual ~gYAxis();
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; };
         void SetShowMajorLines(bool b) { m_show_major_lines=b; };
         bool ShowMinorLines() { return m_show_minor_lines; };
@@ -383,7 +394,7 @@ class gFooBar:public gLayer
     public:
         gFooBar(const wxColor * color1=wxGREEN,const wxColor * color2=wxDARK_GREY);
         virtual ~gFooBar();
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
         static const int Margin=15;
     protected:
 };
@@ -395,7 +406,7 @@ class gLineChart:public gLayer
         gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool accelerate=false,bool _hide_axes=false,bool _square_plot=false);
         virtual ~gLineChart();
 
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
 
         void SetSquarePlot(bool b) { m_square_plot=b; };
         bool GetSquarePlot() { return m_square_plot; };
@@ -422,7 +433,7 @@ class gLineOverlayBar:public gLayer
         gLineOverlayBar(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""),LO_Type _lot=LOT_Bar);
         virtual ~gLineOverlayBar();
 
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
         wxString label;
@@ -435,7 +446,7 @@ class gFlagsLine:public gLayer
         gFlagsLine(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""),int _line_num=0,int _total_lines=0);
         virtual ~gFlagsLine();
 
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
         wxString label;
@@ -449,7 +460,7 @@ class gBarChart:public gLayer
         gBarChart(gPointData *d=NULL,const wxColor *col=NULL,wxOrientation o=wxHORIZONTAL);
         virtual ~gBarChart();
 
-        virtual void Plot(wxDC & dc, wxGraphicsContext & gc, gGraphWindow & w);
+        virtual void Plot(wxDC & dc, gGraphWindow & w);
 
     protected:
         wxOrientation m_direction;
