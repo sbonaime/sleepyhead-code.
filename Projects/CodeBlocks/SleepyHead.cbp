@@ -94,7 +94,10 @@
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
-					<Add option="-ftgl;-mwindows;$(shell $(WX_TOOL) --debug=yes --libs --unicode=yes);-m32" />
+					<Add option="-ftgl" />
+					<Add option="-mwindows;" />
+					<Add option="$(shell $(WX_TOOL) --debug=yes --libs --unicode=yes)" />
+					<Add option="-m32" />
 				</Linker>
 			</Target>
 		</Build>

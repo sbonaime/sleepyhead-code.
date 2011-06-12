@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
-	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="14">
-		<Cursor position="9298" topLine="156" />
+	<ActiveTarget name="Mac" />
+	<File name="../../src/GUIFrame.cpp" open="1" top="1" tabpos="11">
+		<Cursor position="287" topLine="0" />
 	</File>
 	<File name="../../src/GUIFrame.h" open="0" top="0" tabpos="9">
 		<Cursor position="3128" topLine="50" />
@@ -19,7 +19,7 @@
 	<File name="../../src/graphs/freesans.c" open="1" top="0" tabpos="10">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="7">
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="7">
 		<Cursor position="7841" topLine="271" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
