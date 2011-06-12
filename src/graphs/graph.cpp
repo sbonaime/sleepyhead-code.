@@ -1339,7 +1339,7 @@ void gXAxis::Plot(wxDC & dc, gGraphWindow & w)
         const int offset=0;
 
         if (!show_time) {
-            DrawText(fd, px-(y/2)-2, py-(x/2)-14+offset, 90.0);
+            DrawText(fd, px-(y/2)-2, py-(x/2)-14+offset, 90.0,*wxBLACK,w.texfont);
 
         } else {
             DrawText(fd, px-(x/2), py-14-y);
