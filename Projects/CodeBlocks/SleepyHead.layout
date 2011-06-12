@@ -2,28 +2,28 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
 	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="14">
-		<Cursor position="1300" topLine="24" />
+		<Cursor position="9298" topLine="156" />
 	</File>
 	<File name="../../src/GUIFrame.h" open="0" top="0" tabpos="9">
-		<Cursor position="0" topLine="33" />
+		<Cursor position="3128" topLine="50" />
 	</File>
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1042" topLine="16" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="26771" topLine="721" />
+		<Cursor position="10959" topLine="335" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
-		<Cursor position="602" topLine="12" />
+		<Cursor position="2630" topLine="75" />
 	</File>
 	<File name="../../src/graphs/freesans.c" open="1" top="0" tabpos="10">
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="1108" topLine="39" />
+		<Cursor position="7841" topLine="271" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
-		<Cursor position="8777" topLine="0" />
+		<Cursor position="7607" topLine="208" />
 	</File>
 	<File name="../../src/libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="7148" topLine="269" />

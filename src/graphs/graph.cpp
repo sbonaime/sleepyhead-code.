@@ -2026,16 +2026,16 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
 
             //glColor3f (col.Red(), col.Green(), col.Blue());
-            glLineWidth (0.25);
+            glLineWidth (.25);
+            //glEnable(GL_LINE_SMOOTH);
+            //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
             glBegin (GL_LINES); //_LOOP);
-            glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-            double lx,ly;
+            float lx,ly;
             bool first=true;
             for (int i=0;i<dp;i++) {
                 wxPoint &p=screen[i];
-                double x=p.x; //((scrx/double(width))*p.x);
-                double y=p.y; //((scry/double(height))*p.y);
+                float x=p.x; //((scrx/double(width))*p.x);
+                float y=p.y; //((scry/double(height))*p.y);
                 if (first) {
                     first=false;
                 } else {
@@ -2046,6 +2046,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 ly=y;
             }
             glEnd ();
+            //glDisable(GL_LINE_SMOOTH);
 
             //if (dp>1) dc.DrawLines(dp,screen);     // need at least two points
 
@@ -2089,19 +2090,21 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
 
 
-            //glColor3f (0.1F, 0.1F, 0.1F);
+            //glColor4f (0.1F, 0.1F, 0.1F,0.8f);
             //glColor3f (col.Red(), col.Green(), col.Blue());
                 //glLineWidth (1);
             glLineWidth (0.25);
+
+            //glEnable(GL_LINE_SMOOTH);
+            //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+
             glBegin (GL_LINES); //_LOOP);
-            glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-            double lx,ly;
+            float lx,ly;
             bool first=true;
             for (int i=0;i<dp;i++) {
                 wxPoint &p=m_drawlist[i];
-                double x=p.x; //((scrx/double(width))*p.x);
-                double y=p.y; //((scry/double(height))*p.y);
+                float x=p.x; //((scrx/double(width))*p.x);
+                float y=p.y; //((scry/double(height))*p.y);
                 if (first) {
                     first=false;
                 } else {
@@ -2112,6 +2115,7 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
                 ly=y;
             }
             glEnd ();
+            //glDisable(GL_LINE_SMOOTH);
         }
     }
    // dc.DestroyClippingRegion();
