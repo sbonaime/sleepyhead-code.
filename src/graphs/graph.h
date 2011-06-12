@@ -9,6 +9,8 @@ License: LGPL
 
 #include <wx/dcgraph.h>
 #include <wx/glcanvas.h>
+#include <FTGL/ftgl.h>
+
 #include <sleeplib/machine.h>
 #include <list>
 
@@ -119,6 +121,7 @@ public:
 };
 
 
+extern wxGLContext *shared_context;
 
 class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
 {
@@ -225,7 +228,7 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         void SetBlockMove(bool b) { m_block_move=b; };
 
         wxGLContext *gl_context;
-
+        FTFont *texfont;
 
     protected:
         list<gGraphWindow *>link_zoom;

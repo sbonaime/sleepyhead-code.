@@ -10,7 +10,6 @@ License: LGPL
 #include <wx/graphics.h>
 #include <wx/glcanvas.h>
 #include <wx/log.h>
-#include <FTGL/ftgl.h>
 #include <math.h>
 
 
@@ -55,7 +54,8 @@ bool gfont_init=false;
 
 FTFont *normalfont=NULL;
 FTFont *largefont=NULL;
-FTFont *rotfont=NULL;
+FTFont *texfont=NULL;
+//FTFont *rotfont=NULL;
 
 list<wxString> font_paths;
 
@@ -77,7 +77,13 @@ void GraphInit()
 
         normalfont=new FTGLPixmapFont(fontfile.mb_str());
         largefont=new FTGLPixmapFont(fontfile.mb_str());
-        rotfont=new FTGLTextureFont(fontfile.mb_str());
+        texfont=new FTGLTextureFont(pref.Get("{home}{sep}FreeSans.ttf").mb_str()); // each context needs it's own texture font. Should be sharing one context..
+        if (texfont->Error()) {
+            delete texfont;
+            texfont=NULL;
+        } else {
+            texfont->FaceSize(15);
+        }
         if (normalfont->Error()) {
             delete normalfont;
             normalfont=NULL;
@@ -86,13 +92,9 @@ void GraphInit()
             delete largefont;
             largefont=NULL;
         }
-        if (rotfont->Error()) {
-            delete rotfont;
-            rotfont=NULL;
-        }
         largefont->FaceSize(30);
         normalfont->FaceSize(14);
-        rotfont->FaceSize(14);
+        //rotfont->FaceSize(20);
         bigfont=new wxFont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
         boldfont=new wxFont(12,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD);
         smallfont=new wxFont(10,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
@@ -105,7 +107,7 @@ void GraphDone()
         delete smallfont;
         delete boldfont;
         delete bigfont;
-        delete rotfont;
+        delete texfont;
         delete normalfont;
         gfont_init=false;
     }
@@ -145,24 +147,26 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
 
     //glPushAttrib(GL_LIST_BIT|GL_CURRENT_BIT|GL_ENABLE_BIT|GL_TRANSFORM_BIT);
 
-    glPushMatrix();
 	//glEnable(GL_BLEND);
 //  glPixelTransferf(GL_RED_BIAS, -1.0f);
     //glPixelTransferf(GL_GREEN_BIAS, -1.0f);
     //glPixelTransferf(GL_BLUE_BIAS, -1.0f);
 
     //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+   //  glPushAttrib( GL_ENABLE_BIT | GL_HINT_BIT | GL_LINE_BIT | GL_PIXEL_MODE_BIT);
+
+//    glEnable(GL_BLEND);
+ //   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // GL_ONE
+
     glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
 
-    glDisable(GL_BLEND);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_TEXTURE_2D);
+    glPushMatrix();
+	//glEnable(GL_TEXTURE_2D);
     //glBlendFunc(GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ZERO);
   //  glBlendFunc(GL_ONE, GL_ZERO);
     //glLoadIdentity();
     glTranslatef(x,y,0);
-    glRotatef(90.0, 0.0f, 0.0f, 1.0f);
+    glRotatef(angle, 0.0f, 0.0f, 1.0f);
     font->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
     glTranslatef(-x,-y,0);
 	//glDisable(GL_BLEND);
@@ -282,8 +286,10 @@ gGraphWindow::gGraphWindow()
 {
 }
 
+wxGLContext *shared_context=NULL;
+
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
-: wxGLCanvas( parent, (wxGLContext *)NULL, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
+: wxGLCanvas( parent, shared_context, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
 {
     m_scrX   = m_scrY   = 64;
     m_title=title;
@@ -299,19 +305,21 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_foobar_moved=0;
     gtitle=foobar=xaxis=yaxis=NULL;
 
+    if (!shared_context) {
 #if defined(__DARWIN__)
-    // Screw you apple..
-    int *attribList = (int*) NULL;
-    AGLPixelFormat aglpf=aglChoosePixelFormat(NULL,0,attribList);
-    gl_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
-    // Mmmmm.. Platform incosistency with wx..
-
+        // Screw you apple..
+        int *attribList = (int*) NULL;
+        AGLPixelFormat aglpf=aglChoosePixelFormat(NULL,0,attribList);
+        shared_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
+        // Mmmmm.. Platform incosistency with wx..
 #else
-    gl_context=new wxGLContext(this,NULL);
+        shared_context=new wxGLContext(this,NULL);
 #endif
-    GraphInit(); // Font
-//rotfont->FaceSize(14);
 
+    }
+
+    GraphInit(); // Font
+    texfont=::texfont;
     AddLayer(new gGraphTitle(title,wxVERTICAL,boldfont));
 
 }
@@ -841,9 +849,9 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     GetClientSize(&m_scrX, &m_scrY);
 
 #if !defined(__DARWIN__)
-    gl_context->SetCurrent(*this);   // A generic Context needs to be used.. Not one per graph window
+    shared_context->SetCurrent(*this);   // A generic Context needs to be used.. Not one per graph window
 #else
-    gl_context->SetCurrent();
+    shared_context->SetCurrent();
 #endif
 
     glViewport(0, 0, m_scrX, m_scrY);
@@ -874,7 +882,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     glVertex2f(m_scrX, m_scrY);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
+  //  glEnable(GL_TEXTURE_2D);
     //glMatrixMode(GL_PROJECTION);
     //glPopMatrix();
     //glMatrixMode(GL_MODELVIEW);
@@ -895,7 +903,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
             RoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-1,m_mouseRBrect.height,5,*wxDARK_GREY);
     }
 
-    //glEnable(GL_DEPTH_TEST);
+//    glEnable(GL_DEPTH_TEST);
 
     SwapBuffers();
 
@@ -1496,10 +1504,10 @@ void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
         GetTextExtent(m_title,width,height);
         DrawText(m_title,4,scrx-height,0);
     } else {
-        GetTextExtent(m_title,width,height,rotfont);
+        GetTextExtent(m_title,width,height,w.texfont);
         int xp=(height/2)+5;
         if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-height;
-        DrawText(m_title,xp,w.GetBottomMargin()+((scry-w.GetBottomMargin())/2.0)+(height/2),90.0,*wxBLACK,rotfont);
+        DrawText(m_title,xp,w.GetBottomMargin()+((scry-w.GetBottomMargin())/2.0)+(height/2),90.0,*wxBLACK,w.texfont);
     }
 
 }
@@ -1758,7 +1766,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px-textX-8,j);
             } else {
-                DrawText(str,j,start_py-16-(textX/2),90,*wxBLACK,rotfont);
+                DrawText(str,j,start_py-16-(textX/2),90,*wxBLACK,w.texfont);
             }
         } else draw_xticks_instead=true;
 
@@ -2133,8 +2141,6 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
     double x1,x2;
 
-    glEnable(GL_POINT_SMOOTH);
-    glEnable( GL_BLEND );
 
     wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
@@ -2177,20 +2183,26 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
                     glVertex2f(x1,start_py+height-25);
                     glEnd();
 
+                    //glEnable(GL_POINT_SMOOTH);
                     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
                     glPointSize(6);
                     glBegin(GL_POINTS);
                     glVertex2f(x1,start_py+height-25);
                     glEnd();
+                   // glDisable(GL_POINT_SMOOTH);
                 } else {
                     RoundedRectangle(x1,start_py,w1,height,2,col);
                 }
             } else if (lo_type==LOT_Dot) {
                 glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+                //glEnable(GL_POINT_SMOOTH);
+                //glEnable(GL_BLEND);
                 glPointSize(4);
                 glBegin(GL_POINTS);
                 glVertex2f(x1,start_py+(height/2)+14);
                 glEnd();
+                //glDisable(GL_POINT_SMOOTH);
+                //glDisable(GL_BLEND);
             }
 
 
@@ -2200,6 +2212,7 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
 
         if (done) break;
     }
+
 }
 
 gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _line_num,int _total_lines)
@@ -2236,8 +2249,8 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
 //    static wxColor col2=wxColor(0xe0,0xe0,0xff,0xff);
     static wxColor col2=wxColor(0xff,0xff,0xff,0xff);
 
-    dc.SetFont(*smallfont);
-    dc.SetTextForeground(*wxBLACK);
+    //dc.SetFont(*smallfont);
+    //dc.SetTextForeground(*wxBLACK);
 
 
     float line_h=float(height-2)/float(total_lines);

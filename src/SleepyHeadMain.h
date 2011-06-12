@@ -85,6 +85,11 @@ protected:
 
     wxBitmap *ahi_bmp,*tap_bmp,*teap_bmp,*tiap_bmp;
 
+    // Add it's own wxGLCanvas in place of scrolledwindow
+    wxScrolledWindow *GraphWindow;
+    wxFlexGridSizer* gwSizer;
+
+
 };
 
 const wxEventType wxEVT_DO_SCREENSHOT = wxNewEventType();

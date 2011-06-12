@@ -24,10 +24,10 @@
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
 #include <wx/calctrl.h>
-#include <wx/sizer.h>
-#include <wx/scrolwin.h>
 #include <wx/panel.h>
 #include <wx/html/htmlwin.h>
+#include <wx/sizer.h>
+#include <wx/scrolwin.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
 #include <wx/datectrl.h>
@@ -91,8 +91,6 @@ class DailyPanel : public wxPanel
 	
 	protected:
 		wxCalendarCtrl* Calendar;
-		wxScrolledWindow* ScrolledWindow;
-		wxFlexGridSizer* fgSizer;
 		wxAuiNotebook* Notebook;
 		
 		// Virtual event handlers, overide them in your derived class

@@ -596,6 +596,21 @@ void Summary::OnClose(wxCloseEvent &event)
 Daily::Daily(wxWindow *win,Profile *p)
 :DailyPanel(win),profile(p)
 {
+    GraphWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	GraphWindow->SetScrollRate( 5, 5 );
+
+	m_mgr.AddPane( GraphWindow, wxAuiPaneInfo() .Center() .Caption( wxT("Graphs") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).MinSize( wxSize( 440,400 ) ) );
+    m_mgr.Update();
+	gwSizer = new wxFlexGridSizer( 0, 1, 0, 0 );
+	gwSizer->AddGrowableCol( 0 );
+	gwSizer->SetFlexibleDirection( wxVERTICAL );
+	gwSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
+
+	GraphWindow->SetSizer( gwSizer );
+	GraphWindow->Layout();
+	gwSizer->Fit(GraphWindow);
+
+
     tiap_bmp=teap_bmp=tap_bmp=ahi_bmp=NULL;
     HTMLInfo=new wxHtmlWindow(this);
     HTMLInfo->SetBorders(4);
@@ -608,20 +623,20 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
     AddCPAPData(tap=new TAPData(CPAP_Pressure));
 
-    TAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER);  //Time@Pressure
+    TAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER);  //Time@Pressure
     //TAP->SetMargins(20,15,5,50);
     TAP->SetMargins(0,1,0,1);
     TAP->AddLayer(new gCandleStick(tap));
 
-    TAP_EAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@EPAP
+    TAP_EAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@EPAP
     TAP_EAP->SetMargins(0,1,0,1);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
-    TAP_IAP=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
+    TAP_IAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
     TAP_IAP->SetMargins(0,1,0,1);
     TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
-    G_AHI=new gGraphWindow(ScrolledWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Event Breakdown")
+    G_AHI=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Event Breakdown")
     G_AHI->SetMargins(0,1,0,1);
     AddCPAPData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
@@ -644,7 +659,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
 
-    PULSE=new gGraphWindow(ScrolledWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    PULSE=new gGraphWindow(GraphWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PULSE->AddLayer(new gXAxis(wxBLACK));
     PULSE->AddLayer(new gYAxis(wxBLACK));
     PULSE->AddLayer(new gFooBar());
@@ -653,7 +668,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
-    SPO2=new gGraphWindow(ScrolledWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SPO2=new gGraphWindow(GraphWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     SPO2->AddLayer(new gXAxis(wxBLACK));
     SPO2->AddLayer(new gYAxis(wxBLACK));
     SPO2->AddLayer(new gFooBar());
@@ -661,31 +676,35 @@ Daily::Daily(wxWindow *win,Profile *p)
     SPO2->LinkZoom(PULSE);
     PULSE->LinkZoom(SPO2);
 
+
+
+    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
+    //leakdata->ForceMinY(0);
+    //leakdata->ForceMaxY(120);
+    LEAK=new gGraphWindow(GraphWindow,-1,wxT("Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    LEAK->AddLayer(new gXAxis(wxBLACK));
+    LEAK->AddLayer(new gYAxis(wxBLACK));
+    LEAK->AddLayer(new gFooBar());
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
+
+
     AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
     //snore->ForceMinY(0);
     //snore->ForceMaxY(15);
 
-    SNORE=new gGraphWindow(ScrolledWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SNORE=new gGraphWindow(GraphWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     SNORE->AddLayer(new gXAxis(wxBLACK));
     SNORE->AddLayer(new gYAxis(wxBLACK));
     SNORE->AddLayer(new gFooBar());
     SNORE->AddLayer(new gLineChart(snore,wxDARK_GREY,4096,false,false,true));
 
 
-    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
-    //leakdata->ForceMinY(0);
-    //leakdata->ForceMaxY(120);
-    LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    LEAK->AddLayer(new gXAxis(wxBLACK));
-    LEAK->AddLayer(new gYAxis(wxBLACK));
-    LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
 
-    PRD=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    PRD=new gGraphWindow(GraphWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PRD->AddLayer(new gXAxis(wxBLACK));
     PRD->AddLayer(new gYAxis(wxBLACK));
     PRD->AddLayer(new gFooBar());
@@ -694,7 +713,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
 
     AddCPAPData(frw=new WaveData(CPAP_FlowRate));
-    FRW=new gGraphWindow(ScrolledWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    FRW=new gGraphWindow(GraphWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
 
     AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
     AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
@@ -724,7 +743,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
     FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
 
-    SF=new gGraphWindow(ScrolledWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
+    SF=new gGraphWindow(GraphWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
   //  SF->SetMargins(10,15,20,80);
 
 //    #if defined(__UNIX__)
@@ -766,13 +785,15 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->AddLayer(new gXAxis(wxBLACK));
     SF->AddLayer(new gFooBar());
 
-    fgSizer->Add(SF,1,wxEXPAND);
-    fgSizer->Add(FRW,1,wxEXPAND);
-    fgSizer->Add(PRD,1,wxEXPAND);
-    fgSizer->Add(LEAK,1,wxEXPAND);
-    fgSizer->Add(SNORE,1,wxEXPAND);
-    fgSizer->Add(PULSE,1,wxEXPAND);
-    fgSizer->Add(SPO2,1,wxEXPAND);
+    gwSizer->Add(SF,1,wxEXPAND);
+    gwSizer->Add(FRW,1,wxEXPAND);
+    gwSizer->Add(PRD,1,wxEXPAND);
+    gwSizer->Add(LEAK,1,wxEXPAND);
+    gwSizer->Add(SNORE,1,wxEXPAND);
+    gwSizer->Add(PULSE,1,wxEXPAND);
+    gwSizer->Add(SPO2,1,wxEXPAND);
+
+    gwSizer->Layout();
     G_AHI->Hide();
     TAP->Hide();
     TAP_IAP->Hide();
@@ -1107,8 +1128,8 @@ void Daily::RefreshData()
         PULSE->Show(false);
         SPO2->Show(false);
     }
-    fgSizer->Layout();
-    ScrolledWindow->FitInside();
+    gwSizer->Layout();
+    GraphWindow->FitInside();
 
     if (cpap) {
 
