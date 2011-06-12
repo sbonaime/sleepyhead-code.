@@ -59,6 +59,9 @@ FTFont *texfont=NULL;
 
 list<wxString> font_paths;
 
+wxGLContext *shared_context=NULL;
+
+
 // Must be called from a thread inside the application.
 void GraphInit()
 {
@@ -110,6 +113,10 @@ void GraphDone()
         delete texfont;
         delete normalfont;
         gfont_init=false;
+    }
+    if (shared_context) {
+        delete shared_context;
+        shared_context=NULL;
     }
 }
 
@@ -286,7 +293,6 @@ gGraphWindow::gGraphWindow()
 {
 }
 
-wxGLContext *shared_context=NULL;
 
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
 : wxGLCanvas( parent, shared_context, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
@@ -328,7 +334,6 @@ gGraphWindow::~gGraphWindow()
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
     layers.clear();
 
-    delete gl_context;
 }
 
 
