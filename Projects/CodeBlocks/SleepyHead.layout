@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Mac" />
-	<File name="../../src/GUIFrame.cpp" open="1" top="1" tabpos="11">
-		<Cursor position="287" topLine="0" />
+	<ActiveTarget name="Debug" />
+	<File name="../../src/GUIFrame.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="1318" topLine="9" />
 	</File>
 	<File name="../../src/GUIFrame.h" open="0" top="0" tabpos="9">
 		<Cursor position="3128" topLine="50" />
@@ -19,11 +19,11 @@
 	<File name="../../src/graphs/freesans.c" open="1" top="0" tabpos="10">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="7841" topLine="271" />
+	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="7">
+		<Cursor position="55196" topLine="2003" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
-		<Cursor position="7607" topLine="208" />
+		<Cursor position="14685" topLine="387" />
 	</File>
 	<File name="../../src/libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="7148" topLine="269" />

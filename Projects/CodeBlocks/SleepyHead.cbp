@@ -105,6 +105,8 @@
 			<Add option="-Wall" />
 			<Add option="`wx-config --version=2.8 --cflags`" />
 			<Add option="-I/usr/include/freetype2" />
+			<Add option="-I/opt/local/include/freetype2" />
+			<Add option="-I/opt/local/include" />
 			<Add directory="../../src/libs" />
 			<Add directory="../../src" />
 		</Compiler>
