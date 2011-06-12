@@ -14,6 +14,7 @@ License: LGPL
 #include <math.h>
 #include "graph.h"
 #include "sleeplib/profiles.h"
+#include "freesans.c"
 
 #if !wxUSE_GLCANVAS
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the wx library"
@@ -47,13 +48,25 @@ bool gfont_init=false;
 FTGLPixmapFont *normalfont=NULL;
 FTGLTextureFont *rotfont=NULL;
 
+list<wxString> font_paths;
+
 // Must be called from a thread inside the application.
 void GraphInit()
 {
     if (!gfont_init) {
-        const char *fontfile="/usr/share/fonts/truetype/freefont/FreeSans.ttf";
-        normalfont=new FTGLPixmapFont(fontfile);
-        rotfont=new FTGLTextureFont(fontfile);
+        wxString fontfile=pref.Get("{home}{sep}FreeSans.ttf");
+        if (!wxFileExists(fontfile)) {
+            wxFFile f;
+            f.Open(fontfile,wxT("wb"));
+            long size=sizeof(FreeSans_ttf);
+            if (!f.Write(FreeSans_ttf,size)) {
+                wxLogError(wxT("Couldn't Write Font file.. Sorry.. need it to run"));
+                return;
+            }
+            f.Close();
+        }
+        normalfont=new FTGLPixmapFont(fontfile.mb_str());
+        rotfont=new FTGLTextureFont(fontfile.mb_str());
         if (normalfont->Error()) {
             delete normalfont;
             normalfont=NULL;

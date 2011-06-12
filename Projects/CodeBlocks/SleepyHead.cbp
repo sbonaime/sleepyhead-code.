@@ -96,6 +96,9 @@
 		<Unit filename="../../src/SleepyHeadMain.cpp" />
 		<Unit filename="../../src/SleepyHeadMain.h" />
 		<Unit filename="../../src/WxWizFrame.fbp" />
+		<Unit filename="../../src/graphs/freesans.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../src/graphs/graph.cpp" />
 		<Unit filename="../../src/graphs/graph.h" />
 		<Unit filename="../../src/libs/sleeplib/binary_file.cpp" />
