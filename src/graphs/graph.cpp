@@ -1863,8 +1863,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
 
     // Crop to inside the margins.
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-
     glEnable(GL_SCISSOR_TEST);
+
     glLineWidth (.25);
     //glEnable(GL_LINE_SMOOTH);
     //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
@@ -2008,80 +2008,93 @@ void gLineOverlayBar::Plot(wxDC & dc, gGraphWindow & w)
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
 
-    double x1,x2;
+    float x1,x2;
 
+    float x,y;//,descent,leading;
+
+    // Crop to inside the margins.
+    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
+    glEnable(GL_SCISSOR_TEST);
 
     wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
 
         bool done=false;
         bool first=true;
-        for (int i=0;i<data->np[n];i++) { //,done==false
-            if (data->point[n][i].m_y < w.min_x) continue;
+        int fi=0,li;
+        for (li=0;li<data->np[n];li++) {
+            // m_x & m_y are both x axis's here.. (m_y is only used for spans)
+
+            if (data->point[n][li].m_y < w.min_x) continue;
+            if (data->point[n][li].m_x > w.max_x) break;
             if (first) {
                 first=false;
-                if (i>0)  i--;
+                if (li>0)  li--;
+                fi=li;
             }
+        }
+        glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+        if (lo_type==LOT_Bar) {
+            glLineWidth (0.25);
+            glBegin(GL_LINES);
+            float bottom=start_py+25, top=start_py+height-25;
 
-            wxPoint2DDouble & rp=data->point[n][i];
-            x1=w.x2p(rp.m_x);
-            x2=w.x2p(rp.m_y);
-
-            // point z is marker code
-
-            if (x1<=start_px) x1=start_px+1;
-            if (x2<=start_px) continue;
-            if (x1>start_px+width) {
-                //done=true;
-                break;
+            // Draw any lines
+            for (int i=fi;i<li;i++) {
+                wxPoint2DDouble & rp=data->point[n][i];
+                if (rp.m_x==rp.m_y) {
+                    x1=w.x2p(rp.m_x);
+                    glVertex2f(x1,top);
+                    glVertex2f(x1,bottom);
+                }
             }
-            if (x2>=start_px+width+1) x2=start_px+width+1;
-            double w1=x2-x1;
-            float x,y;//,descent,leading;
-            if (lo_type==LOT_Bar) {
+            glEnd();
+
+            // Draw the dots above
+            glPointSize(6);
+            glBegin(GL_POINTS);
+            for (int i=fi;i<li;i++) {
+                wxPoint2DDouble & rp=data->point[n][i];
+                if (rp.m_x==rp.m_y) {
+                    x1=w.x2p(rp.m_x);
+                    glVertex2f(x1,top);
+                }
+            }
+            glEnd();
+
+            // Text Labels & Spans
+            for (int i=fi;i<li;i++) {
+                wxPoint2DDouble & rp=data->point[n][i];
+                x1=w.x2p(rp.m_x);
+                x2=w.x2p(rp.m_y);
                 if (rp.m_x==rp.m_y) {
                     if (xx<(1800.0/86400)) {
                         GetTextExtent(label,x,y);
                         DrawText(label,x1-(x/2),start_py+height-30+y);
-                    }
-                    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-
-                    glLineWidth (0.25);
-                    glBegin(GL_LINES);
-                    glVertex2f(x1,start_py+25);
-                    glVertex2f(x1,start_py+height-25);
-                    glEnd();
-
-                    //glEnable(GL_POINT_SMOOTH);
-                    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-                    glPointSize(6);
-                    glBegin(GL_POINTS);
-                    glVertex2f(x1,start_py+height-25);
-                    glEnd();
-                   // glDisable(GL_POINT_SMOOTH);
+                   }
                 } else {
+                    float w1=x2-x1;
                     RoundedRectangle(x1,start_py,w1,height,2,col);
                 }
-            } else if (lo_type==LOT_Dot) {
-                glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-                //glEnable(GL_POINT_SMOOTH);
-                //glEnable(GL_BLEND);
-                glPointSize(4);
-                glBegin(GL_POINTS);
-                glVertex2f(x1,start_py+(height/2)+14);
-                glEnd();
-                //glDisable(GL_POINT_SMOOTH);
-                //glDisable(GL_BLEND);
             }
+        } else if (lo_type==LOT_Dot) {
+            //glEnable(GL_POINT_SMOOTH);
+            //glEnable(GL_BLEND);
 
+            glPointSize(4);
+            glBegin(GL_POINTS);
+            for (int i=fi;i<li;i++) {
+                wxPoint2DDouble & rp=data->point[n][i];
+                x1=w.x2p(rp.m_x);
 
-            if (done) break;
-
+                glVertex2f(x1,start_py+(height/2)+14);
+            }
+            glEnd();
+            //glDisable(GL_POINT_SMOOTH);
+            //glDisable(GL_BLEND);
         }
-
-        if (done) break;
     }
-
+    glDisable(GL_SCISSOR_TEST);
 }
 
 gFlagsLine::gFlagsLine(gPointData *d,const wxColor * col,wxString _label,int _line_num,int _total_lines)
@@ -2102,12 +2115,9 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
 
     double xx=w.max_x-w.min_x;
     if (xx<=0) return;
-    //if (!data->NP()) return;
 
     int scrx = w.GetScrX();
     int scry = w.GetScrY();
-    //wxString label=wxString::Format(wxT("%i %i"),scrx,scry);
-    //dc.DrawText(label,0,0);
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
@@ -2115,11 +2125,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     static wxColor col1=wxColor(0xd0,0xff,0xd0,0xff);
-//    static wxColor col2=wxColor(0xe0,0xe0,0xff,0xff);
     static wxColor col2=wxColor(0xff,0xff,0xff,0xff);
-
-    //dc.SetFont(*smallfont);
-    //dc.SetTextForeground(*wxBLACK);
 
 
     float line_h=float(height-2)/float(total_lines);
@@ -2139,73 +2145,70 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
         glEnd ();
 
 
-    } //else ceil(line_h);
+    }
 
-
+    // Alternating box color
     wxColor *barcol=&col2;
     if (line_num & 1) {
         barcol=&col1;
     }
+
+    // Draw box
     RoundedRectangle(start_px,line_top,width-1,line_h+1,0,*barcol);
+
+    // Draw text label
     float x,y;
     GetTextExtent(label,x,y);
     DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
-    int x1,x2;
+    float x1,x2,w1;
 
     wxColor & col=color[0];
     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-    glLineWidth (1);
+    int fi=0,li;
+    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
+    glEnable(GL_SCISSOR_TEST);
 
     for (int n=0;n<data->VC();n++) {
 
         bool done=false;
         bool first=true;
-        for (int i=0;i<data->np[n];i++) { //,done==false
-            if (data->point[n][i].m_y < w.min_x) continue;
+        for (li=0;li<data->np[n];li++) { //,done==false
+            if (data->point[n][li].m_y < w.min_x) continue;
+            if (data->point[n][li].m_x > w.max_x) break;
             if (first) {
+                fi=li;
+                if (li>0)  li--;
                 first=false;
-                if (i>0)  i--;
             }
-
-            wxPoint2DDouble & rp=data->point[n][i];
-            x1=w.x2p(rp.m_x);
-            x2=w.x2p(rp.m_y);
-
-            // point z is marker code
-
-            if (x1<=start_px) x1=start_px+1;
-            if (x2<=start_px) continue;
-            if (x1>start_px+width) {
-                //done=true;
-                break;
-            }
-            if (x2>=start_px+width+1) x2=start_px+width+1;
-            double w1=x2-x1;
-            if (rp.m_x==rp.m_y) {
-
-                glBegin(GL_LINES);
-                glVertex2f(x1,line_top+4);
-                glVertex2f(x1,line_top+line_h-3);
-                glEnd();
-                //dc.DrawLine(x1,line_top+4,x1,line_top+line_h-3);
-                //dc.SetPen(sfp2);
-                //dc.DrawLine(x1,w.GetTopMargin()+25,x1,w.GetTopMargin()+25);
-            } else {
-         //       if ((x1>w.GetLeftMargin()) && (x1<w.GetLeftMargin()+w.Width()))
-                //gc.SetPen(sfp1);
-                RoundedRectangle(x1,line_top+4,w1,line_h-6,0,color[0]);
-            }
-
-
-            if (done) break;
-
         }
+        glLineWidth (1);
+        glBegin(GL_LINES);
+        float top=floor(line_top)+2;
+        float bottom=top+floor(line_h)-3;
+        for (int i=fi;i<li;i++) {
+            wxPoint2DDouble & rp=data->point[n][i];
+            if (rp.m_x==rp.m_y) {
+                x1=w.x2p(rp.m_x);
+                glVertex2f(x1,top);
+                glVertex2f(x1,bottom);
+            }
+        }
+        glEnd();
 
-        if (done) break;
+        bottom=floor(line_h)-4; // just the height
+
+        for (int i=fi;i<li;i++) {
+            wxPoint2DDouble & rp=data->point[n][i];
+            if (rp.m_x!=rp.m_y) {
+                x1=w.x2p(rp.m_x);
+                x2=w.x2p(rp.m_y);
+                w1=x2-x1;
+                RoundedRectangle(x1,top,w1,bottom,0,color[0]);
+            }
+        }
     }
-
-
+    glDisable(GL_SCISSOR_TEST);
 }
 
 
