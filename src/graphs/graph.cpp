@@ -143,6 +143,7 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
     float w,h;
     GetTextExtent(text, w, h, font);
 
+    //glPushAttrib(GL_LIST_BIT|GL_CURRENT_BIT|GL_ENABLE_BIT|GL_TRANSFORM_BIT);
 
     glPushMatrix();
 	//glEnable(GL_BLEND);
@@ -150,18 +151,24 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
     //glPixelTransferf(GL_GREEN_BIAS, -1.0f);
     //glPixelTransferf(GL_BLUE_BIAS, -1.0f);
 
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
-    //glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ZERO);
+
+    glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_TEXTURE_2D);
+    //glBlendFunc(GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ZERO);
   //  glBlendFunc(GL_ONE, GL_ZERO);
     //glLoadIdentity();
     glTranslatef(x,y,0);
     glRotatef(90.0, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_TEXTURE_2D);
     font->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
     glTranslatef(-x,-y,0);
 	//glDisable(GL_BLEND);
 	//glEnable(GL_TEXTURE_2D);
     glPopMatrix();
+    //glPopAttrib();
 
 }
 
@@ -295,7 +302,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
 #if defined(__DARWIN__)
     // Screw you apple..
     int *attribList = (int*) NULL;
-    AGLPixelFormat aglpf=aglChoosePixelFormat(attribList);
+    AGLPixelFormat aglpf=aglChoosePixelFormat(NULL,0,attribList);
     gl_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
     // Mmmmm.. Platform incosistency with wx..
 
