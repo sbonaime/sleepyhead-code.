@@ -12,6 +12,14 @@ License: LGPL
 #include <wx/log.h>
 #include <FTGL/ftgl.h>
 #include <math.h>
+
+
+#ifdef __DARWIN__
+#include <OpenGL/gl.h>
+#include <AGL/agl.h>
+#endif
+
+
 #include "graph.h"
 #include "sleeplib/profiles.h"
 #include "freesans.c"
@@ -46,6 +54,7 @@ wxFont *smallfont=NULL,*bigfont=NULL,*boldfont=NULL;
 bool gfont_init=false;
 
 FTGLPixmapFont *normalfont=NULL;
+FTGLPixmapFont *largefont=NULL;
 FTGLTextureFont *rotfont=NULL;
 
 list<wxString> font_paths;
@@ -65,17 +74,24 @@ void GraphInit()
             }
             f.Close();
         }
+
         normalfont=new FTGLPixmapFont(fontfile.mb_str());
+        largefont=new FTGLPixmapFont(fontfile.mb_str());
         rotfont=new FTGLTextureFont(fontfile.mb_str());
         if (normalfont->Error()) {
             delete normalfont;
             normalfont=NULL;
+        }
+        if (largefont->Error()) {
+            delete largefont;
+            largefont=NULL;
         }
         if (rotfont->Error()) {
             delete rotfont;
             rotfont=NULL;
         }
         rotfont->FaceSize(14);
+        largefont->FaceSize(30);
         normalfont->FaceSize(14);
         bigfont=new wxFont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
         boldfont=new wxFont(12,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD);
@@ -275,7 +291,13 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_foobar_moved=0;
     gtitle=foobar=xaxis=yaxis=NULL;
 
+#if defined(__DARWIN__)
+    // Screw you apple..
+    AGLPixelFormat aglpf=ChoosePixelFormat(NULL);
+    gl_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
+#else
     gl_context=new wxGLContext(this,NULL);
+#endif
     rotfont->FaceSize(14);
 
     AddLayer(new gGraphTitle(title,wxVERTICAL,boldfont));
@@ -806,7 +828,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 //#endif
     GetClientSize(&m_scrX, &m_scrY);
 
-#if !defined(__WXMAC__)
+#if !defined(__DARWIN__)
     gl_context->SetCurrent(*this);   // A generic Context needs to be used.. Not one per graph window
 #else
     gl_context->SetCurrent();
