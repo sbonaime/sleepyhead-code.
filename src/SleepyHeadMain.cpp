@@ -76,7 +76,8 @@ const long profile_version=0;
 SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     : GUIFrame(frame)
 {
-    GraphInit();
+    //GraphInit(); // Don't do this here: The first gGraphWindow must do it.
+
     wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
     SetTitle(title);
 

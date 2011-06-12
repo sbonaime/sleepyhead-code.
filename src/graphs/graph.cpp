@@ -53,9 +53,9 @@ wxColor *wxDARK_GREY=&zwxDARK_GREY;
 wxFont *smallfont=NULL,*bigfont=NULL,*boldfont=NULL;
 bool gfont_init=false;
 
-FTGLPixmapFont *normalfont=NULL;
-FTGLPixmapFont *largefont=NULL;
-FTGLTextureFont *rotfont=NULL;
+FTFont *normalfont=NULL;
+FTFont *largefont=NULL;
+FTFont *rotfont=NULL;
 
 list<wxString> font_paths;
 
@@ -90,9 +90,9 @@ void GraphInit()
             delete rotfont;
             rotfont=NULL;
         }
-        rotfont->FaceSize(14);
         largefont->FaceSize(30);
         normalfont->FaceSize(14);
+        rotfont->FaceSize(14);
         bigfont=new wxFont(32,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
         boldfont=new wxFont(12,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD);
         smallfont=new wxFont(10,wxFONTFAMILY_ROMAN,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL);
@@ -111,54 +111,56 @@ void GraphDone()
     }
 }
 
-void GetTextExtent(wxString text, float & width, float & height,float pointsize=14)
+void GetTextExtent(wxString text, float & width, float & height, FTFont *font=normalfont)
 {
-    FTBBox box=normalfont->BBox(text.mb_str(),-1);
+    FTBBox box=font->BBox(text.mb_str(),-1);
     width = box.Upper().X() - box.Lower().X();
-    height = normalfont->Ascender();
-}
-void GetTextExtentB(wxString text, float & width, float & height,float pointsize=14)
-{
-    FTBBox box=rotfont->BBox(text.mb_str(),-1);
-    width = box.Upper().X() - box.Lower().X();
-    height = rotfont->Ascender();
+    height = font->Ascender();
 }
 
-void DrawText(wxString text, float x, float y, float angle=0, float pointsize=14, const wxColor & color=*wxBLACK)
+void DrawText(wxString text, float x, float y, float angle=0, const wxColor & color=*wxBLACK,FTFont *font=normalfont)
 {
-    if (angle==0) {
-        if (!normalfont) {
-            wxLogError(wxT("Font Problem. Forgot to call GraphInit() ?"));
-            abort();
-            return;
-        }
-        glPixelTransferf(GL_RED_BIAS, -1.0f);
-        glPixelTransferf(GL_GREEN_BIAS, -1.0f);
-        glPixelTransferf(GL_BLUE_BIAS, -1.0f);
-        //Dark red textglPixelTransferf(GL_RED_BIAS, -0.5f);glPixelTransferf(GL_GREEN_BIAS, -1.0f);glPixelTransferf(GL_BLUE_BIAS, -1.0f);
-
-        //normalfont->FaceSize(pointsize);
-        normalfont->Render(text.mb_str(),-1,FTPoint(x,y)); //,x,y);
-        return;
-    }
-    if (!rotfont) {
+    if (!font) {
         wxLogError(wxT("Font Problem. Forgot to call GraphInit() ?"));
         abort();
         return;
     }
+    if (angle==0) {
+        glPixelTransferf(GL_RED_BIAS, -1.0f);
+        glPixelTransferf(GL_GREEN_BIAS, -1.0f);
+        glPixelTransferf(GL_BLUE_BIAS, -1.0f);
+        glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
+        //Dark red textglPixelTransferf(GL_RED_BIAS, -0.5f);glPixelTransferf(GL_GREEN_BIAS, -1.0f);glPixelTransferf(GL_BLUE_BIAS, -1.0f);
 
-    glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
+        //normalfont->FaceSize(pointsize);
+        font->Render(text.mb_str(),-1,FTPoint(x,y)); //,x,y);
+        return;
+    }
 
-    //normalfont->FaceSize(pointsize);
+
+    // Damn this crap.. Shouldn't have to do this each draw..
+    //font->FaceSize(14);
     float w,h;
-    GetTextExtentB(text, w, h,pointsize);
+    GetTextExtent(text, w, h, font);
+
 
     glPushMatrix();
-//    glLoadIdentity();
+	//glEnable(GL_BLEND);
+//  glPixelTransferf(GL_RED_BIAS, -1.0f);
+    //glPixelTransferf(GL_GREEN_BIAS, -1.0f);
+    //glPixelTransferf(GL_BLUE_BIAS, -1.0f);
+
+    glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
+    //glBlendFuncSeparate(GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ZERO);
+  //  glBlendFunc(GL_ONE, GL_ZERO);
+    //glLoadIdentity();
     glTranslatef(x,y,0);
     glRotatef(90.0, 0.0f, 0.0f, 1.0f);
-    rotfont->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
+	glEnable(GL_TEXTURE_2D);
+    font->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
     glTranslatef(-x,-y,0);
+	//glDisable(GL_BLEND);
+	//glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 
 }
@@ -276,7 +278,6 @@ gGraphWindow::gGraphWindow()
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
 : wxGLCanvas( parent, (wxGLContext *)NULL, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
 {
-    //GraphInit();
     m_scrX   = m_scrY   = 64;
     m_title=title;
     m_mouseRDown=m_mouseLDown=false;
@@ -293,12 +294,16 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
 
 #if defined(__DARWIN__)
     // Screw you apple..
-    AGLPixelFormat aglpf=ChoosePixelFormat(NULL);
+    int *attribList = (int*) NULL;
+    AGLPixelFormat aglpf=aglChoosePixelFormat(attribList);
     gl_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
+    // Mmmmm.. Platform incosistency with wx..
+
 #else
     gl_context=new wxGLContext(this,NULL);
 #endif
-    rotfont->FaceSize(14);
+    GraphInit(); // Font
+//rotfont->FaceSize(14);
 
     AddLayer(new gGraphTitle(title,wxVERTICAL,boldfont));
 
@@ -862,6 +867,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     glVertex2f(m_scrX, m_scrY);
     glEnd();
 
+    glEnable(GL_TEXTURE_2D);
     //glMatrixMode(GL_PROJECTION);
     //glPopMatrix();
     //glMatrixMode(GL_MODELVIEW);
@@ -1480,14 +1486,13 @@ void gGraphTitle::Plot(wxDC & dc, gGraphWindow & w)
 
     float width,height;
     if (m_orientation==wxHORIZONTAL) {
-        GetTextExtent(m_title,width,height,15);
-        DrawText(m_title,4,scrx-height,0,15);
+        GetTextExtent(m_title,width,height);
+        DrawText(m_title,4,scrx-height,0);
     } else {
-        GetTextExtentB(m_title,width,height,18);
+        GetTextExtent(m_title,width,height,rotfont);
         int xp=(height/2)+5;
         if (m_alignment==wxALIGN_RIGHT) xp=scrx-4-height;
-        DrawText(m_title,xp,w.GetBottomMargin()+((scry-w.GetBottomMargin())/2.0)+(height/2),90.0,18);
-        //DrawText(m_title,scrx/2.0,scry/2.0,90.0,18);
+        DrawText(m_title,xp,w.GetBottomMargin()+((scry-w.GetBottomMargin())/2.0)+(height/2),90.0,*wxBLACK,rotfont);
     }
 
 }
@@ -1746,7 +1751,7 @@ void gBarChart::Plot(wxDC & dc, gGraphWindow & w)
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px-textX-8,j);
             } else {
-                DrawText(str,j,start_py-16-(textX/2),90);
+                DrawText(str,j,start_py-16-(textX/2),90,*wxBLACK,rotfont);
             }
         } else draw_xticks_instead=true;
 
@@ -1835,8 +1840,8 @@ void gLineChart::Plot(wxDC & dc, gGraphWindow & w)
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
             float x,y; //,descent,leading;
-            GetTextExtent(msg,x,y,40);//,&descent,&leading);
-            DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,40,*wxDARK_GREY);
+            GetTextExtent(msg,x,y,largefont);//,&descent,&leading);
+            DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,*wxDARK_GREY,largefont);
         }
         return;
     }
@@ -2254,7 +2259,7 @@ void gFlagsLine::Plot(wxDC & dc, gGraphWindow & w)
     }
     RoundedRectangle(start_px,line_top,width-1,line_h+1,0,*barcol);
     float x,y;
-    GetTextExtent(label,x,y,12);
+    GetTextExtent(label,x,y);
     DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
     int x1,x2;
