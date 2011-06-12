@@ -420,10 +420,9 @@ class gLineChart:public gLayer
         bool m_accelerate;
         int m_drawlist_size;
         bool m_report_empty;
-        wxPoint *m_drawlist;
+        wxRealPoint *m_drawlist;
         bool m_hide_axes;
         bool m_square_plot;
-        wxPoint screen[4096]; // max screen pixel width for accelerated plot usage only.
         //gYAxis * Yaxis;
         //gFooBar *foobar;
 
