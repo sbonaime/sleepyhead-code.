@@ -790,6 +790,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     gwSizer->Add(PRD,1,wxEXPAND);
     gwSizer->Add(LEAK,1,wxEXPAND);
     gwSizer->Add(SNORE,1,wxEXPAND);
+    //gwSizer->Add(TAP,1,wxEXPAND);
     gwSizer->Add(PULSE,1,wxEXPAND);
     gwSizer->Add(SPO2,1,wxEXPAND);
 
@@ -1028,7 +1029,7 @@ void Daily::RefreshData()
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:ahi.png\" ></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=left><img src=\"memory:ahi.png\"></td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         //html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");

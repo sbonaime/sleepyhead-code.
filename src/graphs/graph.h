@@ -9,7 +9,7 @@ License: LGPL
 
 #include <wx/dcgraph.h>
 #include <wx/glcanvas.h>
-#include <FTGL/ftgl.h>
+//#include <FTGL/ftgl.h>
 
 #include <sleeplib/machine.h>
 #include <list>
@@ -215,7 +215,9 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
             return min_y+(yy*hh);
         };
 
-        virtual void Update();
+        void Render(float scrx,float scry);
+
+        //virtual void Update();
         //virtual void Update();
         void AddLayer(gLayer *l);
 
@@ -228,7 +230,7 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         void SetBlockMove(bool b) { m_block_move=b; };
 
         wxGLContext *gl_context;
-        FTFont *texfont;
+        //FTFont *texfont;
 
     protected:
         list<gGraphWindow *>link_zoom;
@@ -267,7 +269,7 @@ class gLayer
         gLayer(gPointData *g=NULL,wxString title=wxT(""));
         virtual ~gLayer();
         //virtual void Update() { data=gd; };
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         vector<wxColor> color;
 
         virtual void SetData(gPointData * gd) { data=gd; };
@@ -336,16 +338,16 @@ class gLayer
 class gGraphTitle:public gLayer
 {
     public:
-        gGraphTitle(const wxString & _title,wxOrientation o=wxVERTICAL,const wxFont * font=wxNORMAL_FONT,const wxColor * color=wxBLACK);
+        gGraphTitle(const wxString & _title,wxOrientation o=wxVERTICAL,const wxColor * color=wxBLACK);
         virtual ~gGraphTitle();
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         wxOrientation Orientation() { return m_orientation; };
         static const int Margin=20;
 
     protected:
         wxString m_title;
         wxOrientation m_orientation;
-        wxFont *m_font;
+        //wxFont *m_font;
         wxColor *m_color;
         wxCoord m_textheight,m_textwidth;
 };
@@ -356,7 +358,7 @@ class gCandleStick:public gLayer
         gCandleStick(gPointData *d=NULL,wxOrientation o=wxHORIZONTAL);
         virtual ~gCandleStick();
 
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         void AddName(wxString name) { m_names.push_back(name); };
 
     protected:
@@ -370,7 +372,7 @@ class gXAxis:public gLayer
     public:
         gXAxis(const wxColor * col=wxBLACK);
         virtual ~gXAxis();
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         static const int Margin=40; // How much room does this take up. (Bottom margin)
     protected:
 //        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
@@ -380,7 +382,7 @@ class gYAxis:public gLayer
     public:
         gYAxis(const wxColor * col=wxBLACK);
         virtual ~gYAxis();
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; };
         void SetShowMajorLines(bool b) { m_show_major_lines=b; };
         bool ShowMinorLines() { return m_show_minor_lines; };
@@ -397,7 +399,7 @@ class gFooBar:public gLayer
     public:
         gFooBar(const wxColor * color1=wxGREEN,const wxColor * color2=wxDARK_GREY);
         virtual ~gFooBar();
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
         static const int Margin=15;
     protected:
 };
@@ -409,7 +411,7 @@ class gLineChart:public gLayer
         gLineChart(gPointData *d=NULL,const wxColor * col=wxBLACK,int dlsize=4096,bool accelerate=false,bool _hide_axes=false,bool _square_plot=false);
         virtual ~gLineChart();
 
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
 
         void SetSquarePlot(bool b) { m_square_plot=b; };
         bool GetSquarePlot() { return m_square_plot; };
@@ -435,7 +437,7 @@ class gLineOverlayBar:public gLayer
         gLineOverlayBar(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""),LO_Type _lot=LOT_Bar);
         virtual ~gLineOverlayBar();
 
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
 
     protected:
         wxString label;
@@ -448,7 +450,7 @@ class gFlagsLine:public gLayer
         gFlagsLine(gPointData *d=NULL,const wxColor * col=wxBLACK,wxString _label=wxT(""),int _line_num=0,int _total_lines=0);
         virtual ~gFlagsLine();
 
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
 
     protected:
         wxString label;
@@ -462,7 +464,7 @@ class gBarChart:public gLayer
         gBarChart(gPointData *d=NULL,const wxColor *col=NULL,wxOrientation o=wxHORIZONTAL);
         virtual ~gBarChart();
 
-        virtual void Plot(wxDC & dc, gGraphWindow & w);
+        virtual void Plot(gGraphWindow & w,float scrx,float scry);
 
     protected:
         wxOrientation m_direction;

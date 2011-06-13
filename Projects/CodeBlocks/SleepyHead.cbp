@@ -126,6 +126,20 @@
 		</Unit>
 		<Unit filename="../../src/graphs/graph.cpp" />
 		<Unit filename="../../src/graphs/graph.h" />
+		<Unit filename="../../src/libs/freetype-gl/font-manager.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/font-manager.h" />
+		<Unit filename="../../src/libs/freetype-gl/text-markup.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/text-markup.h" />
+		<Unit filename="../../src/libs/freetype-gl/texture-atlas.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/texture-atlas.h" />
+		<Unit filename="../../src/libs/freetype-gl/texture-font.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/texture-font.h" />
+		<Unit filename="../../src/libs/freetype-gl/texture-glyph.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/texture-glyph.h" />
+		<Unit filename="../../src/libs/freetype-gl/vector.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/vector.h" />
+		<Unit filename="../../src/libs/freetype-gl/vertex-buffer.cpp" />
+		<Unit filename="../../src/libs/freetype-gl/vertex-buffer.h" />
 		<Unit filename="../../src/libs/sleeplib/binary_file.cpp" />
 		<Unit filename="../../src/libs/sleeplib/binary_file.h" />
 		<Unit filename="../../src/libs/sleeplib/loader_plugins/cms50_loader.cpp" />
