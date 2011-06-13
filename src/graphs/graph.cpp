@@ -826,9 +826,14 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     };
 
     int ret;
-
-    Display *display=wxGetX11Display();
-    GLXFBConfig *fbc = GetGLXFBConfig();
+    Display *display=NULL;
+    GLXFBConfig *fbc=NULL;
+#if wxCHECK_VERSION(2,9,0)
+    display=wxGetX11Display();
+    fbc = GetGLXFBConfig();
+#else
+    return &wxNullBitmap;
+#endif
 
     GLXPbuffer pBuffer=glXCreatePbuffer(display, fbc[0], attrib );
     if (pBuffer == 0) {

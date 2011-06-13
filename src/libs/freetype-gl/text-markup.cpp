@@ -32,7 +32,7 @@ TextMarkup::TextMarkup()
     wxColor white(255,255,255,255);
 
 
-    family = wxString("monotype");
+    family = wxT("monotype");
     italic = 0;
     bold   = 0;
     size   = 16;
