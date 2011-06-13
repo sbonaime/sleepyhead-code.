@@ -133,7 +133,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
-    vbuffer->Render(GL_TRIANGLES, "vtc" );
+    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
     glDisable(GL_BLEND);
 
 }
@@ -810,13 +810,85 @@ void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
     m_marginLeft=left;
     m_marginRight=right;
 }
+
+#if defined (__UNIX__)
 GLXContext real_shared_context=0;
+#endif
 
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
 
     //pBuffers are evil.. but I need to use them here.
 #if defined(__WXMSW__)
+
+   /* HDC hDC = wglGetCurrentDC();
+
+	// Get ready to query for a suitable pixel format that meets our minimum requirements.
+
+	int iAttributes[2*MAX_ATTRIBS];
+	float fAttributes[2*MAX_ATTRIBS];
+	int nfAttribs = 0;
+	int niAttribs = 0;
+	// Attribute arrays must be "0" terminated - for simplicity, first
+
+	// just zero-out the array then fill from left to right.
+
+	for (i=0; i<2*MAX_ATTRIBS; i++ ){
+		iAttributes[i] = 0;
+		fAttributes[i] = 0;
+	}
+	// Since we are trying to create a pbuffer, the pixel format we
+
+	//request (and subsequently use) must be "p-buffer capable".
+
+	iAttributes[2*niAttribs]=WGL_DRAW_TO_PBUFFER_ARB;
+	iAttributes[2*niAttribs+1]=true;
+	niAttribs++;
+	// We require a minimum of 24-bit depth.
+
+	iAttributes[2*niAttribs ]=WGL_DEPTH_BITS_ARB;
+	iAttributes[2*niAttribs+1]=24;
+	niAttribs++;
+	// We require a minimum of 8-bits for each R, G, B, and A.
+
+	iAttributes[2*niAttribs]=WGL_RED_BITS_ARB;
+	iAttributes[2*niAttribs+1]=8;
+	niAttribs++;
+	iAttributes[2*niAttribs]=WGL_GREEN_BITS_ARB;
+	iAttributes[2*niAttribs+1]=8;
+	niAttribs++;
+	iAttributes[2*niAttribs]=WGL_BLUE_BITS_ARB;
+	iAttributes[2*niAttribs+1]=8;
+	niAttribs++;
+	iAttributes[2*niAttribs]=WGL_ALPHA_BITS_ARB;
+	iAttributes[2*niAttribs+1]=8;
+	niAttribs++;
+	// Now obtain a list of pixel formats that meet these minimum requirements.
+
+	int pformat;
+	unsigned int nformats;
+	if(!wglChoosePixelFormatARB( hDC, iAttributes, fAttributes, 1, &pformat, &nformats)){
+		printf("pbuffer creation error: Couldn't find a suitable pixel format.\n" );
+		return false;
+	}
+
+	for (i=0; i<2*MAX_ATTRIBS; i++ )iAttributes[i] = 0;
+
+	g_hPBuffer=wglCreatePbufferARB( hDC, pformat, PBUFFERSIZE, PBUFFERSIZE, iAttributes );
+	g_hPBufDC=wglGetPbufferDCARB( g_hPBuffer );
+
+	int w,h;
+	wglQueryPbufferARB( g_hPBuffer, WGL_PBUFFER_WIDTH_ARB, &w );
+	wglQueryPbufferARB( g_hPBuffer, WGL_PBUFFER_HEIGHT_ARB, &h );
+	printf("PBuffer size: %d x %d\n",w,h);
+
+	g_hPBufRC=wglCreateContext(g_hPBufDC);
+
+
+	return true; */
+
+
+
 // WGL pBuffer Implementation
     return &wxNullBitmap;
 #elif defined(__DARWIN__)
@@ -850,10 +922,21 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
         wxLogError(wxT("pBuffer not availble"));
     }
 
-    //real_shared_context =
-    //GLXContext cx= shared_context->GetGLXContext();
+    GLXContext cx=0,gx=0;
 
-    GLXContext cx = glXCreateNewContext(display,fbc[0],GLX_RGBA_TYPE, real_shared_context, True);
+    // This function is not in WX sourcecode yet :(
+    //cx=shared_context->GetGLXContext();
+
+    if (!cx && real_shared_context) cx=real_shared_context; // Only available after redraw.. :(
+    else {
+        // First render screws up unless we do this..
+        gx=cx = glXCreateNewContext(display,fbc[0],GLX_RGBA_TYPE, NULL, True);
+    }
+
+    //real_shared_context =
+
+
+
     //GLXContext cx=real_shared_context;
     if (cx == 0) {
         wxLogError(wxT("CX not availble"));
@@ -888,7 +971,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
     glFlush();
 #if defined(__UNIX__)
-    glXDestroyContext(display,cx);
+    if (gx) glXDestroyContext(display,gx);
     glXDestroyPbuffer(display, pBuffer);
 #endif
 
@@ -948,7 +1031,9 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
 //#endif
 
+#if defined(__UNIX__)
     real_shared_context = glXGetCurrentContext();
+#endif
 
     GetClientSize(&m_scrX, &m_scrY);
 

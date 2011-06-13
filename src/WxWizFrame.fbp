@@ -69,7 +69,7 @@
             <property name="resize">Resizable</property>
             <property name="row"></property>
             <property name="show">1</property>
-            <property name="size">1157,703</property>
+            <property name="size">1280,773</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass"></property>
             <property name="title">SleepyHead</property>

@@ -75,7 +75,7 @@ class GUIFrame : public wxFrame
 	public:
 		wxAuiNotebook* main_auinotebook;
 		
-		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("SleepyHead"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1157,703 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		GUIFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("SleepyHead"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1280,773 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		wxAuiManager m_mgr;
 		
 		~GUIFrame();
