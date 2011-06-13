@@ -25,8 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "vertex-buffer.h"
-//#include <GL/gl.h>
-//#include <GL/glext.h>
+
 
 
 

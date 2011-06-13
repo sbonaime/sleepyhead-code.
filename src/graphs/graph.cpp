@@ -5,6 +5,13 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: LGPL
 */
 
+#ifdef __DARWIN__
+#include <OpenGL/gl.h>
+#include <AGL/agl.h>
+#elif defined(__WXMSW__)
+#include <GL/wglew.h>
+#endif
+
 #include <wx/settings.h>
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
@@ -14,10 +21,6 @@ License: LGPL
 #include <math.h>
 
 
-#ifdef __DARWIN__
-#include <OpenGL/gl.h>
-#include <AGL/agl.h>
-#endif
 
 #include "sleeplib/profiles.h"
 
@@ -811,7 +814,7 @@ void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
     m_marginRight=right;
 }
 
-#if defined (__UNIX__)
+#if !defined(__WXMAC__) && defined (__UNIX__)
 GLXContext real_shared_context=0;
 #endif
 
@@ -891,7 +894,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
 // WGL pBuffer Implementation
     return &wxNullBitmap;
-#elif defined(__DARWIN__)
+#elif defined(__WXMAC__) || defined(__WXDARWIN__)
     return &wxNullBitmap;
 
 #elif defined(__UNIX__)
@@ -970,7 +973,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     wxBitmap *bmp=new wxBitmap(image);
 
     glFlush();
-#if defined(__UNIX__)
+#if !defined(__WXMAC__) && defined (__UNIX__)
     if (gx) glXDestroyContext(display,gx);
     glXDestroyPbuffer(display, pBuffer);
 #endif
@@ -1031,7 +1034,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
 //#endif
 
-#if defined(__UNIX__)
+#if !defined(__WXMAC__) && defined (__UNIX__)
     real_shared_context = glXGetCurrentContext();
 #endif
 

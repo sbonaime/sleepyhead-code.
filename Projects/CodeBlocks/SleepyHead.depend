@@ -8300,13 +8300,13 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1307993148 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1308004574 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
 	<wx/dcgraph.h>
 	<wx/glcanvas.h>
 	<sleeplib/machine.h>
 	<list>
 
-1308000649 /home/mark/projects/git/sleepyhead/src/version.h
+1308005853 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8344,7 +8344,10 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1307996365 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308003040 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+	<OpenGL/gl.h>
+	<AGL/agl.h>
+	<GL/glew.h>
 	<wx/settings.h>
 	<wx/dcbuffer.h>
 	<wx/graphics.h>
@@ -8352,8 +8355,6 @@
 	<wx/image.h>
 	<wx/log.h>
 	<math.h>
-	<OpenGL/gl.h>
-	<AGL/agl.h>
 	"sleeplib/profiles.h"
 	"freesans.c"
 	"graph.h"
@@ -10930,9 +10931,11 @@
 	"text-markup.h"
 	"vertex-buffer.h"
 
-1308000449 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
+1308003215 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
 	<Glut/glut.h>
+	<GL/glu.h>
 	<GL/gl.h>
+	<GL/glext.h>
 	"freetype-gl/vector.h"
 
 1307960497 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/text-markup.c
@@ -11022,12 +11025,13 @@
 	<math.h>
 	"texture-font.h"
 
-1308000410 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
+1308003216 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
 	<Glut/glut.h>
+	<GL/glu.h>
 	<GL/gl.h>
 	"texture-glyph.h"
 
-1308000067 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
+1308002517 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
 	<assert.h>
 	<string.h>
 	<stdlib.h>

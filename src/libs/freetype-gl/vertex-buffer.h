@@ -25,12 +25,20 @@
 #ifndef __VERTEX_BUFFER_H__
 #define __VERTEX_BUFFER_H__
 
-#define GL_GLEXT_PROTOTYPES 1
 
 #if defined(__APPLE__)
     #include <Glut/glut.h>
+#elif defined(__WXMSW__)
+
+#include <GL/glu.h>
 #else
+
+    #define GL_GLEXT_PROTOTYPES 1
+//#include <GL/glut.h>
+//#include <GL/gl.h>
     #include <GL/gl.h>
+    #include <GL/glext.h>
+
 #endif
 
 #include "freetype-gl/vector.h"  // grrr.. nasty c programmers.. go learn a real OOPL.

@@ -22,6 +22,8 @@
  * ========================================================================= */
 #if defined(__APPLE__)
     #include <Glut/glut.h>
+#elif defined(__WXMSW__)
+#include <GL/glu.h>
 #else
     #include <GL/gl.h>
 #endif

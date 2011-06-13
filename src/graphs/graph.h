@@ -7,6 +7,7 @@ License: LGPL
 #ifndef GRAPH_H
 #define GRAPH_H
 
+
 #include <wx/dcgraph.h>
 #include <wx/glcanvas.h>
 //#include <FTGL/ftgl.h>
