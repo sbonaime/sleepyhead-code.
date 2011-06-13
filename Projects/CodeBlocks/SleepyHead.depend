@@ -8306,7 +8306,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1307996397 /home/mark/projects/git/sleepyhead/src/version.h
+1308000649 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -10921,7 +10921,7 @@
 	"texture-atlas.h"
 	"texture-glyph.h"
 
-1307989095 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.h
+1308000392 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.h
 	<wx/gdicmn.h>
 	<vector>
 
@@ -10930,9 +10930,9 @@
 	"text-markup.h"
 	"vertex-buffer.h"
 
-1307988727 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
+1308000449 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
 	<Glut/glut.h>
-	<GL/glut.h>
+	<GL/gl.h>
 	"freetype-gl/vector.h"
 
 1307960497 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/text-markup.c
@@ -11002,57 +11002,41 @@
 	"freetype-gl/texture-font.h"
 	"freetype-gl/texture-atlas.h"
 
-1307976336 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/font-manager.cpp
+1307999759 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/font-manager.cpp
 	<wx/log.h>
-	<fontconfig/fontconfig.h>
-	<assert.h>
 	<stdio.h>
-	<wchar.h>
 	"font-manager.h"
 
-1307994477 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/text-markup.cpp
-	<assert.h>
-	<stdlib.h>
-	<string.h>
+1307999783 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/text-markup.cpp
 	"font-manager.h"
 	"text-markup.h"
 
-1307984359 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
+1308000368 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
 	<Glut/glut.h>
-	<GL/glut.h>
-	<limits.h>
+	<GL/gl.h>
 	"texture-atlas.h"
 
-1307974648 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
+1307999961 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
 	<ft2build.h>
 	<wx/log.h>
-	<stdint.h>
-	<stdlib.h>
-	<stdio.h>
-	<assert.h>
 	<math.h>
 	"texture-font.h"
 
-1307974760 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
+1308000410 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
 	<Glut/glut.h>
-	<GL/glut.h>
-	<assert.h>
-	<stdlib.h>
+	<GL/gl.h>
 	"texture-glyph.h"
 
-1307989346 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
+1308000067 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
 	<assert.h>
 	<string.h>
 	<stdlib.h>
 	<stdio.h>
 	"vertex-buffer.h"
-	<GL/gl.h>
-	<GL/glext.h>
 
-1307976602 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
+1308000005 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
 	<assert.h>
 	<stdlib.h>
 	<string.h>
-	<stdio.h>
 	"freetype-gl/vector.h"
 

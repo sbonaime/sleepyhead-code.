@@ -30,7 +30,7 @@
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #else
-    #include <GL/glut.h>
+    #include <GL/gl.h>
 #endif
 
 #include "freetype-gl/vector.h"  // grrr.. nasty c programmers.. go learn a real OOPL.

@@ -23,10 +23,10 @@
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #else
-    #include <GL/glut.h>
+    #include <GL/gl.h>
 #endif
 //#include <stdlib.h>
-#include <limits.h>
+//#include <limits.h>
 #include "texture-atlas.h"
 
 #define max(a,b) (a)>(b)?(a):(b)

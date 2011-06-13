@@ -23,10 +23,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <wx/log.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+//#include <stdint.h>
+//#include <stdlib.h>
+//#include <stdio.h>
+//#include <assert.h>
 #include <math.h>
 #include "texture-font.h"
 

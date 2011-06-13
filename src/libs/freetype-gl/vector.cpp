@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include "freetype-gl/vector.h"
 
 Vector *

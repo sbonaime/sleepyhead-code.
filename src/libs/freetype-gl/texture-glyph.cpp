@@ -23,10 +23,10 @@
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #else
-    #include <GL/glut.h>
+    #include <GL/gl.h>
 #endif
-#include <assert.h>
-#include <stdlib.h>
+//#include <assert.h>
+//#include <stdlib.h>
 #include "texture-glyph.h"
 
 

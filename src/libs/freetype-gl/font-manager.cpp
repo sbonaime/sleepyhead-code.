@@ -22,11 +22,11 @@
  * ========================================================================= */
 
 
+//#include <fontconfig/fontconfig.h>
 #include <wx/log.h>
-#include <fontconfig/fontconfig.h>
-#include <assert.h>
+//#include <assert.h>
 #include <stdio.h>
-#include <wchar.h>
+//#include <wchar.h>
 #include "font-manager.h"
 
 
@@ -111,7 +111,7 @@ TextureFont * FontManager::GetFromMarkup(const TextMarkup *markup)
 const wxString & FontManager::MatchDescription(const wxString & family, const float size, const int bold, const int italic)
 {
     static wxString filename=wxEmptyString;
-    int weight = FC_WEIGHT_REGULAR;
+    /*int weight = FC_WEIGHT_REGULAR;
     int slant = FC_SLANT_ROMAN;
     if (bold) {
         weight = FC_WEIGHT_BOLD;
@@ -146,7 +146,7 @@ const wxString & FontManager::MatchDescription(const wxString & family, const fl
             filename = wxString((char *)(value.u.s),wxConvUTF8);
         }
     }
-    FcPatternDestroy(match);
+    FcPatternDestroy(match); */
     return filename;
 }
 
