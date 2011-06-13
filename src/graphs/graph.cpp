@@ -816,8 +816,13 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
 
     //pBuffers are evil.. but I need to use them here.
+#if defined(__WXMSW__)
+// WGL pBuffer Implementation
+    return &wxNullBitmap;
+#elif defined(__DARWIN__)
+    return &wxNullBitmap;
 
-#if defined(__UNIX__)
+#elif defined(__UNIX__)
 
     int attrib[]={
         GLX_PBUFFER_WIDTH,width,
@@ -828,10 +833,15 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     int ret;
     Display *display=NULL;
     GLXFBConfig *fbc=NULL;
+
 #if wxCHECK_VERSION(2,9,0)
     display=wxGetX11Display();
     fbc = GetGLXFBConfig();
 #else
+    display=(Display *)wxGetDisplay();
+    // TODO:
+    // have to setup a GLXFBConfig structure for wx2.8 because wx2.8 is crap.
+    // already done this crap but deleted it.. arggghh.....
     return &wxNullBitmap;
 #endif
 
@@ -854,8 +864,8 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
         wxLogError(wxT("Couldn't make buffer current"));
     }
 
-//    texfont->FaceSize(14);
 #endif
+
    // glClearColor(1,1,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
