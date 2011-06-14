@@ -947,7 +947,7 @@ void Daily::RefreshData()
         }
         wxRect r=HTMLInfo->GetRect();
         int w=r.width-27;
-  /*      ahi_bmp=G_AHI->RenderBitmap(w,25);
+        ahi_bmp=G_AHI->RenderBitmap(w,25);
         tap_bmp=TAP->RenderBitmap(w,25);
         if (ahi_bmp)
             wxMemoryFSHandler::AddFile(_T("ahi.png"), *ahi_bmp, wxBITMAP_TYPE_PNG);
@@ -959,7 +959,7 @@ void Daily::RefreshData()
             tiap_bmp=TAP_IAP->RenderBitmap(w,25);
             wxMemoryFSHandler::AddFile(_T("teap.png"), *teap_bmp, wxBITMAP_TYPE_PNG);
             wxMemoryFSHandler::AddFile(_T("tiap.png"), *tiap_bmp, wxBITMAP_TYPE_PNG);
-        } */
+        }
 
         pr=(PRTypes)cpap->summary_max(CPAP_PressureReliefType);
         if (pr==PR_NONE)
