@@ -399,15 +399,15 @@ char * GL_TYPE_STRING(GLenum gtype)
 {
     switch(gtype)
     {
-    case GL_BOOL:           return "GL_BOOL";
-    case GL_BYTE:           return "GL_BYTE";
-    case GL_UNSIGNED_BYTE:  return "GL_UNSIGNED_BYTE";
-    case GL_SHORT:          return "GL_SHORT";
-    case GL_UNSIGNED_SHORT: return "GL_UNSIGNED_SHORT";
-    case GL_INT:            return "GL_INT";
-    case GL_UNSIGNED_INT:   return "GL_UNSIGNED_INT";
-    case GL_FLOAT:          return "GL_FLOAT";
-    case GL_DOUBLE:         return "GL_DOUBLE";
-    default:                return "GL_VOID";
+    case GL_BOOL:           return (char *)"GL_BOOL";
+    case GL_BYTE:           return (char *)"GL_BYTE";
+    case GL_UNSIGNED_BYTE:  return (char *)"GL_UNSIGNED_BYTE";
+    case GL_SHORT:          return (char *)"GL_SHORT";
+    case GL_UNSIGNED_SHORT: return (char *)"GL_UNSIGNED_SHORT";
+    case GL_INT:            return (char *)"GL_INT";
+    case GL_UNSIGNED_INT:   return (char *)"GL_UNSIGNED_INT";
+    case GL_FLOAT:          return (char *)"GL_FLOAT";
+    case GL_DOUBLE:         return (char *)"GL_DOUBLE";
+    default:                return (char *)"GL_VOID";
     }
 }

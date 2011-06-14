@@ -912,28 +912,15 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 #if wxCHECK_VERSION(2,9,0)
     display=wxGetX11Display();
     fbc = GetGLXFBConfig();
-    fbc=&fbc[0];
-
 #else
     display=(Display *)wxGetDisplay();
-
-    int FBAttribs[] = {
-        GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
-        GLX_RENDER_TYPE, GLX_RGBA_BIT,
-        GLX_DOUBLEBUFFER, True,
-        GLX_RED_SIZE, 8,
-        GLX_GREEN_SIZE, 8,
-        GLX_BLUE_SIZE, 8,
-        None
-    };
-    fbc = glXChooseFBConfig(display, DefaultScreen(display), FBAttribs, &ret);
     // TODO:
     // have to setup a GLXFBConfig structure for wx2.8 because wx2.8 is crap.
     // already done this crap but deleted it.. arggghh.....
-    //return &wxNullBitmap;
+    return &wxNullBitmap;
 #endif
-    GLXPbuffer pBuffer=glXCreatePbuffer(display, *fbc, attrib );
 
+    GLXPbuffer pBuffer=glXCreatePbuffer(display, fbc[0], attrib );
     if (pBuffer == 0) {
         wxLogError(wxT("pBuffer not availble"));
     }
@@ -946,7 +933,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     if (!cx && real_shared_context) cx=real_shared_context; // Only available after redraw.. :(
     else {
         // First render screws up unless we do this..
-        gx=cx = glXCreateNewContext(display,*fbc,GLX_RGBA_TYPE, NULL, True);
+        gx=cx = glXCreateNewContext(display,fbc[0],GLX_RGBA_TYPE, NULL, True);
     }
 
     //real_shared_context =
@@ -1716,7 +1703,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px+barwidth+2+y,j,270.0,*wxBLACK);
             } else {
-                DrawText(str,j,start_py+(barwidth/2)-(y/2)+4); //0,*wxBLACK,texfont);
+                DrawText(str,j,start_py+(barwidth/2)-(y/2)+1);
             }
         }
 

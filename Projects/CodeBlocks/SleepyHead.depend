@@ -8306,7 +8306,23 @@
 	<sleeplib/machine.h>
 	<list>
 
-1308026543 /home/mark/projects/git/sleepyhead/src/version.h
+1308026543 D
+
+1308030963 /home/mark/projects/git/sleepyhead/src/version.h
+
+1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
+	<wx/dcbuffer.h>
+	<wx/glcanvas.h>
+	<wx/settings.h>
+	<wx/graphics.h>
+	<wx/image.h>
+	<wx/log.h>
+	<math.h>
+	"sleeplib/profiles.h"
+	"freesans.c"
+	"graph.h"
+	"freetype-gl/font-manager.h"
+	"freetype-gl/texture-font.h"
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8344,7 +8360,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308010945 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308030539 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<OpenGL/gl.h>
 	<AGL/agl.h>
 	<GL/glew.h>
@@ -8360,6 +8376,8 @@
 	"graph.h"
 	"freetype-gl/font-manager.h"
 	"freetype-gl/texture-font.h"
+
+1308010945 >
 
 1307623396 source:/home/mark/projects/git/sleepyhead/src/libs/sleeplib/binary_file.cpp
 	<wx/filename.h>
@@ -11019,7 +11037,7 @@
 	<GL/glew.h>
 	"texture-atlas.h"
 
-1308025957 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
+1308030624 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
 	<ft2build.h>
 	<wx/log.h>
 	<math.h>
@@ -11031,14 +11049,14 @@
 	<GL/gl.h>
 	"texture-glyph.h"
 
-1308011216 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
+1308030709 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
 	<assert.h>
 	<string.h>
 	<stdlib.h>
 	<stdio.h>
 	"vertex-buffer.h"
 
-1308000005 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
+1308030960 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
 	<assert.h>
 	<stdlib.h>
 	<string.h>

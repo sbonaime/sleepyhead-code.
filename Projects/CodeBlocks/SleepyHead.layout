@@ -19,7 +19,7 @@
 	<File name="../../src/graphs/freesans.c" open="0" top="0" tabpos="10">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="7">
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="7">
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
@@ -29,25 +29,25 @@
 		<Cursor position="0" topLine="30" />
 	</File>
 	<File name="../../src/libs/freetype-gl/font-manager.h" open="1" top="0" tabpos="14">
-		<Cursor position="1954" topLine="13" />
+		<Cursor position="1954" topLine="5" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-atlas.cpp" open="1" top="0" tabpos="10">
 		<Cursor position="3243" topLine="80" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-atlas.h" open="1" top="0" tabpos="13">
-		<Cursor position="1629" topLine="29" />
+		<Cursor position="1629" topLine="21" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-font.cpp" open="1" top="0" tabpos="11">
 		<Cursor position="3837" topLine="106" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-font.h" open="1" top="0" tabpos="12">
-		<Cursor position="0" topLine="17" />
+		<Cursor position="0" topLine="9" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-glyph.cpp" open="1" top="0" tabpos="15">
 		<Cursor position="0" topLine="69" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-glyph.h" open="1" top="0" tabpos="16">
-		<Cursor position="0" topLine="24" />
+		<Cursor position="0" topLine="19" />
 	</File>
 	<File name="../../src/libs/freetype-gl/vector.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="1187" topLine="18" />
@@ -93,5 +93,8 @@
 	</File>
 	<File name="../../src/libs/sleeplib/prs1_loader.h" open="0" top="0" tabpos="11">
 		<Cursor position="622" topLine="0" />
+	</File>
+	<File name="../../src/version.h" open="1" top="1" tabpos="19">
+		<Cursor position="586" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
