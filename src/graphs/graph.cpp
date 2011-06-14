@@ -133,7 +133,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
-    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
+//    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
     glDisable(GL_BLEND);
 
 }
@@ -806,80 +806,121 @@ void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
 
 #if !defined(__WXMAC__) && defined (__UNIX__)
 GLXContext real_shared_context=0;
+
 #endif
+
+
+
 
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
 
     //pBuffers are evil.. but I need to use them here.
 #if defined(__WXMSW__)
-    /*#define MAX_ATTRIBS 8
-    HDC hDC = wglGetCurrentDC();
 
-	// Get ready to query for a suitable pixel format that meets our minimum requirements.
+    int mv=MAX(width,height);
+    // convert to nearest binary power of two.
 
-	int iAttributes[2*MAX_ATTRIBS];
-	float fAttributes[2*MAX_ATTRIBS];
-	int nfAttribs = 0;
-	int niAttribs = 0;
-	// Attribute arrays must be "0" terminated - for simplicity, first
+    int pbwidth=1024;
+    int pbheight=pbwidth;  // Windows sucks ass.
 
-	// just zero-out the array then fill from left to right.
+    unsigned int texture=0;
 
-	for (i=0; i<2*MAX_ATTRIBS; i++ ){
-		iAttributes[i] = 0;
-		fAttributes[i] = 0;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, 4,  pbwidth, pbheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+    HDC saveHdc = wglGetCurrentDC();
+    HGLRC saveHglrc = wglGetCurrentContext();
+
+	wxLogError(wxT("Foo1"));
+
+    int pixelFormats;
+	int intAttrs[32] ={
+        WGL_RED_BITS_ARB,8,
+        WGL_GREEN_BITS_ARB,8,
+        WGL_BLUE_BITS_ARB,8,
+        WGL_ALPHA_BITS_ARB,8,
+        WGL_DRAW_TO_PBUFFER_ARB, GL_TRUE,
+        WGL_BIND_TO_TEXTURE_RGBA_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
+        WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
+        WGL_DOUBLE_BUFFER_ARB,GL_FALSE,
+        0
+    }; // 0 terminate the list
+
+	unsigned int numFormats = 0;
+
+    wxLogError(wxT("Foo2"));
+	if (!wglChoosePixelFormatARB( saveHdc, intAttrs, NULL, 1, &pixelFormats, &numFormats)) {
+
+	    wxLogError(wxT("WGL: pbuffer creation error: Couldn't find a suitable pixel format.\n"));
+		return &wxNullBitmap;
 	}
-	// Since we are trying to create a pbuffer, the pixel format we
+	wxLogError(wxT("Foo3"));
+    if (numFormats==0) {
+		return &wxNullBitmap;
+    }
+	wxLogError(wxT("Foo3"));
 
-	//request (and subsequently use) must be "p-buffer capable".
+    const int attributes[]= {
+        WGL_TEXTURE_FORMAT_ARB,
+        WGL_TEXTURE_RGBA_ARB, // p-buffer will have RBA texture format
+        WGL_TEXTURE_TARGET_ARB,
+        WGL_TEXTURE_2D_ARB,
+        0
+    }; // Of texture target will be GL_TEXTURE_2D
 
-	iAttributes[2*niAttribs]=WGL_DRAW_TO_PBUFFER_ARB;
-	iAttributes[2*niAttribs+1]=true;
-	niAttribs++;
-	// We require a minimum of 24-bit depth.
+    //wglCreatePbufferARB(hDC, pixelFormats, pbwidth, pbheight, attributes);
+	HPBUFFERARB hBuffer=wglCreatePbufferARB(saveHdc, pixelFormats, pbwidth, pbheight, attributes );
+	wxLogError(wxT("Foo4"));
 
-	iAttributes[2*niAttribs ]=WGL_DEPTH_BITS_ARB;
-	iAttributes[2*niAttribs+1]=24;
-	niAttribs++;
-	// We require a minimum of 8-bits for each R, G, B, and A.
+    HDC hdc=wglGetPbufferDCARB( hBuffer );
+	wxLogError(wxT("Foo5"));
 
-	iAttributes[2*niAttribs]=WGL_RED_BITS_ARB;
-	iAttributes[2*niAttribs+1]=8;
-	niAttribs++;
-	iAttributes[2*niAttribs]=WGL_GREEN_BITS_ARB;
-	iAttributes[2*niAttribs+1]=8;
-	niAttribs++;
-	iAttributes[2*niAttribs]=WGL_BLUE_BITS_ARB;
-	iAttributes[2*niAttribs+1]=8;
-	niAttribs++;
-	iAttributes[2*niAttribs]=WGL_ALPHA_BITS_ARB;
-	iAttributes[2*niAttribs+1]=8;
-	niAttribs++;
-	// Now obtain a list of pixel formats that meet these minimum requirements.
+    HGLRC hGlRc=wglCreateContext(hdc);
+	wxLogError(wxT("Foo6"));
 
-	int pformat;
-	unsigned int nformats;
-	if(!wglChoosePixelFormatARB( hDC, iAttributes, fAttributes, 1, &pformat, &nformats)){
-		printf("pbuffer creation error: Couldn't find a suitable pixel format.\n" );
-		return false;
-	}
 
-	for (i=0; i<2*MAX_ATTRIBS; i++ )iAttributes[i] = 0;
+        //printf("PBuffer size: %d x %d\n",w,h);
+    int w,h;
+	wglQueryPbufferARB(hBuffer, WGL_PBUFFER_WIDTH_ARB, &w);
+	wglQueryPbufferARB(hBuffer, WGL_PBUFFER_HEIGHT_ARB, &h);
+	wxLogError(wxT("Foo7"));
 
-	HPBUFFERARB g_hPBuffer=wglCreatePbufferARB( hDC, pformat, PBUFFERSIZE, PBUFFERSIZE, iAttributes );
-	g_hPBufDC=wglGetPbufferDCARB( g_hPBuffer );
+    wglMakeCurrent(hdc,hGlRc);
 
-	int w,h;
-	wglQueryPbufferARB( g_hPBuffer, WGL_PBUFFER_WIDTH_ARB, &w );
-	wglQueryPbufferARB( g_hPBuffer, WGL_PBUFFER_HEIGHT_ARB, &h );
-	printf("PBuffer size: %d x %d\n",w,h);
+    glEnable(GL_TEXTURE_2D);		      // Enable Texture Mapping
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); // enable transparency
 
-	g_hPBufRC=wglCreateContext(g_hPBufDC);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, height, 0, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-*/
+	glClearColor(0,0,0,1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+
+    // switch back to the screen context
+	wglMakeCurrent(saveHdc, saveHglrc);
+
+    // So we can share the main context
+    wglShareLists(saveHglrc, hGlRc);
+
+    // Jump back to pBuffer for rendering
+    wglMakeCurrent(hdc, hGlRc);
+
+
 // WGL pBuffer Implementation
-    return &wxNullBitmap;
+    //return &wxNullBitmap;
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
     return &wxNullBitmap;
 
@@ -970,7 +1011,12 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     wxBitmap *bmp=new wxBitmap(image);
 
     glFlush();
-#if !defined(__WXMAC__) && defined (__UNIX__)
+
+#if defined(__WXMSW__)
+    wglDeleteContext(hGlRc);
+    wglReleasePbufferDCARB(hBuffer, hdc);
+    wglDestroyPbufferARB(hBuffer);
+#elif !defined(__WXMAC__) && defined (__UNIX__)
     if (gx) glXDestroyContext(display,gx);
     glXDestroyPbuffer(display, pBuffer);
 #endif

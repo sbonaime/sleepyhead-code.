@@ -8240,7 +8240,7 @@
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1308031885 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
+1308079880 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
@@ -8312,7 +8312,7 @@
 
 1308026543 D
 
-1308044876 /home/mark/projects/git/sleepyhead/src/version.h
+1308080044 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8364,7 +8364,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308044596 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308073105 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/dcbuffer.h>
 	<wx/settings.h>
 	<wx/graphics.h>
@@ -10870,7 +10870,7 @@
 	"wx/msw/wrapwin.h"
 	<GL/gl.h>
 
-1308041947 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.9/wx/stdpaths.h
+1308044093 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.9/wx/stdpaths.h
 	"wx/defs.h"
 	"wx/string.h"
 	"wx/filefn.h"
@@ -10880,7 +10880,7 @@
 	"wx/unix/stdpaths.h"
 	"wx/palmos/stdpaths.h"
 
-1308041948 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.9/wx/msw/stdpaths.h
+1308044094 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.9/wx/msw/stdpaths.h
 
 1308044096 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.9/wx/aboutdlg.h
 	"wx/defs.h"
@@ -11043,10 +11043,9 @@
 	<math.h>
 	"texture-font.h"
 
-1308009682 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
+1308044876 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
 	<Glut/glut.h>
 	<GL/glew.h>
-	<GL/gl.h>
 	"texture-glyph.h"
 
 1308032101 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
