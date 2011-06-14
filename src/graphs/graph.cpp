@@ -1716,7 +1716,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px+barwidth+2+y,j,270.0,*wxBLACK);
             } else {
-                DrawText(str,j,start_py+(barwidth/2)-(y/2)+1);
+                DrawText(str,j,start_py+(barwidth/2)-(y/2)+4); //0,*wxBLACK,texfont);
             }
         }
 
