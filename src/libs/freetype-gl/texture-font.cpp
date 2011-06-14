@@ -145,7 +145,7 @@ int TextureFont::CacheGlyphs(wchar_t * charcodes)
         for( x=0; x<slot->bitmap.width; ++x ) {
             for( y=0; y<slot->bitmap.rows; ++y ){
                 c = *(unsigned char *)(slot->bitmap.buffer + y*slot->bitmap.pitch + x );
-                c = (unsigned char) ( pow(float(c)/255.0, float(m_gamma) * 255.0));
+                c = (unsigned char) ( pow((float)c/255.0, (float)m_gamma) * 255);
                 *(unsigned char *)(slot->bitmap.buffer + y*slot->bitmap.pitch + x ) = c;
             }
         }
