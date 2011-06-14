@@ -8240,7 +8240,7 @@
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1307528196 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
+1308031885 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
@@ -8308,7 +8308,7 @@
 
 1308026543 D
 
-1308030963 /home/mark/projects/git/sleepyhead/src/version.h
+1308032101 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8340,7 +8340,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1308026543 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308031975 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -11037,7 +11037,7 @@
 	<GL/glew.h>
 	"texture-atlas.h"
 
-1308030624 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
+1308031681 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
 	<ft2build.h>
 	<wx/log.h>
 	<math.h>
@@ -11056,7 +11056,7 @@
 	<stdio.h>
 	"vertex-buffer.h"
 
-1308030960 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
+1308031619 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vector.cpp
 	<assert.h>
 	<stdlib.h>
 	<string.h>

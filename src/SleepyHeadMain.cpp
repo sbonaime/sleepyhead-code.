@@ -78,7 +78,7 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
 {
     //GraphInit(); // Don't do this here: The first gGraphWindow must do it.
 
-    wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
+    wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
     SetTitle(title);
 
     profile=Profiles::Get();
@@ -288,11 +288,11 @@ void SleepyHeadFrame::OnAntiAliasing( wxCommandEvent& event )
 void SleepyHeadFrame::OnAbout(wxCommandEvent &event)
 {
     // wxAboutBox is fairly useless.
-    wxString day=wxString(AutoVersion::DATE,wxConvUTF8);
-    wxString month=wxString(AutoVersion::MONTH,wxConvUTF8);
-    wxString year=wxString(AutoVersion::YEAR,wxConvUTF8);
+    wxString day=wxString(AutoVersion::_DATE,wxConvUTF8);
+    wxString month=wxString(AutoVersion::_MONTH,wxConvUTF8);
+    wxString year=wxString(AutoVersion::_YEAR,wxConvUTF8);
     wxString date=day+wxT("/")+month+wxT("/")+year;
-    wxString msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8)+_(" alpha preview ")+date+_("\n\n")+wxT("\u00a9")+_("2011 Mark Watkins & Troy Schultz\n\n");
+    wxString msg=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8)+_(" alpha preview ")+date+_("\n\n")+wxT("\u00a9")+_("2011 Mark Watkins & Troy Schultz\n\n");
     msg+=_("Website: http://sleepyhead.sourceforge.net\n\n");
     msg+=_("License: GNU Public License (GPL)\n\n");
     msg+=_("This software is under active development, and is guaranteed to break and change regularly! Use at your own risk.\n\n");

@@ -52,7 +52,7 @@ void VertexBuffer::__init(char *_format)
         p = (char *)(strchr(p, ':'));
         attribute->m_pointer = pointer;
         stride += attribute->m_size*GL_TYPE_SIZE(attribute->m_type);
-        pointer+= attribute->m_size*GL_TYPE_SIZE(attribute->m_type);
+        pointer=(unsigned char *)pointer+ attribute->m_size*GL_TYPE_SIZE(attribute->m_type);
         attributes[index] = attribute;
         index++;
     }

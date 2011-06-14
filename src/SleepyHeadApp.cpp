@@ -63,7 +63,7 @@ bool SleepyHeadApp::OnInit()
     //loader_progress->Show();
 
     pref["AppName"]=wxT("Awesome Sleep Application");
-    pref["Version"]=wxString(AutoVersion::FULLVERSION_STRING,wxConvUTF8);
+    pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
 
     pref["Profile"]=wxGetUserId();
     profile=Profiles::Get(pref["Profile"]);
