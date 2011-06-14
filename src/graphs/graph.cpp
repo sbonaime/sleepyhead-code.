@@ -133,7 +133,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
-//    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
+    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
     glDisable(GL_BLEND);
 
 }
