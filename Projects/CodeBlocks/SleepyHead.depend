@@ -8306,7 +8306,7 @@
 	<sleeplib/machine.h>
 	<list>
 
-1308007178 /home/mark/projects/git/sleepyhead/src/version.h
+1308025958 /home/mark/projects/git/sleepyhead/src/version.h
 
 1307627540 /home/mark/projects/git/sleepyhead/src/libs/sleeplib/prs1_loader.h
 	"machine.h"
@@ -8324,7 +8324,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1307991977 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308010361 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8344,14 +8344,14 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308007178 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308010945 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<OpenGL/gl.h>
 	<AGL/agl.h>
-	<GL/wglew.h>
-	<wx/settings.h>
+	<GL/glew.h>
 	<wx/dcbuffer.h>
-	<wx/graphics.h>
 	<wx/glcanvas.h>
+	<wx/settings.h>
+	<wx/graphics.h>
 	<wx/image.h>
 	<wx/log.h>
 	<math.h>
@@ -10931,9 +10931,9 @@
 	"text-markup.h"
 	"vertex-buffer.h"
 
-1308003215 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
+1308009703 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
 	<Glut/glut.h>
-	<GL/glu.h>
+	<GL/glew.h>
 	<GL/gl.h>
 	<GL/glext.h>
 	"freetype-gl/vector.h"
@@ -11014,9 +11014,9 @@
 	"font-manager.h"
 	"text-markup.h"
 
-1308000368 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
+1308009126 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
 	<Glut/glut.h>
-	<GL/gl.h>
+	<GL/glew.h>
 	"texture-atlas.h"
 
 1307999961 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
@@ -11025,13 +11025,13 @@
 	<math.h>
 	"texture-font.h"
 
-1308003216 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
+1308009682 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
 	<Glut/glut.h>
-	<GL/glu.h>
+	<GL/glew.h>
 	<GL/gl.h>
 	"texture-glyph.h"
 
-1308002517 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
+1308011216 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.cpp
 	<assert.h>
 	<string.h>
 	<stdlib.h>

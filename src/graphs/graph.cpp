@@ -5,17 +5,22 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: LGPL
 */
 
+#define GL_GLEXT_PROTOTYPES
+
 #ifdef __DARWIN__
 #include <OpenGL/gl.h>
 #include <AGL/agl.h>
 #elif defined(__WXMSW__)
-#include <GL/wglew.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
 #endif
 
-#include <wx/settings.h>
+
 #include <wx/dcbuffer.h>
-#include <wx/graphics.h>
 #include <wx/glcanvas.h>
+
+#include <wx/settings.h>
+#include <wx/graphics.h>
 #include <wx/image.h>
 #include <wx/log.h>
 #include <math.h>
@@ -123,6 +128,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     TextureGlyph *glyph;
     glyph=font->GetGlyph((wchar_t)text[0]);
     if (!glyph) return;
+    assert(vbuffer!=NULL);
 
     vbuffer->Clear();
     glyph->AddToVertexBuffer(vbuffer, markup, &pen);
@@ -149,13 +155,7 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
         return;
     }
     if (angle==0) {
-        // Colourizing this just plain sucks..
-        DrawText2(text,x,y,font); //
-        /*glPixelTransferf(GL_RED_BIAS, -1.0f);
-        glPixelTransferf(GL_GREEN_BIAS, -1.0f);
-        glPixelTransferf(GL_BLUE_BIAS, -1.0f);
-        glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
-        font->Render(text.mb_str(),-1,FTPoint(x,y)); //,x,y);*/
+        DrawText2(text,x,y,font);
         return;
     }
 
@@ -169,7 +169,6 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
     glTranslatef(x,y,0);
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
     DrawText2(text,-w/2.0,-h/2.0,font);
-    //font->Render(text.mb_str(),-1,FTPoint(-w/2.0,-h/2.0));
     glTranslatef(-x,-y,0);
     glPopMatrix();
 
@@ -824,11 +823,12 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     //pBuffers are evil.. but I need to use them here.
 #if defined(__WXMSW__)
 
-   /* HDC hDC = wglGetCurrentDC();
+    HDC hDC = wglGetCurrentDC();
 
 	// Get ready to query for a suitable pixel format that meets our minimum requirements.
 
-	int iAttributes[2*MAX_ATTRIBS];
+
+	/*int iAttributes[2*MAX_ATTRIBS];
 	float fAttributes[2*MAX_ATTRIBS];
 	int nfAttribs = 0;
 	int niAttribs = 0;

@@ -23,7 +23,9 @@
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #else
-    #include <GL/gl.h>
+    #define GL_GLEXT_PROTOTYPES
+
+    #include <GL/glew.h>
 #endif
 //#include <stdlib.h>
 //#include <limits.h>
