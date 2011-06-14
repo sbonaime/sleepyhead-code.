@@ -8312,7 +8312,7 @@
 
 1308026543 D
 
-1308080044 /home/mark/projects/git/sleepyhead/src/version.h
+1308081125 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8364,7 +8364,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308073105 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308080954 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	<wx/dcbuffer.h>
 	<wx/settings.h>
 	<wx/graphics.h>

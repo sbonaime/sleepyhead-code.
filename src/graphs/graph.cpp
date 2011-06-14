@@ -940,6 +940,8 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     display=wxGetX11Display();
     fbc = GetGLXFBConfig();
     fbc = &fbc[0];
+    GLXPbuffer pBuffer=glXCreatePbuffer(display, fbc[0], attrib );
+
 #else
     display=(Display *)wxGetDisplay();
     int doubleBufferAttributess[] = {
@@ -952,6 +954,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
         None
     };
     fbc=glXChooseFBConfig(display, DefaultScreen(display), doubleBufferAttributess, &ret);
+    GLXPbuffer pBuffer=glXCreatePbuffer(display, *fbc, attrib );
 
     // TODO:
     // have to setup a GLXFBConfig structure for wx2.8 because wx2.8 is crap.
@@ -959,7 +962,6 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
  //   return &wxNullBitmap;
 #endif
 
-    GLXPbuffer pBuffer=glXCreatePbuffer(display, *fbc, attrib );
     if (pBuffer == 0) {
         wxLogError(wxT("pBuffer not availble"));
     }
@@ -981,9 +983,10 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
         wxLogError(wxT("CX not availble"));
     }
 
-#if wxCHECK_VERSION(2,9,0)
+#if !wxCHECK_VERSION(2,9,0)
     XFree(fbc);
 #endif
+
     if (glXMakeCurrent(display,pBuffer,cx)!=True) {
         wxLogError(wxT("Couldn't make buffer current"));
     }
@@ -1016,8 +1019,10 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     wglDeleteContext(hGlRc);
     wglReleasePbufferDCARB(hBuffer, hdc);
     wglDestroyPbufferARB(hBuffer);
-#elif !defined(__WXMAC__) && defined (__UNIX__)
-    if (gx) glXDestroyContext(display,gx);
+#elif defined(__DARWIN__) || defined (__WXMAC__)
+
+#elif !defined(__WXMAC__) && defined (__UNIX__)  // Linux
+    if (gx) glXDestroyContext(display,gx); // Destroy the context only if we created it..
     glXDestroyPbuffer(display, pBuffer);
 #endif
 
