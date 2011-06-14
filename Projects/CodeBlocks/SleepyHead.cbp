@@ -45,16 +45,18 @@
 				<Compiler>
 					<Add option="-march=i686" />
 					<Add option="-O2" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --cflags`" />
 					<Add option="-I/usr/include/freetype2" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --cflags`" />
+					<Add option="-Dd" />
 					<Add directory="../../src/libs" />
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="-lftgl" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --libs gl,richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
 					<Add option="-lfreetype" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --libs richtext,aui,xrc,qa,html,adv,core,xml,net,base,gl`" />
+					<Add option="-lglew32s" />
+					<Add option="-lopengl32" />
 					<Add option="-lgdiplus" />
 				</Linker>
 			</Target>
@@ -162,7 +164,6 @@
 		<Unit filename="../../src/libs/tinyxml/tinyxml.h" />
 		<Unit filename="../../src/libs/tinyxml/tinyxmlerror.cpp" />
 		<Unit filename="../../src/libs/tinyxml/tinyxmlparser.cpp" />
-		<Unit filename="../../src/version.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
@@ -170,9 +171,9 @@
 			<lib_finder disable_auto="1" />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="300" />
-				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="../../src/version.h" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory=" " header_path="../../src/version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
-				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix=" " />
 			</AutoVersioning>
 			<wxsmith version="1">
 				<gui name="wxWidgets" src="" main="" init_handlers="necessary" language="CPP" />

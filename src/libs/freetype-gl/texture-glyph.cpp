@@ -23,12 +23,16 @@
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #elif defined(__WXMSW__)
+
 #define GL_GLEXT_PROTOTYPES
 #define GLEW_STATIC
+#define _UNICODE 1
 #include <GL/glew.h>
-#else
-    #include <GL/gl.h>
+//#include <GL/wglew.h>
+//#else
+//    #include <GL/gl.h>
 #endif
+
 //#include <assert.h>
 //#include <stdlib.h>
 #include "texture-glyph.h"

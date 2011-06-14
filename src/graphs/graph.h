@@ -7,6 +7,26 @@ License: LGPL
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#define GL_GLEXT_PROTOTYPES
+//#define _UNICODE 1
+
+#ifdef __DARWIN__
+#include <OpenGL/gl.h>
+#include <AGL/agl.h>
+#elif defined(__WXMSW__)
+
+#define GLEW_STATIC
+#define WGL_WGLEXT_PROTOTYPES
+//#include <windows.h>
+#include <GL/glew.h>
+#include <GL/wglew.h>
+//#include <GL/freeglut_std.h>
+//#include <GL/freeglut_ext.h>
+// windows gl extensions
+
+#endif
+
+#undef Yield
 
 #include <wx/dcgraph.h>
 #include <wx/glcanvas.h>

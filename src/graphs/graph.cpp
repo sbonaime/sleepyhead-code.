@@ -5,19 +5,10 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: LGPL
 */
 
-#define GL_GLEXT_PROTOTYPES
-
-#ifdef __DARWIN__
-#include <OpenGL/gl.h>
-#include <AGL/agl.h>
-#elif defined(__WXMSW__)
-#define GLEW_STATIC
-#include <GL/glew.h>
-#endif
 
 
 #include <wx/dcbuffer.h>
-#include <wx/glcanvas.h>
+//#include <wx/glcanvas.h>
 
 #include <wx/settings.h>
 #include <wx/graphics.h>
@@ -335,7 +326,7 @@ END_EVENT_TABLE()
 static int wx_gl_attribs[] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 24, 0};
 
 gGraphWindow::gGraphWindow()
-: wxGLCanvas( (wxWindow *)NULL,(wxGLContext *)NULL,wxID_ANY) //,wxDefaultPosition,wxDefaultSize,wxT("GLContext"),(int *)wx_gl_attribs,wxNullPalette)
+: wxGLCanvas( (wxWindow *)NULL,shared_context,wxID_ANY) //,wxDefaultPosition,wxDefaultSize,wxT("GLContext"),(int *)wx_gl_attribs,wxNullPalette)
 {
 }
 
@@ -822,13 +813,12 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
     //pBuffers are evil.. but I need to use them here.
 #if defined(__WXMSW__)
-
+    /*#define MAX_ATTRIBS 8
     HDC hDC = wglGetCurrentDC();
 
 	// Get ready to query for a suitable pixel format that meets our minimum requirements.
 
-
-	/*int iAttributes[2*MAX_ATTRIBS];
+	int iAttributes[2*MAX_ATTRIBS];
 	float fAttributes[2*MAX_ATTRIBS];
 	int nfAttribs = 0;
 	int niAttribs = 0;
@@ -877,7 +867,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
 	for (i=0; i<2*MAX_ATTRIBS; i++ )iAttributes[i] = 0;
 
-	g_hPBuffer=wglCreatePbufferARB( hDC, pformat, PBUFFERSIZE, PBUFFERSIZE, iAttributes );
+	HPBUFFERARB g_hPBuffer=wglCreatePbufferARB( hDC, pformat, PBUFFERSIZE, PBUFFERSIZE, iAttributes );
 	g_hPBufDC=wglGetPbufferDCARB( g_hPBuffer );
 
 	int w,h;
@@ -887,11 +877,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
 	g_hPBufRC=wglCreateContext(g_hPBufDC);
 
-
-	return true; */
-
-
-
+*/
 // WGL pBuffer Implementation
     return &wxNullBitmap;
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
@@ -912,15 +898,27 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 #if wxCHECK_VERSION(2,9,0)
     display=wxGetX11Display();
     fbc = GetGLXFBConfig();
+    fbc = &fbc[0];
 #else
     display=(Display *)wxGetDisplay();
+    int doubleBufferAttributess[] = {
+        GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
+        GLX_RENDER_TYPE, GLX_RGBA_BIT,
+        GLX_DOUBLEBUFFER, True,
+        GLX_RED_SIZE, 8,
+        GLX_GREEN_SIZE, 8,
+        GLX_BLUE_SIZE, 8,
+        None
+    };
+    fbc=glXChooseFBConfig(display, DefaultScreen(display), doubleBufferAttributess, &ret);
+
     // TODO:
     // have to setup a GLXFBConfig structure for wx2.8 because wx2.8 is crap.
     // already done this crap but deleted it.. arggghh.....
-    return &wxNullBitmap;
+ //   return &wxNullBitmap;
 #endif
 
-    GLXPbuffer pBuffer=glXCreatePbuffer(display, fbc[0], attrib );
+    GLXPbuffer pBuffer=glXCreatePbuffer(display, *fbc, attrib );
     if (pBuffer == 0) {
         wxLogError(wxT("pBuffer not availble"));
     }
@@ -933,19 +931,18 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     if (!cx && real_shared_context) cx=real_shared_context; // Only available after redraw.. :(
     else {
         // First render screws up unless we do this..
-        gx=cx = glXCreateNewContext(display,fbc[0],GLX_RGBA_TYPE, NULL, True);
+        gx=cx = glXCreateNewContext(display,*fbc,GLX_RGBA_TYPE, NULL, True);
     }
 
     //real_shared_context =
-
-
-
     //GLXContext cx=real_shared_context;
     if (cx == 0) {
         wxLogError(wxT("CX not availble"));
     }
 
-    //XFree(fbc);
+#if wxCHECK_VERSION(2,9,0)
+    XFree(fbc);
+#endif
     if (glXMakeCurrent(display,pBuffer,cx)!=True) {
         wxLogError(wxT("Couldn't make buffer current"));
     }
@@ -2029,7 +2026,26 @@ gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _lab
 gLineOverlayBar::~gLineOverlayBar()
 {
 }
-
+//nov = number of vertex
+//r = radius
+void Dot(int nov, float r)
+{
+	if (nov < 4) nov = 4;
+	if (nov > 360) nov = 360;
+	float angle = (360/nov)*(3.142159/180);
+	float x[360] = {0};
+	float y[360] = {0};
+	for (int i = 0; i < nov; i++){
+		x[i] = cosf(r*cosf(i*angle));
+		y[i] = sinf(r*sinf(i*angle));
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < nov; i++){
+			glVertex2f(x[i],y[i]);
+		}
+        glEnd();
+	}
+	//render to texture and map to GL_POINT_SPRITE
+}
 void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
@@ -2086,8 +2102,13 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
             }
             glEnd();
 
+            //glEnable(GL_POINT_SPRITE);
             // Draw the dots above
-            glPointSize(6);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            Dot(100,50);
+            glPointSize(5);
+            glEnable(GL_POINT_SMOOTH);
+            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             glBegin(GL_POINTS);
             for (int i=fi;i<li;i++) {
                 wxPoint2DDouble & rp=data->point[n][i];
@@ -2097,6 +2118,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 }
             }
             glEnd();
+            glDisable(GL_POINT_SMOOTH);
+            //glDisable(GL_POINT_SPRITE);
 
             // Text Labels & Spans
             for (int i=fi;i<li;i++) {
@@ -2114,9 +2137,9 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 }
             }
         } else if (lo_type==LOT_Dot) {
-            //glEnable(GL_POINT_SMOOTH);
             //glEnable(GL_BLEND);
-
+            glEnable(GL_POINT_SMOOTH);
+            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             glPointSize(4);
             glBegin(GL_POINTS);
             for (int i=fi;i<li;i++) {
@@ -2126,7 +2149,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 glVertex2f(x1,start_py+(height/2)+14);
             }
             glEnd();
-            //glDisable(GL_POINT_SMOOTH);
+            glDisable(GL_POINT_SMOOTH);
             //glDisable(GL_BLEND);
         }
     }

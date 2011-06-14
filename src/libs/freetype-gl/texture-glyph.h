@@ -23,7 +23,7 @@
 #ifndef __TEXTURE_GLYPH_H__
 #define __TEXTURE_GLYPH_H__
 
-#include <wchar.h>
+//#include <wchar.h>
 #include "text-markup.h"
 #include "vertex-buffer.h"
 
