@@ -43,7 +43,7 @@ wxColor * wxAQUA=&zwxAQUA;
 wxColor zwxPURPLE=wxColor(0xff,0x40,0xff,0xff);
 wxColor * wxPURPLE=&zwxPURPLE;
 
-wxColor zwxGREEN2=wxColor(0x40,0xff,0x40,0x5f);
+wxColor zwxGREEN2=wxColor(0x80,0xff,0x80,0x5f);
 wxColor * wxGREEN2=&zwxGREEN2;
 
 wxColor zwxLIGHT_YELLOW(228,228,168,255);
@@ -144,10 +144,11 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     }
     //glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_BLEND );
-    //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
     vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
 }
@@ -180,7 +181,7 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
 }
 void RoundedRectangle(int x,int y,int w,int h,int radius,const wxColor & color)
 {
-	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
@@ -204,7 +205,7 @@ void RoundedRectangle(int x,int y,int w,int h,int radius,const wxColor & color)
 			glVertex2f(x+radius+cos(i)*radius,y+radius+sin(i)*radius);
 	glEnd();
 
-	glEnable(GL_TEXTURE_2D);
+//	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
 }
 
@@ -326,6 +327,7 @@ BEGIN_EVENT_TABLE(gGraphWindow, wxWindow)
     EVT_LEFT_DCLICK (gGraphWindow::OnMouseLeftDClick)
     EVT_LEFT_UP     (gGraphWindow::OnMouseLeftRelease)
     EVT_RIGHT_DOWN  (gGraphWindow::OnMouseRightDown)
+    EVT_RIGHT_DCLICK (gGraphWindow::OnMouseRightDClick)
     EVT_RIGHT_UP    (gGraphWindow::OnMouseRightRelease)
     //EVT_MOUSEWHEEL (gGraphWindow::OnMouseWheel )
     //EVT_MIDDLE_DOWN (gGraphWindow::OnMouseRightDown)
@@ -469,11 +471,11 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
         (*g)->SetXBounds(rx1,rx2);
     }
 
-    if (m_block_zoom) {
-        Refresh(false); //Rect(m_mouseRBrect,false);
-    } else {
+    //if (m_block_zoom) {
+    //    Refresh(false); //Rect(m_mouseRBrect,false);
+    //} else {
         SetXBounds(rx1,rx2);
-    }
+    //}
 }
 void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
 {
@@ -484,8 +486,16 @@ void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
     if (x1>Width()) x1=Width();
     if (x2>Width()) x2=Width();
 
-    double min=min_x;
-    double max=max_x;
+    double min;
+    double max;
+    if (!m_block_zoom) {
+        min=min_x;
+        max=max_x;
+    } else {
+        min=rmin_x;
+        max=rmax_x;
+    }
+
     double q=max-min;
     rx1=min+(double(x1)/Width()) * q;
     rx2=min+(double(x2)/Width()) * q;
@@ -521,9 +531,9 @@ void gGraphWindow::MoveX(int i)
 /*    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(min,max);
     } */
-    if (!m_block_zoom) {
+    //if (!m_block_zoom) {
         SetXBounds(min,max);
-    }
+    //}
 }
 void gGraphWindow::ZoomX(double mult,int origin_px)
 {
@@ -557,13 +567,18 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
     SetXBounds(min,max);
 }
 gGraphWindow *LastGraphLDown=NULL;
+gGraphWindow *LastGraphRDown=NULL;
 
 void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 {
 //    static bool first=true;
     static wxRect last;
-    if (LastGraphLDown && (LastGraphLDown!=this)) {
+    if (m_mouseLDown && LastGraphLDown && (LastGraphLDown!=this)) {
         LastGraphLDown->OnMouseMove(event);
+        return;
+    }
+    if (m_mouseRDown && LastGraphRDown && (LastGraphRDown!=this)) {
+        LastGraphRDown->OnMouseMove(event);
         return;
     }
 
@@ -605,7 +620,11 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
             ex=rmaxx;
             qx=ex-dx;
         }
-        m_foobar_moved+=fabs((qx-minx))+fabs((m_mouseLClick.x-x))+fabs((m_mouseLClick.y-y));
+        if (m_mouseRDown)
+            m_foobar_moved+=fabs((qx-minx))+fabs((m_mouseRClick.x-x))+fabs((m_mouseRClick.y-y));
+        if (m_mouseLDown)
+            m_foobar_moved+=fabs((qx-minx))+fabs((m_mouseLClick.x-x))+fabs((m_mouseLClick.y-y));
+        //else
         SetXBounds(qx,ex);
         if (pref["LinkGraphMovement"]) {
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
@@ -645,6 +664,11 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
     }
     event.Skip();
 }
+void gGraphWindow::OnMouseRightDClick(wxMouseEvent &event)
+{
+   OnMouseRightDown(event);
+}
+
 void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 {
     if (event.GetY()<GetTopMargin()) // before top margin
@@ -655,19 +679,107 @@ void gGraphWindow::OnMouseRightDown(wxMouseEvent &event)
 
 
     // inside the margin area..
-    m_mouseRClick.x = event.GetX();
-    m_mouseRClick.y = event.GetY();
+
+    int y=event.GetY();
+    int x=event.GetX();
+    int width=m_scrX-GetRightMargin()-GetLeftMargin();
+    int height=m_scrY-GetBottomMargin()-GetTopMargin();
+    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
+    m_mouseRClick.x = x;
+    m_mouseRClick.y = y;
 
     m_mouseRClick_start=m_mouseRClick;
     m_mouseRDown=true;
+
+   // m_mouseRDown=true;
+    if (foobar && m_block_zoom && (((y>GetTopMargin())) && (y<m_scrY))) {
+        double rx=RealMaxX()-RealMinX();
+        double qx=double(width)/rx;
+        double minx=MinX()-RealMinX();
+        double maxx=MaxX()-RealMinX();;
+
+        int x1=(qx*minx);
+        int x2=(qx*maxx);  // length in pixels
+        int xw=x2-x1;
+
+        x1+=GetLeftMargin();
+        x2+=GetLeftMargin();
+        if ((x>x1) && (x<x2)) {
+            double xj=x-x1;
+            m_foobar_pos=(1.0/double(xw))*xj; // where along the foobar the user clicked.
+            m_foobar_moved=0;
+            m_drag_foobar=true;
+            event.Skip();
+            LastGraphRDown=this;
+            return;
+            //   wxLogMessage("Foobar Area Pushed");
+        } else {
+            m_drag_foobar=false;
+            m_mouseRDown=false;
+            x1=(rx/width)*(x-GetLeftMargin())+rmin_x;
+            double z=(max_x-min_x); // width of selected area
+            x1-=z/2.0;
+
+            if (x1<rmin_x) x1=rmin_x;
+            x2=x1+z;
+            if (x2>rmax_x) {
+                x2=rmax_x;
+                x1=x2-z;
+            }
+           // SetXBounds(x1,x2);
+            LastGraphRDown=this;
+        }
+    }
 
     event.Skip();
 }
 
 void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 {
+    if (LastGraphRDown && (LastGraphRDown!=this)) { // Same graph that initiated the click??
+        LastGraphRDown->OnMouseLeftRelease(event);  // Nope.. Give it the event.
+        return;
+    }
+    LastGraphRDown=NULL;
+    if (!m_mouseRDown) return;
     // Do this properly with real hotspots later..
+    int y=event.GetY();
+    int x=event.GetX();
+    int width=m_scrX-GetRightMargin()-GetLeftMargin();
+    int height=m_scrY-GetBottomMargin()-GetTopMargin();
+    wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
+    if (m_block_zoom) { // && hot1.Contains(x,y)) {
+
+
+        bool zoom_in=false;
+        bool did_draw=false;
+
+        // Finished Dragging the FooBar?
+        if (foobar && m_drag_foobar) {
+            if (m_foobar_moved<5) {
+                double zoom_fact=2;
+                if (event.ControlDown()) zoom_fact=5;
+                //if (!m_block_zoom) {
+                    ZoomX(zoom_fact,0);
+                    did_draw=true;
+                //}
+                m_foobar_moved=0;
+            }
+        }
+        m_drag_foobar=false;
+
+        if (did_draw) {
+            double min=MinX();
+            double max=MaxX();
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
+        }
+        event.Skip();
+
+        return;
+    }
 
     double zoom_fact=2;
     if (event.GetY()<GetTopMargin()) {
@@ -681,7 +793,7 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
       //  for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             //(*g)->ZoomX(zoom_fact,0);
         //}
-        if (!m_block_zoom) {
+        //if (!m_block_zoom) {
             ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
 
             double min=MinX();
@@ -689,7 +801,7 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 (*g)->SetXBounds(min,max);
             }
-        }
+        //}
 
     }/* else {
         double min=MinX();
@@ -721,7 +833,7 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
     m_mouseLClick.x = x;
     m_mouseLClick.y = y;
 
-    if (foobar && (y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20) ) {
+    if (foobar && ((y>(m_scrY-GetBottomMargin())) && (y<(m_scrY-GetBottomMargin())+20))) {
         double rx=RealMaxX()-RealMinX();
         double qx=double(width)/rx;
         double minx=MinX()-RealMinX();
@@ -740,10 +852,12 @@ void gGraphWindow::OnMouseLeftDown(wxMouseEvent &event)
             m_drag_foobar=true;
          //   wxLogMessage("Foobar Area Pushed");
         } else m_drag_foobar=false;
+        m_mouseLDown=true;
+        LastGraphLDown=this;
     } else if (hot1.Contains(x,y)) {
         m_mouseLDown=true;
+        LastGraphLDown=this;
     }
-    LastGraphLDown=this;
 
     event.Skip();
 
@@ -761,23 +875,26 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     int height=m_scrY-GetBottomMargin()-GetTopMargin();
     wxRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
-    bool zoom_in=false;
+    bool was_dragging_foo=false;
     bool did_draw=false;
 
     // Finished Dragging the FooBar?
     if (foobar && m_drag_foobar) {
+        m_drag_foobar=false;
+        was_dragging_foo=true;
         if (m_foobar_moved<5) {
             double zoom_fact=0.5;
             if (event.ControlDown()) zoom_fact=0.25;
-            if (!m_block_zoom) {
-                ZoomX(zoom_fact,0);
-                did_draw=true;
-            }
+            //if (!m_block_zoom) {
+            ZoomX(zoom_fact,0);
+            did_draw=true;
+            //}
             m_foobar_moved=0;
         }
+
     }
 
-    if (!did_draw && !zoom_in && m_mouseLDown) {
+    if (!did_draw && m_mouseLDown) {
         wxPoint release(event.GetX(), m_scrY-m_marginBottom);
         wxPoint press(m_mouseLClick.x, m_marginTop);
         int x1=m_mouseRBrect.x;
@@ -795,17 +912,32 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
 
 
     if (!did_draw && hot1.Contains(x,y) && !m_drag_foobar && m_mouseLDown) {
-        int xp=x;
-        if (zoom_in) xp=0;
-        double zoom_fact=0.5;
-        if (event.ControlDown()) zoom_fact=0.25;
-        //for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-        //    (*g)->ZoomX(zoom_fact,xp);
-        //}
-        if (!m_block_zoom) {
+        if (m_block_zoom) {
+            x-=GetLeftMargin();
+            double rx=rmax_x-rmin_x;
+            double mx=max_x-min_x;
+            if (mx<rx) {
+                double qx=(rx/width)*double(x);
+                qx+=rmin_x;
+                qx-=mx/2.0;
+                if (qx<rmin_x) {
+                    qx=rmin_x;
+                }
+                if (qx+mx>rmax_x) {
+                    qx=rmax_x-mx;
+                }
+                SetXBounds(qx,qx+mx);
+                did_draw=true;
+            }
+        } else {
+            int xp=x;
+            xp=0;
+            double zoom_fact=0.5;
+            if (event.ControlDown()) zoom_fact=0.25;
             ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.
             did_draw=true;
         }
+        //}
     }
 
     m_drag_foobar=false;
@@ -1242,9 +1374,20 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     float width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    double xx=w.max_x-w.min_x;
+    double minx;
+    double maxx;
+    if (w.BlockZoom()) {
+        minx=w.rmin_x;
+        maxx=w.rmax_x;
+    } else {
+        minx=w.min_x;
+        maxx=w.max_x;
+    }
+    double xx=maxx-minx;
 
     if (xx==0) return;
+
+    double xmult=width/xx;
 
     wxString fd;
     if (xx<1.5) {
@@ -1257,7 +1400,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     double max_ticks=(x+25.0)/width; // y+50 for rotated text
     double jj=1/max_ticks;
     double minor_tick=max_ticks*xx;
-    double st2=w.min_x; //double(int(frac*1440.0))/1440.0;
+    double st2=minx; //double(int(frac*1440.0))/1440.0;
     double st,q;
 
     bool show_seconds=false;
@@ -1293,7 +1436,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     //.Clip(start_px-10,start_py+height,width+20,w.GetBottomMargin());
     double st3=st;
-    while (st3>w.min_x) {
+    while (st3>minx) {
         st3-=min_tick/10.0;
     }
     st3+=min_tick/10.0;
@@ -1302,10 +1445,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     glLineWidth(0.25);
     glColor3f(0,0,0);
-    for (double i=st3; i<=w.max_x; i+=min_tick/10.0) {
-        if (i<w.min_x) continue;
+    for (double i=st3; i<=maxx; i+=min_tick/10.0) {
+        if (i<minx) continue;
         //px=x2p(w,i);
-        px=w.x2p(i); //w.GetLeftMargin()+((i - w.min_x) * xmult);
+        px=(i-minx)*xmult+w.GetLeftMargin(); //w.GetLeftMargin()+((i - w.min_x) * xmult);
         glBegin(GL_LINES);
         glVertex2f(px,py);
         glVertex2f(px,py-4);
@@ -1314,14 +1457,14 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     //st=st3;
 
-    while (st<w.min_x) {
+    while (st<minx) {
         st+=min_tick; //10.0;  // mucking with this changes the scrollyness of the ticker.
     }
 
     int hour,minute,second,millisecond;
     wxDateTime d;
 
-    for (double i=st; i<=w.max_x; i+=min_tick) { //600.0/86400.0) {
+    for (double i=st; i<=maxx; i+=min_tick) { //600.0/86400.0) {
         d.Set(i+2400000.5+.00000001+1); // JDN vs MJD vs Rounding errors
 
         if (show_time) {
@@ -1341,7 +1484,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             fd=d.Format(wxT("%d %b"));
         }
 
-        px=w.x2p(i);
+        px=(i-minx)*xmult+w.GetLeftMargin();
         glColor3f(0,0,0);
         glBegin(GL_LINES);
         glVertex2f(px,py);
@@ -1503,8 +1646,8 @@ void gGraphTitle::Plot(gGraphWindow & w,float scrx,float scry)
 }
 
 
-gFooBar::gFooBar(const wxColor * col1,const wxColor * col2)
-:gLayer(NULL)
+gFooBar::gFooBar(const wxColor * col1,const wxColor * col2,bool funkbar)
+:gLayer(NULL),m_funkbar(funkbar)
 {
     if (col1 && col2) {
         color.clear();
@@ -1526,7 +1669,7 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     int start_px=w.GetLeftMargin();
     int width=scrx - (w.GetLeftMargin() + w.GetRightMargin());
-   // int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
+    int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
 
     wxColor & col1=color[0];
     wxColor & col2=color[1];
@@ -1550,6 +1693,18 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f(start_px+px,h);
     glVertex2f(start_px+py,h);
     glEnd();
+
+    if ((m_funkbar)) { // && ((w.min_x>w.rmin_x) || (w.max_x<w.rmax_x))) {
+        glColor4f(.8,.8,.8,.6);
+        glEnable(GL_BLEND);
+        glBegin(GL_QUADS);
+        glVertex2f(start_px+px, w.GetBottomMargin());
+        glVertex2f(start_px+px, w.GetBottomMargin()+height);
+        glVertex2f(start_px+py, w.GetBottomMargin()+height);
+        glVertex2f(start_px+py, w.GetBottomMargin());
+        glEnd();
+        glDisable(GL_BLEND);
+    }
 }
 
 gCandleStick::gCandleStick(gPointData *d,wxOrientation o)
@@ -2054,7 +2209,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 wxPoint2DDouble & rp=data->point[n][i];
                 if (rp.m_x==rp.m_y) {
                     x1=w.x2p(rp.m_x);
-                    glVertex2f(x1,top);
+                    glVertex2f(floor(x1),floor(top));
                 }
             }
             glEnd();
@@ -2071,11 +2226,25 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                         GetTextExtent(label,x,y);
                         DrawText(label,x1-(x/2),start_py+height-30+y);
                    }
-                } else {
-                    float w1=x2-x1;
-                    RoundedRectangle(x1,start_py,w1,height,2,col);
                 }
             }
+            glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+            glBegin(GL_QUADS);
+            for (int i=fi;i<li;i++) {
+                wxPoint2DDouble & rp=data->point[n][i];
+                x1=w.x2p(rp.m_x);
+                x2=w.x2p(rp.m_y);
+                if (rp.m_x!=rp.m_y) {
+                    float w1=x2-x1;
+                    glVertex2f(x1, start_py);
+                    glVertex2f(x1, start_py+height);
+                    glVertex2f(x1+w1, start_py+height);
+                    glVertex2f(x1+w1, start_py);
+                    // Quad this up to improve performance.
+                    //RoundedRectangle(x1,start_py,w1,height,2,col);
+                }
+            }
+            glEnd();
         } else if (lo_type==LOT_Dot) {
             //glEnable(GL_BLEND);
             glEnable(GL_POINT_SMOOTH);
@@ -2086,7 +2255,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 wxPoint2DDouble & rp=data->point[n][i];
                 x1=w.x2p(rp.m_x);
 
-                glVertex2f(x1,start_py+(height/2)+14);
+                glVertex2f(floor(x1),floor(start_py+(height/2)+14));
             }
             glEnd();
             glDisable(GL_POINT_SMOOTH);
@@ -2112,13 +2281,26 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     if (!data) return;
     if (!data->IsReady()) return;
 
-    double xx=w.max_x-w.min_x;
+    double minx;
+    double maxx;
+
+    if (w.BlockZoom()) {
+        minx=w.rmin_x;
+        maxx=w.rmax_x;
+    } else {
+        minx=w.min_x;
+        maxx=w.max_x;
+    }
+
+    double xx=maxx-minx;
     if (xx<=0) return;
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+
+    double xmult=width/xx;
 
     static wxColor col1=wxColor(0xd0,0xff,0xd0,0xff);
     static wxColor col2=wxColor(0xff,0xff,0xff,0xff);
@@ -2177,14 +2359,17 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         //bool done=false;
         bool first=true;
         for (li=0;li<data->np[n];li++) { //,done==false
-            if (data->point[n][li].m_y < w.min_x) continue;
-            if (data->point[n][li].m_x > w.max_x) break;
+            if (data->point[n][li].m_y < minx) continue;
+            if (data->point[n][li].m_x > maxx) break;
             if (first) {
                 fi=li;
                 if (li>0)  li--;
                 first=false;
             }
         }
+        //double w=((Width()/xx)*(x-min_x));
+        //return w+GetLeftMargin();
+
         glLineWidth (1);
         glBegin(GL_LINES);
         float top=floor(line_top)+2;
@@ -2192,7 +2377,8 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         for (int i=fi;i<li;i++) {
             wxPoint2DDouble & rp=data->point[n][i];
             if (rp.m_x==rp.m_y) {
-                x1=w.x2p(rp.m_x);
+                //x1=w.x2p(rp.m_x);
+                x1=(rp.m_x-minx)*xmult+w.GetLeftMargin();
                 glVertex2f(x1,top);
                 glVertex2f(x1,bottom);
             }
@@ -2206,8 +2392,10 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         for (int i=fi;i<li;i++) {
             wxPoint2DDouble & rp=data->point[n][i];
             if (rp.m_x!=rp.m_y) {
-                x1=w.x2p(rp.m_x);
-                x2=w.x2p(rp.m_y);
+                x1=(rp.m_x-minx)*xmult+w.GetLeftMargin();
+                x2=(rp.m_y-minx)*xmult+w.GetLeftMargin();
+                //x1=w.x2p(rp.m_x);
+                //x2=w.x2p(rp.m_y);
                 w1=x2-x1;
                 glVertex2f(x1, top);
                 glVertex2f(x1, top+bottom);

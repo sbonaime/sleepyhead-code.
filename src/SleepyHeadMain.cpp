@@ -739,8 +739,8 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
 
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
+    SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis(wxBLACK));
-    SF->AddLayer(new gFooBar());
     SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
     SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
     SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
@@ -750,6 +750,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
     SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
     SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
+    SF->AddLayer(new gFooBar(wxGREEN,wxDARK_GREY,true));
 
 
     AddCPAPData(frw=new WaveData(CPAP_FlowRate));

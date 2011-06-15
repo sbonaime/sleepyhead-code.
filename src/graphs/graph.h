@@ -144,6 +144,7 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         virtual void OnMouseLeftDClick(wxMouseEvent &event);
         virtual void OnMouseLeftRelease (wxMouseEvent  &event);
         virtual void OnMouseRightDown(wxMouseEvent &event);
+        virtual void OnMouseRightDClick(wxMouseEvent &event);
         virtual void OnMouseRightRelease(wxMouseEvent &event);
 
         int GetScrX(void) const { return m_scrX; };
@@ -232,7 +233,7 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
 
         void SetBlockZoom(bool b) { m_block_zoom=b; };
         void SetBlockMove(bool b) { m_block_move=b; };
-
+        bool BlockZoom() { return m_block_zoom; };
         wxGLContext *gl_context;
         //FTFont *texfont;
 
@@ -405,11 +406,12 @@ class gYAxis:public gLayer
 class gFooBar:public gLayer
 {
     public:
-        gFooBar(const wxColor * color1=wxGREEN,const wxColor * color2=wxDARK_GREY);
+        gFooBar(const wxColor * color1=wxGREEN,const wxColor * color2=wxDARK_GREY,bool funkbar=false);
         virtual ~gFooBar();
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
         static const int Margin=15;
     protected:
+        bool m_funkbar;
 };
 
 
