@@ -19,7 +19,7 @@
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
-					<Add option="`wx-config --version=2.8 --libs gl,aui,xrc,qa,html,adv,core,net,base`" />
+					<Add option="`wx-config --version=2.8 --libs aui,xrc,qa,html,adv,gl,core,net,base`" />
 				</Linker>
 			</Target>
 			<Target title="Debug-wx29">
@@ -35,7 +35,7 @@
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
-					<Add option="`wx-config --version=2.9 --libs gl,aui,xrc,qa,html,adv,core,net,base`" />
+					<Add option="`wx-config --version=2.9 --libs aui,xrc,qa,html,adv,gl,core,net,base`" />
 				</Linker>
 			</Target>
 			<Target title="Release">
