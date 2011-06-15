@@ -8258,7 +8258,7 @@
 1307418393 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
 	<wx/app.h>
 
-1308105875 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
+1308112853 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
 	<wx/listbox.h>
 	<wx/treectrl.h>
 	"SleepyHeadApp.h"
@@ -8309,7 +8309,7 @@
 
 1308026543 D
 
-1308108253 /home/mark/projects/git/sleepyhead/src/version.h
+1308116368 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8341,7 +8341,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1308105937 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308113289 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8357,11 +8357,12 @@
 	<wx/filedlg.h>
 	<wx/fs_mem.h>
 	<wx/aui/aui.h>
+	<wx/event.h>
 	"SleepyHeadMain.h"
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308106542 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308109037 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	"freetype-gl/font-manager.h"
 	"freetype-gl/texture-font.h"
 	"graph.h"
@@ -11030,9 +11031,10 @@
 	"font-manager.h"
 	"text-markup.h"
 
-1308009126 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
+1308116368 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
 	<Glut/glut.h>
 	<GL/glew.h>
+	<GL/gl.h>
 	"texture-atlas.h"
 
 1308031681 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-font.cpp
@@ -11067,7 +11069,59 @@
 	<AGL/agl.h>
 	<GL/glx.h>
 
-1308106486 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
+1308108253 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
 	"gl_pbuffer.h"
 	<wx/utils.h>
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/treectrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/treebase.h"
+	"wx/textctrl.h"
+	"wx/generic/treectlg.h"
+	"wx/palmos/treectrl.h"
+	"wx/msw/treectrl.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+	"wx/generic/treectlg.h"
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/treebase.h
+	"wx/defs.h"
+	"wx/window.h"
+	"wx/event.h"
+	"wx/dynarray.h"
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/generic/treectlg.h
+	"wx/scrolwin.h"
+	"wx/pen.h"
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/msw/treectrl.h
+	"wx/textctrl.h"
+	"wx/dynarray.h"
+	"wx/treebase.h"
+	"wx/hashmap.h"
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/glcanvas.h
+	"wx/defs.h"
+	"wx/msw/glcanvas.h"
+	"wx/x11/glcanvas.h"
+	"wx/gtk/glcanvas.h"
+	"wx/gtk1/glcanvas.h"
+	"wx/x11/glcanvas.h"
+	"wx/mac/glcanvas.h"
+	"wx/cocoa/glcanvas.h"
+	"wx/app.h"
+
+1305166123 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/msw/glcanvas.h
+	"wx/palette.h"
+	"wx/scrolwin.h"
+	"wx/msw/wrapwin.h"
+	<GL/gl.h>
+
+1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/aboutdlg.h
+	"wx/defs.h"
+	"wx/app.h"
+	"wx/icon.h"
 

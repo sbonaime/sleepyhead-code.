@@ -29,6 +29,7 @@
 #include <wx/filedlg.h>
 #include <wx/fs_mem.h>
 #include <wx/aui/aui.h>
+#include <wx/event.h>
 
 #include "SleepyHeadMain.h"
 #include "sleeplib/profiles.h"
@@ -621,7 +622,6 @@ Daily::Daily(wxWindow *win,Profile *p)
     HTMLInfo->SetBorders(4);
     EventTree=new wxTreeCtrl(this);
 
-    this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
     Notebook->AddPage(HTMLInfo,wxT("Details"),false,wxNullBitmap);
     Notebook->AddPage(EventTree,wxT("Events"),false,wxNullBitmap);
     AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
@@ -809,7 +809,13 @@ Daily::Daily(wxWindow *win,Profile *p)
     //fgSizer->Add(TAP_IAP,1,wxEXPAND);
     //fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
+    this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
     this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+
+    //this->Connect(wxEVT_SCROLLWIN_THUMBTRACK
+    EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
+    this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
+
     Refresh();
     Update();
     ResetDate();
@@ -833,7 +839,17 @@ Daily::~Daily()
         delete teap_bmp;
     }
 
+    this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
+    //this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll));
+    //this->Disconnect(wxEVT_SCROLLWIN_THUMBRELEASE, EVT_SCROLLWIN_THUMBRELEASE(Daily::OnWinScroll));
+
+    this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
     this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
+}
+void Daily::OnWinScroll(wxScrollWinEvent &event)
+{
+    wxLogMessage(wxT("OnWinScroll"));
+    Update();
 }
 void Daily::OnClose(wxCloseEvent &event)
 {

@@ -369,14 +369,12 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
 
     }
 
-#if defined(__DARWIN__) && !wxCHECK_VERSION(2,9,0)
-    shared_context->SetCurrent(); // It's just plain broken. :(
-#else
-    shared_context->SetCurrent(*this);
+#if defined(__WXMSW__)
+    shared_context->SetCurrent(*this); // Windows needs this done now or it borks..
 #endif
 
 #if !defined(__WXMAC__) && defined (__UNIX__)
-    real_shared_context = glXGetCurrentContext();
+    real_shared_context = glXGetCurrentContext();  // Unix likes this, but can't really have it..
 #endif
 
     GraphInit(); // Font

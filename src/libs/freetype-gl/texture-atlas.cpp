@@ -22,10 +22,12 @@
  * ========================================================================= */
 #if defined(__APPLE__)
     #include <Glut/glut.h>
-#else
+#elif defined(__WINDOWS__)
     #define GL_GLEXT_PROTOTYPES
 
     #include <GL/glew.h>
+#else
+    #include <GL/gl.h>
 #endif
 //#include <stdlib.h>
 //#include <limits.h>

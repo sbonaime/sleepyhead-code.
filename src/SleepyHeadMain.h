@@ -67,7 +67,7 @@ protected:
     virtual void OnClose(wxCloseEvent &event);
     virtual void OnSelectSession( wxCommandEvent& event );
     virtual void OnEventTreeSelection( wxTreeEvent& event );
-
+    virtual void OnWinScroll(wxScrollWinEvent& event);
 	void AddCPAPData(gPointData *d) { CPAPData.push_back(d);  };
 	void AddOXIData(gPointData *d) { OXIData.push_back(d);  };
 	void UpdateCPAPGraphs(Day *day);
