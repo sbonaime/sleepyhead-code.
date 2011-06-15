@@ -81,6 +81,8 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
     wxString title=wxTheApp->GetAppName()+wxT(" v")+wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
     SetTitle(title);
 
+    logwindow=new wxLogWindow(this,wxT("Debug"),false,false); //new wxLogStderr(NULL); //
+
     profile=Profiles::Get();
     if (!profile) {
         wxLogError(wxT("Couldn't get active profile"));
@@ -127,6 +129,10 @@ SleepyHeadFrame::SleepyHeadFrame(wxFrame *frame)
 SleepyHeadFrame::~SleepyHeadFrame()
 {
     GraphDone();
+}
+void SleepyHeadFrame::OnViewLog(wxCommandEvent & event)
+{
+    logwindow->Show();
 }
 void SleepyHeadFrame::UpdateProfiles()
 {
@@ -322,8 +328,7 @@ void SleepyHeadFrame::OnImportSD(wxCommandEvent &event)
     int idx=main_auinotebook->GetPageIndex(daily);
     if (idx!=wxNOT_FOUND) {
         daily->ResetDate();
-        daily->RefreshData();
-        daily->Refresh();
+        //daily->RefreshData();
     }
     idx=main_auinotebook->GetPageIndex(summary);
     if (idx!=wxNOT_FOUND) {
@@ -339,8 +344,8 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
     if (idx==wxNOT_FOUND) {
         daily=new Daily(this,profile);
         main_auinotebook->AddPage(daily,_("Daily"),true,wxNullBitmap);
-        daily->RefreshData();
-        daily->Refresh();
+        //daily->ResetDate();
+        //daily->RefreshData();
 
     } else {
         main_auinotebook->SetSelection(idx);
@@ -804,7 +809,9 @@ Daily::Daily(wxWindow *win,Profile *p)
     //fgSizer->Add(TAP_IAP,1,wxEXPAND);
     //fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
-
+    this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+    Refresh();
+    Update();
     ResetDate();
 }
 Daily::~Daily()
@@ -853,6 +860,8 @@ void Daily::ResetDate()
 {
     foobar_datehack=false; // this exists due to a wxGTK bug.
   //  RefreshData();
+
+    Update();
     wxDateTime date;
     if (profile->LastDay().IsValid()) {
         date=profile->LastDay()+wxTimeSpan::Day();
@@ -864,8 +873,14 @@ void Daily::ResetDate()
     wxCalendarEvent ev;
     ev.SetDate(date);
     OnCalendarMonth(ev);
+    RefreshData();
 }
 void Daily::RefreshData()
+{
+    wxCommandEvent MyEvent( wxEVT_REFRESH_DAILY);
+    wxPostEvent(this, MyEvent);
+}
+void Daily::RefreshData(wxCommandEvent& event)
 {
     wxDateTime date=Calendar->GetDate();
     date.ResetTime();
@@ -1204,7 +1219,7 @@ void Daily::RefreshData()
     } */
     html+=wxT("</table></div></body></html>");
     HTMLInfo->SetPage(html);
-
+    Refresh();
 }
 void Daily::OnSelectSession( wxCommandEvent& event )
 {

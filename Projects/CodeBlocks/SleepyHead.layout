@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Mac" />
-	<File name="../../src/GUIFrame.cpp" open="1" top="1" tabpos="21">
+	<ActiveTarget name="Debug-wx29" />
+	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="21">
 		<Cursor position="287" topLine="0" />
 	</File>
 	<File name="../../src/GUIFrame.h" open="0" top="0" tabpos="9">
 		<Cursor position="3128" topLine="50" />
 	</File>
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="603" topLine="0" />
+		<Cursor position="396" topLine="0" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="8658" topLine="272" />
+		<Cursor position="1273" topLine="0" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="3">
 		<Cursor position="2630" topLine="75" />
@@ -19,47 +19,53 @@
 	<File name="../../src/graphs/freesans.c" open="0" top="0" tabpos="10">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="23140" topLine="830" />
+	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="48" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="8">
-		<Cursor position="507" topLine="0" />
+	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="1" tabpos="7">
+		<Cursor position="382" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/font-manager.cpp" open="1" top="0" tabpos="9">
+	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="4">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/font-manager.h" open="1" top="0" tabpos="14">
+	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="5">
+		<Cursor position="285" topLine="0" />
+	</File>
+	<File name="../../src/libs/freetype-gl/font-manager.cpp" open="0" top="0" tabpos="9">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="../../src/libs/freetype-gl/font-manager.h" open="0" top="0" tabpos="14">
 		<Cursor position="1954" topLine="5" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-atlas.cpp" open="1" top="0" tabpos="10">
-		<Cursor position="3243" topLine="80" />
+	<File name="../../src/libs/freetype-gl/texture-atlas.cpp" open="0" top="0" tabpos="10">
+		<Cursor position="3243" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-atlas.h" open="1" top="0" tabpos="13">
+	<File name="../../src/libs/freetype-gl/texture-atlas.h" open="0" top="0" tabpos="13">
 		<Cursor position="1661" topLine="21" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-font.cpp" open="1" top="0" tabpos="11">
+	<File name="../../src/libs/freetype-gl/texture-font.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="1196" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-font.h" open="1" top="0" tabpos="12">
+	<File name="../../src/libs/freetype-gl/texture-font.h" open="0" top="0" tabpos="12">
 		<Cursor position="1280" topLine="9" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-glyph.cpp" open="1" top="0" tabpos="15">
-		<Cursor position="1342" topLine="0" />
+	<File name="../../src/libs/freetype-gl/texture-glyph.cpp" open="0" top="0" tabpos="15">
+		<Cursor position="1268" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-glyph.h" open="1" top="0" tabpos="16">
+	<File name="../../src/libs/freetype-gl/texture-glyph.h" open="0" top="0" tabpos="16">
 		<Cursor position="1204" topLine="1" />
 	</File>
-	<File name="../../src/libs/freetype-gl/vector.cpp" open="1" top="0" tabpos="19">
+	<File name="../../src/libs/freetype-gl/vector.cpp" open="0" top="0" tabpos="19">
 		<Cursor position="1127" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/vector.h" open="1" top="0" tabpos="20">
+	<File name="../../src/libs/freetype-gl/vector.h" open="0" top="0" tabpos="20">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/vertex-buffer.cpp" open="1" top="0" tabpos="17">
+	<File name="../../src/libs/freetype-gl/vertex-buffer.cpp" open="0" top="0" tabpos="17">
 		<Cursor position="653" topLine="0" />
 	</File>
-	<File name="../../src/libs/freetype-gl/vertex-buffer.h" open="1" top="0" tabpos="18">
-		<Cursor position="1412" topLine="40" />
+	<File name="../../src/libs/freetype-gl/vertex-buffer.h" open="0" top="0" tabpos="18">
+		<Cursor position="1412" topLine="13" />
 	</File>
 	<File name="../../src/libs/sleeplib/binary_file.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="7148" topLine="269" />
@@ -73,10 +79,10 @@
 	<File name="../../src/libs/sleeplib/loader_plugins/zeo_loader.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="1662" topLine="27" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="0" tabpos="5">
+	<File name="../../src/libs/sleeplib/machine.cpp" open="0" top="0" tabpos="5">
 		<Cursor position="11760" topLine="264" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.h" open="1" top="0" tabpos="4">
+	<File name="../../src/libs/sleeplib/machine.h" open="0" top="0" tabpos="4">
 		<Cursor position="5047" topLine="119" />
 	</File>
 	<File name="../../src/libs/sleeplib/machine_loader.h" open="0" top="0" tabpos="14">
@@ -88,7 +94,7 @@
 	<File name="../../src/libs/sleeplib/profiles.h" open="0" top="0" tabpos="13">
 		<Cursor position="757" topLine="15" />
 	</File>
-	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="1" top="0" tabpos="6">
+	<File name="../../src/libs/sleeplib/prs1_loader.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="13397" topLine="309" />
 	</File>
 	<File name="../../src/libs/sleeplib/prs1_loader.h" open="0" top="0" tabpos="11">

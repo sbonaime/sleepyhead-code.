@@ -358,6 +358,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
         int *attribList = (int*) NULL;
         AGLPixelFormat aglpf=aglChoosePixelFormat(NULL,0,attribList);
         shared_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
+
         // Mmmmm.. Platform incosistency with wx..
 #else
         // Darwin joins the rest of the platforms as of wx2.9
@@ -365,6 +366,16 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
 #endif
 
     }
+
+#if defined(__DARWIN__) && !wxCHECK_VERSION(2,9,0)
+    shared_context->SetCurrent(); // It's just plain broken. :(
+#else
+    shared_context->SetCurrent(*this);
+#endif
+
+#if !defined(__WXMAC__) && defined (__UNIX__)
+    real_shared_context = glXGetCurrentContext();
+#endif
 
     GraphInit(); // Font
     //texfont=::texfont;
@@ -824,6 +835,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 #endif
         } catch(GLException e) {
             // Should log already if failed..
+            pbuffer=NULL;
             return NULL;
         }
     }
@@ -906,8 +918,6 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
     wxPaintDC dc(this);
 //#endif
 
-
-
 //#if wxCHECK_VERSION(2,9,0)
     //SetCurrent(*shared_context);
 //#else
@@ -915,7 +925,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 #if defined(__DARWIN__) && !wxCHECK_VERSION(2,9,0)
     shared_context->SetCurrent();
 #else
-    shared_context->SetCurrent(*this);   // A generic Context needs to be used.. Not one per graph window
+    shared_context->SetCurrent(*this);
 #endif
 
 //#endif

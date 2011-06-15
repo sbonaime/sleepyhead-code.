@@ -119,6 +119,8 @@
 		<Unit filename="../../src/graphs/freesans.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../src/graphs/gl_pbuffer.cpp" />
+		<Unit filename="../../src/graphs/gl_pbuffer.h" />
 		<Unit filename="../../src/graphs/graph.cpp" />
 		<Unit filename="../../src/graphs/graph.h" />
 		<Unit filename="../../src/libs/freetype-gl/font-manager.cpp" />

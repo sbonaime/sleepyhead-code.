@@ -41,7 +41,7 @@ bool SleepyHeadApp::OnInit()
 
     // It helps to allocate the logger on the heap.. This show work for all platforms now :)
 
-    wxLog *logger=new wxLogStderr(NULL); //new wxLogWindow(NULL,wxT("Debug"),true,false); //new wxLogStderr(NULL); //
+    wxLog *logger=new wxLogStderr(NULL);
     wxLog::SetActiveTarget(logger);
     //wxLog::SetLogLevel(wxLOG_Max);
 

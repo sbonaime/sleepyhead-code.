@@ -17,7 +17,7 @@ pBuffer::~pBuffer()
 
 #if defined(__WXMSW__)
 
-/*#if !defined(wglGetExtensionsStringARB)
+#if !defined(wglGetExtensionsStringARB)
     PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB = NULL;
 
     // WGL_ARB_pbuffer
@@ -31,7 +31,7 @@ pBuffer::~pBuffer()
     PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB = NULL;
     PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB = NULL;
     PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB      = NULL;
-#endif */
+#endif
 
 
 pBufferWGL::pBufferWGL(int width, int height)
@@ -61,7 +61,7 @@ pBufferWGL::pBufferWGL(int width, int height)
     m_width=j;
     m_height=j;
 
-    wxLogMessage(wxString::Format(wxT("Adjusting pBuffer width and height to %ix%i"),j,j));
+    wxLogDebug(wxString::Format(wxT("Adjusting pBuffer width and height to %ix%i"),j,j));
 
     // Create Texture
     glGenTextures(1, &m_texture);
@@ -93,7 +93,6 @@ pBufferWGL::pBufferWGL(int width, int height)
 
 	unsigned int numFormats = 0;
 
-    wxLogError(wxT("Foo2"));
     if (!wglChoosePixelFormatARB) {
         throw GLException(wxT("No wglChoosePixelFormatARB available"));
     }
@@ -133,8 +132,6 @@ pBufferWGL::pBufferWGL(int width, int height)
 	wglQueryPbufferARB(hBuffer, WGL_PBUFFER_HEIGHT_ARB, &h);
 
 	// compare w & h to m_width & m_height.
-
-	wxLogError(wxT("Foo7"));
 
     wglMakeCurrent(hdc,hGlRc);
 
@@ -186,6 +183,39 @@ bool pBufferWGL::InitGLStuff()
 	    wxLogError(wxT("Unable to get address for wglGetExtensionsStringARB!"));
 	    return false;
 	}
+
+	if (strstr(ext, "WGL_ARB_pbuffer" ) == NULL) {
+        wxLogError(wxT("WGL_ARB_pbuffer extension was not found"));
+        return false;
+	} else {
+		wglCreatePbufferARB    = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
+		wglGetPbufferDCARB     = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
+		wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)wglGetProcAddress("wglReleasePbufferDCARB");
+		wglDestroyPbufferARB   = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
+		wglQueryPbufferARB     = (PFNWGLQUERYPBUFFERARBPROC)wglGetProcAddress("wglQueryPbufferARB");
+
+		if (!wglCreatePbufferARB || !wglGetPbufferDCARB || !wglReleasePbufferDCARB ||
+			!wglDestroyPbufferARB || !wglQueryPbufferARB) {
+            wxLogError(wxT("One or more WGL_ARB_pbuffer functions were not found"));
+            return false;
+		}
+	}
+
+	// WGL_ARB_pixel_format
+	if (strstr( ext, "WGL_ARB_pixel_format" ) == NULL) {
+	    wxLogError(wxT("WGL_ARB_pixel_format extension was not found"));
+		return false;
+	} else {
+		wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+		wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
+		wglChoosePixelFormatARB      = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+
+		if (!wglGetExtensionsStringARB || !wglCreatePbufferARB || !wglGetPbufferDCARB) {
+			wxLogError(wxT("One or more WGL_ARB_pixel_format functions were not found"));
+			return false;
+		}
+	}
+
 
 	return true;
 

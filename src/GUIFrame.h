@@ -70,6 +70,7 @@ class GUIFrame : public wxFrame
 		virtual void OnFullscreen( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnScreenshot( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAbout( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnViewLog( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:

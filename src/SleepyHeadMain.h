@@ -50,6 +50,7 @@ protected:
     Day *dummyday;
 };
 
+const wxEventType wxEVT_REFRESH_DAILY = wxNewEventType();
 
 class Daily:public DailyPanel
 {
@@ -58,6 +59,7 @@ public:
     virtual ~Daily();
     void ResetDate();
     void RefreshData();
+    void RefreshData(wxCommandEvent& event);
   //  void SetProfile(Profile *p);
 protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );
@@ -108,6 +110,7 @@ class SleepyHeadFrame: public GUIFrame
         virtual void OnAbout(wxCommandEvent& event);
         virtual void OnScreenshot(wxCommandEvent& event);
         virtual void OnFullscreen(wxCommandEvent& event);
+        virtual void OnViewLog(wxCommandEvent& event);
         virtual void DoScreenshot(wxCommandEvent& event);
         virtual void OnImportSD(wxCommandEvent& event);
         virtual void OnViewMenuDaily(wxCommandEvent& event);
@@ -125,7 +128,7 @@ class SleepyHeadFrame: public GUIFrame
         Daily *daily;
         Machine *machine;
         Profile *profile;
-
+        wxLogWindow *logwindow;
         vector<Machine *>cpap_machines;
         int current_machine;
 

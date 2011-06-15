@@ -88,8 +88,12 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	
 	HelpMenu = new wxMenu();
 	wxMenuItem* HelpMenuAbout;
-	HelpMenuAbout = new wxMenuItem( HelpMenu, wxID_ABOUT, wxString( _("&About") ) , wxEmptyString, wxITEM_NORMAL );
+	HelpMenuAbout = new wxMenuItem( HelpMenu, wxID_ABOUT, wxString( _("&About") ) + wxT('\t') + wxT("F1"), wxEmptyString, wxITEM_NORMAL );
 	HelpMenu->Append( HelpMenuAbout );
+	
+	wxMenuItem* HelpMenuLog;
+	HelpMenuLog = new wxMenuItem( HelpMenu, wxID_ANY, wxString( _("&View Log") ) + wxT('\t') + wxT("Ctrl+L"), wxEmptyString, wxITEM_NORMAL );
+	HelpMenu->Append( HelpMenuLog );
 	
 	menubar->Append( HelpMenu, _("&Help") ); 
 	
@@ -117,6 +121,7 @@ GUIFrame::GUIFrame( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	this->Connect( ViewMenuFullscreen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Connect( ToolsMenuScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Connect( HelpMenuAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
+	this->Connect( HelpMenuLog->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewLog ) );
 }
 
 GUIFrame::~GUIFrame()
@@ -135,6 +140,7 @@ GUIFrame::~GUIFrame()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnFullscreen ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnScreenshot ) );
 	this->Disconnect( wxID_ABOUT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnAbout ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( GUIFrame::OnViewLog ) );
 	
 	m_mgr.UnInit();
 	
