@@ -442,6 +442,7 @@ void gGraphWindow::SetXBounds(double minx, double maxx)
     SetMinX(minx);
     SetMaxX(maxx);
     Refresh(false);
+    Update();
 }
 void gGraphWindow::ResetXBounds()
 {
@@ -456,13 +457,12 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
     double rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
-    bool changed=false;
     for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(rx1,rx2);
     }
 
     if (m_block_zoom) {
-        RefreshRect(m_mouseRBrect,false);
+        Refresh(false); //Rect(m_mouseRBrect,false);
     } else {
         SetXBounds(rx1,rx2);
     }
@@ -533,6 +533,7 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
 
     double q=span*mult;
     if (q>hardspan) q=hardspan;
+    if (q<hardspan/100) q=hardspan/100;
 
     min=min+(origin-(q/2.0));
     max=min+q;
@@ -661,27 +662,34 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
 
 
     double zoom_fact=2;
-    if (event.GetY()<GetTopMargin())
+    if (event.GetY()<GetTopMargin()) {
         return;
-    else if (event.GetY()>m_scrY-GetBottomMargin()) {
+    } else if (event.GetY()>m_scrY-GetBottomMargin()) {
         if (!foobar) return;
     }
 
     if (event.ControlDown()) zoom_fact=5.0;
     if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->ZoomX(zoom_fact,0);
-        }
+      //  for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            //(*g)->ZoomX(zoom_fact,0);
+        //}
         if (!m_block_zoom) {
             ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+
+            double min=MinX();
+            double max=MaxX();
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
         }
-    } else {
+
+    }/* else {
         double min=MinX();
         double max=MaxX();
         for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->SetXBounds(min,max);
         }
-    }
+    }*/
 
     m_mouseRDown=false;
 
@@ -755,9 +763,9 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
             if (event.ControlDown()) zoom_fact=0.25;
             if (!m_block_zoom) {
                 ZoomX(zoom_fact,0);
+                did_draw=true;
             }
             m_foobar_moved=0;
-            did_draw=true;
         }
     }
 
@@ -788,8 +796,8 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         //}
         if (!m_block_zoom) {
             ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.
+            did_draw=true;
         }
-        did_draw=true;
     }
 
     m_drag_foobar=false;
@@ -797,10 +805,9 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     m_mouseRBrect=wxRect(0, 0, 0, 0);
     m_mouseLDown=false;
     m_drag_foobar=false;
-    if (!did_draw) { // Should never happen.
+    if (!did_draw) {
         if (r!=m_mouseRBrect)
             Refresh(false);
-    //} else { // Update any linked graphs..
     } else {
         double min=MinX();
         double max=MaxX();
@@ -957,12 +964,12 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     SwapBuffers(); // Dump to screen.
 
-    //event.Skip();
+    event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {
     GetClientSize( &m_scrX,&m_scrY);
-    Refresh();
+    Refresh(false);
 }
 
 double gGraphWindow::MinX()
@@ -1186,7 +1193,9 @@ void gGraphWindow::DataChanged(gLayer *layer)
     } else {
         max_x=min_x=0;
     }
-    wxLogMessage(wxString::Format(wxT("%li"),t.GetMilliseconds().GetLo()));
+
+    long l=t.GetMilliseconds().GetLo();
+    wxLogMessage(wxString::Format(wxT("%li"),l));
     if ((t==wxTimeSpan::Milliseconds(0))  && (layer!=lastlayer)) {
         lastlayer=layer;
         return;
@@ -2028,7 +2037,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
             //glEnable(GL_POINT_SPRITE);
             // Draw the dots above
             //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            Dot(100,50);
+            //Dot(100,50);
             glPointSize(5);
             glEnable(GL_POINT_SMOOTH);
             glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -2144,8 +2153,8 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     // Draw text label
     float x,y;
-    //GetTextExtent(label,x,y);
-    //DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
+    GetTextExtent(label,x,y);
+    DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
     float x1,x2,w1;
 

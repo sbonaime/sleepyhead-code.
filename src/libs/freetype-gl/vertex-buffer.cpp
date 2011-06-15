@@ -107,11 +107,7 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::Upload()
 {
-    if (!glGenBuffers) {
-        printf("WHAT???");
-        assert(false);
-        return;
-    }
+    assert(glGenBuffers!=NULL); // glewInit must be called or this will die on windows
     if (!vertices_id) {
         glGenBuffers(1, &vertices_id);
     }
@@ -136,7 +132,8 @@ void VertexBuffer::Clear()
 
 void VertexBuffer::Render(GLenum mode, char *what)
 {
-    int i,j;
+    unsigned i;
+    int j;
 
     if (!vertices->size) {
         return;

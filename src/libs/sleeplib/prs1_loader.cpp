@@ -110,7 +110,9 @@ bool PRS1Loader::Open(wxString & path,Profile *profile)
     wxString filename;
     bool cont=dir.GetFirst(&filename);
 
-	if(!cont) wxLogDebug( wxT("PRS1Loader::Open - Failed to get first directory entry. '") + filename + wxT("'") );
+	if (!cont) {
+        wxLogDebug(wxT("PRS1Loader::Open - Failed to get first directory entry. '") + filename + wxT("'"));
+	}
 
     while (cont) {
         if ((filename[0]=='P') && (isdigit(filename[1])) && (isdigit(filename[2]))) {

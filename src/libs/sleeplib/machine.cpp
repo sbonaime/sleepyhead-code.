@@ -946,9 +946,9 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 void Session::AddEvent(Event * e)
 {
     events[e->code()].push_back(e);
-    if (s_last.IsValid())
+    if (s_last.IsValid()) {
         if (e->time()>s_last) s_last=e->time();
-    else {
+    } else {
         s_last=e->time();
     }
    //  wxLogMessage(e->time().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxString::Format(wxT(" %04i %02i "),e->code(),e->fields()));
