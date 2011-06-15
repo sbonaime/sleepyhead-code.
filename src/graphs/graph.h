@@ -264,6 +264,10 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         gLayer *gtitle;
         DECLARE_DYNAMIC_CLASS(gGraphWindow)
         DECLARE_EVENT_TABLE()
+
+        wxDateTime ti;
+        gLayer *lastlayer;
+
 };
 
 //Borrows a lot of concepts from wxmathplot

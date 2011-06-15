@@ -351,6 +351,8 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_drag_foobar=false;
     m_foobar_pos=0;
     m_foobar_moved=0;
+    lastlayer=NULL;
+    ti=wxDateTime::Now();
     gtitle=foobar=xaxis=yaxis=NULL;
 
     if (!shared_context) {
@@ -454,6 +456,7 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
     double rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
+    bool changed=false;
     for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(rx1,rx2);
     }
@@ -510,7 +513,9 @@ void gGraphWindow::MoveX(int i)
 /*    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(min,max);
     } */
-    if (!m_block_zoom) SetXBounds(min,max);
+    if (!m_block_zoom) {
+        SetXBounds(min,max);
+    }
 }
 void gGraphWindow::ZoomX(double mult,int origin_px)
 {
@@ -595,6 +600,7 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         SetXBounds(qx,ex);
         if (pref["LinkGraphMovement"]) {
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                assert((*g)!=this);
                 (*g)->SetXBounds(qx,ex);
             }
         }
@@ -623,7 +629,9 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
 
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;
-        RefreshRect(r.Union(m_mouseRBlast),true);
+
+        // TODO: Only the rect needs clearing, however OpenGL &  wx have reversed coordinate systems.
+        Refresh(false); //r.Union(m_mouseRBlast),true);
 
     }
     event.Skip();
@@ -791,14 +799,15 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
     m_drag_foobar=false;
     if (!did_draw) { // Should never happen.
         if (r!=m_mouseRBrect)
-            Refresh();
+            Refresh(false);
     //} else { // Update any linked graphs..
-    }
+    } else {
         double min=MinX();
         double max=MaxX();
         for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->SetXBounds(min,max);
         }
+    }
     //}
     LastGraphLDown=NULL;
     event.Skip();
@@ -948,7 +957,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     SwapBuffers(); // Dump to screen.
 
-    event.Skip();
+    //event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {
@@ -1167,15 +1176,30 @@ void gGraphWindow::SetMaxY(double v)
 
 void gGraphWindow::DataChanged(gLayer *layer)
 {
-    // This is possibly evil.. It needs to push one refresh event for all layers
+    wxDateTime n=wxDateTime::Now();
+    wxTimeSpan t=n-ti;
+    ti=n;
 
-    // Assmption currently is Refresh que does skip
     if (layer) {
         MinX(); MinY(); MaxX(); MaxY();
         RealMinX(); RealMinY(); RealMaxX(); RealMaxY();
     } else {
         max_x=min_x=0;
     }
+    wxLogMessage(wxString::Format(wxT("%li"),t.GetMilliseconds().GetLo()));
+    if ((t==wxTimeSpan::Milliseconds(0))  && (layer!=lastlayer)) {
+        lastlayer=layer;
+        return;
+    }
+
+    lastlayer=layer;
+    // This is possibly evil.. It needs to push one refresh event for all layers
+
+    // Assmption currently is Refresh que does skip
+
+
+
+
 
     Refresh(false);
 }
@@ -2104,17 +2128,24 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     // Alternating box color
     wxColor *barcol=&col2;
-    if (line_num & 1) {
+    if (line_num & 1)
         barcol=&col1;
-    }
 
-    // Draw box
-    RoundedRectangle(start_px,line_top,width-1,line_h+1,0,*barcol);
+
+
+    // Filled rectangle
+    glColor4ub(barcol->Red(),barcol->Green(),barcol->Blue(),barcol->Alpha());
+    glBegin(GL_QUADS);
+    glVertex2f(start_px, line_top);
+    glVertex2f(start_px, line_top+line_h);
+    glVertex2f(start_px+width, line_top+line_h);
+    glVertex2f(start_px+width, line_top);
+    glEnd();
 
     // Draw text label
     float x,y;
-    GetTextExtent(label,x,y);
-    DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
+    //GetTextExtent(label,x,y);
+    //DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
     float x1,x2,w1;
 
@@ -2125,7 +2156,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     glEnable(GL_SCISSOR_TEST);
 
     for (int n=0;n<data->VC();n++) {
-
+        if (!data->np[n]) continue;
         //bool done=false;
         bool first=true;
         for (li=0;li<data->np[n];li++) { //,done==false
@@ -2153,15 +2184,22 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
         bottom=floor(line_h)-4; // just the height
 
+        glBegin(GL_QUADS);
+
         for (int i=fi;i<li;i++) {
             wxPoint2DDouble & rp=data->point[n][i];
             if (rp.m_x!=rp.m_y) {
                 x1=w.x2p(rp.m_x);
                 x2=w.x2p(rp.m_y);
                 w1=x2-x1;
-                RoundedRectangle(x1,top,w1,bottom,0,color[0]);
+                glVertex2f(x1, top);
+                glVertex2f(x1, top+bottom);
+                glVertex2f(x1+w1, top+bottom);
+                glVertex2f(x1+w1, top);
             }
         }
+        glEnd();
+
     }
     glDisable(GL_SCISSOR_TEST);
 }

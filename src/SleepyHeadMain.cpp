@@ -696,19 +696,15 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
     //snore->ForceMinY(0);
     //snore->ForceMaxY(15);
-
     SNORE=new gGraphWindow(GraphWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     SNORE->AddLayer(new gXAxis(wxBLACK));
     SNORE->AddLayer(new gYAxis(wxBLACK));
     SNORE->AddLayer(new gFooBar());
     SNORE->AddLayer(new gLineChart(snore,wxDARK_GREY,4096,false,false,true));
 
-
-
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
-
     PRD=new gGraphWindow(GraphWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
     PRD->AddLayer(new gXAxis(wxBLACK));
     PRD->AddLayer(new gYAxis(wxBLACK));
@@ -717,8 +713,13 @@ Daily::Daily(wxWindow *win,Profile *p)
     PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
 
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
-    FRW=new gGraphWindow(GraphWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+
+    SF=new gGraphWindow(GraphWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
+  //  SF->SetMargins(10,15,20,80);
+
+ //  #endif
+
+    const int sfc=9;
 
     AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
     AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
@@ -730,6 +731,24 @@ Daily::Daily(wxWindow *win,Profile *p)
     AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
     AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
     AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
+
+    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
+    SF->AddLayer(new gXAxis(wxBLACK));
+    SF->AddLayer(new gFooBar());
+    SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
+    SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
+    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
+    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));
+    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,sfc));
+    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
+    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
+    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
+    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
+
+
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
+    FRW=new gGraphWindow(GraphWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+
 
     gLineChart *g;
     FRW->AddLayer(new gYAxis(wxBLACK));
@@ -748,8 +767,6 @@ Daily::Daily(wxWindow *win,Profile *p)
     FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
     FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
 
-    SF=new gGraphWindow(GraphWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
-  //  SF->SetMargins(10,15,20,80);
 
 //    #if defined(__UNIX__)
     FRW->LinkZoom(SF);
@@ -773,29 +790,13 @@ Daily::Daily(wxWindow *win,Profile *p)
     SNORE->LinkZoom(PRD);
     SNORE->LinkZoom(LEAK);
 
-  //  #endif
-
-    const int sfc=9;
-
-    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
-    SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
-    SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
-    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
-    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));
-    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,sfc));
-    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
-    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
-    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
-    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
-    SF->AddLayer(new gXAxis(wxBLACK));
-    SF->AddLayer(new gFooBar());
 
     gwSizer->Add(SF,1,wxEXPAND);
     gwSizer->Add(FRW,1,wxEXPAND);
     gwSizer->Add(PRD,1,wxEXPAND);
     gwSizer->Add(LEAK,1,wxEXPAND);
     gwSizer->Add(SNORE,1,wxEXPAND);
-    //gwSizer->Add(TAP,1,wxEXPAND);
+    gwSizer->Add(TAP,1,wxEXPAND);
     gwSizer->Add(PULSE,1,wxEXPAND);
     gwSizer->Add(SPO2,1,wxEXPAND);
 
@@ -813,11 +814,11 @@ Daily::Daily(wxWindow *win,Profile *p)
     this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
 
     //this->Connect(wxEVT_SCROLLWIN_THUMBTRACK
-    EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
-    this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
+    //EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
+    //this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
 
     Refresh();
-    Update();
+    //Update();
     ResetDate();
 }
 Daily::~Daily()
@@ -843,8 +844,8 @@ Daily::~Daily()
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll));
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBRELEASE, EVT_SCROLLWIN_THUMBRELEASE(Daily::OnWinScroll));
 
-    this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
-    this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
+    //this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+    //this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
 }
 void Daily::OnWinScroll(wxScrollWinEvent &event)
 {
