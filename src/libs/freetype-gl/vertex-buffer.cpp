@@ -107,6 +107,11 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::Upload()
 {
+    if (!glGenBuffers) {
+        printf("WHAT???");
+        assert(false);
+        return;
+    }
     if (!vertices_id) {
         glGenBuffers(1, &vertices_id);
     }

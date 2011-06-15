@@ -133,7 +133,7 @@ pBufferWGL::pBufferWGL(int width, int height)
 
 	// compare w & h to m_width & m_height.
 
-    wglMakeCurrent(hdc,hGlRc);
+ /*   wglMakeCurrent(hdc,hGlRc);
 
     glEnable(GL_TEXTURE_2D);		      // Enable Texture Mapping
 	glEnable(GL_BLEND);
@@ -146,7 +146,7 @@ pBufferWGL::pBufferWGL(int width, int height)
 	glLoadIdentity();
 
 	glClearColor(0,0,0,1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT); */
 
 
     // switch back to the screen context
@@ -174,7 +174,9 @@ void pBufferWGL::UseBuffer(bool b)
 
 bool pBufferWGL::InitGLStuff()
 {
-    wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+
+    // Technically don't need this wrangling with glewInit being actually called now....
+    //wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	char *ext = NULL;
 
 	if (wglGetExtensionsStringARB)
@@ -188,11 +190,11 @@ bool pBufferWGL::InitGLStuff()
         wxLogError(wxT("WGL_ARB_pbuffer extension was not found"));
         return false;
 	} else {
-		wglCreatePbufferARB    = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
-		wglGetPbufferDCARB     = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
-		wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)wglGetProcAddress("wglReleasePbufferDCARB");
-		wglDestroyPbufferARB   = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
-		wglQueryPbufferARB     = (PFNWGLQUERYPBUFFERARBPROC)wglGetProcAddress("wglQueryPbufferARB");
+		//wglCreatePbufferARB    = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
+		//wglGetPbufferDCARB     = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
+		//wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)wglGetProcAddress("wglReleasePbufferDCARB");
+		//wglDestroyPbufferARB   = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
+		//wglQueryPbufferARB     = (PFNWGLQUERYPBUFFERARBPROC)wglGetProcAddress("wglQueryPbufferARB");
 
 		if (!wglCreatePbufferARB || !wglGetPbufferDCARB || !wglReleasePbufferDCARB ||
 			!wglDestroyPbufferARB || !wglQueryPbufferARB) {

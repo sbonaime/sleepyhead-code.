@@ -64,6 +64,10 @@ TextMarkup *markup=NULL;
 // Must be called from a thread inside the application.
 void GraphInit()
 {
+    #if defined(__WXMSW__)
+    glewInit(); // Dont forget this nasty little sucker.. :)
+    #endif
+
     if (!gfont_init) {
         font_manager=new FontManager();
         vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
@@ -134,9 +138,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
-    #if !defined(__WXMSW__)
     vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
-    #endif
     glDisable(GL_BLEND);
 
 }
