@@ -8,7 +8,7 @@ License: LGPL
 #define GRAPH_H
 
 #include "gl_pbuffer.h"
-extern pBuffer *buffer;
+extern pBuffer *pbuffer;
 
 //#undef Yield
 

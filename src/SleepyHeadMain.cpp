@@ -350,6 +350,7 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 
     } else {
         main_auinotebook->SetSelection(idx);
+        daily->Refresh(true);
     }
 
 
@@ -366,6 +367,11 @@ void SleepyHeadFrame::OnViewMenuSummary( wxCommandEvent& event )
         summary->Refresh();
     } else {
         main_auinotebook->SetSelection(idx);
+        summary->Refresh(true);
+        summary->AHI->Refresh(true);
+        summary->USAGE->Refresh(true);
+        summary->LEAK->Refresh(true);
+        summary->PRESSURE->Refresh(true);
     }
 }
 
@@ -821,6 +827,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     //Update();
     ResetDate();
 }
+
 Daily::~Daily()
 {
     if (ahi_bmp) {
@@ -840,12 +847,12 @@ Daily::~Daily()
         delete teap_bmp;
     }
 
-    this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
+    //this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll));
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBRELEASE, EVT_SCROLLWIN_THUMBRELEASE(Daily::OnWinScroll));
 
-    //this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
-    //this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
+    this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+    this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
 }
 void Daily::OnWinScroll(wxScrollWinEvent &event)
 {

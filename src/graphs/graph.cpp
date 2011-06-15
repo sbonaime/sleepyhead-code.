@@ -65,13 +65,17 @@ TextMarkup *markup=NULL;
 void GraphInit()
 {
     #if defined(__WXMSW__)
-    glewInit(); // Dont forget this nasty little sucker.. :)
+    static bool glewinit_called=false;
+    if (!glewinit_called) {
+        glewInit(); // Dont forget this nasty little sucker.. :)
+        glewinit_called=true;
+    }
     #endif
 
     if (!gfont_init) {
         font_manager=new FontManager();
         vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
-        zfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),14);
+        zfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),12);
         markup=new TextMarkup();
 
         glBindTexture( GL_TEXTURE_2D, font_manager->m_atlas->m_texid );
@@ -102,6 +106,11 @@ void GraphDone()
         delete shared_context;
         shared_context=NULL;
     }
+   if (pbuffer) {
+        delete pbuffer;
+        pbuffer=NULL;
+    }
+
 }
 
 void GetTextExtent(wxString text, float & width, float & height, TextureFont *font=zfont)
@@ -135,7 +144,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     }
     //glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
     vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
@@ -162,10 +171,10 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
     //glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
 
     glPushMatrix();
-    glTranslatef(x,y,0);
+    glTranslatef(floor(x),floor(y),0);
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    DrawText2(text,-w/2.0,-h/2.0,font);
-    glTranslatef(-x,-y,0);
+    DrawText2(text,floor(-w/2.0),floor(-h/2.0),font);
+    glTranslatef(floor(-x),floor(-y),0);
     glPopMatrix();
 
 }
@@ -442,7 +451,6 @@ void gGraphWindow::SetXBounds(double minx, double maxx)
     SetMinX(minx);
     SetMaxX(maxx);
     Refresh(false);
-    Update();
 }
 void gGraphWindow::ResetXBounds()
 {
@@ -964,7 +972,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     SwapBuffers(); // Dump to screen.
 
-    event.Skip();
+    //event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {
@@ -1737,12 +1745,12 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         str=FormatX(data->point[0][i].m_x);
 
         GetTextExtent(str, textX, textY);
-        if (t2>textY) {
+        if (t2>textY+6) {
             int j=t1+((t2/2)-(textY/2));
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px-textX-8,j);
             } else {
-                DrawText(str,j,start_py-16-(textX/2),90,*wxBLACK);
+                DrawText(str,j,start_py-18-(textX/2),90,*wxBLACK);
             }
         } else draw_xticks_instead=true;
 
