@@ -20,6 +20,7 @@
 #include <AGL/agl.h>
 
 #elif defined(__UNIX__)
+#include <GL/gl.h>
 #include <GL/glx.h>
 #endif
 

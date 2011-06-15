@@ -890,7 +890,8 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
             did_draw=true;
             //}
             m_foobar_moved=0;
-        }
+        } else m_mouseLDown=false;
+
 
     }
 
