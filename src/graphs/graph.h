@@ -7,30 +7,14 @@ License: LGPL
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#define GL_GLEXT_PROTOTYPES
-//#define _UNICODE 1
+#include "gl_pbuffer.h"
+extern pBuffer *buffer;
 
-#ifdef __DARWIN__
-#include <OpenGL/gl.h>
-#include <AGL/agl.h>
-#elif defined(__WXMSW__)
+//#undef Yield
 
-#define GLEW_STATIC
-#define WGL_WGLEXT_PROTOTYPES
-//#include <windows.h>
-#include <GL/glew.h>
-#include <GL/wglew.h>
-//#include <GL/freeglut_std.h>
-//#include <GL/freeglut_ext.h>
-// windows gl extensions
-
-#endif
-
-#undef Yield
-
-#include <wx/dcgraph.h>
+//#include <wx/dcgraph.h>
 #include <wx/glcanvas.h>
-//#include <FTGL/ftgl.h>
+#include <wx/geometry.h>
 
 #include <sleeplib/machine.h>
 #include <list>
@@ -143,7 +127,6 @@ public:
 
 
 extern wxGLContext *shared_context;
-
 class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
 {
     public:

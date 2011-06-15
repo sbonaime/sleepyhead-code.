@@ -5,30 +5,33 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: LGPL
 */
 
+#include "freetype-gl/font-manager.h"
+#include "freetype-gl/texture-font.h"
 
+#include "graph.h"
 
-#include <wx/dcbuffer.h>
 //#include <wx/glcanvas.h>
 
 #include <wx/settings.h>
 #include <wx/graphics.h>
 #include <wx/image.h>
+#include <wx/bitmap.h>
+#include <wx/dcbuffer.h>
+
 #include <wx/log.h>
 #include <math.h>
-
-
 
 #include "sleeplib/profiles.h"
 
 #include "freesans.c"
-#include "graph.h"
-#include "freetype-gl/font-manager.h"
-#include "freetype-gl/texture-font.h"
+
+//#include <wx/dcbuffer.h>
 
 #if !wxUSE_GLCANVAS
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the wx library"
 #endif
 
+extern pBuffer *buffer;
 
 #if !wxCHECK_VERSION(2,9,0)
 wxColor zwxYELLOW=wxColor(0xb0,0xb0,0x40,0xff);
@@ -52,8 +55,6 @@ wxColor zwxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
 wxColor *wxDARK_GREY=&zwxDARK_GREY;
 
 bool gfont_init=false;
-
-wxGLContext *shared_context=NULL;
 
 FontManager *font_manager;
 TextureFont *zfont=NULL;
@@ -104,7 +105,7 @@ void GetTextExtent(wxString text, float & width, float & height, TextureFont *fo
     TextureGlyph *glyph;
     height=width=0;
 
-    for (int i=0;i<text.Length();i++) {
+    for (unsigned i=0;i<text.Length();i++) {
         glyph=font->GetGlyph((wchar_t)text[i]);
         if (!height) height=glyph->m_height; // > height) height=glyph->m_height;
         width+=glyph->m_advance_x;
@@ -123,7 +124,7 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
 
     vbuffer->Clear();
     glyph->AddToVertexBuffer(vbuffer, markup, &pen);
-    for (int j=1; j<text.Length(); ++j) {
+    for (unsigned j=1; j<text.Length(); ++j) {
         glyph=font->GetGlyph(text[j]);
         pen.x += glyph->GetKerning(text[j-1]);
         glyph->AddToVertexBuffer(vbuffer, markup, &pen);
@@ -133,7 +134,9 @@ void DrawText2(wxString text, float x, float y,TextureFont *font)
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
     glColor4f(1,1,1,1);
+    #if !defined(__WXMSW__)
     vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
+    #endif
     glDisable(GL_BLEND);
 
 }
@@ -804,196 +807,33 @@ void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
     m_marginRight=right;
 }
 
-#if !defined(__WXMAC__) && defined (__UNIX__)
-GLXContext real_shared_context=0;
+wxGLContext *shared_context=NULL;
 
-#endif
-
-
-
+pBuffer *pbuffer=NULL;
 
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
-
-    //pBuffers are evil.. but I need to use them here.
+    if (!pbuffer) {
+        try {
 #if defined(__WXMSW__)
-
-    int mv=MAX(width,height);
-    // convert to nearest binary power of two.
-
-    int pbwidth=1024;
-    int pbheight=pbwidth;  // Windows sucks ass.
-
-    unsigned int texture=0;
-
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, 4,  pbwidth, pbheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    HDC saveHdc = wglGetCurrentDC();
-    HGLRC saveHglrc = wglGetCurrentContext();
-
-	wxLogError(wxT("Foo1"));
-
-    int pixelFormats;
-	int intAttrs[32] ={
-        WGL_RED_BITS_ARB,8,
-        WGL_GREEN_BITS_ARB,8,
-        WGL_BLUE_BITS_ARB,8,
-        WGL_ALPHA_BITS_ARB,8,
-        WGL_DRAW_TO_PBUFFER_ARB, GL_TRUE,
-        WGL_BIND_TO_TEXTURE_RGBA_ARB, GL_TRUE,
-        WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
-        WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
-        WGL_DOUBLE_BUFFER_ARB,GL_FALSE,
-        0
-    }; // 0 terminate the list
-
-	unsigned int numFormats = 0;
-
-    wxLogError(wxT("Foo2"));
-	if (!wglChoosePixelFormatARB( saveHdc, intAttrs, NULL, 1, &pixelFormats, &numFormats)) {
-
-	    wxLogError(wxT("WGL: pbuffer creation error: Couldn't find a suitable pixel format.\n"));
-		return &wxNullBitmap;
-	}
-	wxLogError(wxT("Foo3"));
-    if (numFormats==0) {
-		return &wxNullBitmap;
-    }
-	wxLogError(wxT("Foo3"));
-
-    const int attributes[]= {
-        WGL_TEXTURE_FORMAT_ARB,
-        WGL_TEXTURE_RGBA_ARB, // p-buffer will have RBA texture format
-        WGL_TEXTURE_TARGET_ARB,
-        WGL_TEXTURE_2D_ARB,
-        0
-    }; // Of texture target will be GL_TEXTURE_2D
-
-    //wglCreatePbufferARB(hDC, pixelFormats, pbwidth, pbheight, attributes);
-	HPBUFFERARB hBuffer=wglCreatePbufferARB(saveHdc, pixelFormats, pbwidth, pbheight, attributes );
-	wxLogError(wxT("Foo4"));
-
-    HDC hdc=wglGetPbufferDCARB( hBuffer );
-	wxLogError(wxT("Foo5"));
-
-    HGLRC hGlRc=wglCreateContext(hdc);
-	wxLogError(wxT("Foo6"));
-
-
-        //printf("PBuffer size: %d x %d\n",w,h);
-    int w,h;
-	wglQueryPbufferARB(hBuffer, WGL_PBUFFER_WIDTH_ARB, &w);
-	wglQueryPbufferARB(hBuffer, WGL_PBUFFER_HEIGHT_ARB, &h);
-	wxLogError(wxT("Foo7"));
-
-    wglMakeCurrent(hdc,hGlRc);
-
-    glEnable(GL_TEXTURE_2D);		      // Enable Texture Mapping
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); // enable transparency
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width, height, 0, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glClearColor(0,0,0,1);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-
-    // switch back to the screen context
-	wglMakeCurrent(saveHdc, saveHglrc);
-
-    // So we can share the main context
-    wglShareLists(saveHglrc, hGlRc);
-
-    // Jump back to pBuffer for rendering
-    wglMakeCurrent(hdc, hGlRc);
-
-
-// WGL pBuffer Implementation
-    //return &wxNullBitmap;
+            pbuffer=new pBufferWGL(width,height);
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
-    return &wxNullBitmap;
-
+            pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
-
-    int attrib[]={
-        GLX_PBUFFER_WIDTH,width,
-        GLX_PBUFFER_HEIGHT,height,
-        GLX_PRESERVED_CONTENTS, True
-    };
-
-    int ret;
-    Display *display=NULL;
-    GLXFBConfig *fbc=NULL;
-
-#if wxCHECK_VERSION(2,9,0)
-    display=wxGetX11Display();
-    fbc = GetGLXFBConfig();
-    fbc = &fbc[0];
-    GLXPbuffer pBuffer=glXCreatePbuffer(display, fbc[0], attrib );
-
-#else
-    display=(Display *)wxGetDisplay();
-    int doubleBufferAttributess[] = {
-        GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
-        GLX_RENDER_TYPE, GLX_RGBA_BIT,
-        GLX_DOUBLEBUFFER, True,
-        GLX_RED_SIZE, 8,
-        GLX_GREEN_SIZE, 8,
-        GLX_BLUE_SIZE, 8,
-        None
-    };
-    fbc=glXChooseFBConfig(display, DefaultScreen(display), doubleBufferAttributess, &ret);
-    GLXPbuffer pBuffer=glXCreatePbuffer(display, *fbc, attrib );
-
-    // TODO:
-    // have to setup a GLXFBConfig structure for wx2.8 because wx2.8 is crap.
-    // already done this crap but deleted it.. arggghh.....
- //   return &wxNullBitmap;
+            pbuffer=new pBufferGLX(width,height);
 #endif
-
-    if (pBuffer == 0) {
-        wxLogError(wxT("pBuffer not availble"));
+        } catch(GLException e) {
+            // Should log already if failed..
+            return NULL;
+        }
     }
 
-    GLXContext cx=0,gx=0;
-
-    // This function is not in WX sourcecode yet :(
-    //cx=shared_context->GetGLXContext();
-
-    if (!cx && real_shared_context) cx=real_shared_context; // Only available after redraw.. :(
-    else {
-        // First render screws up unless we do this..
-        gx=cx = glXCreateNewContext(display,*fbc,GLX_RGBA_TYPE, NULL, True);
+    if (pbuffer) {
+        pbuffer->UseBuffer(true);
     }
+    // Move this bitmap code to pBuffer
 
-    //real_shared_context =
-    //GLXContext cx=real_shared_context;
-    if (cx == 0) {
-        wxLogError(wxT("CX not availble"));
-    }
-
-#if !wxCHECK_VERSION(2,9,0)
-    XFree(fbc);
-#endif
-
-    if (glXMakeCurrent(display,pBuffer,cx)!=True) {
-        wxLogError(wxT("Couldn't make buffer current"));
-    }
-
-#endif
-
-   // glClearColor(1,1,0,1);
+    // glClearColor(1,1,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Can't use font's in multiple contexts
@@ -1001,30 +841,25 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
     void* pixels = malloc(3 * width * height); // must use malloc
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
     //glDrawBuffer(GL_BACK_LEFT);
     //glReadBuffer(GL_FRONT);
     glReadBuffer( GL_BACK_LEFT );
+
     glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
     // Put the image into a wxImage
     wxImage image(width, height, true);
     image.SetData((unsigned char*) pixels);
     image = image.Mirror(false);
+    glFlush();
 
     wxBitmap *bmp=new wxBitmap(image);
 
-    glFlush();
 
-#if defined(__WXMSW__)
-    wglDeleteContext(hGlRc);
-    wglReleasePbufferDCARB(hBuffer, hdc);
-    wglDestroyPbufferARB(hBuffer);
-#elif defined(__DARWIN__) || defined (__WXMAC__)
-
-#elif !defined(__WXMAC__) && defined (__UNIX__)  // Linux
-    if (gx) glXDestroyContext(display,gx); // Destroy the context only if we created it..
-    glXDestroyPbuffer(display, pBuffer);
-#endif
+    if (pbuffer) {
+        //delete pbuffer;
+    }
 
     return bmp;
 }
@@ -1058,17 +893,20 @@ void gGraphWindow::Render(float scrX, float scrY)
       (*l)->Plot(*this,scrX,scrY);
     }
 
-//    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void gGraphWindow::OnPaint(wxPaintEvent& event)
 {
     // Shouldn't need this anymore as opengl double buffers anyway.
+
 //#if defined(__WXMSW__)
 //    wxAutoBufferedPaintDC dc(this);
 //#else
     wxPaintDC dc(this);
 //#endif
+
+
 
 //#if wxCHECK_VERSION(2,9,0)
     //SetCurrent(*shared_context);
@@ -1092,13 +930,13 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width>0)
-
+            glDisable(GL_DEPTH_TEST);
             RoundedRectangle(m_mouseRBrect.x,m_mouseRBrect.y,m_mouseRBrect.width-1,m_mouseRBrect.height,5,*wxDARK_GREY);
+            glEnable(GL_DEPTH_TEST);
     }
 
-    glEnable(GL_DEPTH_TEST);
 
-    SwapBuffers();
+    SwapBuffers(); // Dump to screen.
 
     event.Skip();
 }
@@ -1348,10 +1186,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 {
     float px,py;
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetTopMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+    //int start_px=w.GetLeftMargin();
+    //int start_py=w.GetTopMargin();
+    float width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+//    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     double xx=w.max_x-w.min_x;
 
@@ -1637,7 +1475,7 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     int start_px=w.GetLeftMargin();
     int width=scrx - (w.GetLeftMargin() + w.GetRightMargin());
-    int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
+   // int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
 
     wxColor & col1=color[0];
     wxColor & col2=color[1];
@@ -2103,7 +1941,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     if (!data) return;
     if (!data->IsReady()) return;
 
-    int start_px=w.GetLeftMargin();
+    //int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
@@ -2122,7 +1960,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
 
-        bool done=false;
+       // bool done=false;
         bool first=true;
         int fi=0,li;
         for (li=0;li<data->np[n];li++) {
@@ -2278,7 +2116,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     for (int n=0;n<data->VC();n++) {
 
-        bool done=false;
+        //bool done=false;
         bool first=true;
         for (li=0;li<data->np[n];li++) { //,done==false
             if (data->point[n][li].m_y < w.min_x) continue;

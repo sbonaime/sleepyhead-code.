@@ -8240,7 +8240,7 @@
 	<wx/datectrl.h>
 	<wx/dateevt.h>
 
-1308079880 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
+1308095988 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadApp.cpp
 	"wx_pch.h"
 	<iostream>
 	<wx/log.h>
@@ -8300,19 +8300,16 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1308044762 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
-	<OpenGL/gl.h>
-	<AGL/agl.h>
-	<GL/glew.h>
-	<GL/wglew.h>
-	<wx/dcgraph.h>
+1308097501 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+	"gl_pbuffer.h"
 	<wx/glcanvas.h>
+	<wx/geometry.h>
 	<sleeplib/machine.h>
 	<list>
 
 1308026543 D
 
-1308081125 /home/mark/projects/git/sleepyhead/src/version.h
+1308097644 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8344,7 +8341,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1308031975 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308088585 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8364,18 +8361,19 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308080954 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
-	<wx/dcbuffer.h>
+1308097644 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+	"freetype-gl/font-manager.h"
+	"freetype-gl/texture-font.h"
+	"graph.h"
 	<wx/settings.h>
 	<wx/graphics.h>
 	<wx/image.h>
+	<wx/bitmap.h>
+	<wx/dcbuffer.h>
 	<wx/log.h>
 	<math.h>
 	"sleeplib/profiles.h"
 	"freesans.c"
-	"graph.h"
-	"freetype-gl/font-manager.h"
-	"freetype-gl/texture-font.h"
 
 1308010945 >
 
@@ -11060,4 +11058,16 @@
 	<stdlib.h>
 	<string.h>
 	"freetype-gl/vector.h"
+
+1308097228 /home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.h
+	<wx/log.h>
+	<GL/glew.h>
+	<GL/wglew.h>
+	<OpenGL/gl.h>
+	<AGL/agl.h>
+	<GL/glx.h>
+
+1308097442 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
+	"gl_pbuffer.h"
+	<wx/utils.h>
 
