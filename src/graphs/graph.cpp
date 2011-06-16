@@ -2041,6 +2041,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     bool done,first;
     double x0,x1,xL;
 
+    int visible_points=0;
+
     for (int n=0;n<data->VC();n++) { // for each segment
 
         int siz=data->np[n];
@@ -2084,7 +2086,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         double ZQ=ZR/XR;
         double ZW=ZR/(width*ZQ);
         const int num_averages=15;  // Number of samples taken from samples per pixel for better min/max values
-
+        visible_points+=ZR*ZQ;
         if (accel && n>0) {
             sam=1;
         }
@@ -2237,15 +2239,17 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 #endif
             }
         }
-        wxString b;
-        int j=vertcnt/2;
-        if (accel) j/=2;
-        b << siz << wxT(" ") << (idx) << wxT(" ") << (siz/sam) << wxT(" ") << j;
-        DrawText(b,scrx-190,scry-w.GetTopMargin()-14);
-
     }
 
 
+
+    wxString b;
+    int j=vertcnt/2;
+    if (accel) j/=2;
+    b << visible_points << wxT(" ") << (sam) << wxT(" ") << num_points << wxT(" ") << j;
+    float x,y;
+    GetTextExtent(b,x,y);
+    DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetTopMargin()-10);
 
     glColor4ub(col.Red(),col.Green(),col.Blue(),255);
 
@@ -2260,6 +2264,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
     }
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
@@ -2330,7 +2335,6 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     static GLshort pointarray[maxverts+8];
     int quadcnt=0;
     static GLshort quadarray[maxverts+8];
-
 
     float bottom=start_py+25, top=start_py+height-25;
     wxColor & col=color[0];
