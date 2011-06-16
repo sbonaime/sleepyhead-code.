@@ -2250,8 +2250,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     glColor4ub(col.Red(),col.Green(),col.Blue(),255);
 
     // Crop to inside the margins.
-    //glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    //glEnable(GL_SCISSOR_TEST);
+    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
+    glEnable(GL_SCISSOR_TEST);
 
     glLineWidth (1);
     bool antialias=pref["UseAntiAliasing"];
@@ -2269,7 +2269,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
     }
-    //glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_SCISSOR_TEST);
 }
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
