@@ -17,7 +17,7 @@ License: LGPL
 #include <wx/image.h>
 #include <wx/bitmap.h>
 #include <wx/dcbuffer.h>
-
+#include <wx/msgdlg.h>
 #include <wx/log.h>
 #include <math.h>
 
@@ -81,13 +81,13 @@ void GraphInit()
         wxLogDebug(wxT("GLInfo: ")+glvendor+wxT(" ")+glrenderer+wxT(" ")+glversion);
 
         // Despite the stupid warning, this does NOT always evaluate as true. Too lazy to put it in #ifdefs
-        if (!glGenBuffers) {
-            wxLogError(wxT("Sorry, your computers graphics card drivers are too old to run this program.\n")+glvendor+wxT(" may have an update."));
-            abort();
-        }
+        /*if (!glGenBuffers) {
+            wxMessageBox(wxT("Sorry, your computers graphics card drivers are too old to run this program.\n")+glvendor+wxT(" may have an update.\n")+glrenderer+wxT("\n")+glversion,_("Welcome to..."),wxOK,NULL);
+            exit(-1);
+        } */
 
         font_manager=new FontManager();
-        vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
+        //vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
         zfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),12);
         bigfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),32);
         markup=new TextMarkup();
@@ -112,7 +112,7 @@ void GraphDone()
 {
     if (gfont_init) {
         delete font_manager;
-        delete vbuffer;
+      //  delete vbuffer;
         delete markup;
         gfont_init=false;
     }
@@ -147,21 +147,26 @@ void DrawText2(wxString text, float x, float y,TextureFont *font=zfont) // The a
     TextureGlyph *glyph;
     glyph=font->GetGlyph((wchar_t)text[0]);
     if (!glyph) return;
-    assert(vbuffer!=NULL);
+    //assert(vbuffer!=NULL);
 
-    vbuffer->Clear();
-    glyph->AddToVertexBuffer(vbuffer, markup, &pen);
-    for (unsigned j=1; j<text.Length(); ++j) {
-        glyph=font->GetGlyph(text[j]);
-        pen.x += glyph->GetKerning(text[j-1]);
-        glyph->AddToVertexBuffer(vbuffer, markup, &pen);
-    }
-    //glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    //vbuffer->Clear();
+
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glEnable( GL_TEXTURE_2D );
-    glColor4f(1,1,1,1);
-    vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
+    glColor4f(0,0,0,1);
+
+    glyph->Render(markup,&pen);
+//    glyph->AddToVertexBuffer(vbuffer, markup, &pen);
+    for (unsigned j=1; j<text.Length(); ++j) {
+        glyph=font->GetGlyph(text[j]);
+        pen.x += glyph->GetKerning(text[j-1]);
+        glyph->Render(markup,&pen);
+
+  //      glyph->AddToVertexBuffer(vbuffer, markup, &pen);
+    }
+    //glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    //vbuffer->Render(GL_TRIANGLES, (char *)"vtc" );
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
@@ -196,6 +201,7 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
 void RoundedRectangle(int x,int y,int w,int h,int radius,const wxColor & color)
 {
 	//glDisable(GL_TEXTURE_2D);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
@@ -371,7 +377,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
     SetMargins(5, 15, 0, 0);
-    m_block_move=false;
+    //m_block_move=false;
     m_block_zoom=false;
     m_drag_foobar=false;
     m_foobar_pos=0;
@@ -409,6 +415,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     if (!title.IsEmpty()) {
         AddLayer(new gGraphTitle(title,wxVERTICAL));
     }
+    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
 }
 gGraphWindow::~gGraphWindow()
@@ -1814,15 +1821,23 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
 
         glBegin(GL_QUADS);
         glColor4ub(col1.Red(),col1.Green(),col1.Blue(),col1.Alpha());
-        glVertex2f(rect.x, rect.y+height);
+        glVertex2f(rect.x+1, rect.y+height);
         glVertex2f(rect.x+rect.width, rect.y+height);
 
         glColor4ub(col2.Red(),col2.Green(),col2.Blue(),col2.Alpha());
-        glVertex2f(rect.x+rect.width, rect.y);
-        glVertex2f(rect.x, rect.y);
+        glVertex2f(rect.x+rect.width, rect.y+1);
+        glVertex2f(rect.x+1, rect.y+1);
         glEnd();
 
-        LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
+        glColor4ub(0,0,0,255);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(rect.x+1, rect.y+height);
+        glVertex2f(rect.x+rect.width, rect.y+height);
+
+        glVertex2f(rect.x+rect.width, rect.y+1);
+        glVertex2f(rect.x+1, rect.y+1);
+        glEnd();
+        //LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
 
         str=wxT("");
         if ((int)m_names.size()>i) {
@@ -2100,10 +2115,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 accel=false;
             }
         }
-        //}
-        wxString a;
-        a << sam;
-        DrawText(a,3,scry-w.GetTopMargin()-10);
 
         // Prepare the min max y values if we still are accelerating this plot
         if (accel) {
@@ -2261,8 +2272,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     bool antialias=pref["UseAntiAliasing"];
     if (antialias) {
         glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+
     }
 
     glEnableClientState(GL_VERTEX_ARRAY);

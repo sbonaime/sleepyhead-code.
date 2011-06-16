@@ -11,6 +11,7 @@
 
 #define GLEW_STATIC
 #define WGL_WGLEXT_PROTOTYPES
+
 #include <GL/glew.h>
 #include <GL/wglew.h>
 //#include <GL/gl.h>

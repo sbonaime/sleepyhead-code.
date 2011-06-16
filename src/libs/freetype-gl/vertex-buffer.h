@@ -31,6 +31,8 @@
     #include <Glut/glut.h>
 #elif defined(__WXMSW__)
 #define GLEW_STATIC
+#define WGL_WGLEXT_PROTOTYPES
+
 //#include <GL/freeglut_ext.h>
 #include <GL/glew.h>
 #include <GL/wglew.h>

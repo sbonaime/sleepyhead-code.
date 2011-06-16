@@ -170,7 +170,7 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };   // Height of ""...
 
         void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); }; // Linking graphs changes zoom behaviour..
-        void LinkMove(gGraphWindow *g) { link_move.push_back(g); }; // Linking graphs changes zoom behaviour..
+        //void LinkMove(gGraphWindow *g) { link_move.push_back(g); }; // Linking graphs changes zoom behaviour..
 
         virtual double MinX();
         virtual double MaxX();
@@ -232,16 +232,16 @@ class gGraphWindow:public wxGLCanvas //Window // rename to gGraphWindow
         double rmax_x,rmin_x,rmax_y,rmin_y;
 
         void SetBlockZoom(bool b) { m_block_zoom=b; };
-        void SetBlockMove(bool b) { m_block_move=b; };
+        //void SetBlockMove(bool b) { m_block_move=b; };
         bool BlockZoom() { return m_block_zoom; };
         wxGLContext *gl_context;
         //FTFont *texfont;
 
     protected:
         list<gGraphWindow *>link_zoom;
-        list<gGraphWindow *>link_move;
+        //list<gGraphWindow *>link_move;
 
-        bool m_block_move;
+        //bool m_block_move;
         bool m_block_zoom;
         bool m_drag_foobar;
         double m_foobar_pos,m_foobar_moved;

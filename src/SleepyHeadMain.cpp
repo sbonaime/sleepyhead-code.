@@ -151,7 +151,10 @@ void SleepyHeadFrame::UpdateProfiles()
 
     for (map<wxString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         Profile &pro=*(Profiles::profiles[p->first]);
-        wxMenuItem *item=ProfileMenu->AppendRadioItem(i,pro["Realname"],wxEmptyString);
+        wxString name=pro["Realname"];
+        if (name.IsEmpty()) name=pref["Profile"].GetString();
+
+        wxMenuItem *item=ProfileMenu->AppendRadioItem(i,name,wxEmptyString);
 
         if (p->first==pref["Profile"].GetString()) {
             item->Check(true);
@@ -776,19 +779,19 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     TAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER);  //Time@Pressure
     //TAP->SetMargins(20,15,5,50);
-    TAP->SetMargins(0,1,0,1);
+    TAP->SetMargins(0,0,0,0);
     TAP->AddLayer(new gCandleStick(tap));
 
     TAP_EAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@EPAP
-    TAP_EAP->SetMargins(0,1,0,1);
+    TAP_EAP->SetMargins(0,0,0,0);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
     TAP_IAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Time@IPAP
-    TAP_IAP->SetMargins(0,1,0,1);
+    TAP_IAP->SetMargins(0,0,0,0);
     TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
     G_AHI=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER); //Event Breakdown")
-    G_AHI->SetMargins(0,1,0,1);
+    G_AHI->SetMargins(0,0,0,0);
     AddCPAPData(g_ahi=new AHIData());
     gCandleStick *l=new gCandleStick(g_ahi);
     l->AddName(wxT("H"));

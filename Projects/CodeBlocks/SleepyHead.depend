@@ -8300,7 +8300,7 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1308143309 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1308258943 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
 	"gl_pbuffer.h"
 	<wx/glcanvas.h>
 	<wx/geometry.h>
@@ -8309,7 +8309,7 @@
 
 1308026543 D
 
-1308240204 /home/mark/projects/git/sleepyhead/src/version.h
+1308259082 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8341,7 +8341,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1308160664 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308258772 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8362,7 +8362,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308240152 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308259082 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	"freetype-gl/font-manager.h"
 	"freetype-gl/texture-font.h"
 	"graph.h"
@@ -8371,6 +8371,7 @@
 	<wx/image.h>
 	<wx/bitmap.h>
 	<wx/dcbuffer.h>
+	<wx/msgdlg.h>
 	<wx/log.h>
 	<math.h>
 	"sleeplib/profiles.h"
@@ -10947,7 +10948,7 @@
 	"text-markup.h"
 	"vertex-buffer.h"
 
-1308040815 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
+1308243124 /home/mark/projects/git/sleepyhead/src/libs/freetype-gl/vertex-buffer.h
 	<Glut/glut.h>
 	<GL/glew.h>
 	<GL/wglew.h>
@@ -11031,7 +11032,7 @@
 	"font-manager.h"
 	"text-markup.h"
 
-1308116368 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
+1308243123 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-atlas.cpp
 	<Glut/glut.h>
 	<GL/glew.h>
 	<GL/gl.h>
@@ -11043,7 +11044,7 @@
 	<math.h>
 	"texture-font.h"
 
-1308044876 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
+1308243123 source:/home/mark/projects/git/sleepyhead/src/libs/freetype-gl/texture-glyph.cpp
 	<Glut/glut.h>
 	<GL/glew.h>
 	"texture-glyph.h"
@@ -11061,7 +11062,7 @@
 	<string.h>
 	"freetype-gl/vector.h"
 
-1308153347 /home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.h
+1308243123 /home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.h
 	<wx/log.h>
 	<GL/glew.h>
 	<GL/wglew.h>

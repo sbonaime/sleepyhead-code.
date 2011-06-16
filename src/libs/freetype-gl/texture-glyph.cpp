@@ -20,11 +20,13 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  * ========================================================================= */
+
+#define GL_GLEXT_PROTOTYPES
+
 #if defined(__APPLE__)
     #include <Glut/glut.h>
 #elif defined(__WXMSW__)
-
-#define GL_GLEXT_PROTOTYPES
+#define WGL_WGLEXT_PROTOTYPES
 #define GLEW_STATIC
 #define _UNICODE 1
 #include <GL/glew.h>
