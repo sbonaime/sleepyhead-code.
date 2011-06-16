@@ -565,7 +565,7 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
 
     double q=span*mult;
     if (q>hardspan) q=hardspan;
-    if (q<hardspan/100) q=hardspan/100;
+    if (q<hardspan/400) q=hardspan/400;
 
     min=min+(origin-(q/2.0));
     max=min+q;
@@ -2017,6 +2017,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
             float x,y;
+            //TextMarkup...
             GetTextExtent(msg,x,y,bigfont);
             DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,*wxDARK_GREY,bigfont);
         }
@@ -2024,58 +2025,83 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     bool accel=m_accelerate;
-    double sfit,sam,sr;
-    int dp;
+    double sfit,sr;
+    int dp,sam;
 
     wxColor & col=color[0];
     // Selected the plot line color
-    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-
-    // Crop to inside the margins.
-    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    glEnable(GL_SCISSOR_TEST);
-
-    glLineWidth (.25);
-    //glEnable(GL_LINE_SMOOTH);
-    //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
 
     const int maxverts=65536*2; // Resolution dependant..
     int vertcnt=0;
     static GLshort vertarray[maxverts+8];
 
-    //glBegin (GL_LINES); //_LOOP);
-
     float lastpx,lastpy;
     float px,py;
-    for (int n=0;n<data->VC();n++) {
-        dp=0;
-        int & siz=data->np[n];
-        // Don't bother drawing 1 point or less.
-        if (siz<=1) continue;
+    int idx,idxend,np;
+    bool done,first;
+    double x0,x1,xL;
 
-        bool done=false;
-        bool first=true;
+    for (int n=0;n<data->VC();n++) { // for each segment
+
+        int siz=data->np[n];
+        if (siz<=1) continue; // Don't bother drawing 1 point or less.
+
         wxPoint2DDouble * point=data->point[n];
 
-        sr=point[1].m_x-point[0].m_x;// Time distance between points
+        x0=point[0].m_x;
+        xL=point[siz-1].m_x;
 
-        // Calculate the number of points to skip when too much data.
-        if (accel) {
+        if (maxx<x0) continue;
+        if (xL<minx) continue;
 
-            sfit=xx/sr;
-            sam=sfit/width;
-            if (sam<=8) { // Don't accelerate if threshold less than this.
-                accel=false;
-                sam=1;
+        if (x0>xL) {
+            if (siz==2) { // this happens on CPAP
+                wxPoint2DDouble t=point[0];
+                point[0]=point[siz-1];
+                point[siz-1]=t;
+                x0=point[0].m_x;
             } else {
-                sam/=18;   // lower this number the more data is skipped over (and the faster things run)
-                if (sam<=1) {
-                    sam=1;
-                    accel=false;
-                }
+                wxLogDebug(wxT("Reversed order sample fed to gLineChart - ignored."));
+                continue;
+                //assert(x1<x2);
             }
+        }
+        done=false;
+        first=true;
+        dp=0;
 
-        } else sam=1;
+        x1=point[1].m_x;
+//        if (accel) {
+        sr=x1-x0;           // Time distance between samples
+        double qx=xL-x0;    // Full time range of this segment
+        double gx=xx/qx;    // ratio of how much of the whole data set this represents
+        double segwidth=width*gx;
+        double XR=xx/sr;
+        double Z1=MAX(x0,minx);
+        double Z2=MIN(xL,maxx);
+        double ZD=Z2-Z1;
+        double ZR=ZD/sr;
+        double ZQ=ZR/XR;
+        double ZW=ZR/(width*ZQ);
+        const int num_averages=15;  // Number of samples taken from samples per pixel for better min/max values
+
+        if (accel && n>0) {
+            sam=1;
+        }
+        if (ZW<num_averages) {
+            sam=1;
+            accel=false;
+        } else {
+            sam=ZW/num_averages;
+            if (sam<1) {
+                sam=1;
+                accel=false;
+            }
+        }
+        //}
+        wxString a;
+        a << sam;
+        DrawText(a,3,scry-w.GetTopMargin()-10);
 
         // Prepare the min max y values if we still are accelerating this plot
         if (accel) {
@@ -2087,27 +2113,30 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         int minz=width,maxz=0;
 
         // Technically shouldn't never ever get fed reverse data.
-        double x1=point[0].m_x;
-        double x2=point[siz-1].m_x;
-        assert(x1<x2);
 
-        if (minx>x2) continue; // don't even bother this round (segments could be out of order)
-        if (maxx<x1) continue;
 
-        int idx=0;
-        int idxend=0;
-        int np=0;
+        // these calculations over estimate
+        // The Z? values are much more accurate
+
+        idx=0;
+        idxend=0;
+        np=0;
         if (m_accelerate)  {
             if (minx>x1) {
-                double j=minx-x1;  // == starting min of first sample in this segment
+                double j=minx-x0;  // == starting min of first sample in this segment
                 idx=floor(j/sr);
+                // Loose the precision
+                idx-=idx % sam;
+
             } // else just start from the beginning
 
             idxend=floor(xx/sr);
             idxend/=sam; // devide by number of samples skips
+
             np=(idxend-idx)+sam;
             np /= sam;
         } else {
+
             np=siz;
         }
 
@@ -2136,10 +2165,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 if (point[i].m_x > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             px=1+((point[i].m_x - minx) * xmult);   // Scale the time scale X to pixel scale X
-            py=1+((point[i].m_y - miny) * ymult);   // Same for Y scale
 
 
             if (!accel) {
+                py=1+((point[i].m_y - miny) * ymult);   // Same for Y scale
                 if (firstpx) {
                     firstpx=false;
                 } else {
@@ -2150,13 +2179,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         vertarray[vertcnt++]=lastpy;
                         vertarray[vertcnt++]=start_px+px;
                         vertarray[vertcnt++]=lastpy;
-                        //glVertex2f(lastpx,lastpy);
-                        //glVertex2f(start_px+px,lastpy);
-                        //glVertex2f(start_px+px,lastpy);
                     } else {
                         vertarray[vertcnt++]=lastpx;
                         vertarray[vertcnt++]=lastpy;
-                        //glVertex2f(lastpx,lastpy);
                     }
 
                     vertarray[vertcnt++]=start_px+px;
@@ -2164,28 +2189,35 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     #if defined(EXTRA_ASSERTS)
                     assert(vertcnt<maxverts);
                     #endif
-                    //glVertex2f(start_px+px,start_py+py);
                 }
                 lastpx=start_px+px;
                 lastpy=start_py+py;
             } else {
                 // Just clip ugly in accel mode.. Too darn complicated otherwise
-                if (px<0) {
+               /* if (px<0) {
                     px=0;
                 }
                 if (px>width) {
                     px=width;
-                }
+                } */
                 // In accel mode, each pixel has a min/max Y value.
                 // m_drawlist's index is the pixel index for the X pixel axis.
+
+                float zz=(maxy-miny)/2.0;  // centreline
+                float jy=fabs(point[i].m_y);
+
+                int y1=1+(jy-miny)*ymult;
+                int y2=1+(-jy-miny)*ymult;
+                //py=1+((point[i].m_y - miny) * ymult);   // Same for Y scale
+
 
                 int z=round(px);
                 if (z<minz) minz=z;  // minz=First pixel
                 if (z>maxz) maxz=z;  // maxz=Last pixel
 
                 // Update the Y pixel bounds.
-                if (py<m_drawlist[z].x) m_drawlist[z].x=py;
-                if (py>m_drawlist[z].y) m_drawlist[z].y=py;
+                if (y2<m_drawlist[z].x) m_drawlist[z].x=y2;
+                if (y1>m_drawlist[z].y) m_drawlist[z].y=y1;
 
             }
 
@@ -2203,23 +2235,41 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 #if defined(EXTRA_ASSERTS)
                 assert(vertcnt<maxverts);
                 #endif
-
-                //glVertex2f(start_px+i+1,start_py+m_drawlist[i].x);
-                //glVertex2f(start_px+i+1,start_py+m_drawlist[i].y);
             }
         }
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_SHORT, 0, vertarray);
-        glDrawArrays(GL_LINES, 0, vertcnt>>1);
-        // deactivate vertex arrays after drawing
-        glDisableClientState(GL_VERTEX_ARRAY);
-
+        wxString b;
+        int j=vertcnt/2;
+        if (accel) j/=2;
+        b << siz << wxT(" ") << (idx) << wxT(" ") << (siz/sam) << wxT(" ") << j;
+        DrawText(b,scrx-190,scry-w.GetTopMargin()-14);
 
     }
-    //glEnd ();
-    //glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_SCISSOR_TEST);
+
+
+
+    glColor4ub(col.Red(),col.Green(),col.Blue(),255);
+
+    // Crop to inside the margins.
+    //glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
+    //glEnable(GL_SCISSOR_TEST);
+
+    glLineWidth (1);
+    bool antialias=pref["UseAntiAliasing"];
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+    }
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_SHORT, 0, vertarray);
+    glDrawArrays(GL_LINES, 0, vertcnt>>1);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    if (antialias) {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+    }
+    //glDisable(GL_SCISSOR_TEST);
 }
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,const wxColor * col,wxString _label,LO_Type _lot)
