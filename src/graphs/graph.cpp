@@ -1455,7 +1455,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     const int maxverts=2048;
     int vertcnt=0;
-    static GLfloat vertarray[maxverts+4];
+    static GLshort vertarray[maxverts+4];
 
     for (double i=st3; i<=maxx; i+=min_tick/10.0) {
         if (i<minx) continue;
@@ -1516,7 +1516,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     glLineWidth(1);
     glColor3f(0,0,0);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertarray);
+    glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 
@@ -1603,9 +1603,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     const int maxverts=2048;
     int vertcnt=0;
-    static GLfloat vertarray[maxverts+4];
+    static GLshort vertarray[maxverts+4];
 
     glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
+    glLineWidth(1);
 
     for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
 		ty=(i - miny) * ymult;
@@ -1649,12 +1650,9 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     glLineWidth(1);
     glColor3f(0,0,0);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertarray);
+    glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
-
-
-
 }
 
 gGraphTitle::gGraphTitle(const wxString & _title,wxOrientation o, const wxColor * color)
@@ -1789,14 +1787,17 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         barwidth=height;
     }
 
+    const wxColor & col2=*wxLIGHT_GREY;
+    wxColor c(0,0,0,255);
     wxString str;
+    wxRect rect;
+    wxDirection dir;
+
     for (int i=0;i<data->np[0];i++) {
         t1=floor(px);
         t2=data->point[0][i].m_y*pxr;
         px+=t2;
         t2=ceil(t2)+1;
-        wxRect rect;
-        wxDirection dir;
         if (m_direction==wxVERTICAL) {
             rect=wxRect(start_px,t1,barwidth,t2);
             dir=wxEAST;
@@ -1806,7 +1807,6 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         const wxColor & col1=color[i % color.size()];
-        const wxColor & col2=*wxLIGHT_GREY;
 
         glBegin(GL_QUADS);
         glColor4ub(col1.Red(),col1.Green(),col1.Blue(),col1.Alpha());
@@ -1818,9 +1818,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         glVertex2f(rect.x, rect.y);
         glEnd();
 
-        wxColor c(0,0,0,255);
         LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
-
 
         str=wxT("");
         if ((int)m_names.size()>i) {
@@ -1837,9 +1835,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
                 DrawText(str,j,start_py+(barwidth/2)-(y/2)+1);
             }
         }
-
-    }
-
+    } // for (int i
 }
 
 gBarChart::gBarChart(gPointData *d,const wxColor *col,wxOrientation o)
@@ -1953,7 +1949,7 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         Xaxis->Plot(w,scrx,scry);
 
     glColor3f (0.1F, 0.1F, 0.1F);
-    glLineWidth (1);
+    glLineWidth(1);
     glBegin (GL_LINES);
     glVertex2f (start_px, start_py);
     glVertex2f (start_px, start_py+height);
@@ -2041,7 +2037,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     const int maxverts=65536; // Resolution dependant..
     int vertcnt=0;
-    static GLfloat vertarray[maxverts+8];
+    static GLshort vertarray[maxverts+8];
 
     //glBegin (GL_LINES); //_LOOP);
 
@@ -2203,7 +2199,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_FLOAT, 0, vertarray);
+        glVertexPointer(2, GL_SHORT, 0, vertarray);
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
         // deactivate vertex arrays after drawing
         glDisableClientState(GL_VERTEX_ARRAY);
@@ -2266,105 +2262,80 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
 
+    const int maxverts=65536;
+    int vertcnt=0;
+    static GLshort vertarray[maxverts+8];
+    int pointcnt=0;
+    static GLshort pointarray[maxverts+8];
+    int quadcnt=0;
+    static GLshort quadarray[maxverts+8];
+
+
+    float bottom=start_py+25, top=start_py+height-25;
     wxColor & col=color[0];
     for (int n=0;n<data->VC();n++) {
 
        // bool done=false;
         bool first=true;
-        int fi=0,li;
-        for (li=0;li<data->np[n];li++) {
-            // m_x & m_y are both x axis's here.. (m_y is only used for spans)
-
-            if (data->point[n][li].m_y < w.min_x) continue;
-            if (data->point[n][li].m_x > w.max_x) break;
-            if (first) {
-                first=false;
-                if (li>0)  li--;
-                fi=li;
-            }
-        }
-        glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-        if (lo_type==LOT_Bar) {
-            glLineWidth (0.25);
-            glBegin(GL_LINES);
-            float bottom=start_py+25, top=start_py+height-25;
-
-            // Draw any lines
-            for (int i=fi;i<li;i++) {
-                wxPoint2DDouble & rp=data->point[n][i];
-                if (rp.m_x==rp.m_y) {
-                    x1=w.x2p(rp.m_x);
-                    glVertex2f(x1,top);
-                    glVertex2f(x1,bottom);
-                }
-            }
-            glEnd();
-
-            //glEnable(GL_POINT_SPRITE);
-            // Draw the dots above
-            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            //Dot(100,50);
-            glPointSize(5);
-            glEnable(GL_POINT_SMOOTH);
-            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-            glBegin(GL_POINTS);
-            for (int i=fi;i<li;i++) {
-                wxPoint2DDouble & rp=data->point[n][i];
-                if (rp.m_x==rp.m_y) {
-                    x1=w.x2p(rp.m_x);
-                    glVertex2f(floor(x1),floor(top));
-                }
-            }
-            glEnd();
-            glDisable(GL_POINT_SMOOTH);
-            //glDisable(GL_POINT_SPRITE);
-
-            // Text Labels & Spans
-            for (int i=fi;i<li;i++) {
-                wxPoint2DDouble & rp=data->point[n][i];
-                x1=w.x2p(rp.m_x);
+        for (int i=0;i<data->np[n];i++) {
+            wxPoint2DDouble & rp=data->point[n][i];
+            if (rp.m_y < w.min_x) continue;
+            if (rp.m_x > w.max_x) break;
+            x1=w.x2p(rp.m_x);
+            if (rp.m_x!=rp.m_y) {
                 x2=w.x2p(rp.m_y);
-                if (rp.m_x==rp.m_y) {
+                //double w1=x2-x1;
+                quadarray[quadcnt++]=x1;
+                quadarray[quadcnt++]=start_py;
+                quadarray[quadcnt++]=x1;
+                quadarray[quadcnt++]=start_py+height;
+                quadarray[quadcnt++]=x2;
+                quadarray[quadcnt++]=start_py+height;
+                quadarray[quadcnt++]=x2;
+                quadarray[quadcnt++]=start_py;
+            } else {
+                if (lo_type==LOT_Dot) {
+                    pointarray[pointcnt++]=x1;
+                    pointarray[pointcnt++]=top-15;
+                } else if (lo_type==LOT_Bar) {
+                    pointarray[pointcnt++]=x1;
+                    pointarray[pointcnt++]=top;
+                    vertarray[vertcnt++]=x1;
+                    vertarray[vertcnt++]=top;
+                    vertarray[vertcnt++]=x1;
+                    vertarray[vertcnt++]=bottom;
                     if (xx<(1800.0/86400)) {
                         GetTextExtent(label,x,y);
                         DrawText(label,x1-(x/2),start_py+height-30+y);
-                   }
+                    }
                 }
             }
-            glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-            glBegin(GL_QUADS);
-            for (int i=fi;i<li;i++) {
-                wxPoint2DDouble & rp=data->point[n][i];
-                x1=w.x2p(rp.m_x);
-                x2=w.x2p(rp.m_y);
-                if (rp.m_x!=rp.m_y) {
-                    float w1=x2-x1;
-                    glVertex2f(x1, start_py);
-                    glVertex2f(x1, start_py+height);
-                    glVertex2f(x1+w1, start_py+height);
-                    glVertex2f(x1+w1, start_py);
-                    // Quad this up to improve performance.
-                    //RoundedRectangle(x1,start_py,w1,height,2,col);
-                }
-            }
-            glEnd();
-        } else if (lo_type==LOT_Dot) {
-            //glEnable(GL_BLEND);
-            glEnable(GL_POINT_SMOOTH);
-            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-            glPointSize(4);
-            glBegin(GL_POINTS);
-            for (int i=fi;i<li;i++) {
-                wxPoint2DDouble & rp=data->point[n][i];
-                x1=w.x2p(rp.m_x);
-
-                glVertex2f(floor(x1),floor(start_py+(height/2)+14));
-            }
-            glEnd();
-            glDisable(GL_POINT_SMOOTH);
-            //glDisable(GL_BLEND);
         }
     }
+    assert (vertcnt<maxverts);
+    assert (quadcnt<maxverts);
+    assert (pointcnt<maxverts);
+    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+    if (quadcnt>0) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, quadarray);
+        glDrawArrays(GL_QUADS, 0, quadcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    if (vertcnt>0) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, vertarray);
+        glDrawArrays(GL_LINES, 0, vertcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    if (pointcnt>0) {
+        glPointSize(4);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, pointarray);
+        glDrawArrays(GL_POINTS, 0, pointcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+
     glDisable(GL_SCISSOR_TEST);
 }
 
@@ -2434,7 +2405,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         barcol=&col1;
 
 
-
     // Filled rectangle
     glColor4ub(barcol->Red(),barcol->Green(),barcol->Blue(),barcol->Alpha());
     glBegin(GL_QUADS);
@@ -2444,6 +2414,13 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f(start_px+width, line_top);
     glEnd();
 
+    const int maxverts=65536;
+    int vertcnt=0;
+    static GLshort vertarray[maxverts+8];
+    int quadcnt=0;
+    static GLshort quadarray[maxverts+8];
+
+
     // Draw text label
     float x,y;
     GetTextExtent(label,x,y);
@@ -2452,62 +2429,55 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     float x1,x2,w1;
 
     wxColor & col=color[0];
-    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
-    int fi=0,li;
-    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    glEnable(GL_SCISSOR_TEST);
+
+    float top=floor(line_top)+2;
+    float bottom=top+floor(line_h)-3;
 
     for (int n=0;n<data->VC();n++) {
         if (!data->np[n]) continue;
         //bool done=false;
         bool first=true;
-        for (li=0;li<data->np[n];li++) { //,done==false
-            if (data->point[n][li].m_y < minx) continue;
-            if (data->point[n][li].m_x > maxx) break;
-            if (first) {
-                fi=li;
-                if (li>0)  li--;
-                first=false;
-            }
-        }
-        //double w=((Width()/xx)*(x-min_x));
-        //return w+GetLeftMargin();
 
-        glLineWidth (1);
-        glBegin(GL_LINES);
-        float top=floor(line_top)+2;
-        float bottom=top+floor(line_h)-3;
-        for (int i=fi;i<li;i++) {
+        for (int i=0;i<data->np[n];i++) {
             wxPoint2DDouble & rp=data->point[n][i];
+            if (rp.m_y < minx) continue;
+            if (rp.m_x > maxx) break;
+            x1=(rp.m_x - minx) * xmult + w.GetLeftMargin();
             if (rp.m_x==rp.m_y) {
-                //x1=w.x2p(rp.m_x);
-                x1=(rp.m_x-minx)*xmult+w.GetLeftMargin();
-                glVertex2f(x1,top);
-                glVertex2f(x1,bottom);
-            }
-        }
-        glEnd();
-
-        bottom=floor(line_h)-4; // just the height
-
-        glBegin(GL_QUADS);
-
-        for (int i=fi;i<li;i++) {
-            wxPoint2DDouble & rp=data->point[n][i];
-            if (rp.m_x!=rp.m_y) {
-                x1=(rp.m_x-minx)*xmult+w.GetLeftMargin();
+                vertarray[vertcnt++]=x1;
+                vertarray[vertcnt++]=top;
+                vertarray[vertcnt++]=x1;
+                vertarray[vertcnt++]=bottom;
+            } else {
                 x2=(rp.m_y-minx)*xmult+w.GetLeftMargin();
-                //x1=w.x2p(rp.m_x);
-                //x2=w.x2p(rp.m_y);
-                w1=x2-x1;
-                glVertex2f(x1, top);
-                glVertex2f(x1, top+bottom);
-                glVertex2f(x1+w1, top+bottom);
-                glVertex2f(x1+w1, top);
+                //w1=x2-x1;
+                quadarray[quadcnt++]=x1;
+                quadarray[quadcnt++]=top;
+                quadarray[quadcnt++]=x1;
+                quadarray[quadcnt++]=bottom;
+                quadarray[quadcnt++]=x2;
+                quadarray[quadcnt++]=bottom;
+                quadarray[quadcnt++]=x2;
+                quadarray[quadcnt++]=top;
             }
         }
-        glEnd();
+    }
+    glLineWidth (1);
 
+    glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
+    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
+    glEnable(GL_SCISSOR_TEST);
+    if (quadcnt>0) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, quadarray);
+        glDrawArrays(GL_QUADS, 0, quadcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    if (vertcnt>0) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, vertarray);
+        glDrawArrays(GL_LINES, 0, vertcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
     }
     glDisable(GL_SCISSOR_TEST);
 }
