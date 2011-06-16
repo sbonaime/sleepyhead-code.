@@ -59,33 +59,37 @@ wxColor *wxDARK_GREY=&zwxDARK_GREY;
 bool gfont_init=false;
 
 FontManager *font_manager;
-TextureFont *zfont=NULL;
+TextureFont *bigfont=NULL,*zfont=NULL;
 VertexBuffer *vbuffer=NULL;
 TextMarkup *markup=NULL;
 
 // Must be called from a thread inside the application.
 void GraphInit()
 {
+    #if defined(__WXMSW__)
     static bool glewinit_called=false;
+    if (!glewinit_called) {
+        glewInit(); // Dont forget this nasty little sucker.. :)
+        glewinit_called=true;
+    }
+    #endif
+
     if (!gfont_init) {
-        #if defined(__WXMSW__)
-        if (!glewinit_called) {
-            glewInit(); // Dont forget this nasty little sucker.. :)
-            glewinit_called=true;
-        }
-        #endif
         wxString glvendor=wxString((char *)glGetString(GL_VENDOR),wxConvUTF8);
         wxString glrenderer=wxString((char *)glGetString(GL_RENDERER),wxConvUTF8);
         wxString glversion=wxString((char *)glGetString(GL_VERSION),wxConvUTF8);
         wxLogDebug(wxT("GLInfo: ")+glvendor+wxT(" ")+glrenderer+wxT(" ")+glversion);
+
+        // Despite the stupid warning, this does NOT always evaluate as true. Too lazy to put it in #ifdefs
         if (!glGenBuffers) {
-            wxLogError(wxT("Sorry, your computers graphics card drivers are too old to run this program.\n")+glvendor+wxT(" may have an update"));
+            wxLogError(wxT("Sorry, your computers graphics card drivers are too old to run this program.\n")+glvendor+wxT(" may have an update."));
             abort();
         }
 
         font_manager=new FontManager();
         vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
         zfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),12);
+        bigfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),32);
         markup=new TextMarkup();
 
         glBindTexture( GL_TEXTURE_2D, font_manager->m_atlas->m_texid );
@@ -134,7 +138,7 @@ void GetTextExtent(wxString text, float & width, float & height, TextureFont *fo
         width+=glyph->m_advance_x;
     }
 }
-void DrawText2(wxString text, float x, float y,TextureFont *font)
+void DrawText2(wxString text, float x, float y,TextureFont *font=zfont) // The actual raw font drawing routine..
 {
     Pen pen;
     pen.x=x;
@@ -592,9 +596,9 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         return;
     }
 
+    int y=event.GetY();
+    int x=event.GetX();
     if (foobar && m_drag_foobar) {
-        int y=event.GetY();
-        int x=event.GetX();
         if (x<GetLeftMargin()) return;
         int x1=x-GetLeftMargin();
 
@@ -644,8 +648,8 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
         }
     } else
     if (event.m_rightDown) {
-        MoveX(event.GetX() - m_mouseRClick.x);
-        m_mouseRClick.x=event.GetX();
+        MoveX(x - m_mouseRClick.x);
+        m_mouseRClick.x=x;
         double min=MinX();
         double max=MaxX();
         if (pref["LinkGraphMovement"]) {
@@ -657,7 +661,7 @@ void gGraphWindow::OnMouseMove(wxMouseEvent &event)
     if (event.m_leftDown) {
 
         int x1=m_mouseLClick.x;
-        int x2=event.GetX();
+        int x2=x;
         int t1=MIN(x1,x2);
         int t2=MAX(x1,x2);
         if (t1<=m_marginLeft) t1=m_marginLeft+1;
@@ -762,7 +766,7 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
     if (m_block_zoom) { // && hot1.Contains(x,y)) {
 
 
-        bool zoom_in=false;
+        //bool zoom_in=false;
         bool did_draw=false;
 
         // Finished Dragging the FooBar?
@@ -792,14 +796,14 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
     }
 
     double zoom_fact=2;
-    if (event.GetY()<GetTopMargin()) {
+    if (y<GetTopMargin()) {
         return;
-    } else if (event.GetY()>m_scrY-GetBottomMargin()) {
+    } else if (y>m_scrY-GetBottomMargin()) {
         if (!foobar) return;
     }
 
     if (event.ControlDown()) zoom_fact=5.0;
-    if (abs(event.GetX()-m_mouseRClick_start.x)<3 && abs(event.GetY()-m_mouseRClick_start.y)<3) {
+    if (abs(x-m_mouseRClick_start.x)<3 && abs(y-m_mouseRClick_start.y)<3) {
       //  for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             //(*g)->ZoomX(zoom_fact,0);
         //}
@@ -1345,7 +1349,7 @@ void gGraphWindow::DataChanged(gLayer *layer)
         max_x=min_x=0;
     }
 
-    long l=t.GetMilliseconds().GetLo();
+    //long l=t.GetMilliseconds().GetLo();
     //wxLogMessage(wxString::Format(wxT("%li"),l));
     if ((t==wxTimeSpan::Milliseconds(0))  && (layer!=lastlayer)) {
         lastlayer=layer;
@@ -1797,7 +1801,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         t1=floor(px);
         t2=data->point[0][i].m_y*pxr;
         px+=t2;
-        t2=ceil(t2)+1;
+        t2=ceil(t2);
         if (m_direction==wxVERTICAL) {
             rect=wxRect(start_px,t1,barwidth,t2);
             dir=wxEAST;
@@ -1826,8 +1830,8 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         }
         str+=wxString::Format(wxT("%0.1f"),data->point[0][i].m_x);
         GetTextExtent(str, x, y);
-        x+=5;
-        if (t2>x) {
+        //x+=5;
+        if (t2>x+5) {
             int j=t1+((t2/2)-(x/2));
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px+barwidth+2+y,j,270.0,*wxBLACK);
@@ -2013,8 +2017,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
             float x,y;
-            GetTextExtent(msg,x,y);
-            DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,*wxDARK_GREY); //,largefont);
+            GetTextExtent(msg,x,y,bigfont);
+            DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,*wxDARK_GREY,bigfont);
         }
         return;
     }
@@ -2035,7 +2039,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     //glEnable(GL_LINE_SMOOTH);
     //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
 
-    const int maxverts=65536; // Resolution dependant..
+    const int maxverts=65536*2; // Resolution dependant..
     int vertcnt=0;
     static GLshort vertarray[maxverts+8];
 
@@ -2053,7 +2057,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         bool first=true;
         wxPoint2DDouble * point=data->point[n];
 
-        double sr=point[1].m_x-point[0].m_x;// Time distance between points
+        sr=point[1].m_x-point[0].m_x;// Time distance between points
 
         // Calculate the number of points to skip when too much data.
         if (accel) {
@@ -2086,30 +2090,37 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         double x1=point[0].m_x;
         double x2=point[siz-1].m_x;
         assert(x1<x2);
-        int idx=0;
 
         if (minx>x2) continue; // don't even bother this round (segments could be out of order)
         if (maxx<x1) continue;
 
-        if (minx>x1) {
-            double j=minx-x1;  // == starting min of first sample in this segment
-            idx=floor(j/sr);
-        } // else just start from the beginning
-
+        int idx=0;
         int idxend=0;
-        idxend=floor(xx/sr);
-        idxend/=sam; // devide by number of samples skips
-        int np=(idxend-idx)+sam;
+        int np=0;
+        if (m_accelerate)  {
+            if (minx>x1) {
+                double j=minx-x1;  // == starting min of first sample in this segment
+                idx=floor(j/sr);
+            } // else just start from the beginning
 
-        // better to do it here than in the main loop.
-        if (!accel) {
-            np<<=2;
-            if (m_square_plot) np<<=1; // double it again
-            assert(np<maxverts);
+            idxend=floor(xx/sr);
+            idxend/=sam; // devide by number of samples skips
+            np=(idxend-idx)+sam;
+            np /= sam;
         } else {
-            np/=sam;
-            np <<=2;
-            assert(np<maxverts);
+            np=siz;
+        }
+
+        bool watch_verts_carefully=false;
+        // better to do it here than in the main loop.
+        np <<= 2;
+
+        if (!accel && m_square_plot)
+            np <<= 1; // double it again
+
+        if (np>=maxverts) {
+            watch_verts_carefully=true;
+            //assert(np<maxverts);
         }
 
         bool firstpx=true;
@@ -2276,7 +2287,6 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     for (int n=0;n<data->VC();n++) {
 
        // bool done=false;
-        bool first=true;
         for (int i=0;i<data->np[n];i++) {
             wxPoint2DDouble & rp=data->point[n][i];
             if (rp.m_y < w.min_x) continue;
@@ -2426,7 +2436,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     GetTextExtent(label,x,y);
     DrawText(label,start_px-x-6,line_top+(line_h/2)-(y/2));
 
-    float x1,x2,w1;
+    float x1,x2;
 
     wxColor & col=color[0];
 
@@ -2435,8 +2445,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     for (int n=0;n<data->VC();n++) {
         if (!data->np[n]) continue;
-        //bool done=false;
-        bool first=true;
 
         for (int i=0;i<data->np[n];i++) {
             wxPoint2DDouble & rp=data->point[n][i];
