@@ -55,7 +55,8 @@ pBufferWGL::pBufferWGL(int width, int height)
         j=1 << i;
         if (j >= ms) break;
     }
-    assert (j>=ms); // I seriously doubt this will ever happen ;)
+    j <<= 2;
+    //assert (j>=ms); // I seriously doubt this will ever happen ;)
 
     // WGL only supports square pBuffers
     m_width=j;

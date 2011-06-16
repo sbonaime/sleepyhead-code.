@@ -1085,7 +1085,7 @@ void Daily::RefreshData(wxCommandEvent& event)
        // html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
         html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Event Breakdown")+wxT("</i></td></tr>\n");
-        html=html+wxT("<tr><td colspan=4 align=left><img src=\"memory:ahi.png\"></td></tr>\n");
+        html=html+wxT("<tr><td colspan=4 align=center><img src=\"memory:ahi.png\"></td></tr>\n");
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         //html=html+wxT("<tr><td colspan=4 align=center><i>")+_("Other Information")+wxT("</i></td></tr>\n");
