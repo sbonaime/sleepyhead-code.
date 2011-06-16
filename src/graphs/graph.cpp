@@ -31,6 +31,8 @@ License: LGPL
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the wx library"
 #endif
 
+//#define EXTRA_ASSERTS
+
 extern pBuffer *buffer;
 
 #if !wxCHECK_VERSION(2,9,0)
@@ -64,15 +66,23 @@ TextMarkup *markup=NULL;
 // Must be called from a thread inside the application.
 void GraphInit()
 {
-    #if defined(__WXMSW__)
     static bool glewinit_called=false;
-    if (!glewinit_called) {
-        glewInit(); // Dont forget this nasty little sucker.. :)
-        glewinit_called=true;
-    }
-    #endif
-
     if (!gfont_init) {
+        #if defined(__WXMSW__)
+        if (!glewinit_called) {
+            glewInit(); // Dont forget this nasty little sucker.. :)
+            glewinit_called=true;
+        }
+        #endif
+        wxString glvendor=wxString((char *)glGetString(GL_VENDOR),wxConvUTF8);
+        wxString glrenderer=wxString((char *)glGetString(GL_RENDERER),wxConvUTF8);
+        wxString glversion=wxString((char *)glGetString(GL_VERSION),wxConvUTF8);
+        wxLogDebug(wxT("GLInfo: ")+glvendor+wxT(" ")+glrenderer+wxT(" ")+glversion);
+        if (!glGenBuffers) {
+            wxLogError(wxT("Sorry, your computers graphics card drivers are too old to run this program.\n")+glvendor+wxT(" may have an update"));
+            abort();
+        }
+
         font_manager=new FontManager();
         vbuffer=new VertexBuffer((char *)"v3i:t2f:c4f");
         zfont=font_manager->GetFromFilename(pref.Get("{home}{sep}FreeSans.ttf"),12);
@@ -1336,7 +1346,7 @@ void gGraphWindow::DataChanged(gLayer *layer)
     }
 
     long l=t.GetMilliseconds().GetLo();
-    wxLogMessage(wxString::Format(wxT("%li"),l));
+    //wxLogMessage(wxString::Format(wxT("%li"),l));
     if ((t==wxTimeSpan::Milliseconds(0))  && (layer!=lastlayer)) {
         lastlayer=layer;
         return;
@@ -1435,7 +1445,6 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         //if (min_tick>10) min_tick=10;
     }
 
-    //.Clip(start_px-10,start_py+height,width+20,w.GetBottomMargin());
     double st3=st;
     while (st3>minx) {
         st3-=min_tick/10.0;
@@ -1444,19 +1453,19 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     py=w.GetBottomMargin();
 
-    glLineWidth(0.25);
-    glColor3f(0,0,0);
+    const int maxverts=2048;
+    int vertcnt=0;
+    static GLfloat vertarray[maxverts+4];
+
     for (double i=st3; i<=maxx; i+=min_tick/10.0) {
         if (i<minx) continue;
-        //px=x2p(w,i);
-        px=(i-minx)*xmult+w.GetLeftMargin(); //w.GetLeftMargin()+((i - w.min_x) * xmult);
-        glBegin(GL_LINES);
-        glVertex2f(px,py);
-        glVertex2f(px,py-4);
-        glEnd();
+        px=(i-minx)*xmult+w.GetLeftMargin();
+        vertarray[vertcnt++]=px;
+        vertarray[vertcnt++]=py;
+        vertarray[vertcnt++]=px;
+        vertarray[vertcnt++]=py-4;
     }
 
-    //st=st3;
 
     while (st<minx) {
         st+=min_tick; //10.0;  // mucking with this changes the scrollyness of the ticker.
@@ -1486,25 +1495,31 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         px=(i-minx)*xmult+w.GetLeftMargin();
-        glColor3f(0,0,0);
-        glBegin(GL_LINES);
-        glVertex2f(px,py);
-        glVertex2f(px,py-6);
-        glEnd();
+        vertarray[vertcnt++]=px;
+        vertarray[vertcnt++]=py;
+        vertarray[vertcnt++]=px;
+        vertarray[vertcnt++]=py-6;
 
         GetTextExtent(fd,x,y);
 
-        // There is a wx2.8 bug in wxMSW that screws up calculating x properly.
-        const int offset=0;
-
         if (!show_time) {
-            DrawText(fd, px-(y/2)-2, py-(x/2)-14+offset, 90.0,*wxBLACK);
+            DrawText(fd, px-(y/2)-2, py-(x/2)-14, 90.0,*wxBLACK);
 
         } else {
             DrawText(fd, px-(x/2), py-14-y);
         }
 
     }
+// Draw the little ticks.
+	assert(vertcnt<maxverts);
+
+    glLineWidth(1);
+    glColor3f(0,0,0);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertarray);
+    glDrawArrays(GL_LINES, 0, vertcnt>>1);
+    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
+
 
 }
 
@@ -1524,31 +1539,45 @@ gYAxis::~gYAxis()
 }
 void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 {
-    static wxColor wxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
-    static wxPen pen1(*wxLIGHT_GREY, 1, wxDOT);
-    static wxPen pen2(wxDARK_GREY, 1, wxDOT);
+    static wxColor wxDARK_GREY(0xb8,0xb8,0xb8,0xa0);
     float x,y;
     int labelW=0;
 
     double miny=w.min_y;
     double maxy=w.max_y;
-    if (maxy==miny)
-        return;
+    if (maxy==miny) return;
     if ((w.max_x-w.min_x)==0) return;
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
+    int width=scrx-(w.GetRightMargin()+start_px);
+    int height=scry-(w.GetTopMargin()+start_py);
 
     const wxColor & linecol1=*wxLIGHT_GREY;
     const wxColor & linecol2=wxDARK_GREY;
 
     wxString fd=wxT("0");
     GetTextExtent(fd,x,y);
-    double max_yticksdiv=(y+15.0)/(height); // y+50 for rotated text
-    double max_yticks=1/max_yticksdiv;
+
+    double max_yticks=round(height / (y+15.0)); // plus spacing between lines
+    double yt=1/max_yticks;
+
+
+    double mxy=MAX(maxy,fabs(miny));
+    double mny=MIN(maxy,fabs(miny));
+    if (miny<0) mny=-mny;
+    if (maxy<0) mxy=-mxy;
+
+    double rxy=mxy-mny;
+    double ymult=height/rxy;
+
+    double min_ytick=rxy*yt;
+
+    //if (miny>=0) {
+    //} else {
+    //}
+    /*double max_yticks=1/max_yticksdiv;
+
     double yy=w.max_y-w.min_y;
     double ymult=height/yy;
     double major_ytick=max_yticksdiv*yy;
@@ -1568,25 +1597,24 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         min_ytick=60;
     }
     if (min_ytick<=0.25)
-        min_ytick=0.25;
+        min_ytick=0.25; */
 
     int ty,h;
-    glColor3f(0,0,0);
-    glLineWidth(0.25);
-    for (float i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=(start_py+height)-ty;
-        glBegin(GL_LINES);
-        glVertex2f(start_px-4, h);
-        glVertex2f(start_px, h);
-        glEnd();
-    }
+
+    const int maxverts=2048;
+    int vertcnt=0;
+    static GLfloat vertarray[maxverts+4];
 
     glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
-    for (double i=w.min_y; i<w.max_y; i+=min_ytick/2) {
-		ty=(i - w.min_y) * ymult;
-        h=start_py+ty;
-        if (m_show_minor_lines && (i > w.min_y)) {
+
+    for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
+		ty=(i - miny) * ymult;
+        h=(start_py+height)-ty;
+        vertarray[vertcnt++]=start_px-4;
+        vertarray[vertcnt++]=h;
+        vertarray[vertcnt++]=start_px;
+        vertarray[vertcnt++]=h;
+        if (m_show_minor_lines && (i > miny)) {
             glBegin(GL_LINES);
             glVertex2f(start_px+1, h);
             glVertex2f(start_px+width, h);
@@ -1594,29 +1622,39 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         }
     }
 
-    for (double i=w.min_y; i<=w.max_y; i+=min_ytick) {
-		ty=(i - w.min_y) * ymult;
+    for (double i=miny; i<=maxy; i+=min_ytick) {
+		ty=(i - miny) * ymult;
         fd=Format(i); // Override this as a function.
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=start_py+ty;
         DrawText(fd,start_px-8-x,h - (y / 2));
 
-        glColor3f(0,0,0);
-        glBegin(GL_LINES);
-        glVertex2f(start_px-6, h);
-        glVertex2f(start_px, h);
-        glEnd();
+        vertarray[vertcnt++]=start_px-4;
+        vertarray[vertcnt++]=h;
+        vertarray[vertcnt++]=start_px;
+        vertarray[vertcnt++]=h;
 
-        if (m_show_major_lines && (i > w.min_y)) {
-            glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
-
+        if (m_show_major_lines && (i > miny)) {
+            glColor4ub(linecol2.Red(),linecol2.Green(),linecol2.Blue(),linecol2.Alpha());
             glBegin(GL_LINES);
             glVertex2f(start_px+1, h);
             glVertex2f(start_px+width, h);
             glEnd();
         }
 	}
+	assert(vertcnt<maxverts);
+
+    // Draw the little ticks.
+    glLineWidth(1);
+    glColor3f(0,0,0);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertarray);
+    glDrawArrays(GL_LINES, 0, vertcnt>>1);
+    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
+
+
+
 }
 
 gGraphTitle::gGraphTitle(const wxString & _title,wxOrientation o, const wxColor * color)
@@ -1978,8 +2016,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     if (!num_points) { // No Data?
         if (m_report_empty) {
             wxString msg=_("No Waveform Available");
-            float x,y; //,descent,leading;
-            GetTextExtent(msg,x,y); //,largefont);//,&descent,&leading);
+            float x,y;
+            GetTextExtent(msg,x,y);
             DrawText(msg,start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),0,*wxDARK_GREY); //,largefont);
         }
         return;
@@ -2000,7 +2038,12 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     glLineWidth (.25);
     //glEnable(GL_LINE_SMOOTH);
     //glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-    glBegin (GL_LINES); //_LOOP);
+
+    const int maxverts=65536; // Resolution dependant..
+    int vertcnt=0;
+    static GLfloat vertarray[maxverts+8];
+
+    //glBegin (GL_LINES); //_LOOP);
 
     float lastpx,lastpy;
     float px,py;
@@ -2014,16 +2057,18 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         bool first=true;
         wxPoint2DDouble * point=data->point[n];
 
+        double sr=point[1].m_x-point[0].m_x;// Time distance between points
+
         // Calculate the number of points to skip when too much data.
         if (accel) {
-            sr=point[1].m_x-point[0].m_x; // Time distance between points
+
             sfit=xx/sr;
             sam=sfit/width;
             if (sam<=8) { // Don't accelerate if threshold less than this.
                 accel=false;
                 sam=1;
             } else {
-                sam/=25;   // lower this number the more data is skipped over (and the faster things run)
+                sam/=18;   // lower this number the more data is skipped over (and the faster things run)
                 if (sam<=1) {
                     sam=1;
                     accel=false;
@@ -2042,10 +2087,37 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         int minz=width,maxz=0;
 
         // Technically shouldn't never ever get fed reverse data.
-        assert(point[0].m_x < point[siz-1].m_x);
+        double x1=point[0].m_x;
+        double x2=point[siz-1].m_x;
+        assert(x1<x2);
+        int idx=0;
+
+        if (minx>x2) continue; // don't even bother this round (segments could be out of order)
+        if (maxx<x1) continue;
+
+        if (minx>x1) {
+            double j=minx-x1;  // == starting min of first sample in this segment
+            idx=floor(j/sr);
+        } // else just start from the beginning
+
+        int idxend=0;
+        idxend=floor(xx/sr);
+        idxend/=sam; // devide by number of samples skips
+        int np=(idxend-idx)+sam;
+
+        // better to do it here than in the main loop.
+        if (!accel) {
+            np<<=2;
+            if (m_square_plot) np<<=1; // double it again
+            assert(np<maxverts);
+        } else {
+            np/=sam;
+            np <<=2;
+            assert(np<maxverts);
+        }
 
         bool firstpx=true;
-        for (int i=0;i<siz;i+=sam) {
+        for (int i=idx;i<siz;i+=sam) {
 
                 if (point[i].m_x < minx) continue; // Skip stuff before the start of our data window
 
@@ -2065,13 +2137,27 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     firstpx=false;
                 } else {
                     if (m_square_plot) {
-                        glVertex2f(lastpx,lastpy);
-                        glVertex2f(start_px+px,lastpy);
-                        glVertex2f(start_px+px,lastpy);
+                        vertarray[vertcnt++]=lastpx;
+                        vertarray[vertcnt++]=lastpy;
+                        vertarray[vertcnt++]=start_px+px;
+                        vertarray[vertcnt++]=lastpy;
+                        vertarray[vertcnt++]=start_px+px;
+                        vertarray[vertcnt++]=lastpy;
+                        //glVertex2f(lastpx,lastpy);
+                        //glVertex2f(start_px+px,lastpy);
+                        //glVertex2f(start_px+px,lastpy);
                     } else {
-                        glVertex2f(lastpx,lastpy);
+                        vertarray[vertcnt++]=lastpx;
+                        vertarray[vertcnt++]=lastpy;
+                        //glVertex2f(lastpx,lastpy);
                     }
-                    glVertex2f(start_px+px,start_py+py);
+
+                    vertarray[vertcnt++]=start_px+px;
+                    vertarray[vertcnt++]=start_py+py;
+                    #if defined(EXTRA_ASSERTS)
+                    assert(vertcnt<maxverts);
+                    #endif
+                    //glVertex2f(start_px+px,start_py+py);
                 }
                 lastpx=start_px+px;
                 lastpy=start_py+py;
@@ -2103,12 +2189,28 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             dp=0;
             // Plot compressed accelerated vertex list
             for (int i=minz;i<maxz;i++) {
-                glVertex2f(start_px+i+1,start_py+m_drawlist[i].x);
-                glVertex2f(start_px+i+1,start_py+m_drawlist[i].y);
+                vertarray[vertcnt++]=start_px+i+1;
+                vertarray[vertcnt++]=start_py+m_drawlist[i].x;
+                vertarray[vertcnt++]=start_px+i+1;
+                vertarray[vertcnt++]=start_py+m_drawlist[i].y;
+                #if defined(EXTRA_ASSERTS)
+                assert(vertcnt<maxverts);
+                #endif
+
+                //glVertex2f(start_px+i+1,start_py+m_drawlist[i].x);
+                //glVertex2f(start_px+i+1,start_py+m_drawlist[i].y);
             }
         }
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_FLOAT, 0, vertarray);
+        glDrawArrays(GL_LINES, 0, vertcnt>>1);
+        // deactivate vertex arrays after drawing
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+
     }
-    glEnd ();
+    //glEnd ();
     //glDisable(GL_LINE_SMOOTH);
     glDisable(GL_SCISSOR_TEST);
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug-wx29" />
+	<ActiveTarget name="Windows" />
 	<File name="../../src/GUIFrame.cpp" open="1" top="0" tabpos="9">
 		<Cursor position="6211" topLine="144" />
 	</File>
@@ -11,7 +11,7 @@
 		<Cursor position="1078" topLine="44" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="29385" topLine="793" />
+		<Cursor position="24248" topLine="650" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="2">
 		<Cursor position="2035" topLine="47" />
@@ -20,16 +20,16 @@
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="0" tabpos="5">
-		<Cursor position="5466" topLine="159" />
+		<Cursor position="8152" topLine="220" />
 	</File>
 	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="0" tabpos="6">
-		<Cursor position="382" topLine="0" />
+		<Cursor position="644" topLine="58" />
 	</File>
 	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="3">
-		<Cursor position="44916" topLine="1656" />
+		<Cursor position="54702" topLine="2014" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="4">
-		<Cursor position="285" topLine="0" />
+		<Cursor position="10808" topLine="297" />
 	</File>
 	<File name="../../src/libs/freetype-gl/font-manager.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />

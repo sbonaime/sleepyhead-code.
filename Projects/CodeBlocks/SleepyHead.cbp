@@ -29,12 +29,14 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-pg" />
 					<Add option="-g" />
 					<Add option="`wx-config --version=2.9 --cflags`" />
 					<Add directory="../../src/libs" />
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
+					<Add option="-pg" />
 					<Add option="`wx-config --version=2.9 --libs aui,xrc,qa,html,adv,gl,core,net,base`" />
 				</Linker>
 			</Target>
@@ -68,14 +70,17 @@
 				<Compiler>
 					<Add option="-march=i686" />
 					<Add option="-O2" />
+					<Add option="-pg" />
+					<Add option="-g" />
 					<Add option="-I/usr/include/freetype2" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --cflags`" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --cflags`" />
 					<Add directory="../../src/libs" />
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="`i686-pc-mingw32-wx-config --version=2.8 --libs gl,richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
+					<Add option="-pg" />
+					<Add option="`i686-pc-mingw32-wx-config --version=2.9 --libs gl,richtext,aui,xrc,qa,html,adv,core,xml,net,base`" />
 					<Add option="-lfreetype" />
 					<Add option="-lGLEW" />
 					<Add option="-lopengl32" />

@@ -630,9 +630,149 @@ Daily::Daily(wxWindow *win,Profile *p)
 
     Notebook->AddPage(HTMLInfo,wxT("Details"),false,wxNullBitmap);
     Notebook->AddPage(EventTree,wxT("Events"),false,wxNullBitmap);
+
+
+    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
+    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
+    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
+    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
+    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
+    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
+    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
+    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
+    AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
+    AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
+
+
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
+    FRW=new gGraphWindow(GraphWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
+    gLineChart *g;
+    FRW->AddLayer(new gYAxis(wxBLACK));
+    FRW->AddLayer(new gXAxis(wxBLACK));
+    FRW->AddLayer(new gFooBar());
+    FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
+    FRW->AddLayer(g=new gLineChart(frw,wxBLACK,200000,true));
+    g->ReportEmpty(true);
+    FRW->AddLayer(new gLineOverlayBar(flags[7],wxRED,wxT("PR"),LOT_Dot));
+    FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
+    FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
+    FRW->AddLayer(new gLineOverlayBar(flags[5],wxRED,wxT("VS")));
+    FRW->AddLayer(new gLineOverlayBar(flags[4],wxBLACK,wxT("FL")));
+    FRW->AddLayer(new gLineOverlayBar(flags[3],wxBLUE,wxT("H")));
+    FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
+    FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
+
+    SF=new gGraphWindow(GraphWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
+
+    AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
+    AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
+    AddCPAPData(prd=new EventData(CPAP_Pressure));
+    PRD=new gGraphWindow(GraphWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    PRD->AddLayer(new gXAxis(wxBLACK));
+    PRD->AddLayer(new gYAxis(wxBLACK));
+    PRD->AddLayer(new gFooBar());
+    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,true));
+    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
+    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
+
+
+    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
+    //leakdata->ForceMinY(0);
+    //leakdata->ForceMaxY(120);
+    LEAK=new gGraphWindow(GraphWindow,-1,wxT("Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    LEAK->AddLayer(new gXAxis(wxBLACK));
+    LEAK->AddLayer(new gYAxis(wxBLACK));
+    LEAK->AddLayer(new gFooBar());
+    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
+
+
+
+
+
+
+  //  SF->SetMargins(10,15,20,80);
+
+ //  #endif
+
+    const int sfc=9;
+
+
+    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
+    SF->SetBlockZoom(true);
+    SF->AddLayer(new gXAxis(wxBLACK));
+    SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
+    SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
+    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
+    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));
+    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,sfc));
+    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
+    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
+    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
+    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
+    SF->AddLayer(new gFooBar(wxGREEN,wxDARK_GREY,true));
+
+
+    AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
+    //snore->ForceMinY(0);
+    //snore->ForceMaxY(15);
+    SNORE=new gGraphWindow(GraphWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SNORE->AddLayer(new gXAxis(wxBLACK));
+    SNORE->AddLayer(new gYAxis(wxBLACK));
+    SNORE->AddLayer(new gFooBar());
+    SNORE->AddLayer(new gLineChart(snore,wxDARK_GREY,4096,false,false,true));
+
+    AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
+    //pulse->ForceMinY(40);
+    //pulse->ForceMaxY(120);
+
+    PULSE=new gGraphWindow(GraphWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    PULSE->AddLayer(new gXAxis(wxBLACK));
+    PULSE->AddLayer(new gYAxis(wxBLACK));
+    PULSE->AddLayer(new gFooBar());
+    PULSE->AddLayer(new gLineChart(pulse,wxRED,65536,false,false,true));
+
+    AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
+    //spo2->ForceMinY(60);
+    //spo2->ForceMaxY(100);
+    SPO2=new gGraphWindow(GraphWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
+    SPO2->AddLayer(new gXAxis(wxBLACK));
+    SPO2->AddLayer(new gYAxis(wxBLACK));
+    SPO2->AddLayer(new gFooBar());
+    SPO2->AddLayer(new gLineChart(spo2,wxBLUE,65536,false,false,true));
+    SPO2->LinkZoom(PULSE);
+    PULSE->LinkZoom(SPO2);
+
+
+//    #if defined(__UNIX__)
+    FRW->LinkZoom(SF);
+    FRW->LinkZoom(PRD);
+    FRW->LinkZoom(LEAK);
+    FRW->LinkZoom(SNORE);
+    SF->LinkZoom(FRW);
+    SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
+    SF->LinkZoom(LEAK);
+    SF->LinkZoom(SNORE);
+    PRD->LinkZoom(SF);
+    PRD->LinkZoom(FRW);
+    PRD->LinkZoom(LEAK);
+    PRD->LinkZoom(SNORE);
+    LEAK->LinkZoom(SF);
+    LEAK->LinkZoom(FRW);
+    LEAK->LinkZoom(PRD);
+    LEAK->LinkZoom(SNORE);
+    SNORE->LinkZoom(SF);
+    SNORE->LinkZoom(FRW);
+    SNORE->LinkZoom(PRD);
+    SNORE->LinkZoom(LEAK);
+
+
+
+
     AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
     AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
     AddCPAPData(tap=new TAPData(CPAP_Pressure));
+
+
 
     TAP=new gGraphWindow(GraphWindow,-1,wxT(""),wxPoint(0,0), wxSize(600,30), wxNO_BORDER);  //Time@Pressure
     //TAP->SetMargins(20,15,5,50);
@@ -666,166 +806,37 @@ Daily::Daily(wxWindow *win,Profile *p)
     l->color.push_back(*wxGREEN2);
     G_AHI->AddLayer(l);
 
-    AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
-    //pulse->ForceMinY(40);
-    //pulse->ForceMaxY(120);
 
-    PULSE=new gGraphWindow(GraphWindow,-1,wxT("Pulse"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    PULSE->AddLayer(new gXAxis(wxBLACK));
-    PULSE->AddLayer(new gYAxis(wxBLACK));
-    PULSE->AddLayer(new gFooBar());
-    PULSE->AddLayer(new gLineChart(pulse,wxRED,65536,false,false,true));
-
-    AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
-    //spo2->ForceMinY(60);
-    //spo2->ForceMaxY(100);
-    SPO2=new gGraphWindow(GraphWindow,-1,wxT("SpO2"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    SPO2->AddLayer(new gXAxis(wxBLACK));
-    SPO2->AddLayer(new gYAxis(wxBLACK));
-    SPO2->AddLayer(new gFooBar());
-    SPO2->AddLayer(new gLineChart(spo2,wxBLUE,65536,false,false,true));
-    SPO2->LinkZoom(PULSE);
-    PULSE->LinkZoom(SPO2);
-
-
-
-    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
-    //leakdata->ForceMinY(0);
-    //leakdata->ForceMaxY(120);
-    LEAK=new gGraphWindow(GraphWindow,-1,wxT("Leaks"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    LEAK->AddLayer(new gXAxis(wxBLACK));
-    LEAK->AddLayer(new gYAxis(wxBLACK));
-    LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,wxPURPLE,4096,false,false,false));
-
-
-    AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
-    //snore->ForceMinY(0);
-    //snore->ForceMaxY(15);
-    SNORE=new gGraphWindow(GraphWindow,-1,wxT("Snore"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    SNORE->AddLayer(new gXAxis(wxBLACK));
-    SNORE->AddLayer(new gYAxis(wxBLACK));
-    SNORE->AddLayer(new gFooBar());
-    SNORE->AddLayer(new gLineChart(snore,wxDARK_GREY,4096,false,false,true));
-
-    AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
-    AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
-    AddCPAPData(prd=new EventData(CPAP_Pressure));
-    PRD=new gGraphWindow(GraphWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(600,130), wxNO_BORDER);
-    PRD->AddLayer(new gXAxis(wxBLACK));
-    PRD->AddLayer(new gYAxis(wxBLACK));
-    PRD->AddLayer(new gFooBar());
-    PRD->AddLayer(new gLineChart(prd,wxDARK_GREEN,4096,false,false,false));
-    PRD->AddLayer(new gLineChart(pressure_iap,wxBLUE,4096,false,true,true));
-    PRD->AddLayer(new gLineChart(pressure_eap,wxRED,4096,false,true,true));
-
-
-    SF=new gGraphWindow(GraphWindow,-1,wxT("Event Flags"),wxPoint(0,0), wxSize(600,180), wxNO_BORDER);
-  //  SF->SetMargins(10,15,20,80);
-
- //  #endif
-
-    const int sfc=9;
-
-    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
-    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
-    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
-    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
-    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
-    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
-    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
-    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
-    AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
-    AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
-
-    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
-    SF->SetBlockZoom(true);
-    SF->AddLayer(new gXAxis(wxBLACK));
-    SF->AddLayer(new gFlagsLine(flags[9],wxDARK_GREEN,wxT("U0E"),8,sfc));
-    SF->AddLayer(new gFlagsLine(flags[8],wxRED,wxT("VS2"),6,sfc));
-    SF->AddLayer(new gFlagsLine(flags[6],wxYELLOW,wxT("RE"),7,sfc));
-    SF->AddLayer(new gFlagsLine(flags[5],wxRED,wxT("VS"),5,sfc));
-    SF->AddLayer(new gFlagsLine(flags[4],wxBLACK,wxT("FL"),4,sfc));
-    SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
-    SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
-    SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
-    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
-    SF->AddLayer(new gFooBar(wxGREEN,wxDARK_GREY,true));
-
-
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
-    FRW=new gGraphWindow(GraphWindow,-1,wxT("Flow Rate"),wxPoint(0,0), wxSize(600,150), wxNO_BORDER);
-
-
-    gLineChart *g;
-    FRW->AddLayer(new gYAxis(wxBLACK));
-    FRW->AddLayer(new gXAxis(wxBLACK));
-    FRW->AddLayer(new gFooBar());
-
-    FRW->AddLayer(new gLineOverlayBar(flags[0],wxGREEN2,wxT("CSR")));
-    FRW->AddLayer(g=new gLineChart(frw,wxBLACK,200000,true));
-    g->ReportEmpty(true);
-    FRW->AddLayer(new gLineOverlayBar(flags[7],wxRED,wxT("PR"),LOT_Dot));
-    FRW->AddLayer(new gLineOverlayBar(flags[6],wxYELLOW,wxT("RE")));
-    FRW->AddLayer(new gLineOverlayBar(flags[9],wxDARK_GREEN,wxT("U0E")));
-    FRW->AddLayer(new gLineOverlayBar(flags[5],wxRED,wxT("VS")));
-    FRW->AddLayer(new gLineOverlayBar(flags[4],wxBLACK,wxT("FL")));
-    FRW->AddLayer(new gLineOverlayBar(flags[3],wxBLUE,wxT("H")));
-    FRW->AddLayer(new gLineOverlayBar(flags[2],wxAQUA,wxT("OA")));
-    FRW->AddLayer(new gLineOverlayBar(flags[1],wxPURPLE,wxT("CA")));
-
-
-//    #if defined(__UNIX__)
-    FRW->LinkZoom(SF);
-    FRW->LinkZoom(PRD);
-    FRW->LinkZoom(LEAK);
-    FRW->LinkZoom(SNORE);
-    SF->LinkZoom(FRW);
-    SF->LinkZoom(PRD); // Uncomment to link in more graphs.. Too slow on windows.
-    SF->LinkZoom(LEAK);
-    SF->LinkZoom(SNORE);
-    PRD->LinkZoom(SF);
-    PRD->LinkZoom(FRW);
-    PRD->LinkZoom(LEAK);
-    PRD->LinkZoom(SNORE);
-    LEAK->LinkZoom(SF);
-    LEAK->LinkZoom(FRW);
-    LEAK->LinkZoom(PRD);
-    LEAK->LinkZoom(SNORE);
-    SNORE->LinkZoom(SF);
-    SNORE->LinkZoom(FRW);
-    SNORE->LinkZoom(PRD);
-    SNORE->LinkZoom(LEAK);
-
+    G_AHI->Hide();
+    TAP->Hide();
+    TAP_IAP->Hide();
+    TAP_EAP->Hide();
 
     gwSizer->Add(SF,1,wxEXPAND);
     gwSizer->Add(FRW,1,wxEXPAND);
     gwSizer->Add(PRD,1,wxEXPAND);
     gwSizer->Add(LEAK,1,wxEXPAND);
     gwSizer->Add(SNORE,1,wxEXPAND);
-    gwSizer->Add(TAP,1,wxEXPAND);
+    //gwSizer->Add(TAP,1,wxEXPAND);
     gwSizer->Add(PULSE,1,wxEXPAND);
     gwSizer->Add(SPO2,1,wxEXPAND);
 
+
     gwSizer->Layout();
-    G_AHI->Hide();
-    TAP->Hide();
-    TAP_IAP->Hide();
-    TAP_EAP->Hide();
     //fgSizer->Add(G_AHI,1,wxEXPAND);
     //fgSizer->Add(TAP,1,wxEXPAND);
     //fgSizer->Add(TAP_IAP,1,wxEXPAND);
     //fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
-    this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
+    this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Daily::OnEventTreeSelection), NULL, this);
     this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+
 
     //this->Connect(wxEVT_SCROLLWIN_THUMBTRACK
     //EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
     //this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
 
-    Refresh();
-    //Update();
+    Refresh(); // Important. Don't change the order of the next two lines.
     ResetDate();
 }
 
@@ -1245,6 +1256,7 @@ void Daily::RefreshData(wxCommandEvent& event)
     html+=wxT("</table></div></body></html>");
     HTMLInfo->SetPage(html);
     Refresh();
+    event.Skip();
 }
 void Daily::OnSelectSession( wxCommandEvent& event )
 {
