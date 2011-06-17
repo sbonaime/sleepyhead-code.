@@ -2,7 +2,7 @@
 gGraph Graphing System Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
-License: LGPL
+License: GPL
 */
 
 #include "freetype-gl/font-manager.h"

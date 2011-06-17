@@ -1,4 +1,9 @@
+/*
+pBuffer OpenGL Implementation
 
+Author: Mark Watkins <jedimark64@users.sourceforge.net>
+License: GPL
+*/
 #include "gl_pbuffer.h"
 
 #include <wx/utils.h>

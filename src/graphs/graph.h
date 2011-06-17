@@ -2,7 +2,7 @@
 gGraph Graphing System Header File
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
-License: LGPL
+License: GPL
 */
 #ifndef GRAPH_H
 #define GRAPH_H
