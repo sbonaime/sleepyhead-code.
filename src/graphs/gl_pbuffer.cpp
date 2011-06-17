@@ -5,7 +5,13 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 #include "gl_pbuffer.h"
+
+#if defined(__DARWIN__)
+#include <AGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
+
 #include <wx/utils.h>
 #include <wx/glcanvas.h>
 #include <wx/image.h>
