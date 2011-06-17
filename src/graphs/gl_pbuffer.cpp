@@ -61,14 +61,7 @@ FBO::FBO(int width, int height)
     glGenFramebuffersEXT(1, &fbo);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 
-    // create texture to render to.
-    glGenTextures(1, &img);
-    glBindTexture(GL_TEXTURE_2D, img);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, img, 0);
-
-
-    m_depth_buffer=true;
+    m_depth_buffer=false;
     m_color_buffer=true; //false;
 
     if (m_depth_buffer) {
@@ -82,23 +75,39 @@ FBO::FBO(int width, int height)
         glGenRenderbuffersEXT(1, &colorbuffer);
         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, colorbuffer);
         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA, m_width, m_height);
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, colorbuffer);
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, colorbuffer);
     }
 
+    // create texture to render to.
+    /*glGenTextures(1, &img);
+    glBindTexture(GL_TEXTURE_2D, img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, img, 0);*/
+
     GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-    //if (status!=GL_FRAMEBUFFER_COMPLETE_EXT) {
-    GLenum err = glGetError();
-    if (err!=GL_NO_ERROR) {
-        wxString a((char *)gluErrorString(status),wxConvUTF8);
-        throw GLException(wxT("glCheckFramebufferStatusEXT failed")+a);
+    if (status!=GL_FRAMEBUFFER_COMPLETE_EXT) {
+        wxString a;
+        a << (int)status; //((char *)gluErrorString(status),wxConvUTF8);
+      //  glDeleteTextures(1, &img);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        glDeleteFramebuffersEXT(1, &fbo);
+        if (m_depth_buffer)
+            glDeleteRenderbuffersEXT(1, &depthbuffer);
+        if (m_color_buffer)
+            glDeleteRenderbuffersEXT(1, &colorbuffer);
+
+        throw GLException(wxT("glCheckFramebufferStatusEXT failed: ")+a);
     }
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+//    GLenum err = glGetError();
+  //  if (err!=GL_NO_ERROR) {
 
 }
 
 
 FBO::~FBO()
 {
+    glDeleteTextures(1, &img);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     glDeleteFramebuffersEXT(1, &fbo);
     if (m_depth_buffer)
@@ -119,7 +128,7 @@ wxBitmap *FBO::Snapshot(int width,int height)
 {
     //width=m_width;
     //height=m_height;
-    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+    //glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
     void* pixels = malloc(3 * width * height); // must use malloc
     glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);

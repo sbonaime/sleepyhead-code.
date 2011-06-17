@@ -1003,6 +1003,7 @@ pBuffer *pbuffer=NULL;
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
     wxBitmap *bmp;
+    Update();
 
     if (!pbuffer) {
         try {

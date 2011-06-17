@@ -8309,7 +8309,7 @@
 
 1308026543 D
 
-1308326231 /home/mark/projects/git/sleepyhead/src/version.h
+1308327771 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8362,7 +8362,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308313179 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308326479 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	"freetype-gl/font-manager.h"
 	"freetype-gl/texture-font.h"
 	"graph.h"
@@ -11074,7 +11074,7 @@
 	<GL/glx.h>
 	<wx/bitmap.h>
 
-1308314362 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
+1308327673 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
 	"gl_pbuffer.h"
 	<GL/glu.h>
 	<wx/utils.h>
