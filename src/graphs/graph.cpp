@@ -23,7 +23,7 @@ License: GPL
 
 #include "sleeplib/profiles.h"
 
-#include "freesans.h"
+#include "graphs/freesans.h"
 
 //#include <wx/dcbuffer.h>
 
@@ -99,8 +99,7 @@ void GraphInit()
         if (!wxFileExists(fontfile)) {
             wxFFile f;
             f.Open(fontfile,wxT("wb"));
-            long size=sizeof(FreeSans_ttf);
-            if (!f.Write(FreeSans_ttf,size)) {
+            if (!f.Write(FreeSans_ttf,FreeSans_length)) {
                 wxLogError(wxT("Couldn't Write Font file.. Sorry.. need it to run"));
                 return;
             }

@@ -237,8 +237,17 @@ GLXContext real_shared_context=NULL;
 pBufferGLX::pBufferGLX(int width, int height)
 :pBuffer()
 {
-    m_width=width;
-    m_height=height;
+
+    int ms=MAX(width,height);
+    int j;
+    for (int i=4;i<32;i++) {  // min size 16x16.. probably a usless size.
+        j=1 << i;
+        if (j >= ms) break;
+    }
+    j <<= 2;
+
+    m_width=j;
+    m_height=j;
 
     int attrib[]={
         GLX_PBUFFER_WIDTH,m_width,
