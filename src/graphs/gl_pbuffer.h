@@ -92,12 +92,16 @@ protected:
 class pBufferAGL:public pBuffer
 {
 public:
-    pBufferAGL(int width, int height){};
-    virtual ~pBufferAGL(){};
-    virtual void UseBuffer(bool b){};
+    pBufferAGL(int width, int height);
+    virtual ~pBufferAGL();
+    virtual void UseBuffer(bool b);
 protected:
-
-    virtual bool InitGLStuff(){};
+    AGLPixelFormat pixelFormat;
+    AGLPbuffer pbuffer;
+    AGLContext context, pbContext;
+    long virtualScreen;
+    GDHandle display2;
+    GDHandle display;
 };
 #endif
 

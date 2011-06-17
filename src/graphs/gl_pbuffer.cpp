@@ -313,5 +313,78 @@ void pBufferGLX::UseBuffer(bool b)
 }
 #elif defined(__DARWIN__) || defined(__WXMAC__)
 
+pBufferAGL::pBufferAGL(int width, int height)
+:pBuffer(),m_width(width),m_height(height)
+{
+    GLint attribs[] = {
+        AGL_RGBA,
+        AGL_DOUBLEBUFFER,
+        AGL_ACCELERATED,
+        AGL_NO_RECOVERY,
+        AGL_DEPTH_SIZE, 24,
+        AGL_NONE
+    };
+    display2 = CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID());
+
+    display = GetMainDevice();
+    wxRect windowRect = { 100, 100, 100 + width, 100 + height };
+    WindowRef window;
+
+    pixelFormat = aglChoosePixelFormat( display2, 1, attribs );
+    pbContext = aglCreateContext( pixelFormat, NULL );
+    aglDestroyPixelFormat(pixelFormat);
+
+    aglCreatePBuffer( width, height, GL_TEXTURE_2D,GL_RGBA, 0, &pbuffer );
+
+    // bind pbuffer
+    virtualScreen = aglGetVirtualScreen( pbContext );
+    aglSetCurrentContext( pbContext );
+    aglSetPBuffer( pbContext, pbuffer, 0, 0, virtualScreen );
+    // draw into pbuffer
+
+    drawPBuffer();
+
+
+    // window pixelformat and context setup and creation
+    pixelFormat = aglChoosePixelFormat( &display, 1, attribs );
+    context = aglCreateContext( pixelFormat, NULL );
+    aglDestroyPixelFormat( pixelFormat );
+    aglSetCurrentContext( context );
+
+    // window creation
+    CreateNewWindow(kDocumentWindowClass, kWindowStandardDocumentAttributes | kWindowStandardHandlerAttribute, &windowRect, &window);
+
+    //Alternative Rendering Destinations 111
+    SetWindowTitleWithCFString( window, CFSTR("AGL PBuffer Texture") );
+    ActivateWindow(window, true);
+    ShowWindow(window);
+    // bind context to window
+    aglSetDrawable( context, GetWindowPort(window) );
+    aglUpdateContext( context );
+    // initialize window context & draw window
+    GLuint texid;
+    init( context, pbuffer, &texid );
+    drawWindow( context, texid );
+    // stub event loop
+}
+
+
+}
+pBufferAGL::~pBufferAGL()
+{
+    aglSetCurrentContext( NULL );
+    aglDestroyContext( context );
+    aglDestroyContext( pbContext );
+    aglDestroyPBuffer( pbuffer );
+
+}
+void pBufferAGL::UseBuffer(bool b)
+{
+    if (b) {
+        wglMakeCurrent(hdc, hGlRc);
+    } else {
+        wglMakeCurrent(saveHdc, saveHglrc);
+    }
+}
 
 #endif
