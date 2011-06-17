@@ -59,7 +59,7 @@ public:
     virtual ~Daily();
     void ResetDate();
     void RefreshData();
-    void RefreshData(wxCommandEvent& event);
+    void DoRefreshData(wxCommandEvent& event);
   //  void SetProfile(Profile *p);
 protected:
     virtual void OnCalendarDay( wxCalendarEvent& event );

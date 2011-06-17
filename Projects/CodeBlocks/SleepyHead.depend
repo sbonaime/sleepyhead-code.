@@ -8258,7 +8258,7 @@
 1307418393 /home/mark/projects/git/sleepyhead/src/SleepyHeadApp.h
 	<wx/app.h>
 
-1308112853 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
+1308270987 /home/mark/projects/git/sleepyhead/src/SleepyHeadMain.h
 	<wx/listbox.h>
 	<wx/treectrl.h>
 	"SleepyHeadApp.h"
@@ -8309,7 +8309,7 @@
 
 1308026543 D
 
-1308265378 /home/mark/projects/git/sleepyhead/src/version.h
+1308270969 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
