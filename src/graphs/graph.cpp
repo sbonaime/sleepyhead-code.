@@ -56,12 +56,13 @@ wxColor *wxDARK_GREEN=&zwxDARK_GREEN;
 wxColor zwxDARK_GREY(0xA0,0xA0,0xA0,0xA0);
 wxColor *wxDARK_GREY=&zwxDARK_GREY;
 
-bool gfont_init=false;
 
 FontManager *font_manager;
 TextureFont *bigfont=NULL,*zfont=NULL;
 VertexBuffer *vbuffer=NULL;
 TextMarkup *markup=NULL;
+
+static bool gfont_init=false;
 
 // Must be called from a thread inside the application.
 void GraphInit()
@@ -373,7 +374,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     m_scrX   = m_scrY   = 64;
     m_title=title;
     m_mouseRDown=m_mouseLDown=false;
-    SetBackgroundColour( *wxWHITE );
+    //SetBackgroundColour( *wxWHITE );
     m_bgColour = *wxWHITE;
     m_fgColour = *wxBLACK;
     SetMargins(5, 15, 0, 0);
@@ -415,7 +416,7 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     if (!title.IsEmpty()) {
         AddLayer(new gGraphTitle(title,wxVERTICAL));
     }
-    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    //SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
 }
 gGraphWindow::~gGraphWindow()
@@ -1114,7 +1115,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     GetClientSize(&m_scrX, &m_scrY);
 
-    Render(m_scrX,m_scrY);
+  //  Render(m_scrX,m_scrY);
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width>0)
@@ -2542,6 +2543,17 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     glColor4ub(col.Red(),col.Green(),col.Blue(),col.Alpha());
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
+
+    glLineWidth (1);
+    bool antialias=pref["UseAntiAliasing"];
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+
+    }
+
     if (quadcnt>0) {
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, quadarray);
@@ -2554,6 +2566,11 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
         glDisableClientState(GL_VERTEX_ARRAY);
     }
+    if (antialias) {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+    }
+
     glDisable(GL_SCISSOR_TEST);
 }
 

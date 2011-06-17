@@ -353,7 +353,7 @@ void SleepyHeadFrame::OnViewMenuDaily( wxCommandEvent& event )
 
     } else {
         main_auinotebook->SetSelection(idx);
-        daily->Refresh(true);
+        daily->Refresh();
     }
 
 
@@ -711,7 +711,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     SF->AddLayer(new gFlagsLine(flags[3],wxBLUE,wxT("H"),3,sfc));
     SF->AddLayer(new gFlagsLine(flags[2],wxAQUA,wxT("OA"),2,sfc));
     SF->AddLayer(new gFlagsLine(flags[1],wxPURPLE,wxT("CA"),1,sfc));
-    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN2,wxT("CSR"),0,sfc));
+    SF->AddLayer(new gFlagsLine(flags[0],wxGREEN,wxT("CSR"),0,sfc));
     SF->AddLayer(new gFooBar(wxGREEN,wxDARK_GREY,true));
 
 
@@ -832,7 +832,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     //fgSizer->Add(TAP_EAP,1,wxEXPAND);
 
     this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Daily::OnEventTreeSelection), NULL, this);
-    this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+    this->Connect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::DoRefreshData));
 
 
     //this->Connect(wxEVT_SCROLLWIN_THUMBTRACK
@@ -919,7 +919,7 @@ void Daily::RefreshData()
     wxCommandEvent MyEvent( wxEVT_REFRESH_DAILY);
     wxPostEvent(this, MyEvent);
 }
-void Daily::RefreshData(wxCommandEvent& event)
+void Daily::DoRefreshData(wxCommandEvent& event)
 {
     wxDateTime date=Calendar->GetDate();
     date.ResetTime();
