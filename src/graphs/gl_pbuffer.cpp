@@ -456,8 +456,10 @@ void pBufferGLX::UseBuffer(bool b)
 #elif defined(__DARWIN__) || defined(__WXMAC__)
 
 pBufferAGL::pBufferAGL(int width, int height)
-:pBuffer(),m_width(width),m_height(height)
+:pBuffer()
 {
+    m_width=width;
+    m_height=height;
     GLint attribs[] = {
         AGL_RGBA,
         AGL_DOUBLEBUFFER,
@@ -510,8 +512,6 @@ pBufferAGL::pBufferAGL(int width, int height)
     // stub event loop
 }
 
-
-}
 pBufferAGL::~pBufferAGL()
 {
     /*aglSetCurrentContext( NULL );
