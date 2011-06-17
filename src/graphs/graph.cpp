@@ -1591,33 +1591,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     double min_ytick=rxy*yt;
 
-    //if (miny>=0) {
-    //} else {
-    //}
-    /*double max_yticks=1/max_yticksdiv;
-
-    double yy=w.max_y-w.min_y;
-    double ymult=height/yy;
-    double major_ytick=max_yticksdiv*yy;
-
-    double min_ytick,q;
-
-    if (w.min_y>=0) {
-        int yrounding[9]={1,2,5,10,20,30,40,50,100}; // time rounding
-        int ry;
-        for (ry=0;ry<9;ry++) {
-       // st=round(st2*rounding[ry])/rounding[ry];
-            min_ytick=round(major_ytick*yrounding[ry])/yrounding[ry];
-            q=yy/min_ytick;  // number of ticks that fits in range
-            if (q<=max_yticks) break; // compared to number of ticks that fit on screen.
-        }
-    } else {
-        min_ytick=60;
-    }
-    if (min_ytick<=0.25)
-        min_ytick=0.25; */
-
-    int ty,h;
+    float ty,h;
 
     const int maxverts=2048;
     int vertcnt=0;
@@ -1625,6 +1599,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     glColor4ub(linecol1.Red(),linecol1.Green(),linecol1.Blue(),linecol1.Alpha());
     glLineWidth(1);
+
 
     for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
 		ty=(i - miny) * ymult;
