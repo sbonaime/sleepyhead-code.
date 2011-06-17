@@ -7,7 +7,7 @@ License: GPL
 #include "gl_pbuffer.h"
 
 #if defined(__DARWIN__)
-#include <AGL/glu.h>
+#include <OpenGL/glu.h>
 #else
 #include <GL/glu.h>
 #endif
