@@ -488,8 +488,10 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
     double rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
-    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-        (*g)->SetXBounds(rx1,rx2);
+    if (pref["LinkGraphMovement"]) {
+        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            (*g)->SetXBounds(rx1,rx2);
+        }
     }
 
     //if (m_block_zoom) {
@@ -791,10 +793,12 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
         m_drag_foobar=false;
 
         if (did_draw) {
-            double min=MinX();
-            double max=MaxX();
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->SetXBounds(min,max);
+            if (pref["LinkGraphMovement"]) {
+                double min=MinX();
+                double max=MaxX();
+                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                    (*g)->SetXBounds(min,max);
+                }
             }
         }
         event.Skip();
@@ -817,10 +821,13 @@ void gGraphWindow::OnMouseRightRelease(wxMouseEvent &event)
         //if (!m_block_zoom) {
             ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
 
-            double min=MinX();
-            double max=MaxX();
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->SetXBounds(min,max);
+            if (pref["LinkGraphMovement"]) {
+                double min=MinX();
+                double max=MaxX();
+
+                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                    (*g)->SetXBounds(min,max);
+                }
             }
         //}
 
@@ -971,10 +978,12 @@ void gGraphWindow::OnMouseLeftRelease(wxMouseEvent &event)
         if (r!=m_mouseRBrect)
             Refresh(false);
     } else {
-        double min=MinX();
-        double max=MaxX();
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-            (*g)->SetXBounds(min,max);
+        if (pref["LinkGraphMovement"]) {
+            double min=MinX();
+            double max=MaxX();
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
         }
     }
     //}
@@ -1007,18 +1016,16 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 
     if (!pbuffer) {
         try {
-            wxSize res=wxGetDisplaySize();
-            pbuffer=new FBO(res.GetWidth(),res.GetHeight());
-            /*
 #if defined(__WXMSW__)
             pbuffer=new pBufferWGL(width,height);
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
+            // Do nothing and load the FBO
             throw GLException(wxT("Macintrash"));
             //pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
             pbuffer=new pBufferGLX(width,height);
 #endif
-*/
+
         } catch(GLException e) {
             // Should log already if failed..
             wxLogDebug(wxT("pBuffers not implemented or functional on this platform.. Trying FBO"));
@@ -1027,7 +1034,12 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     }
     if (!pbuffer) {
         try {
-            pbuffer=new FBO(width,height);
+            // This will fail the first run on GTK
+            // The solution is to get a damn screen refresh event to occur BEFORE the RefreshData() event callback.
+            // Trickier than it sounds, and I didn't want to kludge
+
+            wxSize res=wxGetDisplaySize(); // Not entirely sure if this is the limit..
+            pbuffer=new FBO(res.GetWidth(),res.GetHeight());
         } catch(GLException e) {
             wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
             pbuffer=NULL;
@@ -1906,6 +1918,15 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     wxString str;
     bool draw_xticks_instead=false;
+    bool antialias=pref["UseAntiAliasing"];
+
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+
+    }
 
     for (int i=0;i<data->np[0];i++) {
         if (data->point[0][i].m_x < w.min_x) continue;
@@ -1943,8 +1964,15 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         glEnd();
 
 
-        wxColor c(0,0,0,255);
-        LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
+        glColor4ub(0,0,0,255);
+        glLineWidth (1);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(rect.x, rect.y+rect.height);
+        glVertex2f(rect.x, rect.y);
+        glVertex2f(rect.x+rect.width,rect.y);
+        glVertex2f(rect.x+rect.width, rect.y+rect.height);
+        glEnd();
+        //LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
 
         str=FormatX(data->point[0][i].m_x);
 
@@ -1970,6 +1998,11 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f (start_px,start_py);
     glVertex2f (start_px+width, start_py);
     glEnd ();
+    if (antialias) {
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+
+    }
 
 }
 

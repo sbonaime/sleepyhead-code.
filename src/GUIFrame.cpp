@@ -154,7 +154,7 @@ DailyPanel::DailyPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, con
 	m_mgr.AddPane( Calendar, wxAuiPaneInfo() .Left() .Caption( wxT("Selected Day") ).PaneBorder( false ).Dock().Fixed().BottomDockable( false ).TopDockable( false ) );
 	
 	Notebook = new wxAuiNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_MOVE|wxAUI_NB_TAB_SPLIT );
-	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .Caption( wxT("Summary") ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxSize( 280,480 ) ).DockFixed( false ).Position( 1 ).BestSize( wxSize( 280,480 ) ) );
+	m_mgr.AddPane( Notebook, wxAuiPaneInfo() .Left() .Caption( wxT("Summary") ).PaneBorder( false ).Dock().Resizable().FloatingSize( wxSize( 350,480 ) ).DockFixed( false ).Position( 1 ).BestSize( wxSize( 350,480 ) ).MinSize( wxSize( 320,-1 ) ) );
 	
 	
 	
@@ -180,7 +180,7 @@ SummaryPanel::SummaryPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_mgr.SetManagedWindow(this);
 	
 	HTMLInfo = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Right() .Caption( wxT("Information") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( 208,424 ) ).DockFixed( false ).Row( 0 ).Position( 2 ).MinSize( wxSize( 200,400 ) ) );
+	m_mgr.AddPane( HTMLInfo, wxAuiPaneInfo() .Right() .Caption( wxT("Information") ).CloseButton( false ).MaximizeButton( false ).MinimizeButton( false ).PinButton( true ).Dock().Resizable().FloatingSize( wxSize( 250,424 ) ).DockFixed( false ).Row( 0 ).Position( 2 ).BestSize( wxSize( 250,500 ) ).MinSize( wxSize( 200,400 ) ) );
 	
 	ScrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
 	ScrolledWindow->SetScrollRate( 5, 5 );

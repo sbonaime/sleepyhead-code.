@@ -8,6 +8,7 @@ License: GPL
 #include <GL/glu.h>
 #include <wx/utils.h>
 #include <wx/glcanvas.h>
+#include <wx/image.h>
 
 long roundup2(long v)
 {
