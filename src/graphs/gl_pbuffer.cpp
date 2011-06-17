@@ -338,7 +338,7 @@ pBufferAGL::pBufferAGL(int width, int height)
         AGL_DEPTH_SIZE, 24,
         AGL_NONE
     };
-    display2 = CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID());
+    /*display2 = CGDisplayIDToOpenGLDisplayMask(CGMainDisplayID());
 
     display = GetMainDevice();
     wxRect windowRect = { 100, 100, 100 + width, 100 + height };
@@ -378,7 +378,7 @@ pBufferAGL::pBufferAGL(int width, int height)
     // initialize window context & draw window
     GLuint texid;
     init( context, pbuffer, &texid );
-    drawWindow( context, texid );
+    drawWindow( context, texid ); */
     // stub event loop
 }
 
@@ -386,19 +386,19 @@ pBufferAGL::pBufferAGL(int width, int height)
 }
 pBufferAGL::~pBufferAGL()
 {
-    aglSetCurrentContext( NULL );
+    /*aglSetCurrentContext( NULL );
     aglDestroyContext( context );
     aglDestroyContext( pbContext );
-    aglDestroyPBuffer( pbuffer );
+    aglDestroyPBuffer( pbuffer ); */
 
 }
 void pBufferAGL::UseBuffer(bool b)
 {
-    if (b) {
+/*    if (b) {
         wglMakeCurrent(hdc, hGlRc);
     } else {
         wglMakeCurrent(saveHdc, saveHglrc);
-    }
+    } */
 }
 
 #endif

@@ -26,6 +26,14 @@ License: GPL
 #include <OpenGL/gl.h>
 #include <AGL/agl.h>
 
+// Not sure about these
+#if defined(__WXCARBON__)
+#include <Carbon/Carbon.h>
+#elif defined(__WXCOCOA__)
+#include <Cocoa/Cocoa.h>
+#endif
+
+
 #elif defined(__UNIX__)
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -102,12 +110,12 @@ public:
     virtual ~pBufferAGL();
     virtual void UseBuffer(bool b);
 protected:
-    AGLPixelFormat pixelFormat;
+/*    AGLPixelFormat pixelFormat;
     AGLPbuffer pbuffer;
     AGLContext context, pbContext;
     long virtualScreen;
     GDHandle display2;
-    GDHandle display;
+    GDHandle display; */
 };
 #endif
 
