@@ -825,7 +825,6 @@ Daily::Daily(wxWindow *win,Profile *p)
     gwSizer->Add(SPO2,1,wxEXPAND);
 
 
-    gwSizer->Layout();
     //fgSizer->Add(G_AHI,1,wxEXPAND);
     //fgSizer->Add(TAP,1,wxEXPAND);
     //fgSizer->Add(TAP_IAP,1,wxEXPAND);
@@ -839,7 +838,10 @@ Daily::Daily(wxWindow *win,Profile *p)
     //EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
     //this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
 
-    Refresh(); // Important. Don't change the order of the next two lines.
+    Refresh(true); // Important. Don't change the order of the next two lines.
+    Update();
+//    gwSizer->Layout();
+
     ResetDate();
 }
 

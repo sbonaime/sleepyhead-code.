@@ -8300,7 +8300,7 @@
 	<map>
 	"tinyxml/tinyxml.h"
 
-1308302313 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
+1308311237 /home/mark/projects/git/sleepyhead/src/graphs/graph.h
 	"gl_pbuffer.h"
 	<wx/glcanvas.h>
 	<wx/geometry.h>
@@ -8309,7 +8309,7 @@
 
 1308026543 D
 
-1308306194 /home/mark/projects/git/sleepyhead/src/version.h
+1308326231 /home/mark/projects/git/sleepyhead/src/version.h
 
 1308003040 ent of cb2ab33... Linux wx2.8 & wx2.9 builds fixed
 	<wx/dcbuffer.h>
@@ -8341,7 +8341,7 @@
 	"preferences.h"
 	"tinyxml/tinyxml.h"
 
-1308271319 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
+1308313128 source:/home/mark/projects/git/sleepyhead/src/SleepyHeadMain.cpp
 	"wx_pch.h"
 	"version.h"
 	<wx/app.h>
@@ -8362,7 +8362,7 @@
 	"sleeplib/profiles.h"
 	"sleeplib/machine_loader.h"
 
-1308304488 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
+1308313179 source:/home/mark/projects/git/sleepyhead/src/graphs/graph.cpp
 	"freetype-gl/font-manager.h"
 	"freetype-gl/texture-font.h"
 	"graph.h"
@@ -11062,7 +11062,7 @@
 	<string.h>
 	"freetype-gl/vector.h"
 
-1308306186 /home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.h
+1308311222 /home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.h
 	<wx/log.h>
 	<GL/glew.h>
 	<GL/wglew.h>
@@ -11072,10 +11072,13 @@
 	<Cocoa/Cocoa.h>
 	<GL/gl.h>
 	<GL/glx.h>
+	<wx/bitmap.h>
 
-1308304655 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
+1308314362 source:/home/mark/projects/git/sleepyhead/src/graphs/gl_pbuffer.cpp
 	"gl_pbuffer.h"
+	<GL/glu.h>
 	<wx/utils.h>
+	<wx/glcanvas.h>
 
 1305166122 /opt/mingw/usr/i686-pc-mingw32/include/wx-2.8/wx/treectrl.h
 	"wx/defs.h"

@@ -5,8 +5,20 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 #include "gl_pbuffer.h"
-
+#include <GL/glu.h>
 #include <wx/utils.h>
+#include <wx/glcanvas.h>
+
+long roundup2(long v)
+{
+    int j;
+    for (int i=4;i<32;i++) {  // min size 16x16.. probably a usless size.
+        j=1 << i;
+        if (j >= v) break;
+    }
+    return j;
+}
+
 
 pBuffer::pBuffer()
 {
@@ -18,6 +30,112 @@ pBuffer::pBuffer(int width, int height)
 pBuffer::~pBuffer()
 {
 }
+wxBitmap *pBuffer::Snapshot(int width, int height)
+{
+    glDrawBuffer(GL_BACK_LEFT);
+
+    void* pixels = malloc(3 * width * height); // must use malloc
+    glReadBuffer(GL_BACK_LEFT);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+    // Put the image into a wxImage
+    wxImage image(width, height, true);
+    image.SetData((unsigned char*) pixels);
+    image = image.Mirror(false);
+    wxBitmap *bmp=new wxBitmap(image);
+    return bmp;
+}
+
+
+FBO::FBO(int width, int height)
+:pBuffer()
+{
+    //wxGLContext a((wxGLCanvas *)NULL,(wxGLContext *)NULL);
+    int m=MAX(width,height);
+    //int j=roundup2(m) << 2;
+    m_width=width; //roundup2(width) << 2;
+    m_height=height; //roundup2(height) << 2;
+
+    glGenFramebuffersEXT(1, &fbo);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+
+    // create texture to render to.
+    glGenTextures(1, &img);
+    glBindTexture(GL_TEXTURE_2D, img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, img, 0);
+
+
+    m_depth_buffer=true;
+    m_color_buffer=true; //false;
+
+    if (m_depth_buffer) {
+        glGenRenderbuffersEXT(1, &depthbuffer);
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthbuffer);
+        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, m_width, m_height);
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthbuffer);
+    }
+
+    if (m_color_buffer) {
+        glGenRenderbuffersEXT(1, &colorbuffer);
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, colorbuffer);
+        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA, m_width, m_height);
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, colorbuffer);
+    }
+
+    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    //if (status!=GL_FRAMEBUFFER_COMPLETE_EXT) {
+    GLenum err = glGetError();
+    if (err!=GL_NO_ERROR) {
+        wxString a((char *)gluErrorString(status),wxConvUTF8);
+        throw GLException(wxT("glCheckFramebufferStatusEXT failed")+a);
+    }
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+}
+
+
+FBO::~FBO()
+{
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glDeleteFramebuffersEXT(1, &fbo);
+    if (m_depth_buffer)
+        glDeleteRenderbuffersEXT(1, &depthbuffer);
+    if (m_color_buffer)
+        glDeleteRenderbuffersEXT(1, &colorbuffer);
+}
+void FBO::UseBuffer(bool b)
+{
+    if (b) {
+     //   glBindTexture(GL_TEXTURE_2D, img);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+    } else {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    }
+}
+wxBitmap *FBO::Snapshot(int width,int height)
+{
+    //width=m_width;
+    //height=m_height;
+    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+
+    void* pixels = malloc(3 * width * height); // must use malloc
+    glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+
+    // Put the image into a wxImage
+    wxImage image(width, height, true);
+    image.SetData((unsigned char*) pixels);
+    image = image.Mirror(false);
+    wxBitmap *bmp=new wxBitmap(image);
+    return bmp;
+}
+
 
 
 #if defined(__WXMSW__)

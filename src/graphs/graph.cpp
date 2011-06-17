@@ -23,7 +23,7 @@ License: GPL
 
 #include "sleeplib/profiles.h"
 
-#include "graphs/freesans.h"
+#include "graphs/freesans.h" // Remember to compress this..
 
 //#include <wx/dcbuffer.h>
 
@@ -1002,108 +1002,48 @@ pBuffer *pbuffer=NULL;
 
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
-    // I can't get FBO buffers to work properly
-    // Fonts screw up and the first read is corrupted.
-    // pBuffers are faster anyway..
-
-    // shared_context->SetCurrent(*this);
-    /*GLuint fbo;
-    glGenFramebuffersEXT(1, &fbo);
-
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
-
-    GLuint depthbuffer,colorbuffer;
-    //glGenRenderbuffersEXT(1, &depthbuffer);
-    glGenRenderbuffersEXT(1, &colorbuffer);
-
-    //glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthbuffer);
-    //glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height);
-
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, colorbuffer);
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA8, width, height);
-
-
-    //glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthbuffer);
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, colorbuffer);
-
-
-    GLuint img;
-    glGenTextures(1, &img);
-    glBindTexture(GL_TEXTURE_2D, img);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-
-
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, img, 0);
-
-    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-
-    //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo); */
-
-
-
+    wxBitmap *bmp;
 
     if (!pbuffer) {
         try {
+            wxSize res=wxGetDisplaySize();
+            pbuffer=new FBO(res.GetWidth(),res.GetHeight());
+            /*
 #if defined(__WXMSW__)
             pbuffer=new pBufferWGL(width,height);
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
-            pbuffer=new pBufferAGL(width,height);
+            throw GLException(wxT("Macintrash"));
+            //pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
             pbuffer=new pBufferGLX(width,height);
 #endif
+*/
         } catch(GLException e) {
             // Should log already if failed..
+            wxLogDebug(wxT("pBuffers not implemented or functional on this platform.. Trying FBO"));
+            pbuffer=NULL;
+        }
+    }
+    if (!pbuffer) {
+        try {
+            pbuffer=new FBO(width,height);
+        } catch(GLException e) {
+            wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
             pbuffer=NULL;
             return NULL;
         }
     }
-
-
-
     if (pbuffer) {
         pbuffer->UseBuffer(true);
-    }
-    // Move this bitmap code to pBuffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Can't use font's in multiple contexts
+        Render(width,height);
 
-    // glClearColor(1,1,0,1);
-    //glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-    // Can't use font's in multiple contexts
-    Render(width,height);
+        bmp=pbuffer->Snapshot(width,height);
+        glFlush();
+        pbuffer->UseBuffer(false);
+    } else bmp=NULL;
 
-    //glDrawBuffer(GL_BACK_LEFT);
-
-//    GLubyte* src = (GLubyte*)glMapBufferARB(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY_ARB);
-
-//    glBindTexture(GL_TEXTURE_2D, img);
-    void* pixels = malloc(3 * width * height); // must use malloc
-    //glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-
-    //glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-    //glReadBuffer(GL_FRONT);
-    //glReadBuffer(GL_BACK_LEFT );
-    //glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-    // Put the image into a wxImage
-    wxImage image(width, height, true);
-    image.SetData((unsigned char*) pixels);
-    image = image.Mirror(false);
-    glFlush();
-
-    wxBitmap *bmp=new wxBitmap(image);
-
-
- //   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-//    glDeleteFramebuffersEXT(1, &fbo);
-    //glDeleteRenderbuffersEXT(1, &depthbuffer);
-    if (pbuffer) {
-        //delete pbuffer;
-    }
 
     return bmp;
 }
@@ -1180,7 +1120,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     SwapBuffers(); // Dump to screen.
 
-    //event.Skip();
+    event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {

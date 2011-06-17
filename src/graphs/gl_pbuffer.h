@@ -39,9 +39,12 @@ License: GPL
 #include <GL/glx.h>
 #endif
 
-#define MIN(a,b) (a<b) ? a : b;
-#define MAX(a,b) (a<b) ? b : a;
+#define MIN(a,b) (((a)<(b)) ? (a) : (b));
+#define MAX(a,b) (((a)<(b)) ? (b) : (a));
 
+#include <wx/bitmap.h>
+
+long roundup2(long v);
 
 class GLException {
 public:
@@ -56,10 +59,28 @@ public:
     pBuffer(int width, int height);
     virtual ~pBuffer();
     virtual void UseBuffer(bool b) {};
-
+    int Width() { return m_width; };
+    int Height() { return m_height; };
+    virtual wxBitmap *Snapshot(int width, int height);
 protected:
     int m_width;
     int m_height;
+};
+
+class FBO:public pBuffer
+{
+public:
+    FBO(int width, int height);
+    virtual ~FBO();
+    virtual void UseBuffer(bool b);
+    virtual wxBitmap *Snapshot(int width, int height);
+protected:
+    GLuint depthbuffer,colorbuffer;
+    GLuint img;
+    GLuint fbo;
+    bool m_depth_buffer;
+    bool m_color_buffer;
+
 };
 
 #if defined(__WXMSW__)
