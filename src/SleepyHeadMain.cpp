@@ -866,7 +866,7 @@ Daily::~Daily()
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBTRACK, EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll));
     //this->Disconnect(wxEVT_SCROLLWIN_THUMBRELEASE, EVT_SCROLLWIN_THUMBRELEASE(Daily::OnWinScroll));
 
-    this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::RefreshData));
+    this->Disconnect(wxID_ANY, wxEVT_REFRESH_DAILY, wxCommandEventHandler(Daily::DoRefreshData));
     this->Disconnect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Daily::OnEventTreeSelection), NULL, this);
 }
 void Daily::OnWinScroll(wxScrollWinEvent &event)

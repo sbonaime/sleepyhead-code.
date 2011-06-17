@@ -1115,7 +1115,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     GetClientSize(&m_scrX, &m_scrY);
 
-  //  Render(m_scrX,m_scrY);
+    Render(m_scrX,m_scrY);
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width>0)
