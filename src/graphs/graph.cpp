@@ -134,7 +134,7 @@ void GetTextExtent(wxString text, float & width, float & height, TextureFont *fo
 
     for (unsigned i=0;i<text.Length();i++) {
         glyph=font->GetGlyph((wchar_t)text[i]);
-        if (!height) height=glyph->m_height; // > height) height=glyph->m_height;
+        if (glyph->m_height > height) height=glyph->m_height;
         width+=glyph->m_advance_x;
     }
 }
@@ -1390,6 +1390,11 @@ gXAxis::gXAxis(const wxColor * col)
         color.clear();
         color.push_back(*col);
     }
+    m_show_major_lines=false;
+    m_show_minor_lines=false;
+    m_show_minor_ticks=true;
+    m_show_major_ticks=true;
+
 }
 gXAxis::~gXAxis()
 {
@@ -1422,7 +1427,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     if (xx<1.5) {
         fd=wxT("00:00:00:0000");
     } else {
-        fd=wxT("XX XXX");
+        fd=wxT("XXX");
     }
     float x,y;
     GetTextExtent(fd,x,y);
@@ -1475,13 +1480,15 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     int vertcnt=0;
     static GLshort vertarray[maxverts+4];
 
-    for (double i=st3; i<=maxx; i+=min_tick/10.0) {
-        if (i<minx) continue;
-        px=(i-minx)*xmult+w.GetLeftMargin();
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=py-4;
+    if (m_show_minor_ticks) {
+        for (double i=st3; i<=maxx; i+=min_tick/10.0) {
+            if (i<minx) continue;
+            px=(i-minx)*xmult+w.GetLeftMargin();
+            vertarray[vertcnt++]=px;
+            vertarray[vertcnt++]=py;
+            vertarray[vertcnt++]=px;
+            vertarray[vertcnt++]=py-4;
+        }
     }
 
 
@@ -1513,15 +1520,17 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         px=(i-minx)*xmult+w.GetLeftMargin();
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=py-6;
+        if (m_show_major_ticks) {
+            vertarray[vertcnt++]=px;
+            vertarray[vertcnt++]=py;
+            vertarray[vertcnt++]=px;
+            vertarray[vertcnt++]=py-6;
+        }
 
         GetTextExtent(fd,x,y);
 
         if (!show_time) {
-            DrawText(fd, px-(y/2)-2, py-(x/2)-14, 90.0,*wxBLACK);
+            DrawText(fd, px-(y/2)+2, py-(x/2)-14, 90.0,*wxBLACK);
 
         } else {
             DrawText(fd, px-(x/2), py-14-y);
@@ -1875,7 +1884,7 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
     if (days==0) return;
 
     float barwidth,pxr;
-    float px;//,py;
+    float px,zpx;//,py;
 
     if (m_direction==wxVERTICAL) {
         barwidth=(height-days)/float(days);
@@ -1902,10 +1911,13 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
 
     }
+    zpx=px;
+    int i,idx=-1;
 
-    for (int i=0;i<data->np[0];i++) {
+    for (i=0;i<data->np[0];i++) {
         if (data->point[0][i].m_x < w.min_x) continue;
         if (data->point[0][i].m_x >= w.max_x) break;
+        if (idx<0) idx=i;
         t1=px;
         px+=barwidth+1;
         t2=px-t1-1;
@@ -1915,6 +1927,10 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
 
         u2=data->point[0][i].m_y*pxr;
         u1=start_py;
+        if (antialias) {
+            u1++;
+            u2++;
+        }
 
         if (m_direction==wxVERTICAL) {
             rect=wxRect(start_px,t1,u2,t2);
@@ -1949,35 +1965,50 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         glEnd();
         //LinedRoundedRectangle(rect.x,rect.y,rect.width,rect.height,0,1,c);
 
-        str=FormatX(data->point[0][i].m_x);
+        if (!draw_xticks_instead) {
+            str=FormatX(data->point[0][i].m_x);
 
-        GetTextExtent(str, textX, textY);
-        if (t2>textY+6) {
+            GetTextExtent(str, textX, textY);
+            if (t2<textY+6)
+                draw_xticks_instead=true;
+        }
+    }
+    if (antialias) {
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+    }
+
+    if (draw_xticks_instead) {
+        // turn off the minor ticks..
+        Xaxis->SetShowMinorTicks(false);
+        Xaxis->Plot(w,scrx,scry);
+    } else {
+        px=zpx;
+        for (i=idx;i<data->np[0];i++) {
+            if (data->point[0][i].m_x < w.min_x) continue;
+            if (data->point[0][i].m_x >= w.max_x) break;
+            t1=px;
+            px+=barwidth+1;
+            t2=px-t1-1;
+            str=FormatX(data->point[0][i].m_x);
+            GetTextExtent(str, textX, textY);
             int j=t1+((t2/2)-(textY/2));
             if (m_direction==wxVERTICAL) {
                 DrawText(str,start_px-textX-8,j);
             } else {
                 DrawText(str,j,start_py-18-(textX/2),90,*wxBLACK);
             }
-        } else draw_xticks_instead=true;
-
+        }
     }
-    if (draw_xticks_instead)
-        Xaxis->Plot(w,scrx,scry);
 
     glColor3f (0.1F, 0.1F, 0.1F);
     glLineWidth(1);
     glBegin (GL_LINES);
     glVertex2f (start_px, start_py);
-    glVertex2f (start_px, start_py+height);
-    glVertex2f (start_px,start_py);
-    glVertex2f (start_px+width, start_py);
+    glVertex2f (start_px, start_py+height+1);
+    //glVertex2f (start_px,start_py);
+    //glVertex2f (start_px+width, start_py);
     glEnd ();
-    if (antialias) {
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-
-    }
 
 }
 

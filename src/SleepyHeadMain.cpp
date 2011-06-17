@@ -397,7 +397,9 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     AddData(bedtime=new UsageHistoryData(profile,UHD_Bedtime));
 
     AHI=new gGraphWindow(ScrolledWindow,-1,wxT("AHI"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
-    AHI->SetMargins(10,15,65,80);
+    //AHI->SetMargins(10,15,,0);
+    AHI->SetTopMargin(10);
+    AHI->SetBottomMargin(AHI->GetBottomMargin()+gXAxis::Margin+20);
     AHI->AddLayer(new gFooBar());
     AHI->AddLayer(new gYAxis(wxBLACK));
     AHI->AddLayer(new gBarChart(ahidata,wxRED));
@@ -406,7 +408,7 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     fgSizer->Add(AHI,1,wxEXPAND);
 
     PRESSURE=new gGraphWindow(ScrolledWindow,-1,wxT("Pressure"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
-    PRESSURE->SetMargins(10,15,65,80);
+    //PRESSURE->SetMargins(10,15,65,80);
     PRESSURE->AddLayer(new gYAxis(wxBLACK));
     PRESSURE->AddLayer(new gXAxis(wxBLACK));
     PRESSURE->AddLayer(new gFooBar());
@@ -416,25 +418,41 @@ Summary::Summary(wxWindow *win,Profile *_profile)
     PRESSURE->AddLayer(eap=new gLineChart(pressure_eap,wxBLUE,6192,false,true,true));
     PRESSURE->AddLayer(iap=new gLineChart(pressure_iap,wxRED,6192,false,true,true));
     PRESSURE->AddLayer(pr=new gLineChart(pressure,wxDARK_GREEN,6192,false,true,true));
+    PRESSURE->SetBottomMargin(PRESSURE->GetBottomMargin()+20);
 
     fgSizer->Add(PRESSURE,1,wxEXPAND);
 
     LEAK=new gGraphWindow(ScrolledWindow,-1,wxT("Mask Leak"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
-    LEAK->SetMargins(10,15,65,80);
+    //LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gXAxis(wxBLACK));
     LEAK->AddLayer(new gYAxis(wxBLACK));
     LEAK->AddLayer(new gFooBar());
     LEAK->AddLayer(new gLineChart(leak,wxPURPLE,6192,false,false,true));
+    LEAK->SetBottomMargin(LEAK->GetBottomMargin()+20);
     fgSizer->Add(LEAK,1,wxEXPAND);
 
 
     USAGE=new gGraphWindow(ScrolledWindow,-1,wxT("Usage (Hours)"),wxPoint(0,0), wxSize(400,180), wxNO_BORDER);
-    USAGE->SetMargins(10,15,65,80);
+    //USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gFooBar());
     USAGE->AddLayer(new gYAxis(wxBLACK));
     USAGE->AddLayer(new gBarChart(usage,wxGREEN));
+    USAGE->SetBottomMargin(USAGE->GetBottomMargin()+gXAxis::Margin+20);
     //USAGE->AddLayer(new gXAxis(wxBLACK));
+
+    AHI->LinkZoom(PRESSURE);
+    AHI->LinkZoom(LEAK);
+    AHI->LinkZoom(USAGE);
+    PRESSURE->LinkZoom(AHI);
+    PRESSURE->LinkZoom(LEAK);
+    PRESSURE->LinkZoom(USAGE);
+    LEAK->LinkZoom(AHI);
+    LEAK->LinkZoom(PRESSURE);
+    LEAK->LinkZoom(USAGE);
+    USAGE->LinkZoom(AHI);
+    USAGE->LinkZoom(PRESSURE);
+    USAGE->LinkZoom(LEAK);
 
     //USAGE->AddLayer(new gLineChart(usage,wxGREEN));
     fgSizer->Add(USAGE,1,wxEXPAND);
