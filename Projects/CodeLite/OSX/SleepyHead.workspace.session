@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Session Name="/Users/tschultz/proj/SleepyHead-SF/Projects/CodeLite/OSX/SleepyHead.workspace">
+<Session Name="/Users/tschultz/dev/SleepyHead-SF/Projects/CodeLite/OSX/SleepyHead.workspace">
   <int Value="0" Name="m_selectedTab"/>
-  <wxString Value="/Users/tschultz/proj/SleepyHead-SF/Projects/CodeLite/OSX/SleepyHead.workspace" Name="m_workspaceName"/>
+  <wxString Value="/Users/tschultz/dev/SleepyHead-SF/Projects/CodeLite/OSX/SleepyHead.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/SleepyHeadMain.cpp" Name="FileName"/>
+      <wxString Value="/Users/tschultz/dev/SleepyHead-SF/src/libs/freetype-gl/texture-font.h" Name="FileName"/>
       <int Value="0" Name="FirstVisibleLine"/>
-      <int Value="87" Name="CurrentLine"/>
+      <int Value="28" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/SleepyHeadApp.cpp" Name="FileName"/>
-      <int Value="35" Name="FirstVisibleLine"/>
-      <int Value="36" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/libs/sleeplib/profiles.h" Name="FileName"/>
-      <int Value="37" Name="FirstVisibleLine"/>
-      <int Value="38" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/Users/tschultz/proj/SleepyHead-SF/src/libs/sleeplib/profiles.cpp" Name="FileName"/>
-      <int Value="243" Name="FirstVisibleLine"/>
-      <int Value="258" Name="CurrentLine"/>
+      <wxString Value="/Users/tschultz/dev/SleepyHead-SF/src/graphs/graph.cpp" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="30" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

@@ -34,6 +34,22 @@
       <File Name="../../../src/libs/tinyxml/tinyxmlerror.cpp"/>
       <File Name="../../../src/libs/tinyxml/tinyxmlparser.cpp"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="freetype-gl">
+      <File Name="../../../src/libs/freetype-gl/font-manager.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/font-manager.h"/>
+      <File Name="../../../src/libs/freetype-gl/text-markup.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/text-markup.h"/>
+      <File Name="../../../src/libs/freetype-gl/texture-atlas.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/texture-atlas.h"/>
+      <File Name="../../../src/libs/freetype-gl/texture-font.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/texture-font.h"/>
+      <File Name="../../../src/libs/freetype-gl/texture-glyph.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/texture-glyph.h"/>
+      <File Name="../../../src/libs/freetype-gl/vector.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/vector.h"/>
+      <File Name="../../../src/libs/freetype-gl/vertex-buffer.cpp"/>
+      <File Name="../../../src/libs/freetype-gl/vertex-buffer.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
@@ -45,6 +61,12 @@
     <File Name="../../../src/SleepyHeadMain.cpp"/>
     <File Name="../../../src/SleepyHeadMain.h"/>
     <File Name="../../../src/version.h"/>
+    <VirtualDirectory Name="graphs">
+      <File Name="../../../src/graphs/freesans.cpp"/>
+      <File Name="../../../src/graphs/freesans.h"/>
+      <File Name="../../../src/graphs/gl_pbuffer.cpp"/>
+      <File Name="../../../src/graphs/gl_pbuffer.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="graphs">
     <File Name="../../../src/graphs/graph.cpp"/>
