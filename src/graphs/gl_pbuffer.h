@@ -43,6 +43,7 @@ License: GPL
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
 
 #include <wx/bitmap.h>
+#include <wx/glcanvas.h>
 
 long roundup2(long v);
 
@@ -56,7 +57,7 @@ public:
 class pBuffer {
 public:
     pBuffer();
-    pBuffer(int width, int height);
+    pBuffer(int width, int height,wxGLCanvas * gc);
     virtual ~pBuffer();
     virtual void UseBuffer(bool b) {};
     int Width() { return m_width; };
@@ -70,7 +71,7 @@ protected:
 class FBO:public pBuffer
 {
 public:
-    FBO(int width, int height);
+    FBO(int width, int height,wxGLCanvas * gc);
     virtual ~FBO();
     virtual void UseBuffer(bool b);
     virtual wxBitmap *Snapshot(int width, int height);
@@ -87,7 +88,7 @@ protected:
 class pBufferWGL:public pBuffer
 {
 public:
-    pBufferWGL(int width, int height);
+    pBufferWGL(int width, int height,wxGLCanvas * gc);
     virtual ~pBufferWGL();
     virtual void UseBuffer(bool b);
 protected:
@@ -112,7 +113,7 @@ extern GLXContext real_shared_context;
 class pBufferGLX:public pBuffer
 {
 public:
-    pBufferGLX(int width, int height);
+    pBufferGLX(int width, int height,wxGLCanvas * gc);
     virtual ~pBufferGLX();
     virtual void UseBuffer(bool b);
 protected:
@@ -127,7 +128,7 @@ protected:
 class pBufferAGL:public pBuffer
 {
 public:
-    pBufferAGL(int width, int height);
+    pBufferAGL(int width, int height,wxGLCanvas * gc);
     virtual ~pBufferAGL();
     virtual void UseBuffer(bool b);
 protected:

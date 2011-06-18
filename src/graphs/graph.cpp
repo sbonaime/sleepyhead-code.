@@ -1017,13 +1017,13 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
     if (!pbuffer) {
         try {
 #if defined(__WXMSW__)
-            pbuffer=new pBufferWGL(width,height);
+            pbuffer=new pBufferWGL(width,height,this);
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
             // Do nothing and load the FBO
             throw GLException(wxT("Macintrash"));
             //pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
-            pbuffer=new pBufferGLX(width,height);
+            pbuffer=new pBufferGLX(width,height,this);
 #endif
 
         } catch(GLException e) {
@@ -1039,7 +1039,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
             // Trickier than it sounds, and I didn't want to kludge
 
             wxSize res=wxGetDisplaySize(); // Not entirely sure if this is the limit..
-            pbuffer=new FBO(res.GetWidth(),res.GetHeight());
+            pbuffer=new FBO(res.GetWidth(),res.GetHeight(),this);
         } catch(GLException e) {
             wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
             pbuffer=NULL;

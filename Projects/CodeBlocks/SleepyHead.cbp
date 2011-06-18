@@ -29,14 +29,12 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-pg" />
 					<Add option="-g" />
 					<Add option="`wx-config --version=2.9 --cflags`" />
 					<Add directory="../../src/libs" />
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg" />
 					<Add option="`wx-config --version=2.9 --libs aui,xrc,qa,html,adv,gl,core,net,base`" />
 				</Linker>
 			</Target>

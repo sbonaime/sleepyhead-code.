@@ -30,7 +30,7 @@ long roundup2(long v)
 pBuffer::pBuffer()
 {
 }
-pBuffer::pBuffer(int width, int height)
+pBuffer::pBuffer(int width, int height,wxGLCanvas * gc)
 :m_width(width),m_height(height)
 {
 }
@@ -56,7 +56,7 @@ wxBitmap *pBuffer::Snapshot(int width, int height)
 }
 
 
-FBO::FBO(int width, int height)
+FBO::FBO(int width, int height,wxGLCanvas * gc)
 :pBuffer()
 {
     //wxGLContext a((wxGLCanvas *)NULL,(wxGLContext *)NULL);
@@ -173,7 +173,7 @@ wxBitmap *FBO::Snapshot(int width,int height)
 #endif
 
 
-pBufferWGL::pBufferWGL(int width, int height)
+pBufferWGL::pBufferWGL(int width, int height,wxGLCanvas * gc)
 :m_texture(0)
 {
 
@@ -368,7 +368,7 @@ bool pBufferWGL::InitGLStuff()
 GLXContext real_shared_context=NULL;
 
 
-pBufferGLX::pBufferGLX(int width, int height)
+pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
 :pBuffer()
 {
 
@@ -461,7 +461,7 @@ void pBufferGLX::UseBuffer(bool b)
 }
 #elif defined(__DARWIN__) || defined(__WXMAC__)
 
-pBufferAGL::pBufferAGL(int width, int height)
+pBufferAGL::pBufferAGL(int width, int height,wxGLCanvas * gc)
 :pBuffer()
 {
     m_width=width;

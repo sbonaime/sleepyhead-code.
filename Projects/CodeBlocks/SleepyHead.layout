@@ -7,10 +7,10 @@
 	<File name="../../src/GUIFrame.h" open="0" top="0" tabpos="8">
 		<Cursor position="3128" topLine="100" />
 	</File>
-	<File name="../../src/SleepyHeadApp.cpp" open="0" top="0" tabpos="1">
+	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1078" topLine="44" />
 	</File>
-	<File name="../../src/SleepyHeadMain.cpp" open="1" top="1" tabpos="1">
+	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="24248" topLine="650" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="2">
@@ -19,7 +19,7 @@
 	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="0" tabpos="5">
 		<Cursor position="3" topLine="0" />
 	</File>
-	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="0" tabpos="6">
+	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="1" tabpos="6">
 		<Cursor position="401" topLine="0" />
 	</File>
 	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="3">
