@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Windows" />
+	<ActiveTarget name="Debug" />
 	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="6211" topLine="144" />
 	</File>
@@ -10,7 +10,7 @@
 	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
 		<Cursor position="1078" topLine="44" />
 	</File>
-	<File name="../../src/SleepyHeadApp.h" open="1" top="1" tabpos="0">
+	<File name="../../src/SleepyHeadApp.h" open="1" top="0" tabpos="0">
 		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="1">
@@ -25,7 +25,7 @@
 	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="0" tabpos="6">
 		<Cursor position="401" topLine="0" />
 	</File>
-	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="3">
+	<File name="../../src/graphs/graph.cpp" open="1" top="1" tabpos="3">
 		<Cursor position="2743" topLine="83" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="4">
