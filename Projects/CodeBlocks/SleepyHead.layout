@@ -16,10 +16,10 @@
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="2">
 		<Cursor position="2035" topLine="47" />
 	</File>
-	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="0" tabpos="5">
+	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="1" tabpos="5">
 		<Cursor position="3" topLine="0" />
 	</File>
-	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="1" tabpos="6">
+	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="0" tabpos="6">
 		<Cursor position="401" topLine="0" />
 	</File>
 	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="3">
