@@ -30,6 +30,8 @@ extern wxColor *wxLIGHT_YELLOW;
 extern wxColor *wxDARK_GREEN;
 extern wxColor *wxDARK_GREY;
 
+extern bool graph_init;
+
 //#define MIN(a,b) (((a)<(b)) ? (a) : (b));
 //#define MAX(a,b) (((a)<(b)) ? (b) : (a));
 

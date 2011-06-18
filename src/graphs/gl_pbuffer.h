@@ -31,6 +31,7 @@ License: GPL
 #include <Carbon/Carbon.h>
 #elif defined(__WXCOCOA__)
 #include <Cocoa/Cocoa.h>
+
 #endif
 
 
@@ -52,28 +53,33 @@ public:
     GLException(wxString s=wxT("Lazy Programmer forgot to specify error")) { wxLogError(wxT("GLException: ")+s); };
 };
 
-
-
 class pBuffer {
 public:
-    pBuffer();
-    pBuffer(int width, int height,wxGLCanvas * gc);
+    pBuffer(wxGLContext * gc);
+    pBuffer(int width, int height,wxGLContext * gc);
     virtual ~pBuffer();
-    virtual void UseBuffer(bool b) {};
+
     int Width() { return m_width; };
     int Height() { return m_height; };
+
+    virtual void SelectContext(wxGLCanvas * gc);
+    virtual void SelectBuffer()=0;
+
     virtual wxBitmap *Snapshot(int width, int height);
+
 protected:
     int m_width;
     int m_height;
+    wxGLContext * m_gc;
 };
 
 class FBO:public pBuffer
 {
 public:
-    FBO(int width, int height,wxGLCanvas * gc);
+    FBO(int width, int height,wxGLContext * gc);
     virtual ~FBO();
-    virtual void UseBuffer(bool b);
+    virtual void SelectBuffer();
+    virtual void SelectContext(wxGLCanvas * gc);
     virtual wxBitmap *Snapshot(int width, int height);
 protected:
     GLuint depthbuffer,colorbuffer;
@@ -88,9 +94,10 @@ protected:
 class pBufferWGL:public pBuffer
 {
 public:
-    pBufferWGL(int width, int height,wxGLCanvas * gc);
+    pBufferWGL(int width, int height,wxGLContext * gc);
     virtual ~pBufferWGL();
-    virtual void UseBuffer(bool b);
+    virtual void SelectBuffer();
+    virtual void SelectContext(wxGLCanvas * gc);
 protected:
 
     bool InitGLStuff();
@@ -113,13 +120,13 @@ extern GLXContext real_shared_context;
 class pBufferGLX:public pBuffer
 {
 public:
-    pBufferGLX(int width, int height,wxGLCanvas * gc);
+    pBufferGLX(int width, int height,wxGLContext * gc);
     virtual ~pBufferGLX();
-    virtual void UseBuffer(bool b);
+    virtual void SelectBuffer();
 protected:
 
     Display *display;
-    GLXPbuffer pBuffer;
+    GLXPbuffer hBuffer;
     GLXContext m_context;
     GLXContext m_shared;
 };
@@ -128,9 +135,10 @@ protected:
 class pBufferAGL:public pBuffer
 {
 public:
-    pBufferAGL(int width, int height,wxGLCanvas * gc);
+    pBufferAGL(int width, int height,wxGLContext * gc);
     virtual ~pBufferAGL();
-    virtual void UseBuffer(bool b);
+    virtual void SelectBuffer();
+    virtual void SelectContext(wxGLCanvas * gc);
 protected:
 /*    AGLPixelFormat pixelFormat;
     AGLPbuffer pbuffer;

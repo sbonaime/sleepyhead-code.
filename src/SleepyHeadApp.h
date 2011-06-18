@@ -10,9 +10,22 @@
 #ifndef SLEEPYHEADAPP_H
 #define SLEEPYHEADAPP_H
 
-#include <wx/app.h>
+/*#if defined(__WXMSW__) // windows gl extensions
 
-class SleepyHeadApp : public wxApp
+#define GLEW_STATIC
+#define WGL_WGLEXT_PROTOTYPES
+
+#include <GL/glew.h>
+#include <GL/wglew.h>
+//#include <GL/gl.h>
+
+#endif
+#undef Yield */
+
+#include <wx/app.h>
+//#include <wx/glcanvas.h>
+
+class SleepyHeadApp : public wxApp //wxGLApp
 {
     public:
         virtual bool OnInit();

@@ -48,6 +48,9 @@ wxProgressDialog *loader_progress;
 enum wxbuildinfoformat {
     short_f, long_f };
 
+const wxEventType wxEVT_REFRESH_DAILY = wxNewEventType();
+
+
 wxString wxbuildinfo(wxbuildinfoformat format)
 {
     wxString wxbuild(wxVERSION_STRING);
@@ -856,6 +859,7 @@ Daily::Daily(wxWindow *win,Profile *p)
     //EVT_SCROLLWIN_THUMBTRACK(Daily::OnWinScroll)
     //this->Connect(GraphWindow->GetId(),wxEVT_SCROLLWIN_THUMBTRACK, wxScrollWinEventHandler(Daily::OnWinScroll));
 
+
     Refresh(true); // Important. Don't change the order of the next two lines.
     Update();
 //    gwSizer->Layout();
@@ -939,8 +943,13 @@ void Daily::RefreshData()
     wxCommandEvent MyEvent( wxEVT_REFRESH_DAILY);
     wxPostEvent(this, MyEvent);
 }
+extern bool do_refresh_daily;
 void Daily::DoRefreshData(wxCommandEvent& event)
 {
+    if (!graph_init) {
+        do_refresh_daily=true;
+        return;
+    }
     wxDateTime date=Calendar->GetDate();
     date.ResetTime();
     date.SetHour(0);

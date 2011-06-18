@@ -50,8 +50,7 @@ protected:
     Day *dummyday;
 };
 
-const wxEventType wxEVT_REFRESH_DAILY = wxNewEventType();
-
+extern const wxEventType wxEVT_REFRESH_DAILY;
 class Daily:public DailyPanel
 {
 public:

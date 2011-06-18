@@ -27,11 +27,12 @@ long roundup2(long v)
 }
 
 
-pBuffer::pBuffer()
+pBuffer::pBuffer(wxGLContext * gc)
 {
+    m_gc=gc;
 }
-pBuffer::pBuffer(int width, int height,wxGLCanvas * gc)
-:m_width(width),m_height(height)
+pBuffer::pBuffer(int width, int height,wxGLContext * gc)
+:m_gc(gc),m_width(width),m_height(height)
 {
 }
 pBuffer::~pBuffer()
@@ -54,10 +55,17 @@ wxBitmap *pBuffer::Snapshot(int width, int height)
     wxBitmap *bmp=new wxBitmap(image);
     return bmp;
 }
+void pBuffer::SelectContext(wxGLCanvas * glc)
+{
+    assert(glc!=NULL);
+
+    if (glc->IsShownOnScreen()) glc->SetCurrent(*m_gc);
+    // else wx sucks..
+}
 
 
-FBO::FBO(int width, int height,wxGLCanvas * gc)
-:pBuffer()
+FBO::FBO(int width, int height,wxGLContext * gc)
+:pBuffer(gc)
 {
     //wxGLContext a((wxGLCanvas *)NULL,(wxGLContext *)NULL);
     int m=MAX(width,height);
@@ -122,14 +130,14 @@ FBO::~FBO()
     if (m_color_buffer)
         glDeleteRenderbuffersEXT(1, &colorbuffer);
 }
-void FBO::UseBuffer(bool b)
+void FBO::SelectBuffer()
 {
-    if (b) {
-     //   glBindTexture(GL_TEXTURE_2D, img);
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
-    } else {
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-    }
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+}
+void FBO::SelectContext(wxGLCanvas * glc)
+{
+    // Don't need the context in this case..
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 wxBitmap *FBO::Snapshot(int width,int height)
 {
@@ -173,8 +181,8 @@ wxBitmap *FBO::Snapshot(int width,int height)
 #endif
 
 
-pBufferWGL::pBufferWGL(int width, int height,wxGLCanvas * gc)
-:m_texture(0)
+pBufferWGL::pBufferWGL(int width, int height,wxGLContext * gc)
+:pBuffer(width,height,gc),m_texture(0)
 {
 
     hGlRc=0;
@@ -194,10 +202,10 @@ pBufferWGL::pBufferWGL(int width, int height,wxGLCanvas * gc)
         j=1 << i;
         if (j >= ms) break;
     }
-    j <<= 2;
+    //j <<= 2;
     //assert (j>=ms); // I seriously doubt this will ever happen ;)
 
-    // WGL only supports square pBuffers
+    // WGL only supports square pBuffers (apparently..)
     m_width=j;
     m_height=j;
 
@@ -303,13 +311,13 @@ pBufferWGL::~pBufferWGL()
     if (hBuffer) wglReleasePbufferDCARB(hBuffer, hdc);
     if (hBuffer) wglDestroyPbufferARB(hBuffer);
 }
-void pBufferWGL::UseBuffer(bool b)
+void pBufferWGL::SelectBuffer()
 {
-    if (b) {
-        wglMakeCurrent(hdc, hGlRc);
-    } else {
-        wglMakeCurrent(saveHdc, saveHglrc);
-    }
+    wglMakeCurrent(hdc, hGlRc);
+}
+void pBufferWGL::SelectContext(wxGLCanvas * glc)
+{
+    wglMakeCurrent(saveHdc, saveHglrc);
 }
 
 bool pBufferWGL::InitGLStuff()
@@ -367,12 +375,11 @@ bool pBufferWGL::InitGLStuff()
 
 GLXContext real_shared_context=NULL;
 
-
-pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
-:pBuffer()
+pBufferGLX::pBufferGLX(int width, int height,wxGLContext * gc)
+:pBuffer(width,height,gc)
 {
 
-    int ms=MAX(width,height);
+    /*int ms=MAX(width,height);
     int j;
     for (int i=4;i<32;i++) {  // min size 16x16.. probably a usless size.
         j=1 << i;
@@ -381,7 +388,13 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
     j <<= 2;
 
     m_width=j;
-    m_height=j;
+    m_height=j; */
+
+    hBuffer=0;
+    m_context=0,m_shared=0;
+    int ret;
+    display=NULL;
+    GLXFBConfig *fbc=NULL;
 
     int attrib[]={
         GLX_PBUFFER_WIDTH,m_width,
@@ -389,12 +402,8 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
         GLX_PRESERVED_CONTENTS, True
     };
 
-    pBuffer=0;
-    m_context=0,m_shared=0;
-    int ret;
-    display=NULL;
-    GLXFBConfig *fbc=NULL;
 
+    //bool fbc_dontfree=false;
 /*#if wxCHECK_VERSION(2,9,0)
     display=wxGetX11Display();
     fbc = GetGLXFBConfig(); // wxGLCanvas call
@@ -403,7 +412,7 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
 
 #else */
     display=(Display *)wxGetDisplay();
-    int doubleBufferAttributess[] = {
+    int fb_attrib[] = {
         GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
         GLX_RENDER_TYPE, GLX_RGBA_BIT,
         GLX_DOUBLEBUFFER, True,
@@ -412,11 +421,19 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
         GLX_BLUE_SIZE, 8,
         None
     };
-    fbc=glXChooseFBConfig(display, DefaultScreen(display), doubleBufferAttributess, &ret);
-    pBuffer=glXCreatePbuffer(display, *fbc, attrib );
+//#if wxCHECK_VERSION(2,9,0)
+    //fbc = gc->GetGLXFBConfig(); // wxGLCanvas call
+    //fbc = &fbc[0];
+    //fbc_donefree=true;
+//#else
+    //fbc=(GLXFBConfig*)gc->ChooseGLFBC(fb_attrib); // This adds glcanvas's attribs
+    fbc=glXChooseFBConfig(display, DefaultScreen(display), fb_attrib, &ret);
 //#endif
 
-    if (pBuffer == 0) {
+    hBuffer=glXCreatePbuffer(display, *fbc, attrib );
+//#endif
+
+    if (hBuffer == 0) {
         wxLogError(wxT("pBuffer not availble"));
     }
 
@@ -435,34 +452,29 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLCanvas * gc)
         wxLogError(wxT("Context not availble"));
     }
 
-//#if !wxCHECK_VERSION(2,9,0)
+#if !wxCHECK_VERSION(2,9,0)
     XFree(fbc);
-//#endif
+#endif
 
-    glXMakeCurrent(display,pBuffer,m_shared);
+    glXMakeCurrent(display,hBuffer,m_shared);
 
     //UseBuffer(true);
 }
 pBufferGLX::~pBufferGLX()
 {
     if (m_context) glXDestroyContext(display,m_context); // Destroy the context only if we created it..
-    if (pBuffer) glXDestroyPbuffer(display, pBuffer);
+    if (hBuffer) glXDestroyPbuffer(display, hBuffer);
 }
-void pBufferGLX::UseBuffer(bool b)
+void pBufferGLX::SelectBuffer()
 {
-    if (b) {
-        if (glXMakeCurrent(display,pBuffer,m_shared)!=True) {
-            wxLogError(wxT("Couldn't make pBuffer current"));
-        }
-    } else {
-
-        // to be honest.. i'm not sure yet.. wx stupidly keeps the needed variables private
+    if (glXMakeCurrent(display,hBuffer,m_shared)!=True) {
+        wxLogError(wxT("Couldn't make pBuffer current"));
     }
 }
 #elif defined(__DARWIN__) || defined(__WXMAC__)
 
-pBufferAGL::pBufferAGL(int width, int height,wxGLCanvas * gc)
-:pBuffer()
+pBufferAGL::pBufferAGL(int width, int height,wxGLContext * gc)
+:pBuffer(gc)
 {
     m_width=width;
     m_height=height;

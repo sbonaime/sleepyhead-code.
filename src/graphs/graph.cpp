@@ -62,20 +62,22 @@ TextureFont *bigfont=NULL,*zfont=NULL;
 VertexBuffer *vbuffer=NULL;
 TextMarkup *markup=NULL;
 
-static bool gfont_init=false;
+//extern const wxEventType wxEVT_REFRESH_DAILY;
+
+
+bool graph_init=false;
 
 // Must be called from a thread inside the application.
 void GraphInit()
 {
+    if (!graph_init) {
     #if defined(__WXMSW__)
-    static bool glewinit_called=false;
-    if (!glewinit_called) {
-        glewInit(); // Dont forget this nasty little sucker.. :)
-        glewinit_called=true;
-    }
+        static bool glewinit_called=false;
+        if (!glewinit_called) {
+            glewInit(); // Dont forget this nasty little sucker.. :)
+            glewinit_called=true;
+        }
     #endif
-
-    if (!gfont_init) {
         wxString glvendor=wxString((char *)glGetString(GL_VENDOR),wxConvUTF8);
         wxString glrenderer=wxString((char *)glGetString(GL_RENDERER),wxConvUTF8);
         wxString glversion=wxString((char *)glGetString(GL_VERSION),wxConvUTF8);
@@ -105,16 +107,16 @@ void GraphInit()
             }
             f.Close();
         }
-        gfont_init=true;
+        graph_init=true;
     }
 }
 void GraphDone()
 {
-    if (gfont_init) {
+    if (graph_init) {
         delete font_manager;
       //  delete vbuffer;
         delete markup;
-        gfont_init=false;
+        graph_init=false;
     }
     if (shared_context) {
         delete shared_context;
@@ -188,8 +190,6 @@ void DrawText(wxString text, float x, float y, float angle=0, const wxColor & co
     float w,h;
     GetTextExtent(text, w, h, font);
 
-    //glColor4ub(color.Red(),color.Green(),color.Blue(),color.Alpha());
-
     glPushMatrix();
     glTranslatef(floor(x),floor(y),0);
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
@@ -225,7 +225,6 @@ void RoundedRectangle(int x,int y,int w,int h,int radius,const wxColor & color)
 			glVertex2f(x+radius+cos(i)*radius,y+radius+sin(i)*radius);
 	glEnd();
 
-//	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
 }
 
@@ -366,9 +365,10 @@ gGraphWindow::gGraphWindow()
 {
 }
 
+//wxGLContext frackyouwx((wxGLCanvas *)NULL,(wxGLContext *)NULL);
 
 gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & title,const wxPoint &pos,const wxSize &size,long flags)
-: wxGLCanvas( parent, shared_context, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
+: wxGLCanvas( parent, (wxGLContext *)shared_context, id, pos, size, flags, title, (int *)wx_gl_attribs, wxNullPalette )
 {
     m_scrX   = m_scrY   = 64;
     m_title=title;
@@ -386,8 +386,10 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
     ti=wxDateTime::Now();
     gtitle=foobar=xaxis=yaxis=NULL;
 
+
     if (!shared_context) {
 
+        int q=0;
 #if defined(__DARWIN__) && !wxCHECK_VERSION(2,9,0)
         // Screw you apple..
         int *attribList = (int*) NULL;
@@ -395,22 +397,13 @@ gGraphWindow::gGraphWindow(wxWindow *parent, wxWindowID id,const wxString & titl
         shared_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
 
         // Mmmmm.. Platform incosistency with wx..
-#else
-        // Darwin joins the rest of the platforms as of wx2.9
+
+#else   // (Darwin joins the rest of the platforms as of wx2.9)
         shared_context=new wxGLContext(this,NULL);
 #endif
 
     }
 
-#if defined(__WXMSW__)
-    shared_context->SetCurrent(*this); // Windows needs this done now or it borks..
-#endif
-
-#if !defined(__WXMAC__) && defined (__UNIX__)
-    real_shared_context = glXGetCurrentContext();  // Unix likes this, but can't really have it..
-#endif
-
-    GraphInit(); // Font
     //texfont=::texfont;
     if (!title.IsEmpty()) {
         AddLayer(new gGraphTitle(title,wxVERTICAL));
@@ -422,7 +415,10 @@ gGraphWindow::~gGraphWindow()
 {
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
     layers.clear();
-
+   /* if (shared_context) {
+        delete shared_context;
+        shared_context=NULL;
+    }*/
 }
 
 
@@ -1011,19 +1007,24 @@ pBuffer *pbuffer=NULL;
 
 wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
 {
+    if (!graph_init) {
+        // Damn you WX Update the
+        return NULL;
+    }
     wxBitmap *bmp;
-    Update();
+    //Update();
 
     if (!pbuffer) {
+        wxSize res=wxGetDisplaySize(); // Not entirely sure if this is the limit..
         try {
 #if defined(__WXMSW__)
-            pbuffer=new pBufferWGL(width,height,this);
+            pbuffer=new pBufferWGL(res.GetWidth(),res.GetHeight(),shared_context);
 #elif defined(__WXMAC__) || defined(__WXDARWIN__)
             // Do nothing and load the FBO
             throw GLException(wxT("Macintrash"));
             //pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
-            pbuffer=new pBufferGLX(width,height,this);
+            pbuffer=new pBufferGLX(res.GetWidth(),res.GetHeight(),shared_context);
 #endif
 
         } catch(GLException e) {
@@ -1031,30 +1032,29 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
             wxLogDebug(wxT("pBuffers not implemented or functional on this platform.. Trying FBO"));
             pbuffer=NULL;
         }
-    }
-    if (!pbuffer) {
-        try {
-            // This will fail the first run on GTK
-            // The solution is to get a damn screen refresh event to occur BEFORE the RefreshData() event callback.
-            // Trickier than it sounds, and I didn't want to kludge
 
-            wxSize res=wxGetDisplaySize(); // Not entirely sure if this is the limit..
-            pbuffer=new FBO(res.GetWidth(),res.GetHeight(),this);
-        } catch(GLException e) {
-            wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
-            pbuffer=NULL;
-            return NULL;
+        if (!pbuffer) {
+            try {
+                // This will fail the first run on GTK
+                // The solution is to get a damn screen refresh event to occur BEFORE the RefreshData() event callback.
+                // Trickier than it sounds, and I didn't want to kludge
+                pbuffer=new FBO(res.GetWidth(),res.GetHeight(),shared_context);
+            } catch(GLException e) {
+                wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
+                pbuffer=NULL;
+                return NULL;
+            }
         }
     }
     if (pbuffer) {
-        pbuffer->UseBuffer(true);
+        pbuffer->SelectBuffer();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Can't use font's in multiple contexts
         Render(width,height);
 
         bmp=pbuffer->Snapshot(width,height);
         glFlush();
-        pbuffer->UseBuffer(false);
+        pbuffer->SelectContext(this);
     } else bmp=NULL;
 
 
@@ -1093,9 +1093,24 @@ void gGraphWindow::Render(float scrX, float scrY)
     glEnable(GL_DEPTH_TEST);
 }
 
+bool do_refresh_daily=false;
+extern const wxEventType wxEVT_REFRESH_DAILY;
 void gGraphWindow::OnPaint(wxPaintEvent& event)
 {
     // Shouldn't need this anymore as opengl double buffers anyway.
+
+    if (!shared_context) {
+        int frog=0;
+        event.Skip();
+        return;
+    }
+    if (do_refresh_daily) { // wx is absolutely retarded if you can't force a screen update..
+
+        wxCommandEvent MyEvent(wxEVT_REFRESH_DAILY);
+        wxPostEvent(this, MyEvent);
+        do_refresh_daily=false;
+    }
+
 
 //#if defined(__WXMSW__)
 //    wxAutoBufferedPaintDC dc(this);
@@ -1112,6 +1127,9 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 #else
     shared_context->SetCurrent(*this);
 #endif
+
+    GraphInit(); // Glew & Font init
+
 
 //#endif
 
@@ -1133,7 +1151,7 @@ void gGraphWindow::OnPaint(wxPaintEvent& event)
 
     SwapBuffers(); // Dump to screen.
 
-    event.Skip();
+    //event.Skip();
 }
 void gGraphWindow::OnSize(wxSizeEvent& event)
 {
@@ -1733,6 +1751,8 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f(start_px+py,h);
     glEnd();
 
+    glLineWidth(1);
+
     if ((m_funkbar)) { // && ((w.min_x>w.rmin_x) || (w.max_x<w.rmax_x))) {
         glColor4f(.8,.8,.8,.6);
         glEnable(GL_BLEND);
@@ -1795,6 +1815,9 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
     wxRect rect;
     wxDirection dir;
 
+    glLineWidth(1);
+
+//    glDisable(GL_LINE_SMOOTH);
     for (int i=0;i<data->np[0];i++) {
         t1=floor(px);
         t2=data->point[0][i].m_y*pxr;
@@ -1909,7 +1932,6 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-
     }
     zpx=px;
     int i,idx=-1;
@@ -1974,8 +1996,8 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
     }
     if (antialias) {
-        glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
     }
 
     if (draw_xticks_instead) {
