@@ -1024,7 +1024,7 @@ wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
             throw GLException(wxT("Macintrash"));
             //pbuffer=new pBufferAGL(width,height);
 #elif defined(__UNIX__)
-            throw GLException(wxT("Linux pBuffer Sucks on some cards");
+            throw GLException(wxT("Linux pBuffer Sucks on some cards"));
             //pbuffer=new pBufferGLX(res.GetWidth(),res.GetHeight(),shared_context);
 #endif
 

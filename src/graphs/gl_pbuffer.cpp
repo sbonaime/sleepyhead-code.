@@ -453,7 +453,7 @@ pBufferGLX::pBufferGLX(int width, int height,wxGLContext * gc)
     }
 
 #if !wxCHECK_VERSION(2,9,0)
-    XFree(fbc);
+    //XFree(fbc);
 #endif
 
     glXMakeCurrent(display,hBuffer,m_shared);
