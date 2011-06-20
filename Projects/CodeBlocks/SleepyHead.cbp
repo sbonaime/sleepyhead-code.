@@ -91,16 +91,15 @@
 				<Option object_output="obj/Mac/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="`wx-config --version=2.9 --cflags`" />
+					<Add option="`good-wx-config --version=2.9 --cflags`" />
 					<Add directory="../../src/libs" />
 					<Add directory="../../src" />
 				</Compiler>
 				<Linker>
 					<Add option="-lfreetype" />
-					<Add option="`wx-config --version=2.9 --libs gl,aui,xrc,qa,html,adv,core,net,base`" />
+					<Add option="`good-wx-config --version=2.9 --libs gl,aui,xrc,qa,html,adv,core,net,base`" />
 				</Linker>
 			</Target>
 		</Build>

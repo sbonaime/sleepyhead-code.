@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
-	<File name="../../src/GUIFrame.cpp" open="0" top="0" tabpos="9">
-		<Cursor position="6211" topLine="144" />
+	<ActiveTarget name="Debug-wx29" />
+	<File name="../../src/GUIFrame.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="12506" topLine="212" />
 	</File>
-	<File name="../../src/GUIFrame.h" open="1" top="0" tabpos="8">
-		<Cursor position="3128" topLine="100" />
+	<File name="../../src/GUIFrame.h" open="1" top="0" tabpos="10">
+		<Cursor position="3128" topLine="76" />
 	</File>
-	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="1078" topLine="44" />
+	<File name="../../src/SleepyHeadApp.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="2171" topLine="36" />
 	</File>
-	<File name="../../src/SleepyHeadApp.h" open="1" top="0" tabpos="0">
-		<Cursor position="0" topLine="0" />
+	<File name="../../src/SleepyHeadApp.h" open="1" top="0" tabpos="7">
+		<Cursor position="635" topLine="0" />
 	</File>
 	<File name="../../src/SleepyHeadMain.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="24248" topLine="650" />
+		<Cursor position="1265" topLine="18" />
 	</File>
 	<File name="../../src/SleepyHeadMain.h" open="1" top="0" tabpos="2">
-		<Cursor position="2035" topLine="47" />
+		<Cursor position="1463" topLine="38" />
 	</File>
-	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="1" tabpos="5">
-		<Cursor position="3" topLine="0" />
+	<File name="../../src/graphs/gl_pbuffer.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="13584" topLine="410" />
 	</File>
 	<File name="../../src/graphs/gl_pbuffer.h" open="1" top="0" tabpos="6">
-		<Cursor position="401" topLine="0" />
+		<Cursor position="964" topLine="46" />
 	</File>
 	<File name="../../src/graphs/graph.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="2743" topLine="83" />
+		<Cursor position="28506" topLine="1017" />
 	</File>
 	<File name="../../src/graphs/graph.h" open="1" top="0" tabpos="4">
-		<Cursor position="10808" topLine="297" />
+		<Cursor position="586" topLine="0" />
 	</File>
 	<File name="../../src/libs/freetype-gl/font-manager.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="0" topLine="0" />
@@ -43,8 +43,8 @@
 	<File name="../../src/libs/freetype-gl/texture-atlas.h" open="0" top="0" tabpos="13">
 		<Cursor position="1661" topLine="21" />
 	</File>
-	<File name="../../src/libs/freetype-gl/texture-font.cpp" open="1" top="0" tabpos="11">
-		<Cursor position="1196" topLine="0" />
+	<File name="../../src/libs/freetype-gl/texture-font.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="6522" topLine="156" />
 	</File>
 	<File name="../../src/libs/freetype-gl/texture-font.h" open="0" top="0" tabpos="12">
 		<Cursor position="1280" topLine="9" />
@@ -79,7 +79,7 @@
 	<File name="../../src/libs/sleeplib/loader_plugins/zeo_loader.cpp" open="0" top="0" tabpos="13">
 		<Cursor position="1662" topLine="27" />
 	</File>
-	<File name="../../src/libs/sleeplib/machine.cpp" open="0" top="0" tabpos="5">
+	<File name="../../src/libs/sleeplib/machine.cpp" open="1" top="1" tabpos="5">
 		<Cursor position="11760" topLine="264" />
 	</File>
 	<File name="../../src/libs/sleeplib/machine.h" open="0" top="0" tabpos="4">

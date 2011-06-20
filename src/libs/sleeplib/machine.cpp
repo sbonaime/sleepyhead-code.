@@ -137,7 +137,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[CPAP_EAP]=wxT("BIPAP EPAP");
     DefaultMCLongNames[CPAP_IAP]=wxT("BIPAP IPAP");
     DefaultMCLongNames[PRS1_VSnore2]=wxT("Vibratory Snore 2");
-    DefaultMCLongNames[PRS1_PressurePulse]=wxT("Pressue Pulse");
+    DefaultMCLongNames[PRS1_PressurePulse]=wxT("Pressure Pulse");
     DefaultMCLongNames[PRS1_Unknown0E]=wxT("Unknown 0E");
     DefaultMCLongNames[PRS1_Unknown00]=wxT("Unknown 00");
     DefaultMCLongNames[PRS1_Unknown01]=wxT("Unknown 01");
