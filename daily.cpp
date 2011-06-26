@@ -42,7 +42,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
 
-    gSplitter->setChildrenCollapsible(true);
+    gSplitter->setChildrenCollapsible(false);
     gSplitter->setHandleWidth(3);
     ui->graphSizer->addWidget(gSplitter);
 
