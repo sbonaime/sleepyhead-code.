@@ -181,3 +181,17 @@ void MainWindow::on_webView_loadProgress(int progress)
 {
     qprogress->setValue(progress);
 }
+
+void MainWindow::on_action_About_triggered()
+{
+    QString msg="<html><body><div align='center'><h2>SleepyHead v0.8.0</h2><hr>\
+Copyright &copy;2011 Mark Watkins (jedimark) <br> \n\
+<a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>\
+This software is released under the GNU Public License <hr> \
+<i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.\
+</div></body></html>";
+    QMessageBox msgbox(QMessageBox::Information,"About SleepyHead","",QMessageBox::Ok,this);
+    msgbox.setTextFormat(Qt::RichText);
+    msgbox.setText(msg);
+    msgbox.exec();
+}

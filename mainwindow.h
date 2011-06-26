@@ -58,6 +58,8 @@ private slots:
 
     void on_webView_loadProgress(int progress);
 
+    void on_action_About_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;
