@@ -1,0 +1,24 @@
+SleepyHead alpha test build.. 
+
+This is nowhere near an official release, and is 100% Guaranteed to break when you least expect it.
+
+This "mini alpha version" only currently supports Philips Respironics system one machines and Contec CMS50 Oximeters. 
+
+It's just a tool I wrote based on our SleepLib framework to track my CPAP data, and I thought I'd share it for those who are game while we work on the real app.
+
+Just a heads up, it creates a SleepApp folder in your documents folder. This is where it stores it's database.
+
+To use, Click File -> Import SD and select your SD card folder (or a copy of it). 
+
+I'm hoping the rest is self explanitory, click on things.. See how well it breaks.
+
+
+Licence Stuff
+-------------
+SleepLib and main program is GPL.. 
+
+Incorporates FreeType-GL, converted to C++ code in ./libs/freetype-gl
+Incorporates TinyXML.. see their readme for details in ./libs/tinyxml
+
+/Mark W
+
