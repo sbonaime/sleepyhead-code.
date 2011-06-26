@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Docs/index.html</file>
+        <file>Icons/toggle-on-us.svg</file>
+        <file>Icons/toggle-off-us.svg</file>
+        <file>Icons/preferences.svg</file>
+        <file>Icons/moon.svg</file>
+        <file>Icons/media.svg</file>
+        <file>Icons/go-home.png</file>
+        <file>Icons/gnome-dev-media-sdmmc.svg</file>
+        <file>Icons/forward.svg</file>
+        <file>Icons/emblem-marketing.svg</file>
+        <file>Icons/edit-find.svg</file>
+        <file>Icons/close-window.svg</file>
+        <file>Icons/calendar.svg</file>
+        <file>Icons/back.svg</file>
+        <file>Icons/applications-viewers.svg</file>
+        <file>Fonts/FreeSans.ttf</file>
+        <file>Docs/sheep.svg</file>
+        <file>Docs/sheep.png</file>
+    </qresource>
+</RCC>
