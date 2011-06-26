@@ -4,6 +4,7 @@
  License: GPL
 *********************************************************************/
 
+//#include <QtPlugin>
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"

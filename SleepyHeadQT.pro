@@ -6,6 +6,16 @@
 
 QT += core gui webkit opengl
 
+#CONFIG += static
+
+#static {
+#    CONFIG += static
+#    QTPLUGIN += qsvg qgif
+
+#    DEFINES += STATIC // Equivalent to "#define STATIC" in source code
+#    message("Static build.")
+#}
+
 #CONFIG += link_pkgconfig
 #PKGCONFIG += freetype2
 
@@ -91,4 +101,4 @@ RESOURCES += \
     Resources.qrc
 
 OTHER_FILES += \
-    Docs/index.html
+    docs/index.html

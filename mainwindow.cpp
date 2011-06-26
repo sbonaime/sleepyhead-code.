@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qstatus);
     ui->statusbar->addPermanentWidget(qprogress);
     qprogress->hide();
-    on_homeButton_clicked();
+    //on_homeButton_clicked();
 
 }
 
@@ -123,7 +123,7 @@ void MainWindow::on_actionUse_AntiAliasing_triggered()
 
 void MainWindow::on_homeButton_clicked()
 {
-    QString file="qrc:/Docs/index.html";
+    QString file="qrc:/docs/index.html";
     QUrl url(file);
     //QResource res(file);
     //QByteArray html((const char*)res.data(), res.size());

@@ -377,8 +377,8 @@ void HistoryData::Reload(Day *day)
     double y,lasty=0;
     min_y=max_y=0;
     min_x=max_x=0;
-    for (qint64 x=floor(real_min_x);x<=ceil(real_max_x);x++) {
-        date=QDateTime::fromMSecsSinceEpoch(x*86400000L);
+    for (double x=floor(real_min_x);x<=ceil(real_max_x);x++) {
+        date=QDateTime::fromMSecsSinceEpoch(x*86400000.0L);
         date.setTime(QTime(0,0,0));
         if (profile->daylist.find(date.date())==profile->daylist.end()) continue;
 

@@ -86,7 +86,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
     SF->AddLayer(new gFooBar(10,QColor("lime green"),QColor("dark grey"),true));
     SF->setMinimumHeight(150+(extras ? 20 : 0));
-    SF->setMaximumHeight(350);
+   // SF->setMaximumHeight(350);
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));

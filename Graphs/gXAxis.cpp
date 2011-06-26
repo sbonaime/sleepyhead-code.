@@ -91,7 +91,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         //if (min_tick<1.0) min_tick=1.0;
         //if (min_tick>10) min_tick=10;
     }
-    assert(min_tick>0);
+    if (min_tick<=0) {
+        assert(min_tick>0);
+    }
 
     double st3=st;
     while (st3>minx) {
