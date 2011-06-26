@@ -78,7 +78,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -96,6 +96,9 @@
          </property>
          <item>
           <widget class="QWebView" name="webView">
+           <property name="cursor">
+            <cursorShape>IBeamCursor</cursorShape>
+           </property>
            <property name="url">
             <url>
              <string>about:blank</string>

@@ -10,5 +10,6 @@
         <file>icons/forward.png</file>
         <file>icons/edit-find.png</file>
         <file>icons/back.png</file>
+        <file>fonts/FreeSans.ttf</file>
     </qresource>
 </RCC>

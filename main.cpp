@@ -6,6 +6,7 @@
 
 //#include <QtPlugin>
 #include <QtGui/QApplication>
+#include <QFontDatabase>
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 
@@ -19,6 +20,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QFontDatabase::addApplicationFont(":/fonts/freesans.ttf");
+    a.setFont(QFont("FreeSans"));
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();
