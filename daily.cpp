@@ -77,7 +77,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
         SF->AddLayer(new gFlagsLine(flags[9],QColor("dark green"),"U0E",8,sfc));
         SF->AddLayer(new gFlagsLine(flags[8],QColor("red"),"VS2",7,sfc));
     }
-    SF->AddLayer(new gFlagsLine(flags[6],QColor("yellow"),"RE",6,sfc));
+    SF->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
     SF->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",5,sfc));
     SF->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",4,sfc));
     SF->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",3,sfc));
@@ -112,7 +112,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(g);
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
     FRW->AddLayer(new gLineOverlayBar(flags[7],QColor("red"),"PR",LOT_Dot));
-    FRW->AddLayer(new gLineOverlayBar(flags[6],QColor("yellow"),"RE"));
+    FRW->AddLayer(new gLineOverlayBar(flags[6],QColor("gold"),"RE"));
     FRW->AddLayer(new gLineOverlayBar(flags[9],QColor("dark green"),"U0E"));
     FRW->AddLayer(new gLineOverlayBar(flags[5],QColor("red"),"VS"));
     FRW->AddLayer(new gLineOverlayBar(flags[4],QColor("black"),"FL"));

@@ -103,8 +103,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     vertarray[vertcnt++]=bottom;
                     if (xx<(1800.0/86400.0)) {
                         GetTextExtent(label,x,y);
-                        //DrawText(label,x1-(x/2),start_py+height-30+y);
-                        w.renderText(x1-(x/2),start_py+height-30+y,label);
+                        DrawText(w,label,x1-(x/2),scry-(start_py+height-30+y));
+                        //w.renderText(x1-(x/2),start_py+height-30+y,label);
                     }
                 }
             }

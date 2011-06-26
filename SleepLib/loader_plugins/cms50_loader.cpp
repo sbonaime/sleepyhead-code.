@@ -12,8 +12,7 @@ License: GPL
 // that change loader behaviour or modify channels.
 //********************************************************************************************
 
-//#include <wx/log.h>
-//#include <wx/progdlg.h>
+#include <QProgressBar>
 #include <QDir>
 #include <QString>
 #include <QDateTime>
@@ -26,7 +25,7 @@ using namespace std;
 #include "SleepLib/machine.h"
 #include "SleepLib/session.h"
 
-//extern wxProgressDialog *loader_progress;
+extern QProgressBar *qprogress;
 
 CMS50Loader::CMS50Loader()
 {
@@ -73,7 +72,7 @@ bool CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     if (!dir.exists())
         return false;
 
-   // if(loader_progress) loader_progress->Update(0);
+    if(qprogress) qprogress->setValue(0);
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -94,11 +93,11 @@ bool CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     Machine *mach=CreateMachine(profile);
     int cnt=0;
     for (list<QString>::iterator n=files.begin();n!=files.end();n++,++cnt) {
-        //if (loader_progress) loader_progress->Update((float(cnt)/float(size)*50.0));
+        if (qprogress) qprogress->setValue((float(cnt)/float(size)*50.0));
         OpenSPORFile((*n),mach,profile);
     }
     mach->Save();
-    //if (loader_progress) loader_progress->Update(100);
+    if (qprogress) qprogress->setValue(100);
     return true;
 }
 bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
