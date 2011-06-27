@@ -47,25 +47,6 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     ti=QDateTime::currentDateTime();
     gtitle=foobar=xaxis=yaxis=NULL;
 
-
- /*   if (!shared_context) {
-
-        int q=0;
-#if defined(__DARWIN__) && !wxCHECK_VERSION(2,9,0)
-        // Screw you apple..
-        int *attribList = (int*) NULL;
-        AGLPixelFormat aglpf=aglChoosePixelFormat(NULL,0,attribList);
-        shared_context=new wxGLContext(aglpf,this,wxNullPalette,NULL);
-
-        // Mmmmm.. Platform incosistency with wx..
-
-#else   // (Darwin joins the rest of the platforms as of wx2.9)
-        shared_context=new wxGLContext(this,NULL);
-#endif
-
-    }
-*/
-    //texfont=::texfont;
     if (!title.isEmpty()) {
         AddLayer(new gTitle(title));
     }
@@ -335,10 +316,11 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         int x2=x;
         int t1=MIN(x1,x2);
         int t2=MAX(x1,x2);
-        if (t1<=m_marginLeft) t1=m_marginLeft+1;
+        if (t1<m_marginLeft) t1=m_marginLeft;
+        if (t2<m_marginLeft) t2=m_marginLeft;
         if (t2>(m_scrX-m_marginRight)) t2=m_scrX-m_marginRight;
 
-        QRect r(t1, m_marginBottom, t2-t1, m_scrY-m_marginBottom-m_marginTop);
+        QRect r(t1-1, m_marginBottom, t2-t1, m_scrY-m_marginBottom-m_marginTop);
 
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;

@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QResource>
 #include <QProgressBar>
+#include <QWebHistory>
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -198,6 +199,8 @@ void MainWindow::on_webView_loadFinished(bool arg1)
     } else {
         qstatus->setText("Ready");
     }
+    ui->backButton->setEnabled(ui->webView->history()->canGoBack());
+    ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
 
 }
 
