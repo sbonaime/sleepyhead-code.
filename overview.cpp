@@ -45,7 +45,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     gSplitter->setHandleWidth(3);
     ui->graphLayout->addWidget(gSplitter);
 
-    AHI=new gGraphWindow(ui->SummaryGraphWindow,"AHI",(QGLWidget *)NULL); // Not sure here..
+    AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),(QGLWidget *)NULL); // Not sure here..
     AHI->SetTopMargin(10);
     AHI->SetBottomMargin(AHI->GetBottomMargin()+gXAxis::Margin+25);
     AHI->AddLayer(new gFooBar(7));
@@ -53,7 +53,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AHI->AddLayer(new gBarChart(ahidata,QColor("red")));
     AHI->setMinimumHeight(170);
 
-    PRESSURE=new gGraphWindow(ui->SummaryGraphWindow,"Pressure",AHI);
+    PRESSURE=new gGraphWindow(ui->SummaryGraphWindow,tr("Pressure"),AHI);
     //PRESSURE->SetMargins(10,15,65,80);
     PRESSURE->AddLayer(new gYAxis());
     PRESSURE->AddLayer(new gXAxis());
@@ -66,7 +66,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     PRESSURE->SetBottomMargin(PRESSURE->GetBottomMargin()+25);
     PRESSURE->setMinimumHeight(170);
 
-    LEAK=new gGraphWindow(ui->SummaryGraphWindow,"Leak",AHI);
+    LEAK=new gGraphWindow(ui->SummaryGraphWindow,tr("Leak"),AHI);
     //LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gXAxis());
@@ -76,7 +76,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     LEAK->SetBottomMargin(LEAK->GetBottomMargin()+25);
     LEAK->setMinimumHeight(170);
 
-    USAGE=new gGraphWindow(ui->SummaryGraphWindow,"Usage (Hours)",AHI);
+    USAGE=new gGraphWindow(ui->SummaryGraphWindow,tr("Usage (Hours)"),AHI);
     //USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gFooBar(7));
     USAGE->AddLayer(new gYAxis());

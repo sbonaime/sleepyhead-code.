@@ -28,15 +28,9 @@ public:
 private slots:
     void on_action_Import_Data_triggered();
 
-    void on_actionView_Daily_triggered();
-
-    void on_actionView_Overview_triggered();
-
     void on_actionView_Welcome_triggered();
 
     void on_action_Fullscreen_triggered();
-
-    void on_actionUse_AntiAliasing_triggered();
 
     void on_homeButton_clicked();
 
@@ -61,6 +55,10 @@ private slots:
     void on_action_About_triggered();
 
     void Startup();
+
+    void on_action_Link_Graphs_triggered(bool checked);
+
+    void on_actionUse_AntiAliasing_triggered(bool checked);
 
 private:
     Ui::MainWindow *ui;

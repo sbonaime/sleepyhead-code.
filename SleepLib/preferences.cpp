@@ -186,6 +186,7 @@ bool Preferences::Open(QString filename)
         TiXmlAttribute *attr=pElem->FirstAttribute();
         assert(attr!=NULL);
         QString type=attr->Value();
+        type=type.toLower();
         QString pKey=pElem->Value();
         QString pText=pElem->GetText();
         bool ok;
@@ -204,11 +205,16 @@ bool Preferences::Open(QString filename)
                     p_preferences[pKey]=d;
             } else if (type=="bool") {
                 int d=pText.toInt(&ok);
-                if (!ok)
-                    qDebug("String to number conversion error in Preferences::Open()");
-                else
+                if (!ok) {
+                    if (pText.toLower()=="true")
+                        p_preferences[pKey]=true;
+                    else if (pText.toLower()=="false")
+                        p_preferences[pKey]=false;
+                    else
+                        qDebug("String to number conversion error in Preferences::Open()");
+                } else
                     p_preferences[pKey]=(bool)d;
-            } else if (type=="QDateTime") {
+            } else if (type=="qdatetime") {
                 QDateTime d;
                 d.fromString("yyyy-MM-dd HH:mm:ss");
                 if (d.isValid())

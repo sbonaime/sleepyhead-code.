@@ -31,6 +31,7 @@ public:
     ~Daily();
     void SetGLContext(QGLContext *context) { shared_context=context; };
     void ReloadGraphs();
+    void RedrawGraphs();
 
 private slots:
 
@@ -67,7 +68,6 @@ private:
     void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
-    void RedrawGraphs();
 
     gPointData *flags[10];
 

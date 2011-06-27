@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle("SleepyHead v0.8."+subversion);
+    this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
 
     QGLFormat fmt;
     fmt.setDepth(false);
@@ -51,11 +51,15 @@ MainWindow::MainWindow(QWidget *parent) :
     //loader_progress->Show();
 
     //pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
-    pref["AppName"]="SleepyHead";
-    pref["Profile"]=getUserName();
-    pref["LinkGraphMovement"]=true;
-    pref["fruitsalad"]=true;
+    if (!pref.Exists("AppName")) pref["AppName"]="SleepyHead";
+    if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
+    if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
+    else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
+    if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
+
+    if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
+    else ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
     first_load=true;
 }
 
@@ -77,7 +81,7 @@ MainWindow::~MainWindow()
 void MainWindow::Startup()
 {
 
-    qstatus->setText("Loading Data");
+    qstatus->setText(tr("Loading Data"));
     qprogress->show();
 
     profile=Profiles::Get(pref["Profile"].toString());
@@ -85,11 +89,11 @@ void MainWindow::Startup()
 
     daily=new Daily(ui->tabWidget,shared_context);
     overview=new Overview(ui->tabWidget,shared_context);
-    ui->tabWidget->addTab(daily,"Daily");
-    ui->tabWidget->addTab(overview,"Overview");
+    ui->tabWidget->addTab(daily,tr("Daily"));
+    ui->tabWidget->addTab(overview,tr("Overview"));
 
     qprogress->hide();
-    qstatus->setText("Ready");
+    qstatus->setText(tr("Ready"));
 }
 
 void MainWindow::on_action_Import_Data_triggered()
@@ -102,7 +106,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (qfd.exec()) {
         qprogress->setValue(0);
         qprogress->show();
-        qstatus->setText("Importing Data");
+        qstatus->setText(tr("Importing Data"));
         dirNames=qfd.selectedFiles();
         for (int i=0;i<dirNames.size();i++) {
             profile->Import(dirNames[i]);
@@ -111,25 +115,15 @@ void MainWindow::on_action_Import_Data_triggered()
         daily->ReloadGraphs();
         overview->ReloadGraphs();
         overview->UpdateGraphs();
-        qstatus->setText("Ready");
+        qstatus->setText(tr("Ready"));
         qprogress->hide();
 
     }
 }
 
-void MainWindow::on_actionView_Daily_triggered()
-{
-
-}
-
-void MainWindow::on_actionView_Overview_triggered()
-{
-
-}
-
 void MainWindow::on_actionView_Welcome_triggered()
 {
-
+    ui->tabWidget->setCurrentWidget(ui->welcome);
 }
 
 void MainWindow::on_action_Fullscreen_triggered()
@@ -139,12 +133,6 @@ void MainWindow::on_action_Fullscreen_triggered()
     else
         this->showNormal();
 
-}
-
-void MainWindow::on_actionUse_AntiAliasing_triggered()
-{
-    pref["UseAntiAliasing"]=(bool)ui->actionUse_AntiAliasing->isChecked();
-    if (daily) daily->update();
 }
 
 void MainWindow::on_homeButton_clicked()
@@ -197,7 +185,7 @@ void MainWindow::on_webView_loadFinished(bool arg1)
         QTimer::singleShot(0,this,SLOT(Startup()));
         first_load=false;
     } else {
-        qstatus->setText("Ready");
+        qstatus->setText(tr("Ready"));
     }
     ui->backButton->setEnabled(ui->webView->history()->canGoBack());
     ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
@@ -207,7 +195,7 @@ void MainWindow::on_webView_loadFinished(bool arg1)
 void MainWindow::on_webView_loadStarted()
 {
     if (!first_load) {
-        qstatus->setText("Loading");
+        qstatus->setText(tr("Loading"));
         qprogress->reset();
         qprogress->show();
     }
@@ -220,14 +208,26 @@ void MainWindow::on_webView_loadProgress(int progress)
 
 void MainWindow::on_action_About_triggered()
 {
-    QString msg="<html><body><div align='center'><h2>SleepyHead v0.8.0</h2><hr>\
+    QString msg=tr("<html><body><div align='center'><h2>SleepyHead v0.8.0</h2><hr>\
 Copyright &copy;2011 Mark Watkins (jedimark) <br> \n\
 <a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>\
 This software is released under the GNU Public License <hr> \
 <i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.\
-</div></body></html>";
-    QMessageBox msgbox(QMessageBox::Information,"About SleepyHead","",QMessageBox::Ok,this);
+</div></body></html>");
+    QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
     msgbox.setTextFormat(Qt::RichText);
     msgbox.setText(msg);
     msgbox.exec();
+}
+
+void MainWindow::on_action_Link_Graphs_triggered(bool checked)
+{
+    pref["LinkGraphMovement"]=checked;
+}
+
+void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
+{
+    pref["UseAntiAliasing"]=checked;
+    if (daily) daily->RedrawGraphs();
+
 }
