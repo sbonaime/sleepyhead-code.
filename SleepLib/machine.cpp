@@ -98,7 +98,7 @@ map<MachineCode,QString> DefaultMCLongNames;
     {PRS1_VSnore2,		wxT("Vibratory Snore")},
     {PRS1_PressurePulse,wxT("Pressue Pulse")}
 }; */
-inline const QString & _(QString q) { return q; };
+inline const QString & _(const QString q) { return q; };
 
 void InitMapsWithoutAwesomeInitializerLists()
 {
@@ -375,7 +375,10 @@ bool Machine::Load()
     int size=sessfiles.size();
     int cnt=0;
     for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
-        if (qprogress) qprogress->setValue((float(++cnt)/float(size)*100.0));
+        cnt++;
+        if ((cnt % 10)==0)
+            if (qprogress) qprogress->setValue((float(cnt)/float(size)*100.0));
+
         Session *sess=new Session(this,s->first);
         if (sess->LoadSummary(s->second[0])) {
             sess->SetEventFile(s->second[1]);
@@ -386,6 +389,7 @@ bool Machine::Load()
             delete sess;
         }
     }
+    if (qprogress) qprogress->setValue(100);
     return true;
 }
 bool Machine::SaveSession(Session *sess)

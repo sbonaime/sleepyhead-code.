@@ -60,10 +60,14 @@ private:
 
     list<gPointData *> OXIData;
     list<gPointData *> CPAPData;
+    list<gGraphWindow *> Graphs;
+
     void AddCPAPData(gPointData *d) { CPAPData.push_back(d); };
     void AddOXIData(gPointData *d) { OXIData.push_back(d); };
+    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
+    void RedrawGraphs();
 
     gPointData *flags[10];
 

@@ -25,7 +25,7 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
     if (xx==0)
         return;
 
-    int start_px=w.GetLeftMargin();
+    int start_px=w.GetLeftMargin()-1;
     int width=scrx - (w.GetLeftMargin() + w.GetRightMargin());
     int height=scry - (w.GetTopMargin() + w.GetBottomMargin());
 
@@ -56,8 +56,10 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     if ((m_funkbar)) { // && ((w.min_x>w.rmin_x) || (w.max_x<w.rmax_x))) {
         glEnable(GL_BLEND);
-        glBegin(GL_QUADS);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
         glColor4f(.2,.2,.2,.4);
+        glBegin(GL_QUADS);
         glVertex2f(start_px+px, w.GetBottomMargin());
         glVertex2f(start_px+px, w.GetBottomMargin()+height);
         glVertex2f(start_px+py, w.GetBottomMargin()+height);

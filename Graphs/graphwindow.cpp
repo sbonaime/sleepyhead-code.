@@ -141,7 +141,7 @@ void gGraphWindow::ResetXBounds()
     //max_x=maxx;
     SetMinX(RealMinX());
     SetMaxX(RealMaxX());
-    updateGL();
+  //  updateGL();
 }
 
 void gGraphWindow::ZoomXPixels(int x1, int x2)
@@ -665,62 +665,6 @@ void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
     m_marginRight=right;
 }
 
-/*wxBitmap * gGraphWindow::RenderBitmap(int width,int height)
-{
-    if (!graph_init) {
-        // Damn you WX Update the
-        return NULL;
-    }
-    wxBitmap *bmp;
-    //Update();
-
-    if (!pbuffer) {
-        wxSize res=wxGetDisplaySize(); // Not entirely sure if this is the limit..
-        try {
-#if defined(__WXMSW__)
-            pbuffer=new pBufferWGL(res.GetWidth(),res.GetHeight(),shared_context);
-#elif defined(__WXMAC__) || defined(__WXDARWIN__)
-            // Do nothing and load the FBO
-            throw GLException(wxT("Macintrash"));
-            //pbuffer=new pBufferAGL(width,height);
-#elif defined(__UNIX__)
-            throw GLException(wxT("Linux pBuffer Sucks on some cards"));
-            //pbuffer=new pBufferGLX(res.GetWidth(),res.GetHeight(),shared_context);
-#endif
-
-        } catch(GLException e) {
-            // Should log already if failed..
-            wxLogDebug(wxT("pBuffers not implemented or functional on this platform.. Trying FBO"));
-            pbuffer=NULL;
-        }
-
-        if (!pbuffer) {
-            try {
-                // This will fail the first run on GTK
-                // The solution is to get a damn screen refresh event to occur BEFORE the RefreshData() event callback.
-                // Trickier than it sounds, and I didn't want to kludge
-                pbuffer=new FBO(res.GetWidth(),res.GetHeight(),shared_context);
-            } catch(GLException e) {
-                wxLogError(wxT("No offscreen rendering capabilities detected on this machine."));
-                pbuffer=NULL;
-                return NULL;
-            }
-        }
-    }
-    if (pbuffer) {
-        pbuffer->SelectBuffer();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // Can't use font's in multiple contexts
-        Render(width,height);
-
-        bmp=pbuffer->Snapshot(width,height);
-        glFlush();
-        pbuffer->SelectContext(this);
-    } else bmp=NULL;
-
-
-    return bmp;
-} */
 void gGraphWindow::initializeGL()
 {
     setAutoFillBackground(false);
@@ -1021,7 +965,7 @@ void gGraphWindow::DataChanged(gLayer *layer)
 
     //long l=t.GetMilliseconds().GetLo();
     //wxLogMessage(wxString::Format(wxT("%li"),l));
-    if ((t<1)  && (layer!=lastlayer)) {
+    if ((t<2)  && (layer!=lastlayer)) {
         lastlayer=layer;
         return;
     }
@@ -1031,7 +975,7 @@ void gGraphWindow::DataChanged(gLayer *layer)
 
     // Assmption currently is Refresh que does skip
 
-    updateGL();
+  //  updateGL();
 }
 
 

@@ -66,7 +66,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
     AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
     AddCPAPData(frw=new WaveData(CPAP_FlowRate));
-    SF=new gGraphWindow(gSplitter,"Event Flags",(QGLWidget *)NULL); //
+    AddGraph(SF=new gGraphWindow(gSplitter,"Event Flags",(QGLWidget *)NULL));
     int sfc=7;
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
@@ -84,14 +84,14 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->AddLayer(new gFlagsLine(flags[2],QColor("aqua"),"OA",2,sfc));
     SF->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",1,sfc));
     SF->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
-    SF->AddLayer(new gFooBar(10,QColor("lime green"),QColor("dark grey"),true));
+    SF->AddLayer(new gFooBar(10,QColor("orange"),QColor("dark grey"),true));
     SF->setMinimumHeight(150+(extras ? 20 : 0));
    // SF->setMaximumHeight(350);
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
-    PRD=new gGraphWindow(gSplitter,"Pressure",SF);
+    AddGraph(PRD=new gGraphWindow(gSplitter,"Pressure",SF));
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
     PRD->AddLayer(new gFooBar());
@@ -101,7 +101,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->setMinimumHeight(150);
 
 
-    FRW=new gGraphWindow(gSplitter,"Flow Rate",SF); //shared_context);
+    AddGraph(FRW=new gGraphWindow(gSplitter,"Flow Rate",SF));
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gFooBar());
@@ -124,7 +124,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
     //leakdata->ForceMaxY(120);
-    LEAK=new gGraphWindow(gSplitter,"Leaks",SF);
+    AddGraph(LEAK=new gGraphWindow(gSplitter,"Leaks",SF));
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     LEAK->AddLayer(new gFooBar());
@@ -135,7 +135,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
     //snore->ForceMinY(0);
     //snore->ForceMaxY(15);
-    SNORE=new gGraphWindow(gSplitter,"Snore",SF);
+    AddGraph(SNORE=new gGraphWindow(gSplitter,"Snore",SF));
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
     SNORE->AddLayer(new gFooBar());
@@ -146,7 +146,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
-    PULSE=new gGraphWindow(gSplitter,"Pulse",SF);
+    AddGraph(PULSE=new gGraphWindow(gSplitter,"Pulse",SF));
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
     PULSE->AddLayer(new gFooBar());
@@ -157,7 +157,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
-    SPO2=new gGraphWindow(gSplitter,"SpO2",SF);
+    AddGraph(SPO2=new gGraphWindow(gSplitter,"SpO2",SF));
     SPO2->AddLayer(new gXAxis());
     SPO2->AddLayer(new gYAxis());
     SPO2->AddLayer(new gFooBar());
@@ -395,12 +395,11 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
 
+    const int gwwidth=270;
+    const int gwheight=25;
     UpdateCPAPGraphs(cpap);
     UpdateOXIGraphs(oxi);
     UpdateEventsTree(ui->treeWidget,cpap);
-
-    const int gwwidth=270;
-    const int gwheight=25;
 
 
 
@@ -604,6 +603,7 @@ void Daily::Load(QDate date)
     if (journal) {
         ui->JournalNotes->setHtml(journal->summary[GEN_Notes].toString());
     }
+    RedrawGraphs();
 
 }
 void Daily::Unload(QDate date)
@@ -770,8 +770,17 @@ void Daily::UpdateOXIGraphs(Day *day)
     for (list<gPointData *>::iterator g=OXIData.begin();g!=OXIData.end();g++) {
         (*g)->Update(day);
     }
-};
+}
 
+void Daily::RedrawGraphs()
+{
+
+    // could recall Min & Max stuff here to reset cache
+    // instead of using the dodgy notify calls.
+    for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
+        (*g)->updateGL();
+    }
+}
 
 void Daily::on_treeWidget_itemSelectionChanged()
 {

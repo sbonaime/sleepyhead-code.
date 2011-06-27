@@ -12,7 +12,7 @@
 class gFooBar:public gLayer
 {
     public:
-        gFooBar(int offset=10,QColor color1=QColor("lime green"),QColor color2=QColor("dark grey"),bool funkbar=false);
+        gFooBar(int offset=10,QColor color1=QColor("orange"),QColor color2=QColor("dark grey"),bool funkbar=false);
         virtual ~gFooBar();
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
         static const int Margin=15;

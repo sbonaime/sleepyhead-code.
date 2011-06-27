@@ -55,7 +55,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     float line_top=(start_py+height-line_h)-line_num*line_h;
 
 
-    if ((line_num==total_lines-1)) { // last lines responsibility to draw the title.
+    if ((line_num==total_lines-1)) { // last lines responsibility to draw the bounding box
 
         glColor3f (0.1F, 0.1F, 0.1F);
         glLineWidth (1);
@@ -65,8 +65,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         glVertex2f (start_px+width,start_py+height);
         glVertex2f (start_px+width, start_py);
         glEnd ();
-
-
     }
 
     // Alternating box color
@@ -78,10 +76,10 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     // Filled rectangle
     glColor4ub(barcol->red(),barcol->green(),barcol->blue(),barcol->alpha());
     glBegin(GL_QUADS);
-    glVertex2f(start_px, line_top);
-    glVertex2f(start_px, line_top+line_h);
-    glVertex2f(start_px+width, line_top+line_h);
-    glVertex2f(start_px+width, line_top);
+    glVertex2f(start_px-1, line_top);
+    glVertex2f(start_px-1, line_top+line_h);
+    glVertex2f(start_px+width-1, line_top+line_h);
+    glVertex2f(start_px+width-1, line_top);
     glEnd();
 
     const int maxverts=65536;
