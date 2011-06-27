@@ -785,6 +785,7 @@ void Daily::RedrawGraphs()
 void Daily::on_treeWidget_itemSelectionChanged()
 {
     QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
+    if (!item) return;
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
