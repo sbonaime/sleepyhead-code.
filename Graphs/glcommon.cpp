@@ -61,7 +61,7 @@ void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCol
     glDisable(GL_DEPTH_TEST);
     glFlush();
     QPainter painter(&wid);
-    //painter.setFont(*font);
+    painter.setFont(*font);
     painter.setPen(Qt::black);
     painter.setOpacity(1);
  //   painter.setCompositionMode(QPainter::CompositionMode_);

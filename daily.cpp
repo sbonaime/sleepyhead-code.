@@ -303,8 +303,9 @@ void Daily::on_calendar_currentPageChanged(int year, int month)
 }
 void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 {
-    if (!day) return;
     tree->clear();
+    if (!day) return;
+
     tree->setColumnCount(1); // 1 visible common.. (1 hidden)
 
     QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
@@ -785,6 +786,7 @@ void Daily::RedrawGraphs()
 
 void Daily::on_treeWidget_itemSelectionChanged()
 {
+    if (ui->treeWidget->selectedItems().size()==0) return;
     QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
     if (!item) return;
     QDateTime d;
