@@ -181,8 +181,7 @@ void UpdateCal(QCalendarWidget *cal)
     QDate d1=cal->minimumDate();
     d1.setYMD(d1.year(),d1.month(),1);
     QTextCharFormat fmt=cal->weekdayTextFormat(Qt::Monday);
-    QBrush b(QColor("light grey"));
-    fmt.setForeground(b);
+    fmt.setForeground(QBrush(Qt::gray));
     for (QDate d=d1;d < cal->minimumDate();d=d.addDays(1)) {
         cal->setDateTextFormat(d,fmt);
     }

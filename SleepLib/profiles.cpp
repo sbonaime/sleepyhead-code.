@@ -255,7 +255,7 @@ Machine * Profile::GetMachine(MachineType t)
 
 }
 
-Profile *profile=NULL;
+//Profile *profile=NULL;
 QString SHA1(QString pass)
 {
     return pass;

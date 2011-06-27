@@ -44,7 +44,7 @@ void GetTextExtent(QString text, float & width, float & height, QFont *font)
     width=fm.width(text); //fm.width(text);
     height=fm.xHeight()+2; //fm.ascent();
 }
-void DrawText(gGraphWindow & wid, QString text, float x, float y, float angle, QColor color,QFont *font)
+void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
     //QFontMetrics fm(*font);
     float w,h;
@@ -56,22 +56,26 @@ void DrawText(gGraphWindow & wid, QString text, float x, float y, float angle, Q
         abort();
         return;
     }
-    glColor4ub(color.red(),color.green(),color.blue(),color.alpha());
-    if (angle==0) {
-        wid.renderText(x,y,text,*font);
-       // DrawText2(text,x,y,font);
-        return;
-    }
+
+//    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glFlush();
     QPainter painter(&wid);
+    //painter.setFont(*font);
+    painter.setPen(Qt::black);
+    painter.setOpacity(1);
+ //   painter.setCompositionMode(QPainter::CompositionMode_);
+    if (angle==0) {
+        painter.drawText(x,y,text);
+    } else {
+        GetTextExtent(text, w, h, font);
+        painter.translate(floor(x),floor(y));
+        painter.rotate(-90);
+        painter.drawText(floor(-w/2.0),floor(-h/2.0),text);
+        painter.translate(floor(-x),floor(-y));
 
-    GetTextExtent(text, w, h, font);
+    }
 
-    painter.translate(floor(x),floor(y));
-    painter.rotate(-90);
-    painter.setFont(*font);
-    painter.setPen(QPen(color));
-    painter.drawText(floor(-w/2.0),floor(-h/2.0),text);
-    painter.translate(floor(-x),floor(-y));
     painter.end();
 
     glDisable(GL_TEXTURE_2D);

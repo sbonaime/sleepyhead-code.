@@ -79,7 +79,7 @@ void MainWindow::Startup()
     qstatus->setText("Loading Data");
     qprogress->show();
 
-      Profile *profile=Profiles::Get(pref["Profile"].toString());
+    profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
 
     daily=new Daily(ui->tabWidget,shared_context);

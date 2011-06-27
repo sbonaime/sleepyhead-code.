@@ -100,14 +100,26 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->AddLayer(new gLineChart(pressure_eap,QColor("red"),4096,false,true,true));
     PRD->setMinimumHeight(150);
 
+    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
+    //leakdata->ForceMinY(0);
+    //leakdata->ForceMaxY(120);
+    AddGraph(LEAK=new gGraphWindow(gSplitter,"Leaks",SF));
+    LEAK->AddLayer(new gXAxis());
+    LEAK->AddLayer(new gYAxis());
+    LEAK->AddLayer(new gFooBar());
+    LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),4096,false,false,false));
+
+    LEAK->setMinimumHeight(150);
+
 
     AddGraph(FRW=new gGraphWindow(gSplitter,"Flow Rate",SF));
-    FRW->AddLayer(new gXAxis());
-    FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gFooBar());
+    FRW->AddLayer(new gYAxis());
+    FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
     gLineChart *g=new gLineChart(frw,QColor("black"),200000,true);
     g->ReportEmpty(true);
+
 
     FRW->AddLayer(g);
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
@@ -120,17 +132,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(new gLineOverlayBar(flags[1],QColor("purple"),"CA"));
 
     FRW->setMinimumHeight(190);
-
-    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
-    //leakdata->ForceMinY(0);
-    //leakdata->ForceMaxY(120);
-    AddGraph(LEAK=new gGraphWindow(gSplitter,"Leaks",SF));
-    LEAK->AddLayer(new gXAxis());
-    LEAK->AddLayer(new gYAxis());
-    LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),4096,false,false,false));
-
-    LEAK->setMinimumHeight(150);
 
     AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
     //snore->ForceMinY(0);

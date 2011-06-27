@@ -68,6 +68,7 @@ private:
     Overview * overview;
     QGLContext *shared_context;
     bool first_load;
+    Profile *profile;
 };
 
 #endif // MAINWINDOW_H

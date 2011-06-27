@@ -72,7 +72,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             //TextMarkup...
             GetTextExtent(msg,x,y,bigfont);
             //w.renderText(start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),msg,*bigfont);
-            DrawText(w,msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,QColor("dark grey"),bigfont);//-(y/2.0)
+            DrawText(w,msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);//-(y/2.0)
         }
         return;
     }
