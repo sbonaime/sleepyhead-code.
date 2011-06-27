@@ -20,25 +20,15 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    a.setApplicationName("SleepyHead");
     QFontDatabase::addApplicationFont(":/fonts/freesans.ttf");
     a.setFont(QFont("FreeSans"));
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();
 
-    Profiles::Scan();
 
-    //loader_progress->Show();
 
-    pref["AppName"]="SleepyHead";
-    //pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
-    pref["Profile"]=getUserName();
-    pref["LinkGraphMovement"]=true;
-    pref["fruitsalad"]=true;
-
-    profile=Profiles::Get(pref["Profile"].toString());
-
-    profile->LoadMachineData();
 
     /*Machine *m=new Machine(profile,0);
     m->SetClass("Journal");

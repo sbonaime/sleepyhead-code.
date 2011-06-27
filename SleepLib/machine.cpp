@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <QDir>
 #include <QProgressBar>
+
 extern QProgressBar * qprogress;
 
 map<MachineType,ChannelCode> MachLastCode;
@@ -371,7 +372,10 @@ bool Machine::Load()
         sessfiles[sessid][ext]=fi.canonicalFilePath();
     }
 
+    int size=sessfiles.size();
+    int cnt=0;
     for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
+        if (qprogress) qprogress->setValue((float(++cnt)/float(size)*100.0));
         Session *sess=new Session(this,s->first);
         if (sess->LoadSummary(s->second[0])) {
             sess->SetEventFile(s->second[1]);

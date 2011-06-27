@@ -41,9 +41,9 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
-
-    gSplitter->setChildrenCollapsible(false);
-    gSplitter->setHandleWidth(3);
+    gSplitter->setChildrenCollapsible(true);
+    gSplitter->setHandleWidth(1);
+    //gSplitter->handle
     ui->graphSizer->addWidget(gSplitter);
 
     //QPalette pal;

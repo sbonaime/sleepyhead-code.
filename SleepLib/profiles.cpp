@@ -187,8 +187,9 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
 Day * Profile::GetDay(QDate date,MachineType type)
 {
     Day *day=NULL;
-    if (profile->daylist.find(date)!=profile->daylist.end()) {
-        for (vector<Day *>::iterator di=profile->daylist[date].begin();di!=profile->daylist[date].end();di++) {
+    // profile->     why did I d that??
+    if (daylist.find(date)!=daylist.end()) {
+        for (vector<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
             if (type==MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
                 day=(*di);
                 break;
@@ -313,7 +314,9 @@ Profile *Create(QString name,QString realname,QString password)
 
 Profile *Get()
 {
-    return profile;
+    // username lookup
+    //getUserName()
+    return profiles[getUserName()];;
 }
 
 

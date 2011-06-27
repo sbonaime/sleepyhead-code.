@@ -60,11 +60,14 @@ private slots:
 
     void on_action_About_triggered();
 
+    void Startup();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;
     Overview * overview;
     QGLContext *shared_context;
+    bool first_load;
 };
 
 #endif // MAINWINDOW_H

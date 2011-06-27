@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QResource>
 #include <QProgressBar>
+#include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "daily.h"
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle("SleepyHead v0.8."+subversion);
+
     QGLFormat fmt;
     fmt.setDepth(false);
     fmt.setDirectRendering(true);
@@ -34,21 +36,26 @@ MainWindow::MainWindow(QWidget *parent) :
     fmt.setDefaultFormat(fmt);
     shared_context=new QGLContext(fmt);
 
-    daily=new Daily(ui->tabWidget,shared_context);
-    overview=new Overview(ui->tabWidget,shared_context);
-    ui->tabWidget->addTab(daily,"Daily");
-    ui->tabWidget->addTab(overview,"Overview");
-
     //ui->tabWidget->setCurrentWidget(daily);
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
-    qstatus=new QLabel("Ready",this);
-
+    qstatus=new QLabel("",this);
+    qprogress->hide();
     ui->statusbar->addPermanentWidget(qstatus);
     ui->statusbar->addPermanentWidget(qprogress);
-    qprogress->hide();
-    //on_homeButton_clicked();
+    daily=NULL;
+    overview=NULL;
+    Profiles::Scan();
 
+    //loader_progress->Show();
+
+    //pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
+    pref["AppName"]="SleepyHead";
+    pref["Profile"]=getUserName();
+    pref["LinkGraphMovement"]=true;
+    pref["fruitsalad"]=true;
+
+    first_load=true;
 }
 
 MainWindow::~MainWindow()
@@ -66,6 +73,24 @@ MainWindow::~MainWindow()
     Profiles::Done();
 }
 
+void MainWindow::Startup()
+{
+
+    qstatus->setText("Loading Data");
+    qprogress->show();
+
+      Profile *profile=Profiles::Get(pref["Profile"].toString());
+    profile->LoadMachineData();
+
+    daily=new Daily(ui->tabWidget,shared_context);
+    overview=new Overview(ui->tabWidget,shared_context);
+    ui->tabWidget->addTab(daily,"Daily");
+    ui->tabWidget->addTab(overview,"Overview");
+
+    qprogress->hide();
+    qstatus->setText("Ready");
+}
+
 void MainWindow::on_action_Import_Data_triggered()
 {
     QStringList dirNames;
@@ -76,7 +101,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (qfd.exec()) {
         qprogress->setValue(0);
         qprogress->show();
-        qstatus->setText("Busy");
+        qstatus->setText("Importing Data");
         dirNames=qfd.selectedFiles();
         for (int i=0;i<dirNames.size();i++) {
             profile->Import(dirNames[i]);
@@ -167,14 +192,22 @@ void MainWindow::on_overviewButton_clicked()
 void MainWindow::on_webView_loadFinished(bool arg1)
 {
     qprogress->hide();
-    qstatus->setText("Ready");
+    if (first_load) {
+        QTimer::singleShot(0,this,SLOT(Startup()));
+        first_load=false;
+    } else {
+        qstatus->setText("Ready");
+    }
+
 }
 
 void MainWindow::on_webView_loadStarted()
 {
-    qprogress->reset();
-    qprogress->show();
-    qstatus->setText("Loading");
+    if (!first_load) {
+        qstatus->setText("Loading");
+        qprogress->reset();
+        qprogress->show();
+    }
 }
 
 void MainWindow::on_webView_loadProgress(int progress)
