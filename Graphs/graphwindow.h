@@ -138,6 +138,8 @@ public:
       bool BlockZoom() { return m_block_zoom; };
       QGLContext *gl_context;
       //FTFont *texfont;
+      void SetDrawBackground(bool b) { m_draw_background=b; };
+      bool DrawBackground() { return m_draw_background; };
 
   protected:
       void initializeGL();
@@ -148,6 +150,7 @@ public:
       bool m_block_zoom;
       bool m_drag_foobar;
       double m_foobar_pos,m_foobar_moved;
+      bool m_draw_background;
       std::list<gLayer *> layers;
       QString m_title;
       int    m_scrX;

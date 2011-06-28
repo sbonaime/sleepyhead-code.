@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  MainWindow Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <QGLFormat>
 #include <QFileDialog>

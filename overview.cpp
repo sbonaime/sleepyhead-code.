@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  Overview GUI Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <QCalendarWidget>
 #include <QTextCharFormat>

@@ -41,7 +41,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     double xmult=width/xx;
@@ -76,8 +76,8 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     // Filled rectangle
     glColor4ub(barcol->red(),barcol->green(),barcol->blue(),barcol->alpha());
     glBegin(GL_QUADS);
-    glVertex2f(start_px-1, line_top);
-    glVertex2f(start_px-1, line_top+line_h);
+    glVertex2f(start_px+1, line_top);
+    glVertex2f(start_px+1, line_top+line_h);
     glVertex2f(start_px+width-1, line_top+line_h);
     glVertex2f(start_px+width-1, line_top);
     glEnd();

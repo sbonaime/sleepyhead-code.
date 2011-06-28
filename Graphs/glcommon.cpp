@@ -18,6 +18,7 @@ QFont * mediumfont=NULL;
 QFont * bigfont=NULL;
 
 GLshort *vertex_array[num_vert_arrays]={NULL};
+bool evil_intel_graphics_chip=false;
 
 // Must be called from a thread inside the application.
 void InitGraphs()

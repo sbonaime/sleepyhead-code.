@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  Daily Panel
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include "daily.h"
 #include "ui_daily.h"
@@ -23,6 +23,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gCandleStick.h"
 #include "Graphs/gBarChart.h"
+#include "Graphs/gpiechart.h"
 
 Daily::Daily(QWidget *parent,QGLContext *context) :
     QWidget(parent),
@@ -41,8 +42,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
-    gSplitter->setChildrenCollapsible(true);
-    gSplitter->setHandleWidth(1);
+    gSplitter->setHandleWidth(2);
     //gSplitter->handle
     ui->graphSizer->addWidget(gSplitter);
 
@@ -181,6 +181,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     //TAP->SetMargins(20,15,5,50);
     TAP->SetMargins(0,0,0,0);
     TAP->AddLayer(new gCandleStick(tap));
+    //TAP->AddLayer(new gPieChart(tap));
 
     TAP_EAP=new gGraphWindow(gSplitter,"",SF);
     TAP_EAP->SetMargins(0,0,0,0);
@@ -193,7 +194,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     G_AHI=new gGraphWindow(gSplitter,"",SF);
     G_AHI->SetMargins(0,0,0,0);
     AddCPAPData(g_ahi=new AHIData());
-    gCandleStick *l=new gCandleStick(g_ahi);
+    //gCandleStick *l=new gCandleStick(g_ahi);
+    gPieChart *l=new gPieChart(g_ahi);
     l->AddName(tr("H"));
     l->AddName(tr("OA"));
     l->AddName(tr("CA"));
@@ -205,9 +207,10 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->color.push_back(QColor("aqua"));
     l->color.push_back(QColor("purple")); //0xff,0x40,0xff,0xff)); //wxPURPLE);
     l->color.push_back(QColor("yellow"));
-    l->color.push_back(QColor("black"));
+    l->color.push_back(QColor(20,20,20,255));
     l->color.push_back(QColor("light green"));
     G_AHI->AddLayer(l);
+    //G_AHI->SetDrawBackground(false);
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
     NoData=new QLabel(tr("No CPAP Data"),gSplitter);
@@ -253,6 +256,12 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     gSplitter->addWidget(SPO2);
     gSplitter->refresh();
 
+
+    gSplitter->setChildrenCollapsible(true);  // We set this per widget..
+    for (int i=1;i<gSplitter->count();i++)
+        gSplitter->setCollapsible(i,true);
+    gSplitter->setCollapsible(0,false);
+    gSplitter->setCollapsible(1,false);
     ui->graphSizer->layout();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
@@ -471,7 +480,7 @@ void Daily::Load(QDate date)
         html=html+("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
         {
             G_AHI->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=G_AHI->renderPixmap(gwwidth,gwheight,false);
+            QPixmap pixmap=G_AHI->renderPixmap(200,200,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);

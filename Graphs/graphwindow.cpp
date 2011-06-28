@@ -17,6 +17,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     m_mouseRDown=m_mouseLDown=false;
     m_block_zoom=false;
     m_drag_foobar=false;
+    m_draw_background=true;
     m_foobar_pos=0;
     m_foobar_moved=0;
     SetMargins(10, 15, 0, 0);
@@ -39,6 +40,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     SetMargins(10, 15, 0, 0);
     m_block_zoom=false;
     m_drag_foobar=false;
+    m_draw_background=false;
     m_foobar_pos=0;
     m_foobar_moved=0;
     lastlayer=NULL;
@@ -676,15 +678,22 @@ void gGraphWindow::Render(float w, float h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();*/
 
-    glBegin(GL_QUADS);
-    glColor3f(1.0,1.0,1.0); // Gradient start
-    glVertex2f(0, h);
-    glVertex2f(0, 0);
+    if (m_draw_background) {
+        glBegin(GL_QUADS);
+        glColor3f(1.0,1.0,1.0); // Gradient start
+        glVertex2f(0, h);
+        glVertex2f(0, 0);
 
-    glColor3f(0.8,0.8,1.0); // Gradient End
-    glVertex2f(w, 0);
-    glVertex2f(w, h);
-    glEnd();
+        glColor3f(0.8,0.8,1.0); // Gradient End
+        glVertex2f(w, 0);
+        glVertex2f(w, h);
+        glEnd();
+    } else {
+
+        glClearColor(0,0,0,255);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //    glClear(GL_COLOR_BUFFER_BIT);
+    }
 
 
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
@@ -707,7 +716,7 @@ void gGraphWindow::paintGL()
     if (m_mouseLDown) {
         if (m_mouseRBrect.width()>0)
             glDisable(GL_DEPTH_TEST);
-            RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width()-1,m_mouseRBrect.height(),5,QColor(50,50,50,128));
+            RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,50,128));
             glEnable(GL_DEPTH_TEST);
     }
     glEnable(GL_DEPTH_TEST);

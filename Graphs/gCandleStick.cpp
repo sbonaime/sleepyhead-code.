@@ -97,9 +97,10 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
 
         str="";
         if ((int)m_names.size()>i) {
-       //     str=m_names[i]+" ";
+        //    str=m_names[i]+" ";
         }
-        str+=st.sprintf("%0.1f",data->point[0][i].x());
+        st.sprintf("%0.1f",data->point[0][i].x());
+        str+=st;
         GetTextExtent(str, x, y);
         //x+=5;
         if (t2>x+5) {
@@ -107,8 +108,8 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
             if (m_orientation==Qt::Vertical) {
                 DrawText(w,str,start_px+barwidth+2+y,scry-j,270.0);
             } else {
-                //w.renderText(j,float(scry)-(float(start_py)+(barwidth/2.0)-(y/2.0)+3),str);
-                DrawText(w,str,j,scry-(start_py+(barwidth/2.0)-(y/2.0)));
+                w.renderText(j,float(scry)-(float(start_py)+(barwidth/2.0)-(y/2.0)),str);
+                //DrawText(w,str,j,scry-(start_py+(barwidth/2.0)-(y/2.0)));
             }
         }
     } // for (int i
