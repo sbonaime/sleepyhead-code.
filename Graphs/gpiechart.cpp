@@ -23,7 +23,7 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     float diameter=MIN(width,height);
-    diameter-=4;
+    diameter-=8;
     float radius=diameter/2.0;
 
     double total=0;
@@ -38,11 +38,12 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
     //glEnable(GL_TEXTURE_2D);
     //glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glEnable(GL_POLYGON_SMOOTH);
+    //glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
+    glLineWidth(1);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE );
-    glHint(GL_POLYGON_SMOOTH_HINT,  GL_NICEST);
+    //glHint(GL_POLYGON_SMOOTH_HINT,  GL_NICEST);
 
     for (int i=0;i<data->np[0];i++) {
         j=(data->point[0][i].y()/total); // ratio of this pie slice
@@ -50,11 +51,11 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         w.qglColor(col1);
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
         glBegin(GL_POLYGON);
-        glVertex2f(start_px+radius+2, start_py+radius+2);
+        glVertex2f(start_px+radius+4, start_py+radius+4);
 
         for (double q=sum;q<sum+j;q+=step) {
-            px=start_px+radius+sin(q*2*M_PI)*radius;
-            py=start_py+radius+cos(q*2*M_PI)*radius;
+            px=start_px+radius+4+sin(q*2*M_PI)*radius;
+            py=start_py+radius+4+cos(q*2*M_PI)*radius;
             glVertex2f(px,py);
         }
         glEnd();
@@ -62,10 +63,10 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         glPolygonMode(GL_BACK,GL_LINE);
         w.qglColor(Qt::black);
         glBegin(GL_POLYGON);
-        glVertex2f(start_px+radius+2, start_py+radius+2);
+        glVertex2f(start_px+radius+4, start_py+radius+4);
         for (double q=sum;q<sum+j;q+=step) {
-            px=start_px+radius+sin(q*2*M_PI)*radius;
-            py=start_py+radius+cos(q*2*M_PI)*radius;
+            px=start_px+radius+4+sin(q*2*M_PI)*radius;
+            py=start_py+radius+4+cos(q*2*M_PI)*radius;
             glVertex2f(px,py);
         }
         glEnd();
