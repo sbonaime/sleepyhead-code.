@@ -279,7 +279,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
     }
     if (day.find(date)==day.end()) {
         QString dstr=date.toString("yyyyMMdd");
-        qDebug("Adding Profile Day %s",dstr.toAscii().data());
+        //qDebug("Adding Profile Day %s",dstr.toAscii().data());
         day[date]=new Day(this);
         // Add this Day record to profile
         p->AddDay(date.date(),day[date],m_type);

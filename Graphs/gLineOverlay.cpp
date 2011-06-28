@@ -58,13 +58,15 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
 
-    const int maxverts=65536;
-    int vertcnt=0;
-    static GLshort vertarray[maxverts+8];
-    int pointcnt=0;
-    static GLshort pointarray[maxverts+8];
-    int quadcnt=0;
-    static GLshort quadarray[maxverts+8];
+    qint32 vertcnt=0;
+    GLshort * vertarray=vertex_array[0];
+    qint32 pointcnt=0;
+    GLshort * pointarray=vertex_array[1];
+    qint32 quadcnt=0;
+    GLshort * quadarray=vertex_array[2];
+    assert(vertarray!=NULL);
+    assert(quadarray!=NULL);
+    assert(pointarray!=NULL);
 
     float bottom=start_py+25, top=start_py+height-25;
     QColor & col=color[0];

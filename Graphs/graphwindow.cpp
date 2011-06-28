@@ -707,7 +707,7 @@ void gGraphWindow::paintGL()
     if (m_scrX<=0) return;
     if (m_scrY<=0) return;
 
-    InitFonts();
+    InitGraphs();
     glDisable(GL_DEPTH_TEST);
     Render(m_scrX,m_scrY);
 

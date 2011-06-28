@@ -62,9 +62,9 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     float ty,h;
 
-    const int maxverts=4096;
-    int vertcnt=0;
-    static GLshort vertarray[maxverts+4];
+    qint32 vertcnt=0;
+    GLshort * vertarray=vertex_array[0];
+    assert(vertarray!=NULL);
 
     glColor4ub(linecol1.red(),linecol1.green(),linecol1.blue(),linecol1.alpha());
     glLineWidth(1);

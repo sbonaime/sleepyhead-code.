@@ -73,7 +73,7 @@ MainWindow::~MainWindow()
         overview->close();
         delete overview;
     }
-    DoneFonts();
+    DoneGraphs();
     delete ui;
     Profiles::Done();
 }

@@ -12,12 +12,16 @@
 #include <QtOpenGL/qgl.h>
 #include "Graphs/graphwindow.h"
 
-void InitFonts();
-void DoneFonts();
+void InitGraphs();
+void DoneGraphs();
 
 extern QFont * defaultfont;
 extern QFont * mediumfont;
 extern QFont * bigfont;
+
+const int num_vert_arrays=4;
+const qint32 maxverts=65536*4; // Resolution dependant..
+extern GLshort *vertex_array[num_vert_arrays];
 
 
 class gGraphWindow;

@@ -31,7 +31,7 @@ void WaveData::Reload(Day *day)
     bool first=true;
     int chunk=0;
     for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
-        qDebug("Processing waveform chunk %i",chunk++);
+        //qDebug("Processing waveform chunk %i",chunk++);
         if ((*s)->waveforms.find(code)==(*s)->waveforms.end()) continue;
         for (vector<Waveform *>::iterator l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
             int ps=point.size();
@@ -43,7 +43,7 @@ void WaveData::Reload(Day *day)
             Waveform *w=(*l);
             double st=w->start().toMSecsSinceEpoch()/86400000.0;
             double rate=(w->duration()/w->samples())/86400.0;
-            qDebug("Waveform Chunk contains %i samples",w->samples());
+            //qDebug("Waveform Chunk contains %i samples",w->samples());
             for (int i=0;i<w->samples();i++) {
                 QPointD r(st,(*w)[i]);
                 st+=rate;

@@ -258,7 +258,7 @@ bool Preferences::Save(QString filename)
         if (type==QVariant::Invalid) continue;
 
         msg=new TiXmlElement(i->first.toLatin1());
-        qDebug(i->first.toLatin1());
+        //qDebug(i->first.toLatin1());
         msg->SetAttribute("type",i->second.typeName());
         QString t;
 

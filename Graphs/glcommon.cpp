@@ -10,30 +10,39 @@
 #include "glcommon.h"
 #include "SleepLib/profiles.h"
 #include <QFile>
-bool _font_init=false;
 
-QFont * defaultfont;
-QFont * mediumfont;
-QFont * bigfont;
+bool _graph_init=false;
+
+QFont * defaultfont=NULL;
+QFont * mediumfont=NULL;
+QFont * bigfont=NULL;
+
+GLshort *vertex_array[num_vert_arrays]={NULL};
 
 // Must be called from a thread inside the application.
-void InitFonts()
+void InitGraphs()
 {
-    if (!_font_init) {
+    if (!_graph_init) {
 
         defaultfont=new QFont("FreeSans",10);
         bigfont=new QFont("FreeSans",35);
         mediumfont=new QFont("FreeSans",18);
-
-        _font_init=true;
+        for (int i=0;i<num_vert_arrays;i++) {
+            vertex_array[i]=new GLshort[maxverts];
+        }
+        _graph_init=true;
     }
 }
-void DoneFonts()
+void DoneGraphs()
 {
-    if (_font_init) {
+    if (_graph_init) {
+        delete defaultfont;
         delete bigfont;
         delete mediumfont;
-        _font_init=false;
+        for (int i=0;i<num_vert_arrays;i++) {
+            delete [] vertex_array[i];
+        }
+        _graph_init=false;
     }
 }
 

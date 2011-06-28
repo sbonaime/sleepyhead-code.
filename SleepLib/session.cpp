@@ -274,7 +274,7 @@ bool Session::Store(QString path)
     QString base;
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
-    qDebug(("Storing Session: "+base).toLatin1());
+    //qDebug(("Storing Session: "+base).toLatin1());
     bool a,b,c;
     a=StoreSummary(base+".000"); // if actually has events
     if (events.size()>0) b=StoreEvents(base+".001");
@@ -356,7 +356,8 @@ bool Session::StoreSummary(QString filename)
 }
 bool Session::LoadSummary(QString filename)
 {
-    qDebug(("Loading Summary "+filename).toLatin1());
+    if (filename.isEmpty()) return false;
+    //qDebug(("Loading Summary "+filename).toLatin1());
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
         qDebug(("Couldn't open file"+filename).toLatin1());
@@ -492,9 +493,10 @@ bool Session::StoreEvents(QString filename)
 }
 bool Session::LoadEvents(QString filename)
 {
+    if (filename.isEmpty()) return false;
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
-        qDebug(("Couldn't open file"+filename).toLatin1());
+        qDebug(("Couldn't open events file"+filename).toLatin1());
         return false;
     }
 
@@ -629,9 +631,11 @@ bool Session::StoreWaveforms(QString filename)
 
 bool Session::LoadWaveforms(QString filename)
 {
+    if (filename.isEmpty()) return false;
+
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
-        qDebug(("Couldn't open file "+filename).toLatin1());
+        qDebug(("Couldn't open waveform file "+filename).toLatin1());
         return false;
     }
 

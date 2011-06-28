@@ -82,12 +82,12 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f(start_px+width-1, line_top);
     glEnd();
 
-    const int maxverts=65536;
-    int vertcnt=0;
-    static GLshort vertarray[maxverts+8];
-    int quadcnt=0;
-    static GLshort quadarray[maxverts+8];
-
+    qint32 vertcnt=0;
+    GLshort * vertarray=vertex_array[0];
+    qint32 quadcnt=0;
+    GLshort * quadarray=vertex_array[1];
+    assert(vertarray!=NULL);
+    assert(quadarray!=NULL);
 
     // Draw text label
     float x,y;

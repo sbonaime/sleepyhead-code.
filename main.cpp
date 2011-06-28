@@ -7,6 +7,7 @@
 //#include <QtPlugin>
 #include <QtGui/QApplication>
 #include <QFontDatabase>
+#include <QStringList>
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 
@@ -21,8 +22,14 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     a.setApplicationName("SleepyHead");
-    QFontDatabase::addApplicationFont(":/fonts/freesans.ttf");
-    a.setFont(QFont("FreeSans"));
+    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
+    QStringList ffam=QFontDatabase::applicationFontFamilies(id);
+    for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
+        qDebug(("Loaded Font: "+*i).toLatin1());
+    }
+
+    a.setFont(QFont("FreeSans",10));
+
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();

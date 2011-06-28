@@ -257,7 +257,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
-    ui->tabWidget->setCurrentWidget(ui->info);
+    ui->tabWidget->setCurrentWidget(ui->details);
     ReloadGraphs();
  }
 
@@ -383,7 +383,9 @@ void Daily::Load(QDate date)
     Day *oxi=profile->GetDay(date,MT_OXIMETER);
     Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
-    QString html="<html><body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
+    QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>";
+    html+="</head>";
+    html+="<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
     html+="<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
 
@@ -790,4 +792,18 @@ void Daily::on_treeWidget_itemSelectionChanged()
         LEAK->SetXBounds(st,et);
         SNORE->SetXBounds(st,et);
     }
+}
+
+void Daily::on_JournalNotesUnderline_clicked()
+{
+    QTextCursor cursor = ui->JournalNotes->textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+
+    QTextCharFormat format=cursor.charFormat();
+
+    format.setFontUnderline(!format.fontUnderline());
+
+    cursor.mergeCharFormat(format);
+   //ui->JournalNotes->mergeCurrentCharFormat(format);
 }

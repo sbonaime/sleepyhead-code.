@@ -45,6 +45,8 @@ private slots:
 
     void on_treeWidget_itemSelectionChanged();
 
+    void on_JournalNotesUnderline_clicked();
+
 private:
     Session * CreateJournalSession(QDate date);
     Session * GetJournalSession(QDate date);

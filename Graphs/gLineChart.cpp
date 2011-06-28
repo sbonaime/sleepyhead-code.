@@ -84,9 +84,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     QColor & col=color[0];
     // Selected the plot line color
 
-    const long maxverts=65536*4; // Resolution dependant..
-    long vertcnt=0;
-    static GLshort vertarray[maxverts+8];
+    qint32 vertcnt=0;
+    GLshort * vertarray=vertex_array[0];
+    assert(vertarray!=NULL);
 
     float lastpx,lastpy;
     float px,py;

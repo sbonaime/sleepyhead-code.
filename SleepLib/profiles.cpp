@@ -100,7 +100,7 @@ void Profile::ExtraLoad(TiXmlHandle *root)
     TiXmlElement *elem;
     elem=root->FirstChild("Machines").FirstChild().Element();
     if (!elem) {
-        qDebug("ExtraLoad: Elem is empty.");
+       // qDebug("ExtraLoad: Elem is empty.");
     }
     for(; elem; elem=elem->NextSiblingElement()) {
         QString pKey=elem->Value();

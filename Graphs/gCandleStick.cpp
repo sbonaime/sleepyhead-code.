@@ -52,8 +52,9 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
 
     QColor col2=QColor("light grey");
     QColor c(0,0,0,255);
-    QString str;
+    QString str,st;
     QRect rect;
+
     //Qt::AlignmDirection dir;
 
     glLineWidth(1);
@@ -98,9 +99,7 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         if ((int)m_names.size()>i) {
        //     str=m_names[i]+" ";
         }
-        QString st;
-        st.sprintf("%0.1f",data->point[0][i].x());
-        str+=st;
+        str+=st.sprintf("%0.1f",data->point[0][i].x());
         GetTextExtent(str, x, y);
         //x+=5;
         if (t2>x+5) {
