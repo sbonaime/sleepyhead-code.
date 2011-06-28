@@ -204,11 +204,11 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->AddName(tr("CSR"));
     l->color.clear();
     l->color.push_back(QColor("blue"));
-    l->color.push_back(QColor("aqua"));
-    l->color.push_back(QColor("purple")); //0xff,0x40,0xff,0xff)); //wxPURPLE);
+    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); //#40afbf
+    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); //b254cd; //wxPURPLE);
     l->color.push_back(QColor("yellow"));
-    l->color.push_back(QColor(20,20,20,255));
-    l->color.push_back(QColor("light green"));
+    l->color.push_back(QColor(0x40,0x40,0x40,255));
+    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); //80ff80
     G_AHI->AddLayer(l);
     G_AHI->SetDrawBackground(false);
     //G_AHI->setMaximumSize(2000,30);
@@ -345,9 +345,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                     t=t.addSecs(-((*(*e))[0]/2));
                 }
                 QStringList a;
-                QString c;
-                c.sprintf("#%04i: ",mccnt[code]++);
-                a.append(c+t.toString(" HH:mm:ss"));
+                QString c,b;
+                c.sprintf("#%03i: ",++mccnt[code]);
+                c+=t.toString(" HH:mm:ss");
+
+                //if ((*e)->fields()) { // Perhaps need a dedicated offset field
+                    //b.sprintf(" %02.0f",(*(*e))[0]);
+                    //c+=b;
+                //}
+                a.append(c);
                 a.append(t.toString("yyyy-MM-dd HH:mm:ss"));
                 mcr->addChild(new QTreeWidgetItem(a));
             }
@@ -457,7 +463,7 @@ void Daily::Load(QDate date)
             html=html+("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+tr("AHI")+("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+a.sprintf("%.2f",ahi)+("</font></b></td></tr>\n");
             html=html+("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+tr("Hypopnea")+("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+a.sprintf("%.2f",hi)+("</font></td></tr>\n");
             html=html+("<tr><td align='right' bgcolor='#40afbf'><b>")+tr("Obstructive")+("</b></td><td bgcolor='#40afbf'>")+a.sprintf("%.2f",oai)+("</td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#ff80ff'><b>")+tr("ClearAirway")+("</b></td><td bgcolor='#ff80ff'>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
+            html=html+("<tr><td align='right' bgcolor='#b254cd'><b>")+tr("ClearAirway")+("</b></td><td bgcolor='#b254cd'>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
             html=html+("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
             html=html+("<tr><td align='right' bgcolor='#ffff80'><b>")+tr("RERA")+("</b></td><td bgcolor='#ffff80'>")+a.sprintf("%.2f",rei)+("</td></tr>\n");
             html=html+("<tr><td align='right' bgcolor='#404040'><b><font color='white'>")+tr("FlowLimit")+("</font></b></td><td bgcolor='#404040'><font color='white'>")+a.sprintf("%.2f",fli)+("</font></td></tr>\n");
