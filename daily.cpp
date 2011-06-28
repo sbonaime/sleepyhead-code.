@@ -65,13 +65,15 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
     AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
     AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
+
     AddGraph(SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL));
-    int sfc=7;
+
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
+
     bool extras=true;
+    int sfc=7;
     if (extras) {
         sfc+=2;
         SF->AddLayer(new gFlagsLine(flags[9],QColor("dark green"),"U0E",8,sfc));
@@ -94,7 +96,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF));
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
-    PRD->AddLayer(new gFooBar());
+    //PRD->AddLayer(new gFooBar());
     PRD->AddLayer(new gLineChart(prd,QColor("dark green"),4096,false,false,true));
     PRD->AddLayer(new gLineChart(pressure_iap,Qt::blue,4096,false,true,true));
     PRD->AddLayer(new gLineChart(pressure_eap,Qt::red,4096,false,true,true));
@@ -106,14 +108,15 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF));
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
-    LEAK->AddLayer(new gFooBar());
+    //LEAK->AddLayer(new gFooBar());
     LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),4096,false,false,false));
 
     LEAK->setMinimumHeight(150);
 
 
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
     AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
-    FRW->AddLayer(new gFooBar());
+    //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
@@ -139,7 +142,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF));
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
-    SNORE->AddLayer(new gFooBar());
+    //SNORE->AddLayer(new gFooBar());
     SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
 
     SNORE->setMinimumHeight(150);
@@ -150,7 +153,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse"),SF));
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
-    PULSE->AddLayer(new gFooBar());
+   // PULSE->AddLayer(new gFooBar());
     PULSE->AddLayer(new gLineChart(pulse,Qt::red,65536,false,false,true));
 
     PULSE->setMinimumHeight(150);
@@ -161,7 +164,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF));
     SPO2->AddLayer(new gXAxis());
     SPO2->AddLayer(new gYAxis());
-    SPO2->AddLayer(new gFooBar());
+   // SPO2->AddLayer(new gFooBar());
     SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,true));
     SPO2->setMinimumHeight(150);
     SPO2->LinkZoom(PULSE);

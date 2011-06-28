@@ -126,10 +126,14 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     int hour,minute,second,millisecond;
     QDateTime d;
+    // Need to use Qpainter clipping..
+    // messy. :(
     glScissor(w.GetLeftMargin()-20,0,width+20,w.GetBottomMargin());
     glEnable(GL_SCISSOR_TEST);
 
-    for (double i=st; i<=maxx+min_tick/10.0; i+=min_tick) {
+    //const double extra=min_tick/10.0;
+    const double extra=0;
+    for (double i=st; i<=maxx+extra; i+=min_tick) {
         d=QDateTime::fromMSecsSinceEpoch(i*86400000.0);
 
         if (show_time) {

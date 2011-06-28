@@ -32,6 +32,7 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
     QColor & col1=color[0];
     QColor & col2=color[1];
 
+    glDisable(GL_DEPTH_TEST);
     float h=m_offset;
     glColor4ub(col1.red(),col1.green(),col1.blue(),col1.alpha());
 

@@ -36,9 +36,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     m_scrX   = m_scrY   = 100;
     m_title=title;
     m_mouseRDown=m_mouseLDown=false;
-    //SetBackgroundColour( *wxWHITE );
     SetMargins(10, 15, 0, 0);
-    //m_block_move=false;
     m_block_zoom=false;
     m_drag_foobar=false;
     m_foobar_pos=0;
@@ -50,17 +48,12 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     if (!title.isEmpty()) {
         AddLayer(new gTitle(title));
     }
-    //SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-
 }
+
 gGraphWindow::~gGraphWindow()
 {
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
     layers.clear();
-   /* if (shared_context) {
-        delete shared_context;
-        shared_context=NULL;
-    }*/
 }
 
 #include "gXAxis.h"
@@ -73,7 +66,8 @@ void gGraphWindow::AddLayer(gLayer *l) {
                 qWarning("Can only have one gXAxis per graph");
                 return;
             }
-            if (m_marginBottom<gXAxis::Margin) m_marginBottom+=gXAxis::Margin;
+            //if (m_marginBottom<gXAxis::Margin)
+            m_marginBottom+=gXAxis::Margin;
             xaxis=l;
         }
         if (dynamic_cast<gFooBar *>(l)) {
@@ -81,7 +75,8 @@ void gGraphWindow::AddLayer(gLayer *l) {
                 qWarning("Can only have one gFooBar per graph");
                 return;
             }
-            if (m_marginBottom<gFooBar::Margin) m_marginBottom+=gFooBar::Margin;
+            //if (m_marginBottom<gFooBar::Margin)
+            m_marginBottom+=gFooBar::Margin;
             foobar=l;
         }
         if (dynamic_cast<gYAxis *>(l)) {
@@ -89,7 +84,8 @@ void gGraphWindow::AddLayer(gLayer *l) {
                 qWarning("Can only have one gYAxis per graph");
                 return;
             }
-            if (m_marginLeft<gYAxis::Margin) m_marginLeft+=gYAxis::Margin;
+            //if (m_marginLeft<gYAxis::Margin)
+            m_marginLeft+=gYAxis::Margin;
             yaxis=l;
         }
         if (dynamic_cast<gTitle *>(l)) {
@@ -97,7 +93,8 @@ void gGraphWindow::AddLayer(gLayer *l) {
                 qWarning("Can only have one gGraphTitle per graph");
                 return;
             }
-            if (m_marginLeft<gTitle::Margin) m_marginLeft+=gTitle::Margin;
+            //if (m_marginLeft<gTitle::Margin)
+            m_marginLeft+=gTitle::Margin;
             gtitle=l;
         }
         l->NotifyGraphWindow(this);
@@ -135,11 +132,7 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
         }
     }
 
-    //if (m_block_zoom) {
-    //    Refresh(false); //Rect(m_mouseRBrect,false);
-    //} else {
-        SetXBounds(rx1,rx2);
-    //}
+    SetXBounds(rx1,rx2);
 }
 void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
 {
