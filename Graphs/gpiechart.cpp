@@ -33,14 +33,14 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     double j=0.0;
     double sum=0.0;
-    double step=1.0/360.0;
+    double step=1.0/45.0;
     float px,py;
     //glEnable(GL_TEXTURE_2D);
     //glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     //glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(1);
+    glLineWidth(1.5);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE );
     //glHint(GL_POLYGON_SMOOTH_HINT,  GL_NICEST);
@@ -49,30 +49,38 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         j=(data->point[0][i].y()/total); // ratio of this pie slice
         QColor col1=color[i % color.size()];
         w.qglColor(col1);
-        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+        glPolygonMode(GL_BACK,GL_FILL);
         glBegin(GL_POLYGON);
         glVertex2f(start_px+radius+4, start_py+radius+4);
-
-        for (double q=sum;q<sum+j;q+=step) {
+        double q;
+        for (q=sum;q<sum+j;q+=step) {
             px=start_px+radius+4+sin(q*2*M_PI)*radius;
             py=start_py+radius+4+cos(q*2*M_PI)*radius;
             glVertex2f(px,py);
         }
+        q=sum+j;
+        px=start_px+radius+4+sin(q*2*M_PI)*radius;
+        py=start_py+radius+4+cos(q*2*M_PI)*radius;
+        glVertex2f(px,py);
         glEnd();
 
         glPolygonMode(GL_BACK,GL_LINE);
         w.qglColor(Qt::black);
         glBegin(GL_POLYGON);
         glVertex2f(start_px+radius+4, start_py+radius+4);
-        for (double q=sum;q<sum+j;q+=step) {
+        for (q=sum;q<sum+j;q+=step) {
             px=start_px+radius+4+sin(q*2*M_PI)*radius;
             py=start_py+radius+4+cos(q*2*M_PI)*radius;
             glVertex2f(px,py);
         }
+        q=sum+j;
+        px=start_px+radius+4+sin(q*2*M_PI)*radius;
+        py=start_py+radius+4+cos(q*2*M_PI)*radius;
+        glVertex2f(px,py);
         glEnd();
 
 
-        sum+=j;
+        sum=q;
     }
     glDisable(GL_POLYGON_SMOOTH);
     glDisable(GL_BLEND);

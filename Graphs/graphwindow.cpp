@@ -690,7 +690,7 @@ void gGraphWindow::Render(float w, float h)
         glEnd();
     } else {
 
-        glClearColor(0,0,0,255);
+        glClearColor(255,255,255,255);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //    glClear(GL_COLOR_BUFFER_BIT);
     }

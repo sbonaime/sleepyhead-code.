@@ -210,7 +210,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->color.push_back(QColor(20,20,20,255));
     l->color.push_back(QColor("light green"));
     G_AHI->AddLayer(l);
-    //G_AHI->SetDrawBackground(false);
+    G_AHI->SetDrawBackground(false);
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
     NoData=new QLabel(tr("No CPAP Data"),gSplitter);
