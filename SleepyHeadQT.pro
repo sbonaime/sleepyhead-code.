@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     Graphs/glcommon.cpp \
     Graphs/gTitle.cpp \
     Graphs/gCandleStick.cpp \
-    Graphs/gBarChart.cpp
+    Graphs/gBarChart.cpp \
+    SleepLib/loader_plugins/resmed_loader.cpp
 
 HEADERS  += \
     SleepLib/binary_file.h \
@@ -90,7 +91,8 @@ HEADERS  += \
     Graphs/glcommon.h \
     Graphs/gTitle.h \
     Graphs/gCandleStick.h \
-    Graphs/gBarChart.h
+    Graphs/gBarChart.h \
+    SleepLib/loader_plugins/resmed_loader.h
 
 FORMS    += \
     daily.ui \

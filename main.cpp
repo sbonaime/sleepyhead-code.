@@ -14,7 +14,7 @@
 #include "SleepLib/loader_plugins/prs1_loader.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"
-
+#include "SleepLib/loader_plugins/resmed_loader.h"
 
 
 int main(int argc, char *argv[])
@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();
+    ResmedLoader::Register();
 
 
 
