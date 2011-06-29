@@ -241,6 +241,11 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
         datestr=filename.section("_",0,1);
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
         sessionid=date.toTime_t();
+        // Resmed bugs up on the session filenames.. 1 second either way
+        if (sessfiles.find(sessionid)==sessfiles.end()) {
+            if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
+            if (sessfiles.find(sessionid-1)!=sessfiles.end()) sessionid--;
+        }
 
         sessfiles[sessionid].push_back(fi.canonicalFilePath());
     }

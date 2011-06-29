@@ -222,10 +222,10 @@ void TAPData::Reload(Day *day)
             } else {
                 double d=last.msecsTo(ev.time())/1000.0;
 
-                //assert(lastval<max_slots);
+                assert(lastval<max_slots);
                 if (lastval>max_slots) {
                     int i=0;
-                    throw BoundsError();
+                  //  throw BoundsError();
                 }
                 pTime[lastval]+=d;
             }
