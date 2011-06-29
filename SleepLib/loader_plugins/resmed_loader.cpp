@@ -173,7 +173,7 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     }
     if (found) return ResmedList[serial];
 
-    qDebug(("Create ResMed Machine %s"+serial).toLatin1());
+    qDebug(("Create ResMed Machine"+serial).toLatin1());
     Machine *m=new CPAP(profile,0);
     m->SetClass(resmed_class_name);
 
