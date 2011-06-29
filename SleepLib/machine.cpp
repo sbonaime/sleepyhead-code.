@@ -128,7 +128,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCShortNames[CPAP_Leak]=_("LR");
     DefaultMCShortNames[CPAP_EAP]=_("EPAP");
     DefaultMCShortNames[CPAP_IAP]=_("IPAP");
-    DefaultMCShortNames[PRS1_VSnore2]=_("VS2");
+    DefaultMCShortNames[CPAP_Snore]=_("VS2");
     DefaultMCShortNames[PRS1_PressurePulse]=_("PP");
 
     DefaultMCLongNames[CPAP_Obstructive]=_("Obstructive Apnea");
@@ -142,7 +142,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[CPAP_Leak]=_("Leak Rate");
     DefaultMCLongNames[CPAP_EAP]=_("BIPAP EPAP");
     DefaultMCLongNames[CPAP_IAP]=_("BIPAP IPAP");
-    DefaultMCLongNames[PRS1_VSnore2]=_("Vibratory Snore 2");
+    DefaultMCLongNames[CPAP_Snore]=_("Vibratory Snore 2");
     DefaultMCLongNames[PRS1_PressurePulse]=_("Pressure Pulse");
     DefaultMCLongNames[PRS1_Unknown0E]=_("Unknown 0E");
     DefaultMCLongNames[PRS1_Unknown00]=_("Unknown 00");

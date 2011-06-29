@@ -86,6 +86,8 @@ public:
 
     virtual int Version() { return resmed_data_version; };
     virtual const QString & ClassName() { return resmed_class_name; };
+    void ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,double duration,EventDataType divisor=1);
+
     Machine *CreateMachine(QString serial,Profile *profile);
 
     static void Register();

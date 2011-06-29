@@ -418,14 +418,62 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
         qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
     }
 }
+void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, double duration,EventDataType divisor)
+{
+    bool first=true;
+    double rate=(duration/recs)*1000.0;
+    QDateTime tt=edf.startdate;
+    EventDataType c,last;
+    for (int i=0;i<recs;i++) {
+        c=data[i]/divisor;
+
+        if (first) {
+            sess->AddEvent(new Event(tt,code,&c,1));
+            first=false;
+        } else {
+            if (last!=c) {
+                sess->AddEvent(new Event(tt,code,&c,1));
+            }
+        }
+        tt=tt.addMSecs(rate);
+
+        last=c;
+    }
+}
 bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
 {
     // Oximeter bull crap..
 }
+
+
 bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
 {
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
+        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        double duration=edf.GetNumDataRecords()*edf.GetDuration();
+        if (!sess->first().isValid()) {
+            sess->set_first(edf.startdate);
+            sess->set_last(edf.startdate.addMSecs(duration*1000.0));
+            sess->set_hours(duration/3600.0);
+        }
+        MachineCode code;
+        if (edf.edfsignals[s]->label=="Snore Index") {
+            code=CPAP_Snore;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration);
+        } else if (edf.edfsignals[s]->label=="Mask Pres") {
+            code=CPAP_Pressure;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,100.0);
+        } else if (edf.edfsignals[s]->label=="MV") {
+            code=CPAP_MinuteVentilation;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        } else if (edf.edfsignals[s]->label=="RR") {
+            //code=CPAP_Leak;
+//            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        } else if (edf.edfsignals[s]->label=="Vt") {
+            code=CPAP_Leak;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        }
          qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
     }
 }

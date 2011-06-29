@@ -63,8 +63,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
     AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
     AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
-    AddCPAPData(flags[8]=new FlagData(PRS1_VSnore2,1));
-    AddCPAPData(flags[9]=new FlagData(PRS1_Unknown0E,1));
+    AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
+    AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
 
     AddGraph(SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL));
 
@@ -72,12 +72,12 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
 
-    bool extras=true;
+    bool extras=false; //true;
     int sfc=7;
     if (extras) {
-        sfc+=2;
-        SF->AddLayer(new gFlagsLine(flags[9],QColor("dark green"),"U0E",8,sfc));
-        SF->AddLayer(new gFlagsLine(flags[8],QColor("red"),"VS2",7,sfc));
+        sfc+=1;
+        SF->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
+        //SF->AddLayer(new gFlagsLine(flags[8],QColor("red"),"VS2",7,sfc));
     }
     SF->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
     SF->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",5,sfc));
@@ -128,7 +128,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
     FRW->AddLayer(new gLineOverlayBar(flags[7],QColor("red"),"PR",LOT_Dot));
     FRW->AddLayer(new gLineOverlayBar(flags[6],QColor("gold"),"RE"));
-    FRW->AddLayer(new gLineOverlayBar(flags[9],QColor("dark green"),"U0E"));
+    //FRW->AddLayer(new gLineOverlayBar(flags[9],QColor("dark green"),"U0E"));
     FRW->AddLayer(new gLineOverlayBar(flags[5],QColor("red"),"VS"));
     FRW->AddLayer(new gLineOverlayBar(flags[4],QColor("black"),"FL"));
     FRW->AddLayer(new gLineOverlayBar(flags[2],QColor("aqua"),"OA"));
@@ -136,7 +136,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     FRW->setMinimumHeight(190);
 
-    AddCPAPData(snore=new EventData(CPAP_SnoreGraph,0));
+    AddCPAPData(snore=new EventData(CPAP_Snore,0));
     //snore->ForceMinY(0);
     //snore->ForceMaxY(15);
     AddGraph(SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF));

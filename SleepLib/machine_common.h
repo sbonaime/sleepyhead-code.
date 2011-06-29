@@ -35,6 +35,7 @@ enum MachineCode//:qint16
 
     CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate, CPAP_MaskPressure,
+    CPAP_Snore,CPAP_MinuteVentilation,
     CPAP_BreathsPerMinute,
 
     // General CPAP Summary Information
@@ -47,7 +48,7 @@ enum MachineCode//:qint16
     BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,CPAP_BrokenSummary,
 
     // PRS1 Specific Codes
-    PRS1_PressurePulse=0x1000, PRS1_VSnore2,
+    PRS1_PressurePulse=0x1000,
     PRS1_Unknown00, PRS1_Unknown01, PRS1_Unknown08, PRS1_Unknown09, PRS1_Unknown0B,	PRS1_Unknown0E, PRS1_Unknown10, PRS1_Unknown12,
     PRS1_SystemLockStatus, PRS1_SystemResistanceStatus, PRS1_SystemResistanceSetting, PRS1_HoseDiameter, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI,
 

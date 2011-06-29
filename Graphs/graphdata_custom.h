@@ -33,7 +33,7 @@ public:
     virtual ~TAPData();
     virtual void Reload(Day *day=NULL);
 
-    static const int max_slots=256;
+    static const int max_slots=4096;
     double pTime[max_slots];
     MachineCode code;
 
@@ -52,7 +52,7 @@ protected:
 class EventData:public gPointData
 {
 public:
-    EventData(MachineCode _code,int _field=0,int _size=4096,bool _skipzero=false);
+    EventData(MachineCode _code,int _field=0,int _size=250000,bool _skipzero=false);
     virtual ~EventData();
     virtual void Reload(Day *day=NULL);
 protected:

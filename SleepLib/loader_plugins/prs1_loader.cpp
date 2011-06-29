@@ -312,7 +312,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
         sess->summary[CPAP_VSnore]=sess->count_events(CPAP_VSnore);
-        sess->summary[PRS1_VSnore2]=sess->sum_event_field(PRS1_VSnore2,0);
+        sess->summary[CPAP_Snore]=sess->sum_event_field(CPAP_Snore,0);
 
 
         if (sess->count_events(CPAP_IAP)>0) {
@@ -363,7 +363,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         sess->summary[CPAP_SnoreMinimum]=sess->min_event_field(CPAP_SnoreGraph,0);
         sess->summary[CPAP_SnoreMaximum]=sess->max_event_field(CPAP_SnoreGraph,0);
         sess->summary[CPAP_SnoreMedian]=sess->avg_event_field(CPAP_SnoreGraph,0);
-        sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(PRS1_VSnore2,0);
+        sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(CPAP_Snore,0);
 
         //Printf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);
@@ -563,7 +563,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
                 session->AddEvent(new Event(t,cpapcode, data,1));
                 session->AddEvent(new Event(t,CPAP_SnoreGraph,&data[1],1));
                 if (data[1]>0) {
-                    session->AddEvent(new Event(t,PRS1_VSnore2, &data[1],1));
+                    session->AddEvent(new Event(t,CPAP_Snore, &data[1],1));
                 }
             } else if (code==0x03) {
                 data[0]/=10.0;

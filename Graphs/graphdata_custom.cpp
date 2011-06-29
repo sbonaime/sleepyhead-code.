@@ -215,12 +215,18 @@ void TAPData::Reload(Day *day)
         for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             val=ev[field]*10.0;
-            if (field > ev.fields()) throw BoundsError();
+            assert(field<ev.fields());
+            //if (field > ev.fields()) throw BoundsError();
             if (first) {
                 first=false; // only bother setting lastval (below) this time.
             } else {
                 double d=last.msecsTo(ev.time())/1000.0;
-                if (lastval>max_slots) throw BoundsError();
+
+                //assert(lastval<max_slots);
+                if (lastval>max_slots) {
+                    int i=0;
+                    throw BoundsError();
+                }
                 pTime[lastval]+=d;
             }
             cnt++;
@@ -278,7 +284,7 @@ void AHIData::Reload(Day *day)
 }
 
 FlagData::FlagData(MachineCode _code,double _value,int _field,int _offset)
-:gPointData(1024),code(_code),value(_value),field(_field),offset(_offset)
+:gPointData(65536),code(_code),value(_value),field(_field),offset(_offset)
 {
     AddSegment(max_points);
 }
