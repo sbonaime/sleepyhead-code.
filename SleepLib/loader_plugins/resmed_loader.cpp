@@ -267,16 +267,102 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     }
     return 0;
 }
+//bool ResmedLoader::ParseTAL(Machine *mach,Session *sess,EDFParser &edf,int pos)
+
 bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
 {
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
-        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        double duration=edf.GetNumDataRecords()*edf.GetDuration();
-        duration/=3600.0;
-        t.sprintf("EVE: %li %.2f",recs,duration);
+        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
+        double totaldur=edf.GetNumDataRecords()*edf.GetDuration();
+        totaldur/=3600.0;
+        t.sprintf("EVE: %li %.2f",recs,totaldur);
         qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
         char * data=(char *)edf.edfsignals[s]->data;
+        long pos=0;
+        QDateTime tt=edf.startdate;
+        bool sign;
+        double d;
+        bool ok;
+        double duration=0;
+        char c;
+        while (pos<recs) {
+            c=data[pos];
+            if ((c!='+') && (c!='-'))
+                break;
+            if (data[pos++]=='+') sign=true; else sign=false;
+            t="";
+            c=data[pos];
+            do {
+                t+=c;
+                pos++;
+                c=data[pos];
+            } while ((c!=20) && (c!=21)); // start code
+            d=t.toDouble(&ok);
+            if (!ok) {
+                qDebug(("Faulty EDF EVE file"+edf.filename).toLatin1());
+                break;
+            }
+            if (!sign) d=-d;
+
+            tt=edf.startdate.addMSecs(d*1000.0);
+            duration=0;
+            // First entry
+
+            if (data[pos]==21) {
+                pos++;
+                // get duration.
+                t="";
+                do {
+                    t+=data[pos];
+                    pos++;
+                } while ((data[pos]!=20) && (pos<recs)); // start code
+                duration=t.toDouble(&ok);
+                if (!ok) {
+                    qDebug(("Faulty EDF EVE file (at %li) "+edf.filename).toLatin1(),pos);
+                    break;
+                }
+            }
+            while ((data[pos]==20) && (pos<recs)) {
+                t="";
+                pos++;
+                if (data[pos]==0)
+                    break;
+                if (data[pos]==20) {
+                    pos++;
+                    break;
+                }
+
+                do {
+                    t+=tolower(data[pos++]);
+                } while ((data[pos]!=20) && (pos<recs)); // start code
+                if (!t.isEmpty()) {
+                    EventDataType fields[3];
+                    MachineCode code=MC_UNKNOWN;
+                    if (t=="obstructive apnea") code=CPAP_Obstructive;
+                    else if (t=="hypopnea") code=CPAP_Hypopnea;
+                    else if (t=="central apnea") code=CPAP_ClearAirway;
+                    if (code!=MC_UNKNOWN) {
+                        fields[0]=duration;
+                        Event *e=new Event(tt,code,fields,1);
+                        sess->AddEvent(e);
+                    } else {
+                        if (t!="recording starts") {
+                            qDebug(("Unknown ResMed annotation field: "+t).toLatin1());
+                        }
+                    }
+                    qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
+                }
+                if (pos>=recs) {
+                    qDebug(("Short EDF EVE file"+edf.filename).toLatin1());
+                    break;
+                }
+               // pos++;
+            }
+            while ((data[pos]==0) && pos<recs) pos++;
+            if (pos>=recs) break;
+        }
+       // qDebug(data);
     }
 }
 bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
@@ -288,6 +374,10 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
         MachineCode code;
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
         else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
+        else {
+            qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
+            continue;
+        }
         sess->set_first(edf.startdate);
         QDateTime e=edf.startdate.addSecs(duration);
         sess->set_last(e);
@@ -302,9 +392,14 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
 }
 bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
 {
+    // Oximeter bull crap..
 }
 bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
 {
+    QString t;
+    for (int s=0;s<edf.GetNumSignals();s++) {
+         qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
+    }
 }
 
 void ResInitModelMap()

@@ -67,6 +67,9 @@ void WaveData::Reload(Day *day)
     //double t1=MAX(fabs(min_y),fabs(max_y));
     // Get clever here..
     if (max_y>128) {
+        double j=MAX(max_y,fabs(min_y));
+        min_y=-j;
+        max_y=j;
     } else if (max_y>90) {
         max_y=120;
         min_y=-120;

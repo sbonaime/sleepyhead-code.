@@ -31,7 +31,9 @@ typedef int ChannelCode;
 enum MachineCode//:qint16
 {
     // General Event Codes
-    CPAP_Obstructive=0, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
+    MC_UNKNOWN=0,
+
+    CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate, CPAP_MaskPressure,
     CPAP_BreathsPerMinute,
 
