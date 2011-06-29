@@ -207,14 +207,14 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         bool firstpx=true;
         for (int i=idx;i<siz;i+=sam) {
 
-                if (point[i].x() < minx) continue; // Skip stuff before the start of our data window
+            if (point[i].x() < minx) continue; // Skip stuff before the start of our data window
 
-                if (first) {
-                    first=false;
-                    if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
-                }
+            if (first) {
+                first=false;
+                if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
+            }
 
-                if (point[i].x() > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
+            if (point[i].x() > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             px=1+((point[i].x() - minx) * xmult);   // Scale the time scale X to pixel scale X
 
@@ -245,13 +245,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 lastpx=start_px+px;
                 lastpy=start_py+py;
             } else {
-                // Just clip ugly in accel mode.. Too darn complicated otherwise
-               /* if (px<0) {
-                    px=0;
-                }
-                if (px>width) {
-                    px=width;
-                } */
                 // In accel mode, each pixel has a min/max Y value.
                 // m_drawlist's index is the pixel index for the X pixel axis.
 
@@ -260,10 +253,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
                 int y1=1+(jy-miny)*ymult;
                 int y2=1+(-jy-miny)*ymult;
-                //py=1+((point[i].m_y - miny) * ymult);   // Same for Y scale
 
 
-                int z=round(px);
+                int z=floor(px); // Hmmm... round may screw this up.
                 if (z<minz) minz=z;  // minz=First pixel
                 if (z>maxz) maxz=z;  // maxz=Last pixel
 
@@ -284,6 +276,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 vertarray[vertcnt++]=start_py+m_drawlist[i].x();
                 vertarray[vertcnt++]=start_px+i+1;
                 vertarray[vertcnt++]=start_py+m_drawlist[i].y();
+
                 #if defined(EXTRA_ASSERTS)
                 assert(vertcnt<maxverts);
                 #endif
@@ -306,14 +299,14 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     // Crop to inside the margins.
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
-    //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
+    //glAlphaFunc(GL_LESS,0.8);
     glLineWidth (1);
     bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_ONE, GL_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);

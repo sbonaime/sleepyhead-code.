@@ -210,7 +210,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->color.push_back(QColor(0x40,0x40,0x40,255));
     l->color.push_back(QColor(0x60,0xff,0x60,0xff)); //80ff80
     G_AHI->AddLayer(l);
-    G_AHI->SetDrawBackground(false);
+    G_AHI->SetGradientBackground(false);
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
     NoData=new QLabel(tr("No CPAP Data"),gSplitter);
@@ -258,10 +258,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     gSplitter->setChildrenCollapsible(true);  // We set this per widget..
-    for (int i=1;i<gSplitter->count();i++)
-        gSplitter->setCollapsible(i,true);
-    gSplitter->setCollapsible(0,false);
-    gSplitter->setCollapsible(1,false);
+    gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
+    gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
     ui->graphSizer->layout();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);

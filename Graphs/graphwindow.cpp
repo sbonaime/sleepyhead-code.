@@ -17,7 +17,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     m_mouseRDown=m_mouseLDown=false;
     m_block_zoom=false;
     m_drag_foobar=false;
-    m_draw_background=true;
+    m_gradient_background=true;
     m_foobar_pos=0;
     m_foobar_moved=0;
     SetMargins(10, 15, 0, 0);
@@ -40,7 +40,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     SetMargins(10, 15, 0, 0);
     m_block_zoom=false;
     m_drag_foobar=false;
-    m_draw_background=false;
+    m_gradient_background=false;
     m_foobar_pos=0;
     m_foobar_moved=0;
     lastlayer=NULL;
@@ -666,6 +666,9 @@ void gGraphWindow::resizeGL(int w, int h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    // Only needs doing on a mac
+    updateGL();
+
 }
 
 void gGraphWindow::Render(float w, float h)
@@ -678,13 +681,13 @@ void gGraphWindow::Render(float w, float h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();*/
 
-    if (m_draw_background) {
+    if (m_gradient_background) {
         glBegin(GL_QUADS);
-        glColor3f(1.0,1.0,1.0); // Gradient start
+        glColor4f(1.0,1.0,1.0,.5); // Gradient start
         glVertex2f(0, h);
         glVertex2f(0, 0);
 
-        glColor3f(0.8,0.8,1.0); // Gradient End
+        glColor4f(0.8,0.8,1.0,.5); // Gradient End
         glVertex2f(w, 0);
         glVertex2f(w, h);
         glEnd();
