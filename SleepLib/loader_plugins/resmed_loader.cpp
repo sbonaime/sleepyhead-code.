@@ -26,10 +26,18 @@ EDFParser::~EDFParser()
     vector<EDFSignal *>::iterator s;
     for (s=edfsignals.begin();s!=edfsignals.end();s++) {
         if ((*s)->data) delete [] (*s)->data;
-        if ((*s)->adata) delete [] (*s)->adata;
         delete *s;
     }
     if (buffer) delete [] buffer;
+}
+qint16 EDFParser::Read16()
+{
+    unsigned char *buf=(unsigned char *)buffer;
+    if (pos>=filesize) return 0;
+    qint16 res=*(qint16 *)&buf[pos];
+    //qint16 res=(buf[pos] ^128)<< 8 | buf[pos+1] ^ 128;
+    pos+=2;
+    return res;
 }
 QString EDFParser::Read(int si)
 {
@@ -59,7 +67,19 @@ bool EDFParser::Parse()
     }
     temp=Read(8);
     temp+=" "+Read(8);
-    startdate.fromString(temp,"dd.MM.yy HH.mm.ss");
+    startdate=QDateTime::fromString(temp,"dd.MM.yy HH.mm.ss");
+    QDate d2=startdate.date();
+    if (d2.year()<2000) {
+        d2.setYMD(d2.year()+100,d2.month(),d2.day());
+        startdate.setDate(d2);
+    }
+    if (!startdate.isValid()) {
+        qDebug(("Invalid date time retreieved parsing EDF File"+filename).toLatin1());
+        return false;
+    }
+
+    qDebug(startdate.toString("yyyy-MM-dd HH:mm:ss").toLatin1());
+
     num_header_bytes=Read(8).toLong(&ok);
     if (!ok)
         return false;
@@ -80,7 +100,6 @@ bool EDFParser::Parse()
         EDFSignal *signal=new EDFSignal;
         edfsignals.push_back(signal);
         signal->data=NULL;
-        signal->adata=NULL;
         edfsignals[i]->label=Read(16);
     }
 
@@ -94,27 +113,28 @@ bool EDFParser::Parse()
     for (int i=0;i<num_signals;i++) edfsignals[i]->nr=Read(8).toLong(&ok);
     for (int i=0;i<num_signals;i++) edfsignals[i]->reserved=Read(32);
 
+    // allocate the buffers
     for (int i=0;i<num_signals;i++) {
         //qDebug//cout << "Reading signal " << signals[i]->label << endl;
-        if (edfsignals[i]->label!="EDF Annotations") {
-            // Waveforms
-            edfsignals[i]->data=new qint16 [edfsignals[i]->nr];
-            for (int j=0;j<edfsignals[i]->nr;j++){
-                long t;
-                t=Read(2).toLong(&ok);
-                if (!ok)
-                    return false;
-                edfsignals[i]->data[j]=t & 0xffff;
-            }
+        EDFSignal & sig=*edfsignals[i];
 
-        } else { // Annotation data..
-            edfsignals[i]->adata=(char *) new char [edfsignals[i]->nr*2];
-            //cout << signals[i]->nr << endl;;
-            for (int j=0;j<edfsignals[i]->nr*2;j++)
-                edfsignals[i]->adata[j]=buffer[pos++];
-        }
-        //cout << "Read Signal" << endl;
+        long recs=sig.nr * num_data_records;
+        if (num_data_records<0)
+            return false;
+        sig.data=new qint16 [recs];
+        sig.pos=0;
     }
+
+    for (int x=0;x<num_data_records;x++) {
+        for (int i=0;i<num_signals;i++) {
+            EDFSignal & sig=*edfsignals[i];
+            for (int j=0;j<sig.nr;j++) {
+                qint16 t=Read16();
+                sig.data[sig.pos++]=t;
+            }
+        }
+    }
+
     return true;
 }
 bool EDFParser::Open(QString name)
@@ -124,10 +144,12 @@ bool EDFParser::Open(QString name)
     if (!f.isReadable()) return false;
     filename=name;
     filesize=f.size();
+    qDebug(("Opening "+name).toLatin1());
     buffer=new char [filesize];
     f.read(buffer,filesize);
     f.close();
     pos=0;
+    return true;
 }
 
 ResmedLoader::ResmedLoader()
@@ -187,55 +209,60 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
     map<SessionID,vector<QString> > sessfiles;
+
     QString ext,rest,datestr,s,codestr;
     SessionID sessionid;
     QDateTime date;
-    map<SessionID,Session *> sessions;
-    Session *sess;
-    Machine *m;
 
     for (int i=0;i<flist.size();i++) {
         QFileInfo fi=flist.at(i);
         QString filename=fi.fileName();
         ext=filename.section(".",1).toLower();
         if (ext!="edf") continue;
+
         rest=filename.section(".",0,0);
         datestr=filename.section("_",0,1);
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
         sessionid=date.toTime_t();
 
-        s.sprintf("%li",sessionid);
-        codestr=rest.section("_",2).toUpper();
-        int code;
-        if (codestr=="EVE") code=0;
-        else if (codestr=="PLD") code=1;
-        else if (codestr=="BRP") code=2;
-        else if (codestr=="SAD") code=3;
-        else {
-            qDebug(("Unknown file EDF type"+filename).toLatin1());
-            continue;
-        }
-        qDebug(("Parsing "+filename).toLatin1());
-        EDFParser edf(fi.canonicalFilePath());
-        if (!edf.Parse()) continue;
+        sessfiles[sessionid].push_back(fi.canonicalFilePath());
+    }
 
-        Machine *m=CreateMachine(edf.serialnumber,profile);
+    Machine *m=NULL;
 
-        if (sessions.find(sessionid)==sessions.end()) {
-            sessions[sessionid]=new Session(m,sessionid);
-        }
+    Session *sess=NULL;
+    for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+        sessionid=si->first;
+        qDebug("Parsing Session %li",sessionid);
+        bool done=false;
+        bool first=true;
+        for (int i=0;i<si->second.size();i++) {
+            QString fn=si->second[i].section("_",-1).toLower();
+            EDFParser edf(si->second[i]);
+            qDebug("Parsing File %i %i",i,edf.filesize);
 
-        sess=sessions[sessionid];
-        sess->SetChanged(true);
-        switch(code) {
-        case 0: LoadEVE(m,sess,edf);
-                break;
-        case 1: LoadPLD(m,sess,edf);
-                break;
-        case 2: LoadBRP(m,sess,edf);
-                break;
-        case 3: LoadSAD(m,sess,edf);
-                break;
+            if (!edf.Parse())
+                continue;
+
+            if (first) { // First EDF file parsed, check if this data set is already imported
+                m=CreateMachine(edf.serialnumber,profile);
+                if (m->SessionExists(sessionid)) {
+                    done=true;
+                    break;
+                }
+                sess=new Session(m,sessionid);
+            }
+            if (!done) {
+                if (fn=="eve.edf") LoadEVE(m,sess,edf);
+                else if (fn=="pld.edf") LoadPLD(m,sess,edf);
+                else if (fn=="brp.edf") LoadBRP(m,sess,edf);
+                else if (fn=="sad.edf") LoadSAD(m,sess,edf);
+            }
+            if (first) {
+                sess->SetChanged(true);
+                m->AddSession(sess,profile); // Adding earlier than I really like here..
+                first=false;
+            }
         }
     }
     return 0;
@@ -244,14 +271,34 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
 {
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
-        t.sprintf("%i",edf.edfsignals[s]->nr);
+        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        double duration=edf.GetNumDataRecords()*edf.GetDuration();
+        duration/=3600.0;
+        t.sprintf("EVE: %li %.2f",recs,duration);
         qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
-        if (edf.edfsignals[s]->adata) {
-        }
+        char * data=(char *)edf.edfsignals[s]->data;
     }
 }
 bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
 {
+    QString t;
+    for (int s=0;s<edf.GetNumSignals();s++) {
+        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        double duration=edf.GetNumDataRecords()*edf.GetDuration();
+        MachineCode code;
+        if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
+        else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
+        sess->set_first(edf.startdate);
+        QDateTime e=edf.startdate.addSecs(duration);
+        sess->set_last(e);
+        //duration/=3600.0;
+        sess->set_hours(duration/3600.0);
+        Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
+        edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
+        sess->AddWaveform(w);
+        t.sprintf("BRP: %li %.2f",recs,duration);
+        qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
+    }
 }
 bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
 {

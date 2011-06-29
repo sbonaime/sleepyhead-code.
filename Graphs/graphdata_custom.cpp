@@ -43,7 +43,7 @@ void WaveData::Reload(Day *day)
             Waveform *w=(*l);
             double st=w->start().toMSecsSinceEpoch()/86400000.0;
             double rate=(w->duration()/w->samples())/86400.0;
-            //qDebug("Waveform Chunk contains %i samples",w->samples());
+            qDebug("Waveform Chunk contains %i samples",w->samples());
             for (int i=0;i<w->samples();i++) {
                 QPointD r(st,(*w)[i]);
                 st+=rate;
@@ -377,6 +377,8 @@ void HistoryData::Reload(Day *day)
     double y,lasty=0;
     min_y=max_y=0;
     min_x=max_x=0;
+    if (real_min_x<0) return;
+    if (real_max_x<0) return;
     for (double x=floor(real_min_x);x<=ceil(real_max_x);x++) {
         date=QDateTime::fromMSecsSinceEpoch(x*86400000.0L);
         date.setTime(QTime(0,0,0));

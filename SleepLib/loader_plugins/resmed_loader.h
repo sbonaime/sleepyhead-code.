@@ -39,7 +39,7 @@ public:
     long nr;
     QString reserved;
     qint16 * data;
-    char *adata;
+    int pos;
 };
 
 class EDFParser
@@ -50,12 +50,13 @@ public:
     bool Open(QString name);
 
     QString Read(int si);
+    qint16 Read16();
 
     vector<EDFSignal *> edfsignals;
 
     long GetNumSignals() { return num_signals; };
     long GetNumDataRecords() { return num_data_records; };
-    long GetDuration() { return dur_data_record; };
+    double GetDuration() { return dur_data_record; };
     QString GetPatient() { return patientident; };
     bool Parse();
     char *buffer;

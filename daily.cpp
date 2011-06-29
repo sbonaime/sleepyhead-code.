@@ -114,13 +114,13 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->setMinimumHeight(150);
 
 
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate));
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate,700000)); // Holy crap resmed stuff is huge..
     AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
-    gLineChart *g=new gLineChart(frw,Qt::black,200000,true);
+    gLineChart *g=new gLineChart(frw,Qt::black,700000,true);
     g->ReportEmpty(true);
 
 
@@ -203,12 +203,12 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->AddName(tr("FL"));
     l->AddName(tr("CSR"));
     l->color.clear();
-    l->color.push_back(QColor("blue"));
-    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); //#40afbf
-    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); //b254cd; //wxPURPLE);
-    l->color.push_back(QColor("yellow"));
-    l->color.push_back(QColor(0x40,0x40,0x40,255));
-    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); //80ff80
+    l->color.push_back(QColor(0x40,0x40,0xff,0xff)); // blue
+    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); // aqua
+    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); // purple
+    l->color.push_back(QColor(0xff,0xff,0x80,0xff));  // yellow
+    l->color.push_back(QColor(0x40,0x40,0x40,0xff)); // dark grey
+    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
     G_AHI->AddLayer(l);
     G_AHI->SetGradientBackground(false);
     //G_AHI->setMaximumSize(2000,30);
