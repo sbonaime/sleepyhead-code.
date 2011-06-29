@@ -443,7 +443,7 @@ void Daily::Load(QDate date)
         QString submodel=tr("Unknown Model");
 
 
-        html=html+"<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
+        //html=html+"<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
             submodel=" <br>"+cpap->machine->properties["SubModel"];
         html=html+"<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
@@ -484,7 +484,7 @@ void Daily::Load(QDate date)
         html=html+("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
         {
             G_AHI->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=G_AHI->renderPixmap(200,200,false); //gwwidth,gwheight,false);
+            QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
@@ -822,4 +822,51 @@ void Daily::on_JournalNotesUnderline_clicked()
 
     cursor.mergeCharFormat(format);
    //ui->JournalNotes->mergeCurrentCharFormat(format);
+}
+
+
+
+AHIGraph::AHIGraph(QObject * parent)
+{
+}
+AHIGraph::~AHIGraph()
+{
+}
+QObject * AHIGraph::create(const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues) const
+{
+    gGraphWindow * ahi;
+    ahi=new gGraphWindow(NULL,"",(QGLWidget *)NULL);
+    ahi->SetMargins(0,0,0,0);
+    gPointData *g_ahi=new AHIData();
+    //gCandleStick *l=new gCandleStick(g_ahi);
+    gPieChart *l=new gPieChart(g_ahi);
+    l->AddName(tr("H"));
+    l->AddName(tr("OA"));
+    l->AddName(tr("CA"));
+    l->AddName(tr("RE"));
+    l->AddName(tr("FL"));
+    l->AddName(tr("CSR"));
+    l->color.clear();
+    l->color.push_back(QColor("blue"));
+    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); //#40afbf
+    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); //b254cd; //wxPURPLE);
+    l->color.push_back(QColor("yellow"));
+    l->color.push_back(QColor(0x40,0x40,0x40,255));
+    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); //80ff80
+
+    return ahi;
+}
+QList<QWebPluginFactory::Plugin> AHIGraph::plugins() const
+{
+    QWebPluginFactory::MimeType mimeType;
+    mimeType.name = "text/csv";
+    mimeType.description = "Comma-separated values";
+    mimeType.fileExtensions = QStringList() << "csv";
+
+    QWebPluginFactory::Plugin plugin;
+    plugin.name = "Pie Chart";
+    plugin.description = "A Pie Chart Web plugin.";
+    plugin.mimeTypes = QList<MimeType>() << mimeType;
+
+    return QList<QWebPluginFactory::Plugin>() << plugin;
 }

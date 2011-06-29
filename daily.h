@@ -14,6 +14,7 @@
 #include <QTreeWidget>
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
+#include <QWebPluginFactory>
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
 #include <Graphs/graphdata.h>
@@ -80,6 +81,16 @@ private:
     QScrollArea *scrollArea;
     QSplitter *gSplitter;
     QLabel *NoData;
+};
+
+class AHIGraph:public QWebPluginFactory
+{
+public:
+    AHIGraph(QObject * parent = 0);
+    virtual ~AHIGraph();
+    virtual QObject * 	create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues) const;
+    virtual QList<Plugin> plugins () const;
+    //virtual void refreshPlugins ();
 };
 
 #endif // DAILY_H

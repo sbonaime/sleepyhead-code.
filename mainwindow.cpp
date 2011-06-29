@@ -77,6 +77,11 @@ MainWindow::~MainWindow()
     delete ui;
     Profiles::Done();
 }
+void MainWindow::showEvent(QShowEvent * event)
+{
+    if (daily)
+        daily->RedrawGraphs();
+}
 
 void MainWindow::Startup()
 {
