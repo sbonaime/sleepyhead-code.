@@ -468,7 +468,7 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration);
         } else if (edf.edfsignals[s]->label=="Mask Pres") {
             code=CPAP_Pressure;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,100.0);
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);

@@ -97,9 +97,10 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
     //PRD->AddLayer(new gFooBar());
-    PRD->AddLayer(new gLineChart(prd,QColor("dark green"),4096,false,false,true));
-    PRD->AddLayer(new gLineChart(pressure_iap,Qt::blue,4096,false,true,true));
-    PRD->AddLayer(new gLineChart(pressure_eap,Qt::red,4096,false,true,true));
+    bool square=false;
+    PRD->AddLayer(new gLineChart(prd,QColor("dark green"),4096,false,false,square));
+    PRD->AddLayer(new gLineChart(pressure_iap,Qt::blue,4096,false,true,square));
+    PRD->AddLayer(new gLineChart(pressure_eap,Qt::red,4096,false,true,square));
     PRD->setMinimumHeight(150);
 
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
@@ -143,7 +144,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
     //SNORE->AddLayer(new gFooBar());
-    SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
+    SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,false));
 
     SNORE->setMinimumHeight(150);
 
