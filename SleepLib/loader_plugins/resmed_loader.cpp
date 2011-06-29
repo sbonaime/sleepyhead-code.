@@ -194,11 +194,28 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
 
     QString dirtag="DATALOG";
     if (path.endsWith("/"+dirtag)) {
-        newpath=path;
+        return false; // id10t user..
+        //newpath=path;
     } else {
         newpath=path+"/"+dirtag;
     }
-
+    QString idfile=path+"/Identification.tgt";
+    QFile f(idfile);
+    map<QString,QString> idmap;
+    if (f.open(QIODevice::ReadOnly)) {
+        if (!f.isReadable())
+            return false;
+        while (!f.atEnd()) {
+            QString line=f.readLine().trimmed();
+            QString key,value;
+            if (!line.isEmpty()) {
+                key=line.section(" ",0,0);
+                value=line.section(" ",1);
+                key=key.section("#",1);
+                idmap[key]=value;
+            }
+        }
+    }
     QDir dir(newpath);
 
     if ((!dir.exists() || !dir.isReadable()))
@@ -246,6 +263,17 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
 
             if (first) { // First EDF file parsed, check if this data set is already imported
                 m=CreateMachine(edf.serialnumber,profile);
+                for (map<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
+                    if (i->first=="SRN") {
+                        if (edf.serialnumber!=i->second) {
+                            qDebug("edf Serial number doesn't match Identification.tgt");
+                        }
+                    } else if (i->first=="PNA") {
+                        m->properties["Model"]=i->second;
+                    } else {
+                        m->properties[i->first]=i->second;
+                    }
+                }
                 if (m->SessionExists(sessionid)) {
                     done=true;
                     break;
