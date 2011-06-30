@@ -110,7 +110,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     //LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),4096,false,false,false));
+    LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),65536,false,false,true));
 
     LEAK->setMinimumHeight(150);
 

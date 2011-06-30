@@ -59,7 +59,7 @@ void gFooBar::Plot(gGraphWindow & w,float scrx,float scry)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-        glColor4f(.2,.2,.2,.4);
+        glColor4f(.2,.2,.2,.3);
         glBegin(GL_QUADS);
         glVertex2f(start_px+px, w.GetBottomMargin());
         glVertex2f(start_px+px, w.GetBottomMargin()+height);
