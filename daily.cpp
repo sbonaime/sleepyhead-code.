@@ -115,12 +115,15 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->setMinimumHeight(150);
 
 
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate,700000)); // Holy crap resmed stuff is huge..
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate,700000)); //FlowRate
+    AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
+    // Holy crap resmed stuff is huge..
     AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
+    FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
     gLineChart *g=new gLineChart(frw,Qt::black,700000,true);
     g->ReportEmpty(true);
 
@@ -138,15 +141,33 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->setMinimumHeight(190);
 
     AddCPAPData(snore=new EventData(CPAP_Snore,0));
-    //snore->ForceMinY(0);
-    //snore->ForceMaxY(15);
     AddGraph(SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF));
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
-    //SNORE->AddLayer(new gFooBar());
     SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,false));
-
     SNORE->setMinimumHeight(150);
+
+    AddCPAPData(mv=new EventData(CPAP_MinuteVentilation,0));
+    AddGraph(MV=new gGraphWindow(gSplitter,tr("Minute Vent."),SF));
+    MV->AddLayer(new gXAxis());
+    MV->AddLayer(new gYAxis());
+    MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,false));
+    MV->setMinimumHeight(150);
+
+    AddCPAPData(tv=new EventData(CPAP_TidalVolume,0));
+    AddGraph(TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF));
+    TV->AddLayer(new gXAxis());
+    TV->AddLayer(new gYAxis());
+    TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,false));
+    TV->setMinimumHeight(150);
+
+    AddCPAPData(rr=new EventData(CPAP_RespiratoryRate,0));
+    AddGraph(RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF));
+    RR->AddLayer(new gXAxis());
+    RR->AddLayer(new gYAxis());
+    RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,false));
+    RR->setMinimumHeight(150);
+
 
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
@@ -230,25 +251,71 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->LinkZoom(PRD);
     FRW->LinkZoom(LEAK);
     FRW->LinkZoom(SNORE);
+    FRW->LinkZoom(MV);
+    FRW->LinkZoom(TV);
+    FRW->LinkZoom(RR);
     SF->LinkZoom(FRW);
     SF->LinkZoom(PRD);
     SF->LinkZoom(LEAK);
     SF->LinkZoom(SNORE);
+    SF->LinkZoom(MV);
+    SF->LinkZoom(TV);
+    SF->LinkZoom(RR);
     PRD->LinkZoom(SF);
     PRD->LinkZoom(FRW);
     PRD->LinkZoom(LEAK);
     PRD->LinkZoom(SNORE);
+    PRD->LinkZoom(MV);
+    PRD->LinkZoom(TV);
+    PRD->LinkZoom(RR);
+
     LEAK->LinkZoom(SF);
     LEAK->LinkZoom(FRW);
     LEAK->LinkZoom(PRD);
     LEAK->LinkZoom(SNORE);
+    LEAK->LinkZoom(MV);
+    LEAK->LinkZoom(TV);
+    LEAK->LinkZoom(RR);
+
+
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
     SNORE->LinkZoom(PRD);
     SNORE->LinkZoom(LEAK);
+    SNORE->LinkZoom(MV);
+    SNORE->LinkZoom(TV);
+    SNORE->LinkZoom(RR);
+
+    MV->LinkZoom(SF);
+    MV->LinkZoom(FRW);
+    MV->LinkZoom(PRD);
+    MV->LinkZoom(LEAK);
+    MV->LinkZoom(SNORE);
+    MV->LinkZoom(TV);
+    MV->LinkZoom(RR);
+
+    TV->LinkZoom(SF);
+    TV->LinkZoom(FRW);
+    TV->LinkZoom(PRD);
+    TV->LinkZoom(LEAK);
+    TV->LinkZoom(SNORE);
+    TV->LinkZoom(MV);
+    TV->LinkZoom(RR);
+
+    RR->LinkZoom(SF);
+    RR->LinkZoom(FRW);
+    RR->LinkZoom(PRD);
+    RR->LinkZoom(LEAK);
+    RR->LinkZoom(SNORE);
+    RR->LinkZoom(MV);
+    RR->LinkZoom(TV);
+
 
     gSplitter->addWidget(SF);
     gSplitter->addWidget(FRW);
+    gSplitter->addWidget(MV);
+    gSplitter->addWidget(TV);
+    gSplitter->addWidget(RR);
     gSplitter->addWidget(PRD);
     gSplitter->addWidget(LEAK);
     gSplitter->addWidget(SNORE);

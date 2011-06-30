@@ -35,8 +35,7 @@ enum MachineCode//:qint16
 
     CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate, CPAP_MaskPressure,
-    CPAP_Snore,CPAP_MinuteVentilation,
-    CPAP_BreathsPerMinute,
+    CPAP_Snore,CPAP_MinuteVentilation, CPAP_RespiratoryRate, CPAP_TidalVolume,
 
     // General CPAP Summary Information
     CPAP_PressureMin=0x80, CPAP_PressureMax, CPAP_RampTime, CPAP_RampStartingPressure, CPAP_Mode, CPAP_PressureReliefType,

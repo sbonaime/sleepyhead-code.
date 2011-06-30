@@ -16,6 +16,8 @@ License: GPL
 #include "resmed_loader.h"
 #include "SleepLib/session.h"
 
+extern QProgressBar *qprogress;
+
 EDFParser::EDFParser(QString name)
 {
     buffer=NULL;
@@ -230,8 +232,8 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     QString ext,rest,datestr,s,codestr;
     SessionID sessionid;
     QDateTime date;
-
-    for (int i=0;i<flist.size();i++) {
+    int size=flist.size();
+    for (int i=0;i<size;i++) {
         QFileInfo fi=flist.at(i);
         QString filename=fi.fileName();
         ext=filename.section(".",1).toLower();
@@ -248,11 +250,14 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
         }
 
         sessfiles[sessionid].push_back(fi.canonicalFilePath());
+        if (qprogress) qprogress->setValue((float(i+1)/float(size)*33.0));
     }
 
     Machine *m=NULL;
 
     Session *sess=NULL;
+    int cnt=0;
+    size=sessfiles.size();
     for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si->first;
         qDebug("Parsing Session %li",sessionid);
@@ -297,7 +302,10 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 first=false;
             }
         }
+        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
     }
+    // m->save();
+    if (qprogress) qprogress->setValue(100);
     return 0;
 }
 //bool ResmedLoader::ParseTAL(Machine *mach,Session *sess,EDFParser &edf,int pos)
@@ -473,9 +481,12 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
             code=CPAP_MinuteVentilation;
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         } else if (edf.edfsignals[s]->label=="RR") {
-            //code=CPAP_Leak;
-//            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+            code=CPAP_RespiratoryRate;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         } else if (edf.edfsignals[s]->label=="Vt") {
+            code=CPAP_TidalVolume;
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        } else if (edf.edfsignals[s]->label=="Leak") {
             code=CPAP_Leak;
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         }

@@ -58,9 +58,9 @@ private:
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
     gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap,*snore;
-    gPointData *pulse,*spo2;
+    gPointData *pulse,*spo2,*rr,*mv,*tv,*mpw;
 
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MV,*TV;
 
     list<gPointData *> OXIData;
     list<gPointData *> CPAPData;

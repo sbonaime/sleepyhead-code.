@@ -93,9 +93,11 @@ void MainWindow::Startup()
     profile->LoadMachineData();
 
     daily=new Daily(ui->tabWidget,shared_context);
-    overview=new Overview(ui->tabWidget,shared_context);
     ui->tabWidget->addTab(daily,tr("Daily"));
-    ui->tabWidget->addTab(overview,tr("Overview"));
+
+    // Disabled Overview until I want to actually look at it again. :)
+    //overview=new Overview(ui->tabWidget,shared_context);
+    //ui->tabWidget->addTab(overview,tr("Overview"));
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
@@ -117,9 +119,11 @@ void MainWindow::on_action_Import_Data_triggered()
             profile->Import(dirNames[i]);
         }
         profile->Save();
-        daily->ReloadGraphs();
-        overview->ReloadGraphs();
-        overview->UpdateGraphs();
+        if (daily) daily->ReloadGraphs();
+        if (overview) {
+            overview->ReloadGraphs();
+            overview->UpdateGraphs();
+        }
         qstatus->setText(tr("Ready"));
         qprogress->hide();
 

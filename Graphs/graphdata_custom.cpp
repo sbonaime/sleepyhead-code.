@@ -25,7 +25,9 @@ void WaveData::Reload(Day *day)
     min_x=day->first().toMSecsSinceEpoch()/86400000.0;
     max_x=day->last().toMSecsSinceEpoch()/86400000.0;
     if (max_x<min_x) {
-        max_y=0;
+        min_y=max_y=0;
+        m_ready=false;
+        return;
     }
     max_y=0;
     bool first=true;
@@ -50,12 +52,12 @@ void WaveData::Reload(Day *day)
                 (point[vc][t++])=r;
                 assert(t<max_points);
                 if (first) {
-                    min_y=r.y();
+                    max_y=min_y=r.y();
                     first=false;
                 } else {
                     if (r.y()<min_y) min_y=r.y();
+                    if (r.y()>max_y) max_y=r.y();
                 }
-                if (r.y()>max_y) max_y=r.y();
             }
             np[vc]=t;
             vc++;
@@ -66,19 +68,21 @@ void WaveData::Reload(Day *day)
 
     //double t1=MAX(fabs(min_y),fabs(max_y));
     // Get clever here..
-    if (max_y>128) {
-        double j=MAX(max_y,fabs(min_y));
-        min_y=-j;
-        max_y=j;
-    } else if (max_y>90) {
-        max_y=120;
-        min_y=-120;
-    } else if (max_y>60) {
-        min_y=-90;
-        max_y=90;
-    } else  {
-        min_y=-60;
-        max_y=60;
+    if (min_y<0) {
+        if (max_y>128) {
+            double j=MAX(max_y,fabs(min_y));
+            min_y=-j;
+            max_y=j;
+        } else if (max_y>90) {
+            max_y=120;
+            min_y=-120;
+        } else if (max_y>60) {
+            min_y=-90;
+            max_y=90;
+        } else  {
+            min_y=-60;
+            max_y=60;
+        }
     }
 
     if (force_min_y!=force_max_y) {
