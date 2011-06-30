@@ -145,21 +145,29 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
     SNORE->setMinimumHeight(150);
 
-    AddCPAPData(mv=new EventData(CPAP_MinuteVentilation,0));
+    AddCPAPData(flg=new EventData(CPAP_FlowLimitGraph,0));
+    AddGraph(FLG=new gGraphWindow(gSplitter,tr("Flow Limitation"),SF));
+    FLG->AddLayer(new gXAxis());
+    FLG->AddLayer(new gYAxis());
+    FLG->AddLayer(new gLineChart(flg,Qt::black,4096,false,false,true));
+    FLG->setMinimumHeight(150);
+
+
+    AddCPAPData(mv=new WaveData(CPAP_MinuteVentilation));
     AddGraph(MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF));
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
     MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,false));
     MV->setMinimumHeight(150);
 
-    AddCPAPData(tv=new EventData(CPAP_TidalVolume,0));
+    AddCPAPData(tv=new WaveData(CPAP_TidalVolume));
     AddGraph(TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF));
     TV->AddLayer(new gXAxis());
     TV->AddLayer(new gYAxis());
     TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,false));
     TV->setMinimumHeight(150);
 
-    AddCPAPData(rr=new EventData(CPAP_RespiratoryRate,0));
+    AddCPAPData(rr=new WaveData(CPAP_RespiratoryRate));
     AddGraph(RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF));
     RR->AddLayer(new gXAxis());
     RR->AddLayer(new gYAxis());
@@ -252,6 +260,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->LinkZoom(MV);
     FRW->LinkZoom(TV);
     FRW->LinkZoom(RR);
+    FRW->LinkZoom(FLG);
     SF->LinkZoom(FRW);
     SF->LinkZoom(PRD);
     SF->LinkZoom(LEAK);
@@ -259,6 +268,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->LinkZoom(MV);
     SF->LinkZoom(TV);
     SF->LinkZoom(RR);
+    SF->LinkZoom(FLG);
     PRD->LinkZoom(SF);
     PRD->LinkZoom(FRW);
     PRD->LinkZoom(LEAK);
@@ -266,6 +276,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->LinkZoom(MV);
     PRD->LinkZoom(TV);
     PRD->LinkZoom(RR);
+    PRD->LinkZoom(FLG);
 
     LEAK->LinkZoom(SF);
     LEAK->LinkZoom(FRW);
@@ -274,7 +285,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->LinkZoom(MV);
     LEAK->LinkZoom(TV);
     LEAK->LinkZoom(RR);
-
+    LEAK->LinkZoom(FLG);
 
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
@@ -283,6 +294,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SNORE->LinkZoom(MV);
     SNORE->LinkZoom(TV);
     SNORE->LinkZoom(RR);
+    SNORE->LinkZoom(FLG);
 
     MV->LinkZoom(SF);
     MV->LinkZoom(FRW);
@@ -291,6 +303,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     MV->LinkZoom(SNORE);
     MV->LinkZoom(TV);
     MV->LinkZoom(RR);
+    MV->LinkZoom(FLG);
 
     TV->LinkZoom(SF);
     TV->LinkZoom(FRW);
@@ -299,6 +312,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     TV->LinkZoom(SNORE);
     TV->LinkZoom(MV);
     TV->LinkZoom(RR);
+    TV->LinkZoom(FLG);
 
     RR->LinkZoom(SF);
     RR->LinkZoom(FRW);
@@ -307,6 +321,16 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     RR->LinkZoom(SNORE);
     RR->LinkZoom(MV);
     RR->LinkZoom(TV);
+    RR->LinkZoom(FLG);
+
+    FLG->LinkZoom(SF);
+    FLG->LinkZoom(FRW);
+    FLG->LinkZoom(PRD);
+    FLG->LinkZoom(LEAK);
+    FLG->LinkZoom(SNORE);
+    FLG->LinkZoom(MV);
+    FLG->LinkZoom(TV);
+    FLG->LinkZoom(RR);
 
 
     gSplitter->addWidget(SF);
@@ -316,6 +340,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     gSplitter->addWidget(RR);
     gSplitter->addWidget(PRD);
     gSplitter->addWidget(LEAK);
+    gSplitter->addWidget(FLG);
     gSplitter->addWidget(SNORE);
     gSplitter->addWidget(NoData);
     gSplitter->addWidget(PULSE);
@@ -390,6 +415,9 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             if (code==CPAP_RespiratoryRate) continue;
             if (code==CPAP_TidalVolume) continue;
             if (code==CPAP_MinuteVentilation) continue;
+            if (code==CPAP_FlowLimitGraph) continue;
+
+            // Note this is not so evil on PRS1.
             if (code==CPAP_Pressure) continue;
 
             if (code==CPAP_Snore) continue;
