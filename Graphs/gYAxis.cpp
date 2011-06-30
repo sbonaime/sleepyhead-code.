@@ -85,7 +85,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         }
     }
 
-    for (double i=miny; i<=maxy; i+=min_ytick) {
+    for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         fd=Format(i); // Override this as a function.
         GetTextExtent(fd,x,y);

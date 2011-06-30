@@ -302,6 +302,30 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 first=false;
             }
         }
+        if (sess) {
+            sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMin]=sess->summary[CPAP_PressureMinAchieved];
+            sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMaxAchieved];
+
+            sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
+            sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..
+            sess->summary[CPAP_LeakMedian]=sess->avg_event_field(CPAP_Leak,0);
+            sess->summary[CPAP_LeakAverage]=sess->weighted_avg_event_field(CPAP_Leak,0);
+
+            sess->summary[CPAP_Snore]=sess->sum_event_field(CPAP_Snore,0);
+            sess->summary[CPAP_SnoreMinimum]=sess->min_event_field(CPAP_Snore,0);
+            sess->summary[CPAP_SnoreMaximum]=sess->max_event_field(CPAP_Snore,0);
+            sess->summary[CPAP_SnoreMedian]=sess->avg_event_field(CPAP_Snore,0);
+            sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(CPAP_Snore,0);
+            sess->summary[CPAP_Obstructive]=sess->count_events(CPAP_Obstructive);
+            sess->summary[CPAP_Hypopnea]=sess->count_events(CPAP_Hypopnea);
+            sess->summary[CPAP_ClearAirway]=sess->count_events(CPAP_ClearAirway);
+            sess->summary[CPAP_Mode]=MODE_APAP;
+        }
+
         if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
     }
     // m->save();
@@ -489,9 +513,11 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
         } else if (edf.edfsignals[s]->label=="Leak") {
             code=CPAP_Leak;
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        } else {
+            qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
         }
-         qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
     }
+
 }
 
 void ResInitModelMap()

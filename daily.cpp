@@ -116,18 +116,16 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,700000)); //FlowRate
-    AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
+   // AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
     // Holy crap resmed stuff is huge..
     AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
-    FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
+    //FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
     gLineChart *g=new gLineChart(frw,Qt::black,700000,true);
     g->ReportEmpty(true);
-
-
     FRW->AddLayer(g);
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
     FRW->AddLayer(new gLineOverlayBar(flags[7],QColor("red"),"PR",LOT_Dot));
@@ -148,7 +146,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SNORE->setMinimumHeight(150);
 
     AddCPAPData(mv=new EventData(CPAP_MinuteVentilation,0));
-    AddGraph(MV=new gGraphWindow(gSplitter,tr("Minute Vent."),SF));
+    AddGraph(MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF));
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
     MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,false));
@@ -524,31 +522,26 @@ void Daily::Load(QDate date)
         html=html+"<tr><td align='center'>"+cpap->first().date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+cpap->first().toString("HH:mm")+"</td><td align='center'>"+cpap->last().toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
         html=html+"<tr><td colspan=4 align=center><hr></td></tr>\n";
 
-        if (pref.Exists("fruitsalad") && pref["fruitsalad"].toBool()) {
-            html=html+("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-            html=html+("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+tr("AHI")+("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+a.sprintf("%.2f",ahi)+("</font></b></td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+tr("Hypopnea")+("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+a.sprintf("%.2f",hi)+("</font></td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#40afbf'><b>")+tr("Obstructive")+("</b></td><td bgcolor='#40afbf'>")+a.sprintf("%.2f",oai)+("</td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#b254cd'><b>")+tr("ClearAirway")+("</b></td><td bgcolor='#b254cd'>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
-            html=html+("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-            html=html+("<tr><td align='right' bgcolor='#ffff80'><b>")+tr("RERA")+("</b></td><td bgcolor='#ffff80'>")+a.sprintf("%.2f",rei)+("</td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#404040'><b><font color='white'>")+tr("FlowLimit")+("</font></b></td><td bgcolor='#404040'><font color='white'>")+a.sprintf("%.2f",fli)+("</font></td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#ff4040'><b>")+tr("Vsnore")+("</b></td><td bgcolor='#ff4040'>")+a.sprintf("%.2f",vsi)+("</td></tr>\n");
-            html=html+("<tr><td align='right' bgcolor='#80ff80'><b>")+tr("PB/CSR")+("</b></td><td bgcolor='#80ff80'>")+a.sprintf("%.2f",csr)+("%</td></tr>\n");
-            html=html+("</table></td></tr>");
-        } else {
-            html=html+("<tr><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-            html=html+("<tr><td align='right'><b><font color='black'>")+tr("AHI")+("</font></b></td><td><b><font color='black'>")+a.sprintf("%.2f",ahi)+("</font></b></td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("Hypopnea")+("</b></td><td>")+a.sprintf("%.2f",hi)+("</td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("Obstructive")+("</b></td><td>")+a.sprintf("%.2f",oai)+("</td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("ClearAirway")+("</b></td><td>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
-            html=html+("</table></td><td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-            html=html+("<tr><td align='right'><b>")+tr("RERA")+("</b></td><td>")+a.sprintf("%.2f",rei)+("</td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("FlowLimit")+("</b></td><td>")+a.sprintf("%.2f",fli)+("</td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("Vsnore")+("</b></td><td>")+a.sprintf("%.2f",vsi)+("</td></tr>\n");
-            html=html+("<tr><td align='right'><b>")+tr("PB/CSR")+("</b></td><td>")+a.sprintf("%.2f%%",csr)+("</td></tr>\n");
-            html=html+("</table></td></tr>");
+        QString cs;
+        if (cpap->machine->GetClass()!="PRS1") {
+            cs="4 align=center>";
+        } else cs="2>";
+        html+=("<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>");
+        html+=("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+tr("AHI")+("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+a.sprintf("%.2f",ahi)+("</font></b></td></tr>\n");
+        html+=("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+tr("Hypopnea")+("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+a.sprintf("%.2f",hi)+("</font></td></tr>\n");
+        html+=("<tr><td align='right' bgcolor='#40afbf'><b>")+tr("Obstructive")+("</b></td><td bgcolor='#40afbf'>")+a.sprintf("%.2f",oai)+("</td></tr>\n");
+        html+=("<tr><td align='right' bgcolor='#b254cd'><b>")+tr("ClearAirway")+("</b></td><td bgcolor='#b254cd'>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
+        html+="</table></td>";
+        if (cpap->machine->GetClass()=="PRS1") {
+            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>";
+            html+="<tr><td align='right' bgcolor='#ffff80'><b>"+tr("RERA")+("</b></td><td bgcolor='#ffff80'>")+a.sprintf("%.2f",rei)+("</td></tr>\n");
+            html+="<tr><td align='right' bgcolor='#404040'><b><font color='white'>"+tr("FlowLimit")+("</font></b></td><td bgcolor='#404040'><font color='white'>")+a.sprintf("%.2f",fli)+("</font></td></tr>\n");
+            html+="<tr><td align='right' bgcolor='#ff4040'><b>"+tr("Vsnore")+("</b></td><td bgcolor='#ff4040'>")+a.sprintf("%.2f",vsi)+("</td></tr>\n");
+            html+="<tr><td align='right' bgcolor='#80ff80'><b>"+tr("PB/CSR")+("</b></td><td bgcolor='#80ff80'>")+a.sprintf("%.2f",csr)+("%</td></tr>\n");
+            html+="</table></td>";
         }
+        html+="</tr>";
+
         html=html+("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
         {
             G_AHI->setFixedSize(gwwidth,gwheight);
