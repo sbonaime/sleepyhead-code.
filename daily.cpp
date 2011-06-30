@@ -144,7 +144,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF));
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
-    SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,false));
+    SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
     SNORE->setMinimumHeight(150);
 
     AddCPAPData(mv=new EventData(CPAP_MinuteVentilation,0));
@@ -172,7 +172,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
-    AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse"),SF));
+    AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF));
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
    // PULSE->AddLayer(new gFooBar());
@@ -183,15 +183,15 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
-    AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF));
-    SPO2->AddLayer(new gXAxis());
-    SPO2->AddLayer(new gYAxis());
+//    AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF));
+//    SPO2->AddLayer(new gXAxis());
+//    SPO2->AddLayer(new gYAxis());
    // SPO2->AddLayer(new gFooBar());
-    SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,true));
-    SPO2->setMinimumHeight(150);
-    SPO2->LinkZoom(PULSE);
-    PULSE->LinkZoom(SPO2);
-    SPO2->hide();
+    PULSE->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,true));
+//    SPO2->setMinimumHeight(150);
+//    SPO2->LinkZoom(PULSE);
+//    PULSE->LinkZoom(SPO2);
+//    SPO2->hide();
     PULSE->hide();
 
     AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
@@ -321,7 +321,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     gSplitter->addWidget(SNORE);
     gSplitter->addWidget(NoData);
     gSplitter->addWidget(PULSE);
-    gSplitter->addWidget(SPO2);
+  //  gSplitter->addWidget(SPO2);
     gSplitter->refresh();
 
 
@@ -620,6 +620,16 @@ void Daily::Load(QDate date)
         SF->hide();
         SNORE->hide();
     }
+    if (cpap && (cpap->machine->GetClass()=="ResMed")) {
+        MV->show();
+        TV->show();
+        RR->show();
+    } else {
+        MV->hide();
+        TV->hide();
+        RR->hide();
+    }
+
     if (oxi) {
         html=html+"<tr><td>"+tr("Pulse");
         html=html+"</td><td>"+a.sprintf("%.2fbpm",oxi->summary_min(OXI_PulseMin));
@@ -634,10 +644,10 @@ void Daily::Load(QDate date)
         //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         PULSE->show();
-        SPO2->show();
+        //SPO2->show();
     } else {
         PULSE->hide();
-        SPO2->hide();
+        //SPO2->hide();
     }
     if (!cpap && !oxi) {
         NoData->setText(tr("No CPAP Data for ")+date.toString(Qt::SystemLocaleLongDate));
