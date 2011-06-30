@@ -259,7 +259,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             cnt++;
             //if (qprogress) qprogress->Pulse(); //Update((float(cnt)/float(size)*25));
 
-            if (qprogress) qprogress->setValue((float(cnt)/float(size)*25.0));
+            if (qprogress) qprogress->setValue((float(cnt)/float(size)*33.0));
         }
     }
     size=sessfiles.size();
@@ -270,7 +270,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     for (map<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         session=s->first;
         cnt++;
-        if (qprogress) qprogress->setValue(25.0+(float(cnt)/float(size)*25.0));
+        if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
 
         if (m->SessionExists(session)) continue;
         if (s->second[0].isEmpty()) continue;

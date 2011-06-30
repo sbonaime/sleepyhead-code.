@@ -387,7 +387,12 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
         for (m=(*s)->events.begin();m!=(*s)->events.end();m++) {
             MachineCode code=m->first;
             if (code==CPAP_Leak) continue;
-            if (code==CPAP_SnoreGraph) continue;
+            if (code==CPAP_RespiratoryRate) continue;
+            if (code==CPAP_TidalVolume) continue;
+            if (code==CPAP_MinuteVentilation) continue;
+            if (code==CPAP_Pressure) continue;
+
+            if (code==CPAP_Snore) continue;
             if (code==PRS1_Unknown12) continue;
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -509,18 +514,18 @@ void Daily::Load(QDate date)
         QString submodel=tr("Unknown Model");
 
 
-        //html=html+"<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
+        //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
             submodel=" <br>"+cpap->machine->properties["SubModel"];
-        html=html+"<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
+        html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
         if (pref.Exists("ShowSerialNumbers") && pref["ShowSerialNumbers"].toBool()) {
-            html=html+"<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
+            html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
         }
 
-        html=html+"<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
+        html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
         int tt=cpap->total_time();
-        html=html+"<tr><td align='center'>"+cpap->first().date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+cpap->first().toString("HH:mm")+"</td><td align='center'>"+cpap->last().toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
-        html=html+"<tr><td colspan=4 align=center><hr></td></tr>\n";
+        html+="<tr><td align='center'>"+cpap->first().date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+cpap->first().toString("HH:mm")+"</td><td align='center'>"+cpap->last().toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
+        html+="<tr><td colspan=4 align=center><hr></td></tr>\n";
 
         QString cs;
         if (cpap->machine->GetClass()!="PRS1") {
@@ -542,7 +547,7 @@ void Daily::Load(QDate date)
         }
         html+="</tr>";
 
-        html=html+("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
+        html+=("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
         {
             G_AHI->setFixedSize(gwwidth,gwheight);
             QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
@@ -552,49 +557,49 @@ void Daily::Load(QDate date)
             pixmap.save(&buffer, "PNG");
             html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
-        html=html+("</table>");
-        html=html+("<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
-        //html=html+("<tr><td colspan=4>&nbsp;</td></tr>\n");
-        html=html+("<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n");
-        //html=html+wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
+        html+=("</table>");
+        html+=("<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
+        //html+=("<tr><td colspan=4>&nbsp;</td></tr>\n");
+        html+=("<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n");
+        //html+=wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
 
         if (mode==MODE_BIPAP) {
-            html=html+("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;EPAP ")+a.sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n";
-            html=html+("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;IPAP ")+a.sprintf("%.2f",iap90)+"</td></tr>\n";
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;EPAP ")+a.sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n";
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;IPAP ")+a.sprintf("%.2f",iap90)+"</td></tr>\n";
         } else if (mode==MODE_APAP) {
-            html=html+("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
         } else if (mode==MODE_CPAP) {
-            html=html+("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+a.sprintf("%.2f",cpap->summary_min(CPAP_PressureMin))+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+a.sprintf("%.2f",cpap->summary_min(CPAP_PressureMin))+("</i></td></tr>\n");
         }
-        //html=html+("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
+        //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
-        html=html+("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
+        html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
 
         if (mode==MODE_APAP) {
-            html=html+"<tr><td>"+tr("Pressure")+"</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_PressureMinAchieved));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressureAverage));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_max(CPAP_PressureMaxAchieved))+("</td></tr>");
+            html+="<tr><td align=left>"+tr("Pressure:")+"</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_PressureMinAchieved));
+            html+=(" </td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressureAverage));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(CPAP_PressureMaxAchieved))+("</td></tr>");
 
-            //  html=html+wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
+            //  html+=wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
         } else if (mode==MODE_BIPAP) {
-            html=html+("<tr><td>"+tr("EPAP")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_EAPMin));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_EAPAverage));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_EAPMax))+("</td></tr>");
+            html+=("<tr><td align=left>"+tr("EPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_EAPMin));
+            html+=(" </td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_EAPAverage));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_EAPMax))+("</td></tr>");
 
-            html=html+("<tr><td>"+tr("IPAP")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_IAPMin));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_IAPAverage));
-            html=html+("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_IAPMax))+("</td></tr>");
+            html+=("<tr><td> align=left"+tr("IPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_IAPMin));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_IAPAverage));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_IAPMax))+("</td></tr>");
 
         }
-        html=html+"<tr><td>"+tr("Leak");
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_LeakMinimum));
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_LeakAverage));
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_max(CPAP_LeakMaximum))+("</td><tr>");
+        html+="<tr><td align=left>"+tr("Leak:");
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_LeakMinimum));
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_LeakAverage));
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_max(CPAP_LeakMaximum))+("</td><tr>");
 
-        html=html+"<tr><td>"+tr("Snore");
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_SnoreMinimum));
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_avg(CPAP_SnoreAverage));
-        html=html+"</td><td>"+a.sprintf("%.2f",cpap->summary_max(CPAP_SnoreMaximum))+("</td><tr>");
+        html+="<tr><td align=left>"+tr("Snore:");
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_SnoreMinimum));
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_avg(CPAP_SnoreAverage));
+        html+="</td><td>"+a.sprintf("%.2f",cpap->summary_max(CPAP_SnoreMaximum))+("</td><tr>");
         FRW->show();
         PRD->show();
         LEAK->show();
@@ -624,17 +629,17 @@ void Daily::Load(QDate date)
     }
 
     if (oxi) {
-        html=html+"<tr><td>"+tr("Pulse");
-        html=html+"</td><td>"+a.sprintf("%.2fbpm",oxi->summary_min(OXI_PulseMin));
-        html=html+"</td><td>"+a.sprintf("%.2fbpm",oxi->summary_avg(OXI_PulseAverage));
-        html=html+"</td><td>"+a.sprintf("%.2fbpm",oxi->summary_max(OXI_PulseMax))+"</td><tr>";
+        html+="<tr><td>"+tr("Pulse:");
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->summary_min(OXI_PulseMin));
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->summary_avg(OXI_PulseAverage));
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->summary_max(OXI_PulseMax))+"</td><tr>";
 
-        html=html+"<tr><td>"+tr("SpO2");
-        html=html+"</td><td>"+a.sprintf("%.2f%%",oxi->summary_min(OXI_SPO2Min));
-        html=html+"</td><td>"+a.sprintf("%.2f%%",oxi->summary_avg(OXI_SPO2Average));
-        html=html+"</td><td>"+a.sprintf("%.2f%%",oxi->summary_max(OXI_SPO2Max))+"</td><tr>";
+        html+="<tr><td>"+tr("SpO2:");
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->summary_min(OXI_SPO2Min));
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->summary_avg(OXI_SPO2Average));
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->summary_max(OXI_SPO2Max))+"</td><tr>";
 
-        //html=html+wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
+        //html+=wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
         PULSE->show();
         //SPO2->show();
@@ -648,14 +653,11 @@ void Daily::Load(QDate date)
     } else
         NoData->hide();
 
-    //ui->graphSizer->invalidate();
-    //ui->graphSizer->layout();
-    //GraphWindow->FitInside();
     if (cpap) {
         if (mode==MODE_BIPAP) {
 
         } else if (mode==MODE_APAP) {
-            html=html+("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
             TAP->setFixedSize(gwwidth,gwheight);
 
             QPixmap pixmap=TAP->renderPixmap(gwwidth,gwheight,false);
@@ -663,21 +665,20 @@ void Daily::Load(QDate date)
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
-            html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
-        html=html+("</table><hr height=2>");
-
+        html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
         for (vector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
-            tmp.sprintf(("%06i "+(*s)->first().toString("yyyy-MM-dd HH:mm ")+(*s)->last().toString("HH:mm")+"<br/>").toLatin1(),(*s)->session());
+
+            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+(*s)->first().toString("yyyy-MM-dd")+"</td><td align=center>"+(*s)->first().toString("HH:mm ")+"</td><td align=center>"+(*s)->last().toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
         }
+        html+="</table>";
     }
     html+="</html>";
 
-    //PRD->updateGL();
     ui->webView->setHtml(html);
-    //frw->Update(cpap);
-    //FRW->updateGL();
 
     ui->JournalNotes->clear();
     Session *journal=GetJournalSession(date);

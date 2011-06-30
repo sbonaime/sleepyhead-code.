@@ -414,7 +414,7 @@ bool Machine::Save()
 
         for (s=d->second->begin(); s!=d->second->end(); s++) {
             cnt++;
-            if (qprogress) qprogress->setValue(50+(float(cnt)/float(size)*50.0));
+            if (qprogress) qprogress->setValue(66+(float(cnt)/float(size)*33));
             if ((*s)->IsChanged()) (*s)->Store(path);
         }
     }

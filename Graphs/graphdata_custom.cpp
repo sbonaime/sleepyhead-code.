@@ -45,7 +45,7 @@ void WaveData::Reload(Day *day)
             Waveform *w=(*l);
             double st=w->start().toMSecsSinceEpoch()/86400000.0;
             double rate=(w->duration()/w->samples())/86400.0;
-            qDebug("Waveform Chunk contains %i samples",w->samples());
+            //qDebug("Waveform Chunk contains %i samples",w->samples());
             for (int i=0;i<w->samples();i++) {
                 QPointD r(st,(*w)[i]);
                 st+=rate;

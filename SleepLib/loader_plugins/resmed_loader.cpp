@@ -12,6 +12,7 @@ License: GPL
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <math.h>
 
 #include "resmed_loader.h"
 #include "SleepLib/session.h"
@@ -80,7 +81,7 @@ bool EDFParser::Parse()
         return false;
     }
 
-    qDebug(startdate.toString("yyyy-MM-dd HH:mm:ss").toLatin1());
+    //qDebug(startdate.toString("yyyy-MM-dd HH:mm:ss").toLatin1());
 
     num_header_bytes=Read(8).toLong(&ok);
     if (!ok)
@@ -130,10 +131,13 @@ bool EDFParser::Parse()
     for (int x=0;x<num_data_records;x++) {
         for (int i=0;i<num_signals;i++) {
             EDFSignal & sig=*edfsignals[i];
-            for (int j=0;j<sig.nr;j++) {
+            memcpy((char *)&sig.data[sig.pos],(char *)&buffer[pos],sig.nr*2);
+            sig.pos+=sig.nr;
+            pos+=sig.nr*2;
+            /*for (int j=0;j<sig.nr;j++) {
                 qint16 t=Read16();
                 sig.data[sig.pos++]=t;
-            }
+            } */
         }
     }
 
@@ -146,7 +150,7 @@ bool EDFParser::Open(QString name)
     if (!f.isReadable()) return false;
     filename=name;
     filesize=f.size();
-    qDebug(("Opening "+name).toLatin1());
+    //qDebug(("Opening "+name).toLatin1());
     buffer=new char [filesize];
     f.read(buffer,filesize);
     f.close();
@@ -207,6 +211,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     if (f.open(QIODevice::ReadOnly)) {
         if (!f.isReadable())
             return false;
+
         while (!f.atEnd()) {
             QString line=f.readLine().trimmed();
             QString key,value;
@@ -232,10 +237,11 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     QString ext,rest,datestr,s,codestr;
     SessionID sessionid;
     QDateTime date;
+    QString filename;
     int size=flist.size();
     for (int i=0;i<size;i++) {
         QFileInfo fi=flist.at(i);
-        QString filename=fi.fileName();
+        filename=fi.fileName();
         ext=filename.section(".",1).toLower();
         if (ext!="edf") continue;
 
@@ -255,18 +261,19 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
 
     Machine *m=NULL;
 
+    QString fn;
     Session *sess=NULL;
     int cnt=0;
     size=sessfiles.size();
     for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si->first;
-        qDebug("Parsing Session %li",sessionid);
+        //qDebug("Parsing Session %li",sessionid);
         bool done=false;
         bool first=true;
         for (int i=0;i<si->second.size();i++) {
-            QString fn=si->second[i].section("_",-1).toLower();
+            fn=si->second[i].section("_",-1).toLower();
             EDFParser edf(si->second[i]);
-            qDebug("Parsing File %i %i",i,edf.filesize);
+            //qDebug("Parsing File %i %i",i,edf.filesize);
 
             if (!edf.Parse())
                 continue;
@@ -328,29 +335,35 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
 
         if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
     }
-    // m->save();
+    //m->Save();
     if (qprogress) qprogress->setValue(100);
     return 0;
 }
-//bool ResmedLoader::ParseTAL(Machine *mach,Session *sess,EDFParser &edf,int pos)
 
 bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
 {
     QString t;
+    long recs;
+    double totaldur,duration;
+    char * data;
+    char c;
+    long pos;
+    bool sign,ok;
+    double d;
+    QDateTime tt;
+    EventDataType fields[3];
+    MachineCode code;
+    Event *e;
     for (int s=0;s<edf.GetNumSignals();s++) {
-        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
-        double totaldur=edf.GetNumDataRecords()*edf.GetDuration();
+        recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
+        totaldur=edf.GetNumDataRecords()*edf.GetDuration();
         totaldur/=3600.0;
-        t.sprintf("EVE: %li %.2f",recs,totaldur);
-        qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
-        char * data=(char *)edf.edfsignals[s]->data;
-        long pos=0;
-        QDateTime tt=edf.startdate;
-        bool sign;
-        double d;
-        bool ok;
-        double duration=0;
-        char c;
+        //t.sprintf("EVE: %li %.2f",recs,totaldur);
+        //qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
+        data=(char *)edf.edfsignals[s]->data;
+        pos=0;
+        tt=edf.startdate;
+        duration=0;
         while (pos<recs) {
             c=data[pos];
             if ((c!='+') && (c!='-'))
@@ -402,21 +415,19 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
                     t+=tolower(data[pos++]);
                 } while ((data[pos]!=20) && (pos<recs)); // start code
                 if (!t.isEmpty()) {
-                    EventDataType fields[3];
-                    MachineCode code=MC_UNKNOWN;
+                    code=MC_UNKNOWN;
                     if (t=="obstructive apnea") code=CPAP_Obstructive;
                     else if (t=="hypopnea") code=CPAP_Hypopnea;
                     else if (t=="central apnea") code=CPAP_ClearAirway;
                     if (code!=MC_UNKNOWN) {
                         fields[0]=duration;
-                        Event *e=new Event(tt,code,fields,1);
-                        sess->AddEvent(e);
+                        sess->AddEvent(new Event(tt,code,fields,1));
                     } else {
                         if (t!="recording starts") {
                             qDebug(("Unknown ResMed annotation field: "+t).toLatin1());
                         }
                     }
-                    qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
+                   // qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
                 }
                 if (pos>=recs) {
                     qDebug(("Short EDF EVE file"+edf.filename).toLatin1());
@@ -451,8 +462,8 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
         Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
         edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
         sess->AddWaveform(w);
-        t.sprintf("BRP: %li %.2f",recs,duration);
-        qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
+        //t.sprintf("BRP: %li %.2f",recs,duration);
+        //qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
     }
 }
 void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, double duration,EventDataType divisor)
@@ -463,6 +474,7 @@ void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint1
     EventDataType c,last;
     for (int i=0;i<recs;i++) {
         c=data[i]/divisor;
+        //c=EventDataType(q)/2.0; //data[i]/divisor;
 
         if (first) {
             sess->AddEvent(new Event(tt,code,&c,1));
