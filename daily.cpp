@@ -909,6 +909,11 @@ void Daily::on_treeWidget_itemSelectionChanged()
         PRD->SetXBounds(st,et);
         LEAK->SetXBounds(st,et);
         SNORE->SetXBounds(st,et);
+        MV->SetXBounds(st,et);
+        TV->SetXBounds(st,et);
+        RR->SetXBounds(st,et);
+        FLG->SetXBounds(st,et);
+
     }
 }
 

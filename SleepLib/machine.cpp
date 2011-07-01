@@ -123,12 +123,12 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCShortNames[CPAP_ClearAirway]=_("CA");
     DefaultMCShortNames[CPAP_CSR]=_("CSR/PB");
     DefaultMCShortNames[CPAP_VSnore]=_("VS");
+    DefaultMCShortNames[PRS1_VSnore2]=_("VS2");
     DefaultMCShortNames[CPAP_FlowLimit]=_("FL");
     DefaultMCShortNames[CPAP_Pressure]=_("P");
     DefaultMCShortNames[CPAP_Leak]=_("LR");
     DefaultMCShortNames[CPAP_EAP]=_("EPAP");
     DefaultMCShortNames[CPAP_IAP]=_("IPAP");
-    DefaultMCShortNames[CPAP_Snore]=_("VS2");
     DefaultMCShortNames[PRS1_PressurePulse]=_("PP");
 
     DefaultMCLongNames[CPAP_Obstructive]=_("Obstructive Apnea");
@@ -136,13 +136,14 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[CPAP_RERA]=_("RERA");
     DefaultMCLongNames[CPAP_ClearAirway]=_("Clear Airway Apnea");
     DefaultMCLongNames[CPAP_CSR]=_("Periodic Breathing");
-    DefaultMCLongNames[CPAP_VSnore]=_("Vibratory Snore");
+    DefaultMCLongNames[CPAP_VSnore]=_("Vibratory Snore"); // flags type
     DefaultMCLongNames[CPAP_FlowLimit]=_("Flow Limitation");
     DefaultMCLongNames[CPAP_Pressure]=_("Pressure");
     DefaultMCLongNames[CPAP_Leak]=_("Leak Rate");
     DefaultMCLongNames[CPAP_EAP]=_("BIPAP EPAP");
     DefaultMCLongNames[CPAP_IAP]=_("BIPAP IPAP");
-    DefaultMCLongNames[CPAP_Snore]=_("Vibratory Snore 2");
+    DefaultMCLongNames[CPAP_Snore]=_("Vibratory Snore");  // Graph data
+    DefaultMCLongNames[PRS1_VSnore2]=_("Vibratory Snore (Graph)");
     DefaultMCLongNames[PRS1_PressurePulse]=_("Pressure Pulse");
     DefaultMCLongNames[PRS1_Unknown0E]=_("Unknown 0E");
     DefaultMCLongNames[PRS1_Unknown00]=_("Unknown 00");
