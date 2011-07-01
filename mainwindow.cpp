@@ -95,9 +95,8 @@ void MainWindow::Startup()
     daily=new Daily(ui->tabWidget,shared_context);
     ui->tabWidget->addTab(daily,tr("Daily"));
 
-    // Disabled Overview until I want to actually look at it again. :)
-    //overview=new Overview(ui->tabWidget,shared_context);
-    //ui->tabWidget->addTab(overview,tr("Overview"));
+    overview=new Overview(ui->tabWidget,shared_context);
+    ui->tabWidget->addTab(overview,tr("Overview"));
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
@@ -107,7 +106,6 @@ void MainWindow::on_action_Import_Data_triggered()
 {
     QStringList dirNames;
     QFileDialog qfd(this);
-    //qfddir = QFileDialog::getOpenFileName(this,tr("Import Folder"), "", tr("Folders"));
     qfd.setFileMode(QFileDialog::DirectoryOnly);
 
     if (qfd.exec()) {
@@ -148,11 +146,8 @@ void MainWindow::on_homeButton_clicked()
 {
     QString file="qrc:/docs/index.html";
     QUrl url(file);
-    //QResource res(file);
-    //QByteArray html((const char*)res.data(), res.size());
     ui->webView->setUrl(url);
     ui->webView->load(url);
-    //ui->webView->setHtml(url); //QString(html));
 }
 
 void MainWindow::on_backButton_clicked()

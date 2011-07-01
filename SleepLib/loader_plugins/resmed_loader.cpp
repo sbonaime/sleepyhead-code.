@@ -488,6 +488,7 @@ void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint1
 
         last=c;
     }
+    sess->AddEvent(new Event(tt,code,&c,1)); // add one at the end..
 }
 bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
 {
@@ -497,6 +498,11 @@ bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
 
 bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
 {
+    // Is it save to assume the order does not change here?
+    enum PLDType { MaskPres=0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
+
+    //qDebug(edf.edfsignals[MaskPres]->label.toLatin1());
+
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
@@ -507,12 +513,15 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
             sess->set_hours(duration/3600.0);
         }
         MachineCode code;
+       // if (s==TherapyPres) {
+//            for (int i=0;i<recs;i++) qDebug("%04i %i",i,edf.edfsignals[s]->data[i]);
+//        } else
         if (edf.edfsignals[s]->label=="Snore Index") {
             code=CPAP_Snore;
             ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration);
-        } else if (edf.edfsignals[s]->label=="Mask Pres") {
+        } else if (edf.edfsignals[s]->label=="Therapy Pres") {
             code=CPAP_Pressure;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
+            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,100.0); //50.0
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
             //ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);

@@ -650,10 +650,12 @@ void Daily::Load(QDate date)
         MV->show();
         TV->show();
         RR->show();
+        FLG->show();
     } else {
         MV->hide();
         TV->hide();
         RR->hide();
+        FLG->hide();
     }
 
     if (oxi) {
