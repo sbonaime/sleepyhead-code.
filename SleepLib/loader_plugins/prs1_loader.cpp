@@ -12,6 +12,7 @@ License: GPL
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QDebug>
 
 #include "prs1_loader.h"
 #include "SleepLib/session.h"
@@ -56,7 +57,7 @@ PRS1Loader::~PRS1Loader()
 }
 Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
 {
-    qDebug(("Create Machine "+serial).toLatin1());
+    qDebug() << "Create Machine " << serial;
     assert(profile!=NULL);
 
     vector<Machine *> ml=profile->GetMachines(MT_CPAP);
@@ -102,7 +103,7 @@ bool PRS1Loader::Open(QString & path,Profile *profile)
     if ((!dir.exists() || !dir.isReadable()))
         return 0;
 
-    qDebug(("PRS1Loader::Open newpath="+newpath).toLatin1());
+    qDebug() << "PRS1Loader::Open newpath=" << newpath;
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
@@ -121,11 +122,11 @@ bool PRS1Loader::Open(QString & path,Profile *profile)
             QString file=fi.canonicalFilePath();
             QFile f(file);
             if (!fi.isReadable()) {
-                qDebug("PRS1Loader: last.txt exists but I couldn't read it!");
+                qDebug() << "PRS1Loader: last.txt exists but I couldn't read it!";
                 continue;
             }
             if (!f.open(QIODevice::ReadOnly)) {
-                qDebug("PRS1Loader: last.txt exists but I couldn't open it!");
+                qDebug() << "PRS1Loader: last.txt exists but I couldn't open it!";
                 continue;
             }
             last=f.readLine(64);
@@ -183,7 +184,7 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
         }
     }
     if (prop["SerialNumber"]!=m->properties["Serial"]) {
-        qDebug("Serial Number in PRS1 properties.txt doesn't match directory structure");
+        qDebug() << "Serial Number in PRS1 properties.txt doesn't match directory structure";
     } else prop.erase("SerialNumber"); // already got it stored.
 
     for (map<QString,QString>::iterator i=prop.begin(); i!=prop.end(); i++) {
@@ -197,7 +198,7 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
 int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 {
 
-    qDebug(("Opening PRS1 "+path).toLatin1());
+    qDebug() << "Opening PRS1 " << path;
     QDir dir(path);
     if (!dir.exists() || (!dir.isReadable()))
          return false;
@@ -277,22 +278,20 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         Session *sess=new Session(m,session);
         if (!OpenSummary(sess,s->second[0])) {
-            qWarning(("PRS1Loader: Could'nt open summary file "+s->second[0]).toLatin1());
+            qWarning() << "PRS1Loader: Could'nt open summary file " << s->second[0];
 
             delete sess;
             continue;
         }
-        //wxLogMessage(sess->first().Format(wxT("%Y-%m-%d %H:%M:%S"))+wxT(" ")+sess->last().Format(wxT("%Y-%m-%d %H:%M:%S")));
-
         //sess->SetSessionID(sess->start().GetTicks());
         if (!s->second[1].isEmpty()) {
             if (!OpenEvents(sess,s->second[1])) {
-                qWarning(("PRS1Loader: Couldn't open event file "+s->second[1]).toLatin1());
+                qWarning() << "PRS1Loader: Couldn't open event file " << s->second[1];
             }
         }
         if (!s->second[2].isEmpty()) {
             if (!OpenWaveforms(sess,s->second[2])) {
-                qWarning(("PRS1Loader: Couldn't open event file "+s->second[2]).toLatin1());
+                qWarning() << "PRS1Loader: Couldn't open event file " << s->second[2];
             }
         }
         const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
@@ -383,7 +382,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     unsigned char header[24];
     unsigned char ext,sum;
 
-    //qDebug("Opening PRS1 Summary %s",filename);
+    //qDebug() << "Opening PRS1 Summary " << filename;
     QFile f(filename);
     //,wxT("rb"));
     if (!f.open(QIODevice::ReadOnly))
@@ -417,13 +416,12 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
         return false;
 
     if (size<=19) {
-        qDebug(("Ignoring short session file "+filename).toLatin1());
+        qDebug() << "Ignoring short session file " << filename;
         return false;
     }
 
     QDateTime date=QDateTime::fromTime_t(timestamp);
     //QDateTime tmpdate=date;
-    //qDebug(date.Format()+wxT(" UTC=")+tmpdate.Format());
     //int ticks=date.GetTicks();
 
     if (!date.isValid())
@@ -473,7 +471,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     quint16 bb=*(quint16*)b;
     unsigned duration=bb;// | (buffer[0x15] << 8);
     session->summary[CPAP_Duration]=(int)duration;
-    //qDebug("ID: %i %i",session->session(),duration));
+    //qDebug() << "ID: " << session->session() << " " << duration;
     float hours=float(duration)/3600.0;
     session->set_hours(hours);
 
@@ -767,13 +765,10 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (min>c) min=c;
         if (max<c) max=c;
     }
-    //wxLogMessage(wxT("Samples Per Breath: ")+QString::Format(wxT("%.2f"),double(breath_total)/double(breaths)));
     QDateTime dt=QDateTime::fromTime_t(start);
     Waveform *w=new Waveform(dt,CPAP_FlowRate,data,samples,duration,min,max);
-    //wxLogMessage(QString::Format(wxT("%i %i %i %i %i"),start,samples,duration,min,max));
     session->AddWaveform(w);
 
-    //wxLogMessage(wxT("Done PRS1 Waveforms ")+filename);
     return true;
 }
 
@@ -789,7 +784,7 @@ bool initialized=false;
 void PRS1Loader::Register()
 {
     if (initialized) return;
-    qDebug("Registering PRS1Loader");
+    qDebug() << "Registering PRS1Loader";
     RegisterLoader(new PRS1Loader());
     InitModelMap();
     initialized=true;

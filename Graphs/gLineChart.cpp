@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <QString>
+#include <QDebug>
 #include <SleepLib/profiles.h>
 #include "gLineChart.h"
 
@@ -78,7 +79,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     bool accel=m_accelerate;
-    double sfit,sr;
+    double sr;
     int dp,sam;
 
     QColor & col=color[0];
@@ -116,7 +117,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 point[siz-1]=t;
                 x0=point[0].x();
             } else {
-                qDebug("Reversed order sample fed to gLineChart - ignored.");
+                qDebug() << "Reversed order sample fed to gLineChart - ignored.";
                 continue;
                 //assert(x1<x2);
             }
@@ -129,9 +130,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 //        if (accel) {
         sr=x1-x0;           // Time distance between samples
         assert(sr>0);
-        double qx=xL-x0;    // Full time range of this segment
-        double gx=xx/qx;    // ratio of how much of the whole data set this represents
-        double segwidth=width*gx;
+       // double qx=xL-x0;    // Full time range of this segment
+        //double gx=xx/qx;    // ratio of how much of the whole data set this represents
+        //double segwidth=width*gx;
         double XR=xx/sr;
         double Z1=MAX(x0,minx);
         double Z2=MIN(xL,maxx);
@@ -248,7 +249,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 // In accel mode, each pixel has a min/max Y value.
                 // m_drawlist's index is the pixel index for the X pixel axis.
 
-                float zz=(maxy-miny)/2.0;  // centreline
+                //float zz=(maxy-miny)/2.0;  // centreline
                 float jy=point[i].y();
 
                 int y1=1+(jy-miny)*ymult;

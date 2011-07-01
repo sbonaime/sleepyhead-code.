@@ -8,6 +8,7 @@
 #include <QtGui/QApplication>
 #include <QFontDatabase>
 #include <QStringList>
+#include <QDebug>
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
     int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     QStringList ffam=QFontDatabase::applicationFontFamilies(id);
     for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
-        qDebug(("Loaded Font: "+*i).toLatin1());
+        qDebug() << "Loaded Font: " << (*i);
     }
 
     a.setFont(QFont("FreeSans",10));

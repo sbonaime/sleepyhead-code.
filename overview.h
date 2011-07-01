@@ -31,19 +31,19 @@ public:
 
 private slots:
 
-    void on_rbLastWeek_clicked(bool checked);
-
-    void on_rbLastMonth_clicked(bool checked);
-
-    void on_rbEverything_clicked(bool checked);
-
-    void on_rbDateRange_clicked(bool checked);
-
     void on_drStart_dateChanged(const QDate &date);
 
     void on_drEnd_dateChanged(const QDate &date);
 
     void on_rbDateRange_toggled(bool checked);
+
+    void on_rbLastWeek_clicked();
+
+    void on_rbLastMonth_clicked();
+
+    void on_rbEverything_clicked();
+
+    void on_rbDateRange_clicked();
 
 private:
     Ui::Overview *ui;

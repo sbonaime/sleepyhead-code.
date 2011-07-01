@@ -6,17 +6,12 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 
 */
-//#include <wx/filefn.h>
-//#include <wx/filename.h>
-//#include <wx/utils.h>
-//#include <wx/dir.h>
-//#include <wx/log.h>
-//#include <wx/msgdlg.h>
 
 #include <QString>
 #include <QDateTime>
 #include <QDir>
 #include <QMessageBox>
+#include <QDebug>
 
 #include "preferences.h"
 #include "profiles.h"
@@ -211,7 +206,7 @@ Day * Profile::GetDay(QDate date,MachineType type)
 void Profile::Import(QString path)
 {
     int c=0;
-    qDebug(("Importing "+path).toLatin1());
+    qDebug() << "Importing " << path;
     list<MachineLoader *>loaders=GetLoaders();
     for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
@@ -344,7 +339,7 @@ void Scan()
         return;
     }
     if (!dir.isReadable()) {
-        qWarning(("Can't open "+path).toLatin1());
+        qWarning() << "Can't open " << path;
         return;
     }
 

@@ -1,17 +1,20 @@
-/********************************************************************
+/*
  SleepLib Machine Class Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
+#include <QDir>
+#include <QProgressBar>
+#include <QDebug>
+#include <QString>
+#include <QObject>
 #include <tr1/random>
 #include <sys/time.h>
 #include "binary_file.h"
 #include "machine.h"
 #include "profiles.h"
 #include <algorithm>
-#include <QDir>
-#include <QProgressBar>
 
 extern QProgressBar * qprogress;
 
@@ -98,58 +101,57 @@ map<MachineCode,QString> DefaultMCLongNames;
     {PRS1_VSnore2,		wxT("Vibratory Snore")},
     {PRS1_PressurePulse,wxT("Pressue Pulse")}
 }; */
-inline const QString & _(const QString q) { return q; };
 
 void InitMapsWithoutAwesomeInitializerLists()
 {
-    CPAPModeNames[MODE_UNKNOWN]=_("Undetermined");
-    CPAPModeNames[MODE_CPAP]=_("CPAP");
-    CPAPModeNames[MODE_APAP]=_("Auto");
-    CPAPModeNames[MODE_BIPAP]=_("BIPAP");
-    CPAPModeNames[MODE_ASV]=_("ASV");
+    CPAPModeNames[MODE_UNKNOWN]=QObject::tr("Undetermined");
+    CPAPModeNames[MODE_CPAP]=QObject::tr("CPAP");
+    CPAPModeNames[MODE_APAP]=QObject::tr("Auto");
+    CPAPModeNames[MODE_BIPAP]=QObject::tr("BIPAP");
+    CPAPModeNames[MODE_ASV]=QObject::tr("ASV");
 
-    PressureReliefNames[PR_UNKNOWN]=_("Undetermined");
-    PressureReliefNames[PR_NONE]=_("None");
-    PressureReliefNames[PR_CFLEX]=_("C-Flex");
-    PressureReliefNames[PR_CFLEXPLUS]=_("C-Flex+");
-    PressureReliefNames[PR_AFLEX]=_("A-Flex");
-    PressureReliefNames[PR_BIFLEX]=_("Bi-Flex");
-    PressureReliefNames[PR_EPR]=_("Exhalation Pressure Relief (EPR)");
-    PressureReliefNames[PR_SMARTFLEX]=_("SmartFlex");
+    PressureReliefNames[PR_UNKNOWN]=QObject::tr("Undetermined");
+    PressureReliefNames[PR_NONE]=QObject::tr("None");
+    PressureReliefNames[PR_CFLEX]=QObject::tr("C-Flex");
+    PressureReliefNames[PR_CFLEXPLUS]=QObject::tr("C-Flex+");
+    PressureReliefNames[PR_AFLEX]=QObject::tr("A-Flex");
+    PressureReliefNames[PR_BIFLEX]=QObject::tr("Bi-Flex");
+    PressureReliefNames[PR_EPR]=QObject::tr("Exhalation Pressure Relief (EPR)");
+    PressureReliefNames[PR_SMARTFLEX]=QObject::tr("SmartFlex");
 
-    DefaultMCShortNames[CPAP_Obstructive]=_("OA");
-    DefaultMCShortNames[CPAP_Hypopnea]=_("H");
-    DefaultMCShortNames[CPAP_RERA]=_("RE");
-    DefaultMCShortNames[CPAP_ClearAirway]=_("CA");
-    DefaultMCShortNames[CPAP_CSR]=_("CSR/PB");
-    DefaultMCShortNames[CPAP_VSnore]=_("VS");
-    DefaultMCShortNames[PRS1_VSnore2]=_("VS2");
-    DefaultMCShortNames[CPAP_FlowLimit]=_("FL");
-    DefaultMCShortNames[CPAP_Pressure]=_("P");
-    DefaultMCShortNames[CPAP_Leak]=_("LR");
-    DefaultMCShortNames[CPAP_EAP]=_("EPAP");
-    DefaultMCShortNames[CPAP_IAP]=_("IPAP");
-    DefaultMCShortNames[PRS1_PressurePulse]=_("PP");
+    DefaultMCShortNames[CPAP_Obstructive]=QObject::tr("OA");
+    DefaultMCShortNames[CPAP_Hypopnea]=QObject::tr("H");
+    DefaultMCShortNames[CPAP_RERA]=QObject::tr("RE");
+    DefaultMCShortNames[CPAP_ClearAirway]=QObject::tr("CA");
+    DefaultMCShortNames[CPAP_CSR]=QObject::tr("CSR/PB");
+    DefaultMCShortNames[CPAP_VSnore]=QObject::tr("VS");
+    DefaultMCShortNames[PRS1_VSnore2]=QObject::tr("VS2");
+    DefaultMCShortNames[CPAP_FlowLimit]=QObject::tr("FL");
+    DefaultMCShortNames[CPAP_Pressure]=QObject::tr("P");
+    DefaultMCShortNames[CPAP_Leak]=QObject::tr("LR");
+    DefaultMCShortNames[CPAP_EAP]=QObject::tr("EPAP");
+    DefaultMCShortNames[CPAP_IAP]=QObject::tr("IPAP");
+    DefaultMCShortNames[PRS1_PressurePulse]=QObject::tr("PP");
 
-    DefaultMCLongNames[CPAP_Obstructive]=_("Obstructive Apnea");
-    DefaultMCLongNames[CPAP_Hypopnea]=_("Hypopnea");
-    DefaultMCLongNames[CPAP_RERA]=_("RERA");
-    DefaultMCLongNames[CPAP_ClearAirway]=_("Clear Airway Apnea");
-    DefaultMCLongNames[CPAP_CSR]=_("Periodic Breathing");
-    DefaultMCLongNames[CPAP_VSnore]=_("Vibratory Snore"); // flags type
-    DefaultMCLongNames[CPAP_FlowLimit]=_("Flow Limitation");
-    DefaultMCLongNames[CPAP_Pressure]=_("Pressure");
-    DefaultMCLongNames[CPAP_Leak]=_("Leak Rate");
-    DefaultMCLongNames[CPAP_EAP]=_("BIPAP EPAP");
-    DefaultMCLongNames[CPAP_IAP]=_("BIPAP IPAP");
-    DefaultMCLongNames[CPAP_Snore]=_("Vibratory Snore");  // Graph data
-    DefaultMCLongNames[PRS1_VSnore2]=_("Vibratory Snore (Graph)");
-    DefaultMCLongNames[PRS1_PressurePulse]=_("Pressure Pulse");
-    DefaultMCLongNames[PRS1_Unknown0E]=_("Unknown 0E");
-    DefaultMCLongNames[PRS1_Unknown00]=_("Unknown 00");
-    DefaultMCLongNames[PRS1_Unknown01]=_("Unknown 01");
-    DefaultMCLongNames[PRS1_Unknown0B]=_("Unknown 0B");
-    DefaultMCLongNames[PRS1_Unknown10]=_("Unknown 10");
+    DefaultMCLongNames[CPAP_Obstructive]=QObject::tr("Obstructive Apnea");
+    DefaultMCLongNames[CPAP_Hypopnea]=QObject::tr("Hypopnea");
+    DefaultMCLongNames[CPAP_RERA]=QObject::tr("RERA");
+    DefaultMCLongNames[CPAP_ClearAirway]=QObject::tr("Clear Airway Apnea");
+    DefaultMCLongNames[CPAP_CSR]=QObject::tr("Periodic Breathing");
+    DefaultMCLongNames[CPAP_VSnore]=QObject::tr("Vibratory Snore"); // flags type
+    DefaultMCLongNames[CPAP_FlowLimit]=QObject::tr("Flow Limitation");
+    DefaultMCLongNames[CPAP_Pressure]=QObject::tr("Pressure");
+    DefaultMCLongNames[CPAP_Leak]=QObject::tr("Leak Rate");
+    DefaultMCLongNames[CPAP_EAP]=QObject::tr("BIPAP EPAP");
+    DefaultMCLongNames[CPAP_IAP]=QObject::tr("BIPAP IPAP");
+    DefaultMCLongNames[CPAP_Snore]=QObject::tr("Vibratory Snore");  // Graph data
+    DefaultMCLongNames[PRS1_VSnore2]=QObject::tr("Vibratory Snore (Graph)");
+    DefaultMCLongNames[PRS1_PressurePulse]=QObject::tr("Pressure Pulse");
+    DefaultMCLongNames[PRS1_Unknown0E]=QObject::tr("Unknown 0E");
+    DefaultMCLongNames[PRS1_Unknown00]=QObject::tr("Unknown 00");
+    DefaultMCLongNames[PRS1_Unknown01]=QObject::tr("Unknown 01");
+    DefaultMCLongNames[PRS1_Unknown0B]=QObject::tr("Unknown 0B");
+    DefaultMCLongNames[PRS1_Unknown10]=QObject::tr("Unknown 10");
 }
 
 
@@ -202,13 +204,13 @@ Machine::Machine(Profile *p,MachineID id)
         m_id=temp;
 
     } else m_id=id;
-    qDebug("Create Machine: %lx",m_id);
+    qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
     m_type=MT_UNKNOWN;
     firstsession=true;
 }
 Machine::~Machine()
 {
-    qDebug("Destroy Machine");
+    qDebug() << "Destroy Machine";
     map<QDateTime,Day *>::iterator d;
     for (d=day.begin();d!=day.end();d++) {
         delete d->second;
@@ -308,8 +310,7 @@ bool Machine::Purge(int secret)
         return false;
 
 
-    QString native="Purging "+QDir::toNativeSeparators(path);
-    qDebug(native.toLatin1());
+    qDebug() << "Purging " << QDir::toNativeSeparators(path);
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -323,15 +324,15 @@ bool Machine::Purge(int secret)
         int j=fullpath.lastIndexOf(".");
         QString ext_s=*(fullpath.rightRef(j+1).string());
         bool ok;
-        int ext=ext_s.toInt(&ok,10);
+        ext_s.toInt(&ok,10);
         if (ok) {
-            qDebug(("TestMe: Deleting "+fullpath).toLatin1());
+            qDebug() << "TestMe: Deleting " << fullpath;
             dir.remove(fullpath);
         } else could_not_kill++;
 
     }
     if (could_not_kill>0) {
-        qWarning(("Could not purge path\n"+path+"\n\n%i file(s) remain.. Suggest manually deleting this path\n").toLatin1(),could_not_kill);
+        qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
         return false;
     }
 
@@ -341,7 +342,7 @@ bool Machine::Load()
 {
     QString path=profile->Get("DataFolder")+"/"+hexid();
     QDir dir(path);
-    qDebug(("Loading "+path).toLatin1());
+    qDebug() << "Loading " << path;
 
     if (!dir.exists() || !dir.isReadable())
         return false;
@@ -397,6 +398,7 @@ bool Machine::SaveSession(Session *sess)
 {
     QString path=profile->Get("DataFolder")+"/"+hexid();
     if (sess->IsChanged()) sess->Store(path);
+    return true;
 }
 bool Machine::Save()
 {

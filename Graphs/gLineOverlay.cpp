@@ -75,8 +75,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
        // bool done=false;
         for (int i=0;i<data->np[n];i++) {
             QPointD & rp=data->point[n][i];
-            float X=rp.x();
-            float Y=rp.y();
+            //float X=rp.x();
+            //float Y=rp.y();
             if (rp.y() < w.min_x) continue;
             if (rp.x() > w.max_x) break;
 

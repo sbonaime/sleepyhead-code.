@@ -86,17 +86,17 @@ public:
 
     virtual int Version() { return resmed_data_version; };
     virtual const QString & ClassName() { return resmed_class_name; };
-    void ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,double duration,EventDataType divisor=1);
+    void ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,double duration,EventDataType divisor=1);
 
     Machine *CreateMachine(QString serial,Profile *profile);
 
     static void Register();
 protected:
     map<QString,Machine *> ResmedList;
-    bool LoadEVE(Machine *mach,Session *sess,EDFParser &edf);
-    bool LoadBRP(Machine *mach,Session *sess,EDFParser &edf);
-    bool LoadSAD(Machine *mach,Session *sess,EDFParser &edf);
-    bool LoadPLD(Machine *mach,Session *sess,EDFParser &edf);
+    bool LoadEVE(Session *sess,EDFParser &edf);
+    bool LoadBRP(Session *sess,EDFParser &edf);
+    bool LoadSAD(Session *sess,EDFParser &edf);
+    bool LoadPLD(Session *sess,EDFParser &edf);
 
 };
 

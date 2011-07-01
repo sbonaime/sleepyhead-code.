@@ -17,6 +17,7 @@ License: GPL
 #include <QString>
 #include <QDateTime>
 #include <QFile>
+#include <QDebug>
 #include <list>
 
 using namespace std;
@@ -169,7 +170,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         date.setDate(d2);
     }
     if (!date.isValid()) {
-        qDebug("Invalid date time retreieved in CMS50::OpenSPORFile");
+        qDebug() << "Invalid date time retreieved in CMS50::OpenSPORFile";
         return false;
     }
 
@@ -178,7 +179,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     buffer=new char [num_records];
     br=f.read(buffer,num_records);
     if (br!=num_records) {
-        qDebug(("Short .spoR File: "+path).toLatin1());
+        qDebug() << "Short .spoR File: " << path;
         delete [] buffer;
         return false;
     }
@@ -280,7 +281,7 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
         }
     }
 
-    qDebug("Create CMS50 Machine Record");
+    qDebug() << "Create CMS50 Machine Record";
 
     Machine *m=new Oximeter(profile,0);
     m->SetClass(cms50_class_name);
@@ -301,7 +302,7 @@ static bool cms50_initialized=false;
 void CMS50Loader::Register()
 {
     if (cms50_initialized) return;
-    qDebug("Registering CMS50Loader");
+    qDebug() << "Registering CMS50Loader";
     RegisterLoader(new CMS50Loader());
     //InitModelMap();
     cms50_initialized=true;

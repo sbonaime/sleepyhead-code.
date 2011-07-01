@@ -77,11 +77,6 @@ MainWindow::~MainWindow()
     delete ui;
     Profiles::Done();
 }
-void MainWindow::showEvent(QShowEvent * event)
-{
-    if (daily)
-        daily->RedrawGraphs();
-}
 
 void MainWindow::Startup()
 {
@@ -184,6 +179,7 @@ void MainWindow::on_overviewButton_clicked()
 
 void MainWindow::on_webView_loadFinished(bool arg1)
 {
+    arg1=arg1;
     qprogress->hide();
     if (first_load) {
         QTimer::singleShot(0,this,SLOT(Startup()));

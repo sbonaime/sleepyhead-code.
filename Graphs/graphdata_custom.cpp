@@ -31,9 +31,9 @@ void WaveData::Reload(Day *day)
     }
     max_y=0;
     bool first=true;
-    int chunk=0;
+   // int chunk=0;
     for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
-        //qDebug("Processing waveform chunk %i",chunk++);
+        //qDebug() << "Processing waveform chunk " << chunk++;
         if ((*s)->waveforms.find(code)==(*s)->waveforms.end()) continue;
         for (vector<Waveform *>::iterator l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
             int ps=point.size();
@@ -45,7 +45,7 @@ void WaveData::Reload(Day *day)
             Waveform *w=(*l);
             double st=w->start().toMSecsSinceEpoch()/86400000.0;
             double rate=(w->duration()/w->samples())/86400.0;
-            //qDebug("Waveform Chunk contains %i samples",w->samples());
+            //qDebug() << "Waveform Chunk contains " << w->samples() << " samples";
             for (int i=0;i<w->samples();i++) {
                 QPointD r(st,(*w)[i]);
                 st+=rate;
@@ -117,8 +117,8 @@ void EventData::Reload(Day *day)
     min_x=day->first().toMSecsSinceEpoch()/86400000.0;
     max_x=day->last().toMSecsSinceEpoch()/86400000.0;
     if (min_x>max_x) {
-        int a=5;
-        //assert(min_x<max_x);
+        //int a=5;
+        assert(min_x<max_x);
     }
     min_y=max_y=0;
     int tt=0;
@@ -227,10 +227,6 @@ void TAPData::Reload(Day *day)
                 double d=last.msecsTo(ev.time())/1000.0;
 
                 assert(lastval<max_slots);
-                if (lastval>max_slots) {
-                    int i=0;
-                  //  throw BoundsError();
-                }
                 pTime[lastval]+=d;
             }
             cnt++;
@@ -382,6 +378,7 @@ double HistoryData::Calc(Day *day)
 
 void HistoryData::Reload(Day *day)
 {
+    day=day; //shuttup warnings..
     QDateTime date;
     vc=0;
     int i=0;

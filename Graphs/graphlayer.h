@@ -20,7 +20,7 @@ class gLayer
 public:
     gLayer(gPointData *g=NULL,QString title="");
     virtual ~gLayer();
-    virtual void Plot(gGraphWindow & w,float scrx,float scry);
+    virtual void Plot(gGraphWindow & w,float scrx,float scry)=0;
     vector<QColor> color;
 
     virtual void SetData(gPointData * gd);;

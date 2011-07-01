@@ -59,7 +59,6 @@ private slots:
     void on_action_Link_Graphs_triggered(bool checked);
 
     void on_actionUse_AntiAliasing_triggered(bool checked);
-    void showEvent(QShowEvent * event);
 
 private:
     Ui::MainWindow *ui;

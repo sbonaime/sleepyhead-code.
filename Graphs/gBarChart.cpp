@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gBarChart Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <math.h>
 #include <SleepLib/profiles.h>

@@ -8,6 +8,7 @@
 #include "session.h"
 #include "math.h"
 #include <QDir>
+#include <QDebug>
 #include <SleepLib/binary_file.h>
 #include <vector>
 #include <algorithm>
@@ -113,7 +114,7 @@ double Session::percentile(MachineCode mc,int field,double percent)
 
     for (e=events[mc].begin(); e!=events[mc].end(); e++) {
         Event & ev = *(*e);
-        array.push_back(ev[0]);
+        array.push_back(ev[field]);
     }
     std::sort(array.begin(),array.end(),sortfunction);
     int size=array.size();
@@ -327,7 +328,7 @@ bool Session::StoreSummary(QString filename)
             mctype[mc]=MC_datetime;
         } else {
             QString t=i->second.typeToName(type);
-            qWarning(("Error in Session->StoreSummary: Can't pack variant type "+t).toLatin1());
+            qWarning() << "Error in Session->StoreSummary: Can't pack variant type " << t;
             exit(1);
         }
         f.Pack((qint16)mc);
@@ -360,7 +361,7 @@ bool Session::LoadSummary(QString filename)
     //qDebug(("Loading Summary "+filename).toLatin1());
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
-        qDebug(("Couldn't open file"+filename).toLatin1());
+        qDebug() << "Couldn't open file" << filename;
         return false;
     }
 
@@ -496,14 +497,14 @@ bool Session::LoadEvents(QString filename)
     if (filename.isEmpty()) return false;
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
-        qDebug(("Couldn't open events file"+filename).toLatin1());
+        qDebug() << "Couldn't open events file" << filename;
         return false;
     }
 
     quint32 t32;
     quint16 t16;
     quint8 t8;
-    qint16 i16;
+    //qint16 i16;
 
 //    qint16 sumsize;
 
@@ -561,7 +562,7 @@ bool Session::LoadEvents(QString filename)
             }
             EventDataType ED[max_number_event_fields];
             for (int c=0; c<mcfields[mc]; c++) {
-                if (!f.Unpack(fl)); //throw UnpackError();  // Data Fields in float format
+                if (!f.Unpack(fl)) {}; //throw UnpackError();  // Data Fields in float format
                 ED[c]=fl;
             }
             Event *ev=new Event(d,mc,ED,mcfields[mc]);
@@ -635,7 +636,7 @@ bool Session::LoadWaveforms(QString filename)
 
     BinaryFile f;
     if (!f.Open(filename,BF_READ)) {
-        qDebug(("Couldn't open waveform file "+filename).toLatin1());
+        qDebug() << "Couldn't open waveform file " << filename;
         return false;
     }
 

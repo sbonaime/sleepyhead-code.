@@ -83,7 +83,7 @@ private:
     QLabel *NoData;
 };
 
-class AHIGraph:public QWebPluginFactory
+/*class AHIGraph:public QWebPluginFactory
 {
 public:
     AHIGraph(QObject * parent = 0);
@@ -91,6 +91,6 @@ public:
     virtual QObject * 	create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues) const;
     virtual QList<Plugin> plugins () const;
     //virtual void refreshPlugins ();
-};
+}; */
 
 #endif // DAILY_H

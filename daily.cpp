@@ -407,7 +407,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 
         map<MachineCode,vector<Event *> >::iterator m;
 
-        QTreeWidgetItem * ti,sroot;
+        //QTreeWidgetItem * sroot;
 
         for (m=(*s)->events.begin();m!=(*s)->events.end();m++) {
             MachineCode code=m->first;
@@ -496,7 +496,7 @@ void Daily::Load(QDate date)
     previous_date=date;
     Day *cpap=profile->GetDay(date,MT_CPAP);
     Day *oxi=profile->GetDay(date,MT_OXIMETER);
-    Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
+   // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>";
     html+="</head>";
@@ -933,7 +933,7 @@ void Daily::on_JournalNotesUnderline_clicked()
 
 
 
-AHIGraph::AHIGraph(QObject * parent)
+/*AHIGraph::AHIGraph(QObject * parent)
 {
 }
 AHIGraph::~AHIGraph()
@@ -977,3 +977,4 @@ QList<QWebPluginFactory::Plugin> AHIGraph::plugins() const
 
     return QList<QWebPluginFactory::Plugin>() << plugin;
 }
+ */

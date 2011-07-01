@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QFontMetrics>
+#include <QDebug>
 #include <math.h>
 #include "glcommon.h"
 #include "SleepLib/profiles.h"
@@ -62,7 +63,7 @@ void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCol
     //int a=fm.overlinePos(); //ascent();
     //LinedRoundedRectangle(x,wid.GetScrY()-y,w,h,0,1,QColor("black"));
     if (!font) {
-        qDebug("Font Problem. Forgot to call GraphInit() ?");
+        qDebug() << "Font Problem. Forgot to call GraphInit() ?";
         abort();
         return;
     }
@@ -72,7 +73,7 @@ void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCol
     glFlush();
     QPainter painter(&wid);
     painter.setFont(*font);
-    painter.setPen(Qt::black);
+    painter.setPen(color);
     painter.setOpacity(1);
  //   painter.setCompositionMode(QPainter::CompositionMode_);
     if (angle==0) {

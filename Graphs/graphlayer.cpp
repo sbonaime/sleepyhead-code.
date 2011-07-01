@@ -23,9 +23,9 @@ gLayer::~gLayer()
 
 }
 
-void gLayer::Plot(gGraphWindow & w,float scrx,float scry)
-{
-}
+//void gLayer::Plot(gGraphWindow & w,float scrx,float scry)
+//{
+//}
 
 void gLayer::DataChanged(gGraphData *src)
 {

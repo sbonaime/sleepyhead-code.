@@ -12,6 +12,7 @@ License: GPL
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QDebug>
 #include <math.h>
 
 #include "resmed_loader.h"
@@ -77,11 +78,11 @@ bool EDFParser::Parse()
         startdate.setDate(d2);
     }
     if (!startdate.isValid()) {
-        qDebug(("Invalid date time retreieved parsing EDF File"+filename).toLatin1());
+        qDebug() << "Invalid date time retreieved parsing EDF File " << filename;
         return false;
     }
 
-    //qDebug(startdate.toString("yyyy-MM-dd HH:mm:ss").toLatin1());
+    //qDebug() << startdate.toString("yyyy-MM-dd HH:mm:ss");
 
     num_header_bytes=Read(8).toLong(&ok);
     if (!ok)
@@ -150,7 +151,7 @@ bool EDFParser::Open(QString name)
     if (!f.isReadable()) return false;
     filename=name;
     filesize=f.size();
-    //qDebug(("Opening "+name).toLatin1());
+    //qDebug() << "Opening " << name;
     buffer=new char [filesize];
     f.read(buffer,filesize);
     f.close();
@@ -179,7 +180,7 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     }
     if (found) return ResmedList[serial];
 
-    qDebug(("Create ResMed Machine"+serial).toLatin1());
+    qDebug() << "Create ResMed Machine" << serial;
     Machine *m=new CPAP(profile,0);
     m->SetClass(resmed_class_name);
 
@@ -228,7 +229,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     if ((!dir.exists() || !dir.isReadable()))
         return 0;
 
-    qDebug(("ResmedLoader::Open newpath="+newpath).toLatin1());
+    qDebug() << "ResmedLoader::Open newpath=" << newpath;
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
@@ -267,13 +268,13 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     size=sessfiles.size();
     for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si->first;
-        //qDebug("Parsing Session %li",sessionid);
+        //qDebug() << "Parsing Session " << sessionid;
         bool done=false;
         bool first=true;
-        for (int i=0;i<si->second.size();i++) {
+        for (size_t i=0;i<si->second.size();i++) {
             fn=si->second[i].section("_",-1).toLower();
             EDFParser edf(si->second[i]);
-            //qDebug("Parsing File %i %i",i,edf.filesize);
+            //qDebug() << "Parsing File " << i << " "  << edf.filesize;
 
             if (!edf.Parse())
                 continue;
@@ -283,7 +284,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 for (map<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
                     if (i->first=="SRN") {
                         if (edf.serialnumber!=i->second) {
-                            qDebug("edf Serial number doesn't match Identification.tgt");
+                            qDebug() << "edf Serial number doesn't match Identification.tgt";
                         }
                     } else if (i->first=="PNA") {
                         m->properties["Model"]=i->second;
@@ -298,10 +299,10 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 sess=new Session(m,sessionid);
             }
             if (!done) {
-                if (fn=="eve.edf") LoadEVE(m,sess,edf);
-                else if (fn=="pld.edf") LoadPLD(m,sess,edf);
-                else if (fn=="brp.edf") LoadBRP(m,sess,edf);
-                else if (fn=="sad.edf") LoadSAD(m,sess,edf);
+                if (fn=="eve.edf") LoadEVE(sess,edf);
+                else if (fn=="pld.edf") LoadPLD(sess,edf);
+                else if (fn=="brp.edf") LoadBRP(sess,edf);
+                else if (fn=="sad.edf") LoadSAD(sess,edf);
             }
             if (first) {
                 sess->SetChanged(true);
@@ -340,7 +341,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     return 0;
 }
 
-bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
+bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 {
     QString t;
     long recs;
@@ -353,13 +354,13 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
     QDateTime tt;
     EventDataType fields[3];
     MachineCode code;
-    Event *e;
+    //Event *e;
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
         totaldur=edf.GetNumDataRecords()*edf.GetDuration();
         totaldur/=3600.0;
         //t.sprintf("EVE: %li %.2f",recs,totaldur);
-        //qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
+        //qDebug() << edf.edfsignals[s]->label << " " << t;
         data=(char *)edf.edfsignals[s]->data;
         pos=0;
         tt=edf.startdate;
@@ -378,7 +379,7 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
             } while ((c!=20) && (c!=21)); // start code
             d=t.toDouble(&ok);
             if (!ok) {
-                qDebug(("Faulty EDF EVE file"+edf.filename).toLatin1());
+                qDebug() << "Faulty EDF EVE file " << edf.filename;
                 break;
             }
             if (!sign) d=-d;
@@ -397,7 +398,7 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
                 } while ((data[pos]!=20) && (pos<recs)); // start code
                 duration=t.toDouble(&ok);
                 if (!ok) {
-                    qDebug(("Faulty EDF EVE file (at %li) "+edf.filename).toLatin1(),pos);
+                    qDebug() << "Faulty EDF EVE file (at %" << pos << ") " << edf.filename;
                     break;
                 }
             }
@@ -424,13 +425,13 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
                         sess->AddEvent(new Event(tt,code,fields,1));
                     } else {
                         if (t!="recording starts") {
-                            qDebug(("Unknown ResMed annotation field: "+t).toLatin1());
+                            qDebug() << "Unknown ResMed annotation field: " << t;
                         }
                     }
                    // qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
                 }
                 if (pos>=recs) {
-                    qDebug(("Short EDF EVE file"+edf.filename).toLatin1());
+                    qDebug() << "Short EDF EVE file" << edf.filename;
                     break;
                 }
                // pos++;
@@ -440,8 +441,9 @@ bool ResmedLoader::LoadEVE(Machine *mach,Session *sess,EDFParser &edf)
         }
        // qDebug(data);
     }
+    return true;
 }
-bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
+bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
 {
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
@@ -451,7 +453,7 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
         else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
         else {
-            qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
+            qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
         }
         sess->set_first(edf.startdate);
@@ -465,8 +467,9 @@ bool ResmedLoader::LoadBRP(Machine *mach,Session *sess,EDFParser &edf)
         //t.sprintf("BRP: %li %.2f",recs,duration);
         //qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
     }
+    return true;
 }
-void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, double duration,EventDataType divisor)
+void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, double duration,EventDataType divisor)
 {
     bool first=true;
     double rate=(duration/recs)*1000.0;
@@ -490,13 +493,15 @@ void ResmedLoader::ToTimeDelta(Machine *mach,Session *sess,EDFParser &edf, qint1
     }
     sess->AddEvent(new Event(tt,code,&c,1)); // add one at the end..
 }
-bool ResmedLoader::LoadSAD(Machine *mach,Session *sess,EDFParser &edf)
+bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
-    // Oximeter bull crap..
+    // Oximeter bull crap.. this oximeter is not reported of highly..
+    // nonetheless, the data is easy to access.
+    return true;
 }
 
 
-bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
+bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 {
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres=0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
@@ -518,10 +523,10 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
 //        } else
         if (edf.edfsignals[s]->label=="Snore Index") {
             code=CPAP_Snore;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
         } else if (edf.edfsignals[s]->label=="Therapy Pres") {
             code=CPAP_Pressure;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
             //ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
@@ -542,15 +547,15 @@ bool ResmedLoader::LoadPLD(Machine *mach,Session *sess,EDFParser &edf)
             sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="Leak") {
             code=CPAP_Leak;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         } else if (edf.edfsignals[s]->label=="FFL Index") {
             code=CPAP_FlowLimitGraph;
-            ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         } else {
-            qDebug(("Unknown Signal "+edf.edfsignals[s]->label).toLatin1());
+            qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
         }
     }
-
+    return true;
 }
 
 void ResInitModelMap()
@@ -563,7 +568,7 @@ bool resmed_initialized=false;
 void ResmedLoader::Register()
 {
     if (resmed_initialized) return;
-    qDebug("Registering ResmedLoader");
+    qDebug() << "Registering ResmedLoader";
     RegisterLoader(new ResmedLoader());
     ResInitModelMap();
     resmed_initialized=true;

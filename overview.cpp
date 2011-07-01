@@ -122,7 +122,7 @@ void Overview::ReloadGraphs()
         (*h)->ResetDateRange();
         (*h)->Reload(NULL);
     }
-    on_rbLastWeek_clicked(true);
+    on_rbLastWeek_clicked();
 }
 void Overview::UpdateGraphs()
 {
@@ -136,46 +136,6 @@ void Overview::UpdateGraphs()
 }
 
 
-void Overview::on_rbLastWeek_clicked(bool checked)
-{
-    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
-    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
-
-    QDate d=profile->LastDay();
-    ui->drEnd->setDate(d);
-    d=d.addDays(-7);
-    if (d<profile->FirstDay()) d=profile->FirstDay();
-    ui->drStart->setDate(d);
-    UpdateGraphs();
-}
-
-void Overview::on_rbLastMonth_clicked(bool checked)
-{
-    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
-    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
-
-    QDate d=profile->LastDay();
-    ui->drEnd->setDate(d);
-    d=d.addDays(-30);
-    if (d<profile->FirstDay()) d=profile->FirstDay();
-    ui->drStart->setDate(d);
-    UpdateGraphs();
-}
-
-void Overview::on_rbEverything_clicked(bool checked)
-{
-    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
-    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
-
-    ui->drEnd->setDate(profile->LastDay());
-    ui->drStart->setDate(profile->FirstDay());
-    UpdateGraphs();
-}
-
-void Overview::on_rbDateRange_clicked(bool checked)
-{
-    UpdateGraphs();
-}
 void UpdateCal(QCalendarWidget *cal)
 {
     QDate d1=cal->minimumDate();
@@ -216,4 +176,45 @@ void Overview::on_rbDateRange_toggled(bool checked)
     ui->drEnd->setEnabled(checked);
     ui->drStartLabel->setEnabled(checked);
     ui->drEndLabel->setEnabled(checked);
+}
+
+void Overview::on_rbLastWeek_clicked()
+{
+    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
+    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
+
+    QDate d=profile->LastDay();
+    ui->drEnd->setDate(d);
+    d=d.addDays(-7);
+    if (d<profile->FirstDay()) d=profile->FirstDay();
+    ui->drStart->setDate(d);
+    UpdateGraphs();
+}
+
+void Overview::on_rbLastMonth_clicked()
+{
+    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
+    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
+
+    QDate d=profile->LastDay();
+    ui->drEnd->setDate(d);
+    d=d.addDays(-30);
+    if (d<profile->FirstDay()) d=profile->FirstDay();
+    ui->drStart->setDate(d);
+    UpdateGraphs();
+}
+
+void Overview::on_rbEverything_clicked()
+{
+    ui->drStart->setDateRange(profile->FirstDay(),profile->LastDay());
+    ui->drEnd->setDateRange(profile->FirstDay(),profile->LastDay());
+
+    ui->drEnd->setDate(profile->LastDay());
+    ui->drStart->setDate(profile->FirstDay());
+    UpdateGraphs();
+}
+
+void Overview::on_rbDateRange_clicked()
+{
+    UpdateGraphs();
 }

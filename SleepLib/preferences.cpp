@@ -16,6 +16,7 @@ License: GPL
 #include <QDateTime>
 #include <QDir>
 #include <QDesktopServices>
+#include <QDebug>
 
 #include "preferences.h"
 
@@ -163,7 +164,7 @@ bool Preferences::Open(QString filename)
 {
     if (!filename.isEmpty()) p_filename=filename;
 
-    qDebug(("Opening "+p_filename).toLatin1());
+    qDebug() << "Opening " << p_filename;
     TiXmlDocument xml(p_filename.toLatin1());
     if (!xml.LoadFile()) {
         return false;
@@ -194,13 +195,13 @@ bool Preferences::Open(QString filename)
             if (type=="double") {
                 double d=pText.toDouble(&ok);
                 if (!ok)
-                    qDebug("String to number conversion error in Preferences::Open()");
+                    qDebug() << "String to number conversion error in Preferences::Open()";
                 else
                     p_preferences[pKey]=d;
             } else if (type=="qlonglong") {
                 qlonglong d=pText.toLongLong(&ok);
                 if (!ok)
-                    qDebug("String to number conversion error in Preferences::Open()");
+                    qDebug() << "String to number conversion error in Preferences::Open()";
                 else
                     p_preferences[pKey]=d;
             } else if (type=="bool") {
@@ -211,7 +212,7 @@ bool Preferences::Open(QString filename)
                     else if (pText.toLower()=="false")
                         p_preferences[pKey]=false;
                     else
-                        qDebug("String to number conversion error in Preferences::Open()");
+                        qDebug() << "String to number conversion error in Preferences::Open()";
                 } else
                     p_preferences[pKey]=(bool)d;
             } else if (type=="qdatetime") {
@@ -220,7 +221,7 @@ bool Preferences::Open(QString filename)
                 if (d.isValid())
                     p_preferences[pKey]=d;
                 else
-                    qWarning(("Invalid DateTime record in "+filename).toLatin1());
+                    qWarning() << "Invalid DateTime record in " << filename;
 
             } else { // Assume string
                 p_preferences[pKey]=pText;
@@ -258,7 +259,7 @@ bool Preferences::Save(QString filename)
         if (type==QVariant::Invalid) continue;
 
         msg=new TiXmlElement(i->first.toLatin1());
-        //qDebug(i->first.toLatin1());
+        //qDebug() << i->first;
         msg->SetAttribute("type",i->second.typeName());
         QString t;
 
