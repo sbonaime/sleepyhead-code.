@@ -42,7 +42,7 @@ public:
 class WaveData:public gPointData
 {
 public:
-    WaveData(MachineCode _code,int _size=800000);
+    WaveData(MachineCode _code,int _size=1000000);
     virtual ~WaveData();
     virtual void Reload(Day *day=NULL);
 protected:

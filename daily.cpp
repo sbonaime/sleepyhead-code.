@@ -115,7 +115,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->setMinimumHeight(150);
 
 
-    AddCPAPData(frw=new WaveData(CPAP_FlowRate,700000)); //FlowRate
+    AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
    // AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
     // Holy crap resmed stuff is huge..
     AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
@@ -124,7 +124,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
     //FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
-    gLineChart *g=new gLineChart(frw,Qt::black,700000,true);
+    gLineChart *g=new gLineChart(frw,Qt::black,4000,true);
     g->ReportEmpty(true);
     FRW->AddLayer(g);
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
