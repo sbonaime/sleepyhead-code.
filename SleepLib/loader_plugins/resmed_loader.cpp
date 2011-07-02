@@ -359,6 +359,12 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
         totaldur=edf.GetNumDataRecords()*edf.GetDuration();
         totaldur/=3600.0;
+        if (!sess->first().isValid()) {
+            sess->set_first(edf.startdate);
+            sess->set_last(edf.startdate.addMSecs(totaldur*1000.0));
+            sess->set_hours(totaldur/3600.0);
+        }
+
         //t.sprintf("EVE: %li %.2f",recs,totaldur);
         //qDebug() << edf.edfsignals[s]->label << " " << t;
         data=(char *)edf.edfsignals[s]->data;
@@ -456,11 +462,11 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
         }
-        sess->set_first(edf.startdate);
-        QDateTime e=edf.startdate.addSecs(duration);
-        sess->set_last(e);
-        //duration/=3600.0;
-        sess->set_hours(duration/3600.0);
+        if (!sess->first().isValid()) {
+            sess->set_first(edf.startdate);
+            sess->set_last(edf.startdate.addMSecs(duration*1000.0));
+            sess->set_hours(duration/3600.0);
+        }
         Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
         edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
         sess->AddWaveform(w);

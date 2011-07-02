@@ -673,14 +673,6 @@ void gGraphWindow::resizeGL(int w, int h)
 
 void gGraphWindow::Render(float w, float h)
 {
-    /*glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glOrtho(0, width, 0, height, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();*/
-
     if (m_gradient_background) {
         glBegin(GL_QUADS);
         glColor4f(1.0,1.0,1.0,.5); // Gradient start
@@ -692,10 +684,8 @@ void gGraphWindow::Render(float w, float h)
         glVertex2f(w, h);
         glEnd();
     } else {
-
         glClearColor(255,255,255,0);
         glClear(GL_COLOR_BUFFER_BIT ); //| GL_DEPTH_BUFFER_BIT
-    //    glClear(GL_COLOR_BUFFER_BIT);
     }
 
 
@@ -718,9 +708,9 @@ void gGraphWindow::paintGL()
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width()>0)
-            glDisable(GL_DEPTH_TEST);
+            //glDisable(GL_DEPTH_TEST);
             RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,50,128));
-            glEnable(GL_DEPTH_TEST);
+            //glEnable(GL_DEPTH_TEST);
     }
     glEnable(GL_DEPTH_TEST);
 
