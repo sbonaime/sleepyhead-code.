@@ -51,6 +51,8 @@ private:
     QGLContext *shared_context;
 
     void AddData(HistoryData *d) { Data.push_back(d);  };
+    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
+    void RedrawGraphs();
 
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     HistoryData *pressure_min,*pressure_max;
@@ -60,6 +62,7 @@ private:
     gLayer *prmax,*prmin,*iap,*eap,*pr;
 
     list<HistoryData *> Data;
+    list<gGraphWindow *> Graphs;
     Day *dummyday;
     QSplitter *gSplitter;
 };

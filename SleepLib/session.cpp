@@ -179,7 +179,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     //double hours=total.GetSeconds().GetLo()/3600.0;
 
     double s0=0,s1=0,s2=0;
-
+    if (total==0) return 0;
     for (int i=0; i<max_slots; i++) {
         if (vtime[i] > 0) {
             s0=(vtime[i]/3600.0);
@@ -188,7 +188,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
         }
     }
 
-    return (s1/hours())/mult;
+    return (s1/total)/mult;
 }
 
 void Session::AddEvent(Event * e)

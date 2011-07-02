@@ -357,14 +357,18 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     //Event *e;
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
-        totaldur=edf.GetNumDataRecords()*edf.GetDuration();
-        totaldur/=3600.0;
+
         if (!sess->first().isValid()) {
             sess->set_first(edf.startdate);
-            sess->set_last(edf.startdate.addMSecs(totaldur*1000.0));
-            sess->set_hours(totaldur/3600.0);
+
+            totaldur=edf.GetNumDataRecords()*edf.GetDuration();
+            if (totaldur>0) {
+                sess->set_last(edf.startdate.addMSecs(totaldur*1000.0));
+                sess->set_hours(totaldur/3600.0);
+            }
         }
 
+//        totaldur/=3600.0;
         //t.sprintf("EVE: %li %.2f",recs,totaldur);
         //qDebug() << edf.edfsignals[s]->label << " " << t;
         data=(char *)edf.edfsignals[s]->data;

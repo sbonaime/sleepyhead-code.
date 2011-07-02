@@ -66,6 +66,9 @@ public:
         s_last=d;
     };
     void set_hours(float h) {
+        if (h<=0) {
+            h=0.000001;
+        }
         s_hours=h;
     };
 

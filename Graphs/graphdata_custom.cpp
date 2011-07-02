@@ -400,12 +400,15 @@ void HistoryData::Reload(Day *day)
         for (vector<Day *>::iterator dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
             Day *d=(*dd);
             if (d->machine_type()==MT_CPAP) {
-                y=Calc(d);
+                y+=Calc(d);
                 z++;
             }
         }
-        if (!z) continue;
-        if (z>1) y /= z;
+
+        if (!z)
+            continue;
+        if (z>1)
+            y /= z;
         if (first) {
           //  max_x=min_x=x;
             lasty=max_y=min_y=y;
@@ -443,6 +446,7 @@ void HistoryData::Reload(Day *day)
             max_y++;
         }
     }
+   // assert(max_y<10000000);
     real_min_y=min_y;
     real_max_y=max_y;
     m_ready=true;

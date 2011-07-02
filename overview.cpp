@@ -45,7 +45,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     gSplitter->setHandleWidth(3);
     ui->graphLayout->addWidget(gSplitter);
 
-    AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),(QGLWidget *)NULL); // Not sure here..
+    AddGraph(AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),(QGLWidget *)NULL));
     AHI->SetTopMargin(10);
     AHI->SetBottomMargin(AHI->GetBottomMargin()+gXAxis::Margin+25);
     AHI->AddLayer(new gFooBar(7));
@@ -53,7 +53,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AHI->AddLayer(new gBarChart(ahidata,QColor("red")));
     AHI->setMinimumHeight(170);
 
-    PRESSURE=new gGraphWindow(ui->SummaryGraphWindow,tr("Pressure"),AHI);
+    AddGraph(PRESSURE=new gGraphWindow(ui->SummaryGraphWindow,tr("Pressure"),AHI));
     //PRESSURE->SetMargins(10,15,65,80);
     PRESSURE->AddLayer(new gYAxis());
     PRESSURE->AddLayer(new gXAxis());
@@ -66,7 +66,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     PRESSURE->SetBottomMargin(PRESSURE->GetBottomMargin()+25);
     PRESSURE->setMinimumHeight(170);
 
-    LEAK=new gGraphWindow(ui->SummaryGraphWindow,tr("Leak"),AHI);
+    AddGraph(LEAK=new gGraphWindow(ui->SummaryGraphWindow,tr("Leak"),AHI));
     //LEAK->SetMargins(10,15,65,80);
     //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gXAxis());
@@ -76,7 +76,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     LEAK->SetBottomMargin(LEAK->GetBottomMargin()+25);
     LEAK->setMinimumHeight(170);
 
-    USAGE=new gGraphWindow(ui->SummaryGraphWindow,tr("Usage (Hours)"),AHI);
+    AddGraph(USAGE=new gGraphWindow(ui->SummaryGraphWindow,tr("Usage (Hours)"),AHI));
     //USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gFooBar(7));
     USAGE->AddLayer(new gYAxis());
@@ -114,7 +114,12 @@ Overview::~Overview()
     delete dummyday;
     delete ui;
 }
-
+void Overview::RedrawGraphs()
+{
+    for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
+        (*g)->updateGL();
+    }
+}
 void Overview::ReloadGraphs()
 {
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
@@ -124,6 +129,7 @@ void Overview::ReloadGraphs()
     }
     on_rbLastWeek_clicked();
 }
+
 void Overview::UpdateGraphs()
 {
     QDate first=ui->drStart->date();
@@ -131,8 +137,8 @@ void Overview::UpdateGraphs()
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
           //(*h)->Update(dummyday);
           (*h)->SetDateRange(first,last);
-      }
-
+    }
+    RedrawGraphs();
 }
 
 
