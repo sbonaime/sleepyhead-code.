@@ -373,7 +373,12 @@ void HistoryData::ResetDateRange()
 }
 double HistoryData::Calc(Day *day)
 {
-    return (day->summary_sum(CPAP_Obstructive) + day->summary_sum(CPAP_Hypopnea) + day->summary_sum(CPAP_ClearAirway)) / day->hours();
+    double h=day->hours();
+    double ahi=(day->summary_sum(CPAP_Obstructive) + day->summary_sum(CPAP_Hypopnea) + day->summary_sum(CPAP_ClearAirway)) / h;
+    if (ahi>1000) {
+        ahi=999;
+    }
+    return ahi;
 }
 
 void HistoryData::Reload(Day *day)

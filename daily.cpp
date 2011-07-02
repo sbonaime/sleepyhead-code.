@@ -554,7 +554,7 @@ void Daily::Load(QDate date)
         QDateTime date=QDateTime::fromMSecsSinceEpoch(cpap->first());
         QDateTime date2=QDateTime::fromMSecsSinceEpoch(cpap->last());
 
-        html+="<tr><td align='center'>"+date.toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+date.toString("HH:mm")+"</td><td align='center'>"+date2.toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
+        html+="<tr><td align='center'>"+date.date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+date.toString("HH:mm")+"</td><td align='center'>"+date2.toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
         html+="<tr><td colspan=4 align=center><hr></td></tr>\n";
 
         QString cs;

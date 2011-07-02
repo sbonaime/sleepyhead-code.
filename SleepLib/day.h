@@ -46,7 +46,7 @@ public:
     qint64 last() { return d_last; };
 
     qint64 total_time(); // in milliseconds
-    float hours() { return total_time()/3600000.0; };
+    double hours() { return double(total_time())/3600000.0; };
 
     Session *operator [](int i) { return sessions[i]; };
 
