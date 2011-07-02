@@ -16,13 +16,13 @@ class Event
 {
     friend class Session;
 public:
-    Event(QDateTime time,MachineCode code,EventDataType * data,int fields);
+    Event(qint64 time,MachineCode code,EventDataType * data,int fields);
     ~Event();
     EventDataType operator[](short i) {
         if (i<e_fields) return e_data[i];
         else return 0;
     };
-    const QDateTime & time() {
+    const qint64 & time() {
         return e_time;
     };
     MachineCode code() {
@@ -32,7 +32,7 @@ public:
         return e_fields;
     };
 protected:
-    QDateTime e_time;
+    qint64 e_time;
     MachineCode e_code;
     short e_fields;
     vector<EventDataType> e_data;

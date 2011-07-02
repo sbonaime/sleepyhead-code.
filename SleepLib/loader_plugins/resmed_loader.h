@@ -26,6 +26,20 @@ const int resmed_data_version=0;
 
 const QString resmed_class_name="ResMed";
 
+struct EDFHeader {
+    char version[8];
+    char patientident[80];
+    char recordingident[80];
+    char datetime[16];
+    char num_header_bytes[8];
+    char reserved[44];
+    char num_data_records[8];
+    char dur_data_records[8];
+    char num_signals[4];
+} __attribute__ ((packed));
+
+const int EDFHeaderSize=sizeof(EDFHeader);
+
 struct EDFSignal {
 public:
     QString label;
@@ -60,20 +74,22 @@ public:
     QString GetPatient() { return patientident; };
     bool Parse();
     char *buffer;
+    EDFHeader header;
     QString filename;
-    int filesize;
-    int pos;
+    long filesize;
+    long datasize;
+    long pos;
 
     long version;
     long num_header_bytes;
     long num_data_records;
-    double dur_data_record;
+    qint64 dur_data_record;
     long num_signals;
 
     QString patientident;
     QString recordingident;
     QString serialnumber;
-    QDateTime startdate;
+    qint64 startdate;
     QString reserved44;
 };
 
@@ -86,7 +102,7 @@ public:
 
     virtual int Version() { return resmed_data_version; };
     virtual const QString & ClassName() { return resmed_class_name; };
-    void ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,double duration,EventDataType divisor=1);
+    void ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,qint64 duration,EventDataType divisor=1);
 
     Machine *CreateMachine(QString serial,Profile *profile);
 

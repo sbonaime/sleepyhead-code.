@@ -437,21 +437,22 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 mcr=mcroot[code];
             }
             for (vector<Event *>::iterator e=(*s)->events[code].begin();e!=(*s)->events[code].end();e++) {
-                QDateTime t=(*e)->time();
+                qint64 t=(*e)->time();
                 if (code==CPAP_CSR) {
-                    t=t.addSecs(-((*(*e))[0]/2));
+                    t-=((*(*e))[0]/2)*1000;
                 }
                 QStringList a;
                 QString c,b;
                 c.sprintf("#%03i: ",++mccnt[code]);
-                c+=t.toString(" HH:mm:ss");
+                QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
+                c+=d.toString(" HH:mm:ss");
 
                 //if ((*e)->fields()) { // Perhaps need a dedicated offset field
                     //b.sprintf(" %02.0f",(*(*e))[0]);
                     //c+=b;
                 //}
                 a.append(c);
-                a.append(t.toString("yyyy-MM-dd HH:mm:ss"));
+                a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                 mcr->addChild(new QTreeWidgetItem(a));
             }
         }
@@ -510,8 +511,6 @@ void Daily::Load(QDate date)
     UpdateOXIGraphs(oxi);
     UpdateEventsTree(ui->treeWidget,cpap);
 
-
-
     QString epr,modestr;
     float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
@@ -551,8 +550,11 @@ void Daily::Load(QDate date)
         }
 
         html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
-        int tt=cpap->total_time();
-        html+="<tr><td align='center'>"+cpap->first().date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+cpap->first().toString("HH:mm")+"</td><td align='center'>"+cpap->last().toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
+        int tt=cpap->total_time()/1000;
+        QDateTime date=QDateTime::fromMSecsSinceEpoch(cpap->first());
+        QDateTime date2=QDateTime::fromMSecsSinceEpoch(cpap->last());
+
+        html+="<tr><td align='center'>"+date.toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+date.toString("HH:mm")+"</td><td align='center'>"+date2.toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
         html+="<tr><td colspan=4 align=center><hr></td></tr>\n";
 
         QString cs;
@@ -699,9 +701,11 @@ void Daily::Load(QDate date)
         }
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
+        QDateTime fd,ld;
         for (vector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
-
-            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+(*s)->first().toString("yyyy-MM-dd")+"</td><td align=center>"+(*s)->first().toString("HH:mm ")+"</td><td align=center>"+(*s)->last().toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+            fd=QDateTime::fromMSecsSinceEpoch((*s)->first());
+            ld=QDateTime::fromMSecsSinceEpoch((*s)->last());
+            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+fd.toString("yyyy-MM-dd")+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
         }
         html+="</table>";
@@ -832,9 +836,9 @@ Session * Daily::CreateJournalSession(QDate date)
     QDateTime dt;
     dt.setDate(date);
     dt.setTime(QTime(17,0)); //5pm to make sure it goes in the right day
-    sess->set_first(dt);
+    sess->set_first(dt.toMSecsSinceEpoch());
     dt=dt.addSecs(3600);
-    sess->set_last(dt);
+    sess->set_last(dt.toMSecsSinceEpoch());
     sess->SetChanged(true);
     m->AddSession(sess,profile);
     return sess;

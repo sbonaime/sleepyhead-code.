@@ -50,30 +50,25 @@ public:
     const SessionID & session() {
         return s_session;
     };
-    const QDateTime & first() {
+    const qint64 & first() {
         return s_first;
     };
-    const QDateTime & last() {
+    const qint64 & last() {
         return s_last;
     };
     void SetSessionID(SessionID s) {
         s_session=s;
     };
-    void set_first(QDateTime d) {
+    void set_first(qint64 d) {
         s_first=d;
     };
-    void set_last(QDateTime d) {
+    void set_last(qint64 d) {
         s_last=d;
     };
-    void set_hours(float h) {
-        if (h<=0) {
-            h=0.000001;
-        }
-        s_hours=h;
-    };
 
-    const float & hours() {
-        return s_hours;
+    float hours() {
+        double t=(s_last-s_first)/3600000.0;
+        return t;
     };
     int count_events(MachineCode mc) {
         if (events.find(mc)==events.end()) return 0;
@@ -107,9 +102,8 @@ protected:
     SessionID s_session;
 
     Machine *s_machine;
-    QDateTime s_first;
-    QDateTime s_last;
-    float s_hours;
+    qint64 s_first;
+    qint64 s_last;
     bool s_changed;
     bool s_lonesession;
     bool _first_session;

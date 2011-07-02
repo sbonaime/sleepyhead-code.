@@ -22,8 +22,8 @@ void WaveData::Reload(Day *day)
         m_ready=false;
         return;
     }
-    min_x=day->first().toMSecsSinceEpoch()/86400000.0;
-    max_x=day->last().toMSecsSinceEpoch()/86400000.0;
+    min_x=day->first()/86400000.0;
+    max_x=day->last()/86400000.0;
     if (max_x<min_x) {
         min_y=max_y=0;
         m_ready=false;
@@ -43,8 +43,8 @@ void WaveData::Reload(Day *day)
             int t=0;
 
             Waveform *w=(*l);
-            double st=w->start().toMSecsSinceEpoch()/86400000.0;
-            double rate=(w->duration()/w->samples())/86400.0;
+            double st=w->start()/86400000.0;
+            double rate=(w->duration()/w->samples())/86400000.0;
             //qDebug() << "Waveform Chunk contains " << w->samples() << " samples";
             for (int i=0;i<w->samples();i++) {
                 QPointD r(st,(*w)[i]);
@@ -114,8 +114,8 @@ void EventData::Reload(Day *day)
         return;
     }
 
-    min_x=day->first().toMSecsSinceEpoch()/86400000.0;
-    max_x=day->last().toMSecsSinceEpoch()/86400000.0;
+    min_x=day->first()/86400000.0;
+    max_x=day->last()/86400000.0;
     if (min_x>max_x) {
         //int a=5;
         assert(min_x<max_x);
@@ -135,7 +135,7 @@ void EventData::Reload(Day *day)
         for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
             if (((p!=0) && skipzero) || !skipzero) {
-                QPointD r((*ev)->time().toMSecsSinceEpoch()/86400000.0,p);
+                QPointD r((*ev)->time()/86400000.0,p);
                 point[vc][t++]=r;
                 assert(t<max_points);
                 if (first) {
@@ -208,7 +208,7 @@ void TAPData::Reload(Day *day)
     int cnt=0;
 
     bool first;
-    QDateTime last;
+    qint64 last;
     int lastval=0,val;
 
     int field=0;
@@ -224,7 +224,7 @@ void TAPData::Reload(Day *day)
             if (first) {
                 first=false; // only bother setting lastval (below) this time.
             } else {
-                double d=last.msecsTo(ev.time())/1000.0;
+                double d=(ev.time()-last)/1000.0;
 
                 assert(lastval<max_slots);
                 pTime[lastval]+=d;
@@ -301,15 +301,15 @@ void FlagData::Reload(Day *day)
     vc=0;
     double v1,v2;
     bool first;
-    min_x=day->first().toMSecsSinceEpoch()/86400000.0;
-    max_x=day->last().toMSecsSinceEpoch()/86400000.0;
+    min_x=day->first()/86400000.0;
+    max_x=day->last()/86400000.0;
 
     for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         first=true;
         for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
-            v2=v1=ev.time().toMSecsSinceEpoch()/86400000.0;
+            v2=v1=ev.time()/86400000.0;
             if (offset>=0)
                 v1-=ev[offset]/86400.0;
             point[vc][c].setX(v1);
@@ -467,8 +467,8 @@ double HistoryData::GetAverage()
 }
 void HistoryData::SetDateRange(QDate start,QDate end)
 {
-    double x1=QDateTime(start).toMSecsSinceEpoch()/86400000.0; // -0.5;
-    double x2=QDateTime(end.addDays(1)).toMSecsSinceEpoch()/86400000.0;
+    qint64 x1=QDateTime(start).toMSecsSinceEpoch()/86400000.0;
+    qint64 x2=QDateTime(end.addDays(1)).toMSecsSinceEpoch()/86400000.0;
     if (x1 < real_min_x) x1=real_min_x;
     if (x2 > (real_max_x)) x2=(real_max_x);
     min_x=x1;
@@ -500,22 +500,33 @@ UsageHistoryData::~UsageHistoryData()
 }
 double UsageHistoryData::Calc(Day *day)
 {
-    double d;
+    qint64 d;
+    double h;
     if (uhd==UHD_Bedtime) {
-        d=day->first().time().hour();
-        if (d<12) d+=24;
-        d+=(day->first().time().minute()/60.0);
-        d+=(day->first().time().second()/3600.0);
-        return d;
+        d=day->first()/1000;
+        d%=86400;
+
+        h=d/3600;
+        if (h<12) h+=24;
+        h+=1.0/float(d%3600);
+        //d+=(day->first().time().minute()/60.0);
+        //d+=(day->first().time().second()/3600.0);
+        return h;
     }
     else if (uhd==UHD_Waketime) {
-        d=day->last().time().hour();
-        d+=(day->last().time().minute()/60.0);
-        d+=(day->last().time().second()/3600.0);
-        return d;
+        d=day->first()/1000;
+        d%=86400;
+        h=d/3600;
+        h+=1.0/float(d%3600);
+
+        //d=day->last().time().hour();
+        //d+=(day->last().time().minute()/60.0);
+        //d+=(day->last().time().second()/3600.0);
+        return h;
     }
-    else if (uhd==UHD_Hours) return day->hours();
-    else
+    else if (uhd==UHD_Hours) {
+        return day->hours();
+    } else
         return 0;
 }
 

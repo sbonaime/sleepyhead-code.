@@ -230,12 +230,12 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
     if (s2==0) return 0;
     return (s1/s2);
 }
-float Day::total_time()
+qint64 Day::total_time()
 {
     d_totaltime=0;
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        d_totaltime+=sess.last().toTime_t()-sess.first().toTime_t();
+        d_totaltime+=sess.last()-sess.first();
     }
     return d_totaltime;
 }
@@ -256,19 +256,17 @@ EventDataType Day::percentile(MachineCode code,int field,double percent)
 
 }
 
-const QDateTime & Day::first(MachineCode code)
+qint64 Day::first(MachineCode code)
 {
-    static QDateTime date;
-    QDateTime tmp;
-    bool fir=true;
+    qint64 date=0;
+    qint64 tmp;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             tmp=sess.events[code][0]->time();
-            if (fir) {
+            if (!date) {
                 date=tmp;
-                fir=false;
             } else {
                 if (tmp<date) date=tmp;
             }
@@ -277,11 +275,10 @@ const QDateTime & Day::first(MachineCode code)
     return date;
 }
 
-const QDateTime & Day::last(MachineCode code)
+qint64 Day::last(MachineCode code)
 {
-    static QDateTime date;
-    QDateTime tmp;
-    bool fir=true;
+    qint64 date=0;
+    qint64 tmp;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
@@ -289,9 +286,8 @@ const QDateTime & Day::last(MachineCode code)
             vector<Event *>::reverse_iterator i=sess.events[code].rbegin();
             assert(i!=sess.events[code].rend());
             tmp=(*i)->time();
-            if (fir) {
+            if (!date) {
                 date=tmp;
-                fir=false;
             } else {
                 if (tmp>date) date=tmp;
             }

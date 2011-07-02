@@ -43,7 +43,7 @@ public:
     bool SaveSession(Session *sess);
     bool Purge(int secret);
 
-    map<QDateTime,Day *> day;
+    map<qint64,Day *> day;
     map<SessionID,Session *> sessionlist;
     map<QString,QString> properties;
 
@@ -69,11 +69,11 @@ public:
     };
     SessionID CreateSessionID() { return highest_sessionid+1; };
     const MachineID & id() { return m_id; };
-    const QDateTime & FirstDay() { return firstday; };
-    const QDateTime & LastDay() { return lastday; };
+    const qint64 & FirstDay() { return firstday; };
+    const qint64 & LastDay() { return lastday; };
 
 protected:
-    QDateTime firstday,lastday;
+    qint64 firstday,lastday;
     SessionID highest_sessionid;
     MachineID m_id;
     QString m_class;

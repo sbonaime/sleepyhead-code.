@@ -40,13 +40,13 @@ public:
     EventDataType summary_min(MachineCode code);
     EventDataType summary_max(MachineCode code);
 
-    const QDateTime & first(MachineCode code);
-    const QDateTime & last(MachineCode code);
-    const QDateTime & first() { return d_first; };
-    const QDateTime & last() { return d_last; };
+    qint64 first(MachineCode code);
+    qint64 last(MachineCode code);
+    qint64 first() { return d_first; };
+    qint64 last() { return d_last; };
 
-    float total_time(); // in seconds
-    float hours() { return total_time()/3600.0; };
+    qint64 total_time(); // in milliseconds
+    float hours() { return total_time()/3600000.0; };
 
     Session *operator [](int i) { return sessions[i]; };
 
@@ -61,8 +61,8 @@ public:
 
 protected:
     vector<Session *> sessions;
-    QDateTime d_first,d_last;
-    double d_totaltime;
+    qint64 d_first,d_last;
+    qint64 d_totaltime;
 private:
     bool d_firstsession;
 };

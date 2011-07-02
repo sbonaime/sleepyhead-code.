@@ -56,49 +56,58 @@ bool EDFParser::Parse()
 {
     bool ok;
     QString temp,temp2;
-    version=Read(8).toLong(&ok);
+
+    version=QString::fromAscii(header.version,8).toLong(&ok);
     if (!ok)
         return false;
 
-    patientident=Read(80);
-    recordingident=Read(80); // Serial number is in here..
-    int snp=recordingident.indexOf("SRN=");
-
-    for (int i=snp+4;i<recordingident.length();i++) {
-        if (recordingident[i]==' ')
-            break;
-        serialnumber+=recordingident[i];
+    //patientident=QString::fromAscii(header.patientident,80);
+    //recordingident=QString::fromAscii(header.recordingident,80); // Serial number is in here..
+    //int snp=recordingident.indexOf("SRN=");
+    char * idx=index(header.recordingident,'=');
+    idx++;
+    serialnumber.clear();
+    for (int i=0;i<16;++i) {
+        if (*idx==0x20) break;
+        serialnumber+=*idx;
+        ++idx;
     }
-    temp=Read(8);
-    temp+=" "+Read(8);
-    startdate=QDateTime::fromString(temp,"dd.MM.yy HH.mm.ss");
-    QDate d2=startdate.date();
+
+   // for (int i=snp+4;i<recordingident.length();i++) {
+     //   if (recordingident[i]==' ')
+      //      break;
+        //serialnumber+=recordingident[i];
+    //}
+    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
+    QDate d2=startDate.date();
     if (d2.year()<2000) {
         d2.setYMD(d2.year()+100,d2.month(),d2.day());
-        startdate.setDate(d2);
+        startDate.setDate(d2);
     }
-    if (!startdate.isValid()) {
+    if (!startDate.isValid()) {
         qDebug() << "Invalid date time retreieved parsing EDF File " << filename;
         return false;
     }
+    startdate=startDate.toMSecsSinceEpoch();
 
-    //qDebug() << startdate.toString("yyyy-MM-dd HH:mm:ss");
+    //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
-    num_header_bytes=Read(8).toLong(&ok);
+    num_header_bytes=QString::fromAscii(header.num_header_bytes,8).toLong(&ok);
     if (!ok)
         return false;
-    reserved44=Read(44);
-    num_data_records=Read(8).toLong(&ok);
+    //reserved44=QString::fromAscii(header.reserved,44);
+    num_data_records=QString::fromAscii(header.num_data_records,8).toLong(&ok);
     if (!ok)
         return false;
-    temp=Read(8);
-  //  temp="0.00";
-    dur_data_record=temp.toDouble(&ok);
+    dur_data_record=QString::fromAscii(header.dur_data_records,8).toDouble(&ok)*1000.0;
     if (!ok)
         return false;
-    num_signals=Read(4).toLong(&ok);
+    num_signals=QString::fromAscii(header.num_signals,4).toLong(&ok);
     if (!ok)
         return false;
+
+
+    // this could be loaded quicker by transducer_type[signal] etc..
 
     for (int i=0;i<num_signals;i++) {
         EDFSignal *signal=new EDFSignal;
@@ -135,6 +144,7 @@ bool EDFParser::Parse()
             memcpy((char *)&sig.data[sig.pos],(char *)&buffer[pos],sig.nr*2);
             sig.pos+=sig.nr;
             pos+=sig.nr*2;
+            // big endian will screw up without this..
             /*for (int j=0;j<sig.nr;j++) {
                 qint16 t=Read16();
                 sig.data[sig.pos++]=t;
@@ -151,9 +161,12 @@ bool EDFParser::Open(QString name)
     if (!f.isReadable()) return false;
     filename=name;
     filesize=f.size();
+    datasize=filesize-EDFHeaderSize;
+    if (datasize<0) return false;
+    f.read((char *)&header,EDFHeaderSize);
     //qDebug() << "Opening " << name;
-    buffer=new char [filesize];
-    f.read(buffer,filesize);
+    buffer=new char [datasize];
+    f.read(buffer,datasize);
     f.close();
     pos=0;
     return true;
@@ -193,6 +206,8 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     return m;
 
 }
+
+long event_cnt=0;
 
 bool ResmedLoader::Open(QString & path,Profile *profile)
 {
@@ -303,14 +318,15 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 else if (fn=="pld.edf") LoadPLD(sess,edf);
                 else if (fn=="brp.edf") LoadBRP(sess,edf);
                 else if (fn=="sad.edf") LoadSAD(sess,edf);
-            }
-            if (first) {
-                sess->SetChanged(true);
-                m->AddSession(sess,profile); // Adding earlier than I really like here..
-                first=false;
+
+                if (first) {
+                    sess->SetChanged(true);
+                    m->AddSession(sess,profile); // Adding earlier than I really like here..
+                    first=false;
+                }
             }
         }
-        if (sess) {
+        if (!done && sess) {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
@@ -338,6 +354,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     }
     //m->Save();
     if (qprogress) qprogress->setValue(100);
+    qDebug() << "Total Events " << event_cnt;
     return 0;
 }
 
@@ -351,20 +368,20 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     long pos;
     bool sign,ok;
     double d;
-    QDateTime tt;
+    qint64 tt;
     EventDataType fields[3];
     MachineCode code;
     //Event *e;
+    totaldur=edf.GetNumDataRecords()*edf.GetDuration();
+
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
 
-        if (!sess->first().isValid()) {
+        if (!sess->first()) {
             sess->set_first(edf.startdate);
-
-            totaldur=edf.GetNumDataRecords()*edf.GetDuration();
             if (totaldur>0) {
-                sess->set_last(edf.startdate.addMSecs(totaldur*1000.0));
-                sess->set_hours(totaldur/3600.0);
+                sess->set_last(edf.startdate+totaldur);
+                //sess->set_hours(totaldur/3600.0);
             }
         }
 
@@ -394,7 +411,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
             }
             if (!sign) d=-d;
 
-            tt=edf.startdate.addMSecs(d*1000.0);
+            tt+=d*1000.0;
             duration=0;
             // First entry
 
@@ -406,7 +423,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     t+=data[pos];
                     pos++;
                 } while ((data[pos]!=20) && (pos<recs)); // start code
-                duration=t.toDouble(&ok);
+                duration=t.toDouble(&ok)*1000.0;
                 if (!ok) {
                     qDebug() << "Faulty EDF EVE file (at %" << pos << ") " << edf.filename;
                     break;
@@ -431,7 +448,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     else if (t=="hypopnea") code=CPAP_Hypopnea;
                     else if (t=="central apnea") code=CPAP_ClearAirway;
                     if (code!=MC_UNKNOWN) {
-                        fields[0]=duration;
+                        fields[0]=duration/1000.0;
                         sess->AddEvent(new Event(tt,code,fields,1));
                     } else {
                         if (t!="recording starts") {
@@ -458,7 +475,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        double duration=edf.GetNumDataRecords()*edf.GetDuration();
+        qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
         MachineCode code;
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
         else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
@@ -466,10 +483,10 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
         }
-        if (!sess->first().isValid()) {
+        if (!sess->first()) {
             sess->set_first(edf.startdate);
-            sess->set_last(edf.startdate.addMSecs(duration*1000.0));
-            sess->set_hours(duration/3600.0);
+            sess->set_last(edf.startdate+duration);
+            //sess->set_hours(duration/3600.0);
         }
         Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
         edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
@@ -479,29 +496,37 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     }
     return true;
 }
-void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, double duration,EventDataType divisor)
+void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, qint64 duration,EventDataType divisor)
 {
     bool first=true;
-    double rate=(duration/recs)*1000.0;
-    QDateTime tt=edf.startdate;
+    double rate=(duration/recs); // milliseconds per record
+    qint64 tt=edf.startdate;
     EventDataType c,last;
+    //return;
+    Event *e=new Event(tt,code,&c,1);
     for (int i=0;i<recs;i++) {
         c=data[i]/divisor;
-        //c=EventDataType(q)/2.0; //data[i]/divisor;
 
         if (first) {
-            sess->AddEvent(new Event(tt,code,&c,1));
+            e=new Event(tt,code,&c,1);
+            sess->AddEvent(e);
+            event_cnt++;
             first=false;
         } else {
             if (last!=c) {
-                sess->AddEvent(new Event(tt,code,&c,1));
+                e=new Event(tt,code,&c,1);
+                sess->AddEvent(e);
+                event_cnt++;
+
             }
         }
-        tt=tt.addMSecs(rate);
+        tt+=rate;
 
         last=c;
     }
-    sess->AddEvent(new Event(tt,code,&c,1)); // add one at the end..
+    e=new Event(tt,code,&c,1);
+    sess->AddEvent(e); // add one at the end..
+    event_cnt++;
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
@@ -521,11 +546,11 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        double duration=edf.GetNumDataRecords()*edf.GetDuration();
-        if (!sess->first().isValid()) {
+        qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
+        if (!sess->first()) {
             sess->set_first(edf.startdate);
-            sess->set_last(edf.startdate.addMSecs(duration*1000.0));
-            sess->set_hours(duration/3600.0);
+            sess->set_last(edf.startdate+duration);
+            //sess->set_hours(duration/3600.0);
         }
         MachineCode code;
        // if (s==TherapyPres) {

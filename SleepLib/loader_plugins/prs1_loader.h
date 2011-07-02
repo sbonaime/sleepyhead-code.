@@ -57,7 +57,7 @@ protected:
     bool OpenSummary(Session *session,QString filename);
     bool OpenEvents(Session *session,QString filename);
     bool OpenWaveforms(Session *session,QString filename);
-    bool Parse002(Session *session,unsigned char *buffer,int size,time_t timestamp);
+    bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp);
     unsigned char * m_buffer;
 };
 

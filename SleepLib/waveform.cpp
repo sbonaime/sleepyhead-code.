@@ -6,12 +6,11 @@
 
 #include "waveform.h"
 
-Waveform::Waveform(QDateTime time,MachineCode code, SampleFormat *data,int samples,float duration,SampleFormat min, SampleFormat max)
+Waveform::Waveform(qint64 time,MachineCode code, SampleFormat *data,int samples,qint64 duration,SampleFormat min, SampleFormat max)
     :w_time(time),w_code(code),w_data(data),w_samples(samples),w_duration(duration)
 {
     w_totalspan=duration;
-    double rate=duration/samples;
-    w_samplespan=rate;
+    w_samplespan=duration/samples;
     Min=min;
     Max=max;
 }

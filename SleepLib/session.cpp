@@ -27,6 +27,7 @@ Session::Session(Machine * m,SessionID session)
     s_waves_loaded=false;
     _first_session=true;
 
+    s_first=s_last=0;
     s_wavefile="";
     s_eventfile="";
 }
@@ -139,10 +140,10 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     int cnt=0;
 
     bool first=true;
-    QDateTime last;
+    qint64 last;
     int lastval=0,val;
     const int max_slots=2600;
-    double vtime[max_slots]={0};
+    qint64 vtime[max_slots]={0};
 
 
     double mult;
@@ -160,7 +161,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
         if (first) {
             first=false;
         } else {
-            int d=e.e_time.toTime_t()-last.toTime_t();
+            int d=(e.e_time-last)/1000;
             if (lastval>max_slots) {
                 qWarning("max_slots to small in Session::weighted_avg_event_fied()");
                 return 0;
@@ -174,7 +175,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
         lastval=val;
     }
 
-    double total;
+    qint64 total;
     for (int i=0; i<max_slots; i++) total+=vtime[i];
     //double hours=total.GetSeconds().GetLo()/3600.0;
 
@@ -194,7 +195,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 void Session::AddEvent(Event * e)
 {
     events[e->code()].push_back(e);
-    if (s_first.isValid()) {
+    if (s_first) {
         if (e->time()<s_first) s_first=e->time();
         if (e->time()>s_last) s_last=e->time();
     } else {
@@ -294,16 +295,17 @@ bool Session::StoreSummary(QString filename)
     f.Open(filename,BF_WRITE);
 
     f.Pack((quint32)magic); 			// Magic Number
-    f.Pack((quint32)s_machine->id());	// Machine ID
-    f.Pack((quint32)s_session);		// Session ID
+    f.Pack((quint32)s_machine->id());           // Machine ID
+    f.Pack((quint32)s_session);                 // Session ID
     f.Pack((quint16)0);				// File Type 0 == Summary File
     f.Pack((quint16)0);				// File Version
 
-    time_t starttime=s_first.toTime_t();
-    time_t duration=s_last.toTime_t()-starttime;
+    quint32 starttime=s_first/1000;
+    quint32 duration=(s_last-s_first)/1000;
 
-    f.Pack(s_first);					// Session Start Time
-    f.Pack((quint16)duration);			// Duration of sesion in seconds.
+    f.Pack(starttime);				// Session Start Time
+    f.Pack(duration);                           // Duration of sesion in seconds.
+
     f.Pack((quint16)summary.size());
 
     map<MachineCode,MCDataType> mctype;
@@ -352,14 +354,15 @@ bool Session::StoreSummary(QString filename)
         }
     }
     f.Close();
-//    wxFFile j;
     return true;
 }
+
 bool Session::LoadSummary(QString filename)
 {
     if (filename.isEmpty()) return false;
     //qDebug(("Loading Summary "+filename).toLatin1());
     BinaryFile f;
+
     if (!f.Open(filename,BF_READ)) {
         qDebug() << "Couldn't open file" << filename;
         return false;
@@ -388,11 +391,12 @@ bool Session::LoadSummary(QString filename)
     if (!f.Unpack(t16)) throw UnpackError();		// File Version
     // dont care yet
 
-    if (!f.Unpack(s_first)) throw UnpackError();	// Start time
-    if (!f.Unpack(t16)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
 
-    s_last=s_first.addSecs(t16);
-    s_hours=t16/3600.0;
+    if (!f.Unpack(t32)) throw UnpackError();            // Start time
+    s_first=qint64(t32)*1000;
+
+    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    s_last=s_first+qint64(t32)*1000;
 
     if (!f.Unpack(sumsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
 
@@ -445,11 +449,11 @@ bool Session::StoreEvents(QString filename)
     f.Pack((quint16)1);				// File type 1 == Event
     f.Pack((quint16)0);				// File Version
 
-    time_t starttime=s_first.toTime_t();
-    time_t duration=s_last.toTime_t()-starttime;
+    quint32 starttime=s_first/1000;
+    quint32 duration=(s_last-s_first)/1000;
 
-    f.Pack(s_first);
-    f.Pack((qint16)duration);
+    f.Pack(starttime);
+    f.Pack(duration);
 
     f.Pack((qint16)events.size()); // Number of event categories
 
@@ -465,22 +469,22 @@ bool Session::StoreEvents(QString filename)
     }
     bool first;
     float tf;
-    time_t last=0,eventtime,delta;
+    qint64 last=0,eventtime,delta;
 
     for (i=events.begin(); i!=events.end(); i++) {
         first=true;
         for (j=i->second.begin(); j!=i->second.end(); j++) {
-            eventtime=(*j)->time().toTime_t();
+            eventtime=(*j)->time();
             if (first) {
                 f.Pack((*j)->time());
                 first=false;
             } else {
                 delta=eventtime-last;
-                if (delta>0xffff) {
+                if (delta>0xffffffff) {
                     qDebug("StoreEvent: Delta too big.. needed to use bigger value");
                     exit(1);
                 }
-                f.Pack((quint16)delta);
+                f.Pack((quint32)delta);
             }
             for (int k=0; k<(*j)->fields(); k++) {
                 tf=(*(*j))[k];
@@ -522,11 +526,10 @@ bool Session::LoadEvents(QString filename)
     if (!f.Unpack(t16)) throw UnpackError();		// File Version
     // dont give a crap yet..
 
-    if (!f.Unpack(s_first)) throw UnpackError();	// Start time
-    if (!f.Unpack(t16)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
-
-    s_last=s_first.addSecs(t16);
-    s_hours=t16/3600.0;
+    if (!f.Unpack(t32)) throw UnpackError();            // Start time
+    s_first=qint64(t32)*1000;
+    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    s_last=s_first+qint64(t32)*1000;
 
     qint16 evsize;
     if (!f.Unpack(evsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
@@ -549,7 +552,7 @@ bool Session::LoadEvents(QString filename)
     for (int i=0; i<evsize; i++) {
         mc=mcorder[i];
         bool first=true;
-        QDateTime d;
+        qint64 d;
         float fl;
         events[mc].clear();
         for (int e=0; e<mcsize[mc]; e++) {
@@ -557,8 +560,8 @@ bool Session::LoadEvents(QString filename)
                 if (!f.Unpack(d)) throw UnpackError();  // Timestamp
                 first=false;
             } else {
-                if (!f.Unpack(t16)) throw UnpackError();  // Time Delta
-                d=d.addSecs(t16);
+                if (!f.Unpack(t32)) throw UnpackError();  // Time Delta
+                d=d+t32;
             }
             EventDataType ED[max_number_event_fields];
             for (int c=0; c<mcfields[mc]; c++) {
@@ -587,11 +590,11 @@ bool Session::StoreWaveforms(QString filename)
     f.Pack((quint16)2);				// File type 2 == Waveform
     f.Pack((quint16)0);				// File Version
 
-    time_t starttime=s_first.toTime_t();
-    time_t duration=s_last.toTime_t()-starttime;
+    quint32 starttime=s_first/1000;
+    quint32 duration=(s_last-s_first)/1000;
 
-    f.Pack(s_first);
-    f.Pack((qint16)duration);
+    f.Pack(starttime);
+    f.Pack(duration);
 
     f.Pack((qint16)waveforms.size());	// Number of different waveforms
 
@@ -605,13 +608,14 @@ bool Session::StoreWaveforms(QString filename)
         for (j=i->second.begin(); j!=i->second.end(); j++) {
 
             Waveform &w=*(*j);
+            // 64bit number..
             f.Pack(w.start()); 			// Start time of first waveform chunk
 
             //qint32 samples;
             //double seconds;
 
             f.Pack((qint32)w.samples());					// Total number of samples
-            f.Pack((float)w.duration());            // Total number of seconds
+            f.Pack((qint64)w.duration());            // Total number of seconds
             f.Pack((qint16)w.min());
             f.Pack((qint16)w.max());
             f.Pack((qint8)sizeof(SampleFormat));  	// Bytes per sample
@@ -658,18 +662,18 @@ bool Session::LoadWaveforms(QString filename)
     if (!f.Unpack(t16)) throw UnpackError();		// File Version
     // dont give a crap yet..
 
-    if (!f.Unpack(s_first)) throw UnpackError();	// Start time
-    if (!f.Unpack(t16)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    if (!f.Unpack(t32)) throw UnpackError();	// Start time
+    s_first=qint64(t32)*1000;
 
-    s_last=s_first.addSecs(t16);
-    s_hours=t16/3600.0;
+    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    s_last=s_first+qint64(t32)*1000;
 
     qint16 wvsize;
     if (!f.Unpack(wvsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
 
     MachineCode mc;
-    QDateTime date;
-    float seconds;
+    qint64 date;
+    qint64 seconds;
     qint32 samples;
     int chunks;
     SampleFormat min,max;

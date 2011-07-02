@@ -6,7 +6,7 @@
 
 #include "event.h"
 
-Event::Event(QDateTime time,MachineCode code, EventDataType * data, int fields)
+Event::Event(qint64 time,MachineCode code, EventDataType * data, int fields)
     :e_time(time),e_code(code)
 {
     e_fields=fields;

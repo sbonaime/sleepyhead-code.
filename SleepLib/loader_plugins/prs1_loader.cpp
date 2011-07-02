@@ -378,7 +378,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 bool PRS1Loader::OpenSummary(Session *session,QString filename)
 {
     int size,sequence,seconds,br;
-    time_t timestamp;
+    qint64 timestamp;
     unsigned char header[24];
     unsigned char ext,sum;
 
@@ -420,12 +420,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
         return false;
     }
 
-    QDateTime date=QDateTime::fromTime_t(timestamp);
-    //QDateTime tmpdate=date;
-    //int ticks=date.GetTicks();
-
-    if (!date.isValid())
-        return false;
+    qint64 date=timestamp*1000;
 
     memset(m_buffer,0,size);
     unsigned char * buffer=m_buffer;
@@ -472,12 +467,10 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     unsigned duration=bb;// | (buffer[0x15] << 8);
     session->summary[CPAP_Duration]=(int)duration;
     //qDebug() << "ID: " << session->session() << " " << duration;
-    float hours=float(duration)/3600.0;
-    session->set_hours(hours);
+    //float hours=float(duration)/3600.0;
+    //session->set_hours(hours);
 
-    QDateTime st=session->first();
-    st=st.addSecs(duration);
-    session->set_last(st);
+    session->set_last(date+(duration*1000));
 
     session->summary[CPAP_PressureMinAchieved]=buffer[0x16]/10.0;
     session->summary[CPAP_PressureMaxAchieved]=buffer[0x17]/10.0;
@@ -499,7 +492,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     return true;
 }
 
-bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t timestamp)
+bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
     MachineCode Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
@@ -510,9 +503,9 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
 
     EventDataType data[4];
 
-    QDateTime start=QDateTime::fromTime_t(timestamp);
-    QDateTime t=start;
-    //t.Set(timestamp);
+    qint64 start=timestamp;
+    qint64 t=timestamp;
+    qint64 tt;
     int pos=0;
     int cnt=0;
     short delta;
@@ -522,11 +515,11 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         if (code!=0x12) {
             delta=buffer[pos] | buffer[pos+1] << 8;
             pos+=2;
-            t=t.addSecs(delta);
+            t+=delta*1000;
         }
     //    float data0,data1,data2;
         MachineCode cpapcode=Codes[(int)code];
-        QDateTime tt=t;
+        tt=t;
         cnt++;
         switch (code) {
         case 0x00: // Unknown
@@ -546,7 +539,9 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         case 0x0a: // Hypopnea
         case 0x0c: // Flow Limitation
             data[0]=buffer[pos];
-            tt=tt.addSecs(-(buffer[pos++])); // Subtract Time Offset
+
+            tt-=buffer[pos++]*1000; // Subtract Time Offset
+
             session->AddEvent(new Event(tt,cpapcode,data,1));
             break;
         case 0x0d: // Vibratory Snore
@@ -575,18 +570,15 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
         case 0x0e: // Unknown
         case 0x10: // Unknown
             data[0]=buffer[pos++]; // << 8) | buffer[pos];
-            //pos+=2;
             data[1]=buffer[pos++];
             data[2]=buffer[pos++];
-            //tt-=wxTimeSpan::Seconds(data[0]);
             session->AddEvent(new Event(t,cpapcode, data, 3));
-            //wxLogMessage(tt.FormatTime()+QString::Format(wxT(" %i: %.2f %.2f %.2f"),code,data[0],data[1],data[2]));
             break;
         case 0x0f: // Cheyne Stokes Respiration
             data[0]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
             data[1]=buffer[pos++];
-            tt=tt.addSecs(-data[1]);
+            tt-=data[1]*1000;
             session->AddEvent(new Event(tt,cpapcode, data, 2));
             break;
         case 0x12: // Summary
@@ -608,7 +600,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,time_t
 bool PRS1Loader::OpenEvents(Session *session,QString filename)
 {
     int size,sequence,seconds,br;
-    time_t timestamp;
+    qint64 timestamp;
     unsigned char header[24]; // use m_buffer?
     unsigned char ext;
 
@@ -646,7 +638,7 @@ bool PRS1Loader::OpenEvents(Session *session,QString filename)
     if (br<size) {
         return false;
     }
-    Parse002(session,buffer,size,timestamp);
+    Parse002(session,buffer,size,timestamp*1000L);
 
     return true;
 }
@@ -658,9 +650,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
 
     int size,sequence,seconds,br;
     unsigned cnt=0;
-    time_t timestamp;
+    qint64 timestamp;
 
-    time_t start=0;
+    qint64 start=0;
     unsigned char header[24];
     unsigned char ext;
 
@@ -671,7 +663,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
 
     int hl=24;
     long samples=0;
-    int duration=0;
+    qint64 duration=0;
     char * buffer=(char *)m_buffer;
 
     while (true) {
@@ -698,7 +690,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (sequence==328) {
             seconds=0;
         }
-        if (!start) start=timestamp;
+        if (!start) start=timestamp*1000;
         seconds=(header[16] << 8) | header[15];
 
         size-=(hl+2);
@@ -754,6 +746,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     bool first=true;
 
     SampleFormat c;
+    duration*=1000;
 
     for (long i=0;i<samples;i++) {
         data[i]=buffer[i];
@@ -765,8 +758,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (min>c) min=c;
         if (max<c) max=c;
     }
-    QDateTime dt=QDateTime::fromTime_t(start);
-    Waveform *w=new Waveform(dt,CPAP_FlowRate,data,samples,duration,min,max);
+    Waveform *w=new Waveform(start,CPAP_FlowRate,data,samples,duration,min,max);
     session->AddWaveform(w);
 
     return true;

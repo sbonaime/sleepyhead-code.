@@ -173,6 +173,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         qDebug() << "Invalid date time retreieved in CMS50::OpenSPORFile";
         return false;
     }
+    qint64 starttime=date.toMSecsSinceEpoch();
 
     f.seek(data_starts);
 
@@ -192,15 +193,15 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     EventDataType cp,cs;
 
     Session *sess=new Session(mach,sessid);
-    sess->set_first(date);
-    sess->AddEvent(new Event(date,OXI_Pulse,&last_pulse,1));
-    sess->AddEvent(new Event(date,OXI_SPO2,&last_spo2,1));
+    sess->set_first(starttime);
+    sess->AddEvent(new Event(starttime,OXI_Pulse,&last_pulse,1));
+    sess->AddEvent(new Event(starttime,OXI_SPO2,&last_spo2,1));
 
     EventDataType PMin=0,PMax=0,SMin=0,SMax=0,PAvg=0,SAvg=0;
     int PCnt=0,SCnt=0;
     //wxDateTime
-    QDateTime tt=date;
-    QDateTime lasttime=date;
+    qint64 tt=starttime;
+    qint64 lasttime=starttime;
     bool first_p=true,first_s=true;
 
     for (int i=2;i<num_records;i+=2) {
@@ -238,16 +239,15 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         last_spo2=cs;
         if (PMax<cp) PMax=cp;
         if (SMax<cs) SMax=cs;
-        tt=tt.addSecs(1); // An educated guess. Verified by gcz@cpaptalk
+        tt+=1000; // An educated guess of 1 second. Verified by gcz@cpaptalk
     }
     if (cp) sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
     if (cs) sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
 
     sess->set_last(lasttime);
-    double t=sess->last().toTime_t()-sess->first().toTime_t();
-
-    double hours=(t/3600.0);
-    sess->set_hours(hours);
+    //double t=sess->last()-sess->first().toTime_t();
+    //double hours=(t/3600.0);
+    //sess->set_hours(hours);
 
     EventDataType pa=0,sa=0;
     if (PCnt>0) pa=PAvg/double(PCnt);
