@@ -616,7 +616,7 @@ void Daily::Load(QDate date)
             html+=(" </td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_EAPAverage));
             html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_EAPMax))+("</td></tr>");
 
-            html+=("<tr><td> align=left"+tr("IPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_IAPMin));
+            html+=("<tr><td align=left>"+tr("IPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_IAPMin));
             html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_IAPAverage));
             html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_IAPMax))+("</td></tr>");
 

@@ -90,7 +90,7 @@ bool EDFParser::Parse()
     }
     startdate=startDate.toMSecsSinceEpoch();
 
-    //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
+    qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
     num_header_bytes=QString::fromAscii(header.num_header_bytes,8).toLong(&ok);
     if (!ok)
@@ -368,7 +368,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     long pos;
     bool sign,ok;
     double d;
-    qint64 tt;
+    double tt;
     EventDataType fields[3];
     MachineCode code;
     //Event *e;
@@ -410,8 +410,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                 break;
             }
             if (!sign) d=-d;
-
-            tt+=d*1000.0;
+            tt=edf.startdate+(d*1000.0);
             duration=0;
             // First entry
 
@@ -423,11 +422,12 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     t+=data[pos];
                     pos++;
                 } while ((data[pos]!=20) && (pos<recs)); // start code
-                duration=t.toDouble(&ok)*1000.0;
+                duration=t.toDouble(&ok);
                 if (!ok) {
                     qDebug() << "Faulty EDF EVE file (at %" << pos << ") " << edf.filename;
                     break;
                 }
+                //duration*=1000;
             }
             while ((data[pos]==20) && (pos<recs)) {
                 t="";
@@ -448,14 +448,14 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     else if (t=="hypopnea") code=CPAP_Hypopnea;
                     else if (t=="central apnea") code=CPAP_ClearAirway;
                     if (code!=MC_UNKNOWN) {
-                        fields[0]=duration/1000.0;
+                        fields[0]=duration;///1000.0;
                         sess->AddEvent(new Event(tt,code,fields,1));
                     } else {
                         if (t!="recording starts") {
                             qDebug() << "Unknown ResMed annotation field: " << t;
                         }
                     }
-                   // qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
+                    // qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
                 }
                 if (pos>=recs) {
                     qDebug() << "Short EDF EVE file" << edf.filename;
@@ -500,7 +500,7 @@ void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, Machi
 {
     bool first=true;
     double rate=(duration/recs); // milliseconds per record
-    qint64 tt=edf.startdate;
+    double tt=edf.startdate;
     EventDataType c,last;
     //return;
     Event *e=new Event(tt,code,&c,1);
