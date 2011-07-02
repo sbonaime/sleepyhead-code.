@@ -352,7 +352,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
 
         if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
     }
-    //m->Save();
+    m->Save();
     if (qprogress) qprogress->setValue(100);
     qDebug() << "Total Events " << event_cnt;
     return 0;
