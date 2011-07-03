@@ -469,7 +469,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     //qDebug() << "ID: " << session->session() << " " << duration;
     //float hours=float(duration)/3600.0;
     //session->set_hours(hours);
-
+    if (!duration) return false;
 
     session->set_last(date+qint64(duration)*1000L);
 
