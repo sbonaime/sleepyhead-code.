@@ -211,7 +211,7 @@ Machine::Machine(Profile *p,MachineID id)
 Machine::~Machine()
 {
     qDebug() << "Destroy Machine";
-    map<qint64,Day *>::iterator d;
+    map<QDate,Day *>::iterator d;
     for (d=day.begin();d!=day.end();d++) {
         delete d->second;
     }
@@ -233,9 +233,14 @@ Day *Machine::AddSession(Session *s,Profile *p)
     if (s->session()>highest_sessionid)
         highest_sessionid=s->session();
 
-    qint64 date=s->first()/86400000;
-    date--; //=date.addDays(-1);
-    date*=86400000;
+    QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
+
+    QDate date=d2.date();
+    date.addDays(-1);
+
+    //qint64 date=s->first()/86400000;
+    //date--; //=date.addDays(-1);
+    //date*=86400000;
 
     const int hours_since_last_session=4;
     const int hours_since_midnight=12;
@@ -251,16 +256,15 @@ Day *Machine::AddSession(Session *s,Profile *p)
         // less than n hours since last session yesterday?
         if (span < hours_since_last_session) {
             previous=true;
-        } else {
         }
     }
 
     if (!previous) {
         // Calculate Hours since midnight.
-        qint64 t=s->first()/86400000;
-        t*=86400000;
-        //t.setTime(QTime(0,0));
-        span=(s->first() - t)/3600000.0;
+        d1=d2;
+        d1.setTime(QTime(0,0,0));
+        float secsto=d1.secsTo(d2);
+        span=secsto/3600.0;
 
         // Bedtime was late last night.
         if (span < hours_since_midnight) {
@@ -271,7 +275,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
     if (!previous) {
         // Revert to sessions original day.
-        date+=86400000;
+        date=date.addDays(1);
     }
 
     sessionlist[s->session()]=s;
@@ -288,9 +292,9 @@ Day *Machine::AddSession(Session *s,Profile *p)
         //qDebug("Adding Profile Day %s",dstr.toAscii().data());
         day[date]=new Day(this);
         // Add this Day record to profile
-        QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
-        qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
-        p->AddDay(d.date(),day[date],m_type);
+        //QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
+        //qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
+        p->AddDay(date,day[date],m_type);
     }
 
     day[date]->AddSession(s);
@@ -407,7 +411,7 @@ bool Machine::SaveSession(Session *sess)
 }
 bool Machine::Save()
 {
-    map<qint64,Day *>::iterator d;
+    map<QDate,Day *>::iterator d;
     vector<Session *>::iterator s;
     int size=0;
     int cnt=0;
