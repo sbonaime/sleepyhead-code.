@@ -56,6 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
+    if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
+    else ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
+
     if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
 
     if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
@@ -230,4 +233,9 @@ void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
     pref["UseAntiAliasing"]=checked;
     if (daily) daily->RedrawGraphs();
 
+}
+
+void MainWindow::on_action_Noon_Date_Split_toggled(bool checked)
+{
+    pref["NoonDateSplit"]=checked;
 }

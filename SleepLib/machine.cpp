@@ -236,48 +236,50 @@ Day *Machine::AddSession(Session *s,Profile *p)
     QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
 
     QDate date=d2.date();
-    date.addDays(-1);
 
-    //qint64 date=s->first()/86400000;
-    //date--; //=date.addDays(-1);
-    //date*=86400000;
+   // pref["NoonDateSplit"]=true;
 
-    const int hours_since_last_session=4;
-    const int hours_since_midnight=12;
+    if (pref["NoonDateSplit"].toBool()) {
+        if (d2.time().hour()<12) date.addDays(-1);
+    } else {
+        date.addDays(-1);
 
-    bool previous=false;
-    // Find what day session belongs to.
-    if (day.find(date)!=day.end()) {
-        // Previous day record exists...
+        const int hours_since_last_session=4;
+        const int hours_since_midnight=12;
 
-        // Calculate time since end of previous days last session
-        span=(s->first() - day[date]->last())/3600000.0;
+        bool previous=false;
+        // Find what day session belongs to.
+        if (day.find(date)!=day.end()) {
+            // Previous day record exists...
 
-        // less than n hours since last session yesterday?
-        if (span < hours_since_last_session) {
-            previous=true;
+            // Calculate time since end of previous days last session
+            span=(s->first() - day[date]->last())/3600000.0;
+
+            // less than n hours since last session yesterday?
+            if (span < hours_since_last_session) {
+                previous=true;
+            }
+        }
+
+        if (!previous) {
+            // Calculate Hours since midnight.
+            d1=d2;
+            d1.setTime(QTime(0,0,0));
+            float secsto=d1.secsTo(d2);
+            span=secsto/3600.0;
+
+            // Bedtime was late last night.
+            if (span < hours_since_midnight) {
+
+                previous=true;
+            }
+        }
+
+        if (!previous) {
+            // Revert to sessions original day.
+            date=date.addDays(1);
         }
     }
-
-    if (!previous) {
-        // Calculate Hours since midnight.
-        d1=d2;
-        d1.setTime(QTime(0,0,0));
-        float secsto=d1.secsTo(d2);
-        span=secsto/3600.0;
-
-        // Bedtime was late last night.
-        if (span < hours_since_midnight) {
-
-            previous=true;
-        }
-    }
-
-    if (!previous) {
-        // Revert to sessions original day.
-        date=date.addDays(1);
-    }
-
     sessionlist[s->session()]=s;
 
     if (!firstsession) {
@@ -287,6 +289,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
         firstday=lastday=date;
         firstsession=false;
     }
+
     if (day.find(date)==day.end()) {
         //QString dstr=date.toString("yyyyMMdd");
         //qDebug("Adding Profile Day %s",dstr.toAscii().data());

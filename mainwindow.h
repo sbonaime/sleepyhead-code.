@@ -60,6 +60,8 @@ private slots:
 
     void on_actionUse_AntiAliasing_triggered(bool checked);
 
+    void on_action_Noon_Date_Split_toggled(bool );
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

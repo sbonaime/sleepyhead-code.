@@ -561,6 +561,7 @@
     <addaction name="separator"/>
     <addaction name="actionUse_AntiAliasing"/>
     <addaction name="action_Link_Graphs"/>
+    <addaction name="action_Noon_Date_Split"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
    </widget>
@@ -653,6 +654,14 @@
    </property>
    <property name="text">
     <string>&amp;Fullscreen Toggle</string>
+   </property>
+  </action>
+  <action name="action_Noon_Date_Split">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Noon Date Split</string>
    </property>
   </action>
  </widget>
