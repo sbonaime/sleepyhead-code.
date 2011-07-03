@@ -19,6 +19,7 @@ License: GPL
 #include "SleepLib/session.h"
 
 extern QProgressBar *qprogress;
+map<int,QString> RMS9ModelMap;
 
 EDFParser::EDFParser(QString name)
 {
@@ -307,6 +308,12 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                         }
                     } else if (i->first=="PNA") {
                         m->properties["Model"]=i->second;
+                    } else if (i->first=="PCD") {
+                        bool ok;
+                        int j=i->second.toInt(&ok);
+                        if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
+                            m->properties["SubModel"]=RMS9ModelMap[j];
+                        }
                     } else {
                         m->properties[i->first]=i->second;
                     }
@@ -580,7 +587,22 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 
 void ResInitModelMap()
 {
-   // ModelMap[34]="S9 with some weird feature";
+    // Courtesy Troy Schultz
+    RMS9ModelMap[36001]="ResMed S9 Escape";
+    RMS9ModelMap[36002]="ResMed S9 Escape Auto";
+    RMS9ModelMap[36003]="ResMed S9 Elite";
+    RMS9ModelMap[36004]="ResMed S9 VPAP S";
+    RMS9ModelMap[36005]="ResMed S9 AutoSet";
+    RMS9ModelMap[36006]="ResMed S9 VPAP Auto";
+    RMS9ModelMap[36007]="ResMed S9 VPAP Adapt";
+    RMS9ModelMap[36008]="ResMed S9 VPAP ST";
+// S8 Series
+    RMS9ModelMap[33007]="ResMed S8 Escape";
+    RMS9ModelMap[33039]="ResMed S8 Elite II";
+    RMS9ModelMap[33051]="ResMed S8 Escape II";
+    RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
+    RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
+    RMS9ModelMap[33129]="ResMed S8 AutoSet II";
 };
 
 
