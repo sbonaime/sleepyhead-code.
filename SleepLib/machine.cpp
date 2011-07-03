@@ -226,7 +226,7 @@ Session *Machine::SessionExists(SessionID session)
 }
 Day *Machine::AddSession(Session *s,Profile *p)
 {
-    double span;
+    double span=0;
     assert(s!=NULL);
     assert(p!=NULL);
 
@@ -251,6 +251,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
         // less than n hours since last session yesterday?
         if (span < hours_since_last_session) {
             previous=true;
+        } else {
         }
     }
 
@@ -263,6 +264,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
         // Bedtime was late last night.
         if (span < hours_since_midnight) {
+
             previous=true;
         }
     }
@@ -286,7 +288,8 @@ Day *Machine::AddSession(Session *s,Profile *p)
         //qDebug("Adding Profile Day %s",dstr.toAscii().data());
         day[date]=new Day(this);
         // Add this Day record to profile
-        QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
+        QDateTime d=QDateTime::fromMSecsSinceEpoch(date).toUTC();
+        qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
         p->AddDay(d.date(),day[date],m_type);
     }
 

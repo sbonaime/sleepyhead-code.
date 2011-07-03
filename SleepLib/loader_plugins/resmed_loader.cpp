@@ -78,7 +78,7 @@ bool EDFParser::Parse()
       //      break;
         //serialnumber+=recordingident[i];
     //}
-    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
+    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss").toUTC();
     QDate d2=startDate.date();
     if (d2.year()<2000) {
         d2.setYMD(d2.year()+100,d2.month(),d2.day());
@@ -107,7 +107,8 @@ bool EDFParser::Parse()
         return false;
 
     enddate=startdate+dur_data_record*qint64(num_data_records);
-
+    if (dur_data_record==0)
+        return false;
 
     // this could be loaded quicker by transducer_type[signal] etc..
 
