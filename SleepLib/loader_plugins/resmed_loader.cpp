@@ -79,7 +79,7 @@ bool EDFParser::Parse()
       //      break;
         //serialnumber+=recordingident[i];
     //}
-    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss").toUTC();
+    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
     QDate d2=startDate.date();
     if (d2.year()<2000) {
         d2.setYMD(d2.year()+100,d2.month(),d2.day());
