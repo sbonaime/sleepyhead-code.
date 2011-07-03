@@ -288,7 +288,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
         //qDebug("Adding Profile Day %s",dstr.toAscii().data());
         day[date]=new Day(this);
         // Add this Day record to profile
-        QDateTime d=QDateTime::fromMSecsSinceEpoch(date).toUTC();
+        QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
         qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
         p->AddDay(d.date(),day[date],m_type);
     }
