@@ -29,21 +29,8 @@ public:
     bool LoadEvents(QString filename);
     bool LoadWaveforms(QString filename);
 
-    bool OpenEvents() {
-        if(s_events_loaded)
-            return true;
-        bool b=LoadEvents(s_eventfile);
-        s_events_loaded=b;
-        return b;
-    };
-    bool OpenWaveforms() {
-        if (s_waves_loaded)
-            return true;
-        bool b=LoadWaveforms(s_wavefile);
-        s_waves_loaded=b;
-        return b;
-    };
-
+    bool OpenEvents();
+    bool OpenWaveforms();
     void TrashEvents();
     void TrashWaveforms();
 

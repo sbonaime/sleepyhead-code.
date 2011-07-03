@@ -36,15 +36,6 @@ int main(int argc, char *argv[])
     ZEOLoader::Register();
     ResmedLoader::Register();
 
-
-
-
-    /*Machine *m=new Machine(profile,0);
-    m->SetClass("Journal");
-    m->SetType(MT_JOURNAL);
-    m->properties["Brand"]="Virtual";
-    profile->AddMachine(m); */
-
     MainWindow w;
     w.show();
 

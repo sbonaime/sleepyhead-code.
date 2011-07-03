@@ -401,12 +401,18 @@ bool Machine::Load()
             if (qprogress) qprogress->setValue((float(cnt)/float(size)*100.0));
 
         Session *sess=new Session(this,s->first);
-        if (sess->LoadSummary(s->second[0])) {
-            sess->SetEventFile(s->second[1]);
-            sess->SetWaveFile(s->second[2]);
 
-            AddSession(sess,profile);
-        } else {
+        try {
+            if (sess->LoadSummary(s->second[0])) {
+                sess->SetEventFile(s->second[1]);
+                sess->SetWaveFile(s->second[2]);
+
+                AddSession(sess,profile);
+            } else {
+                delete sess;
+            }
+        } catch(UnpackError e) {
+            qWarning() << "Error unpacking summary data";
             delete sess;
         }
     }

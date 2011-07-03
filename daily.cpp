@@ -505,7 +505,7 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
 
-    const int gwwidth=270;
+    const int gwwidth=240;
     const int gwheight=25;
     UpdateCPAPGraphs(cpap);
     UpdateOXIGraphs(oxi);

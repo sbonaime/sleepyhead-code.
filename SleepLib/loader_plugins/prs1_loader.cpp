@@ -593,8 +593,8 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         default:
             // ERROR!!!
-            throw exception(); // UnknownCode();
-            break;
+            qWarning() << "Some new fandangled PRS1 code detected:" << code;
+            return false;
         }
     }
     return true;

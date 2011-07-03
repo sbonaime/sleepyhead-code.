@@ -244,6 +244,36 @@ void Session::TrashWaveforms()
 
 
 //const int max_pack_size=128;
+bool Session::OpenEvents() {
+    if(s_events_loaded)
+        return true;
+    bool b;
+    try {
+        b=LoadEvents(s_eventfile);
+    } catch (UnpackError e) {
+        qWarning() << "Error Unkpacking Events" << s_eventfile;
+        b=false;
+    }
+
+    s_events_loaded=b;
+    return b;
+};
+bool Session::OpenWaveforms() {
+    if (s_waves_loaded)
+        return true;
+    bool b;
+    try {
+        b=LoadWaveforms(s_wavefile);
+    } catch (UnpackError e) {
+        qWarning() << "Error Unkpacking Wavefile" << s_wavefile;
+        b=false;
+    }
+    s_waves_loaded=b;
+    return b;
+};
+
+
+
 
 bool Session::Store(QString path)
 // Storing Session Data in our format
