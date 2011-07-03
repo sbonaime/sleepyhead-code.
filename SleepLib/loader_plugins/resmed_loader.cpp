@@ -106,6 +106,8 @@ bool EDFParser::Parse()
     if (!ok)
         return false;
 
+    enddate=startdate+dur_data_record*qint64(num_data_records);
+
 
     // this could be loaded quicker by transducer_type[signal] etc..
 
@@ -374,19 +376,11 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     //Event *e;
     totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
+    sess->set_first(edf.startdate);
+    if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
 
-        if (!sess->first()) {
-            sess->set_first(edf.startdate);
-            if (totaldur>0) {
-                sess->set_last(edf.startdate+totaldur);
-                //sess->set_hours(totaldur/3600.0);
-            }
-        }
-
-//        totaldur/=3600.0;
-        //t.sprintf("EVE: %li %.2f",recs,totaldur);
         //qDebug() << edf.edfsignals[s]->label << " " << t;
         data=(char *)edf.edfsignals[s]->data;
         pos=0;
@@ -427,7 +421,6 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     qDebug() << "Faulty EDF EVE file (at %" << pos << ") " << edf.filename;
                     break;
                 }
-                //duration*=1000;
             }
             while ((data[pos]==20) && (pos<recs)) {
                 t="";
@@ -448,7 +441,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     else if (t=="hypopnea") code=CPAP_Hypopnea;
                     else if (t=="central apnea") code=CPAP_ClearAirway;
                     if (code!=MC_UNKNOWN) {
-                        fields[0]=duration;///1000.0;
+                        fields[0]=duration;
                         sess->AddEvent(new Event(tt,code,fields,1));
                     } else {
                         if (t!="recording starts") {
@@ -473,20 +466,18 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
 {
     QString t;
+    sess->set_first(edf.startdate);
+    sess->set_last(edf.enddate);
+    qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
+
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
         MachineCode code;
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
         else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
         else {
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
-        }
-        if (!sess->first()) {
-            sess->set_first(edf.startdate);
-            sess->set_last(edf.startdate+duration);
-            //sess->set_hours(duration/3600.0);
         }
         Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
         edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
@@ -502,31 +493,22 @@ void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, Machi
     double rate=(duration/recs); // milliseconds per record
     double tt=edf.startdate;
     EventDataType c,last;
-    //return;
-    Event *e=new Event(tt,code,&c,1);
     for (int i=0;i<recs;i++) {
         c=data[i]/divisor;
 
         if (first) {
-            e=new Event(tt,code,&c,1);
-            sess->AddEvent(e);
-            event_cnt++;
+            sess->AddEvent(new Event(tt,code,&c,1));
             first=false;
         } else {
             if (last!=c) {
-                e=new Event(tt,code,&c,1);
-                sess->AddEvent(e);
-                event_cnt++;
-
+                sess->AddEvent(new Event(tt,code,&c,1));
             }
         }
         tt+=rate;
 
         last=c;
     }
-    e=new Event(tt,code,&c,1);
-    sess->AddEvent(e); // add one at the end..
-    event_cnt++;
+    sess->AddEvent(new Event(tt,code,&c,1)); // add one at the end..
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
@@ -543,15 +525,12 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 
     //qDebug(edf.edfsignals[MaskPres]->label.toLatin1());
 
+    sess->set_first(edf.startdate);
+    sess->set_last(edf.enddate);
+    qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
     QString t;
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
-        if (!sess->first()) {
-            sess->set_first(edf.startdate);
-            sess->set_last(edf.startdate+duration);
-            //sess->set_hours(duration/3600.0);
-        }
         MachineCode code;
        // if (s==TherapyPres) {
 //            for (int i=0;i<recs;i++) qDebug("%04i %i",i,edf.edfsignals[s]->data[i]);
@@ -564,19 +543,16 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
-            //ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
             Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
             edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
             sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="RR") {
             code=CPAP_RespiratoryRate;
-            //ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
             Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
             edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
             sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="Vt") {
             code=CPAP_TidalVolume;
-            //ToTimeDelta(mach,sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
             Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
             edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
             sess->AddWaveform(w);

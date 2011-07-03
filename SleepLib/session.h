@@ -50,23 +50,26 @@ public:
     const SessionID & session() {
         return s_session;
     };
-    const qint64 & first() {
+    qint64 first() {
         return s_first;
     };
-    const qint64 & last() {
+    qint64 last() {
         return s_last;
     };
     void SetSessionID(SessionID s) {
         s_session=s;
     };
     void set_first(qint64 d) {
-        s_first=d;
+        if (!s_first) s_first=d;
+        else if (d<s_first) s_first=d;
     };
     void set_last(qint64 d) {
-        s_last=d;
+        assert(d>s_first);
+        if (!s_last) s_last=d;
+        else if (s_last<d) s_last=d;
     };
 
-    float hours() {
+    double hours() {
         double t=(s_last-s_first)/3600000.0;
         return t;
     };

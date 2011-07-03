@@ -339,7 +339,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
             if (sess->summary.find(CPAP_PressureMin)==sess->summary.end()) {
                 sess->summary[CPAP_BrokenSummary]=true;
-                sess->set_last(sess->first());
+                //sess->set_last(sess->first());
                 if (sess->summary[CPAP_PressureMinAchieved]==sess->summary[CPAP_PressureMaxAchieved]) {
                     sess->summary[CPAP_Mode]=MODE_CPAP;
                 } else {
@@ -470,7 +470,8 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     //float hours=float(duration)/3600.0;
     //session->set_hours(hours);
 
-    session->set_last(date+(duration*1000));
+
+    session->set_last(date+qint64(duration)*1000L);
 
     session->summary[CPAP_PressureMinAchieved]=buffer[0x16]/10.0;
     session->summary[CPAP_PressureMaxAchieved]=buffer[0x17]/10.0;

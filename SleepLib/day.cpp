@@ -230,6 +230,7 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
     if (s2==0) return 0;
     return (s1/s2);
 }
+// Total session time in milliseconds
 qint64 Day::total_time()
 {
     d_totaltime=0;

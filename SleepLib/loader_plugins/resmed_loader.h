@@ -90,6 +90,7 @@ public:
     QString recordingident;
     QString serialnumber;
     qint64 startdate;
+    qint64 enddate;
     QString reserved44;
 };
 

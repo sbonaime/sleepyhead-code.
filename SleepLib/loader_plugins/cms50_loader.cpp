@@ -201,7 +201,9 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     int PCnt=0,SCnt=0;
     //wxDateTime
     qint64 tt=starttime;
+    //fixme: Need two lasttime values here..
     qint64 lasttime=starttime;
+
     bool first_p=true,first_s=true;
 
     for (int i=2;i<num_records;i+=2) {

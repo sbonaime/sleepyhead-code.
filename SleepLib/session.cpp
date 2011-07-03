@@ -44,7 +44,7 @@ double Session::min_event_field(MachineCode mc,int field)
     double min=0;
     vector<Event *>::iterator i;
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        if (field>(*i)->e_fields) throw BoundsError();
+        assert(field<(*i)->e_fields);
         if (first) {
             first=false;
             min=(*(*i))[field];
@@ -62,7 +62,7 @@ double Session::max_event_field(MachineCode mc,int field)
     double max=0;
     vector<Event *>::iterator i;
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        if (field>(*i)->e_fields) throw BoundsError();
+        assert(field<(*i)->e_fields);
         if (first) {
             first=false;
             max=(*(*i))[field];
@@ -81,7 +81,7 @@ double Session::sum_event_field(MachineCode mc,int field)
     vector<Event *>::iterator i;
 
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        if (field>(*i)->e_fields) throw BoundsError();
+        assert(field<(*i)->e_fields);
         sum+=(*(*i))[field];
     }
     return sum;
@@ -95,7 +95,7 @@ double Session::avg_event_field(MachineCode mc,int field)
     vector<Event *>::iterator i;
 
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        if (field>(*i)->e_fields) throw BoundsError();
+        assert(field<(*i)->e_fields);
         sum+=(*(*i))[field];
         cnt++;
     }
@@ -157,11 +157,11 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         Event & e =(*(*i));
         val=e[field]*mult;
-        if (field > e.e_fields) throw BoundsError();
+        assert(field<e.e_fields);
         if (first) {
             first=false;
         } else {
-            int d=(e.e_time-last)/1000;
+            int d=(e.e_time-last)/1000L;
             if (lastval>max_slots) {
                 qWarning("max_slots to small in Session::weighted_avg_event_fied()");
                 return 0;
@@ -207,13 +207,13 @@ void Session::AddEvent(Event * e)
 void Session::AddWaveform(Waveform *w)
 {
     waveforms[w->code()].push_back(w);
-  /*  if (s_last.isValid()) {
+    if (!s_last) {
         if (w->start()<s_first) s_first=w->start();
         if (w->end()>s_last) s_last=w->end();
     } else {
         s_first=w->start();
         s_last=w->end();
-    } */
+    }
 
     // Could parse the flow data for Breaths per minute info here..
 }
@@ -243,26 +243,7 @@ void Session::TrashWaveforms()
 }
 
 
-const int max_pack_size=128;
-/*template <class T>
-int pack(char * buf,T * var)
-{
-    int c=0;
-    int s=sizeof(T);
-    if (s>max_pack_size) return 0;
-
-    char * dat=(char *)var;
-    if (IsPlatformLittleEndian()) {
-        for (int i=0; i<s; i++) {
-            buf[i]=dat[i];
-        }
-    } else {
-        for (int i=0; i<s; i++) {
-            buf[s-i]=dat[i];
-        }
-    }
-    return s;
-} */
+//const int max_pack_size=128;
 
 bool Session::Store(QString path)
 // Storing Session Data in our format
@@ -300,8 +281,8 @@ bool Session::StoreSummary(QString filename)
     f.Pack((quint16)0);				// File Type 0 == Summary File
     f.Pack((quint16)0);				// File Version
 
-    quint32 starttime=s_first/1000;
-    quint32 duration=(s_last-s_first)/1000;
+    quint32 starttime=s_first/1000L;
+    quint32 duration=(s_last-s_first)/1000L;
 
     f.Pack(starttime);				// Session Start Time
     f.Pack(duration);                           // Duration of sesion in seconds.
@@ -393,10 +374,10 @@ bool Session::LoadSummary(QString filename)
 
 
     if (!f.Unpack(t32)) throw UnpackError();            // Start time
-    s_first=qint64(t32)*1000;
+    s_first=qint64(t32)*1000L;
 
     if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
-    s_last=s_first+qint64(t32)*1000;
+    s_last=s_first+qint64(t32)*1000L;
 
     if (!f.Unpack(sumsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
 
@@ -449,8 +430,8 @@ bool Session::StoreEvents(QString filename)
     f.Pack((quint16)1);				// File type 1 == Event
     f.Pack((quint16)0);				// File Version
 
-    quint32 starttime=s_first/1000;
-    quint32 duration=(s_last-s_first)/1000;
+    quint32 starttime=s_first/1000L;
+    quint32 duration=(s_last-s_first)/1000L;
 
     f.Pack(starttime);
     f.Pack(duration);
@@ -527,9 +508,9 @@ bool Session::LoadEvents(QString filename)
     // dont give a crap yet..
 
     if (!f.Unpack(t32)) throw UnpackError();            // Start time
-    s_first=qint64(t32)*1000;
+    s_first=qint64(t32)*1000L;
     if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
-    s_last=s_first+qint64(t32)*1000;
+    s_last=s_first+qint64(t32)*1000L;
 
     qint16 evsize;
     if (!f.Unpack(evsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
@@ -590,8 +571,8 @@ bool Session::StoreWaveforms(QString filename)
     f.Pack((quint16)2);				// File type 2 == Waveform
     f.Pack((quint16)0);				// File Version
 
-    quint32 starttime=s_first/1000;
-    quint32 duration=(s_last-s_first)/1000;
+    quint32 starttime=s_first/1000L;
+    quint32 duration=(s_last-s_first)/1000L;
 
     f.Pack(starttime);
     f.Pack(duration);
