@@ -240,8 +240,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         for (int i=0;i<flist.size();i++) {
             QFileInfo fi=flist.at(i);
-            QString ext_s=fi.fileName().section(".",-1); //AfterLast(wxChar('.'));
-            QString session_s=fi.fileName().section(".",0,-2); //BeforeLast(wxChar('.'));
+            QString ext_s=fi.fileName().section(".",-1);
+            QString session_s=fi.fileName().section(".",0,-2);
 
             ext=ext_s.toLong(&ok);
             if (!ok) continue;
@@ -277,6 +277,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         if (s->second[0].isEmpty()) continue;
 
         Session *sess=new Session(m,session);
+        if (session==0x112)
+            int q=0;
         if (!OpenSummary(sess,s->second[0])) {
             qWarning() << "PRS1Loader: Could'nt open summary file " << s->second[0];
 

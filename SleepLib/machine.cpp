@@ -236,13 +236,20 @@ Day *Machine::AddSession(Session *s,Profile *p)
     QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
 
     QDate date=d2.date();
+    QTime time=d2.time();
 
    // pref["NoonDateSplit"]=true;
 
     if (pref["NoonDateSplit"].toBool()) {
-        if (d2.time().hour()<12) date.addDays(-1);
+        int hour=d2.time().hour();
+        if (s->session()==0x114) {
+            int q=0;
+        }
+        if (hour<12)
+            date=date.addDays(-1);
+            //date=date.addDays(1);
     } else {
-        date.addDays(-1);
+        date=date.addDays(-1);
 
         const int hours_since_last_session=4;
         const int hours_since_midnight=12;
