@@ -589,6 +589,9 @@
    <property name="text">
     <string>&amp;Import Data</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+F2</string>
+   </property>
   </action>
   <action name="action_Preferences">
    <property name="text">
@@ -609,15 +612,24 @@
    <property name="text">
     <string>View &amp;Daily</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionView_Overview">
    <property name="text">
     <string>View &amp;Overview</string>
    </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
   </action>
   <action name="actionView_Welcome">
    <property name="text">
     <string>View &amp;Welcome</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
    </property>
   </action>
   <action name="action_2">
@@ -652,6 +664,9 @@
    </property>
    <property name="text">
     <string>&amp;Fullscreen Toggle</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
   <action name="action_Noon_Date_Split">

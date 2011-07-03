@@ -471,12 +471,21 @@ void Daily::UpdateCalendarDay(QDate date)
     QTextCharFormat bold;
     QTextCharFormat cpapcol;
     QTextCharFormat normal;
+    QTextCharFormat oxiday;
     bold.setFontWeight(QFont::Bold);
     cpapcol.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
     cpapcol.setFontWeight(QFont::Bold);
+    oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxiday.setFontWeight(QFont::Bold);
+    bool hascpap=profile->GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=profile->GetDay(date,MT_OXIMETER)!=NULL;
 
-    if (profile->GetDay(date,MT_CPAP)) {
-        ui->calendar->setDateTextFormat(date,cpapcol);
+    if (hascpap) {
+        if (hasoxi) {
+            ui->calendar->setDateTextFormat(date,oxiday);
+        } else {
+            ui->calendar->setDateTextFormat(date,cpapcol);
+        }
     } else if (profile->GetDay(date)) {
         ui->calendar->setDateTextFormat(date,bold);
     } else {
