@@ -107,8 +107,8 @@ bool EDFParser::Parse()
         return false;
 
     enddate=startdate+dur_data_record*qint64(num_data_records);
-    if (dur_data_record==0)
-        return false;
+   // if (dur_data_record==0)
+     //   return false;
 
     // this could be loaded quicker by transducer_type[signal] etc..
 
@@ -281,7 +281,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     Machine *m=NULL;
 
     QString fn;
-    Session *sess=NULL;
+    Session *sess;
     int cnt=0;
     size=sessfiles.size();
     for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
@@ -289,7 +289,8 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
         //qDebug() << "Parsing Session " << sessionid;
         bool done=false;
         bool first=true;
-        for (size_t i=0;i<si->second.size();i++) {
+        sess=NULL;
+        for (size_t i=0;i<si->second.size();++i) {
             fn=si->second[i].section("_",-1).toLower();
             EDFParser edf(si->second[i]);
             //qDebug() << "Parsing File " << i << " "  << edf.filesize;
@@ -315,6 +316,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                     break;
                 }
                 sess=new Session(m,sessionid);
+                first=false;
             }
             if (!done) {
                 if (fn=="eve.edf") LoadEVE(sess,edf);
@@ -322,12 +324,19 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
                 else if (fn=="brp.edf") LoadBRP(sess,edf);
                 else if (fn=="sad.edf") LoadSAD(sess,edf);
 
-                if (first) {
-                    sess->SetChanged(true);
-                    m->AddSession(sess,profile); // Adding earlier than I really like here..
-                    first=false;
-                }
+                //if (first) {
+                    //first=false;
+                //}
             }
+        }
+        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
+        if (!sess) continue;
+        if (!sess->first()) {
+            delete sess;
+            continue;
+        } else {
+            sess->SetChanged(true);
+            m->AddSession(sess,profile); // Adding earlier than I really like here..
         }
         if (!done && sess) {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
@@ -353,7 +362,6 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
             sess->summary[CPAP_Mode]=MODE_APAP;
         }
 
-        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
     }
     m->Save();
     if (qprogress) qprogress->setValue(100);
@@ -377,8 +385,8 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     //Event *e;
     totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
-    sess->set_first(edf.startdate);
-    if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
+    //sess->set_first(edf.startdate);
+    //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
 
