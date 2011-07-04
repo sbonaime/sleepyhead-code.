@@ -12,11 +12,14 @@
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * shared,Qt::WindowFlags f)
 : QGLWidget(parent,shared, f )
 {
+    splitter=NULL;
     m_scrX   = m_scrY   = 100;
     m_title=title;
     m_mouseRDown=m_mouseLDown=false;
     m_block_zoom=false;
     m_drag_foobar=false;
+    m_dragGraph=false;
+
     m_gradient_background=true;
     m_foobar_pos=0;
     m_foobar_moved=0;
@@ -27,7 +30,8 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     if (!title.isEmpty()) {
         AddLayer(new gTitle(title));
     }
-
+    //setAcceptDrops(true);
+    setMouseTracking(true);
 }
 
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
@@ -40,6 +44,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     SetMargins(10, 15, 0, 0);
     m_block_zoom=false;
     m_drag_foobar=false;
+    m_dragGraph=false;
     m_gradient_background=false;
     m_foobar_pos=0;
     m_foobar_moved=0;
@@ -50,6 +55,8 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     if (!title.isEmpty()) {
         AddLayer(new gTitle(title));
     }
+    //setAcceptDrops(true);
+    setMouseTracking(true);
 }
 
 gGraphWindow::~gGraphWindow()
@@ -227,13 +234,17 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
 }
 gGraphWindow *LastGraphLDown=NULL;
 gGraphWindow *LastGraphRDown=NULL;
-
+gGraphWindow *currentWidget=NULL;
 void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 {
 //    static bool first=true;
     static QRect last;
-
     // grabbed
+    if (m_dragGraph) {
+        if (LastGraphLDown!=this)
+            currentWidget=this;
+        return;
+    }
     if (m_mouseLDown && LastGraphLDown && (LastGraphLDown!=this)) {
         LastGraphLDown->mouseMoveEvent(event);
         return;
@@ -389,7 +400,6 @@ void gGraphWindow::OnMouseRightDown(QMouseEvent * event)
             m_drag_foobar=true;
             LastGraphRDown=this;
             return;
-            //   wxLogMessage("Foobar Area Pushed");
         } else {
             m_drag_foobar=false;
             m_mouseRDown=false;
@@ -499,6 +509,18 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
 {
     int y=event->y();
     int x=event->x();
+
+    if (x<GetLeftMargin()) {
+        LastGraphLDown=this;
+        m_dragGraph=true;
+  /*      QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
+        mimeData->setText("BiteMe");
+        drag->setMimeData(mimeData);
+
+        Qt::DropAction dropAction = drag->exec(); */
+        return;
+    }
     int width=m_scrX-GetRightMargin()-GetLeftMargin();
     int height=m_scrY-GetBottomMargin()-GetTopMargin();
     QRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
@@ -531,8 +553,28 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
         LastGraphLDown=this;
     }
 }
+void gGraphWindow::dropEvent ( QDropEvent * event )
+{
+    int frong=23;
+    assert(splitter!=NULL);
+    //m_dragGraph=false;
+}
+
 void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
 {
+    if (m_dragGraph) {
+        if (splitter && currentWidget && LastGraphLDown) {
+            if (LastGraphLDown!=currentWidget) {
+                int newidx=splitter->indexOf(currentWidget);
+                int idx=splitter->indexOf(LastGraphLDown);
+                splitter->insertWidget(newidx,LastGraphLDown);
+                return;
+            }
+        }
+        m_dragGraph=false;
+        return;
+    }
+
     if (LastGraphLDown && (LastGraphLDown!=this)) { // Same graph that initiated the click??
         LastGraphLDown->OnMouseLeftRelease(event);  // Nope.. Give it the event.
         return;

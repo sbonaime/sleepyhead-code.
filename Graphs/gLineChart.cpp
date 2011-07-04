@@ -250,9 +250,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 // m_drawlist's index is the pixel index for the X pixel axis.
 
                 //float zz=(maxy-miny)/2.0;  // centreline
-                float jy=point[i].y();
 
-                int y1=1+(jy-miny)*ymult;
+                int y1=1+(point[i].y()-miny)*ymult;
 
                 int z=floor(px); // Hmmm... round may screw this up.
                 if (z<minz) minz=z;  // minz=First pixel

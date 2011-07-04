@@ -68,7 +68,7 @@ private:
 
     void AddCPAPData(gPointData *d) { CPAPData.push_back(d); };
     void AddOXIData(gPointData *d) { OXIData.push_back(d); };
-    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
+    void AddGraph(gGraphWindow *w);
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
 

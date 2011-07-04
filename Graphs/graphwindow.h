@@ -9,6 +9,7 @@
 
 #include <QGLContext>
 #include <QGLWidget>
+#include <QSplitter>
 #include <QDateTime>
 #include <list>
 using namespace std;
@@ -31,7 +32,7 @@ public:
 
 signals:
 public slots:
-
+    void dropEvent(QDropEvent * event);
 public:
     QBitmap * RenderBitmap(int width,int height);
 
@@ -141,15 +142,20 @@ public:
       void SetGradientBackground(bool b) { m_gradient_background=b; };
       bool GradientBackground() { return m_gradient_background; };
 
+      void SetSplitter(QSplitter *s) { splitter=s; };
+      bool isDraggingGraph() { return m_dragGraph; };
   protected:
       void initializeGL();
+      QSplitter *splitter;
       list<gGraphWindow *>link_zoom;
       //list<gGraphWindow *>link_move;
 
       //bool m_block_move;
       bool m_block_zoom;
       bool m_drag_foobar;
+      bool m_dragGraph;
       double m_foobar_pos,m_foobar_moved;
+
       bool m_gradient_background;
       std::list<gLayer *> layers;
       QString m_title;

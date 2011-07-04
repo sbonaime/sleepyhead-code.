@@ -41,6 +41,16 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>This whole page is still being figured out.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QWebView" name="webView">
           <property name="minimumSize">
            <size>

@@ -66,7 +66,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
     AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
 
-    AddGraph(SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL));
+    SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL);
 
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
@@ -93,7 +93,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
-    AddGraph(PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF));
+    PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF);
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
     //PRD->AddLayer(new gFooBar());
@@ -106,7 +106,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
     //leakdata->ForceMinY(0);
     //leakdata->ForceMaxY(120);
-    AddGraph(LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF));
+    LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     //LEAK->AddLayer(new gFooBar());
@@ -118,7 +118,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
    // AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
     // Holy crap resmed stuff is huge..
-    AddGraph(FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF));
+    FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
@@ -139,14 +139,14 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->setMinimumHeight(190);
 
     AddCPAPData(snore=new EventData(CPAP_Snore,0));
-    AddGraph(SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF));
+    SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF);
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
     SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
     SNORE->setMinimumHeight(150);
 
     AddCPAPData(flg=new EventData(CPAP_FlowLimitGraph,0));
-    AddGraph(FLG=new gGraphWindow(gSplitter,tr("Flow Limitation"),SF));
+    FLG=new gGraphWindow(gSplitter,tr("Flow Limitation"),SF);
     FLG->AddLayer(new gXAxis());
     FLG->AddLayer(new gYAxis());
     FLG->AddLayer(new gLineChart(flg,Qt::black,4096,false,false,true));
@@ -154,21 +154,21 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     AddCPAPData(mv=new WaveData(CPAP_MinuteVentilation));
-    AddGraph(MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF));
+    MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF);
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
     MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,false));
     MV->setMinimumHeight(150);
 
     AddCPAPData(tv=new WaveData(CPAP_TidalVolume));
-    AddGraph(TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF));
+    TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF);
     TV->AddLayer(new gXAxis());
     TV->AddLayer(new gYAxis());
     TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,false));
     TV->setMinimumHeight(150);
 
     AddCPAPData(rr=new WaveData(CPAP_RespiratoryRate));
-    AddGraph(RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF));
+    RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF);
     RR->AddLayer(new gXAxis());
     RR->AddLayer(new gYAxis());
     RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,false));
@@ -178,7 +178,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
-    AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF));
+    PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF);
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
    // PULSE->AddLayer(new gFooBar());
@@ -189,7 +189,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(spo2=new EventData(OXI_SPO2,0,65536,true));
     //spo2->ForceMinY(60);
     //spo2->ForceMaxY(100);
-//    AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF));
+//    SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF);
 //    SPO2->AddLayer(new gXAxis());
 //    SPO2->AddLayer(new gYAxis());
    // SPO2->AddLayer(new gFooBar());
@@ -333,18 +333,18 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FLG->LinkZoom(RR);
 
 
-    gSplitter->addWidget(SF);
-    gSplitter->addWidget(FRW);
-    gSplitter->addWidget(MV);
-    gSplitter->addWidget(TV);
-    gSplitter->addWidget(RR);
-    gSplitter->addWidget(PRD);
-    gSplitter->addWidget(LEAK);
-    gSplitter->addWidget(FLG);
-    gSplitter->addWidget(SNORE);
     gSplitter->addWidget(NoData);
-    gSplitter->addWidget(PULSE);
-  //  gSplitter->addWidget(SPO2);
+    AddGraph(SF);
+    AddGraph(FRW);
+    AddGraph(MV);
+    AddGraph(TV);
+    AddGraph(RR);
+    AddGraph(PRD);
+    AddGraph(LEAK);
+    AddGraph(FLG);
+    AddGraph(SNORE);
+    AddGraph(PULSE);
+  //  AddGraph(SPO2);
     gSplitter->refresh();
 
 
@@ -371,6 +371,14 @@ Daily::~Daily()
     delete gSplitter;
     delete ui;
 }
+void Daily::AddGraph(gGraphWindow *w)
+{
+    Graphs.push_back(w);
+
+    gSplitter->addWidget(w);
+    w->SetSplitter(gSplitter);
+}
+
 void Daily::ReloadGraphs()
 {
     QDate d=profile->LastDay();

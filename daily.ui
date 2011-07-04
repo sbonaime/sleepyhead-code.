@@ -40,7 +40,7 @@
      <widget class="QSplitter" name="splitter">
       <property name="maximumSize">
        <size>
-        <width>280</width>
+        <width>265</width>
         <height>16777215</height>
        </size>
       </property>
@@ -62,7 +62,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>280</width>
+         <width>265</width>
          <height>180</height>
         </size>
        </property>
@@ -89,6 +89,12 @@
        </property>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="maximumSize">
+        <size>
+         <width>265</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Sans Serif</family>
@@ -96,7 +102,7 @@
         </font>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -314,6 +320,25 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_11">
            <item>
+            <widget class="QLabel" name="label_6">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="text">
+              <string>This tab is fake.. What to put here?</string>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <property name="spacing">
               <number>2</number>
@@ -465,7 +490,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>748</width>
+         <width>763</width>
          <height>620</height>
         </rect>
        </property>
