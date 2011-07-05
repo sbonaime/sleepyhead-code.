@@ -63,22 +63,22 @@ bool EDFParser::Parse()
         return false;
 
     //patientident=QString::fromAscii(header.patientident,80);
-    //recordingident=QString::fromAscii(header.recordingident,80); // Serial number is in here..
-    //int snp=recordingident.indexOf("SRN=");
-    char * idx=index(header.recordingident,'=');
-    idx++;
+    recordingident=QString::fromAscii(header.recordingident,80); // Serial number is in here..
+    int snp=recordingident.indexOf("SRN=");
     serialnumber.clear();
+    /*char * idx=index(header.recordingident,'=');
+    idx++;
     for (int i=0;i<16;++i) {
         if (*idx==0x20) break;
         serialnumber+=*idx;
         ++idx;
-    }
+    } */
 
-   // for (int i=snp+4;i<recordingident.length();i++) {
-     //   if (recordingident[i]==' ')
-      //      break;
-        //serialnumber+=recordingident[i];
-    //}
+    for (int i=snp+4;i<recordingident.length();i++) {
+        if (recordingident[i]==' ')
+            break;
+        serialnumber+=recordingident[i];
+    }
     QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
     QDate d2=startDate.date();
     if (d2.year()<2000) {
