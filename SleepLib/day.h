@@ -29,7 +29,7 @@ public:
     EventDataType max(MachineCode code,int field=0);
     EventDataType avg(MachineCode code,int field=0);
     EventDataType sum(MachineCode code,int field=0);
-    EventDataType count(MachineCode code);
+    int count(MachineCode code);
     EventDataType weighted_avg(MachineCode code,int field=0);
     EventDataType percentile(MachineCode mc,int field,double percent);
 

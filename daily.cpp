@@ -410,6 +410,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
     map<MachineCode,QTreeWidgetItem *> mcroot;
     map<MachineCode,int> mccnt;
+    int total_events=0;
 
     for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
 
@@ -432,13 +433,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             if (code==PRS1_Unknown12) continue;
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
+                int cnt=day->count(code);
+                total_events+=cnt;
                 QString st=DefaultMCLongNames[m->first];
                 if (st.isEmpty())  {
-                    st=st.sprintf("Fixme: %i",code);
+                    st="Fixme "+QString::number((int)code);
                 }
+                st+=" ("+QString::number(cnt)+")";
                 QStringList l(st);
                 l.append("");
-                //QString g="";
                 mcroot[code]=mcr=new QTreeWidgetItem(root,l);
                 mccnt[code]=0;
             } else {
@@ -450,16 +453,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                     t-=((*(*e))[0]/2)*1000;
                 }
                 QStringList a;
-                QString c,b;
-                c.sprintf("#%03i: ",++mccnt[code]);
                 QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-                c+=d.toString(" HH:mm:ss");
-
-                //if ((*e)->fields()) { // Perhaps need a dedicated offset field
-                    //b.sprintf(" %02.0f",(*(*e))[0]);
-                    //c+=b;
-                //}
-                a.append(c);
+                a.append(QString("#%1: %2").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")));
                 a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                 mcr->addChild(new QTreeWidgetItem(a));
             }
@@ -469,8 +464,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     for (map<MachineCode,QTreeWidgetItem *>::iterator m=mcroot.begin();m!=mcroot.end();m++) {
         tree->insertTopLevelItem(cnt++,m->second);
     }
-
-
+    //tree->insertTopLevelItem(cnt++,new QTreeWidgetItem(QStringList("[Total Events ("+QString::number(total_events)+")]")));
     tree->sortByColumn(0,Qt::AscendingOrder);
     //tree->expandAll();
 }
@@ -516,10 +510,10 @@ void Daily::Load(QDate date)
     Day *oxi=profile->GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
-    QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>";
-    html+="</head>";
-    html+="<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
-    html+="<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
+    QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
+    "</head>"
+    "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
+    "<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
 
     const int gwwidth=240;
@@ -539,8 +533,7 @@ void Daily::Load(QDate date)
         if (pr==PR_NONE)
            epr=tr(" No Pressure Relief");
         else {
-            a.sprintf(" x%i",(int)cpap->summary_max(CPAP_PressureReliefSetting));
-            epr=PressureReliefNames[pr]+a;
+            epr=PressureReliefNames[pr]+QString(" x%1").arg((int)cpap->summary_max(CPAP_PressureReliefSetting));
         }
         modestr=CPAPModeNames[mode];
 
@@ -571,30 +564,33 @@ void Daily::Load(QDate date)
         QDateTime date=QDateTime::fromMSecsSinceEpoch(cpap->first());
         QDateTime date2=QDateTime::fromMSecsSinceEpoch(cpap->last());
 
-        html+="<tr><td align='center'>"+date.date().toString(Qt::SystemLocaleShortDate)+"</td><td align='center'>"+date.toString("HH:mm")+"</td><td align='center'>"+date2.toString("HH:mm")+"</td><td align='center'>"+a.sprintf("%02i:%02i",tt/3600,tt%60)+"</td></tr>\n";
-        html+="<tr><td colspan=4 align=center><hr></td></tr>\n";
+        html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
+        "<tr><td colspan=4 align=center><hr></td></tr>\n")
+                .arg(date.date().toString(Qt::SystemLocaleShortDate))
+                .arg(date.toString("HH:mm"))
+                .arg(date2.toString("HH:mm"))
+                .arg(QString().sprintf("%02i:%02i",tt/3600,tt%60));
 
         QString cs;
         if (cpap->machine->GetClass()!="PRS1") {
             cs="4 align=center>";
         } else cs="2>";
-        html+=("<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>");
-        html+=("<tr><td align='right' bgcolor='#F88017'><b><font color='black'>")+tr("AHI")+("</font></b></td><td  bgcolor='#F88017'><b><font color='black'>")+a.sprintf("%.2f",ahi)+("</font></b></td></tr>\n");
-        html+=("<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>")+tr("Hypopnea")+("</font></b></td><td bgcolor='#4040ff'><font color='white'>")+a.sprintf("%.2f",hi)+("</font></td></tr>\n");
-        html+=("<tr><td align='right' bgcolor='#40afbf'><b>")+tr("Obstructive")+("</b></td><td bgcolor='#40afbf'>")+a.sprintf("%.2f",oai)+("</td></tr>\n");
-        html+=("<tr><td align='right' bgcolor='#b254cd'><b>")+tr("ClearAirway")+("</b></td><td bgcolor='#b254cd'>")+a.sprintf("%.2f",cai)+("</td></tr>\n");
-        html+="</table></td>";
-        if (cpap->machine->GetClass()=="PRS1") {
-            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>";
-            html+="<tr><td align='right' bgcolor='#ffff80'><b>"+tr("RERA")+("</b></td><td bgcolor='#ffff80'>")+a.sprintf("%.2f",rei)+("</td></tr>\n");
-            html+="<tr><td align='right' bgcolor='#404040'><b><font color='white'>"+tr("FlowLimit")+("</font></b></td><td bgcolor='#404040'><font color='white'>")+a.sprintf("%.2f",fli)+("</font></td></tr>\n");
-            html+="<tr><td align='right' bgcolor='#ff4040'><b>"+tr("Vsnore")+("</b></td><td bgcolor='#ff4040'>")+a.sprintf("%.2f",vsi)+("</td></tr>\n");
-            html+="<tr><td align='right' bgcolor='#80ff80'><b>"+tr("PB/CSR")+("</b></td><td bgcolor='#80ff80'>")+a.sprintf("%.2f",csr)+("%</td></tr>\n");
-            html+="</table></td>";
-        }
-        html+="</tr>";
+        html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>"
+        "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td  bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
+        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>"+tr("Hypopnea")+"</font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n"
+        "<tr><td align='right' bgcolor='#40afbf'><b>"+tr("Obstructive")+"</b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+        "<tr><td align='right' bgcolor='#b254cd'><b>"+tr("ClearAirway")+"</b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
+        "</table></td>";
 
-        html+=("<tr><td colspan=4 align=center><i>")+tr("Event Breakdown")+("</i></td></tr>\n");
+        if (cpap->machine->GetClass()=="PRS1") {
+            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
+            "<tr><td align='right' bgcolor='#ffff80'><b>"+tr("RERA")+"</b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b><font color='white'>"+tr("FlowLimit")+"</font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+            "<tr><td align='right' bgcolor='#ff4040'><b>"+tr("Vsnore")+"</b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#80ff80'><b>"+tr("PB/CSR")+"</b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+            "</table></td>";
+        }
+        html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
         {
             G_AHI->setFixedSize(gwwidth,gwheight);
             QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
@@ -604,19 +600,17 @@ void Daily::Load(QDate date)
             pixmap.save(&buffer, "PNG");
             html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
-        html+=("</table>");
-        html+=("<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n");
-        //html+=("<tr><td colspan=4>&nbsp;</td></tr>\n");
-        html+=("<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n");
-        //html+=wxT("<tr><td colspan=4 align=center><hr></td></tr>\n");
+        html+="</table>"
+        "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n"
+        "<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n";
 
         if (mode==MODE_BIPAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;EPAP ")+a.sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n";
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;IPAP ")+a.sprintf("%.2f",iap90)+"</td></tr>\n";
+            html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
+            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;IPAP ")+QString().sprintf("%.2f",iap90)+"</td></tr>\n";
         } else if (mode==MODE_APAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+a.sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+QString().sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
         } else if (mode==MODE_CPAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+a.sprintf("%.2f",cpap->summary_min(CPAP_PressureMin))+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+QString().sprintf("%.2f",cpap->summary_min(CPAP_PressureMin))+("</i></td></tr>\n");
         }
         //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 

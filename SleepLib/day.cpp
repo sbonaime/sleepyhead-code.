@@ -204,9 +204,9 @@ EventDataType Day::sum(MachineCode code,int field)
     return val;
 }
 
-EventDataType Day::count(MachineCode code)
+int Day::count(MachineCode code)
 {
-    EventDataType val=0;
+    int val=0;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);

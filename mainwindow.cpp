@@ -145,7 +145,7 @@ void MainWindow::on_homeButton_clicked()
     QString file="qrc:/docs/index.html";
     QUrl url(file);
     ui->webView->setUrl(url);
-    ui->webView->load(url);
+    //ui->webView->load(url);
 }
 
 void MainWindow::on_backButton_clicked()
