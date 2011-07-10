@@ -116,8 +116,16 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->setMinimumHeight(150);
 
 
+    AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
+    MP=new gGraphWindow(gSplitter,tr("Mask Pressure"),SF);
+    MP->AddLayer(new gYAxis());
+    MP->AddLayer(new gXAxis());
+    gLineChart *g=new gLineChart(mpw,Qt::black,4000,true);
+    g->ReportEmpty(true);
+    MP->AddLayer(g);
+
+
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
-    //AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
     // Holy crap resmed stuff is huge..
     FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
     //FRW->AddLayer(new gFooBar());
@@ -125,7 +133,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
    // FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
-    gLineChart *g=new gLineChart(frw,Qt::black,4000,true);
+    g=new gLineChart(frw,Qt::black,4000,true);
     g->ReportEmpty(true);
     FRW->AddLayer(g);
     FRW->AddLayer(new gLineOverlayBar(flags[3],QColor("blue"),"H"));
@@ -255,6 +263,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     TAP_EAP->hide();
 
     FRW->LinkZoom(SF);
+    FRW->LinkZoom(MP);
     FRW->LinkZoom(PRD);
     FRW->LinkZoom(LEAK);
     FRW->LinkZoom(SNORE);
@@ -263,6 +272,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->LinkZoom(RR);
     FRW->LinkZoom(FLG);
     SF->LinkZoom(FRW);
+    SF->LinkZoom(MP);
     SF->LinkZoom(PRD);
     SF->LinkZoom(LEAK);
     SF->LinkZoom(SNORE);
@@ -272,6 +282,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->LinkZoom(FLG);
     PRD->LinkZoom(SF);
     PRD->LinkZoom(FRW);
+    PRD->LinkZoom(MP);
     PRD->LinkZoom(LEAK);
     PRD->LinkZoom(SNORE);
     PRD->LinkZoom(MV);
@@ -282,6 +293,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->LinkZoom(SF);
     LEAK->LinkZoom(FRW);
     LEAK->LinkZoom(PRD);
+    LEAK->LinkZoom(MP);
     LEAK->LinkZoom(SNORE);
     LEAK->LinkZoom(MV);
     LEAK->LinkZoom(TV);
@@ -290,6 +302,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
+    SNORE->LinkZoom(MP);
     SNORE->LinkZoom(PRD);
     SNORE->LinkZoom(LEAK);
     SNORE->LinkZoom(MV);
@@ -299,6 +312,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     MV->LinkZoom(SF);
     MV->LinkZoom(FRW);
+    MV->LinkZoom(MP);
     MV->LinkZoom(PRD);
     MV->LinkZoom(LEAK);
     MV->LinkZoom(SNORE);
@@ -308,6 +322,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     TV->LinkZoom(SF);
     TV->LinkZoom(FRW);
+    TV->LinkZoom(MP);
     TV->LinkZoom(PRD);
     TV->LinkZoom(LEAK);
     TV->LinkZoom(SNORE);
@@ -318,6 +333,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     RR->LinkZoom(SF);
     RR->LinkZoom(FRW);
     RR->LinkZoom(PRD);
+    RR->LinkZoom(MP);
     RR->LinkZoom(LEAK);
     RR->LinkZoom(SNORE);
     RR->LinkZoom(MV);
@@ -326,6 +342,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     FLG->LinkZoom(SF);
     FLG->LinkZoom(FRW);
+    FLG->LinkZoom(MP);
     FLG->LinkZoom(PRD);
     FLG->LinkZoom(LEAK);
     FLG->LinkZoom(SNORE);
@@ -333,10 +350,21 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FLG->LinkZoom(TV);
     FLG->LinkZoom(RR);
 
+    MP->LinkZoom(SF);
+    MP->LinkZoom(FRW);
+    MP->LinkZoom(FLG);
+    MP->LinkZoom(PRD);
+    MP->LinkZoom(LEAK);
+    MP->LinkZoom(SNORE);
+    MP->LinkZoom(MV);
+    MP->LinkZoom(TV);
+    MP->LinkZoom(RR);
+
 
     gSplitter->addWidget(NoData);
     AddGraph(SF);
     AddGraph(FRW);
+    AddGraph(MP);
     AddGraph(MV);
     AddGraph(TV);
     AddGraph(RR);
@@ -646,6 +674,9 @@ void Daily::Load(QDate date)
         LEAK->show();
         SF->show();
         SNORE->show();
+        MP->show();
+
+
     } else {
         html+="<tr><td colspan=4 align=center><i>"+tr("No CPAP data available")+"</i></td></tr>";
         html+="<tr><td colspan=4>&nbsp;</td></tr>\n";
@@ -658,21 +689,16 @@ void Daily::Load(QDate date)
         LEAK->hide();
         SF->hide();
         SNORE->hide();
+        MP->hide();
     }
     // Instead of doing this, check whether any data exists..
     // and show based on this factor.
-    if (cpap && (cpap->machine->GetClass()=="ResMed")) {
-        //MV->show();
-        //TV->show();
-        //RR->show();
-        FLG->show();
-    } else {
-        //MV->hide();
 
-        //TV->hide();
-        //RR->hide();
-        FLG->hide();
-    }
+    //cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
+    cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
+    cpap && cpap->count(CPAP_TidalVolume)>0 ? TV->show() : TV->hide();
+    cpap && cpap->count(CPAP_RespiratoryRate)>0 ? RR->show() : RR->hide();
+    cpap && cpap->count(CPAP_FlowLimitGraph)>0 ? FLG->show() : FLG->hide();
 
     if (oxi) {
         html+="<tr><td>"+tr("Pulse:");

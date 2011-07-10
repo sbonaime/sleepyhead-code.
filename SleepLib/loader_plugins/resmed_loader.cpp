@@ -490,8 +490,10 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         MachineCode code;
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
-        else if (edf.edfsignals[s]->label=="Mask Pres") code=CPAP_MaskPressure;
-        else {
+        else if (edf.edfsignals[s]->label=="Mask Pres") {
+            code=CPAP_MaskPressure;
+           // for (int i=0;i<recs;i++) edf.edfsignals[s]->data[i]/=50.0;
+        } else {
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
         }
