@@ -1054,7 +1054,7 @@ void InitModelMap()
     ModelMap[34]="RemStar Pro with C-Flex+";
     ModelMap[35]="RemStar Auto with A-Flex";
     ModelMap[37]="RemStar BIPAP Auto with Bi-Flex";
-    ModelMap[0x41]="RemStar BIPAP Auto with Bi-Flex";
+    ModelMap[0x41]="RemStar Something ASV with Funky-Flex";
 };
 
 
