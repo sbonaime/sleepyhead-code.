@@ -58,7 +58,8 @@ SOURCES += main.cpp\
     Graphs/gCandleStick.cpp \
     Graphs/gBarChart.cpp \
     SleepLib/loader_plugins/resmed_loader.cpp \
-    Graphs/gpiechart.cpp
+    Graphs/gpiechart.cpp \
+    SleepLib/loader_plugins/sleep_database.cpp
 
 HEADERS  += \
     SleepLib/binary_file.h \
@@ -94,7 +95,8 @@ HEADERS  += \
     Graphs/gCandleStick.h \
     Graphs/gBarChart.h \
     SleepLib/loader_plugins/resmed_loader.h \
-    Graphs/gpiechart.h
+    Graphs/gpiechart.h \
+    SleepLib/loader_plugins/sleep_database.h
 
 FORMS    += \
     daily.ui \

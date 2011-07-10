@@ -555,7 +555,6 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
 }
 void gGraphWindow::dropEvent ( QDropEvent * event )
 {
-    int frong=23;
     assert(splitter!=NULL);
     //m_dragGraph=false;
 }

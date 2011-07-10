@@ -51,6 +51,9 @@ enum MachineCode//:qint16
     PRS1_Unknown00, PRS1_Unknown01, PRS1_Unknown08, PRS1_Unknown09, PRS1_Unknown0B,	PRS1_Unknown0E, PRS1_Unknown10, PRS1_Unknown12,
     PRS1_SystemLockStatus, PRS1_SystemResistanceStatus, PRS1_SystemResistanceSetting, PRS1_HoseDiameter, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI,
 
+    // ASV Unknown Codes
+    PRS1_Unknown0A,PRS1_Unknown0C, PRS1_Unknown0F,
+
     // Oximeter Codes
     OXI_Pulse=0x2000, OXI_SPO2, OXI_Plethy, OXI_Signal2, OXI_SignalGood, OXI_PulseAverage, OXI_PulseMin, OXI_PulseMax, OXI_SPO2Average, OXI_SPO2Min, OXI_SPO2Max,
 

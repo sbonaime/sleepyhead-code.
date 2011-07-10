@@ -33,7 +33,7 @@ public:
 };
 
 
-const int max_load_buffer_size=384*1024;
+const int max_load_buffer_size=1024*1024;
 
 
 const QString prs1_class_name="PRS1";
@@ -57,7 +57,9 @@ protected:
     bool OpenSummary(Session *session,QString filename);
     bool OpenEvents(Session *session,QString filename);
     bool OpenWaveforms(Session *session,QString filename);
-    bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp);
+    bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,int version);
+    bool Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp,int version);
+
     unsigned char * m_buffer;
 };
 

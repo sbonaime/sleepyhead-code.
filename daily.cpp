@@ -97,7 +97,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
     //PRD->AddLayer(new gFooBar());
-    bool square=false;
+    bool square=true;
     PRD->AddLayer(new gLineChart(prd,QColor("dark green"),4096,false,false,square));
     PRD->AddLayer(new gLineChart(pressure_iap,Qt::blue,4096,false,true,square));
     PRD->AddLayer(new gLineChart(pressure_eap,Qt::red,4096,false,true,square));
@@ -116,14 +116,14 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
-   // AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
+    //AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,700000)); //FlowRate
     // Holy crap resmed stuff is huge..
     FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
     FRW->AddLayer(new gLineOverlayBar(flags[0],QColor("light green"),"CSR"));
-    //FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
+   // FRW->AddLayer(new gLineChart(mpw,Qt::blue,700000,true));
     gLineChart *g=new gLineChart(frw,Qt::black,4000,true);
     g->ReportEmpty(true);
     FRW->AddLayer(g);
@@ -428,7 +428,6 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 
             // Note this is not so evil on PRS1.
             if (code==CPAP_Pressure) continue;
-
             if (code==CPAP_Snore) continue;
             if (code==PRS1_Unknown12) continue;
             QTreeWidgetItem *mcr;

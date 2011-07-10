@@ -77,7 +77,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
         return;
     }
-
+    bool square_plot=m_square_plot;
+    if (num_points>500) {
+        square_plot=false;
+    }
     bool accel=m_accelerate;
     double sr;
     int dp,sam;
@@ -197,7 +200,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         // better to do it here than in the main loop.
         np <<= 2;
 
-        if (!accel && m_square_plot)
+        if (!accel && square_plot)
             np <<= 1; // double it again
 
         if (np>=maxverts) {
