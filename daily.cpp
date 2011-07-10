@@ -93,6 +93,9 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
     AddCPAPData(prd=new EventData(CPAP_Pressure));
+    pressure_eap->ForceMinY(0);
+    pressure_eap->ForceMaxY(30);
+
     PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF);
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
@@ -104,8 +107,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->setMinimumHeight(150);
 
     AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
-    //leakdata->ForceMinY(0);
-    //leakdata->ForceMaxY(120);
     LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
@@ -153,25 +154,25 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FLG->setMinimumHeight(150);
 
 
-    AddCPAPData(mv=new WaveData(CPAP_MinuteVentilation));
+    AddCPAPData(mv=new EventData(CPAP_MinuteVentilation));
     MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF);
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
-    MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,false));
+    MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,true));
     MV->setMinimumHeight(150);
 
-    AddCPAPData(tv=new WaveData(CPAP_TidalVolume));
+    AddCPAPData(tv=new EventData(CPAP_TidalVolume));
     TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF);
     TV->AddLayer(new gXAxis());
     TV->AddLayer(new gYAxis());
-    TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,false));
+    TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,true));
     TV->setMinimumHeight(150);
 
-    AddCPAPData(rr=new WaveData(CPAP_RespiratoryRate));
+    AddCPAPData(rr=new EventData(CPAP_RespiratoryRate));
     RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF);
     RR->AddLayer(new gXAxis());
     RR->AddLayer(new gYAxis());
-    RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,false));
+    RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,true));
     RR->setMinimumHeight(150);
 
 
@@ -658,15 +659,18 @@ void Daily::Load(QDate date)
         SF->hide();
         SNORE->hide();
     }
+    // Instead of doing this, check whether any data exists..
+    // and show based on this factor.
     if (cpap && (cpap->machine->GetClass()=="ResMed")) {
-        MV->show();
-        TV->show();
-        RR->show();
+        //MV->show();
+        //TV->show();
+        //RR->show();
         FLG->show();
     } else {
-        MV->hide();
-        TV->hide();
-        RR->hide();
+        //MV->hide();
+
+        //TV->hide();
+        //RR->hide();
         FLG->hide();
     }
 

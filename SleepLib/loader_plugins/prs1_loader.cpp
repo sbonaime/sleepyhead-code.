@@ -665,6 +665,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
     int pos=0;
     int cnt=0;
     short delta,duration;
+    QDateTime d;
     while (pos<size) {
         unsigned char code=buffer[pos++];
         if (code>=ncodes) {
@@ -672,8 +673,8 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             return false;
         }
         //assert(code<ncodes);
-        QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-        qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
+        //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
+        //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
         if (code==0) {
             int q=4;
         } else
@@ -685,6 +686,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             t+=delta*1000;
         }
         MachineCode cpapcode=Codes[(int)code];
+        EventDataType PS;
         tt=t;
         cnt++;
         int fc=0;
@@ -692,11 +694,11 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
         case 0x01: // Unknown
             session->AddEvent(new Event(t,cpapcode, data,0));
             break;
-        case 0x00: // Unknown (ASV Pressure value) // could this be RLE?
+        case 0x00: // Unknown (ASV Pressure value)
             // offset?
             data[0]=buffer[pos++];
             fc++;
-            if (!buffer[pos-1]) {
+            if (!buffer[pos-1]) {   // WTH???
                 data[1]=buffer[pos++];
                 fc++;
             }
@@ -707,8 +709,8 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             session->AddEvent(new Event(t,cpapcode, data,2));
             break;
         case 0x02: // Pressure
-            data[0]=buffer[pos++]/10.0;
-            session->AddEvent(new Event(t,cpapcode, data,1));
+            data[0]=buffer[pos++]/10.0; // crappy EPAP pressure value.
+            //session->AddEvent(new Event(t,cpapcode, data,1));
             break;
         case 0x04: // Pressure Pulse
             data[0]=buffer[pos++];
@@ -743,22 +745,37 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             session->AddEvent(new Event(tt,cpapcode,data,1));
             break;
         case 0x0d: // All the other ASV graph stuff.
-            data[0]=buffer[pos++];
-            if (buffer[pos]<=0x12) {  // short type of 0d record
-                // Type??
-                session->AddEvent(new Event(t,cpapcode, data,1));
-            } else {
-                data[1]=buffer[pos++];
-                data[2]=buffer[pos++];
-                data[3]=buffer[pos++];
-                data[4]=buffer[pos++]; // ??
-                data[5]=buffer[pos++]; // Patient Triggered Breaths                 data[6]=buffer[pos++]; // Patient Triggered Breaths
-                data[6]=buffer[pos++]; // Patient Triggered Breaths                 data[6]=buffer[pos++]; // Patient Triggered Breaths
-                data[7]=buffer[pos++]; // Patient Triggered Breaths
-                data[8]=buffer[pos++]; // Patient Triggered Breaths
-                data[9]=buffer[pos++]; // Patient Triggered Breaths
-                //session->AddEvent(new Event(t,cpapcode, data,6));
+            d=QDateTime::fromMSecsSinceEpoch(t);
+            data[0]=buffer[pos++]/10.0;
+            session->AddEvent(new Event(t,CPAP_IAP,&data[0],1)); //correct
+            data[1]=buffer[pos++]/10.0; // Low IPAP
+            session->AddEvent(new Event(t,CPAP_IAPLO,&data[1],1)); //correct
+            data[2]=buffer[pos++]/10.0; // Hi IPAP
+            session->AddEvent(new Event(t,CPAP_IAPHI,&data[2],1)); //correct
+
+            // This may not be necessary.. Check: the average of IAPHI - average of IAPLO may equal the average of this.
+            data[2]-=data[1];
+            session->AddEvent(new Event(t,CPAP_PS,&data[2],1)); //correct
+
+            data[3]=buffer[pos++];//Leak
+            session->AddEvent(new Event(t,CPAP_Leak,&data[3],1)); // correct
+            data[4]=buffer[pos++];//Breaths Per Minute
+            session->AddEvent(new Event(t,CPAP_RespiratoryRate,&data[4],1)); //correct
+            data[5]=buffer[pos++];//Patient Triggered Breaths
+            session->AddEvent(new Event(t,CPAP_PatientTriggeredBreaths,&data[5],1)); //correct
+            data[6]=buffer[pos++];//Minute Ventilation
+            session->AddEvent(new Event(t,CPAP_MinuteVentilation,&data[6],1)); //correct
+            data[7]=buffer[pos++]*10.0; // Tidal Volume
+            session->AddEvent(new Event(t,CPAP_TidalVolume,&data[7],1)); //correct
+            data[8]=buffer[pos++];
+            session->AddEvent(new Event(t,CPAP_Snore,&data[8],1)); //correct
+            if (data[8]>0) {
+                session->AddEvent(new Event(t,CPAP_VSnore,&data[8],1)); //correct
             }
+            data[9]=buffer[pos++]/10.0; // This is a pressure value
+            session->AddEvent(new Event(t,CPAP_EAP,&data[9],1)); //correct
+
+            qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << hex << session->session() << pos+15 << hex << int(code) << ": " << hex << int(data[0]) << " " << int(data[1]) << " " << int(data[2])  << " " << int(data[3]) << " " << int(data[4]) << " " << int(data[5])<< " " << int(data[6]) << " " << int(data[7]) << " " << int(data[8]) << " " << int(data[9]);
             break;
         case 0x03: // BIPAP Pressure
             data[0]=buffer[pos++];
@@ -1037,6 +1054,7 @@ void InitModelMap()
     ModelMap[34]="RemStar Pro with C-Flex+";
     ModelMap[35]="RemStar Auto with A-Flex";
     ModelMap[37]="RemStar BIPAP Auto with Bi-Flex";
+    ModelMap[0x41]="RemStar BIPAP Auto with Bi-Flex";
 };
 
 

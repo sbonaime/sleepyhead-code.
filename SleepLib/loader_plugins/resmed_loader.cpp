@@ -559,19 +559,22 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
-            Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            sess->AddWaveform(w);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
+            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
+            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
+            //sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="RR") {
             code=CPAP_RespiratoryRate;
-            Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            sess->AddWaveform(w);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
+            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
+            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
+            //sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="Vt") {
             code=CPAP_TidalVolume;
-            Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            sess->AddWaveform(w);
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
+            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
+            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
+            //sess->AddWaveform(w);
         } else if (edf.edfsignals[s]->label=="Leak") {
             code=CPAP_Leak;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
