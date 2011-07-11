@@ -184,7 +184,8 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
         s=f.readLine();
     }
     bool ok;
-    int i=prop["ProductType"].toInt(&ok);
+    QString pt=prop["ProductType"];
+    int i=pt.toInt(&ok,0);
     if (ok) {
         if (ModelMap.find(i)!=ModelMap.end()) {
             m->properties["SubModel"]=ModelMap[i];
@@ -1025,14 +1026,20 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             for (int j=0;j<interleave[numsignals-1-s];j++) {
                 if (sampletype[numsignals-1-s]==0)
                     c=buffer[k++];
-                else if (sampletype[numsignals-1-s]==1)
+                else if (sampletype[numsignals-1-s]==1) {
                     c=ucbuffer[k++];
+                    if (c<40) {
+                        c=min[s];
+                        //int q=0;
+                    }
+                }
                 if (first[s]) {
                     min[s]=max[s]=c;
                     first[s]=false;
+                } else {
+                    if (min[s]>c) min[s]=c;
+                    if (max[s]<c) max[s]=c;
                 }
-                if (min[s]>c) min[s]=c;
-                if (max[s]<c) max[s]=c;
                 data[s][pos[s]++]=c;
             }
         }
@@ -1054,7 +1061,7 @@ void InitModelMap()
     ModelMap[34]="RemStar Pro with C-Flex+";
     ModelMap[35]="RemStar Auto with A-Flex";
     ModelMap[37]="RemStar BIPAP Auto with Bi-Flex";
-    ModelMap[0x41]="RemStar Something ASV with Funky-Flex";
+    ModelMap[0x41]="BiPAP autoSV Advanced";
 };
 
 

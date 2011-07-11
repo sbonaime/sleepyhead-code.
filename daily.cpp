@@ -118,11 +118,14 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
     MP=new gGraphWindow(gSplitter,tr("Mask Pressure"),SF);
-    MP->AddLayer(new gYAxis());
+    gYAxis *y=new gYAxis();
+    y->SetScale(.1);
+    MP->AddLayer(y);
     MP->AddLayer(new gXAxis());
     gLineChart *g=new gLineChart(mpw,Qt::black,4000,true);
     g->ReportEmpty(true);
     MP->AddLayer(g);
+    MP->setMinimumHeight(120);
 
 
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
@@ -634,7 +637,7 @@ void Daily::Load(QDate date)
 
         if (mode==MODE_BIPAP) {
             html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
-            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;IPAP ")+QString().sprintf("%.2f",iap90)+"</td></tr>\n";
+            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;IPAP ")+QString().sprintf("%.2f",iap90)+tr("cmH2O")+"</td></tr>\n";
         } else if (mode==MODE_APAP) {
             html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+QString().sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
         } else if (mode==MODE_CPAP) {

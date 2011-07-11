@@ -55,7 +55,7 @@ void GetTextExtent(QString text, float & width, float & height, QFont *font)
     width=fm.width(text); //fm.width(text);
     height=fm.xHeight()+2; //fm.ascent();
 }
-void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
+void RDrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
     //QFontMetrics fm(*font);
     float w,h;
@@ -69,11 +69,13 @@ void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCol
     }
 
 //    glEnable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_TEST);
-    glFlush();
+//    glDisable(GL_DEPTH_TEST);
+    glFinish();
     QPainter painter(&wid);
     painter.setFont(*font);
+    color=Qt::black;
     painter.setPen(color);
+    painter.setBrush(QBrush(color));
     painter.setOpacity(1);
  //   painter.setCompositionMode(QPainter::CompositionMode_);
     if (angle==0) {
@@ -92,6 +94,33 @@ void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCol
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
 
+}
+struct TextBuffer
+{
+    gGraphWindow *wid;
+    QString text;
+    int x,y;
+    float angle;
+    QColor *color;
+    QFont *font;
+    TextBuffer(gGraphWindow * _wid, QString _text, int _x, int  _y, float _angle, QColor *_color,QFont *_font) {
+        wid=_wid; text=_text; x=_x; y=_y; angle=_angle; color=_color; font=_font;
+    }
+};
+vector<TextBuffer *> TextQue;
+
+void DrawTextQueue()
+{
+    for (unsigned i=0;i<TextQue.size();i++) {
+        TextBuffer * t=TextQue[i];
+        RDrawText(*t->wid,t->text,t->x,t->y,t->angle,*t->color,t->font);
+        delete TextQue[i];
+    }
+    TextQue.clear();
+}
+void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
+{
+    TextQue.push_back(new TextBuffer(&wid,text,x,y,angle,&color,font));
 }
 
 

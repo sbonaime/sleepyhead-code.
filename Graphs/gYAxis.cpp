@@ -15,6 +15,7 @@ gYAxis::gYAxis(QColor col)
 
     m_show_major_lines=true;
     m_show_minor_lines=true;
+    m_yaxis_scale=1;
 }
 gYAxis::~gYAxis()
 {
@@ -89,7 +90,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
-        fd=Format(i); // Override this as a function.
+        fd=Format(i*m_yaxis_scale); // Override this as a function.
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=start_py+ty;

@@ -733,6 +733,8 @@ void gGraphWindow::Render(float w, float h)
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(*this,w,h);
     }
+    glFinish();
+    DrawTextQueue();
 }
 
 void gGraphWindow::paintGL()
