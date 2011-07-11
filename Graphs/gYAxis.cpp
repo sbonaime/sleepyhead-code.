@@ -94,7 +94,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=start_py+ty;
-        DrawText(w,fd,start_px-12-x,scry-(h-(y/2.0)),0); //
+        DrawText(fd,start_px-12-x,scry-(h-(y/2.0)),0);
         //glColor3ub(0,0,0);
         //w.renderText(start_px-15-x, scry-(h - (y / 2)),fd);
 

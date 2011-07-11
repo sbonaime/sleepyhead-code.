@@ -83,6 +83,7 @@ inline void RDrawText(QPainter & painter, QString text, int x, int  y, float ang
         painter.translate(floor(x),floor(y));
         painter.rotate(-90);
         painter.drawText(floor(-w/2.0),floor(-h/2.0),text);
+        painter.rotate(+90);
         painter.translate(floor(-x),floor(-y));
 
     }
@@ -124,11 +125,13 @@ void DrawTextQueue(gGraphWindow & wid)
     glDisable(GL_DEPTH_TEST);
 }
 // I bet this slows things down craploads..  should probably skip the vector and use a preallocated textbuffer array.
-void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
+void DrawText(QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
     TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
-    if (!angle) TextQue.push_back(b);
-    else TextQueRot.push_back(b);
+    if (angle==90)
+        TextQueRot.push_back(b);
+    else
+        TextQue.push_back(b);
 }
 
 

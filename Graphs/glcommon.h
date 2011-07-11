@@ -26,7 +26,7 @@ extern GLshort *vertex_array[num_vert_arrays];
 
 class gGraphWindow;
 void GetTextExtent(QString text, float & width, float & height, QFont *font=defaultfont);
-void DrawText(gGraphWindow & wid, QString text, int x, int y, float angle=0, QColor color=QColor("black"),QFont *font=defaultfont);
+void DrawText(QString text, int x, int y, float angle=0, QColor color=QColor("black"),QFont *font=defaultfont);
 void DrawTextQueue(gGraphWindow & wid);
 
 void LinedRoundedRectangle(int x,int y,int w,int h,int radius,int lw,QColor color);

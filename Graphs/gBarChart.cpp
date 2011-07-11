@@ -152,9 +152,9 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
             GetTextExtent(str, textX, textY);
             float j=t1+((t2/2.0)+(textY/2.0)+5);
             if (m_orientation==Qt::Vertical) {
-                DrawText(w,str,start_px-textX-8,scry-j);
+                DrawText(str,start_px-textX-8,scry-j);
             } else {
-                DrawText(w,str,j,scry-(start_py-3-(textX/2)),90);
+                DrawText(str,j,scry-(start_py-3-(textX/2)),90);
             }
         }
     }

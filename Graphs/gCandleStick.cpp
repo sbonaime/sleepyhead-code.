@@ -106,10 +106,10 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
         if (t2>x+5) {
             int j=t1+((t2/2.0)-(x/2.0));
             if (m_orientation==Qt::Vertical) {
-                DrawText(w,str,start_px+barwidth+2+y,scry-j,270.0);
+                DrawText(str,start_px+barwidth+2+y,scry-j,270.0);
             } else {
-                w.renderText(j,float(scry)-(float(start_py)+(barwidth/2.0)-(y/2.0)),str);
-                //DrawText(w,str,j,scry-(start_py+(barwidth/2.0)-(y/2.0)));
+                //w.renderText(j,float(scry)-(float(start_py)+(barwidth/2.0)-(y/2.0)),str);
+                DrawText(str,j,float(scry)-(float(start_py)+(barwidth/2.0)-(y/2.0)));
             }
         }
     } // for (int i
