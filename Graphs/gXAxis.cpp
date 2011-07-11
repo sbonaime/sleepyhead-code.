@@ -163,7 +163,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         GetTextExtent(fd,x,y);
-        glColor3ub(0,0,0);
+        //glColor3ub(0,0,0);
         if (!show_time) {
             DrawText(w,fd, px+y, scry-(py-(x/2)-8), 90.0);
             //w.renderText(px-(y/2)+2, scry-(py-(x/2)-20), 90.0,fd);

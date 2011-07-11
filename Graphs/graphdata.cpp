@@ -29,6 +29,12 @@ void gGraphData::AddLayer(gLayer *g)
 {
     notify_layers.push_back(g);
 }
+bool gGraphData::isEmpty()
+{
+    bool b=((vc==1) && (np[0]==0)) || vc==0;
+    return b;
+}
+
 
 gPointData::gPointData(int mp)
 :gGraphData(mp,gDT_Point)

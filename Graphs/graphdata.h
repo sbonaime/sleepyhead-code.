@@ -54,7 +54,8 @@ public:
 
     vector<int> np;
     vector<int> maxsize;
-    const bool & IsReady() { return m_ready; };
+    bool IsReady() { return m_ready; };
+    bool isEmpty();
 
     void AddLayer(gLayer *g);
 protected:

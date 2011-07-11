@@ -55,7 +55,7 @@ void GetTextExtent(QString text, float & width, float & height, QFont *font)
     width=fm.width(text); //fm.width(text);
     height=fm.xHeight()+2; //fm.ascent();
 }
-void RDrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
+inline void RDrawText(QPainter & painter, QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
     //QFontMetrics fm(*font);
     float w,h;
@@ -70,10 +70,8 @@ void RDrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCo
 
 //    glEnable(GL_TEXTURE_2D);
 //    glDisable(GL_DEPTH_TEST);
-    glFinish();
-    QPainter painter(&wid);
     painter.setFont(*font);
-    color=Qt::black;
+    //color=Qt::black;
     painter.setPen(color);
     painter.setBrush(QBrush(color));
     painter.setOpacity(1);
@@ -88,39 +86,49 @@ void RDrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QCo
         painter.translate(floor(-x),floor(-y));
 
     }
+}
+struct TextBuffer
+{
+    QString text;
+    int x,y;
+    float angle;
+    QColor color;
+    QFont *font;
+    TextBuffer(QString _text, int _x, int  _y, float _angle, QColor _color,QFont *_font) {
+        text=_text; x=_x; y=_y; angle=_angle; color=_color; font=_font;
+    }
+};
+vector<TextBuffer *> TextQue;
+vector<TextBuffer *> TextQueRot;
 
+void DrawTextQueue(gGraphWindow & wid)
+{
+    glFlush();
+    QPainter painter(&wid);
+    for (unsigned i=0;i<TextQue.size();i++) {
+        TextBuffer & t=*TextQue[i];
+        RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
+        delete TextQue[i];
+    }
+    // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
+    TextQue.clear();
+    for (unsigned i=0;i<TextQueRot.size();i++) {
+        TextBuffer & t=*TextQueRot[i];
+        RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
+        delete TextQueRot[i];
+    }
+    TextQueRot.clear();
     painter.end();
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
-
 }
-struct TextBuffer
-{
-    gGraphWindow *wid;
-    QString text;
-    int x,y;
-    float angle;
-    QColor *color;
-    QFont *font;
-    TextBuffer(gGraphWindow * _wid, QString _text, int _x, int  _y, float _angle, QColor *_color,QFont *_font) {
-        wid=_wid; text=_text; x=_x; y=_y; angle=_angle; color=_color; font=_font;
-    }
-};
-vector<TextBuffer *> TextQue;
-
-void DrawTextQueue()
-{
-    for (unsigned i=0;i<TextQue.size();i++) {
-        TextBuffer * t=TextQue[i];
-        RDrawText(*t->wid,t->text,t->x,t->y,t->angle,*t->color,t->font);
-        delete TextQue[i];
-    }
-    TextQue.clear();
-}
+// I bet this slows things down craploads..  should probably skip the vector and use a preallocated textbuffer array.
 void DrawText(gGraphWindow & wid, QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
-    TextQue.push_back(new TextBuffer(&wid,text,x,y,angle,&color,font));
+    TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
+    if (!angle) TextQue.push_back(b);
+    else TextQueRot.push_back(b);
 }
 
 

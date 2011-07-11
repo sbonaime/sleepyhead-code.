@@ -9,8 +9,11 @@
 
 #include "graphlayer.h"
 
+class gFlagsGroup;
+
 class gFlagsLine:public gLayer
 {
+    friend class gFlagsGroup;
     public:
         gFlagsLine(gPointData *d=NULL,QColor col=QColor("black"),QString _label="",int _line_num=0,int _total_lines=0);
         virtual ~gFlagsLine();
@@ -22,5 +25,13 @@ class gFlagsLine:public gLayer
         int line_num,total_lines;
 };
 
+class gFlagsGroup:public gLayerGroup
+{
+public:
+    gFlagsGroup();
+    virtual ~gFlagsGroup();
+
+    virtual void Plot(gGraphWindow &w, float scrx, float scry);
+};
 
 #endif // GFLAGSLINE_H

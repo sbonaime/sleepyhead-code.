@@ -67,25 +67,27 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
 
     SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL);
+    fg=new gFlagsGroup();
 
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
 
-    bool extras=false; //true;
     int sfc=7;
+    bool extras=false; //true;
+    fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
+    fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",1,sfc));
+    fg->AddLayer(new gFlagsLine(flags[2],QColor("aqua"),"OA",2,sfc));
+    fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",3,sfc));
+    fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",4,sfc));
+    fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
+    fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",5,sfc));
     if (extras) {
-        sfc+=1;
-        SF->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
-        //SF->AddLayer(new gFlagsLine(flags[8],QColor("red"),"VS2",7,sfc));
+        fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
+        fg->AddLayer(new gFlagsLine(flags[9],QColor("red"),"VS2",8,sfc));
+        sfc++;
     }
-    SF->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
-    SF->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",5,sfc));
-    SF->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",4,sfc));
-    SF->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",3,sfc));
-    SF->AddLayer(new gFlagsLine(flags[2],QColor("aqua"),"OA",2,sfc));
-    SF->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",1,sfc));
-    SF->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
+    SF->AddLayer(fg);
     SF->AddLayer(new gFooBar(10,QColor("orange"),QColor("dark grey"),true));
     SF->setMinimumHeight(150+(extras ? 20 : 0));
    // SF->setMaximumHeight(350);
@@ -106,23 +108,23 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->AddLayer(new gLineChart(pressure_eap,Qt::red,4096,false,true,square));
     PRD->setMinimumHeight(150);
 
-    AddCPAPData(leakdata=new EventData(CPAP_Leak,0));
+    AddCPAPData(leak=new EventData(CPAP_Leak,0));
     LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     //LEAK->AddLayer(new gFooBar());
-    LEAK->AddLayer(new gLineChart(leakdata,QColor("purple"),65536,false,false,true));
+    LEAK->AddLayer(new gLineChart(leak,QColor("purple"),65536,false,false,true));
 
     LEAK->setMinimumHeight(150);
 
 
-    AddCPAPData(mpw=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
+    AddCPAPData(mp=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
     MP=new gGraphWindow(gSplitter,tr("Mask Pressure"),SF);
     gYAxis *y=new gYAxis();
     y->SetScale(.1);
     MP->AddLayer(y);
     MP->AddLayer(new gXAxis());
-    gLineChart *g=new gLineChart(mpw,Qt::black,4000,true);
+    gLineChart *g=new gLineChart(mp,Qt::blue,4000,true);
     g->ReportEmpty(true);
     MP->AddLayer(g);
     MP->setMinimumHeight(120);
@@ -698,10 +700,27 @@ void Daily::Load(QDate date)
     // and show based on this factor.
 
     //cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
-    cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
-    cpap && cpap->count(CPAP_TidalVolume)>0 ? TV->show() : TV->hide();
-    cpap && cpap->count(CPAP_RespiratoryRate)>0 ? RR->show() : RR->hide();
-    cpap && cpap->count(CPAP_FlowLimitGraph)>0 ? FLG->show() : FLG->hide();
+    //cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
+    //cpap && cpap->count(CPAP_TidalVolume)>0 ? TV->show() : TV->hide();
+    //cpap && cpap->count(CPAP_RespiratoryRate)>0 ? RR->show() : RR->hide();
+    //cpap && cpap->count(CPAP_FlowLimitGraph)>0 ? FLG->show() : FLG->hide();
+    mv->isEmpty() ? MV->hide() : MV->show();
+    tv->isEmpty() ? TV->hide() : TV->show();
+    rr->isEmpty() ? RR->hide() : RR->show();
+    flg->isEmpty() ? FLG->hide() : FLG->show();
+    mp->isEmpty() ? MP->hide() : MP->show();
+    frw->isEmpty() ? FRW->hide() : FRW->show();
+    prd->isEmpty() && pressure_iap->isEmpty() ? PRD->hide() : PRD->show();
+    leak->isEmpty() ? LEAK->hide() : LEAK->show();
+    snore->isEmpty() ? SNORE->hide() : SNORE->show();
+
+    bool merge_oxi_graphs=true;
+    if (!merge_oxi_graphs) {
+        spo2->isEmpty() ? SPO2->hide() : SPO2->show();
+        pulse->isEmpty() ? PULSE->hide() : PULSE->show();
+    } else {
+        pulse->isEmpty() && spo2->isEmpty() ? PULSE->hide() : PULSE->show();
+    }
 
     if (oxi) {
         html+="<tr><td>"+tr("Pulse:");
@@ -716,10 +735,10 @@ void Daily::Load(QDate date)
 
         //html+=wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
-        PULSE->show();
+        //PULSE->show();
         //SPO2->show();
     } else {
-        PULSE->hide();
+        //PULSE->hide();
         //SPO2->hide();
     }
     if (!cpap && !oxi) {
@@ -952,6 +971,7 @@ void Daily::on_treeWidget_itemSelectionChanged()
         double st=(d.addSecs(-180)).toMSecsSinceEpoch()/86400000.0;
         double et=(d.addSecs(180)).toMSecsSinceEpoch()/86400000.0;
         FRW->SetXBounds(st,et);
+        MP->SetXBounds(st,et);
         SF->SetXBounds(st,et);
         PRD->SetXBounds(st,et);
         LEAK->SetXBounds(st,et);

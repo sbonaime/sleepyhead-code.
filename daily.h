@@ -18,7 +18,7 @@
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
 #include <Graphs/graphdata.h>
-
+#include <Graphs/gFlagsLine.h>
 namespace Ui {
     class Daily;
 }
@@ -57,14 +57,16 @@ private:
     void UpdateCalendarDay(QDate date);
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
-    gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leakdata,*pressure_iap,*pressure_eap,*snore;
-    gPointData *pulse,*spo2,*rr,*mv,*tv,*mpw,*flg;
+    gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
+    gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg;
 
+    gFlagsGroup *fg;
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG;
 
     list<gPointData *> OXIData;
     list<gPointData *> CPAPData;
     list<gGraphWindow *> Graphs;
+
 
     void AddCPAPData(gPointData *d) { CPAPData.push_back(d); };
     void AddOXIData(gPointData *d) { OXIData.push_back(d); };

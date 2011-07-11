@@ -4,9 +4,49 @@
  License: GPL
 *********************************************************************/
 
-#include <math.h>
+#include <cmath>
+#include <vector>
 #include "SleepLib/profiles.h"
 #include "gFlagsLine.h"
+
+gFlagsGroup::gFlagsGroup()
+{
+}
+gFlagsGroup::~gFlagsGroup()
+{
+}
+
+void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
+{
+    if (!m_visible) return;
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetBottomMargin();
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+
+    glColor3f (0.1F, 0.1F, 0.1F);
+    glLineWidth (1);
+    glBegin (GL_LINE_LOOP);
+    glVertex2f (start_px-1, start_py);
+    glVertex2f (start_px-1, start_py+height);
+    glVertex2f (start_px+width,start_py+height);
+    glVertex2f (start_px+width, start_py);
+    glEnd ();
+
+    vector<gFlagsLine *> visible;
+    for (unsigned i=0;i<layers.size();i++) {
+        if (!layers[i]->isEmpty()) {
+            gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
+            visible.push_back(f);
+        }
+    }
+    int vis=visible.size();
+    for (unsigned i=0;i<visible.size();i++) {
+        visible[i]->line_num=i;
+        visible[i]->total_lines=vis;
+        visible[i]->Plot(w,scrx,scry);
+    }
+}
 
 
 gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,int _line_num,int _total_lines)
@@ -54,19 +94,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     line_h=line_h;
     float line_top=(start_py+height-line_h)-line_num*line_h;
 
-
-    if ((line_num==total_lines-1)) { // last lines responsibility to draw the bounding box
-
-        glColor3f (0.1F, 0.1F, 0.1F);
-        glLineWidth (1);
-        glBegin (GL_LINE_LOOP);
-        glVertex2f (start_px-1, start_py);
-        glVertex2f (start_px-1, start_py+height);
-        glVertex2f (start_px+width,start_py+height);
-        glVertex2f (start_px+width, start_py);
-        glEnd ();
-    }
-
     // Alternating box color
     QColor *barcol=&col2;
     if (line_num & 1)
@@ -92,7 +119,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     // Draw text label
     float x,y;
     GetTextExtent(label,x,y);
-    DrawText(w,label,start_px-x-10,scry-(line_top-((line_h/2)-(y/2))+4));
+    DrawText(w,label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2)); //(line_top-((line_h/2)-(y/2))+4));
     //glColor3ub(0,0,0);
     //w.renderText(start_px-x-10,scry-(line_top+(line_h/2)-(y/2)+3),label);
     float x1,x2;
