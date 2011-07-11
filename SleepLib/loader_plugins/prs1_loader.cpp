@@ -577,14 +577,11 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             tt-=data[0]*1000; // Subtract Time Offset
             session->AddEvent(new Event(tt,cpapcode,data,1));
             break;
-        //case 0x0b: // ASV Codes
-        //    fc++;
-         //   data[0]=buffer[pos++];
-          //  tt-=data[0]*1000; // Subtract Time Offset
-           // fc++;
-            //data[1]=buffer[pos++];
-            //session->AddEvent(new Event(tt,cpapcode,data,2));
-            //break;
+        case 0x0b: // ASV Codes
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++];
+            session->AddEvent(new Event(tt,cpapcode,data,2));
+            break;
         //case 0x08: // ASV Codes
         //case 0x09: // ASV Codes
          //   data[0]=buffer[pos];
