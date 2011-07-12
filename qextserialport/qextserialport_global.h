@@ -5,6 +5,8 @@
 
 #include <QtCore/qglobal.h>
 
+#define QEXTSERIALPORT_LIB
+
 #ifdef QEXTSERIALPORT_LIB
 # define QEXTSERIALPORT_EXPORT Q_DECL_EXPORT
 #else
