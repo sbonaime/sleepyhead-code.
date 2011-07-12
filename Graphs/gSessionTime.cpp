@@ -8,6 +8,25 @@
 #include <SleepLib/profiles.h>
 #include "gSessionTime.h"
 
+gTimeYAxis::gTimeYAxis(QColor col)
+   :gYAxis(col)
+{
+}
+gTimeYAxis::~gTimeYAxis()
+{
+}
+const QString & gTimeYAxis::Format(double v)
+{
+    static QString t;
+    int i=v;
+    if (i<0) i=24+i;
+
+
+    t.sprintf("%02i:00",i);
+    return t;
+};
+
+
 gSessionTime::gSessionTime(gPointData *d,QColor col,Qt::Orientation o)
 :gLayer(d),m_orientation(o)
 {

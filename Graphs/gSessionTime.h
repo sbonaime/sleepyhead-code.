@@ -9,6 +9,16 @@
 
 #include "graphlayer.h"
 #include "gXAxis.h"
+#include "gYAxis.h"
+
+class gTimeYAxis:public gYAxis
+{
+public:
+    gTimeYAxis(QColor col=QColor("black"));
+    virtual ~gTimeYAxis();
+    virtual const QString & Format(double v);
+};
+
 
 class gSessionTime:public gLayer
 {

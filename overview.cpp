@@ -92,7 +92,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AddGraph(SESSTIMES=new gGraphWindow(ui->SummaryGraphWindow,tr("Session Times"),AHI));
     //SESSTIMES->SetMargins(10,15,65,80);
     SESSTIMES->AddLayer(new gFooBar(7));
-    SESSTIMES->AddLayer(new gYAxis());
+    SESSTIMES->AddLayer(new gTimeYAxis());
     SESSTIMES->AddLayer(new gSessionTime(session_times,QColor("green")));
     SESSTIMES->SetBottomMargin(SESSTIMES->GetBottomMargin()+gXAxis::Margin+25);
     //SESSTIMES->AddLayer(new gXAxis());
