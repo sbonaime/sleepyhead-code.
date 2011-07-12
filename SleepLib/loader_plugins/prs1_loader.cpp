@@ -315,10 +315,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->summary[CPAP_ClearAirway]=sess->count_events(CPAP_ClearAirway);
             sess->summary[CPAP_RERA]=sess->count_events(CPAP_RERA);
             sess->summary[CPAP_FlowLimit]=sess->count_events(CPAP_FlowLimit);
+            sess->summary[CPAP_VSnore]=sess->count_events(CPAP_VSnore);
         //}
 
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
-        sess->summary[CPAP_VSnore]=sess->count_events(CPAP_VSnore);
         sess->summary[CPAP_Snore]=sess->sum_event_field(CPAP_Snore,0);
 
 
@@ -349,8 +349,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
 
         } else {
-            sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
-            //sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMedian]=sess->weighted_avg_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
             sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
             if (sess->summary.find(CPAP_PressureMin)==sess->summary.end()) {
