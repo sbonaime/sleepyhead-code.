@@ -12,6 +12,7 @@
 #include <QSplitter>
 #include <SleepLib/profiles.h>
 #include <Graphs/graphdata_custom.h>
+
 namespace Ui {
     class Overview;
 }
@@ -56,10 +57,10 @@ private:
 
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     HistoryData *pressure_min,*pressure_max;
+    SessionTimes *session_times;
+    gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE,*SESSTIMES;
 
-    gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE;
-
-    gLayer *prmax,*prmin,*iap,*eap,*pr;
+    gLayer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
 
     list<HistoryData *> Data;
     list<gGraphWindow *> Graphs;

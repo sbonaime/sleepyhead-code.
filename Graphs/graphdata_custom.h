@@ -70,14 +70,31 @@ public:
     virtual void Reload(Day *day=NULL);
 };
 
+class SessionTimes:public gPointData
+{
+public:
+    SessionTimes(Profile * _profile);
+    virtual ~SessionTimes();
+
+    void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
+    Profile * GetProfile() { return profile; }
+    double GetAverage(); // length??
+    virtual void Reload(Day *day=NULL);
+    virtual void ResetDateRange();
+    virtual void SetDateRange(QDate start,QDate end);
+
+protected:
+    Profile * profile;
+};
+
 class HistoryData:public gPointData
 {
 public:
     HistoryData(Profile * _profile);
     virtual ~HistoryData();
 
-    void SetProfile(Profile *_profile) { profile=_profile; Reload(); };
-    Profile * GetProfile() { return profile; };
+    void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
+    Profile * GetProfile() { return profile; }
     double GetAverage();
 
     virtual double Calc(Day *day);

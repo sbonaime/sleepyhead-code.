@@ -300,13 +300,13 @@ void FlagData::Reload(Day *day)
     int c=0;
     vc=0;
     double v1,v2;
-    bool first;
+    //bool first;
     min_x=day->first()/86400000.0;
     max_x=day->last()/86400000.0;
 
     for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
-        first=true;
+        //first=true;
         for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             v2=v1=ev.time()/86400000.0;
@@ -336,6 +336,116 @@ void FlagData::Reload(Day *day)
     real_min_x=min_x;
     real_min_y=min_y;
     real_max_x=max_x;
+    real_max_y=max_y;
+    m_ready=true;
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+// Session Times Implementation
+////////////////////////////////////////////////////////////////////////////////////////////
+
+SessionTimes::SessionTimes(Profile * _profile)
+    :gPointData(2048),profile(_profile)
+{
+    AddSegment(max_points);
+    if (profile->LastDay().isValid()) {
+        QDateTime tmp;
+        tmp.setDate(profile->FirstDay());
+        real_min_x=tmp.toMSecsSinceEpoch()/86400000.0;
+        tmp.setDate(profile->LastDay());
+        real_max_x=(tmp.toMSecsSinceEpoch()/86400000.0)+1;
+    }
+    real_min_y=real_max_y=0;
+}
+SessionTimes::~SessionTimes()
+{
+}
+void SessionTimes::ResetDateRange()
+{
+    if (profile->LastDay().isValid()) {
+        QDateTime tmp;
+        tmp.setDate(profile->FirstDay());
+        real_min_x=tmp.toMSecsSinceEpoch()/86400000.0;
+        tmp.setDate(profile->LastDay());
+        real_max_x=(tmp.toMSecsSinceEpoch()/86400000.0)+1;
+    }
+}
+double SessionTimes::GetAverage()
+{
+    double x,val=0;
+    int cnt=0;
+    for (int i=0;i<np[0];i++) {
+        x=point[0][i].x();
+        if ((x<min_x) || (x>max_x)) continue;
+        val+=point[0][i].y()-point[0][i].x();
+        cnt++;
+    }
+    if (!cnt) return 0;
+    val/=cnt;
+    return val;
+}
+void SessionTimes::SetDateRange(QDate start,QDate end)
+{
+    qint64 x1=QDateTime(start).toMSecsSinceEpoch()/86400000.0;
+    qint64 x2=QDateTime(end.addDays(1)).toMSecsSinceEpoch()/86400000.0;
+    if (x1 < real_min_x) x1=real_min_x;
+    if (x2 > (real_max_x)) x2=(real_max_x);
+    min_x=x1;
+    max_x=x2;
+    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
+        (*i)->DataChanged(this);
+    }    // Do nothing else.. Callers responsibility to Refresh window.
+}
+
+
+void SessionTimes::Reload(Day *day)
+{
+    day=day; //shuttup warnings.. we don't use this.
+
+    QDateTime date;
+    vc=0;
+    bool done=false;
+    double st,et;
+    min_y=max_y=0;
+    min_x=max_x=0;
+    if (real_min_x<0) return;
+    if (real_max_x<0) return;
+    int i=0;
+    for (double x=floor(real_min_x);x<=ceil(real_max_x);x++) {
+        date=QDateTime::fromMSecsSinceEpoch(x*86400000.0L); // Ouch.. QDateTime conversions are slow as hell..
+    //    date.setTime(QTime(0,0,0));
+        //if (profile->daylist.find(date.date())==profile->daylist.end()) continue;
+        Day *dy=profile->GetDay(date.date(),MT_CPAP);
+        if (!dy) continue;
+        //vector<Day *> & daylist=profile->daylist[date.date()];
+        for (vector<Session *>::iterator dd=dy->begin(); dd!=dy->end(); dd++) { // average any multiple data sets
+            st=double((*dd)->first())/86400000.0;
+            et=double((*dd)->last())/86400000.0;
+            point[vc][i].setX(st);
+            point[vc][i].setY(et);
+
+            i++;
+            if (i>max_points) {
+                qWarning("max_points is not enough in HistoryData");
+                done=true;
+                break;
+            }
+        }
+        if (done)
+            break;
+    }
+    np[vc]=i;
+    vc++;
+    min_x=real_min_x;
+    max_x=real_max_x;
+
+    if (force_min_y!=force_max_y) {
+        min_y=force_min_y;
+        max_y=force_max_y;
+    } else {
+        min_y=-12;
+        max_y=+12;
+    }
+    real_min_y=min_y;
     real_max_y=max_y;
     m_ready=true;
 }
@@ -389,7 +499,7 @@ void HistoryData::Reload(Day *day)
     int i=0;
     bool first=true;
     bool done=false;
-    double y,lasty=0;
+    double y,lasty;
     min_y=max_y=0;
     min_x=max_x=0;
     if (real_min_x<0) return;

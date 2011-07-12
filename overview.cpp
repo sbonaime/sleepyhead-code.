@@ -14,6 +14,7 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFooBar.h"
+#include "Graphs/gSessionTime.h"
 
 Overview::Overview(QWidget *parent,QGLContext *context) :
     QWidget(parent),
@@ -30,6 +31,8 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
 
     AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPAverage));
     AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPAverage));
+
+    session_times=new SessionTimes(profile);
 
    // pressure->ForceMinY(3);
    // pressure->ForceMaxY(12);
@@ -86,24 +89,44 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     //USAGE->AddLayer(new gLineChart(usage,QColor("green")));
     USAGE->setMinimumHeight(170);
 
+    AddGraph(SESSTIMES=new gGraphWindow(ui->SummaryGraphWindow,tr("Session Times"),AHI));
+    //SESSTIMES->SetMargins(10,15,65,80);
+    SESSTIMES->AddLayer(new gFooBar(7));
+    SESSTIMES->AddLayer(new gYAxis());
+    SESSTIMES->AddLayer(new gSessionTime(session_times,QColor("green")));
+    SESSTIMES->SetBottomMargin(SESSTIMES->GetBottomMargin()+gXAxis::Margin+25);
+    //SESSTIMES->AddLayer(new gXAxis());
+    SESSTIMES->setMinimumHeight(270);
+
     AHI->LinkZoom(PRESSURE);
     AHI->LinkZoom(LEAK);
     AHI->LinkZoom(USAGE);
+    AHI->LinkZoom(SESSTIMES);
     PRESSURE->LinkZoom(AHI);
     PRESSURE->LinkZoom(LEAK);
     PRESSURE->LinkZoom(USAGE);
+    PRESSURE->LinkZoom(SESSTIMES);
     LEAK->LinkZoom(AHI);
     LEAK->LinkZoom(PRESSURE);
     LEAK->LinkZoom(USAGE);
+    LEAK->LinkZoom(SESSTIMES);
     USAGE->LinkZoom(AHI);
     USAGE->LinkZoom(PRESSURE);
     USAGE->LinkZoom(LEAK);
+    USAGE->LinkZoom(SESSTIMES);
+    SESSTIMES->LinkZoom(AHI);
+    SESSTIMES->LinkZoom(PRESSURE);
+    SESSTIMES->LinkZoom(LEAK);
+    SESSTIMES->LinkZoom(USAGE);
 
 
+
+    gSplitter->addWidget(SESSTIMES);
     gSplitter->addWidget(AHI);
     gSplitter->addWidget(PRESSURE);
     gSplitter->addWidget(LEAK);
     gSplitter->addWidget(USAGE);
+
     dummyday=new Day(NULL);
 
     ReloadGraphs();
@@ -119,6 +142,7 @@ void Overview::RedrawGraphs()
     for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
         (*g)->updateGL();
     }
+    SESSTIMES->updateGL();
 }
 void Overview::ReloadGraphs()
 {
@@ -127,6 +151,9 @@ void Overview::ReloadGraphs()
         (*h)->ResetDateRange();
         (*h)->Reload(NULL);
     }
+    session_times->SetProfile(profile);
+    session_times->ResetDateRange();
+    session_times->Reload(NULL);
     on_rbLastWeek_clicked();
 }
 
@@ -138,6 +165,7 @@ void Overview::UpdateGraphs()
           //(*h)->Update(dummyday);
           (*h)->SetDateRange(first,last);
     }
+    session_times->SetDateRange(first,last);
     RedrawGraphs();
 }
 

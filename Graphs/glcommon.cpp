@@ -81,9 +81,9 @@ inline void RDrawText(QPainter & painter, QString text, int x, int  y, float ang
     } else {
         GetTextExtent(text, w, h, font);
         painter.translate(floor(x),floor(y));
-        painter.rotate(-90);
+        painter.rotate(-angle);
         painter.drawText(floor(-w/2.0),floor(-h/2.0),text);
-        painter.rotate(+90);
+        painter.rotate(+angle);
         painter.translate(floor(-x),floor(-y));
 
     }

@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     Graphs/gBarChart.cpp \
     SleepLib/loader_plugins/resmed_loader.cpp \
     Graphs/gpiechart.cpp \
-    SleepLib/loader_plugins/sleep_database.cpp
+    SleepLib/loader_plugins/sleep_database.cpp \
+    Graphs/gSessionTime.cpp
 
 HEADERS  += \
     SleepLib/binary_file.h \
@@ -96,7 +97,8 @@ HEADERS  += \
     Graphs/gBarChart.h \
     SleepLib/loader_plugins/resmed_loader.h \
     Graphs/gpiechart.h \
-    SleepLib/loader_plugins/sleep_database.h
+    SleepLib/loader_plugins/sleep_database.h \
+    Graphs/gSessionTime.h
 
 FORMS    += \
     daily.ui \
