@@ -45,7 +45,10 @@ enum MachineCode//:qint16
     CPAP_LeakMedian,CPAP_LeakMinimum,CPAP_LeakMaximum,CPAP_LeakAverage,CPAP_Duration,
     CPAP_SnoreMinimum, CPAP_SnoreMaximum, CPAP_SnoreAverage, CPAP_SnoreMedian,
 
-    BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,CPAP_BrokenSummary,
+    BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,
+    BIPAP_PSAverage,BIPAP_PSMin, BIPAP_PSMax,
+
+    CPAP_BrokenSummary,
 
     // PRS1 Specific Codes
     PRS1_PressurePulse=0x1000,PRS1_VSnore2,

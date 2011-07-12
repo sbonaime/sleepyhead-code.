@@ -323,7 +323,13 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
 
         if (sess->count_events(CPAP_IAP)>0) {
+            //sess->summary[CPAP_Mode]!=MODE_ASV)
             sess->summary[CPAP_Mode]=MODE_BIPAP;
+
+            sess->summary[BIPAP_PSAverage]=sess->weighted_avg_event_field(CPAP_PS,0);
+            sess->summary[BIPAP_PSMin]=sess->min_event_field(CPAP_PS,0);
+            sess->summary[BIPAP_PSMax]=sess->max_event_field(CPAP_PS,0);
+
             if (sess->summary[CPAP_PressureReliefType].toInt()!=PR_NONE) {
                 sess->summary[CPAP_PressureReliefType]=PR_BIFLEX;
             }
@@ -339,6 +345,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->summary[BIPAP_IAPAverage]=sess->weighted_avg_event_field(CPAP_IAP,0);
             sess->summary[BIPAP_IAPMin]=sess->min_event_field(CPAP_IAP,0);
             sess->summary[BIPAP_IAPMax]=sess->max_event_field(CPAP_IAP,0);
+
+
 
         } else {
             sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
@@ -563,15 +571,24 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++]/10.0;
             session->AddEvent(new Event(t,cpapcode, data,1));
             break;
+        case 0x03: // BIPAP Pressure
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++];
+            data[0]/=10.0;
+            data[1]/=10.0;
+            session->AddEvent(new Event(t,CPAP_EAP, data, 1));
+            session->AddEvent(new Event(t,CPAP_IAP, &data[1], 1));
+            data[1]-=data[0];
+            session->AddEvent(new Event(t,CPAP_PS, &data[1], 1));
+            break;
         case 0x04: // Pressure Pulse
             data[0]=buffer[pos++];
             session->AddEvent(new Event(t,cpapcode, data,1));
             break;
-
-        case 0x0a: // Hypopnea
         case 0x05: // RERA
         case 0x06: // Obstructive Apoanea
         case 0x07: // Clear Airway
+        case 0x0a: // Hypopnea
         case 0x0c: // Flow Limitation
             data[0]=buffer[pos++];
             tt-=data[0]*1000; // Subtract Time Offset
@@ -582,22 +599,8 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[1]=buffer[pos++];
             session->AddEvent(new Event(tt,cpapcode,data,2));
             break;
-        //case 0x08: // ASV Codes
-        //case 0x09: // ASV Codes
-         //   data[0]=buffer[pos];
-          //  tt-=buffer[pos++]*1000; // Subtract Time Offset
-           // session->AddEvent(new Event(tt,cpapcode,data,1));
-           // break;
         case 0x0d: // Vibratory Snore
             session->AddEvent(new Event(t,cpapcode, data,0));
-            break;
-        case 0x03: // BIPAP Pressure
-            data[0]=buffer[pos++];
-            data[1]=buffer[pos++];
-            data[0]/=10.0;
-            data[1]/=10.0;
-            session->AddEvent(new Event(t,CPAP_EAP, data, 1));
-            session->AddEvent(new Event(t,CPAP_IAP, &data[1], 1));
             break;
         case 0x11: // Leak Rate
             data[0]=buffer[pos++];
@@ -609,13 +612,11 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             }
             break;
         case 0x0e: // Unknown
-
             data[0]=buffer[pos++]; // << 8) | buffer[pos];
             data[1]=buffer[pos++];
             data[2]=buffer[pos++];
             session->AddEvent(new Event(t,cpapcode, data, 3));
             break;
-
         case 0x10: // Unknown
             data[0]=buffer[pos++]; // << 8) | buffer[pos];
             data[1]=buffer[pos++];
@@ -750,11 +751,6 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             session->AddEvent(new Event(t,CPAP_IAPLO,&data[1],1)); //correct
             data[2]=buffer[pos++]/10.0; // Hi IPAP
             session->AddEvent(new Event(t,CPAP_IAPHI,&data[2],1)); //correct
-
-            // This may not be necessary.. Check: the average of IAPHI - average of IAPLO may equal the average of this.
-            data[2]-=data[1];
-            session->AddEvent(new Event(t,CPAP_PS,&data[2],1)); //correct
-
             data[3]=buffer[pos++];//Leak
             session->AddEvent(new Event(t,CPAP_Leak,&data[3],1)); // correct
             data[4]=buffer[pos++];//Breaths Per Minute
@@ -770,9 +766,11 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             if (data[8]>0) {
                 session->AddEvent(new Event(t,CPAP_VSnore,&data[8],1)); //correct
             }
-            data[9]=buffer[pos++]/10.0; // This is a pressure value
+            data[9]=buffer[pos++]/10.0; // EPAP
             session->AddEvent(new Event(t,CPAP_EAP,&data[9],1)); //correct
 
+            data[2]-=data[9]; // Pressure Support
+            session->AddEvent(new Event(t,CPAP_PS,&data[2],1)); //correct
             qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << hex << session->session() << pos+15 << hex << int(code) << ": " << hex << int(data[0]) << " " << int(data[1]) << " " << int(data[2])  << " " << int(data[3]) << " " << int(data[4]) << " " << int(data[5])<< " " << int(data[6]) << " " << int(data[7]) << " " << int(data[8]) << " " << int(data[9]);
             break;
         case 0x03: // BIPAP Pressure

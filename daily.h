@@ -58,10 +58,10 @@ private:
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
     gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
-    gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg;
+    gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
 
     gFlagsGroup *fg;
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB;
 
     list<gPointData *> OXIData;
     list<gPointData *> CPAPData;

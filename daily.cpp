@@ -188,6 +188,13 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,true));
     RR->setMinimumHeight(150);
 
+    AddCPAPData(ptb=new EventData(CPAP_PatientTriggeredBreaths ));
+    PTB=new gGraphWindow(gSplitter,tr("Patient Trig Breaths"),SF);
+    PTB->AddLayer(new gXAxis());
+    PTB->AddLayer(new gYAxis());
+    PTB->AddLayer(new gLineChart(ptb,Qt::gray,65536,false,false,true));
+    PTB->setMinimumHeight(150);
+
 
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
@@ -276,6 +283,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->LinkZoom(TV);
     FRW->LinkZoom(RR);
     FRW->LinkZoom(FLG);
+    FRW->LinkZoom(PTB);
+
     SF->LinkZoom(FRW);
     SF->LinkZoom(MP);
     SF->LinkZoom(PRD);
@@ -285,6 +294,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SF->LinkZoom(TV);
     SF->LinkZoom(RR);
     SF->LinkZoom(FLG);
+    SF->LinkZoom(PTB);
+
     PRD->LinkZoom(SF);
     PRD->LinkZoom(FRW);
     PRD->LinkZoom(MP);
@@ -294,6 +305,18 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->LinkZoom(TV);
     PRD->LinkZoom(RR);
     PRD->LinkZoom(FLG);
+    PRD->LinkZoom(PTB);
+
+    PTB->LinkZoom(SF);
+    PTB->LinkZoom(FRW);
+    PTB->LinkZoom(MP);
+    PTB->LinkZoom(LEAK);
+    PTB->LinkZoom(SNORE);
+    PTB->LinkZoom(MV);
+    PTB->LinkZoom(TV);
+    PTB->LinkZoom(RR);
+    PTB->LinkZoom(FLG);
+    PTB->LinkZoom(PRD);
 
     LEAK->LinkZoom(SF);
     LEAK->LinkZoom(FRW);
@@ -304,6 +327,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     LEAK->LinkZoom(TV);
     LEAK->LinkZoom(RR);
     LEAK->LinkZoom(FLG);
+    LEAK->LinkZoom(PTB);
 
     SNORE->LinkZoom(SF);
     SNORE->LinkZoom(FRW);
@@ -314,6 +338,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     SNORE->LinkZoom(TV);
     SNORE->LinkZoom(RR);
     SNORE->LinkZoom(FLG);
+    SNORE->LinkZoom(PTB);
 
     MV->LinkZoom(SF);
     MV->LinkZoom(FRW);
@@ -324,6 +349,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     MV->LinkZoom(TV);
     MV->LinkZoom(RR);
     MV->LinkZoom(FLG);
+    MV->LinkZoom(PTB);
 
     TV->LinkZoom(SF);
     TV->LinkZoom(FRW);
@@ -334,6 +360,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     TV->LinkZoom(MV);
     TV->LinkZoom(RR);
     TV->LinkZoom(FLG);
+    TV->LinkZoom(PTB);
 
     RR->LinkZoom(SF);
     RR->LinkZoom(FRW);
@@ -344,6 +371,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     RR->LinkZoom(MV);
     RR->LinkZoom(TV);
     RR->LinkZoom(FLG);
+    RR->LinkZoom(PTB);
 
     FLG->LinkZoom(SF);
     FLG->LinkZoom(FRW);
@@ -354,6 +382,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FLG->LinkZoom(MV);
     FLG->LinkZoom(TV);
     FLG->LinkZoom(RR);
+    FLG->LinkZoom(PTB);
 
     MP->LinkZoom(SF);
     MP->LinkZoom(FRW);
@@ -364,6 +393,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     MP->LinkZoom(MV);
     MP->LinkZoom(TV);
     MP->LinkZoom(RR);
+    MP->LinkZoom(PTB);
 
 
     gSplitter->addWidget(NoData);
@@ -372,6 +402,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddGraph(MP);
     AddGraph(MV);
     AddGraph(TV);
+    AddGraph(PTB);
     AddGraph(RR);
     AddGraph(PRD);
     AddGraph(LEAK);
@@ -664,6 +695,10 @@ void Daily::Load(QDate date)
             html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_IAPAverage));
             html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_IAPMax))+("</td></tr>");
 
+            html+=("<tr><td align=left>"+tr("PS:")+"</td><td>")+a.sprintf("%.2f",cpap->summary_min(BIPAP_PSMin));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_weighted_avg(BIPAP_PSAverage));
+            html+=("</td><td>")+a.sprintf("%.2f",cpap->summary_max(BIPAP_PSMax))+("</td></tr>");
+
         }
         html+="<tr><td align=left>"+tr("Leak:");
         html+="</td><td>"+a.sprintf("%.2f",cpap->summary_min(CPAP_LeakMinimum));
@@ -713,6 +748,7 @@ void Daily::Load(QDate date)
     prd->isEmpty() && pressure_iap->isEmpty() ? PRD->hide() : PRD->show();
     leak->isEmpty() ? LEAK->hide() : LEAK->show();
     snore->isEmpty() ? SNORE->hide() : SNORE->show();
+    ptb->isEmpty() ? PTB->hide() : PTB->show();
 
     bool merge_oxi_graphs=true;
     if (!merge_oxi_graphs) {

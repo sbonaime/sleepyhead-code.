@@ -135,10 +135,10 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
                 GetTextExtent(str, textX, textY);
                 if (!draw_xticks_instead && (textY+6<barwidth)) {
                     glBegin(GL_LINE);
-                    glVertex2f(start_px+px1+barwidth/2+textY/2,start_py);
-                    glVertex2f(start_px+px1+barwidth/2+textY/2,start_py-6);
+                    glVertex2f(start_px+px1+barwidth/2,start_py);
+                    glVertex2f(start_px+px1+barwidth/2,start_py-6);
                     glEnd();
-                    DrawText(str,start_px+px1+barwidth/2+textY/2+textY,scry-(start_py-8-textX/2),90);
+                    DrawText(str,start_px+px1+barwidth/2+textY,scry-(start_py-8-textX/2),90);
                 } else draw_xticks_instead=true;
             }
         }

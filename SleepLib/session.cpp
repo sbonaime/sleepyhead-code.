@@ -147,7 +147,7 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
 
 
     double mult;
-    if ((mc==CPAP_Pressure) || (mc==CPAP_EAP) ||  (mc==CPAP_IAP)) {
+    if ((mc==CPAP_Pressure) || (mc==CPAP_EAP) ||  (mc==CPAP_IAP) | (mc==CPAP_PS)) {
         mult=10.0;
 
     } else mult=10.0;
@@ -175,21 +175,21 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
         lastval=val;
     }
 
-    qint64 total;
+    qint64 total=0;
     for (int i=0; i<max_slots; i++) total+=vtime[i];
     //double hours=total.GetSeconds().GetLo()/3600.0;
 
-    double s0=0,s1=0,s2=0;
+    qint64 s0=0,s1=0,s2=0;
     if (total==0) return 0;
     for (int i=0; i<max_slots; i++) {
         if (vtime[i] > 0) {
-            s0=(vtime[i]/3600.0);
+            s0=vtime[i];
             s1+=i*s0;
             s2+=s0;
         }
     }
-
-    return (s1/total)/mult;
+    double j=double(s1)/double(total);
+    return j/mult;
 }
 
 void Session::AddEvent(Event * e)
