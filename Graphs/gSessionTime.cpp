@@ -63,14 +63,22 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
     double px1,px2,py1,py2;
     QColor & col1=color[0];
     QColor col2("light grey");
+    QString str;
+    bool draw_xticks_instead=false;
+    bool antialias=pref["UseAntiAliasing"].toBool();
 
     QDateTime d;
     QTime t;
     double start,end,total;
+    float textX,textY;
+    map<int,bool> datedrawn;
+
+    int idx=-1;
     for (int i=0;i<data->np[0];i++) {
         QPointD & rp=data->point[0][i];
         if (int(rp.x()) < int(minx)) continue;
         if (int(rp.x()) > int(maxx+.5)) break;
+        if (idx<0) idx=i;
         d=QDateTime::fromTime_t(rp.x()*86400.0);
         t=d.time();
         start=t.hour()+(t.minute()/60.0)+(t.second()/3600.0);
@@ -119,7 +127,29 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
         glVertex2f(rect.x()+rect.width(),rect.y());
         glVertex2f(rect.x()+rect.width(), rect.y()+rect.height());
         glEnd();
+        if (!draw_xticks_instead) {
+            if (datedrawn.find(dy)==datedrawn.end()) {
+                datedrawn[dy]=true;
+                str=FormatX(rp.y());
+
+                GetTextExtent(str, textX, textY);
+                if (!draw_xticks_instead && (textY+6<barwidth)) {
+                    glBegin(GL_LINE);
+                    glVertex2f(start_px+px1+barwidth/2+textY/2,start_py);
+                    glVertex2f(start_px+px1+barwidth/2+textY/2,start_py-6);
+                    glEnd();
+                    DrawText(str,start_px+px1+barwidth/2+textY/2+textY,scry-(start_py-8-textX/2),90);
+                } else draw_xticks_instead=true;
+            }
+        }
+
     }
+    if (draw_xticks_instead) {
+        // turn off the minor ticks..
+        Xaxis->SetShowMinorTicks(false);
+        Xaxis->Plot(w,scrx,scry);
+    }
+
     glColor3f (0.0F, 0.0F, 0.0F);
     glLineWidth(1);
     glBegin (GL_LINES);
@@ -128,6 +158,4 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f (start_px,start_py);
     glVertex2f (start_px+width, start_py);
     glEnd ();
-
-    Xaxis->Plot(w,scrx,scry);
 }
