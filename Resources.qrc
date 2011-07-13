@@ -11,5 +11,6 @@
         <file>icons/edit-find.png</file>
         <file>icons/back.png</file>
         <file>fonts/FreeSans.ttf</file>
+        <file>icons/refresh.png</file>
     </qresource>
 </RCC>

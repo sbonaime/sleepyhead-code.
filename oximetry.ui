@@ -36,7 +36,7 @@
           <x>0</x>
           <y>0</y>
           <width>508</width>
-          <height>304</height>
+          <height>303</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -86,7 +86,11 @@
         <item>
          <widget class="QToolButton" name="RefreshPortsButton">
           <property name="text">
-           <string>R</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="Resources.qrc">
+            <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
           </property>
          </widget>
         </item>
@@ -117,6 +121,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
