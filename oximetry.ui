@@ -47,7 +47,7 @@
           <number>0</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="graphLayout">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -95,6 +95,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="RunButton">
+          <property name="text">
+           <string>&amp;Start</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -110,7 +120,7 @@
         <item>
          <widget class="QPushButton" name="ImportButton">
           <property name="text">
-           <string>Import from Device</string>
+           <string>&amp;Import from Device</string>
           </property>
          </widget>
         </item>

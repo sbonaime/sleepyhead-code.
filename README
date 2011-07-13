@@ -14,5 +14,6 @@ Licence Stuff
 -------------
 This software is released under the GNU Public License. 
 
+Exceptions:
 Incorporates TinyXML.. see their readme for details in ./libs/tinyxml
-
+Incorporates QextSerialPort. Insert New BSD license here.
