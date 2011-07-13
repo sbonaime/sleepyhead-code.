@@ -76,6 +76,10 @@ MainWindow::~MainWindow()
         overview->close();
         delete overview;
     }
+    if (oximetry) {
+        oximetry->close();
+        delete oximetry;
+    }
     DoneGraphs();
     delete ui;
     Profiles::Done();
@@ -95,6 +99,9 @@ void MainWindow::Startup()
 
     overview=new Overview(ui->tabWidget,shared_context);
     ui->tabWidget->addTab(overview,tr("Overview"));
+
+    oximetry=new Oximetry(ui->tabWidget);
+    ui->tabWidget->addTab(oximetry,tr("Oximetry"));
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));

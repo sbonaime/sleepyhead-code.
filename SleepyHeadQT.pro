@@ -61,7 +61,8 @@ SOURCES += main.cpp\
     Graphs/gpiechart.cpp \
     SleepLib/loader_plugins/sleep_database.cpp \
     Graphs/gSessionTime.cpp \
-    qextserialport/qextserialport.cpp
+    qextserialport/qextserialport.cpp \
+    oximetry.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -116,13 +117,15 @@ HEADERS  += \
     Graphs/gSessionTime.h \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
-    qextserialport/qextserialenumerator.h
+    qextserialport/qextserialenumerator.h \
+    oximetry.h
 
 
 FORMS    += \
     daily.ui \
     overview.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    oximetry.ui
 
 RESOURCES += \
     Resources.qrc
