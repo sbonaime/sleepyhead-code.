@@ -98,34 +98,19 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     //SESSTIMES->AddLayer(new gXAxis());
     SESSTIMES->setMinimumHeight(270);
 
-    AHI->LinkZoom(PRESSURE);
-    AHI->LinkZoom(LEAK);
-    AHI->LinkZoom(USAGE);
-    AHI->LinkZoom(SESSTIMES);
-    PRESSURE->LinkZoom(AHI);
-    PRESSURE->LinkZoom(LEAK);
-    PRESSURE->LinkZoom(USAGE);
-    PRESSURE->LinkZoom(SESSTIMES);
-    LEAK->LinkZoom(AHI);
-    LEAK->LinkZoom(PRESSURE);
-    LEAK->LinkZoom(USAGE);
-    LEAK->LinkZoom(SESSTIMES);
-    USAGE->LinkZoom(AHI);
-    USAGE->LinkZoom(PRESSURE);
-    USAGE->LinkZoom(LEAK);
-    USAGE->LinkZoom(SESSTIMES);
-    SESSTIMES->LinkZoom(AHI);
-    SESSTIMES->LinkZoom(PRESSURE);
-    SESSTIMES->LinkZoom(LEAK);
-    SESSTIMES->LinkZoom(USAGE);
 
+    gGraphWindow * graphs[]={AHI,PRESSURE,LEAK,USAGE,SESSTIMES};
+    int ss=sizeof(graphs)/sizeof(gGraphWindow *);
 
-
-    gSplitter->addWidget(SESSTIMES);
-    gSplitter->addWidget(AHI);
-    gSplitter->addWidget(PRESSURE);
-    gSplitter->addWidget(LEAK);
-    gSplitter->addWidget(USAGE);
+    for (int i=0;i<ss;i++) {
+        AddGraph(graphs[i]);
+        for (int j=0;j<ss;j++) {
+            if (graphs[i]!=graphs[j])
+                graphs[i]->LinkZoom(graphs[j]);
+        }
+        gSplitter->addWidget(graphs[i]);
+        graphs[i]->SetSplitter(gSplitter);
+    }
 
     dummyday=new Day(NULL);
 

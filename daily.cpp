@@ -77,7 +77,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     bool extras=false; //true;
     fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
     fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",1,sfc));
-    fg->AddLayer(new gFlagsLine(flags[2],QColor("aqua"),"OA",2,sfc));
+    fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",2,sfc));
     fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",3,sfc));
     fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",4,sfc));
     fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
@@ -147,7 +147,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     //FRW->AddLayer(new gLineOverlayBar(flags[9],QColor("dark green"),"U0E"));
     FRW->AddLayer(new gLineOverlayBar(flags[5],QColor("red"),"VS"));
     FRW->AddLayer(new gLineOverlayBar(flags[4],QColor("black"),"FL"));
-    FRW->AddLayer(new gLineOverlayBar(flags[2],QColor("aqua"),"OA"));
+    FRW->AddLayer(new gLineOverlayBar(flags[2],QColor("#40c0ff"),"OA"));
     FRW->AddLayer(new gLineOverlayBar(flags[1],QColor("purple"),"CA"));
 
     FRW->setMinimumHeight(190);

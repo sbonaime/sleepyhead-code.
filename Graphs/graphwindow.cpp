@@ -5,6 +5,7 @@
 *********************************************************************/
 
 #include <math.h>
+#include <QDebug>
 #include <QMouseEvent>
 #include "SleepLib/profiles.h"
 #include "graphwindow.h"
@@ -234,6 +235,7 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
     }
     SetXBounds(min,max);
 }
+
 gGraphWindow *LastGraphLDown=NULL;
 gGraphWindow *LastGraphRDown=NULL;
 gGraphWindow *currentWidget=NULL;
@@ -245,6 +247,21 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
     if (m_dragGraph) {
         if (LastGraphLDown!=this)
             currentWidget=this;
+        if (splitter) {
+            if (event->y()>m_scrY) {
+                //qDebug() << "Swap Down";
+                int i=splitter->indexOf(this);
+                splitter->insertWidget(i+1,this);
+
+            } else if (event->y()<0) {
+                //qDebug() << "Swap up";
+                int i=splitter->indexOf(this);
+                if (i>0) {
+                    splitter->insertWidget(i-1,this);
+                }
+            }
+        }
+
         return;
     }
     if (m_mouseLDown && LastGraphLDown && (LastGraphLDown!=this)) {

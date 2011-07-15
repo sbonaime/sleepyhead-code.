@@ -51,29 +51,29 @@ public:
     virtual void OnMouseRightDown(QMouseEvent * event);
     virtual void OnMouseRightRelease(QMouseEvent * event);
 
-    int GetScrX(void) const { return m_scrX; };
-    int GetScrY(void) const { return m_scrY; };
+    int GetScrX(void) const { return m_scrX; }
+    int GetScrY(void) const { return m_scrY; }
 
     // For mouse to screen use only.. work in OpenGL points where possible
-    const QString & Title(void ) { return m_title; };
+    const QString & Title(void ) { return m_title; }
 
       void SetMargins(float top, float right, float bottom, float left);  // OpenGL width of each corners margin
 
-      float GetTopMargin(void) const { return m_marginTop; };
-      float GetBottomMargin(void) const { return m_marginBottom; };
-      float GetLeftMargin(void) const { return m_marginLeft; };
-      float GetRightMargin(void) const { return m_marginRight; };
+      float GetTopMargin(void) const { return m_marginTop; }
+      float GetBottomMargin(void) const { return m_marginBottom; }
+      float GetLeftMargin(void) const { return m_marginLeft; }
+      float GetRightMargin(void) const { return m_marginRight; }
 
-      void SetTopMargin(float i) { m_marginTop=i; };
-      void SetBottomMargin(float i) { m_marginBottom=i; };
-      void SetLeftMargin(float i) { m_marginLeft=i; };
-      void SetRightMargin(float i) { m_marginRight=i; };
+      void SetTopMargin(float i) { m_marginTop=i; }
+      void SetBottomMargin(float i) { m_marginBottom=i; }
+      void SetLeftMargin(float i) { m_marginLeft=i; }
+      void SetRightMargin(float i) { m_marginRight=i; }
 
-      inline float Width() { return m_scrX-m_marginLeft-m_marginRight; };  // Width of OpenGL main drawing area
-      inline int Height() { return m_scrY-m_marginTop-m_marginBottom; };   // Height of ""...
+      inline float Width() { return m_scrX-m_marginLeft-m_marginRight; }  // Width of OpenGL main drawing area
+      inline int Height() { return m_scrY-m_marginTop-m_marginBottom; }   // Height of ""...
 
-      void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); }; // Linking graphs changes zoom behaviour..
-      //void LinkMove(gGraphWindow *g) { link_move.push_back(g); }; // Linking graphs changes zoom behaviour..
+      void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); } // Linking graphs changes zoom behaviour..
+      //void LinkMove(gGraphWindow *g) { link_move.push_back(g); } // Linking graphs changes zoom behaviour..
 
       virtual double MinX();
       virtual double MaxX();
@@ -105,24 +105,24 @@ public:
           double wid=Width();
           double w=((wid/xx)*(x-min_x));
           return w+GetLeftMargin();
-      };
+      }
       inline double p2x(float px) {
           double xx=max_x-min_x;
           double wx=px-GetLeftMargin();
           double ww=wx/Width();
           return min_x+(xx*ww);
-      };
+      }
       inline int y2p(double y) {
           double yy=max_y-min_y;
           double h=(Height()/yy)*(y-min_y);
           return h+GetBottomMargin();
-      };
+      }
       inline double p2y(float py) {
           double yy=max_y-min_y;
           double hy=py-GetBottomMargin();
           double hh=hy/Height();
           return min_y+(yy*hh);
-      };
+      }
 
       void Render(float scrx,float scry);
 
@@ -135,16 +135,16 @@ public:
       double max_x,min_x,max_y,min_y;
       double rmax_x,rmin_x,rmax_y,rmin_y;
 
-      void SetBlockZoom(bool b) { m_block_zoom=b; };
-      //void SetBlockMove(bool b) { m_block_move=b; };
-      bool BlockZoom() { return m_block_zoom; };
+      void SetBlockZoom(bool b) { m_block_zoom=b; }
+      //void SetBlockMove(bool b) { m_block_move=b; }
+      bool BlockZoom() { return m_block_zoom; }
       QGLContext *gl_context;
       //FTFont *texfont;
-      void SetGradientBackground(bool b) { m_gradient_background=b; };
-      bool GradientBackground() { return m_gradient_background; };
+      void SetGradientBackground(bool b) { m_gradient_background=b; }
+      bool GradientBackground() { return m_gradient_background; }
 
-      void SetSplitter(QSplitter *s) { splitter=s; };
-      bool isDraggingGraph() { return m_dragGraph; };
+      void SetSplitter(QSplitter *s) { splitter=s; }
+      bool isDraggingGraph() { return m_dragGraph; }
   protected:
       void initializeGL();
       QSplitter *splitter;

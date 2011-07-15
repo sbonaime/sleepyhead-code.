@@ -60,9 +60,19 @@ Oximetry::Oximetry(QWidget *parent) :
 
     portname="";
 
-    gSplitter->addWidget(PLETHY);
-    gSplitter->addWidget(PULSE);
-    gSplitter->addWidget(SPO2);
+
+    gGraphWindow * graphs[]={PLETHY,PULSE,SPO2};
+    int ss=sizeof(graphs)/sizeof(gGraphWindow *);
+
+    for (int i=0;i<ss;i++) {
+        AddGraph(graphs[i]);
+        for (int j=0;j<ss;j++) {
+            if (graphs[i]!=graphs[j])
+                graphs[i]->LinkZoom(graphs[j]);
+        }
+        gSplitter->addWidget(graphs[i]);
+        graphs[i]->SetSplitter(gSplitter);
+    }
 
     on_RefreshPortsButton_clicked();
 }

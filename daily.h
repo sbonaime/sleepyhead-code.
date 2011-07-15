@@ -30,7 +30,7 @@ class Daily : public QWidget
 public:
     explicit Daily(QWidget *parent,QGLContext *context);
     ~Daily();
-    void SetGLContext(QGLContext *context) { shared_context=context; };
+    void SetGLContext(QGLContext *context) { shared_context=context; }
     void ReloadGraphs();
     void RedrawGraphs();
 
@@ -68,8 +68,8 @@ private:
     list<gGraphWindow *> Graphs;
 
 
-    void AddCPAPData(gPointData *d) { CPAPData.push_back(d); };
-    void AddOXIData(gPointData *d) { OXIData.push_back(d); };
+    void AddCPAPData(gPointData *d) { CPAPData.push_back(d); }
+    void AddOXIData(gPointData *d) { OXIData.push_back(d); }
     void AddGraph(gGraphWindow *w);
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
