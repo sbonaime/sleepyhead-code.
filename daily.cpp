@@ -274,144 +274,23 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     TAP_IAP->hide();
     TAP_EAP->hide();
 
-    FRW->LinkZoom(SF);
-    FRW->LinkZoom(MP);
-    FRW->LinkZoom(PRD);
-    FRW->LinkZoom(LEAK);
-    FRW->LinkZoom(SNORE);
-    FRW->LinkZoom(MV);
-    FRW->LinkZoom(TV);
-    FRW->LinkZoom(RR);
-    FRW->LinkZoom(FLG);
-    FRW->LinkZoom(PTB);
-
-    SF->LinkZoom(FRW);
-    SF->LinkZoom(MP);
-    SF->LinkZoom(PRD);
-    SF->LinkZoom(LEAK);
-    SF->LinkZoom(SNORE);
-    SF->LinkZoom(MV);
-    SF->LinkZoom(TV);
-    SF->LinkZoom(RR);
-    SF->LinkZoom(FLG);
-    SF->LinkZoom(PTB);
-
-    PRD->LinkZoom(SF);
-    PRD->LinkZoom(FRW);
-    PRD->LinkZoom(MP);
-    PRD->LinkZoom(LEAK);
-    PRD->LinkZoom(SNORE);
-    PRD->LinkZoom(MV);
-    PRD->LinkZoom(TV);
-    PRD->LinkZoom(RR);
-    PRD->LinkZoom(FLG);
-    PRD->LinkZoom(PTB);
-
-    PTB->LinkZoom(SF);
-    PTB->LinkZoom(FRW);
-    PTB->LinkZoom(MP);
-    PTB->LinkZoom(LEAK);
-    PTB->LinkZoom(SNORE);
-    PTB->LinkZoom(MV);
-    PTB->LinkZoom(TV);
-    PTB->LinkZoom(RR);
-    PTB->LinkZoom(FLG);
-    PTB->LinkZoom(PRD);
-
-    LEAK->LinkZoom(SF);
-    LEAK->LinkZoom(FRW);
-    LEAK->LinkZoom(PRD);
-    LEAK->LinkZoom(MP);
-    LEAK->LinkZoom(SNORE);
-    LEAK->LinkZoom(MV);
-    LEAK->LinkZoom(TV);
-    LEAK->LinkZoom(RR);
-    LEAK->LinkZoom(FLG);
-    LEAK->LinkZoom(PTB);
-
-    SNORE->LinkZoom(SF);
-    SNORE->LinkZoom(FRW);
-    SNORE->LinkZoom(MP);
-    SNORE->LinkZoom(PRD);
-    SNORE->LinkZoom(LEAK);
-    SNORE->LinkZoom(MV);
-    SNORE->LinkZoom(TV);
-    SNORE->LinkZoom(RR);
-    SNORE->LinkZoom(FLG);
-    SNORE->LinkZoom(PTB);
-
-    MV->LinkZoom(SF);
-    MV->LinkZoom(FRW);
-    MV->LinkZoom(MP);
-    MV->LinkZoom(PRD);
-    MV->LinkZoom(LEAK);
-    MV->LinkZoom(SNORE);
-    MV->LinkZoom(TV);
-    MV->LinkZoom(RR);
-    MV->LinkZoom(FLG);
-    MV->LinkZoom(PTB);
-
-    TV->LinkZoom(SF);
-    TV->LinkZoom(FRW);
-    TV->LinkZoom(MP);
-    TV->LinkZoom(PRD);
-    TV->LinkZoom(LEAK);
-    TV->LinkZoom(SNORE);
-    TV->LinkZoom(MV);
-    TV->LinkZoom(RR);
-    TV->LinkZoom(FLG);
-    TV->LinkZoom(PTB);
-
-    RR->LinkZoom(SF);
-    RR->LinkZoom(FRW);
-    RR->LinkZoom(PRD);
-    RR->LinkZoom(MP);
-    RR->LinkZoom(LEAK);
-    RR->LinkZoom(SNORE);
-    RR->LinkZoom(MV);
-    RR->LinkZoom(TV);
-    RR->LinkZoom(FLG);
-    RR->LinkZoom(PTB);
-
-    FLG->LinkZoom(SF);
-    FLG->LinkZoom(FRW);
-    FLG->LinkZoom(MP);
-    FLG->LinkZoom(PRD);
-    FLG->LinkZoom(LEAK);
-    FLG->LinkZoom(SNORE);
-    FLG->LinkZoom(MV);
-    FLG->LinkZoom(TV);
-    FLG->LinkZoom(RR);
-    FLG->LinkZoom(PTB);
-
-    MP->LinkZoom(SF);
-    MP->LinkZoom(FRW);
-    MP->LinkZoom(FLG);
-    MP->LinkZoom(PRD);
-    MP->LinkZoom(LEAK);
-    MP->LinkZoom(SNORE);
-    MP->LinkZoom(MV);
-    MP->LinkZoom(TV);
-    MP->LinkZoom(RR);
-    MP->LinkZoom(PTB);
-
 
     gSplitter->addWidget(NoData);
-    AddGraph(SF);
-    AddGraph(FRW);
-    AddGraph(MP);
-    AddGraph(MV);
-    AddGraph(TV);
-    AddGraph(PTB);
-    AddGraph(RR);
-    AddGraph(PRD);
-    AddGraph(LEAK);
-    AddGraph(FLG);
-    AddGraph(SNORE);
-    AddGraph(PULSE);
-  //  AddGraph(SPO2);
-    gSplitter->refresh();
 
+    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,LEAK,FLG,SNORE};
+    int ss=sizeof(graphs)/sizeof(gGraphWindow *);
+
+    for (int i=0;i<ss;i++) {
+        AddGraph(graphs[i]);
+        for (int j=0;j<ss;j++) {
+            if (graphs[i]!=graphs[j])
+                graphs[i]->LinkZoom(graphs[j]);
+        }
+    }
+    AddGraph(PULSE);
+    //  AddGraph(SPO2);
+
+    gSplitter->refresh();
 
     gSplitter->setChildrenCollapsible(true);  // We set this per widget..
     gSplitter->setCollapsible(gSplitter->indexOf(SF),false);

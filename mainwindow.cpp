@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->showMaximized();
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
 

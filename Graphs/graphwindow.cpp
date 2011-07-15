@@ -337,6 +337,9 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 }
 void gGraphWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
+    QVector<double> s;
+    s.push_back(32);
+    double * test=new double [s.size()];
     // TODO: Retest.. QT might not be so retarded
     if (event->buttons() & Qt::LeftButton) OnMouseLeftDown(event);
     else if (event->buttons() & Qt::RightButton) OnMouseRightDown(event);
