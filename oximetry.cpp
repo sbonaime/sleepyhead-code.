@@ -38,7 +38,7 @@ Oximetry::Oximetry(QWidget *parent) :
     PULSE->setMinimumHeight(150);
 
     AddData(spo2=new WaveData(OXI_SPO2));
-    SPO2=new gGraphWindow(gSplitter,tr("SPO2"),(QGLWidget *)NULL);
+    SPO2=new gGraphWindow(gSplitter,tr("SPO2"),PULSE);
     SPO2->AddLayer(new gXAxis());
     SPO2->AddLayer(new gYAxis());
     SPO2->AddLayer(new gFooBar());
@@ -46,18 +46,23 @@ Oximetry::Oximetry(QWidget *parent) :
     SPO2->setMinimumHeight(150);
 
     AddData(plethy=new WaveData(OXI_Plethy));
-    PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),(QGLWidget *)NULL);
-    PLETHY->AddLayer(new gXAxis());
+    plethy->AddSegment(1000000);
+    plethy->np[0]=0;
+    plethy->SetMaxY(100);
+    plethy->SetMinY(0);
+    PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),PULSE);
+    //PLETHY->AddLayer(new gXAxis());
     PLETHY->AddLayer(new gYAxis());
     PLETHY->AddLayer(new gFooBar());
-    PLETHY->AddLayer(new gLineChart(plethy,Qt::red,65536,false,false,false));
+    PLETHY->AddLayer(new gLineChart(plethy,Qt::red,65536,true,false,false));
     PLETHY->setMinimumHeight(150);
+    PLETHY->SetBlockZoom(true);
 
     portname="";
 
+    gSplitter->addWidget(PLETHY);
     gSplitter->addWidget(PULSE);
     gSplitter->addWidget(SPO2);
-    gSplitter->addWidget(PLETHY);
 
     on_RefreshPortsButton_clicked();
 }
@@ -151,6 +156,44 @@ void Oximetry::onReadyRead()
     int a = port->bytesAvailable();
     bytes.resize(a);
     port->read(bytes.data(), bytes.size());
+
+    static qint64 starttime=0;
+    static qint64 lasttime=0;
+    static int idx=0;
+    if (!lasttime) {
+        lasttime=QDateTime::currentMSecsSinceEpoch();
+        starttime=lasttime;
+
+        plethy->SetRealMinX(double(lasttime)/86400000.0);
+        plethy->SetRealMaxX(double(lasttime+1800000)/86400000.0);
+        plethy->SetMinX(double(lasttime)/86400000.0);
+        plethy->SetMaxX(double(lasttime+600000)/86400000.0);
+        plethy->SetRealMinY(0);
+        plethy->SetRealMaxY(120);
+        plethy->SetMaxY(120);
+        plethy->SetMinY(0);
+        PLETHY->MinX();
+        PLETHY->MaxX();
+        PLETHY->RealMinX();
+        PLETHY->RealMaxX();
+        PLETHY->MinY();
+        PLETHY->MaxY();
+        plethy->SetReady(true);
+        plethy->SetVC(1);
+        plethy->np[0]=600;
+    }
+
+    if (bytes.size()==3) {
+        EventDataType d=bytes[1] & 0x7f;
+        plethy->point[0][idx].setX(double(lasttime)/86400000.0);
+        plethy->point[0][idx++].setY(d);
+        lasttime+=1000;
+        if (idx>600) {
+            idx=0;
+            lasttime=starttime;
+        }
+        PLETHY->updateGL();
+    }
     /*if (portmode!=PM_RECORDING) {
         return;
     }
@@ -169,11 +212,11 @@ void Oximetry::onReadyRead()
         lastspo2=bytes[1];
     } else {
         qDebug() << "bytes read:" << bytes.size(); */
-        QString aa;
-        for (int i=0;i<bytes.size();i++)
-            aa+=QString::number((unsigned char)bytes[i],16)+" ";
+        //QString aa;
+        //for (int i=0;i<bytes.size();i++)
+          //  aa+=QString::number((unsigned char)bytes[i],16)+" ";
 
-        qDebug() << hex << aa;
+        //qDebug() << hex << aa;
         /*QByteArray b;
         b.resize(3);
         b[0]=0xf6;

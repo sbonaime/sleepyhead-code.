@@ -27,13 +27,17 @@ gLineChart::~gLineChart()
 // Time Domain Line Chart
 void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
-
     if (!m_visible)
         return;
     if (!data)
         return;
     if (!data->IsReady())
         return;
+    if (w.Title()=="Plethysomogram") {
+        int q=0;
+    } else {
+//        qDebug() << w.Title();
+    }
 
     int start_px=w.GetLeftMargin(), start_py=w.GetBottomMargin();
 

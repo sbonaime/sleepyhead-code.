@@ -518,7 +518,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 }
                 QStringList a;
                 QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-                a.append(QString("#%1: %2").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")));
+                QString s=QString("#%1: %2").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss"));
+                if ((code==PRS1_Unknown0E) || (code==PRS1_Unknown10) || (code==PRS1_Unknown0B)) {
+                    s.append(" "+QString::number((*(*e))[0]));
+                    s.append(" "+QString::number((*(*e))[1]));
+                }
+                if ((code==PRS1_Unknown0E) || (code==PRS1_Unknown10)) {
+                    s.append(" "+QString::number((*(*e))[2]));
+                }
+                a.append(s);
                 a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                 mcr->addChild(new QTreeWidgetItem(a));
             }

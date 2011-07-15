@@ -612,10 +612,14 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             }
             break;
         case 0x0e: // Unknown
-            data[0]=buffer[pos++]; // << 8) | buffer[pos];
-            data[1]=buffer[pos++];
+            data[0]=buffer[pos++];
+            data[1]=buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
+            //data[0]/=10.0;
+            //pos+=2;
             data[2]=buffer[pos++];
             session->AddEvent(new Event(t,cpapcode, data, 3));
+            //tt-=data[1]*1000;
+            //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
             break;
         case 0x10: // Unknown
             data[0]=buffer[pos++]; // << 8) | buffer[pos];
