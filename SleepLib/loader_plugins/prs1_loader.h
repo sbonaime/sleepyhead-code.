@@ -43,9 +43,9 @@ class PRS1Loader : public MachineLoader
 public:
     PRS1Loader();
     virtual ~PRS1Loader();
-    virtual bool Open(QString & path,Profile *profile);
-    virtual int Version() { return prs1_data_version; };
-    virtual const QString & ClassName() { return prs1_class_name; };
+    virtual int Open(QString & path,Profile *profile);
+    virtual int Version() { return prs1_data_version; }
+    virtual const QString & ClassName() { return prs1_class_name; }
     Machine *CreateMachine(QString serial,Profile *profile);
 
     static void Register();

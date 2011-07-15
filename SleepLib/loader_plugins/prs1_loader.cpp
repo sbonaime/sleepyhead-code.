@@ -93,7 +93,7 @@ bool isdigit(QChar c)
     if ((c>='0') && (c<='9')) return true;
     return false;
 }
-bool PRS1Loader::Open(QString & path,Profile *profile)
+int PRS1Loader::Open(QString & path,Profile *profile)
 {
 
     QString newpath;
@@ -157,11 +157,9 @@ bool PRS1Loader::Open(QString & path,Profile *profile)
             delete m;
         }
     }
-
     return PRS1List.size();
-
-   // return c;
 }
+
 bool PRS1Loader::ParseProperties(Machine *m,QString filename)
 {
     QFile f(filename);

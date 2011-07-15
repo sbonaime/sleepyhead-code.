@@ -213,14 +213,14 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 
 long event_cnt=0;
 
-bool ResmedLoader::Open(QString & path,Profile *profile)
+int ResmedLoader::Open(QString & path,Profile *profile)
 {
 
     QString newpath;
 
     QString dirtag="DATALOG";
     if (path.endsWith("/"+dirtag)) {
-        return false; // id10t user..
+        return 0; // id10t user..
         //newpath=path;
     } else {
         newpath=path+"/"+dirtag;
@@ -230,7 +230,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     map<QString,QString> idmap;
     if (f.open(QIODevice::ReadOnly)) {
         if (!f.isReadable())
-            return false;
+            return 0;
 
         while (!f.atEnd()) {
             QString line=f.readLine().trimmed();
@@ -373,7 +373,7 @@ bool ResmedLoader::Open(QString & path,Profile *profile)
     m->Save();
     if (qprogress) qprogress->setValue(100);
     qDebug() << "Total Events " << event_cnt;
-    return 0;
+    return 1;
 }
 
 bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)

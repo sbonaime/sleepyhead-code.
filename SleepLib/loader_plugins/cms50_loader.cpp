@@ -37,7 +37,7 @@ CMS50Loader::~CMS50Loader()
 {
     //dtor
 }
-bool CMS50Loader::Open(QString & path,Profile *profile)
+int CMS50Loader::Open(QString & path,Profile *profile)
 {
     // CMS50 folder structure detection stuff here.
 
@@ -62,16 +62,16 @@ bool CMS50Loader::Open(QString & path,Profile *profile)
         // My Logger
     }
 
-    return false;
+    return 0;
 }
-bool CMS50Loader::OpenCMS50(QString & path, Profile *profile)
+int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
 {
     QString filename,pathname;
     list<QString> files;
     QDir dir(path);
 
     if (!dir.exists())
-        return false;
+        return 0;
 
     if(qprogress) qprogress->setValue(0);
 
@@ -89,7 +89,7 @@ bool CMS50Loader::OpenCMS50(QString & path, Profile *profile)
 
     }
     int size=files.size();
-    if (size==0) return false;
+    if (size==0) return 0;
 
     Machine *mach=CreateMachine(profile);
     int cnt=0;
@@ -99,7 +99,7 @@ bool CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     }
     mach->Save();
     if (qprogress) qprogress->setValue(100);
-    return true;
+    return 1;
 }
 bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 {

@@ -26,11 +26,11 @@ ZEOLoader::~ZEOLoader()
 {
     //dtor
 }
-bool ZEOLoader::Open(QString & path,Profile *profile)
+int ZEOLoader::Open(QString & path,Profile *profile)
 {
     // ZEO folder structure detection stuff here.
 
-    return false;
+    return 0; // number of machines affected
 }
 Machine *ZEOLoader::CreateMachine(Profile *profile)
 {

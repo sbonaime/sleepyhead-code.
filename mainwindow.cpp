@@ -119,14 +119,21 @@ void MainWindow::on_action_Import_Data_triggered()
         qprogress->show();
         qstatus->setText(tr("Importing Data"));
         dirNames=qfd.selectedFiles();
+        int c=0,d;
         for (int i=0;i<dirNames.size();i++) {
-            profile->Import(dirNames[i]);
+            d=profile->Import(dirNames[i]);
+            if (!d) {
+                QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dirNames[i],QMessageBox::Ok);
+            }
+            c+=d;
         }
-        profile->Save();
-        if (daily) daily->ReloadGraphs();
-        if (overview) {
-            overview->ReloadGraphs();
-            overview->UpdateGraphs();
+        if (c) {
+            profile->Save();
+            if (daily) daily->ReloadGraphs();
+            if (overview) {
+                overview->ReloadGraphs();
+                overview->UpdateGraphs();
+            }
         }
         qstatus->setText(tr("Ready"));
         qprogress->hide();

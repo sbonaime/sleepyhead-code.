@@ -99,7 +99,7 @@ class ResmedLoader : public MachineLoader
 public:
     ResmedLoader();
     virtual ~ResmedLoader();
-    virtual bool Open(QString & path,Profile *profile);
+    virtual int Open(QString & path,Profile *profile);
 
     virtual int Version() { return resmed_data_version; };
     virtual const QString & ClassName() { return resmed_class_name; };

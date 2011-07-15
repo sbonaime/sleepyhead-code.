@@ -21,7 +21,7 @@ public:
 
     //virtual Machine * CreateMachine() {};
 
-    virtual bool Open(QString &,Profile *)=0;   // Scans for new content
+    virtual int Open(QString &,Profile *)=0;   // Scans for new content
     virtual int Version()=0;
     virtual const QString & ClassName()=0;
 

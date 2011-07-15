@@ -203,7 +203,7 @@ Day * Profile::GetDay(QDate date,MachineType type)
  * @brief Import Machine Data
  * @param path
  */
-void Profile::Import(QString path)
+int Profile::Import(QString path)
 {
     int c=0;
     qDebug() << "Importing " << path;
@@ -211,6 +211,7 @@ void Profile::Import(QString path)
     for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
     }
+    return c;
 }
 
 MachineLoader * GetLoader(QString name)

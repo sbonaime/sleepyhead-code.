@@ -37,7 +37,7 @@ public:
     void AddMachine(Machine *m);
     void DelMachine(Machine *m);
     void LoadMachineData();
-    void Import(QString path);
+    int Import(QString path);
 
     void AddDay(QDate date,Day *day,MachineType mt);
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
@@ -49,8 +49,8 @@ public:
     virtual void ExtraLoad(TiXmlHandle *root);
     virtual TiXmlElement * ExtraSave();
     map<QDate,vector<Day *> > daylist;
-    const QDate & FirstDay() { return m_first; };
-    const QDate & LastDay() { return m_last; };
+    const QDate & FirstDay() { return m_first; }
+    const QDate & LastDay() { return m_last; }
 
 protected:
     QDate m_first,m_last;

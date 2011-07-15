@@ -19,7 +19,7 @@ class ZEOLoader : public MachineLoader
     public:
         ZEOLoader();
         virtual ~ZEOLoader();
-        virtual bool Open(QString & path,Profile *profile);
+        virtual int Open(QString & path,Profile *profile);
         static void Register();
 
         virtual int Version() { return zeo_data_version; };
