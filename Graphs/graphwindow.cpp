@@ -365,11 +365,24 @@ void gGraphWindow::mouseReleaseEvent(QMouseEvent * event)
 void gGraphWindow::keyPressEvent(QKeyEvent * event)
 {
     bool moved=false;
+    int accel=1;
     if (event->key()==Qt::Key_Left) {
-        MoveX(40);
+        if (event->modifiers() & Qt::ControlModifier) accel=4;
+        MoveX(40*accel);
         moved=true;
     } else if (event->key()==Qt::Key_Right) {
-        MoveX(-40);
+        if (event->modifiers() & Qt::ControlModifier) accel=4;
+        MoveX(-40*accel);
+        moved=true;
+    } else if (event->key()==Qt::Key_Up) {
+        double zoom_fact=2;
+        if (event->modifiers() & Qt::ControlModifier) zoom_fact=5;
+        ZoomX(zoom_fact,0);
+        moved=true;
+    } else if (event->key()==Qt::Key_Down) {
+        double zoom_fact=.5;
+        if (event->modifiers() & Qt::ControlModifier) zoom_fact=.2;
+        ZoomX(zoom_fact,0);
         moved=true;
     }
 
