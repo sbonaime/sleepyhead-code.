@@ -44,6 +44,7 @@ public:
     virtual void mousePressEvent(QMouseEvent * event);
     virtual void mouseReleaseEvent(QMouseEvent * event);
     virtual void mouseDoubleClickEvent(QMouseEvent * event);
+    virtual void keyPressEvent(QKeyEvent * event);
     //virtual void OnMouseRightDClick(wxMouseEvent * event);
     virtual void OnMouseLeftDown(QMouseEvent * event);
     virtual void OnMouseLeftRelease (QMouseEvent * event);

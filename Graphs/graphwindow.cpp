@@ -32,6 +32,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     }
     //setAcceptDrops(true);
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
@@ -57,6 +58,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     }
     //setAcceptDrops(true);
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 gGraphWindow::~gGraphWindow()
@@ -359,6 +361,30 @@ void gGraphWindow::mouseReleaseEvent(QMouseEvent * event)
     else if (event->button()==Qt::RightButton)
         OnMouseRightRelease(event);
 
+}
+void gGraphWindow::keyPressEvent(QKeyEvent * event)
+{
+    bool moved=false;
+    if (event->key()==Qt::Key_Left) {
+        MoveX(40);
+        moved=true;
+    } else if (event->key()==Qt::Key_Right) {
+        MoveX(-40);
+        moved=true;
+    }
+
+    if (moved) {
+        double min=MinX();
+        double max=MaxX();
+        if (pref["LinkGraphMovement"].toBool()) {
+            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                (*g)->SetXBounds(min,max);
+            }
+        }
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 
 void gGraphWindow::OnMouseRightDown(QMouseEvent * event)
