@@ -25,7 +25,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+#ifndef Q_WS_MAC
     this->showMaximized();
+#endif
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
 

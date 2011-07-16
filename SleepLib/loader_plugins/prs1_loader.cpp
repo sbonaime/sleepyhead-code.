@@ -898,15 +898,19 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     static qint16 interleave[max_signals]={0};
     static char sampletype[max_signals]={0};
 
-    int hl;
+    int hl=0;
     long samples=0;
     qint64 duration=0;
     char * buffer=(char *)m_buffer;
     bool first2=true;
+    long fpos=0;
+    int bsize=0;
+    int lasthl=0;
     while (true) {
+        lasthl=hl;
         hl=20;
         br=f.read((char *)header,hl);
-
+        fpos+=hl;
         if (br<hl) {
             if (cnt==0)
                 return false;
@@ -916,11 +920,33 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (header[0]!=PRS1_MAGIC_NUMBER) {
             if (cnt==0)
                 return false;
-            break;
+            qDebug() << "Corrupt waveform, trying to recover";
+            // read the damn bytes anyway..
+
+            br=f.read((char *)header,lasthl-hl+1); // last bit of the header
+            if (br<lasthl-hl+1) {
+                qDebug() << "End of file, couldn't recover";
+                break;
+            }
+            hl=lasthl;
+
+            br=f.read((char *)&buffer[samples],size);
+            if (br<size) {
+                //delete [] buffer;
+                break;
+            }
+            samples+=size;
+            duration+=seconds;
+            br=f.read((char *)header,2);
+            fpos+=size+3+lasthl-hl;
+
+            //f.seek(fpos-hl+bsize);
+            //fpos+=bsize-hl;
+            continue;
         }
 
         //sequence=size=timestamp=seconds=ext=0;
-        size=(header[2] << 8) | header[1];
+        bsize=size=(header[2] << 8) | header[1];
         version=header[4];
         htype=header[3];
         ext=header[6];
@@ -936,6 +962,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         char buf[3];
         for (int i=0;i<numsignals;i++) {
             f.read(buf,3);
+            fpos+=3;
             if (br<3) {
                 if (cnt==0)
                     return false;
@@ -952,6 +979,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                 return false;
             break;
         }
+        fpos+=1;
         if (sum!=hchk)
             return false;
 
@@ -980,6 +1008,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             delete [] buffer;
             break;
         }
+        fpos+=size;
 
         cnt++;
 
@@ -989,6 +1018,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         char chkbuf[2];
         qint16 chksum;
         br=f.read(chkbuf,2);
+        fpos+=2;
         if (br<2)
             return false;
         chksum=chkbuf[0] << 8 | chkbuf[1];
