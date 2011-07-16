@@ -690,7 +690,7 @@ void Daily::Load(QDate date)
         for (vector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
             fd=QDateTime::fromMSecsSinceEpoch((*s)->first());
             ld=QDateTime::fromMSecsSinceEpoch((*s)->last());
-            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+fd.toString("yyyy-MM-dd")+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
         }
         html+="</table>";

@@ -150,7 +150,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
                 fd.sprintf("%02i:%02i",hour,minute);
             }
         } else {
-            fd=d.toString("dd MMM");
+            fd=d.toString("MMM dd");
         }
 
         px=(i-minx)*xmult+w.GetLeftMargin();
