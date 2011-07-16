@@ -35,7 +35,6 @@ bool gGraphData::isEmpty()
     return b;
 }
 
-
 gPointData::gPointData(int mp)
 :gGraphData(mp,gDT_Point)
 {
@@ -51,4 +50,52 @@ void gPointData::AddSegment(int max_points)
     np.push_back(0);
     QPointD *p=new QPointD [max_points];
     point.push_back(p);
+}
+double gPointData::CalcAverage()
+{
+    double x,val=0;
+    int cnt=0;
+    for (int i=0;i<np[0];i++) {
+        x=point[0][i].x();
+        if ((x<min_x) || (x>max_x)) continue;
+        val+=point[0][i].y();
+        cnt++;
+    }
+    if (!cnt) return 0;
+    val/=cnt;
+    return val;
+}
+double gPointData::CalcMinY()
+{
+    double x,val=0;
+    double min;
+    bool first=true;
+    for (int i=0;i<np[0];i++) {
+        x=point[0][i].x();
+        if ((x<min_x) || (x>max_x)) continue;
+        val=point[0][i].y();
+        if (first) {
+            min=val;
+            first=false;
+        } else
+        if (min>val) min=val;
+    }
+    return min;
+}
+double gPointData::CalcMaxY()
+{
+    double x,val=0;
+    double max;
+    bool first=true;
+    for (int i=0;i<np[0];i++) {
+        x=point[0][i].x();
+        if ((x<min_x) || (x>max_x)) continue;
+        val=point[0][i].y();
+        if (first) {
+            max=val;
+            first=false;
+        } else
+        if (max<val) max=val;
+    }
+    return max;
 }

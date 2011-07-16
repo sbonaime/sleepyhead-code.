@@ -566,20 +566,7 @@ void HistoryData::Reload(Day *day)
     real_max_y=max_y;
     m_ready=true;
 }
-double HistoryData::GetAverage()
-{
-    double x,val=0;
-    int cnt=0;
-    for (int i=0;i<np[0];i++) {
-        x=point[0][i].x();
-        if ((x<min_x) || (x>max_x)) continue;
-        val+=point[0][i].y();
-        cnt++;
-    }
-    if (!cnt) return 0;
-    val/=cnt;
-    return val;
-}
+
 void HistoryData::SetDateRange(QDate start,QDate end)
 {
     qint64 x1=QDateTime(start).toMSecsSinceEpoch()/86400000.0;

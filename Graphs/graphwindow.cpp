@@ -704,7 +704,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             }
         } else {
             int xp=x;
-            xp=0;
+            //xp=0;
             double zoom_fact=0.5;
             if (event->modifiers() & Qt::ControlModifier) zoom_fact=0.25;
             ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.

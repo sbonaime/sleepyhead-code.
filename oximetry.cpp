@@ -47,7 +47,8 @@ Oximetry::Oximetry(QWidget *parent) :
 
     AddData(plethy=new WaveData(OXI_Plethy));
     plethy->AddSegment(1000000);
-    plethy->np[0]=0;
+
+    plethy->np.push_back(0);
     plethy->SetMaxY(100);
     plethy->SetMinY(0);
     PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),PULSE);

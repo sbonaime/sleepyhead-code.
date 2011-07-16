@@ -12,8 +12,9 @@ Copyright (C) 2011
 
 Licence Stuff
 -------------
-This software is released under the GNU Public License. 
+This software is released under the GNU Public License, at a GPL version of my choosing at a later date. 
 
 Exceptions:
 Incorporates TinyXML.. see their readme for details in ./libs/tinyxml
-Incorporates QextSerialPort. Insert New BSD license here.
+Incorporates QextSerialPort. Insert New BSD license here? (Apparently PD.. need to verify)
+

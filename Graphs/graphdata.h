@@ -30,6 +30,10 @@ public:
     //virtual inline const int & NP(int i) { return vnp[i]; }
     //virtual inline const int & MP(int i) { return vsize[i]; }
     inline const gDataType & Type() { return type; }
+    virtual double CalcAverage()=0;
+    virtual double CalcMinY()=0;
+    virtual double CalcMaxY()=0;
+
 
     virtual inline double MaxX() { return max_x; }
     virtual inline double MinX() { return min_x; }
@@ -103,6 +107,10 @@ public:
     virtual ~gPointData();
     virtual void Reload(Day *day=NULL){ day=day; };
     virtual void AddSegment(int max_points);
+    virtual double CalcAverage();
+    virtual double CalcMinY();
+    virtual double CalcMaxY();
+
     vector<QPointD *> point;
 };
 

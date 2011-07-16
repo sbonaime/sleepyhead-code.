@@ -95,7 +95,7 @@ public:
 
     void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
     Profile * GetProfile() { return profile; }
-    double GetAverage();
+    //double GetAverage();
 
     virtual double Calc(Day *day);
     virtual void Reload(Day *day=NULL);

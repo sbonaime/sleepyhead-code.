@@ -152,6 +152,31 @@ void Overview::UpdateGraphs()
     }
     session_times->SetDateRange(first,last);
     RedrawGraphs();
+    QString html="<html><body><div align=center>";
+    html+="<table width='100%' cellpadding=2 cellspacing=0 border=0>";
+    html+="<tr align=center><td colspan=4><b><i>Statistics</i></b></td></tr>";
+    html+="<tr><td><b>Details</b></td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>";
+    html+=QString("<tr><td>AHI</td><td>%1</td><td>%2</td><td>%3</td></tr>\n")
+            .arg(ahidata->CalcMinY(),2,'f',2,'0')
+            .arg(ahidata->CalcAverage(),2,'f',2,'0')
+            .arg(ahidata->CalcMaxY(),2,'f',2,'0');
+    html+=QString("<tr><td>Leak</td><td>%1</td><td>%2</td><td>%3</td></tr>")
+            .arg(leak->CalcMinY(),2,'f',2,'0')
+            .arg(leak->CalcAverage(),2,'f',2,'0')
+            .arg(leak->CalcMaxY(),2,'f',2,'0');
+    html+=QString("<tr><td>Pressure</td><td>%1</td><td>%2</td><td>%3</td></tr>")
+            .arg(pressure->CalcMinY(),2,'f',2,'0')
+            .arg(pressure->CalcAverage(),2,'f',2,'0')
+            .arg(pressure->CalcMaxY(),2,'f',2,'0');
+    html+=QString("<tr><td>Usage</td><td>%1</td><td>%2</td><td>%3</td></tr>")
+            .arg(usage->CalcMinY(),2,'f',2,'0')
+            .arg(usage->CalcAverage(),2,'f',2,'0')
+            .arg(usage->CalcMaxY(),2,'f',2,'0');
+
+    html+="</table>"
+    "</div></body></html>";
+    ui->webView->setHtml(html);
+
 }
 
 
