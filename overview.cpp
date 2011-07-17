@@ -28,22 +28,19 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AddData(pressure=new HistoryCodeData(profile,CPAP_PressureAverage));
     AddData(pressure_min=new HistoryCodeData(profile,CPAP_PressureMin));
     AddData(pressure_max=new HistoryCodeData(profile,CPAP_PressureMax));
-
     AddData(pressure_eap=new HistoryCodeData(profile,BIPAP_EAPAverage));
     AddData(pressure_iap=new HistoryCodeData(profile,BIPAP_IAPAverage));
-
-    session_times=new SessionTimes(profile);
-
-   // pressure->ForceMinY(3);
-   // pressure->ForceMaxY(12);
     AddData(leak=new HistoryCodeData(profile,CPAP_LeakMedian));
     AddData(usage=new UsageHistoryData(profile,UHD_Hours));
     AddData(waketime=new UsageHistoryData(profile,UHD_Waketime));
     AddData(bedtime=new UsageHistoryData(profile,UHD_Bedtime));
+    AddData(session_times=new SessionTimes(profile));
+
+    // pressure->ForceMinY(3);
+    // pressure->ForceMaxY(12);
 
     gSplitter=new QSplitter(Qt::Vertical,ui->SummaryGraphWindow);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
-
     gSplitter->setChildrenCollapsible(true);
     gSplitter->setHandleWidth(3);
     ui->graphLayout->addWidget(gSplitter);
@@ -70,8 +67,6 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     PRESSURE->setMinimumHeight(170);
 
     AddGraph(LEAK=new gGraphWindow(ui->SummaryGraphWindow,tr("Leak"),AHI));
-    //LEAK->SetMargins(10,15,65,80);
-    //LEAK->AddLayer(new gBarChart(leak,wxYELLOW));
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     LEAK->AddLayer(new gFooBar(7));
@@ -80,11 +75,10 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     LEAK->setMinimumHeight(170);
 
     AddGraph(USAGE=new gGraphWindow(ui->SummaryGraphWindow,tr("Usage (Hours)"),AHI));
-    //USAGE->SetMargins(10,15,65,80);
     USAGE->AddLayer(new gFooBar(7));
     USAGE->AddLayer(new gYAxis());
     USAGE->AddLayer(new gBarChart(usage,QColor("green")));
-    USAGE->SetBottomMargin(USAGE->GetBottomMargin()+gXAxis::Margin+15);
+    USAGE->SetBottomMargin(USAGE->GetBottomMargin()+gXAxis::Margin+25);
     //USAGE->AddLayer(new gXAxis());
     //USAGE->AddLayer(new gLineChart(usage,QColor("green")));
     USAGE->setMinimumHeight(170);
@@ -97,6 +91,13 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     SESSTIMES->SetBottomMargin(SESSTIMES->GetBottomMargin()+gXAxis::Margin+25);
     //SESSTIMES->AddLayer(new gXAxis());
     SESSTIMES->setMinimumHeight(270);
+
+    NoData=new QLabel(tr("No data"),gSplitter);
+    NoData->setAlignment(Qt::AlignCenter);
+    QFont font("FreeSans",20); //NoData->font();
+    //font.setBold(true);
+    NoData->setFont(font);
+    NoData->hide();
 
 
     gGraphWindow * graphs[]={AHI,PRESSURE,LEAK,USAGE,SESSTIMES};
@@ -132,13 +133,16 @@ void Overview::RedrawGraphs()
 void Overview::ReloadGraphs()
 {
     for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-        (*h)->SetProfile(profile);
-        (*h)->ResetDateRange();
-        (*h)->Reload(NULL);
+        if (HistoryData *hd=dynamic_cast<HistoryData *>(*h)){
+            hd->SetProfile(profile);
+            hd->ResetDateRange();
+            hd->Reload(NULL);
+        }
+
     }
-    session_times->SetProfile(profile);
-    session_times->ResetDateRange();
-    session_times->Reload(NULL);
+//    session_times->SetProfile(profile);
+ //   session_times->ResetDateRange();
+  //  session_times->Reload(NULL);
     on_rbLastWeek_clicked();
 }
 

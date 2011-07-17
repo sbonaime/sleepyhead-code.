@@ -344,9 +344,9 @@ void FlagData::Reload(Day *day)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 SessionTimes::SessionTimes(Profile * _profile)
-    :gPointData(2048),profile(_profile)
+:HistoryData(_profile,2048)
 {
-    AddSegment(max_points);
+    /*AddSegment(max_points);
     if (profile->LastDay().isValid()) {
         QDateTime tmp;
         tmp.setDate(profile->FirstDay());
@@ -354,12 +354,12 @@ SessionTimes::SessionTimes(Profile * _profile)
         tmp.setDate(profile->LastDay());
         real_max_x=(tmp.toMSecsSinceEpoch()/86400000.0)+1;
     }
-    real_min_y=real_max_y=0;
+    real_min_y=real_max_y=0; */
 }
 SessionTimes::~SessionTimes()
 {
 }
-void SessionTimes::ResetDateRange()
+/*void SessionTimes::ResetDateRange()
 {
     if (profile->LastDay().isValid()) {
         QDateTime tmp;
@@ -395,7 +395,7 @@ void SessionTimes::SetDateRange(QDate start,QDate end)
         (*i)->DataChanged(this);
     }    // Do nothing else.. Callers responsibility to Refresh window.
 }
-
+*/
 
 void SessionTimes::Reload(Day *day)
 {
@@ -454,8 +454,8 @@ void SessionTimes::Reload(Day *day)
 // HistoryData Implementation
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-HistoryData::HistoryData(Profile * _profile)
-:gPointData(1024),profile(_profile)
+HistoryData::HistoryData(Profile * _profile,int mpts)
+:gPointData(mpts),profile(_profile)
 {
     AddSegment(max_points);
     if (profile->LastDay().isValid()) {

@@ -350,15 +350,17 @@ void Scan()
     QFileInfoList list=dir.entryInfoList();
 
     QString username=getUserName();
-    if (list.size()==0) {
+    if (list.size()==0) { // No profiles.. Create one.
         Create(username,username,"");
         return;
     }
+
+    // Iterate through subdirectories and load profiles..
     for (int i=0;i<list.size();i++) {
         QFileInfo fi=list.at(i);
         QString npath=fi.canonicalFilePath();
         Profile *prof=new Profile(npath);
-        prof->Open();
+        prof->Open();  // Read it's XML file..
         profiles[fi.fileName()]=prof;
     }
 

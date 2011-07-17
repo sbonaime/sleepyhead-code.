@@ -211,18 +211,28 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
     if (origin_px<0) origin_px=0;
     if (origin_px>Width()) origin_px=Width();
 
+
+    // Okay, I want it to zoom in centered on the mouse click area..
+    // Find X graph position of mouse click
+    // find current zoom width
+    // apply zoom
+    // center on point found in step 1.
+
     double min=min_x;
     double max=max_x;
 
     double hardspan=rmax_x-rmin_x;
     double span=max-min;
-    double origin=double(origin_px) / Width() * span;
+    double ww=double(origin_px) / double(Width());
+    double origin=ww * span;
+    //double center=0.5*span;
+    //double dist=(origin-center);
 
     double q=span*mult;
     if (q>hardspan) q=hardspan;
     if (q<hardspan/400) q=hardspan/400;
 
-    min=min+(origin-(q/2.0));
+    min=min+origin-(q*ww);
     max=min+q;
 
     if (min<rmin_x) {
@@ -506,7 +516,7 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
                 double zoom_fact=2;
                 if (event->modifiers() & Qt::ControlModifier) zoom_fact=5;
                 //if (!m_block_zoom) {
-                    ZoomX(zoom_fact,0);
+                    ZoomX(zoom_fact,x);
                     did_draw=true;
                 //}
                 m_foobar_moved=0;
@@ -540,7 +550,7 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
             //(*g)->ZoomX(zoom_fact,0);
         //}
         //if (!m_block_zoom) {
-            ZoomX(zoom_fact,0); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
+            ZoomX(zoom_fact,x); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
 
             if (pref["LinkGraphMovement"].toBool()) {
                 double min=MinX();

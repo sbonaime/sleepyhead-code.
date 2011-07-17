@@ -262,7 +262,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     G_AHI->SetGradientBackground(false);
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
-    NoData=new QLabel(tr("No CPAP Data"),gSplitter);
+    NoData=new QLabel(tr("No data"),gSplitter);
     NoData->setAlignment(Qt::AlignCenter);
     QFont font("FreeSans",20); //NoData->font();
     //font.setBold(true);
@@ -665,7 +665,7 @@ void Daily::Load(QDate date)
         //SPO2->hide();
     }
     if (!cpap && !oxi) {
-        NoData->setText(tr("No CPAP Data for ")+date.toString(Qt::SystemLocaleLongDate));
+        NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
     } else
         NoData->hide();

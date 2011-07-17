@@ -70,27 +70,10 @@ public:
     virtual void Reload(Day *day=NULL);
 };
 
-class SessionTimes:public gPointData
-{
-public:
-    SessionTimes(Profile * _profile);
-    virtual ~SessionTimes();
-
-    void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
-    Profile * GetProfile() { return profile; }
-    double GetAverage(); // length??
-    virtual void Reload(Day *day=NULL);
-    virtual void ResetDateRange();
-    virtual void SetDateRange(QDate start,QDate end);
-
-protected:
-    Profile * profile;
-};
-
 class HistoryData:public gPointData
 {
 public:
-    HistoryData(Profile * _profile);
+    HistoryData(Profile * _profile,int mpts=2048);
     virtual ~HistoryData();
 
     void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
@@ -104,6 +87,23 @@ public:
   //  virtual void Reload(Machine *machine=NULL);
 protected:
     Profile * profile;
+};
+
+class SessionTimes:public HistoryData
+{
+public:
+    SessionTimes(Profile * _profile);
+    virtual ~SessionTimes();
+
+    //void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
+    //Profile * GetProfile() { return profile; }
+    //virtual double GetAverage(); // length??
+    virtual void Reload(Day *day=NULL);
+    //virtual void ResetDateRange();
+    //virtual void SetDateRange(QDate start,QDate end);
+
+protected:
+   // Profile * profile;
 };
 
 class HistoryCodeData:public HistoryData

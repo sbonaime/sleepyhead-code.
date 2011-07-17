@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QGLContext>
 #include <QSplitter>
+#include <QLabel>
 #include <SleepLib/profiles.h>
 #include <Graphs/graphdata_custom.h>
 
@@ -31,19 +32,12 @@ public:
 
 
 private slots:
-
     void on_drStart_dateChanged(const QDate &date);
-
     void on_drEnd_dateChanged(const QDate &date);
-
     void on_rbDateRange_toggled(bool checked);
-
     void on_rbLastWeek_clicked();
-
     void on_rbLastMonth_clicked();
-
     void on_rbEverything_clicked();
-
     void on_rbDateRange_clicked();
 
 private:
@@ -66,6 +60,7 @@ private:
     list<gGraphWindow *> Graphs;
     Day *dummyday;
     QSplitter *gSplitter;
+    QLabel *NoData;
 };
 
 #endif // OVERVIEW_H
