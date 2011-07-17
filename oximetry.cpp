@@ -42,7 +42,7 @@ Oximetry::Oximetry(QWidget *parent) :
     SPO2->AddLayer(new gXAxis());
     SPO2->AddLayer(new gYAxis());
     SPO2->AddLayer(new gFooBar());
-    SPO2->AddLayer(new gLineChart(spo2,Qt::red,65536,false,false,false));
+    SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,false));
     SPO2->setMinimumHeight(150);
 
     pulse->AddSegment(1000000);
@@ -60,7 +60,7 @@ Oximetry::Oximetry(QWidget *parent) :
     //PLETHY->AddLayer(new gXAxis());
     PLETHY->AddLayer(new gYAxis());
     PLETHY->AddLayer(new gFooBar());
-    PLETHY->AddLayer(new gLineChart(plethy,Qt::red,65536,true,false,false));
+    PLETHY->AddLayer(new gLineChart(plethy,Qt::black,65536,true,false,false));
     PLETHY->setMinimumHeight(150);
     //PLETHY->SetBlockZoom(true);
 
@@ -106,9 +106,6 @@ void Oximetry::on_RefreshPortsButton_clicked()
         //qDebug() << "port name:" << ports.at(i).portName;
         qDebug() << "Serial Port:" << ports.at(i).physName << ports.at(i).friendName;
         //qDebug() << "enumerator name:" << ports.at(i).enumName;
-        //qDebug() << "vendor ID:" << QString::number(ports.at(i).vendorID, 16);
-        //qDebug() << "product ID:" << QString::number(ports.at(i).productID, 16);
-        //qDebug() << "===================================";
     }
 
     if (z>0) {
@@ -135,6 +132,63 @@ void Oximetry::on_RunButton_toggled(bool checked)
         lastpulse=-1;
         lastspo2=-1;
         plethy->np[0]=0;
+        lasttime=QDateTime::currentMSecsSinceEpoch();
+        starttime=lasttime;
+
+        plethy->SetRealMinX(double(lasttime)/86400000.0);
+        plethy->SetRealMaxX(double(lasttime+60000)/86400000.0);
+        plethy->SetMinX(double(lasttime)/86400000.0);
+        plethy->SetMaxX(double(lasttime+30000)/86400000.0);
+        plethy->SetRealMinY(0);
+        plethy->SetRealMaxY(120);
+        plethy->SetMaxY(120);
+        plethy->SetMinY(0);
+        PLETHY->MinX();
+        PLETHY->MaxX();
+        PLETHY->RealMinX();
+        PLETHY->RealMaxX();
+        PLETHY->MinY();
+        PLETHY->MaxY();
+        plethy->SetReady(true);
+        plethy->SetVC(1);
+        plethy->np[0]=0;
+
+
+        pulse->SetRealMinX(double(lasttime)/86400000.0);
+        pulse->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
+        pulse->SetMinX(double(lasttime)/86400000.0);
+        pulse->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
+        pulse->SetRealMinY(40);
+        pulse->SetRealMaxY(120);
+        pulse->SetMaxY(120);
+        pulse->SetMinY(40);
+        pulse->np[0]=0;
+        pulse->SetReady(true);
+        pulse->SetVC(1);
+        PULSE->MinX();
+        PULSE->MaxX();
+        PULSE->RealMinX();
+        PULSE->RealMaxX();
+        PULSE->MinY();
+        PULSE->MaxY();
+
+        spo2->SetRealMinX(double(lasttime)/86400000.0);
+        spo2->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
+        spo2->SetMinX(double(lasttime)/86400000.0);
+        spo2->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
+        spo2->SetRealMinY(40);
+        spo2->SetRealMaxY(100);
+        spo2->SetMaxY(100);
+        spo2->SetMinY(40);
+        spo2->np[0]=0;
+        spo2->SetReady(true);
+        spo2->SetVC(1);
+        SPO2->MinX();
+        SPO2->MaxX();
+        SPO2->RealMinX();
+        SPO2->RealMaxX();
+        SPO2->MinY();
+        SPO2->MaxY();
 
         ui->RunButton->setText("&Stop");
         ui->SerialPortsCombo->setEnabled(false);
@@ -205,82 +259,15 @@ void Oximetry::onReadyRead()
     bytes.resize(a);
     port->read(bytes.data(), bytes.size());
 
-    static qint64 starttime=0;
-    //static qint64 lasttime=0;
-    static int idx=0;
-
-    if (!lasttime) { // Move this to start??
-        lasttime=QDateTime::currentMSecsSinceEpoch();
-        starttime=lasttime;
-
-        plethy->SetRealMinX(double(lasttime)/86400000.0);
-        plethy->SetRealMaxX(double(lasttime+60000)/86400000.0);
-        plethy->SetMinX(double(lasttime)/86400000.0);
-        plethy->SetMaxX(double(lasttime+60000)/86400000.0);
-        plethy->SetRealMinY(0);
-        plethy->SetRealMaxY(120);
-        plethy->SetMaxY(120);
-        plethy->SetMinY(0);
-        PLETHY->MinX();
-        PLETHY->MaxX();
-        PLETHY->RealMinX();
-        PLETHY->RealMaxX();
-        PLETHY->MinY();
-        PLETHY->MaxY();
-        plethy->SetReady(true);
-        plethy->SetVC(1);
-        plethy->np[0]=0;
-
-
-        pulse->SetRealMinX(double(lasttime)/86400000.0);
-        pulse->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        pulse->SetMinX(double(lasttime)/86400000.0);
-        pulse->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        pulse->SetRealMinY(40);
-        pulse->SetRealMaxY(120);
-        pulse->SetMaxY(120);
-        pulse->SetMinY(40);
-        pulse->np[0]=0;
-        pulse->SetReady(true);
-        pulse->SetVC(1);
-        PULSE->MinX();
-        PULSE->MaxX();
-        PULSE->RealMinX();
-        PULSE->RealMaxX();
-        PULSE->MinY();
-        PULSE->MaxY();
-
-        spo2->SetRealMinX(double(lasttime)/86400000.0);
-        spo2->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        spo2->SetMinX(double(lasttime)/86400000.0);
-        spo2->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        spo2->SetRealMinY(40);
-        spo2->SetRealMaxY(100);
-        spo2->SetMaxY(100);
-        spo2->SetMinY(40);
-        spo2->np[0]=0;
-        spo2->SetReady(true);
-        spo2->SetVC(1);
-        SPO2->MinX();
-        SPO2->MaxX();
-        SPO2->RealMinX();
-        SPO2->RealMaxX();
-        SPO2->MinY();
-        SPO2->MaxY();
-
-
-        idx=0;
-    }
-
     const int max_data_points=1000000;
     if (bytes.size()==3) {
         EventDataType d=bytes[1] & 0x7f;
         plethy->point[0][plethy->np[0]].setX(double(lasttime)/86400000.0);
         plethy->point[0][plethy->np[0]++].setY(d);
-        lasttime+=200;
+        lasttime+=20;  // 50 samples per second?
         plethy->SetRealMaxX(lasttime/86400000.0);
-        if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*60.0))) {
-            plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*60.0)));
+        if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*120.0))) {
+            plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*120.0)));
             plethy->SetMaxX(lasttime/86400000.0);
         }
         PLETHY->MinX();
