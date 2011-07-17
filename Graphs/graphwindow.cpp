@@ -699,19 +699,20 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             x-=GetLeftMargin();
             double rx=rmax_x-rmin_x;
             double mx=max_x-min_x;
-            if (mx<rx) {
-                double qx=(rx/width)*double(x);
-                qx+=rmin_x;
-                qx-=mx/2.0;
-                if (qx<rmin_x) {
-                    qx=rmin_x;
-                }
-                if (qx+mx>rmax_x) {
-                    qx=rmax_x-mx;
-                }
-                SetXBounds(qx,qx+mx);
-                did_draw=true;
+            double qx=(rx/width)*double(x);
+            if (mx>=rx) {
+                mx=1.0/(24.0*15.0);
             }
+            qx+=rmin_x;
+            qx-=mx/2.0;
+            if (qx<rmin_x) {
+                qx=rmin_x;
+            }
+            if (qx+mx>rmax_x) {
+                qx=rmax_x-mx;
+            }
+            SetXBounds(qx,qx+mx);
+            did_draw=true;
         } else {
             int xp=x;
             //xp=0;
