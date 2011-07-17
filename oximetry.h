@@ -49,6 +49,9 @@ private:
     QextSerialPort *port;
     QString portname;
     PORTMODE portmode;
+    qint64 lasttime;
+    int lastpulse, lastspo2;
+
 };
 
 #endif // OXIMETRY_H
