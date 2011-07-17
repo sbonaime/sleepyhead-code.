@@ -70,6 +70,10 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=false;
     else ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
 
+    if (!pref["ShowDebug"].toBool()) {
+        ui->logText->hide();
+    }
+
     if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
     else ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
 
