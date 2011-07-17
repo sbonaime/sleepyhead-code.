@@ -271,12 +271,9 @@ void MainWindow::on_action_Noon_Date_Split_toggled(bool checked)
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
     pref["ShowDebug"]=checked;
-    int idx=ui->tabWidget->indexOf(ui->debugTab);
     if (checked) {
-        //ui->debugTab->show();
-        //ui->tabWidget->setTabEnabled(idx,true);
+        ui->logText->show();
     } else {
-        //ui->debugTab->hide();
-       // ui->tabWidget->setTabEnabled(idx,false);
+        ui->logText->hide();
     }
 }

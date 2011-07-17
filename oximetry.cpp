@@ -340,11 +340,11 @@ void Oximetry::onReadyRead()
     } else {
         //qDebug() << "Got " << bytes.size() << " bytes";
     }*/
-    QString aa=QString::number(bytes.size(),16)+"bytes: ";
+    /*QString aa=QString::number(bytes.size(),16)+"bytes: ";
     for (int i=0;i<bytes.size();i++) {
         aa+=" "+QString::number((unsigned char)bytes[i],16);
     }
-    qDebug() << aa;
+    qDebug() << aa; */
 
     lastsize=bytes.size();
 }
