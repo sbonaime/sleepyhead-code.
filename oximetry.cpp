@@ -62,7 +62,7 @@ Oximetry::Oximetry(QWidget *parent) :
     PLETHY->AddLayer(new gFooBar());
     PLETHY->AddLayer(new gLineChart(plethy,Qt::red,65536,true,false,false));
     PLETHY->setMinimumHeight(150);
-    PLETHY->SetBlockZoom(true);
+    //PLETHY->SetBlockZoom(true);
 
     portname="";
 
@@ -174,6 +174,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         spo2->SetMaxX(plethy->RealMaxX());
         pulse->SetMinX(plethy->RealMinX());
         pulse->SetMaxX(plethy->RealMaxX());
+        plethy->SetMinX(plethy->RealMinX());
 
         PULSE->RealMaxX();
         PULSE->MaxX();
@@ -181,6 +182,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
         SPO2->RealMaxX();
         SPO2->MaxX();
         SPO2->MinX();
+        PLETHY->MinX();
+        PLETHY->MaxX();
 
 
         PLETHY->updateGL();
@@ -211,9 +214,9 @@ void Oximetry::onReadyRead()
         starttime=lasttime;
 
         plethy->SetRealMinX(double(lasttime)/86400000.0);
-        plethy->SetRealMaxX(double(lasttime+1800000)/86400000.0);
+        plethy->SetRealMaxX(double(lasttime+60000)/86400000.0);
         plethy->SetMinX(double(lasttime)/86400000.0);
-        plethy->SetMaxX(double(lasttime+600000)/86400000.0);
+        plethy->SetMaxX(double(lasttime+60000)/86400000.0);
         plethy->SetRealMinY(0);
         plethy->SetRealMaxY(120);
         plethy->SetMaxY(120);
@@ -233,10 +236,10 @@ void Oximetry::onReadyRead()
         pulse->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
         pulse->SetMinX(double(lasttime)/86400000.0);
         pulse->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        pulse->SetRealMinY(0);
+        pulse->SetRealMinY(40);
         pulse->SetRealMaxY(120);
         pulse->SetMaxY(120);
-        pulse->SetMinY(0);
+        pulse->SetMinY(40);
         pulse->np[0]=0;
         pulse->SetReady(true);
         pulse->SetVC(1);
@@ -251,10 +254,10 @@ void Oximetry::onReadyRead()
         spo2->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
         spo2->SetMinX(double(lasttime)/86400000.0);
         spo2->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        spo2->SetRealMinY(0);
+        spo2->SetRealMinY(40);
         spo2->SetRealMaxY(100);
         spo2->SetMaxY(100);
-        spo2->SetMinY(0);
+        spo2->SetMinY(40);
         spo2->np[0]=0;
         spo2->SetReady(true);
         spo2->SetVC(1);
@@ -276,8 +279,10 @@ void Oximetry::onReadyRead()
         plethy->point[0][plethy->np[0]++].setY(d);
         lasttime+=200;
         plethy->SetRealMaxX(lasttime/86400000.0);
-        plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*30.0)));
-        plethy->SetMaxX(lasttime/86400000.0);
+        if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*60.0))) {
+            plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*60.0)));
+            plethy->SetMaxX(lasttime/86400000.0);
+        }
         PLETHY->MinX();
         PLETHY->MaxX();
         PLETHY->RealMaxX();
