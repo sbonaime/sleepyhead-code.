@@ -76,7 +76,7 @@
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -546,6 +546,20 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="debugTab">
+       <attribute name="title">
+        <string>Debug</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QPlainTextEdit" name="logText">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -593,6 +607,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionDebug"/>
+    <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
    <addaction name="menu_File"/>
@@ -690,6 +706,14 @@
    </property>
    <property name="text">
     <string>&amp;Noon Date Split</string>
+   </property>
+  </action>
+  <action name="actionDebug">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Debug</string>
    </property>
   </action>
  </widget>

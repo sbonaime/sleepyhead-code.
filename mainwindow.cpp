@@ -20,6 +20,12 @@
 QProgressBar *qprogress;
 QLabel *qstatus;
 
+void MainWindow::Log(QString s)
+{
+    ui->logText->appendPlainText(s);
+}
+
+
 QString subversion="0";
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
+    ui->tabWidget->setCurrentIndex(0);
 
     QGLFormat fmt;
     fmt.setDepth(false);
@@ -59,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
+
+    if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=false;
+    else ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
 
     if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
     else ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
@@ -99,13 +109,13 @@ void MainWindow::Startup()
     profile->LoadMachineData();
 
     daily=new Daily(ui->tabWidget,shared_context);
-    ui->tabWidget->addTab(daily,tr("Daily"));
+    ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
     overview=new Overview(ui->tabWidget,shared_context);
-    ui->tabWidget->addTab(overview,tr("Overview"));
+    ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
     oximetry=new Oximetry(ui->tabWidget);
-    ui->tabWidget->addTab(oximetry,tr("Oximetry"));
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
@@ -256,4 +266,17 @@ void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
 void MainWindow::on_action_Noon_Date_Split_toggled(bool checked)
 {
     pref["NoonDateSplit"]=checked;
+}
+
+void MainWindow::on_actionDebug_toggled(bool checked)
+{
+    pref["ShowDebug"]=checked;
+    int idx=ui->tabWidget->indexOf(ui->debugTab);
+    if (checked) {
+        //ui->debugTab->show();
+        //ui->tabWidget->setTabEnabled(idx,true);
+    } else {
+        //ui->debugTab->hide();
+       // ui->tabWidget->setTabEnabled(idx,false);
+    }
 }

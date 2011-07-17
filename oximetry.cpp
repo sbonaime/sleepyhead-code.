@@ -140,8 +140,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
         plethy->SetMinX(double(lasttime)/86400000.0);
         plethy->SetMaxX(double(lasttime+30000)/86400000.0);
         plethy->SetRealMinY(0);
-        plethy->SetRealMaxY(120);
-        plethy->SetMaxY(120);
+        plethy->SetRealMaxY(130);
+        plethy->SetMaxY(130);
         plethy->SetMinY(0);
         PLETHY->MinX();
         PLETHY->MaxX();
@@ -250,6 +250,64 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 {
     portname=arg1;
 }
+void Oximetry::UpdatePlethy(qint8 d)
+{
+    plethy->point[0][plethy->np[0]].setX(double(lasttime)/86400000.0);
+    plethy->point[0][plethy->np[0]++].setY(d);
+    lasttime+=20;  // 50 samples per second?
+    plethy->SetRealMaxX(lasttime/86400000.0);
+    if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*120.0))) {
+        plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*120.0)));
+        plethy->SetMaxX(lasttime/86400000.0);
+    }
+    PLETHY->MinX();
+    PLETHY->MaxX();
+    PLETHY->RealMaxX();
+    if (plethy->np[0]>max_data_points) {
+        //TODO: Stop Serial recording..
+
+        // for now overwrite..
+        plethy->np[0]=0;
+        lasttime=0;
+    }
+    //PLETHY->updateGL(); // Move this to a timer.
+}
+bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
+{
+    bool ret=false;
+    if (lastpulse!=pul) {
+        pulse->point[0][pulse->np[0]].setX(double(lasttime)/86400000.0);
+        pulse->point[0][pulse->np[0]++].setY(pul);
+        PULSE->updateGL();
+        if (pulse->np[0]>max_data_points) {
+            //TODO: Stop Serial recording..
+
+            // for now overwrite..
+            pulse->np[0]=0;
+            lasttime=0;
+        }
+        ret=true;
+        //qDebug() << "Pulse=" << int(bytes[0]);
+    }
+    if (lastspo2!=sp) {
+        spo2->point[0][spo2->np[0]].setX(double(lasttime)/86400000.0);
+        spo2->point[0][spo2->np[0]++].setY(sp);
+        SPO2->updateGL();
+        if (spo2->np[0]>max_data_points) {
+            //TODO: Stop Serial recording..
+
+            // for now overwrite..
+            spo2->np[0]=0;
+            lasttime=0;
+        }
+        ret=true;
+        //qDebug() << "SpO2=" << int(bytes[1]);
+    }
+
+    lastpulse=pul;
+    lastspo2=sp;
+    return ret;
+}
 
 void Oximetry::onReadyRead()
 {
@@ -259,68 +317,35 @@ void Oximetry::onReadyRead()
     bytes.resize(a);
     port->read(bytes.data(), bytes.size());
 
-    const int max_data_points=1000000;
-    if (bytes.size()==3) {
-        EventDataType d=bytes[1] & 0x7f;
-        plethy->point[0][plethy->np[0]].setX(double(lasttime)/86400000.0);
-        plethy->point[0][plethy->np[0]++].setY(d);
-        lasttime+=20;  // 50 samples per second?
-        plethy->SetRealMaxX(lasttime/86400000.0);
-        if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*120.0))) {
-            plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*120.0)));
-            plethy->SetMaxX(lasttime/86400000.0);
+    int i=0;
+    bool redraw_ps=false;
+    while (i<bytes.size()) {
+        if (bytes[i]&0x80) {
+            EventDataType d=bytes[i+1] & 0x7f;
+            UpdatePlethy(d);
+            i+=3;
+        } else {
+            if (UpdatePulseSPO2(bytes[i], bytes[i+1])) redraw_ps=true;
+            i+=2;
         }
-        PLETHY->MinX();
-        PLETHY->MaxX();
-        PLETHY->RealMaxX();
-        if (plethy->np[0]>max_data_points) {
-            //TODO: Stop Serial recording..
-
-            // for now overwrite..
-            plethy->np[0]=0;
-            lasttime=0;
-        }
-        PLETHY->updateGL(); // Move this to a timer.
     }
-    if (bytes.size()==2) { // Data bytes in live mode
+    PLETHY->updateGL();
+    if (redraw_ps) {
+        PULSE->updateGL();
+        SPO2->updateGL();
+    }
+    /*if (bytes.size()==3) {
+    } else if (bytes.size()==2) { // Data bytes in live mode
         // Plethy data
-        if (lastpulse!=bytes[0]) {
-            pulse->point[0][pulse->np[0]].setX(double(lasttime)/86400000.0);
-            pulse->point[0][pulse->np[0]++].setY(bytes[0]);
-            //pulse->SetMinX(lasttime/86400000.0-(1.0/(24.0*15.0)));
-            //pulse->SetMaxX(lasttime/86400000.0);
-            //pulse->SetRealMaxX(lasttime/86400000.0);
-            //PULSE->MinX();
-            //PULSE->MaxX();
-            //PULSE->RealMaxX();
-            PULSE->updateGL();
-            if (pulse->np[0]>max_data_points) {
-                //TODO: Stop Serial recording..
-
-                // for now overwrite..
-                pulse->np[0]=0;
-                lasttime=0;
-            }
-            //qDebug() << "Pulse=" << int(bytes[0]);
-        }
-        if (lastspo2!=bytes[1]) {
-            spo2->point[0][spo2->np[0]].setX(double(lasttime)/86400000.0);
-            spo2->point[0][spo2->np[0]++].setY(bytes[1]);
-            SPO2->updateGL();
-            if (spo2->np[0]>max_data_points) {
-                //TODO: Stop Serial recording..
-
-                // for now overwrite..
-                spo2->np[0]=0;
-                lasttime=0;
-            }
-
-            //qDebug() << "SpO2=" << int(bytes[1]);
-        }
-
-        lastpulse=bytes[0];
-        lastspo2=bytes[1];
+    } else {
+        //qDebug() << "Got " << bytes.size() << " bytes";
+    }*/
+    QString aa=QString::number(bytes.size(),16)+"bytes: ";
+    for (int i=0;i<bytes.size();i++) {
+        aa+=" "+QString::number((unsigned char)bytes[i],16);
     }
+    qDebug() << aa;
+
     lastsize=bytes.size();
 }
 void Oximetry::onDsrChanged(bool status)

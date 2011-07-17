@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void Log(QString s);
 
 private slots:
     void on_action_Import_Data_triggered();
@@ -62,6 +63,8 @@ private slots:
     void on_actionUse_AntiAliasing_triggered(bool checked);
 
     void on_action_Noon_Date_Split_toggled(bool );
+
+    void on_actionDebug_toggled(bool arg1);
 
 private:
     Ui::MainWindow *ui;

@@ -14,6 +14,7 @@ namespace Ui {
 }
 
 enum PORTMODE { PM_LIVE, PM_RECORDING };
+const int max_data_points=1000000;
 
 class Oximetry : public QWidget
 {
@@ -23,8 +24,8 @@ public:
     explicit Oximetry(QWidget *parent = 0);
     ~Oximetry();
 
-    void AddData(gPointData *d) { Data.push_back(d);  };
-    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
+    void AddData(gPointData *d) { Data.push_back(d);  }
+    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); }
     void RedrawGraphs();
 
 private slots:
@@ -39,6 +40,10 @@ private slots:
     void on_ImportButton_clicked();
 
 private:
+    bool UpdatePulseSPO2(qint8 pulse,qint8 spo2);
+    void UpdatePlethy(qint8 plethy);
+
+
     Ui::Oximetry *ui;
     Profile *profile;
     QSplitter *gSplitter;

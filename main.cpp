@@ -17,12 +17,35 @@
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
 
+MainWindow *mainwin;
+
+void MyOutputHandler(QtMsgType type, const char *msg) {
+    if (!mainwin) return;
+    switch (type) {
+        case QtDebugMsg:
+            mainwin->Log(msg);
+            break;
+        case QtWarningMsg:
+            mainwin->Log(QString("Warning: ")+msg);
+            break;
+        case QtFatalMsg:
+            mainwin->Log(QString("Fatal: ")+msg);
+            break;
+        case QtCriticalMsg:
+            mainwin->Log(QString("Critical: ")+msg);
+            break;
+            // Popup a messagebox
+            //abort();
+    }
+}
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qInstallMsgHandler(MyOutputHandler);
 
     a.setApplicationName("SleepyHead");
+
     int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     QStringList ffam=QFontDatabase::applicationFontFamilies(id);
     for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
@@ -30,13 +53,14 @@ int main(int argc, char *argv[])
     }
 
     a.setFont(QFont("FreeSans",10));
+    MainWindow w;
+    mainwin=&w;
 
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();
     ResmedLoader::Register();
 
-    MainWindow w;
     w.show();
 
     return a.exec();
