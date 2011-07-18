@@ -91,18 +91,22 @@ void Oximetry::on_RefreshPortsButton_clicked()
     int z=0;
     QString firstport;
     bool current_found=false;
+#if (Q_WS_WINDOWS)
+#define qesPORTNAME portName
+#else
+#define qesPORTNAME physName
+#endif
     for (int i = 0; i < ports.size(); i++) {
         if (ports.at(i).friendName.toUpper().contains("USB")) {
-            if (firstport.isEmpty()) firstport=ports.at(i).physName;
-            if (!portname.isEmpty() && ports.at(i).physName==portname) current_found=true;
-            ui->SerialPortsCombo->addItem(ports.at(i).physName);
+            if (firstport.isEmpty()) firstport=ports.at(i). qesPORTNAME;
+            if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
+            ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
             z++;
         }
         //qDebug() << "port name:" << ports.at(i).portName;
-        qDebug() << "Serial Port:" << ports.at(i).physName << ports.at(i).friendName;
+        qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
         //qDebug() << "enumerator name:" << ports.at(i).enumName;
     }
-
     if (z>0) {
         ui->RunButton->setEnabled(true);
         ui->ImportButton->setEnabled(true);
