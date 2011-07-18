@@ -94,23 +94,34 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 quadarray[quadcnt++]=start_py;
             } else {
                 if (lo_type==LOT_Dot) {
-                    pointarray[pointcnt++]=x1;
-                    pointarray[pointcnt++]=start_py+3; //
+                    //pointarray[pointcnt++]=x1;
+                    //pointarray[pointcnt++]=start_py+3; //
+                    vertarray[vertcnt++]=x1;
+                    vertarray[vertcnt++]=start_py+1;
+                    vertarray[vertcnt++]=x1;
+                    vertarray[vertcnt++]=start_py+1+12;
                 } else if (lo_type==LOT_Bar) {
-                    int z=start_py+height-2;
-                    if (xx<(1800.0/86400.0)) {
+                    int z=start_py+height;
+                    if (xx<(3600.0/86400.0)) {
                         z=top;
 
+                        pointarray[pointcnt++]=x1;
+                        pointarray[pointcnt++]=top; //z+2;
                         vertarray[vertcnt++]=x1;
                         vertarray[vertcnt++]=top;
                         vertarray[vertcnt++]=x1;
                         vertarray[vertcnt++]=bottom;
+                    } else {
+                        vertarray[vertcnt++]=x1;
+                        vertarray[vertcnt++]=z;
+                        vertarray[vertcnt++]=x1;
+                        vertarray[vertcnt++]=z-12;
+                    }
+                    if (xx<(1800.0/86400.0)) {
                         GetTextExtent(label,x,y);
                         DrawText(label,x1-(x/2),scry-(start_py+height-30+y));
                         //w.renderText(x1-(x/2),scry-(start_py+height-30+y),label);
                     }
-                    pointarray[pointcnt++]=x1;
-                    pointarray[pointcnt++]=z;
 
                 }
             }
