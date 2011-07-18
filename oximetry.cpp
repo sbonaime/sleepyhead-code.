@@ -17,6 +17,7 @@ Oximetry::Oximetry(QWidget *parent) :
 {
     ui->setupUi(this);
     port=NULL;
+    portname="";
     QString prof=pref["Profile"].toString();
     profile=Profiles::Get(prof);
     if (!profile) {
@@ -29,55 +30,46 @@ Oximetry::Oximetry(QWidget *parent) :
     gSplitter->setHandleWidth(2);
     ui->graphLayout->addWidget(gSplitter);
 
+    AddData(plethy=new WaveData(OXI_Plethy));
+    AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),(QGLWidget *)NULL));
+    PLETHY->AddLayer(new gLineChart(plethy,Qt::black,65536,true,false,false));
+
     AddData(pulse=new EventData(OXI_Pulse));
-    PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),(QGLWidget *)NULL);
-    PULSE->AddLayer(new gXAxis());
-    PULSE->AddLayer(new gYAxis());
-    PULSE->AddLayer(new gFooBar());
+    AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),PLETHY));
     PULSE->AddLayer(new gLineChart(pulse,Qt::red,65536,false,false,false));
-    PULSE->setMinimumHeight(150);
 
     AddData(spo2=new EventData(OXI_SPO2));
-    SPO2=new gGraphWindow(gSplitter,tr("SPO2"),PULSE);
-    SPO2->AddLayer(new gXAxis());
-    SPO2->AddLayer(new gYAxis());
-    SPO2->AddLayer(new gFooBar());
+    AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SPO2"),PLETHY));
     SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,false));
-    SPO2->setMinimumHeight(150);
 
-    pulse->AddSegment(1000000);
-    pulse->np.push_back(0);
-    spo2->AddSegment(1000000);
-    spo2->np.push_back(0);
+    plethy->SetRealMaxY(128);
+    pulse->SetRealMaxY(130);
+    spo2->SetRealMaxY(100);
 
+    for (unsigned i=0;i<Data.size();i++) {
+        Data[i]->AddSegment(1000000);
+        Data[i]->np.push_back(0);
+        Data[i]->SetRealMinY(0);
+        Data[i]->SetMinY(0);
+        Data[i]->SetMaxY(Data[i]->RealMaxY());
+    }
 
-    AddData(plethy=new WaveData(OXI_Plethy));
-    plethy->AddSegment(1000000);
-    plethy->np.push_back(0);
-    plethy->SetMaxY(100);
-    plethy->SetMinY(0);
-    PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),PULSE);
-    //PLETHY->AddLayer(new gXAxis());
-    PLETHY->AddLayer(new gYAxis());
-    PLETHY->AddLayer(new gFooBar());
-    PLETHY->AddLayer(new gLineChart(plethy,Qt::black,65536,true,false,false));
-    PLETHY->setMinimumHeight(150);
-    //PLETHY->SetBlockZoom(true);
-
-    portname="";
-
-
-    gGraphWindow * graphs[]={PLETHY,PULSE,SPO2};
-    int ss=sizeof(graphs)/sizeof(gGraphWindow *);
-
-    for (int i=0;i<ss;i++) {
-        AddGraph(graphs[i]);
-        for (int j=0;j<ss;j++) {
-            if (graphs[i]!=graphs[j])
-                graphs[i]->LinkZoom(graphs[j]);
+    for (unsigned i=0;i<Graphs.size();i++) {
+        for (unsigned j=0;j<Graphs.size();j++) {
+            if (Graphs[i]!=Graphs[j])
+                Graphs[i]->LinkZoom(Graphs[j]);
         }
-        gSplitter->addWidget(graphs[i]);
-        graphs[i]->SetSplitter(gSplitter);
+        Graphs[i]->AddLayer(new gYAxis());
+        Graphs[i]->AddLayer(new gXAxis());
+        Graphs[i]->AddLayer(new gFooBar());
+
+        Graphs[i]->setMinimumHeight(150);
+        Graphs[i]->SetSplitter(gSplitter);
+        Graphs[i]->RealMinY();
+        Graphs[i]->RealMaxY();
+        Graphs[i]->MinY();
+        Graphs[i]->MaxY();
+        gSplitter->addWidget(Graphs[i]);
     }
 
     on_RefreshPortsButton_clicked();
@@ -120,7 +112,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
 }
 void Oximetry::RedrawGraphs()
 {
-    for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
+    for (vector<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
         (*g)->updateGL();
     }
 }
@@ -139,16 +131,10 @@ void Oximetry::on_RunButton_toggled(bool checked)
         plethy->SetRealMaxX(double(lasttime+60000)/86400000.0);
         plethy->SetMinX(double(lasttime)/86400000.0);
         plethy->SetMaxX(double(lasttime+30000)/86400000.0);
-        plethy->SetRealMinY(0);
-        plethy->SetRealMaxY(130);
-        plethy->SetMaxY(130);
-        plethy->SetMinY(0);
-        PLETHY->MinX();
-        PLETHY->MaxX();
         PLETHY->RealMinX();
         PLETHY->RealMaxX();
-        PLETHY->MinY();
-        PLETHY->MaxY();
+        PLETHY->MinX();
+        PLETHY->MaxX();
         plethy->SetReady(true);
         plethy->SetVC(1);
         plethy->np[0]=0;
@@ -158,37 +144,25 @@ void Oximetry::on_RunButton_toggled(bool checked)
         pulse->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
         pulse->SetMinX(double(lasttime)/86400000.0);
         pulse->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        pulse->SetRealMinY(40);
-        pulse->SetRealMaxY(120);
-        pulse->SetMaxY(120);
-        pulse->SetMinY(40);
         pulse->np[0]=0;
         pulse->SetReady(true);
         pulse->SetVC(1);
-        PULSE->MinX();
-        PULSE->MaxX();
         PULSE->RealMinX();
         PULSE->RealMaxX();
-        PULSE->MinY();
-        PULSE->MaxY();
+        PULSE->MinX();
+        PULSE->MaxX();
 
         spo2->SetRealMinX(double(lasttime)/86400000.0);
         spo2->SetRealMaxX(double(lasttime)/86400000.0+(1.0/24.0));
         spo2->SetMinX(double(lasttime)/86400000.0);
         spo2->SetMaxX(double(lasttime)/86400000.0+(1.0/24.0));
-        spo2->SetRealMinY(40);
-        spo2->SetRealMaxY(100);
-        spo2->SetMaxY(100);
-        spo2->SetMinY(40);
         spo2->np[0]=0;
         spo2->SetReady(true);
         spo2->SetVC(1);
-        SPO2->MinX();
-        SPO2->MaxX();
         SPO2->RealMinX();
         SPO2->RealMaxX();
-        SPO2->MinY();
-        SPO2->MaxY();
+        SPO2->MinX();
+        SPO2->MaxX();
 
         ui->RunButton->setText("&Stop");
         ui->SerialPortsCombo->setEnabled(false);

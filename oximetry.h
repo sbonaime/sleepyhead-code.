@@ -49,8 +49,8 @@ private:
     QSplitter *gSplitter;
     gPointData *pulse,*spo2,*plethy;
     gGraphWindow *PULSE,*SPO2,*PLETHY;
-    list<gGraphWindow *> Graphs;
-    list<gPointData *> Data;
+    vector<gGraphWindow *> Graphs;
+    vector<gPointData *> Data;
     QextSerialPort *port;
     QString portname;
     PORTMODE portmode;

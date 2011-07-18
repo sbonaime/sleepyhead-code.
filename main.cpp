@@ -53,13 +53,13 @@ int main(int argc, char *argv[])
     }
 
     a.setFont(QFont("FreeSans",10));
-    MainWindow w;
-    mainwin=&w;
 
     PRS1Loader::Register();
     CMS50Loader::Register();
     ZEOLoader::Register();
     ResmedLoader::Register();
+    MainWindow w;
+    mainwin=&w;
 
     w.show();
 

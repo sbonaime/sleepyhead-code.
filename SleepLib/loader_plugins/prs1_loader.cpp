@@ -391,7 +391,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
 bool PRS1Loader::OpenSummary(Session *session,QString filename)
 {
-    int size,sequence,seconds,br,htype,version;
+    int size,seconds,br,htype,version,sequence;
     qint64 timestamp;
     unsigned char header[24];
     unsigned char ext,sum;
@@ -419,6 +419,11 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     ext=header[6];
     htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
     version=header[4];
+
+    sequence=sequence;
+    version=version; // don't need it here?
+
+    htype=htype; // shut the warning up.. this is useless.
 
     if (ext!=PRS1_SUMMARY_FILE)
         return false;
@@ -519,7 +524,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
 }
 
 // v2 event parser.
-bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,int version)
+bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
     MachineCode Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
@@ -530,12 +535,12 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
 
     EventDataType data[10];
 
-    qint64 start=timestamp;
+    //qint64 start=timestamp;
     qint64 t=timestamp;
     qint64 tt;
     int pos=0;
     int cnt=0;
-    short delta,duration;
+    short delta;//,duration;
     while (pos<size) {
         unsigned char code=buffer[pos++];
         if (code>=ncodes) {
@@ -547,7 +552,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
        // qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
         if (code!=0x12) {
             delta=buffer[pos];
-            duration=buffer[pos+1];
+            //duration=buffer[pos+1];
             //delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
             t+=delta*1000;
@@ -555,7 +560,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
         MachineCode cpapcode=Codes[(int)code];
         tt=t;
         cnt++;
-        int fc=0;
+        //int fc=0;
         switch (code) {
         case 0x01: // Unknown            
             session->AddEvent(new Event(t,cpapcode, data,0));
@@ -648,7 +653,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
     return true;
 }
 
-bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp,int version)
+bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
     MachineCode Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_Obstructive, CPAP_ClearAirway, CPAP_Hypopnea,
@@ -660,12 +665,12 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
     EventDataType data[10];
 
-    qint64 start=timestamp;
+    //qint64 start=timestamp;
     qint64 t=timestamp;
     qint64 tt;
     int pos=0;
     int cnt=0;
-    short delta,duration;
+    short delta;//,duration;
     QDateTime d;
     while (pos<size) {
         unsigned char code=buffer[pos++];
@@ -673,21 +678,17 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos+16;
             return false;
         }
-        //assert(code<ncodes);
         //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
         //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
-        if (code==0) {
-            int q=4;
-        } else
         if (code!=0x12) {
             delta=buffer[pos];
-            duration=buffer[pos+1];
+            //duration=buffer[pos+1];
             //delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
             t+=delta*1000;
         }
         MachineCode cpapcode=Codes[(int)code];
-        EventDataType PS;
+        //EventDataType PS;
         tt=t;
         cnt++;
         int fc=0;
@@ -849,6 +850,8 @@ bool PRS1Loader::OpenEvents(Session *session,QString filename)
     htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
     version=header[4];// | header[4];
 
+    htype=htype;
+    sequence=sequence;
     if (ext!=PRS1_EVENT_FILE)  // 2 == Event file
         return false;
 
@@ -866,12 +869,12 @@ bool PRS1Loader::OpenEvents(Session *session,QString filename)
         return false;
     }
     if (version==0) {
-        if (!Parse002(session,buffer,size,timestamp*1000L,version)) {
+        if (!Parse002(session,buffer,size,timestamp*1000L)) {
             qDebug() << "Couldn't Parse PRS1 Event File " << filename;
             return false;
         }
     } else if (version==5) {
-        if (!Parse002ASV(session,buffer,size,timestamp*1000L,version)) {
+        if (!Parse002ASV(session,buffer,size,timestamp*1000L)) {
             qDebug() << "Couldn't Parse PRS1 (ASV) Event File " << filename;
             return false;
         }
@@ -902,9 +905,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     long samples=0;
     qint64 duration=0;
     char * buffer=(char *)m_buffer;
-    bool first2=true;
+    //bool first2=true;
     long fpos=0;
-    int bsize=0;
+    //int bsize=0;
     int lasthl=0;
     while (true) {
         lasthl=hl;
@@ -940,13 +943,11 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             br=f.read((char *)header,2);
             fpos+=size+3+lasthl-hl;
 
-            //f.seek(fpos-hl+bsize);
-            //fpos+=bsize-hl;
             continue;
         }
 
         //sequence=size=timestamp=seconds=ext=0;
-        bsize=size=(header[2] << 8) | header[1];
+        size=(header[2] << 8) | header[1];
         version=header[4];
         htype=header[3];
         ext=header[6];
@@ -954,6 +955,10 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
         seconds=(header[16] << 8) | header[15];
         numsignals=header[19] << 8 | header[18];
+
+        sequence=sequence;
+        version=version;
+        //htype=htype;
 
         unsigned char sum=0,hchk;
         for (int i=0; i<hl; i++) sum+=header[i];
@@ -1022,6 +1027,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (br<2)
             return false;
         chksum=chkbuf[0] << 8 | chkbuf[1];
+        chksum=chksum;
 
     }
 

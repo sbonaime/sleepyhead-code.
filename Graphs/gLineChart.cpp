@@ -217,16 +217,15 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         bool firstpx=true;
+        int done2=0;
         for (int i=idx;i<siz;i+=sam) {
 
-            if (point[i].x() < minx) continue; // Skip stuff before the start of our data window
+            if (first && point[i].x() < minx) continue; // Skip stuff before the start of our data window
 
             if (first) {
                 first=false;
                 if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
             }
-
-            if (point[i].x() > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             px=1+((point[i].x() - minx) * xmult);   // Scale the time scale X to pixel scale X
 
@@ -256,6 +255,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 }
                 lastpx=start_px+px;
                 lastpy=start_py+py;
+                //if (lastpx>start_px+width) done=true;
             } else {
                 // In accel mode, each pixel has a min/max Y value.
                 // m_drawlist's index is the pixel index for the X pixel axis.
@@ -271,8 +271,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 // Update the Y pixel bounds.
                 if (y1<m_drawlist[z].x()) m_drawlist[z].setX(y1);
                 if (y1>m_drawlist[z].y()) m_drawlist[z].setY(y1);
+                //if (z>width) done=true;
 
             }
+            if (point[i].x() > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             if (done) break;
         }
@@ -295,13 +297,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
 
 
-    QString b;
+    /*QString b;
     long j=vertcnt/2;
     if (accel) j/=2;
-    //b.sprintf("%i %i %i %i",visible_points,sam,num_points,j);
-    //float x,y;
-    //GetTextExtent(b,x,y);
-    //DrawText(w,b,scrx-w.GetRightMargin()-x-15,scry-w.GetTopMargin()-10);
+    b.sprintf("%i %i %i %li",visible_points,sam,num_points,j);
+    float x,y;
+    GetTextExtent(b,x,y);
+    DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetBottomMargin()-10); */
 
     glColor4ub(col.red(),col.green(),col.blue(),255);
 

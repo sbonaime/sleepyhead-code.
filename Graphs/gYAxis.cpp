@@ -31,8 +31,8 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     double maxy=w.max_y;
     if (maxy==miny)
         return;
-    if ((w.max_x-w.min_x)==0)
-        return;
+    //if ((w.max_x-w.min_x)==0)
+    //    return;
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
