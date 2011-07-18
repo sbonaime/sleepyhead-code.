@@ -5,6 +5,7 @@
 *********************************************************************/
 
 #include <math.h>
+#include "SleepLib/profiles.h"
 #include "gLineOverlay.h"
 
 gLineOverlayBar::gLineOverlayBar(gPointData *d,QColor col,QString _label,LO_Type _lot)
@@ -102,7 +103,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     vertarray[vertcnt++]=start_py+1+12;
                 } else if (lo_type==LOT_Bar) {
                     int z=start_py+height;
-                    if (xx<(3600.0/86400.0)) {
+                    if (pref["AlwaysShowOverlayBars"].toBool() || (xx<(3600.0/86400.0))) {
                         z=top;
 
                         pointarray[pointcnt++]=x1;

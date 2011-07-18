@@ -593,6 +593,7 @@
     <addaction name="actionUse_AntiAliasing"/>
     <addaction name="action_Link_Graphs"/>
     <addaction name="action_Noon_Date_Split"/>
+    <addaction name="actionOverlay_Bars"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
    </widget>
@@ -707,6 +708,14 @@
    </property>
    <property name="text">
     <string>Debug</string>
+   </property>
+  </action>
+  <action name="actionOverlay_Bars">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Overlay Bars</string>
    </property>
   </action>
  </widget>

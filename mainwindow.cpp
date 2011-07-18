@@ -82,6 +82,10 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
     else ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
     first_load=true;
+
+    if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
+    else ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
+
 }
 
 MainWindow::~MainWindow()
@@ -280,4 +284,10 @@ void MainWindow::on_actionDebug_toggled(bool checked)
     } else {
         ui->logText->hide();
     }
+}
+
+void MainWindow::on_actionOverlay_Bars_toggled(bool checked)
+{
+    pref["AlwaysShowOverlayBars"]=checked;
+    if (daily) daily->RedrawGraphs();
 }

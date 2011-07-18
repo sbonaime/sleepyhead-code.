@@ -66,6 +66,8 @@ private slots:
 
     void on_actionDebug_toggled(bool arg1);
 
+    void on_actionOverlay_Bars_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;
