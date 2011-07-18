@@ -821,7 +821,7 @@ void gGraphWindow::paintGL()
     if (m_mouseLDown) {
         if (m_mouseRBrect.width()>0)
             //glDisable(GL_DEPTH_TEST);
-            RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,50,128));
+            RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,200,64));
             //glEnable(GL_DEPTH_TEST);
     }
     glEnable(GL_DEPTH_TEST);

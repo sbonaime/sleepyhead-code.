@@ -29,7 +29,7 @@ Oximetry::Oximetry(QWidget *parent) :
     gSplitter->setHandleWidth(2);
     ui->graphLayout->addWidget(gSplitter);
 
-    AddData(pulse=new WaveData(OXI_Pulse));
+    AddData(pulse=new EventData(OXI_Pulse));
     PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),(QGLWidget *)NULL);
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
@@ -37,7 +37,7 @@ Oximetry::Oximetry(QWidget *parent) :
     PULSE->AddLayer(new gLineChart(pulse,Qt::red,65536,false,false,false));
     PULSE->setMinimumHeight(150);
 
-    AddData(spo2=new WaveData(OXI_SPO2));
+    AddData(spo2=new EventData(OXI_SPO2));
     SPO2=new gGraphWindow(gSplitter,tr("SPO2"),PULSE);
     SPO2->AddLayer(new gXAxis());
     SPO2->AddLayer(new gYAxis());
@@ -275,6 +275,9 @@ void Oximetry::UpdatePlethy(qint8 d)
 bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
 {
     bool ret=false;
+
+    // Don't block zeros.. If the data is used, it's needed
+    // Can make the graph can skip them.
     if (lastpulse!=pul) {
         pulse->point[0][pulse->np[0]].setX(double(lasttime)/86400000.0);
         pulse->point[0][pulse->np[0]++].setY(pul);
@@ -311,7 +314,6 @@ bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
 
 void Oximetry::onReadyRead()
 {
-    static int lastsize=-1;
     QByteArray bytes;
     int a = port->bytesAvailable();
     bytes.resize(a);
@@ -346,7 +348,7 @@ void Oximetry::onReadyRead()
     }
     qDebug() << aa; */
 
-    lastsize=bytes.size();
+    //lastsize=bytes.size();
 }
 void Oximetry::onDsrChanged(bool status)
 {
@@ -357,6 +359,16 @@ void Oximetry::onDsrChanged(bool status)
 }
 extern QProgressBar *qprogress;
 extern QLabel *qstatus;
+
+
+void DumpBytes(unsigned char * b,int len)
+{
+    QString a="Bytes "+QString::number(len,16)+": ";
+    for (int i=0;i<len;i++) {
+        a.append(QString::number(b[i],16)+" ");
+    }
+    qDebug() << a;
+}
 
 // Move this code to CMS50 Importer??
 void Oximetry::on_ImportButton_clicked()
@@ -437,6 +449,7 @@ void Oximetry::on_ImportButton_clicked()
         do {
             bool fnd=false;
             res=port->read((char *)rb,0x20);
+            DumpBytes(rb,0x20);
 
             if (blocks==0) {
                 for (int i=0;i<res-1;i++) {
@@ -447,6 +460,7 @@ void Oximetry::on_ImportButton_clicked()
                     }
                 }
                 if (!fnd) {
+
                     qDebug() << "Retrying..";
                     fails++;
                     break; // reissue the F5 and try again

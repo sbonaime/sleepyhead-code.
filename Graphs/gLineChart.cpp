@@ -136,7 +136,11 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         x1=point[1].x();
 //        if (accel) {
         sr=x1-x0;           // Time distance between samples
-        assert(sr>0);
+        if (sr<=0) {
+            qWarning() << "qLineChart::Plot() assert(sr>0)";
+            return;
+        }
+            //assert(sr>0);
        // double qx=xL-x0;    // Full time range of this segment
         //double gx=xx/qx;    // ratio of how much of the whole data set this represents
         //double segwidth=width*gx;
