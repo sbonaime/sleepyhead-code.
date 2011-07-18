@@ -95,12 +95,19 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 quadarray[quadcnt++]=start_py;
             } else {
                 if (lo_type==LOT_Dot) {
-                    //pointarray[pointcnt++]=x1;
-                    //pointarray[pointcnt++]=start_py+3; //
-                    vertarray[vertcnt++]=x1;
-                    vertarray[vertcnt++]=start_py+1;
-                    vertarray[vertcnt++]=x1;
-                    vertarray[vertcnt++]=start_py+1+12;
+                    //if (pref["AlwaysShowOverlayBars"].toBool()) {
+
+                    if (pref["AlwaysShowOverlayBars"].toBool() || (xx<(3600.0/86400.0))) {
+                        // show the fat dots in the middle
+                        pointarray[pointcnt++]=x1;
+                        pointarray[pointcnt++]=w.y2p(20);
+                    } else {
+                        // thin lines down the bottom
+                        vertarray[vertcnt++]=x1;
+                        vertarray[vertcnt++]=start_py+1;
+                        vertarray[vertcnt++]=x1;
+                        vertarray[vertcnt++]=start_py+1+12;
+                    }
                 } else if (lo_type==LOT_Bar) {
                     int z=start_py+height;
                     if (pref["AlwaysShowOverlayBars"].toBool() || (xx<(3600.0/86400.0))) {

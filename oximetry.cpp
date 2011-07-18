@@ -32,15 +32,12 @@ Oximetry::Oximetry(QWidget *parent) :
 
     AddData(plethy=new WaveData(OXI_Plethy));
     AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),(QGLWidget *)NULL));
-    PLETHY->AddLayer(new gLineChart(plethy,Qt::black,65536,true,false,false));
 
     AddData(pulse=new EventData(OXI_Pulse));
     AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),PLETHY));
-    PULSE->AddLayer(new gLineChart(pulse,Qt::red,65536,false,false,false));
 
     AddData(spo2=new EventData(OXI_SPO2));
     AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SPO2"),PLETHY));
-    SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,false));
 
     plethy->SetRealMaxY(128);
     pulse->SetRealMaxY(130);
@@ -63,13 +60,19 @@ Oximetry::Oximetry(QWidget *parent) :
         Graphs[i]->AddLayer(new gXAxis());
         Graphs[i]->AddLayer(new gFooBar());
 
+        gSplitter->addWidget(Graphs[i]);
+    }
+    SPO2->AddLayer(new gLineChart(spo2,Qt::blue,65536,false,false,false));
+    PULSE->AddLayer(new gLineChart(pulse,Qt::red,65536,false,false,false));
+    PLETHY->AddLayer(new gLineChart(plethy,Qt::black,65536,true,false,false));
+
+    for (unsigned i=0;i<Graphs.size();i++) {
         Graphs[i]->setMinimumHeight(150);
         Graphs[i]->SetSplitter(gSplitter);
         Graphs[i]->RealMinY();
         Graphs[i]->RealMaxY();
         Graphs[i]->MinY();
         Graphs[i]->MaxY();
-        gSplitter->addWidget(Graphs[i]);
     }
 
     on_RefreshPortsButton_clicked();
@@ -335,9 +338,9 @@ extern QProgressBar *qprogress;
 extern QLabel *qstatus;
 
 
-void DumpBytes(unsigned char * b,int len)
+void DumpBytes(int blocks, unsigned char * b,int len)
 {
-    QString a="Bytes "+QString::number(len,16)+": ";
+    QString a=QString::number(blocks,16)+": Bytes "+QString::number(len,16)+": ";
     for (int i=0;i<len;i++) {
         a.append(QString::number(b[i],16)+" ");
     }
@@ -423,13 +426,14 @@ void Oximetry::on_ImportButton_clicked()
         do {
             bool fnd=false;
             res=port->read((char *)rb,0x20);
-            DumpBytes(rb,0x20);
+            DumpBytes(blocks,rb,res);
 
+            done=false;
             if (blocks==0) {
                 for (int i=0;i<res-1;i++) {
-                    if ((rb[i]==0xf2) && (rb[i+1]==0x80)) {
+                    if ((rb[i]==0xf2) && (rb[i+1]==0x80)) { // && (rb[i+2]==0x00)) {
                         fnd=true;
-                        startpos=i+10;
+                        startpos=i+9;
                         break;
                     }
                 }
@@ -438,14 +442,26 @@ void Oximetry::on_ImportButton_clicked()
                     qDebug() << "Retrying..";
                     fails++;
                     break; // reissue the F5 and try again
+                } else {
+                    qDebug() << "Found";
                 }
 
-                length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]&0x7f);
+                //  84 95 7c
+                // 0x10556 bytes..
+                // 0x82b blocks
+                length=(rb[startpos++] & 0x7f) << 14;
+                length|=(rb[startpos++] & 0x7f) << 7;
+                length|=(rb[startpos++] & 0x7f);
+                if (!(rb[startpos]&0x80)) {
+                    length <<= 8;
+                    length|=rb[startpos++];
+                }
+                /*length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]);
                 startpos+=2;
                 if (!(rb[startpos]&0x80)) {
                     length|=(rb[startpos]&0x7f) << 14;
                     startpos++;
-                } else oneoff=true;
+                } else oneoff=true; */
                 buffer=new unsigned char [length+32];
 
                 //qDebug() << length << startpos;
@@ -456,14 +472,10 @@ void Oximetry::on_ImportButton_clicked()
                 memcpy((char *)&buffer[bytes],(char *)rb,res);
                 bytes+=res;
             }
-            //aa="";
-            //for (int i=0;i<res;i++) {
-            //    aa+=QString::number(unsigned(rb[i]),16)+" ";
-            //}
-            //qDebug() << aa;
 
             blocks++;
             if (res<0x20) {
+                qDebug() << "Read "<< bytes << " bytes of " << length;
                 done=true;
                 break;
             }
