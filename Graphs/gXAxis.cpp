@@ -5,6 +5,7 @@
 *********************************************************************/
 
 #include <math.h>
+#include <QDebug>
 #include "gXAxis.h"
 
 gXAxis::gXAxis(QColor col)
@@ -53,7 +54,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     }
     float x,y;
     GetTextExtent(fd,x,y);
-    assert(x>0);
+    if (x<=0) {
+        qWarning() << "gXAxis::Plot() x<=0";
+        return;
+    }
 
     double max_ticks=(x+25.0)/width; // y+50 for rotated text
     double jj=1/max_ticks;
@@ -92,7 +96,8 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         //if (min_tick>10) min_tick=10;
     }
     if (min_tick<=0) {
-        assert(min_tick>0);
+        qWarning() << "gXAxis::Plot() min_tick<=0 :(";
+        return;
     }
 
     double st3=st;
@@ -115,7 +120,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             vertarray[vertcnt++]=py;
             vertarray[vertcnt++]=px;
             vertarray[vertcnt++]=py-4;
-            assert(vertcnt<maxverts);
+            if (vertcnt>maxverts) {
+                qWarning() << "gXAxis::Plot() maxverts exceeded trying to draw minor ticks";
+                return;
+            }
         }
     }
 
@@ -159,7 +167,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             vertarray[vertcnt++]=py;
             vertarray[vertcnt++]=px;
             vertarray[vertcnt++]=py-6;
-            assert(vertcnt<maxverts);
+            if (vertcnt>maxverts) {
+                qWarning() << "gXAxis::Plot() maxverts exceeded trying to draw Major ticks";
+                return;
+            }
         }
 
         GetTextExtent(fd,x,y);
@@ -174,7 +185,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     }
 // Draw the little ticks.
-    assert(vertcnt<maxverts);
+    if (vertcnt>=maxverts) {
+        qWarning() << "maxverts exceeded in gYAxis::Plot()";
+        return;
+    }
 
     glLineWidth(1);
     glColor3f(0,0,0);

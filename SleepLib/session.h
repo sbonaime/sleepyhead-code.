@@ -8,6 +8,7 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include <QDebug>
 #include "SleepLib/machine.h"
 
 class Machine;
@@ -51,7 +52,10 @@ public:
         else if (d<s_first) s_first=d;
     };
     void set_last(qint64 d) {
-        assert(d>s_first);
+        if (d<=s_first) {
+            qWarning() << "Session::set_last() d<=s_first";
+            return;
+        }
         if (!s_last) s_last=d;
         else if (s_last<d) s_last=d;
     };

@@ -262,7 +262,7 @@ void gGraphWindow::updateSelectionTime()
     seconds=int(f*24*3600.0) % 60;
     QString s;
     if (f>1) {
-        s.sprintf("%.1f days",f);
+        s.sprintf("%.0f days",f);
     } else if (f>(1.0/(24.0*12.0))) {
         s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
     } else {
@@ -355,7 +355,10 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         SetXBounds(qx,ex);
         if (pref["LinkGraphMovement"].toBool()) {
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                assert((*g)!=this);
+                if (*g==this) {
+                    qWarning() << "mouseMoveEvent *g should not equal this";
+                    continue;
+                }
                 (*g)->SetXBounds(qx,ex);
             }
         }
@@ -397,7 +400,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         seconds=int(f*3600.0) % 60;
         QString s;
         if (z>1) {
-            s.sprintf("%.1f days",q*z);
+            s.sprintf("%.0f days",q*z);
         } else if (z>(1.0/(24.0*12.0))) {
             s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
         } else {
@@ -669,11 +672,6 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
         m_mouseLDown=true;
         LastGraphLDown=this;
     }
-}
-void gGraphWindow::dropEvent ( QDropEvent * event )
-{
-    assert(splitter!=NULL);
-    //m_dragGraph=false;
 }
 
 void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)

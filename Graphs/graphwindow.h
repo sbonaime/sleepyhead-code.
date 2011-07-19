@@ -32,7 +32,6 @@ public:
 
 signals:
 public slots:
-    void dropEvent(QDropEvent * event);
 public:
     QBitmap * RenderBitmap(int width,int height);
 

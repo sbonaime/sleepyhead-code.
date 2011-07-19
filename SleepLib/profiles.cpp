@@ -99,8 +99,10 @@ void Profile::ExtraLoad(TiXmlHandle *root)
     }
     for(; elem; elem=elem->NextSiblingElement()) {
         QString pKey=elem->Value();
-        assert(pKey=="Machine");
-
+        if (pKey!="Machine") {
+            qWarning() << "Profile::ExtraLoad() pKey!=\"Machine\"";
+            continue;
+        }
         int m_id;
         elem->QueryIntAttribute("id",&m_id);
         int mt;
@@ -235,7 +237,10 @@ vector<Machine *> Profile::GetMachines(MachineType t)
     map<MachineID,Machine *>::iterator i;
 
     for (i=machlist.begin(); i!=machlist.end(); i++) {
-        assert(i->second!=NULL);
+        if (!i->second) {
+            qWarning() << "Profile::GetMachines() i->second == NULL";
+            continue;
+        }
         if (i->second->GetType()==t) {
             vec.push_back(i->second);
         }

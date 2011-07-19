@@ -185,7 +185,10 @@ bool Preferences::Open(QString filename)
     for( ; pElem; pElem=pElem->NextSiblingElement()) {
 
         TiXmlAttribute *attr=pElem->FirstAttribute();
-        assert(attr!=NULL);
+        if (!attr) {
+            qWarning() << "Preferences::Open() attr==NULL!";
+            return false;
+        }
         QString type=attr->Value();
         type=type.toLower();
         QString pKey=pElem->Value();

@@ -5,6 +5,7 @@
 *********************************************************************/
 
 #include <math.h>
+#include <QDebug>
 #include "gYAxis.h"
 
 gYAxis::gYAxis(QColor col)
@@ -95,8 +96,6 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         if (x>labelW) labelW=x;
         h=start_py+ty;
         DrawText(fd,start_px-12-x,scry-(h-(y/2.0)),0);
-        //glColor3ub(0,0,0);
-        //w.renderText(start_px-15-x, scry-(h - (y / 2)),fd);
 
         vertarray[vertcnt++]=start_px-4;
         vertarray[vertcnt++]=h;
@@ -111,7 +110,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
             glEnd();
         }
     }
-    assert(vertcnt<maxverts);
+    if (vertcnt>=maxverts) {
+        qDebug() << "maxverts exceeded in gYAxis::Plot()";
+        return;
+    }
 
     // Draw the little ticks.
     glLineWidth(1);

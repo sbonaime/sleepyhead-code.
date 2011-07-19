@@ -285,7 +285,11 @@ qint64 Day::last(MachineCode code)
         Session & sess=*(*s);
         if (sess.events.find(code)!=sess.events.end()) {
             vector<Event *>::reverse_iterator i=sess.events[code].rbegin();
-            assert(i!=sess.events[code].rend());
+            if (i==sess.events[code].rend()) {
+                qWarning() << "Day::last() i==sess.events[code].rend()";
+                continue;
+            }
+            //assert(i!=sess.events[code].rend());
             tmp=(*i)->time();
             if (!date) {
                 date=tmp;

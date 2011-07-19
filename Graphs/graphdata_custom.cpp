@@ -4,7 +4,8 @@
  License: GPL
 *********************************************************************/
 
-#include <math.h>
+#include <cmath>
+#include <QDebug>
 #include "graphdata_custom.h"
 
 
@@ -50,7 +51,11 @@ void WaveData::Reload(Day *day)
                 QPointD r(st,(*w)[i]);
                 st+=rate;
                 (point[vc][t++])=r;
-                assert(t<max_points);
+                if (t>=max_points) {
+                    qWarning()<< "WaveData max_points exceeded";
+                    break;
+                }
+                //assert(t<max_points);
                 if (first) {
                     max_y=min_y=r.y();
                     first=false;
@@ -117,8 +122,8 @@ void EventData::Reload(Day *day)
     min_x=day->first()/86400000.0;
     max_x=day->last()/86400000.0;
     if (min_x>max_x) {
-        //int a=5;
-        assert(min_x<max_x);
+        qWarning() << "EventData min_x > max_x";
+        return;
     }
     min_y=max_y=0;
     int tt=0;
@@ -137,7 +142,10 @@ void EventData::Reload(Day *day)
             if (((p!=0) && skipzero) || !skipzero) {
                 QPointD r((*ev)->time()/86400000.0,p);
                 point[vc][t++]=r;
-                assert(t<max_points);
+                if (t>=max_points) {
+                    qWarning() << "EventData max_points exceeded";
+                    break;
+                }
                 if (first) {
                     max_y=min_y=r.y();
                     //lastp=p;
@@ -225,8 +233,10 @@ void TAPData::Reload(Day *day)
                 first=false; // only bother setting lastval (below) this time.
             } else {
                 double d=(ev.time()-last)/1000.0;
-
-                assert(lastval<max_slots);
+                if (lastval>=max_slots) {
+                    qWarning() << "TapData: lastval<max_slots";
+                    break;
+                }
                 pTime[lastval]+=d;
             }
             cnt++;
@@ -304,6 +314,7 @@ void FlagData::Reload(Day *day)
     min_x=day->first()/86400000.0;
     max_x=day->last()/86400000.0;
 
+    bool done=false;
     for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         //first=true;
@@ -318,7 +329,11 @@ void FlagData::Reload(Day *day)
             v2=point[vc][c].y();
             //point[vc][c].z=value;
             c++;
-            assert(c<max_points);
+            if (c>=max_points) {
+                qWarning() << "FlagData: max_points exceeded";
+                done=true;
+                break;
+            }
             /*if (first) {
                 min_y=v1;
                 first=false;
@@ -328,6 +343,7 @@ void FlagData::Reload(Day *day)
             }
             if (v2>max_x) max_x=v2; */
         }
+        if (done) break;
     }
     min_y=-value;
     max_y=value;

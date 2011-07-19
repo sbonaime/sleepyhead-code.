@@ -963,7 +963,10 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         unsigned char sum=0,hchk;
         for (int i=0; i<hl; i++) sum+=header[i];
 
-        assert(numsignals<max_signals);
+        if (numsignals>=max_signals) {
+            qWarning() << "PRS1Loader::OpenWaveforms() numsignals >= max_signals";
+            return false;
+        }
         char buf[3];
         for (int i=0;i<numsignals;i++) {
             f.read(buf,3);

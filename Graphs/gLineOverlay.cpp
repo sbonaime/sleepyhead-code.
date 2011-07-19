@@ -133,11 +133,13 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
                 }
             }
+            if ((vertcnt>=maxverts) || (quadcnt>=maxverts) || (pointcnt>=maxverts)) break;
         }
     }
-    assert (vertcnt<maxverts);
-    assert (quadcnt<maxverts);
-    assert (pointcnt<maxverts);
+
+    //assert (vertcnt<maxverts);
+    //assert (quadcnt<maxverts);
+    //assert (pointcnt<maxverts);
     glColor4ub(col.red(),col.green(),col.blue(),col.alpha());
     if (quadcnt>0) {
         glEnableClientState(GL_VERTEX_ARRAY);

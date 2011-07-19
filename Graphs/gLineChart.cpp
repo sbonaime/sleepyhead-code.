@@ -249,9 +249,11 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
                     vertarray[vertcnt++]=start_px+px;
                     vertarray[vertcnt++]=start_py+py;
-                    #if defined(EXTRA_ASSERTS)
-                    assert(vertcnt<maxverts);
-                    #endif
+
+                    if (vertcnt>=maxverts) break;
+                    //#if defined(EXTRA_ASSERTS)
+                    //assert(vertcnt<maxverts);
+                    //#endif
                 }
                 lastpx=start_px+px;
                 lastpy=start_py+py;
@@ -288,9 +290,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 vertarray[vertcnt++]=start_px+i+1;
                 vertarray[vertcnt++]=start_py+m_drawlist[i].y();
 
-                #if defined(EXTRA_ASSERTS)
-                assert(vertcnt<maxverts);
-                #endif
+                if (vertcnt>=maxverts) break;
+                //#if defined(EXTRA_ASSERTS)
+                //assert(vertcnt<maxverts);
+                //#endif
             }
         }
     }

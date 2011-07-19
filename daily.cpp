@@ -150,7 +150,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->AddLayer(new gLineOverlayBar(flags[2],QColor("#40c0ff"),"OA"));
     FRW->AddLayer(new gLineOverlayBar(flags[1],QColor("purple"),"CA"));
 
-    FRW->setMinimumHeight(190);
+    FRW->setMinimumHeight(150);
 
     AddCPAPData(snore=new EventData(CPAP_Snore,0));
     SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF);

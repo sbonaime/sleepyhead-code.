@@ -49,7 +49,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AddGraph(AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),(QGLWidget *)NULL));
     AHI->SetTopMargin(10);
     AHI->SetBottomMargin(AHI->GetBottomMargin()+gXAxis::Margin+25);
-    AHI->AddLayer(new gFooBar(7));
+    //AHI->AddLayer(new gFooBar(7));
     AHI->AddLayer(new gYAxis());
     AHI->AddLayer(new gBarChart(ahidata,QColor("red")));
     AHI->setMinimumHeight(170);
@@ -58,7 +58,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     //PRESSURE->SetMargins(10,15,65,80);
     PRESSURE->AddLayer(new gYAxis());
     PRESSURE->AddLayer(new gXAxis());
-    PRESSURE->AddLayer(new gFooBar(7));
+    //PRESSURE->AddLayer(new gFooBar(7));
     PRESSURE->AddLayer(prmax=new gLineChart(pressure_max,QColor("blue"),6192,false,true,true));
     PRESSURE->AddLayer(prmin=new gLineChart(pressure_min,QColor("red"),6192,false,true,true));
     PRESSURE->AddLayer(eap=new gLineChart(pressure_eap,QColor("blue"),6192,false,true,true));
@@ -70,13 +70,13 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     AddGraph(LEAK=new gGraphWindow(ui->SummaryGraphWindow,tr("Leak"),AHI));
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
-    LEAK->AddLayer(new gFooBar(7));
+    //LEAK->AddLayer(new gFooBar(7));
     LEAK->AddLayer(new gLineChart(leak,QColor("purple"),6192,false,false,true));
     LEAK->SetBottomMargin(LEAK->GetBottomMargin()+25);
     LEAK->setMinimumHeight(170);
 
     AddGraph(USAGE=new gGraphWindow(ui->SummaryGraphWindow,tr("Usage (Hours)"),AHI));
-    USAGE->AddLayer(new gFooBar(7));
+    //USAGE->AddLayer(new gFooBar(7));
     USAGE->AddLayer(new gYAxis());
     USAGE->AddLayer(new gBarChart(usage,QColor("green")));
     USAGE->SetBottomMargin(USAGE->GetBottomMargin()+gXAxis::Margin+25);
@@ -86,7 +86,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
 
     AddGraph(SESSTIMES=new gGraphWindow(ui->SummaryGraphWindow,tr("Session Times"),AHI));
     //SESSTIMES->SetMargins(10,15,65,80);
-    SESSTIMES->AddLayer(new gFooBar(7));
+    //SESSTIMES->AddLayer(new gFooBar(7));
     SESSTIMES->AddLayer(new gTimeYAxis());
     SESSTIMES->AddLayer(new gSessionTime(session_times,QColor("green")));
     SESSTIMES->SetBottomMargin(SESSTIMES->GetBottomMargin()+gXAxis::Margin+25);
@@ -106,6 +106,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
 
     for (int i=0;i<ss;i++) {
         AddGraph(graphs[i]);
+        graphs[i]->AddLayer(new gFooBar(7));
         for (int j=0;j<ss;j++) {
             if (graphs[i]!=graphs[j])
                 graphs[i]->LinkZoom(graphs[j]);
