@@ -868,8 +868,19 @@ void gGraphWindow::paintGL()
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width()>0)
-            //glDisable(GL_DEPTH_TEST);
-            RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,200,64));
+            glDisable(GL_DEPTH_TEST);
+            glColor4ub(50,50,200,64);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glBegin(GL_QUADS);
+            glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y());
+            glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y());
+            glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y()+m_mouseRBrect.height());
+            glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y()+m_mouseRBrect.height());
+            glEnd();
+            glDisable(GL_BLEND);
+            //RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,200,64));
             //glEnable(GL_DEPTH_TEST);
     }
     glEnable(GL_DEPTH_TEST);

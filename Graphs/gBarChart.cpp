@@ -117,10 +117,11 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
         glColor4ub(0,0,0,255);
         glLineWidth (1);
         glBegin(GL_LINE_LOOP);
-        glVertex2f(rect.x(), rect.y()+rect.height());
+        glVertex2f(rect.x(), rect.y()+rect.height()+.5);
         glVertex2f(rect.x(), rect.y());
         glVertex2f(rect.x()+rect.width(),rect.y());
-        glVertex2f(rect.x()+rect.width(), rect.y()+rect.height());
+        glVertex2f(rect.x()+rect.width(), rect.y()+rect.height()+.5);
+        //glVertex2f(rect.x(), rect.y()+rect.height());
         glEnd();
 
         if (!draw_xticks_instead) {
