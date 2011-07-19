@@ -258,15 +258,15 @@ void gGraphWindow::updateSelectionTime()
 
     int hours,minutes,seconds;
     hours=int(f*24.0);
-    minutes=int(f*60.0) % 60;
-    seconds=int(f*3600.0) % 60;
+    minutes=int(f*24*60.0) % 60;
+    seconds=int(f*24*3600.0) % 60;
     QString s;
     if (f>1) {
         s.sprintf("%.1f days",f);
     } else if (f>(1.0/(24.0*12.0))) {
         s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
     } else {
-        int milli=int(f*3600000.0) % 1000;
+        int milli=int(f*24*3600000.0) % 1000;
         s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
     }
     qstatus2->setText(s);

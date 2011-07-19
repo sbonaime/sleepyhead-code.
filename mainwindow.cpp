@@ -70,7 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
     daily=NULL;
     overview=NULL;
     Profiles::Scan();
-    qstatusbar->showMessage("Foo Foo Foo",10);
 
     //loader_progress->Show();
 
@@ -125,6 +124,7 @@ void MainWindow::Startup()
 
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
+    qstatusbar->showMessage("Your computer loads faster than JediMark's",1900);
 
     profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
@@ -140,6 +140,7 @@ void MainWindow::Startup()
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
+
 }
 
 void MainWindow::on_action_Import_Data_triggered()
