@@ -91,7 +91,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
     int z=0;
     QString firstport;
     bool current_found=false;
-#if (Q_WS_WINDOWS)
+#if (Q_WS_WIN32)
 #define qesPORTNAME portName
 #else
 #define qesPORTNAME physName
@@ -244,6 +244,12 @@ void Oximetry::UpdatePlethy(qint8 d)
     PLETHY->MinX();
     PLETHY->MaxX();
     PLETHY->RealMaxX();
+    pulse->SetRealMaxX(PLETHY->RealMaxX());
+    spo2->SetRealMaxX(PLETHY->RealMaxX());
+    PULSE->SetMinX(PLETHY->MinX());
+    SPO2->SetMinX(PLETHY->MinX());
+    PULSE->SetMaxX(PLETHY->MaxX());
+    SPO2->SetMaxX(PLETHY->MaxX());
     if (plethy->np[0]>max_data_points) {
         //TODO: Stop Serial recording..
 
@@ -253,16 +259,36 @@ void Oximetry::UpdatePlethy(qint8 d)
     }
     //PLETHY->updateGL(); // Move this to a timer.
 }
-bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
+bool Oximetry::UpdatePulse(qint8 pul)
 {
     bool ret=false;
 
     // Don't block zeros.. If the data is used, it's needed
     // Can make the graph can skip them.
-    if (lastpulse!=pul) {
+    if (lastpulse!=pul)
+    {
         pulse->point[0][pulse->np[0]].setX(double(lasttime)/86400000.0);
         pulse->point[0][pulse->np[0]++].setY(pul);
-        PULSE->updateGL();
+        if (pul!=0) {
+            if (pulse->MinY()==0) {
+                pulse->SetMinY((pul/10) * 10);
+                pulse->SetMaxY((pul/10+1) * 10);
+                PULSE->MinY();
+                PULSE->MaxY();
+            } else {
+                if (pul<pulse->MinY()) {
+                    pulse->SetMinY((pul/10) * 10);
+                    PULSE->MinY();
+                }
+                if (pul>pulse->MaxY()) {
+                    pulse->SetMaxY((pul/10+1) * 10);
+                    PULSE->MaxY();
+                }
+
+            }
+        }
+
+       // PULSE->updateGL();
         if (pulse->np[0]>max_data_points) {
             //TODO: Stop Serial recording..
 
@@ -273,10 +299,38 @@ bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
         ret=true;
         //qDebug() << "Pulse=" << int(bytes[0]);
     }
-    if (lastspo2!=sp) {
+    lastpulse=pul;
+    return ret;
+}
+bool Oximetry::UpdateSPO2(qint8 sp)
+{
+    bool ret=false;
+
+    if (lastspo2!=sp)
+    {
         spo2->point[0][spo2->np[0]].setX(double(lasttime)/86400000.0);
         spo2->point[0][spo2->np[0]++].setY(sp);
-        SPO2->updateGL();
+
+        if (sp!=0) {
+            if (spo2->MinY()==0) {
+                spo2->SetMinY((sp/10) * 10);
+                spo2->SetMaxY((sp/10+1) * 10);
+                SPO2->MinY();
+                SPO2->MaxY();
+            } else {
+                if (sp<spo2->MinY()) {
+                    spo2->SetMinY((sp/10) * 10);
+                    SPO2->MinY();
+                }
+                if (sp>spo2->MaxY()) {
+                    spo2->SetMaxY((sp/10+1) * 10);
+                    SPO2->MaxY();
+                }
+
+            }
+        }
+
+        //SPO2->updateGL();
         if (spo2->np[0]>max_data_points) {
             //TODO: Stop Serial recording..
 
@@ -288,7 +342,6 @@ bool Oximetry::UpdatePulseSPO2(qint8 pul,qint8 sp)
         //qDebug() << "SpO2=" << int(bytes[1]);
     }
 
-    lastpulse=pul;
     lastspo2=sp;
     return ret;
 }
@@ -301,22 +354,25 @@ void Oximetry::onReadyRead()
     port->read(bytes.data(), bytes.size());
 
     int i=0;
-    bool redraw_ps=false;
+    bool redraw_pulse,redraw_spo2;
+    redraw_pulse=redraw_spo2=false;
     while (i<bytes.size()) {
         if (bytes[i]&0x80) {
             EventDataType d=bytes[i+1] & 0x7f;
             UpdatePlethy(d);
             i+=3;
         } else {
-            if (UpdatePulseSPO2(bytes[i], bytes[i+1])) redraw_ps=true;
+            if (UpdatePulse(bytes[i])) redraw_pulse=true;
+            if (UpdateSPO2(bytes[i+1])) redraw_spo2=true;
             i+=2;
         }
     }
     PLETHY->updateGL();
-    if (redraw_ps) {
+    if (redraw_pulse)
         PULSE->updateGL();
+    if (redraw_spo2)
         SPO2->updateGL();
-    }
+
     /*if (bytes.size()==3) {
     } else if (bytes.size()==2) { // Data bytes in live mode
         // Plethy data

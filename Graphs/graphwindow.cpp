@@ -6,10 +6,14 @@
 
 #include <math.h>
 #include <QDebug>
+#include <QStatusBar>
 #include <QMouseEvent>
 #include "SleepLib/profiles.h"
 #include "graphwindow.h"
 #include "Graphs/gTitle.h"
+
+extern QStatusBar *qstatusbar;
+
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * shared,Qt::WindowFlags f)
 : QGLWidget(parent,shared, f )
 {
@@ -357,6 +361,28 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 
         QRect r(t1-1, m_marginBottom, t2-t1, m_scrY-m_marginBottom-m_marginTop);
 
+        double z;
+        if (m_block_zoom) {
+            z=rmax_x-rmin_x;
+        } else {
+            z=max_x-min_x;
+        }
+        double q=double(t2-t1)/width();
+        double f=(q*z)*24.0;
+        int hours,minutes,seconds;
+        hours=int(f);
+        minutes=int(f*60.0) % 60;
+        seconds=int(f*3600.0) % 60;
+        QString s;
+        if (z>1) {
+            s.sprintf("%.1f days",q*z);
+        } else if (z>(1.0/(24.0*12.0))) {
+            s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
+        } else {
+            int milli=int(f*3600000.0) % 1000;
+            s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
+        }
+        qstatusbar->showMessage(s,3000);
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;
 

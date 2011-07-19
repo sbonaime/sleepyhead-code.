@@ -145,17 +145,8 @@ void Overview::ReloadGraphs()
   //  session_times->Reload(NULL);
     on_rbLastWeek_clicked();
 }
-
-void Overview::UpdateGraphs()
+void Overview::UpdateHTML()
 {
-    QDate first=ui->drStart->date();
-    QDate last=ui->drEnd->date();
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
-          //(*h)->Update(dummyday);
-          (*h)->SetDateRange(first,last);
-    }
-    session_times->SetDateRange(first,last);
-    RedrawGraphs();
     QString html="<html><body><div align=center>";
     html+="<table width='100%' cellpadding=2 cellspacing=0 border=0>";
     html+="<tr align=center><td colspan=4><b><i>Statistics</i></b></td></tr>";
@@ -180,7 +171,18 @@ void Overview::UpdateGraphs()
     html+="</table>"
     "</div></body></html>";
     ui->webView->setHtml(html);
-
+}
+void Overview::UpdateGraphs()
+{
+    QDate first=ui->drStart->date();
+    QDate last=ui->drEnd->date();
+    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
+          //(*h)->Update(dummyday);
+          (*h)->SetDateRange(first,last);
+    }
+    session_times->SetDateRange(first,last);
+    RedrawGraphs();
+    UpdateHTML();
 }
 
 

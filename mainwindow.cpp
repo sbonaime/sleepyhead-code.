@@ -19,6 +19,7 @@
 
 QProgressBar *qprogress;
 QLabel *qstatus;
+QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
 {
@@ -49,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     shared_context=new QGLContext(fmt);
 
     //ui->tabWidget->setCurrentWidget(daily);
+    qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
     qstatus=new QLabel("",this);

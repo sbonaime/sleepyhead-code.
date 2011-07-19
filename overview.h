@@ -48,6 +48,7 @@ private:
     void AddData(HistoryData *d) { Data.push_back(d);  };
     void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
     void RedrawGraphs();
+    void UpdateHTML();
 
     HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
     HistoryData *pressure_min,*pressure_max;

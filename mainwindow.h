@@ -18,6 +18,8 @@ namespace Ui {
     class MainWindow;
 }
 
+extern QStatusBar *qstatusbar;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

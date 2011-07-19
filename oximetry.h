@@ -40,7 +40,8 @@ private slots:
     void on_ImportButton_clicked();
 
 private:
-    bool UpdatePulseSPO2(qint8 pulse,qint8 spo2);
+    bool UpdatePulse(qint8 pulse);
+    bool UpdateSPO2(qint8 spo2);
     void UpdatePlethy(qint8 plethy);
 
 
