@@ -10,6 +10,11 @@
     <height>355</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Sans Serif</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -90,7 +95,7 @@
             <x>0</x>
             <y>0</y>
             <width>800</width>
-            <height>276</height>
+            <height>282</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -179,6 +184,9 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
             <item>
              <widget class="QLabel" name="drStartLabel">
               <property name="enabled">
@@ -196,9 +204,6 @@
               </property>
               <property name="locale">
                <locale language="C" country="AnyCountry"/>
-              </property>
-              <property name="displayFormat">
-               <string>dd/MM/yyyy</string>
               </property>
               <property name="calendarPopup">
                <bool>true</bool>
@@ -222,9 +227,6 @@
               </property>
               <property name="locale">
                <locale language="C" country="AnyCountry"/>
-              </property>
-              <property name="displayFormat">
-               <string>dd/MM/yyyy</string>
               </property>
               <property name="calendarPopup">
                <bool>true</bool>

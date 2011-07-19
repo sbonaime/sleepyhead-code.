@@ -6,6 +6,8 @@
 
 #include <QCalendarWidget>
 #include <QTextCharFormat>
+#include <QSystemLocale>
+#include <QDebug>
 #include "overview.h"
 #include "ui_overview.h"
 #include "Graphs/graphdata_custom.h"
@@ -22,7 +24,6 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
 {
     ui->setupUi(this);
     shared_context=context;
-
     profile=Profiles::Get(pref["Profile"].toString());
     AddData(ahidata=new HistoryData(profile));
     AddData(pressure=new HistoryCodeData(profile,CPAP_PressureAverage));
