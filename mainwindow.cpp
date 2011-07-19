@@ -19,6 +19,7 @@
 
 QProgressBar *qprogress;
 QLabel *qstatus;
+QLabel *qstatus2;
 QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
@@ -53,13 +54,23 @@ MainWindow::MainWindow(QWidget *parent) :
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
+    qstatus2=new QLabel("Welcome",this);
+    qstatus2->setFrameStyle(QFrame::Raised);
+    qstatus2->setFrameShadow(QFrame::Sunken);
+    qstatus2->setFrameShape(QFrame::Box);
+    //qstatus2->setMinimumWidth(100);
+    qstatus2->setMaximumWidth(100);
+    qstatus2->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
     qstatus=new QLabel("",this);
     qprogress->hide();
-    ui->statusbar->addPermanentWidget(qstatus);
-    ui->statusbar->addPermanentWidget(qprogress);
+    ui->statusbar->setMinimumWidth(200);
+    ui->statusbar->addPermanentWidget(qstatus2,0);
+    ui->statusbar->addPermanentWidget(qstatus,0);
+    ui->statusbar->addPermanentWidget(qprogress,10);
     daily=NULL;
     overview=NULL;
     Profiles::Scan();
+    qstatusbar->showMessage("Foo Foo Foo",10);
 
     //loader_progress->Show();
 

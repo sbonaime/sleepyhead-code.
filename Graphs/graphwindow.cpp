@@ -6,13 +6,13 @@
 
 #include <math.h>
 #include <QDebug>
-#include <QStatusBar>
+#include <QLabel>
 #include <QMouseEvent>
 #include "SleepLib/profiles.h"
 #include "graphwindow.h"
 #include "Graphs/gTitle.h"
 
-extern QStatusBar *qstatusbar;
+extern QLabel *qstatus2;
 
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * shared,Qt::WindowFlags f)
 : QGLWidget(parent,shared, f )
@@ -248,6 +248,28 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
         min=max-q;
     }
     SetXBounds(min,max);
+    updateSelectionTime();
+}
+
+void gGraphWindow::updateSelectionTime()
+{
+    double f;
+    f=max_x-min_x;
+
+    int hours,minutes,seconds;
+    hours=int(f*24.0);
+    minutes=int(f*60.0) % 60;
+    seconds=int(f*3600.0) % 60;
+    QString s;
+    if (f>1) {
+        s.sprintf("%.1f days",f);
+    } else if (f>(1.0/(24.0*12.0))) {
+        s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
+    } else {
+        int milli=int(f*3600000.0) % 1000;
+        s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
+    }
+    qstatus2->setText(s);
 }
 
 gGraphWindow *LastGraphLDown=NULL;
@@ -382,7 +404,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
             int milli=int(f*3600000.0) % 1000;
             s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
         }
-        qstatusbar->showMessage(s,3000);
+        qstatus2->setText(s);
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;
 
@@ -660,7 +682,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
         if (splitter && currentWidget && LastGraphLDown) {
             if (LastGraphLDown!=currentWidget) {
                 int newidx=splitter->indexOf(currentWidget);
-                int idx=splitter->indexOf(LastGraphLDown);
+                //int idx=splitter->indexOf(LastGraphLDown);
                 splitter->insertWidget(newidx,LastGraphLDown);
                 return;
             }

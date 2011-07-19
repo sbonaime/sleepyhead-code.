@@ -146,6 +146,8 @@ public:
       void SetSplitter(QSplitter *s) { splitter=s; }
       bool isDraggingGraph() { return m_dragGraph; }
   protected:
+      void updateSelectionTime();
+
       void initializeGL();
       QSplitter *splitter;
       list<gGraphWindow *>link_zoom;
