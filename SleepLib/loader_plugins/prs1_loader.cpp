@@ -680,6 +680,8 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
         }
         //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
         //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
+        if (code==0) {
+        } else
         if (code!=0x12) {
             delta=buffer[pos];
             //duration=buffer[pos+1];
@@ -774,7 +776,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
             data[2]-=data[9]; // Pressure Support
             session->AddEvent(new Event(t,CPAP_PS,&data[2],1)); //correct
-            qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << hex << session->session() << pos+15 << hex << int(code) << ": " << hex << int(data[0]) << " " << int(data[1]) << " " << int(data[2])  << " " << int(data[3]) << " " << int(data[4]) << " " << int(data[5])<< " " << int(data[6]) << " " << int(data[7]) << " " << int(data[8]) << " " << int(data[9]);
+            //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << hex << session->session() << pos+15 << hex << int(code) << ": " << hex << int(data[0]) << " " << int(data[1]) << " " << int(data[2])  << " " << int(data[3]) << " " << int(data[4]) << " " << int(data[5])<< " " << int(data[6]) << " " << int(data[7]) << " " << int(data[8]) << " " << int(data[9]);
             break;
         case 0x03: // BIPAP Pressure
             data[0]=buffer[pos++];

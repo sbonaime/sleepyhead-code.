@@ -91,7 +91,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
     int z=0;
     QString firstport;
     bool current_found=false;
-#if (Q_WS_WIN32)
+#ifdef Q_WS_WIN32
 #define qesPORTNAME portName
 #else
 #define qesPORTNAME physName
