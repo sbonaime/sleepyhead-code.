@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QProgressBar>
+#include <QMessageBox>
 
 #include "oximetry.h"
 #include "ui_oximetry.h"
@@ -410,6 +411,9 @@ void DumpBytes(int blocks, unsigned char * b,int len)
 // Move this code to CMS50 Importer??
 void Oximetry::on_ImportButton_clicked()
 {
+    QMessageBox msgbox(QMessageBox::Information,"Importing","Please Wait",QMessageBox::NoButton,this);
+    msgbox.show();
+
     Machine *mach=profile->GetMachine(MT_OXIMETER);
     if (!mach) {
         CMS50Loader *l=dynamic_cast<CMS50Loader *>(GetLoader("CMS50"));
@@ -419,14 +423,15 @@ void Oximetry::on_ImportButton_clicked()
 
         qDebug() << "Needed to create Oximeter device";
     }
-    unsigned char b1[2];
-    unsigned char b2[3];
-    unsigned char rb[0x20];
-    b1[0]=0xf5;
-    b1[1]=0xf5;
-    b2[0]=0xf6;
-    b2[1]=0xf6;
-    b2[2]=0xf6;
+    const int rb_size=0x200;
+    static unsigned char b1[2]={0xf5,0xf5};
+    static unsigned char b2[3]={0xf6,0xf6,0xf6};
+    static unsigned char rb[rb_size];
+    //b1[0]=0xf5;
+    //b1[1]=0xf5;
+    //b2[0]=0xf6;
+    //b2[1]=0xf6;
+    //b2[2]=0xf6;
     unsigned char * buffer=NULL;
     ui->SerialPortsCombo->setEnabled(false);
     ui->RunButton->setText("&Start");
@@ -472,26 +477,34 @@ void Oximetry::on_ImportButton_clicked()
     qprogress->show();
     int fails=0;
     while (!done) {
-
-        //port->setRts(true);
         if (port->write((char *)b1,2)==-1) {
             qDebug() << "Couldn't write 2 lousy bytes to CMS50";
         }
-        //usleep(500);
-       // port->setRts(false);
-        //qDebug() << "Available " << port->bytesAvailable();
         blocks=0;
         int startpos=0;
         unsigned int length=0;
+        int dr;
+        int ec;
         do {
             bool fnd=false;
-            res=port->read((char *)rb,0x20);
-            DumpBytes(blocks,rb,res);
+            dr=0;
+            ec=0;
+            do {
+                res=port->read((char *)rb,rb_size);
+                DumpBytes(blocks,rb,res);
+                if (blocks>0) break;
+                if (res<=0) ec++;
+                dr+=res;
+            } while ((res<=5) && (dr<0x200) && (ec<5));
+
+            //if (res>5) DumpBytes(blocks,rb,res);
+
 
             done=false;
             if (blocks==0) {
-                for (int i=0;i<res-1;i++) {
-                    if ((rb[i]==0xf2) && (rb[i+1]==0x80)) { // && (rb[i+2]==0x00)) {
+                if (res>5)
+                for (int i=0;i<res-2;i++) {
+                    if ((rb[i]==0xf2) && (rb[i+1]==0x80) && (rb[i+2]==0x00)) {
                         fnd=true;
                         startpos=i+9;
                         break;
@@ -509,13 +522,17 @@ void Oximetry::on_ImportButton_clicked()
                 //  84 95 7c
                 // 0x10556 bytes..
                 // 0x82b blocks
-                length=(rb[startpos++] & 0x7f) << 14;
+                length=0;
+                while (rb[startpos]!=0xf0) {
+                    length=(length << 7) | (rb[startpos++] & 0x7f);
+                }
+                /*length=(rb[startpos++] & 0x7f) << 14;
                 length|=(rb[startpos++] & 0x7f) << 7;
                 length|=(rb[startpos++] & 0x7f);
                 if (!(rb[startpos]&0x80)) {
                     length <<= 8;
                     length|=rb[startpos++];
-                }
+                }*/
                 /*length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]);
                 startpos+=2;
                 if (!(rb[startpos]&0x80)) {
@@ -534,7 +551,7 @@ void Oximetry::on_ImportButton_clicked()
             }
 
             blocks++;
-            if (res<0x20) {
+            if (res<rb_size) {
                 qDebug() << "Read "<< bytes << " bytes of " << length;
                 done=true;
                 break;
@@ -599,6 +616,7 @@ void Oximetry::on_ImportButton_clicked()
     }
     delete port;
     port=NULL;
+    msgbox.hide();
     qprogress->hide();
     ui->SerialPortsCombo->setEnabled(true);
     qstatus->setText("Ready");
