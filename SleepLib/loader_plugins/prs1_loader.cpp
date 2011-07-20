@@ -932,7 +932,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (header[0]!=PRS1_MAGIC_NUMBER) {
             if (cnt==0)
                 return false;
-            qWarning() << "Corrupt waveform, trying to recover";
+            qWarning() << "Corrupt waveform, trying to recover" << sequence;
             // read the damn bytes anyway..
 
             br=f.read((char *)header,lasthl-hl+1); // last bit of the header
@@ -1015,11 +1015,11 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         } else {
             qint32 diff=timestamp-expected_timestamp;
             if (diff<0) {
-                if (duration<diff) {
-                    duration+=diff;
+                if (duration>abs(diff)) {
+                    duration+=diff;  // really Subtracting..
                     samples+=diff*5;
                 } else {
-                    qWarning() << "Waveform out of sync beyond the first entry" << sequence;
+                    qWarning() << "Waveform out of sync beyond the first entry" << sequence << duration << diff;
                 }
             } else if (diff>0) {
                 qDebug() << "Fixing up Waveform sync" << sequence;

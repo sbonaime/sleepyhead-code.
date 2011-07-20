@@ -24,7 +24,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    SleepLib/binary_file.cpp \
     SleepLib/machine.cpp \
     SleepLib/machine_loader.cpp \
     SleepLib/preferences.cpp \
@@ -79,7 +78,6 @@ win32 {
 }
 
 HEADERS  += \
-    SleepLib/binary_file.h \
     SleepLib/machine.h \
     SleepLib/machine_loader.h \
     SleepLib/preferences.h \

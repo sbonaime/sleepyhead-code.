@@ -11,7 +11,6 @@
 #include <QObject>
 #include <tr1/random>
 #include <sys/time.h>
-#include "binary_file.h"
 #include "machine.h"
 #include "profiles.h"
 #include <algorithm>
@@ -337,8 +336,9 @@ bool Machine::Purge(int secret)
     for (int i=0;i<list.size();++i) {
         QFileInfo fi=list.at(i);
         QString fullpath=fi.canonicalFilePath();
-        int j=fullpath.lastIndexOf(".");
-        QString ext_s=*(fullpath.rightRef(j+1).string());
+        //int j=fullpath.lastIndexOf(".");
+
+        QString ext_s=fullpath.section('.',-1);//right(j);
         bool ok;
         ext_s.toInt(&ok,10);
         if (ok) {
@@ -399,16 +399,11 @@ bool Machine::Load()
 
         Session *sess=new Session(this,s->first);
 
-        try {
-            if (sess->LoadSummary(s->second[0])) {
-                sess->SetEventFile(s->second[1]);
-                sess->SetWaveFile(s->second[2]);
-
-                AddSession(sess,profile);
-            } else {
-                delete sess;
-            }
-        } catch(UnpackError e) {
+        if (sess->LoadSummary(s->second[0])) {
+             sess->SetEventFile(s->second[1]);
+             sess->SetWaveFile(s->second[2]);
+             AddSession(sess,profile);
+        } else {
             qWarning() << "Error unpacking summary data";
             delete sess;
         }

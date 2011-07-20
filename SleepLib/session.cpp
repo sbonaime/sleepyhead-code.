@@ -1,15 +1,14 @@
-/********************************************************************
+/*
  SleepLib Session Implementation
  This stuff contains the base calculation smarts
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include "session.h"
 #include "math.h"
 #include <QDir>
 #include <QDebug>
-#include <SleepLib/binary_file.h>
 #include <vector>
 #include <algorithm>
 
@@ -248,11 +247,9 @@ bool Session::OpenEvents() {
     if(s_events_loaded)
         return true;
     bool b;
-    try {
-        b=LoadEvents(s_eventfile);
-    } catch (UnpackError e) {
+    b=LoadEvents(s_eventfile);
+    if (!b) {
         qWarning() << "Error Unkpacking Events" << s_eventfile;
-        b=false;
     }
 
     s_events_loaded=b;
@@ -262,11 +259,9 @@ bool Session::OpenWaveforms() {
     if (s_waves_loaded)
         return true;
     bool b;
-    try {
-        b=LoadWaveforms(s_wavefile);
-    } catch (UnpackError e) {
+    b=LoadWaveforms(s_wavefile);
+    if (!b) {
         qWarning() << "Error Unkpacking Wavefile" << s_wavefile;
-        b=false;
     }
     s_waves_loaded=b;
     return b;
@@ -300,24 +295,32 @@ bool Session::Store(QString path)
 
 const quint32 magic=0xC73216AB;
 
+bool IsPlatformLittleEndian()
+{
+    quint32 j=1;
+    *((char*)&j) = 0;
+    return j!=1;
+}
+
 bool Session::StoreSummary(QString filename)
 {
-    BinaryFile f;
-    f.Open(filename,BF_WRITE);
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
 
-    f.Pack((quint32)magic); 			// Magic Number
-    f.Pack((quint32)s_machine->id());           // Machine ID
-    f.Pack((quint32)s_session);                 // Session ID
-    f.Pack((quint16)0);				// File Type 0 == Summary File
-    f.Pack((quint16)0);				// File Version
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_6);
+
+    out << (quint32)magic;
+    out << (quint32)s_machine->id();
+    out << (quint32)s_session;
+    out << (quint16)0 << (quint16)0;
 
     quint32 starttime=s_first/1000L;
     quint32 duration=(s_last-s_first)/1000L;
 
-    f.Pack(starttime);				// Session Start Time
-    f.Pack(duration);                           // Duration of sesion in seconds.
-
-    f.Pack((quint16)summary.size());
+    out << (quint32)starttime;  // Session Start Time
+    out << (quint32)duration;   // Duration of sesion in seconds.
+    out << (quint16)summary.size();
 
     map<MachineCode,MCDataType> mctype;
 
@@ -342,29 +345,30 @@ bool Session::StoreSummary(QString filename)
         } else {
             QString t=i->second.typeToName(type);
             qWarning() << "Error in Session->StoreSummary: Can't pack variant type " << t;
-            exit(1);
+            return false;
+            //exit(1);
         }
-        f.Pack((qint16)mc);
-        f.Pack((qint8)mctype[mc]);
+        out << (qint16)mc;
+        out << (qint8)mctype[mc];
     }
     // Then dump out the actual data, according to format.
     for (i=summary.begin(); i!=summary.end(); i++) {
         MachineCode mc=i->first;
         if (mctype[mc]==MC_bool) {
-            f.Pack((qint8)i->second.toBool());
+            out << i->second.toBool();
         } else if (mctype[mc]==MC_int) {
-            f.Pack((qint32)i->second.toInt());
+            out << (qint32)i->second.toInt();
         } else if (mctype[mc]==MC_long) {
-            f.Pack((qint64)i->second.toLongLong());
+            out << (qint64)i->second.toLongLong();
         } else if (mctype[mc]==MC_double) {
-            f.Pack((double)i->second.toDouble());
+            out << (double)i->second.toDouble();
         } else if (mctype[mc]==MC_string) {
-            f.Pack(i->second.toString());
+            out << i->second.toString();
         } else if (mctype[mc]==MC_datetime) {
-            f.Pack(i->second.toDateTime());
+            out << i->second.toDateTime();
         }
     }
-    f.Close();
+    file.close();
     return true;
 }
 
@@ -372,12 +376,15 @@ bool Session::LoadSummary(QString filename)
 {
     if (filename.isEmpty()) return false;
     //qDebug(("Loading Summary "+filename).toLatin1());
-    BinaryFile f;
 
-    if (!f.Open(filename,BF_READ)) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "Couldn't open file" << filename;
         return false;
     }
+
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_4_6);
 
     quint64 t64;
     quint32 t32;
@@ -387,34 +394,38 @@ bool Session::LoadSummary(QString filename)
     qint16 sumsize;
     map<MachineCode,MCDataType> mctype;
     vector<MachineCode> mcorder;
+    in >> t32;
+    if (t32!=magic) {
+        qDebug() << "Wrong magic number in " << filename;
+        return false;
+    }
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Magic Number
-    if (t32!=magic) throw UnpackError();
+    in >> t32;     // MachineID (dont need this result)
 
-    if (!f.Unpack(t32)) throw UnpackError();		// MachineID
-
-    if (!f.Unpack(t32)) throw UnpackError();		// Sessionid;
+    in >> t32;     // Sessionid;
     s_session=t32;
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Type
-    if (t16!=0) throw UnpackError(); 				//wrong file type
+    in >> t16;      // File Type
+    if (t16!=0) {
+        qDebug() << "Wrong file type"; //wrong file type
+        return false;
+    }
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Version
+    in >> t16;      // File Version
     // dont care yet
 
-
-    if (!f.Unpack(t32)) throw UnpackError();            // Start time
+    in >> t32;      // Start time
     s_first=qint64(t32)*1000L;
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    in >> t32;       // Duration // (16bit==Limited to 18 hours)
     s_last=s_first+qint64(t32)*1000L;
 
-    if (!f.Unpack(sumsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
+    in >> sumsize;  // Summary size (number of Machine Code lists)
 
     for (int i=0; i<sumsize; i++) {
-        if (!f.Unpack(t16)) throw UnpackError();	// Machine Code
+        in >> t16;      // Machine Code
         MachineCode mc=(MachineCode)t16;
-        if (!f.Unpack(t8)) throw UnpackError();		// Data Type
+        in >> t8;       // Data Type
         mctype[mc]=(MCDataType)t8;
         mcorder.push_back(mc);
     }
@@ -423,25 +434,25 @@ bool Session::LoadSummary(QString filename)
         MachineCode mc=mcorder[i];
         if (mctype[mc]==MC_bool) {
             bool b;
-            if (!f.Unpack(b)) throw UnpackError();
+            in >> b;
             summary[mc]=b;
         } else if (mctype[mc]==MC_int) {
-            if (!f.Unpack(t32)) throw UnpackError();
+            in >> t32;
             summary[mc]=(qint32)t32;
         } else if (mctype[mc]==MC_long) {
-            if (!f.Unpack(t64)) throw UnpackError();
+            in >> t64;
             summary[mc]=(qint64)t64;
         } else if (mctype[mc]==MC_double) {
             double dl;
-            if (!f.Unpack(dl)) throw UnpackError();
+            in >> dl;
             summary[mc]=(double)dl;
         } else if (mctype[mc]==MC_string) {
             QString s;
-            if (!f.Unpack(s)) throw UnpackError();
+            in >> s;
             summary[mc]=s;
         } else if (mctype[mc]==MC_datetime) {
             QDateTime dt;
-            if (!f.Unpack(dt)) throw UnpackError();
+            in >> dt;
             summary[mc]=dt;
         }
 
@@ -451,35 +462,38 @@ bool Session::LoadSummary(QString filename)
 
 bool Session::StoreEvents(QString filename)
 {
-    BinaryFile f;
-    f.Open(filename,BF_WRITE);
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
 
-    f.Pack((quint32)magic); 			// Magic Number
-    f.Pack((quint32)s_machine->id());  // Machine ID
-    f.Pack((quint32)s_session);		// This session's ID
-    f.Pack((quint16)1);				// File type 1 == Event
-    f.Pack((quint16)0);				// File Version
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_6);
+
+    out << (quint32)magic; 			// Magic Number
+    out << (quint32)s_machine->id();  // Machine ID
+    out << (quint32)s_session;		// This session's ID
+    out << (quint16)1;				// File type 1 == Event
+    out << (quint16)0;				// File Version
 
     quint32 starttime=s_first/1000L;
     quint32 duration=(s_last-s_first)/1000L;
 
-    f.Pack(starttime);
-    f.Pack(duration);
+    out << starttime;
+    out << duration;
 
-    f.Pack((qint16)events.size()); // Number of event categories
+    out << (qint16)events.size(); // Number of event categories
 
 
     map<MachineCode,vector<Event *> >::iterator i;
     vector<Event *>::iterator j;
 
     for (i=events.begin(); i!=events.end(); i++) {
-        f.Pack((qint16)i->first); // MachineID
-        f.Pack((qint16)i->second.size()); // count of events in this category
+        out << (qint16)i->first; // MachineID
+        out << (qint16)i->second.size(); // count of events in this category
         j=i->second.begin();
-        f.Pack((qint8)(*j)->fields()); 	// number of data fields in this event type
+        out << (qint8)(*j)->fields(); 	// number of data fields in this event type
     }
     bool first;
-    float tf;
+    EventDataType tf;
     qint64 last=0,eventtime,delta;
 
     for (i=events.begin(); i!=events.end(); i++) {
@@ -487,34 +501,37 @@ bool Session::StoreEvents(QString filename)
         for (j=i->second.begin(); j!=i->second.end(); j++) {
             eventtime=(*j)->time();
             if (first) {
-                f.Pack((*j)->time());
+                out << (*j)->time();
                 first=false;
             } else {
                 delta=eventtime-last;
                 if (delta>0xffffffff) {
                     qDebug("StoreEvent: Delta too big.. needed to use bigger value");
-                    exit(1);
+                    return false;
                 }
-                f.Pack((quint32)delta);
+                out << (quint32)delta;
             }
             for (int k=0; k<(*j)->fields(); k++) {
                 tf=(*(*j))[k];
-                f.Pack((float)tf);
+                out << tf;
             }
             last=eventtime;
         }
     }
-    f.Close();
+    //file.close();
     return true;
 }
 bool Session::LoadEvents(QString filename)
 {
     if (filename.isEmpty()) return false;
-    BinaryFile f;
-    if (!f.Open(filename,BF_READ)) {
-        qDebug() << "Couldn't open events file" << filename;
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Couldn't open file" << filename;
         return false;
     }
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_4_6);
 
     quint32 t32;
     quint16 t16;
@@ -523,27 +540,32 @@ bool Session::LoadEvents(QString filename)
 
 //    qint16 sumsize;
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Magic Number
-    if (t32!=magic) throw UnpackError();
+    in >> t32;      // Magic Number
+    if (t32!=magic) {
+        qWarning() << "Wrong Magic number in " << filename;
+        return false;
+    }
+    in >> t32;      // MachineID
 
-    if (!f.Unpack(t32)) throw UnpackError();		// MachineID
-
-    if (!f.Unpack(t32)) throw UnpackError();		// Sessionid;
+    in >> t32;      // Sessionid;
     s_session=t32;
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Type
-    if (t16!=1) throw UnpackError(); 				//wrong file type
+    in >> t16;      // File Type
+    if (t16!=1) {
+        qDebug() << "Wrong File Type in " << filename;
+        return false;
+    }
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Version
+    in >> t16;      // File Version
     // dont give a crap yet..
 
-    if (!f.Unpack(t32)) throw UnpackError();            // Start time
+    in >> t32;      // Start time
     s_first=qint64(t32)*1000L;
-    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    in >> t32;      // Duration // (16bit==Limited to 18 hours)
     s_last=s_first+qint64(t32)*1000L;
 
     qint16 evsize;
-    if (!f.Unpack(evsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
+    in >> evsize;   // Summary size (number of Machine Code lists)
 
     map<MachineCode,qint16> mcsize;
     map<MachineCode,qint16> mcfields;
@@ -551,12 +573,12 @@ bool Session::LoadEvents(QString filename)
 
     MachineCode mc;
     for (int i=0; i<evsize; i++) {
-        if (!f.Unpack(t16)) throw UnpackError();  // MachineID
+        in >> t16;      // MachineCode
         mc=(MachineCode)t16;
         mcorder.push_back(mc);
-        if (!f.Unpack(t16)) throw UnpackError();  // Count of this Event
+        in >> t16;      // Count of this Event
         mcsize[mc]=t16;
-        if (!f.Unpack(t8)) throw UnpackError();  // Count of this Event
+        in >> t8;       // Type
         mcfields[mc]=t8;
     }
 
@@ -564,20 +586,18 @@ bool Session::LoadEvents(QString filename)
         mc=mcorder[i];
         bool first=true;
         qint64 d;
-        float fl;
         events[mc].clear();
         for (int e=0; e<mcsize[mc]; e++) {
             if (first) {
-                if (!f.Unpack(d)) throw UnpackError();  // Timestamp
+                in >> d;     // Timestamp
                 first=false;
             } else {
-                if (!f.Unpack(t32)) throw UnpackError();  // Time Delta
+                in >> t32;   // Time Delta
                 d=d+t32;
             }
             EventDataType ED[max_number_event_fields];
             for (int c=0; c<mcfields[mc]; c++) {
-                if (!f.Unpack(fl)) {}; //throw UnpackError();  // Data Fields in float format
-                ED[c]=fl;
+                in >> ED[c];   // Data Fields in float format
             }
             Event *ev=new Event(d,mc,ED,mcfields[mc]);
 
@@ -590,55 +610,53 @@ bool Session::LoadEvents(QString filename)
 
 bool Session::StoreWaveforms(QString filename)
 {
-    BinaryFile f;
-    f.Open(filename,BF_WRITE);
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
 
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_6);
     quint16 t16;
 
-    f.Pack((quint32)magic); 			// Magic Number
-    f.Pack((quint32)s_machine->id());  // Machine ID
-    f.Pack((quint32)s_session);		// This session's ID
-    f.Pack((quint16)2);				// File type 2 == Waveform
-    f.Pack((quint16)0);				// File Version
+    out << (quint32)magic; 			// Magic Number
+    out << (quint32)s_machine->id();  // Machine ID
+    out << (quint32)s_session;		// This session's ID
+    out << (quint16)2;				// File type 2 == Waveform
+    out << (quint16)0;				// File Version
 
     quint32 starttime=s_first/1000L;
     quint32 duration=(s_last-s_first)/1000L;
 
-    f.Pack(starttime);
-    f.Pack(duration);
+    out << starttime;
+    out << duration;
 
-    f.Pack((qint16)waveforms.size());	// Number of different waveforms
+    out << (qint16)waveforms.size();	// Number of different waveforms
 
     map<MachineCode,vector<Waveform *> >::iterator i;
     vector<Waveform *>::iterator j;
     for (i=waveforms.begin(); i!=waveforms.end(); i++) {
-        f.Pack((qint16)i->first); 		// Machine Code
+        out << (quint16)i->first; 	// Machine Code
         t16=i->second.size();
-        f.Pack(t16); 					// Number of (hopefully non-linear) waveform chunks
+        out << t16;                     // Number of (hopefully non-linear) waveform chunks
 
         for (j=i->second.begin(); j!=i->second.end(); j++) {
 
             Waveform &w=*(*j);
             // 64bit number..
-            f.Pack(w.start()); 			// Start time of first waveform chunk
+            out << (qint64)w.start();           // Start time of first waveform chunk
 
             //qint32 samples;
             //double seconds;
 
-            f.Pack((qint32)w.samples());					// Total number of samples
-            f.Pack((qint64)w.duration());            // Total number of seconds
-            f.Pack((qint16)w.min());
-            f.Pack((qint16)w.max());
-            f.Pack((qint8)sizeof(SampleFormat));  	// Bytes per sample
-            f.Pack((qint8)0); // signed.. all samples for now are signed 16bit.
+            out << (qint32)w.samples(); // Total number of samples
+            out << (qint64)w.duration();  // Total number of seconds
+            out << (SampleFormat)w.min();
+            out << (SampleFormat)w.max();
+            out << (qint8)sizeof(SampleFormat);  // Bytes per sample
+            out << (qint8)0; // signed.. all samples for now are signed 16bit.
             //t8=0; // 0=signed, 1=unsigned, 2=float
 
             // followed by sample data.
-            if (IsPlatformLittleEndian()) {
-                f.Write((const char *)w.GetBuffer(),w.samples()*sizeof(SampleFormat));
-            } else {
-                for (int k=0; k<(*j)->samples(); k++) f.Pack((qint16)w[k]);
-            }
+            for (int k=0; k<(*j)->samples(); k++) out << w[k];
         }
     }
     return true;
@@ -648,39 +666,46 @@ bool Session::StoreWaveforms(QString filename)
 bool Session::LoadWaveforms(QString filename)
 {
     if (filename.isEmpty()) return false;
-
-    BinaryFile f;
-    if (!f.Open(filename,BF_READ)) {
-        qDebug() << "Couldn't open waveform file " << filename;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Couldn't open file" << filename;
         return false;
     }
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_4_6);
 
     quint32 t32;
     quint16 t16;
     quint8 t8;
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Magic Number
-    if (t32!=magic) throw UnpackError();
+    in >>t32;   // Magic Number
+    if (t32!=magic) {
+        qDebug() << "Wrong magic in " << filename;
+        return false;
+    }
 
-    if (!f.Unpack(t32)) throw UnpackError();		// MachineID
+    in >> t32;      // MachineID
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Sessionid;
+    in >> t32;      // Sessionid;
     s_session=t32;
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Type
-    if (t16!=2) throw UnpackError(); 				//wrong file type?
+    in >> t16;      // File Type
+    if (t16!=2) {
+        qDebug() << "Wrong File Type in " << filename;
+        return false;
+    }
 
-    if (!f.Unpack(t16)) throw UnpackError();		// File Version
+    in >> t16;      // File Version
     // dont give a crap yet..
 
-    if (!f.Unpack(t32)) throw UnpackError();	// Start time
+    in >> t32;       // Start time
     s_first=qint64(t32)*1000;
 
-    if (!f.Unpack(t32)) throw UnpackError();		// Duration // (16bit==Limited to 18 hours)
+    in >> t32;      // Duration // (16bit==Limited to 18 hours)
     s_last=s_first+qint64(t32)*1000;
 
-    qint16 wvsize;
-    if (!f.Unpack(wvsize)) throw UnpackError();	// Summary size (number of Machine Code lists)
+    quint16 wvsize;
+    in >> wvsize;   // Number of waveforms
 
     MachineCode mc;
     qint64 date;
@@ -689,26 +714,25 @@ bool Session::LoadWaveforms(QString filename)
     int chunks;
     SampleFormat min,max;
     for (int i=0; i<wvsize; i++) {
-        if (!f.Unpack(t16)) throw UnpackError();		// Machine Code
+        in >> t16;      // Machine Code
         mc=(MachineCode)t16;
-        if (!f.Unpack(t16)) throw UnpackError();		// Machine Code
+        in >> t16;      // Number of waveform Chunks
         chunks=t16;
 
         for (int i=0; i<chunks; i++) {
-
-            if (!f.Unpack(date)) throw UnpackError();		// Waveform DateTime
-            if (!f.Unpack(samples)) throw UnpackError();	// Number of samples
-            if (!f.Unpack(seconds)) throw UnpackError();	// Duration in seconds
-            if (!f.Unpack(min)) throw UnpackError();		// Min value
-            if (!f.Unpack(max)) throw UnpackError();		// Min value
-            if (!f.Unpack(t8)) throw UnpackError();			// sample size in bytes
-            if (!f.Unpack(t8)) throw UnpackError();			// Number of samples
+            in >> date;     // Waveform DateTime
+            in >> samples;  // Number of samples
+            in >> seconds;  // Duration in seconds
+            in >> min;      // Min value
+            in >> max;      // Min value
+            in >> t8;       // sample size in bytes
+            in >> t8;       // Number of samples (?? what did I mean by this)
 
             SampleFormat *data=new SampleFormat [samples];
 
+
             for (int k=0; k<samples; k++) {
-                if (!f.Unpack(t16)) throw UnpackError();			// Number of samples
-                data[k]=t16;
+                in >> data[k];      // Individual Samples;
             }
             Waveform *w=new Waveform(date,mc,data,samples,seconds,min,max);
             AddWaveform(w);
