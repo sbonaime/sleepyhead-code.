@@ -53,22 +53,10 @@ const QString & getUserName()
 
 const QString & GetAppRoot()
 {
-    static QString HomeAppRoot=QDesktopServices::storageLocation(QDesktopServices::HomeLocation)+"/"+AppRoot;
+    // Should it go here: QDesktopServices::DataLocation ???
 
-  //  wxLogMessage(wxStandardPathsBase::Get().GetUserDataDir());
+    static QString HomeAppRoot=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)+"/"+AppRoot;
 
-    //HomeAppRoot=s+wxFileName::GetPathSeparator();
-
-/*#if defined(__WXMSW__)
-    // This conveniently maps to unix home directory for now in wine.. Change before release if necessary..
-    HomeAppRoot=wxGetHomeDir()+"/"+wxT("My Documents")+"/"+AppRoot;
-#elif defined(__UNIX__)
-    HomeAppRoot=wxGetHomeDir()+"/"+AppRoot;
-#elif defined(__WXMAC__)
-    // I have no idea
-    HomeAppRoot=wxGetHomeDir()+"/"+AppRoot;
-#endif
-    //HomeAppRoot+=wxFileName::GetPathSeparator(); // Trailing separator */
     return HomeAppRoot;
 }
 
