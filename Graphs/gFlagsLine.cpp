@@ -35,8 +35,10 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 
     vector<gFlagsLine *> visible;
     for (unsigned i=0;i<layers.size();i++) {
-        if (!layers[i]->isEmpty()) {
-            gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
+        gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
+        if (!f) continue;
+
+        if (!f->isEmpty() || f->isAlwaysVisible()) {
             visible.push_back(f);
         }
     }
@@ -49,8 +51,8 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,int _line_num,int _total_lines)
-:gLayer(d),label(_label),line_num(_line_num),total_lines(_total_lines)
+gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,bool always_visible, int _line_num,int _total_lines)
+:gLayer(d),label(_label),m_always_visible(always_visible),line_num(_line_num),total_lines(_total_lines)
 {
     color.clear();
     color.push_back(col);

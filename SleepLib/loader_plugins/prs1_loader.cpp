@@ -547,14 +547,16 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos+16;
             return false;
         }
-        //assert(code<ncodes);
-       // QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-       // qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
+        //if (code==0xe) {
+        //    pos+=2;
+        //} else
         if (code!=0x12) {
-            delta=buffer[pos];
+            //delta=buffer[pos];
             //duration=buffer[pos+1];
-            //delta=buffer[pos+1] << 8 | buffer[pos];
+            delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
+            //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
+            //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) << int(delta);
             t+=delta*1000;
         }
         MachineCode cpapcode=Codes[(int)code];
@@ -587,6 +589,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
         case 0x04: // Pressure Pulse
             data[0]=buffer[pos++];
             session->AddEvent(new Event(t,cpapcode, data,1));
+            //qDebug() << hex << data[0];
             break;
         case 0x05: // RERA
         case 0x06: // Obstructive Apoanea
@@ -615,11 +618,12 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             }
             break;
         case 0x0e: // Unknown
-            data[0]=buffer[pos++];
+            data[0]=((char *)buffer)[pos++];
             data[1]=buffer[pos++]; //(buffer[pos+1] << 8) | buffer[pos];
             //data[0]/=10.0;
             //pos+=2;
             data[2]=buffer[pos++];
+            //qDebug() << hex << data[0] << data[1] << data[2];
             session->AddEvent(new Event(t,cpapcode, data, 3));
             //tt-=data[1]*1000;
             //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
@@ -889,6 +893,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
 {
     int size,sequence,seconds,br,htype,version,numsignals;
     unsigned cnt=0;
+    qint32 lastts,ts1;
     qint64 timestamp;
 
     qint64 start=0;
@@ -911,6 +916,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     long fpos=0;
     //int bsize=0;
     int lasthl=0;
+    qint32 expected_timestamp=0;
     while (true) {
         lasthl=hl;
         hl=20;
@@ -925,12 +931,12 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         if (header[0]!=PRS1_MAGIC_NUMBER) {
             if (cnt==0)
                 return false;
-            qDebug() << "Corrupt waveform, trying to recover";
+            qWarning() << "Corrupt waveform, trying to recover";
             // read the damn bytes anyway..
 
             br=f.read((char *)header,lasthl-hl+1); // last bit of the header
             if (br<lasthl-hl+1) {
-                qDebug() << "End of file, couldn't recover";
+                qWarning() << "End of file, couldn't recover";
                 break;
             }
             hl=lasthl;
@@ -954,7 +960,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         htype=header[3];
         ext=header[6];
         sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
-        timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+        ts1=timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
         seconds=(header[16] << 8) | header[15];
         numsignals=header[19] << 8 | header[18];
 
@@ -999,7 +1005,39 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             qDebug() << "PRS1 Waveform data has htype set differently";
         }
 
-        if (!start) start=timestamp*1000; //convert from epoch to msecs since epoch
+
+        if (!start) {
+            lastts=timestamp;
+         //   expected_timestamp=timestamp+seconds;
+            start=timestamp*1000; //convert from epoch to msecs since epoch
+            //qDebug() << "Wave: " << cnt << seconds;
+        } else {
+            qint32 diff=timestamp-expected_timestamp;
+            if (diff<0) {
+                if (duration<diff) {
+                    duration+=diff;
+                    samples+=diff*5;
+                } else {
+                    qWarning() << "Waveform out of sync beyond the first entry" << sequence;
+                }
+            } else if (diff>0) {
+                qDebug() << "Fixing up Waveform sync" << sequence;
+                for (int i=0;i<diff*5;i++) {
+                    buffer[samples++]=0;
+                }
+                duration+=diff;
+            }
+            /*if (diff!=0) {
+                if (cnt==1) {
+                    start+=diff*1000;
+                } else {
+                }
+            } */
+            //qDebug() << "Wave: " << cnt << seconds << diff;
+        }
+
+
+        expected_timestamp=timestamp+seconds;
 
         if (ext!=PRS1_WAVEFORM_FILE) {
             if (cnt==0)
@@ -1033,7 +1071,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             return false;
         chksum=chkbuf[0] << 8 | chkbuf[1];
         chksum=chksum;
-
+        lastts=ts1;
     }
 
     if (samples==0)

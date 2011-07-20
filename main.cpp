@@ -62,6 +62,5 @@ int main(int argc, char *argv[])
     mainwin=&w;
 
     w.show();
-
     return a.exec();
 }

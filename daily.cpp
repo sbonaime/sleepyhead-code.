@@ -75,13 +75,13 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
     int sfc=7;
     bool extras=false; //true;
-    fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",0,sfc));
-    fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",1,sfc));
-    fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",2,sfc));
-    fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",3,sfc));
-    fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",4,sfc));
-    fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",6,sfc));
-    fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",5,sfc));
+    fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",false,0,sfc));
+    fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",true,1,sfc));
+    fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",true,2,sfc));
+    fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",true,3,sfc));
+    fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",false,4,sfc));
+    fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",false,6,sfc));
+    fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",false,5,sfc));
     if (extras) {
         fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
         fg->AddLayer(new gFlagsLine(flags[9],QColor("red"),"VS2",8,sfc));
@@ -690,7 +690,7 @@ void Daily::Load(QDate date)
         for (vector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
             fd=QDateTime::fromMSecsSinceEpoch((*s)->first());
             ld=QDateTime::fromMSecsSinceEpoch((*s)->last());
-            tmp.sprintf(("<tr><td align=center>%08x</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+            tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
         }
         html+="</table>";
