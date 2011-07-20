@@ -284,10 +284,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         Session *sess=new Session(m,session);
         if (!OpenSummary(sess,s->second[0])) {
-            qWarning() << "PRS1Loader: Could'nt open summary file " << s->second[0];
+            //qWarning() << "PRS1Loader: Dodgy summary file " << s->second[0];
 
-            delete sess;
-            continue;
+           // delete sess;
+           // continue;
         }
         //sess->SetSessionID(sess->start().GetTicks());
         if (!s->second[1].isEmpty()) {
@@ -302,6 +302,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         }
         const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
         if (sess->hours()<=ignore_thresh) {
+            qDebug() << "Igoring short session" << session << "which is only" << (sess->hours()*60.0) << "minute(s) long";
             delete sess;
             continue;
         }
@@ -437,7 +438,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
         return false;
 
     if (size<=19) {
-        qDebug() << "Ignoring short session file " << filename;
+      //  qDebug() << "Ignoring short session file " << filename;
         return false;
     }
 
@@ -1027,12 +1028,6 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                 }
                 duration+=diff;
             }
-            /*if (diff!=0) {
-                if (cnt==1) {
-                    start+=diff*1000;
-                } else {
-                }
-            } */
             //qDebug() << "Wave: " << cnt << seconds << diff;
         }
 
