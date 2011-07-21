@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
-    if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=false;
+    if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=true;
     else ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
 
     if (!pref["ShowDebug"].toBool()) {

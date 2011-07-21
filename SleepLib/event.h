@@ -10,7 +10,7 @@
 #include <QDateTime>
 #include "machine_common.h"
 
-typedef double EventDataType;
+typedef float EventDataType;
 
 class Event
 {

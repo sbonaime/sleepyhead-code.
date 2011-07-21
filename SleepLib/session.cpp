@@ -610,6 +610,7 @@ bool Session::LoadEvents(QString filename)
 
 bool Session::StoreWaveforms(QString filename)
 {
+
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
@@ -633,12 +634,15 @@ bool Session::StoreWaveforms(QString filename)
 
     map<MachineCode,vector<Waveform *> >::iterator i;
     vector<Waveform *>::iterator j;
+    int zz=0;
     for (i=waveforms.begin(); i!=waveforms.end(); i++) {
+        qDebug() << "Storing Waveform" << zz++ << filename;
         out << (quint16)i->first; 	// Machine Code
         t16=i->second.size();
         out << t16;                     // Number of (hopefully non-linear) waveform chunks
-
+        int chnk=0;
         for (j=i->second.begin(); j!=i->second.end(); j++) {
+            qDebug() << "Storing Waveform Chunk" << chnk++;
 
             Waveform &w=*(*j);
             // 64bit number..
@@ -656,6 +660,7 @@ bool Session::StoreWaveforms(QString filename)
             //t8=0; // 0=signed, 1=unsigned, 2=float
 
             // followed by sample data.
+            qDebug() << "Writing " << (*j)->samples() << "samples";
             for (int k=0; k<(*j)->samples(); k++) out << w[k];
         }
     }

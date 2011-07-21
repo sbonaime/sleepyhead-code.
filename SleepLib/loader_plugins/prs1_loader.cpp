@@ -889,7 +889,181 @@ bool PRS1Loader::OpenEvents(Session *session,QString filename)
     return true;
 }
 
+struct WaveHeaderList {
+    quint16 interleave;
+    quint8  sample_format;
+    WaveHeaderList(quint16 i,quint8 f){ interleave=i; sample_format=f; }
+};
+
 bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
+{
+    //int sequence,seconds,br,htype,version,numsignals;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Couldn't open waveform file" << filename;
+        return false;
+    }
+
+    int pos,br,size=file.size();
+    if (size>max_load_buffer_size) {
+        qWarning() << "Waveform too big, increase max_load_buffer_size in PRS1Loader sourcecode" << filename;
+        return false;
+    }
+
+    br=file.read((char *)m_buffer,size);
+    if (br<size) {
+        qWarning() << "Couldn't read waveform data.. Disk error?" << filename;
+        return false;
+    }
+
+    // Look at the initial header and assume this header size for the lot.
+    if ((m_buffer[0]!=2) || (m_buffer[6]!=0x05)) {
+        qWarning() << "Not correct waveform format" << filename;
+        return false;
+    }
+    quint8 version=m_buffer[4];
+    quint32 start=m_buffer[0xb] | m_buffer[0xc] << 8 | m_buffer[0xd] << 16 | m_buffer[0x0e] << 24;
+    quint16 num_signals=m_buffer[0x12] | m_buffer[0x13] << 8;
+    if (num_signals>2) {
+        qWarning() << "More than 2 Waveforms in " << filename;
+        return false;
+    }
+    pos=0x14+(num_signals-1)*3;
+    vector<WaveHeaderList> whl;
+    // add the in reverse...
+    for (int i=0;i<num_signals;i++) {
+        quint16 interleave=m_buffer[pos] | m_buffer[pos+1] << 8;
+        quint8  sample_format=m_buffer[pos+2];
+        whl.push_back(WaveHeaderList(interleave,sample_format));
+        pos-=3;
+    }
+    int hl=15+5+(num_signals*3);
+    quint16 duration,length;
+    quint32 timestamp,lasttimestamp;
+
+
+    pos=0;
+    int block=0;
+    lasttimestamp=start;
+    duration=0;
+    int corrupt=0;
+    char waveform[num_signals][500000];
+    int wlength[num_signals];
+    int wdur[num_signals];
+    for (int i=0;i<num_signals;i++) {
+        wlength[i]=0;
+        wdur[i]=0;
+        //waveform[i].resize(500000);
+    }
+    SampleFormat *wf[num_signals];
+    MachineCode wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
+    do {
+        timestamp=m_buffer[pos+0xb] | m_buffer[pos+0xc] << 8 | m_buffer[pos+0xd] << 16 | m_buffer[pos+0x0e] << 24;
+        register unsigned char sum8=0;
+        for (int i=0;i<hl;i++) sum8+=m_buffer[pos+i];
+        if (m_buffer[pos+hl]!=sum8) {
+            if (block==0) {
+                qDebug() << "Faulty Header Checksum, aborting" << filename;
+                return false;
+            }
+            if (++corrupt>3) {
+                qDebug() << "3 Faulty Waveform Headers in a row.. Aborting" << filename;
+                return false;
+            }
+            qDebug() << "Faulty Header Checksum, skipping block" << block;
+            pos+=length;
+            continue;
+        } else {
+            int diff=(lasttimestamp+duration)-timestamp;
+            length=m_buffer[pos+0x1] | m_buffer[pos+0x2] << 8;      // block length in bytes
+            duration=m_buffer[pos+0xf] | m_buffer[pos+0x10] << 8;    // block duration in seconds
+            if (diff || corrupt)  {
+                qDebug() << "Timestamp restarts" << diff << corrupt << duration;
+
+
+                for (int i=0;i<num_signals;i++) {
+                    wf[i]=new SampleFormat [wlength[i]];
+                    for (int j=0;j<wlength[i];j++) {
+                        if (whl[i].sample_format)
+                            wf[i][j]=((unsigned char*)waveform[i])[j];
+                        else
+                            wf[i][j]=(waveform[i])[j];
+                    }
+                    Waveform *w=new Waveform(qint64(start)*1000L,wc[i],wf[i],wlength[i],qint64(wdur[i])*1000L,-128,128); //FlowRate
+                    session->AddWaveform(w);
+                    wlength[i]=0;
+                    wdur[i]=0;
+                }
+                start=timestamp;
+                corrupt=0;
+            }
+        }
+
+        pos+=hl+1;
+        //qDebug() <<  (duration*num_signals*whl[0].interleave) << length-(hl+3);
+        if (num_signals==1) { // no interleave.. this is much quicker.
+            int bs=duration*whl[0].interleave;
+            memcpy((char *)&(waveform[0])[wlength[0]],(char *)&m_buffer[pos],bs);
+
+            wlength[0]+=bs;
+
+            pos+=bs;
+        } else {
+            for (int i=0;i<duration;i++) {
+                for (int s=0;s<num_signals;s++) {
+                    memcpy((char *)&(waveform[s])[wlength[s]],(char *)&m_buffer[pos],whl[s].interleave);
+                    wlength[s]+=whl[s].interleave;
+                    pos+=whl[s].interleave;
+                }
+            }
+        }
+        for (int i=0;i<num_signals;i++) wdur[i]+=duration;
+        pos+=2;
+        block++;
+        lasttimestamp=timestamp;
+    } while (pos<size);
+
+    for (int i=0;i<num_signals;i++) {
+        wf[i]=new SampleFormat [wlength[i]];
+        for (int j=0;j<wlength[i];j++) {
+            if (whl[i].sample_format)
+                wf[i][j]=((unsigned char*)waveform[i])[j];
+            else
+                wf[i][j]=(waveform[i])[j];
+        }
+        Waveform *w=new Waveform(qint64(start)*1000L,wc[i],wf[i],wlength[i],qint64(wdur[i])*1000L,-128,128); //FlowRate
+        session->AddWaveform(w);
+    }
+
+    int froog=3;
+    /*    file.read(headerbytes,sizeof(PRS1Header));
+        file.read(waveheaderbytes,sizeof(PRS1Header));
+        int ns=waveheader.num_signals;
+        WaveHeaderList ws[ns];
+        char * wsc=&ws[0];
+        file.read(wsc,waveheader.num_signals*3);
+        chksum8=0;
+        for (int i=0;i<15;i++) chksum8+=headerbytes[i];
+        for (int i=0;i<5;i++) chksum8+=waveheaderbytes[i];
+        for (int i=0;i<waveheader.num_signals*3;i++) {
+            char *a=wsc;
+            chksum8+=a[i];
+        }
+        file.read((char *)&t8,1);
+        if (t8!=chksum8) {
+            qDebug() << "Mr T says \"Checksum doesn't match fool!\"";
+        }
+
+        qDebug() << "Reading Waveform " << header.sequence << header.extension << ":" << waveheader.duration << "seconds";
+        for (int i=0;i<ns;i++) {
+            qDebug() << ns << "signals" << "interleave=" << ws[i].interleave << ws[i].sample_format;
+        }
+        //file.read(m_buffer,
+
+    } while (!file.atEnd()); */
+    return true;
+}
+/*bool PRS1Loader::OldOpenWaveforms(Session *session,QString filename)
 {
     int size,sequence,seconds,br,htype,version,numsignals;
     unsigned cnt=0;
@@ -1014,25 +1188,29 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             //qDebug() << "Wave: " << cnt << seconds;
         } else {
             qint32 diff=timestamp-expected_timestamp;
-            if (diff<0) {
-                if (duration>abs(diff)) {
-                    duration+=diff;  // really Subtracting..
-                    samples+=diff*5;
-                } else {
-                    qWarning() << "Waveform out of sync beyond the first entry" << sequence << duration << diff;
+            if (version==5) {
+                qWarning() << "ASV Waveform out of sync" << sequence << duration << diff << timestamp-lastts;
+            } else {
+                if (diff<0) {
+                    if (duration>abs(diff)) {
+                        duration+=diff;  // really Subtracting..
+                        samples+=diff*5;
+                    } else {
+                        qWarning() << "Waveform out of sync beyond the first entry" << sequence << duration << diff;
+                    }
+                } else if (diff>0) {
+                    qDebug() << "Fixing up Waveform sync" << sequence;
+                    for (int i=0;i<diff*5;i++) {
+                        buffer[samples++]=0;
+                    }
+                    duration+=diff;
                 }
-            } else if (diff>0) {
-                qDebug() << "Fixing up Waveform sync" << sequence;
-                for (int i=0;i<diff*5;i++) {
-                    buffer[samples++]=0;
-                }
-                duration+=diff;
             }
             //qDebug() << "Wave: " << cnt << seconds << diff;
         }
 
 
-        expected_timestamp=timestamp+seconds;
+        expected_timestamp=timestamp+seconds*numsignals;
 
         if (ext!=PRS1_WAVEFORM_FILE) {
             if (cnt==0)
@@ -1126,7 +1304,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     }
     return true;
 }
-
+*/
 void InitModelMap()
 {
     ModelMap[34]="RemStar Pro with C-Flex+";
