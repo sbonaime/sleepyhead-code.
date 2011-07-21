@@ -91,7 +91,7 @@ bool EDFParser::Parse()
     }
     startdate=startDate.toMSecsSinceEpoch();
 
-    qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
+    //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
     num_header_bytes=QString::fromAscii(header.num_header_bytes,8).toLong(&ok);
     if (!ok)
