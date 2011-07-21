@@ -455,6 +455,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     code=MC_UNKNOWN;
                     if (t=="obstructive apnea") code=CPAP_Obstructive;
                     else if (t=="hypopnea") code=CPAP_Hypopnea;
+                    else if (t=="apnea") code=CPAP_Apnea;
                     else if (t=="central apnea") code=CPAP_ClearAirway;
                     if (code!=MC_UNKNOWN) {
                         fields[0]=duration;
@@ -547,6 +548,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     sess->set_last(edf.enddate);
     qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
     QString t;
+    int emptycnt=0;
     for (int s=0;s<edf.GetNumSignals();s++) {
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         MachineCode code;
@@ -583,8 +585,25 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         } else if (edf.edfsignals[s]->label=="FFL Index") {
             code=CPAP_FlowLimitGraph;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+        } else if (edf.edfsignals[s]->label=="Mask Pres") {
+            code=CPAP_MaskPressureExt;
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
+        } else if (edf.edfsignals[s]->label=="Exp Press") {
+            code=CPAP_ExpPressure;
+            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
+        } else if (edf.edfsignals[s]->label=="") {
+            if (emptycnt==0) {
+                code=ResMed_Empty1;
+                ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+            } else if (emptycnt==1) {
+                code=ResMed_Empty2;
+                ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+            } else {
+                qDebug() << "Unobserved Empty Signal " << edf.edfsignals[s]->label;
+            }
+            emptycnt++;
         } else {
-            qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved Signal " << edf.edfsignals[s]->label;
         }
     }
     return true;

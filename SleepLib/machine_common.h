@@ -33,7 +33,7 @@ enum MachineCode//:qint16
     // General Event Codes
     MC_UNKNOWN=0,
 
-    CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
+    CPAP_Obstructive, CPAP_Apnea, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_VSnore, CPAP_FlowLimit,
     CPAP_Leak, CPAP_Pressure, CPAP_EAP, CPAP_IAP, CPAP_CSR, CPAP_FlowRate, CPAP_MaskPressure,
     CPAP_Snore,CPAP_MinuteVentilation, CPAP_RespiratoryRate, CPAP_TidalVolume,CPAP_FlowLimitGraph,
     CPAP_PatientTriggeredBreaths, CPAP_PS, CPAP_IAPLO, CPAP_IAPHI,
@@ -43,7 +43,7 @@ enum MachineCode//:qint16
     CPAP_PressureReliefSetting, CPAP_HumidifierSetting, CPAP_HumidifierStatus, CPAP_PressureMinAchieved,
     CPAP_PressureMaxAchieved, CPAP_PressurePercentValue, CPAP_PressurePercentName, CPAP_PressureAverage, CPAP_PressureMedian,
     CPAP_LeakMedian,CPAP_LeakMinimum,CPAP_LeakMaximum,CPAP_LeakAverage,CPAP_Duration,
-    CPAP_SnoreMinimum, CPAP_SnoreMaximum, CPAP_SnoreAverage, CPAP_SnoreMedian,
+    CPAP_SnoreMinimum, CPAP_SnoreMaximum, CPAP_SnoreAverage, CPAP_SnoreMedian, CPAP_MaskPressureEvt, CPAP_ExpPressure,
 
     BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,
     BIPAP_PSAverage,BIPAP_PSMin, BIPAP_PSMax,
@@ -57,6 +57,8 @@ enum MachineCode//:qint16
 
     // ASV Unknown Codes
     PRS1_Unknown0A,PRS1_Unknown0C, PRS1_Unknown0F,
+
+    ResMed_Empty1, ResMed_Empty2,
 
     // Oximeter Codes
     OXI_Pulse=0x2000, OXI_SPO2, OXI_Plethy, OXI_Signal2, OXI_SignalGood, OXI_PulseAverage, OXI_PulseMin, OXI_PulseMax, OXI_SPO2Average, OXI_SPO2Min, OXI_SPO2Max,
