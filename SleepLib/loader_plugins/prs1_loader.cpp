@@ -157,6 +157,7 @@ int PRS1Loader::Open(QString & path,Profile *profile)
             delete m;
         }
     }
+    qDebug() << "Open() Done";
     return PRS1List.size();
 }
 
@@ -387,6 +388,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     m->properties["DataVersion"]=s;
     m->Save(); // Save any new sessions to disk in our format
     if (qprogress) qprogress->setValue(100);
+    qDebug() << "OpenMachine Done";
     return true;
 }
 

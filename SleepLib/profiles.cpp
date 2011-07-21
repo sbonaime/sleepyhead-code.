@@ -213,6 +213,7 @@ int Profile::Import(QString path)
     for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
     }
+    qDebug() << "Import Done";
     return c;
 }
 
