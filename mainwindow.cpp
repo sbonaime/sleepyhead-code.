@@ -162,13 +162,17 @@ void MainWindow::on_action_Import_Data_triggered()
             }
             c+=d;
         }
+        qDebug() << "Finished Importing data" << c;
         if (c) {
             profile->Save();
+            qDebug() << " profile->Save();";
             if (daily) daily->ReloadGraphs();
+            qDebug() << " daily->ReloadGraphs();";
             if (overview) {
                 overview->ReloadGraphs();
                 overview->UpdateGraphs();
             }
+            qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText(tr("Ready"));
         qprogress->hide();

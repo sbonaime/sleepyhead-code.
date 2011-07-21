@@ -432,11 +432,14 @@ bool Machine::Save()
 
     for (d=day.begin();d!=day.end();d++) {
 
+        qDebug() << "Day Save Commenced";
         for (s=d->second->begin(); s!=d->second->end(); s++) {
             cnt++;
             if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
             if ((*s)->IsChanged()) (*s)->Store(path);
         }
+        qDebug() << "Day Save Completed";
+
     }
     return true;
 }

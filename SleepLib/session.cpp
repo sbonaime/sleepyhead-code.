@@ -247,7 +247,9 @@ bool Session::OpenEvents() {
     if(s_events_loaded)
         return true;
     bool b;
+    qDebug() << "Open Events() Start";
     b=LoadEvents(s_eventfile);
+    qDebug() << "Open Events() Done";
     if (!b) {
         qWarning() << "Error Unkpacking Events" << s_eventfile;
     }
@@ -259,7 +261,9 @@ bool Session::OpenWaveforms() {
     if (s_waves_loaded)
         return true;
     bool b;
+    qDebug() << "OpenWaveforms() Start";
     b=LoadWaveforms(s_wavefile);
+    qDebug() << "OpenWaveforms() Done";
     if (!b) {
         qWarning() << "Error Unkpacking Wavefile" << s_wavefile;
     }
@@ -274,7 +278,6 @@ bool Session::Store(QString path)
 // Storing Session Data in our format
 // {DataDir}/{MachineID}/{SessionID}.{ext}
 {
-
     QDir dir(path);
     if (!dir.exists(path))
         dir.mkpath(path);
@@ -282,11 +285,14 @@ bool Session::Store(QString path)
     QString base;
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
-    //qDebug(("Storing Session: "+base).toLatin1());
+    qDebug() << "Storing Session: " << base;
     bool a,b,c;
     a=StoreSummary(base+".000"); // if actually has events
+    qDebug() << " Summary done";
     if (events.size()>0) b=StoreEvents(base+".001");
+    qDebug() << " Events done";
     if (waveforms.size()>0) c=StoreWaveforms(base+".002");
+    qDebug() << " Waveform done";
     if (a) {
         s_changed=false;
     }

@@ -980,7 +980,6 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             if (diff || corrupt)  {
                 qDebug() << "Timestamp restarts" << diff << corrupt << duration;
 
-
                 for (int i=0;i<num_signals;i++) {
                     wf[i]=new SampleFormat [wlength[i]];
                     for (int j=0;j<wlength[i];j++) {
@@ -1034,33 +1033,6 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         Waveform *w=new Waveform(qint64(start)*1000L,wc[i],wf[i],wlength[i],qint64(wdur[i])*1000L,-128,128); //FlowRate
         session->AddWaveform(w);
     }
-
-    int froog=3;
-    /*    file.read(headerbytes,sizeof(PRS1Header));
-        file.read(waveheaderbytes,sizeof(PRS1Header));
-        int ns=waveheader.num_signals;
-        WaveHeaderList ws[ns];
-        char * wsc=&ws[0];
-        file.read(wsc,waveheader.num_signals*3);
-        chksum8=0;
-        for (int i=0;i<15;i++) chksum8+=headerbytes[i];
-        for (int i=0;i<5;i++) chksum8+=waveheaderbytes[i];
-        for (int i=0;i<waveheader.num_signals*3;i++) {
-            char *a=wsc;
-            chksum8+=a[i];
-        }
-        file.read((char *)&t8,1);
-        if (t8!=chksum8) {
-            qDebug() << "Mr T says \"Checksum doesn't match fool!\"";
-        }
-
-        qDebug() << "Reading Waveform " << header.sequence << header.extension << ":" << waveheader.duration << "seconds";
-        for (int i=0;i<ns;i++) {
-            qDebug() << ns << "signals" << "interleave=" << ws[i].interleave << ws[i].sample_format;
-        }
-        //file.read(m_buffer,
-
-    } while (!file.atEnd()); */
     return true;
 }
 /*bool PRS1Loader::OldOpenWaveforms(Session *session,QString filename)
