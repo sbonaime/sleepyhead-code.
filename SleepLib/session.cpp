@@ -206,7 +206,7 @@ void Session::AddEvent(Event * e)
 void Session::AddWaveform(Waveform *w)
 {
     waveforms[w->code()].push_back(w);
-    if (!s_last) {
+    if (s_last) {
         if (w->start()<s_first) s_first=w->start();
         if (w->end()>s_last) s_last=w->end();
     } else {

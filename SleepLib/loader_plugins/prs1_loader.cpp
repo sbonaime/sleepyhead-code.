@@ -420,7 +420,9 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     ext=header[6];
     htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
     version=header[4];
-
+    if (sequence==127) {
+        int i=0;
+    }
     sequence=sequence;
     version=version; // don't need it here?
 
@@ -456,7 +458,6 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
 
     session->set_first(date);
 
-    //session->set_last(date);
     double max;
     session->summary[CPAP_PressureMin]=(double)buffer[0x03]/10.0;
     session->summary[CPAP_PressureMax]=max=(double)buffer[0x04]/10.0;
@@ -492,9 +493,7 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     session->summary[PRS1_MaskAlert]=(buffer[offset+0x0c]&0x08)==0x08;
     session->summary[PRS1_ShowAHI]=(buffer[offset+0x0c]&0x04)==0x04;
 
-    unsigned char * b=&buffer[offset+0x14];
-    quint16 bb=*(quint16*)b;
-    unsigned duration=bb;// | (buffer[0x15] << 8);
+    unsigned duration=buffer[offset+0x14] | (buffer[0x15] << 8);
     session->summary[CPAP_Duration]=(int)duration;
     //qDebug() << "ID: " << session->session() << " " << duration;
     //float hours=float(duration)/3600.0;
@@ -513,14 +512,14 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     if (max==0) {
         session->summary[CPAP_PressureAverage]=session->summary[CPAP_PressureMin];
     }
-    if (size==0x4d) {
+   /*/if (size==0x4d) {
 
         session->summary[CPAP_Obstructive]=(int)buffer[offset+0x1C] | (buffer[offset+0x1D] << 8);
         session->summary[CPAP_ClearAirway]=(int)buffer[offset+0x20] | (buffer[offset+0x21] << 8);
         session->summary[CPAP_Hypopnea]=(int)buffer[offset+0x2A] | (buffer[offset+0x2B] << 8);
         session->summary[CPAP_RERA]=(int)buffer[offset+0x2E] | (buffer[offset+0x2F] << 8);
         session->summary[CPAP_FlowLimit]=(int)buffer[offset+0x30] | (buffer[offset+0x31] << 8);
-    }
+    }*/
     return true;
 }
 
