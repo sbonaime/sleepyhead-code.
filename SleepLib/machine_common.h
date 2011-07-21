@@ -48,7 +48,7 @@ enum MachineCode//:qint16
     BIPAP_EAPAverage,BIPAP_IAPAverage,BIPAP_EAPMin,BIPAP_EAPMax,BIPAP_IAPMin,BIPAP_IAPMax,
     BIPAP_PSAverage,BIPAP_PSMin, BIPAP_PSMax,
 
-    CPAP_BrokenSummary,
+    CPAP_BrokenSummary, CPAP_BrokenWaveform,
 
     // PRS1 Specific Codes
     PRS1_PressurePulse=0x1000,PRS1_VSnore2,

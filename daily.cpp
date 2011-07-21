@@ -501,7 +501,6 @@ void Daily::Load(QDate date)
         iap90=cpap->percentile(CPAP_IAP,0,0.9);
         QString submodel=tr("Unknown Model");
 
-
         //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
             submodel=" <br>"+cpap->machine->properties["SubModel"];
@@ -687,13 +686,18 @@ void Daily::Load(QDate date)
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
         QDateTime fd,ld;
+        bool corrupted_waveform=false;
         for (vector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
             fd=QDateTime::fromMSecsSinceEpoch((*s)->first());
             ld=QDateTime::fromMSecsSinceEpoch((*s)->last());
+            if (((*s)->summary.find(CPAP_BrokenWaveform)!=(*s)->summary.end()) && (*s)->summary[CPAP_BrokenWaveform].toBool()) corrupted_waveform=true;
             tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
         }
         html+="</table>";
+        if (corrupted_waveform) {
+            html+="<hr><div align=center><i>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</i></div>";
+        }
     }
     html+="</html>";
 

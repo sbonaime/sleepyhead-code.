@@ -932,6 +932,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             if (cnt==0)
                 return false;
             qWarning() << "Corrupt waveform, trying to recover" << sequence;
+            session->summary[CPAP_BrokenWaveform]=true;
             // read the damn bytes anyway..
 
             br=f.read((char *)header,lasthl-hl+1); // last bit of the header
