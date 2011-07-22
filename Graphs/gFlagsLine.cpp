@@ -24,14 +24,6 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    glColor3f (0.1F, 0.1F, 0.1F);
-    glLineWidth (1);
-    glBegin (GL_LINE_LOOP);
-    glVertex2f (start_px-1, start_py);
-    glVertex2f (start_px-1, start_py+height);
-    glVertex2f (start_px+width,start_py+height);
-    glVertex2f (start_px+width, start_py);
-    glEnd ();
 
     vector<gFlagsLine *> visible;
     for (unsigned i=0;i<layers.size();i++) {
@@ -48,6 +40,15 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
         visible[i]->total_lines=vis;
         visible[i]->Plot(w,scrx,scry);
     }
+    glColor3f (0.0F, 0.0F, 0.0F);
+    glLineWidth (1);
+    glBegin (GL_LINE_LOOP);
+    glVertex2f (start_px-1, start_py);
+    glVertex2f (start_px-1, start_py+height);
+    glVertex2f (start_px+width,start_py+height);
+    glVertex2f (start_px+width, start_py);
+    glEnd ();
+
 }
 
 

@@ -12,7 +12,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFooBar.h"
 
-Oximetry::Oximetry(QWidget *parent) :
+Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
     ui(new Ui::Oximetry)
 {
@@ -32,7 +32,7 @@ Oximetry::Oximetry(QWidget *parent) :
     ui->graphLayout->addWidget(gSplitter);
 
     AddData(plethy=new WaveData(OXI_Plethy));
-    AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),(QGLWidget *)NULL));
+    AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),shared));
 
     AddData(pulse=new EventData(OXI_Pulse));
     AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),PLETHY));
@@ -103,9 +103,9 @@ void Oximetry::on_RefreshPortsButton_clicked()
             if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
             ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
             z++;
+            qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
         }
         //qDebug() << "port name:" << ports.at(i).portName;
-        qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
         //qDebug() << "enumerator name:" << ports.at(i).enumName;
     }
     if (z>0) {

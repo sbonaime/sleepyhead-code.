@@ -104,22 +104,28 @@ vector<TextBuffer *> TextQueRot;
 
 void DrawTextQueue(gGraphWindow & wid)
 {
-    glFlush();
-    QPainter painter(&wid);
+    //glFlush();
     for (unsigned i=0;i<TextQue.size();i++) {
         TextBuffer & t=*TextQue[i];
-        RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
+        wid.qglColor(t.color);
+        wid.renderText(t.x,wid.GetScrY()-t.y,0,t.text,*t.font);
+        //RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
         delete TextQue[i];
     }
-    // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
-    TextQue.clear();
-    for (unsigned i=0;i<TextQueRot.size();i++) {
-        TextBuffer & t=*TextQueRot[i];
-        RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
-        delete TextQueRot[i];
+
+    if (wid.parentWidget()!=0) {
+        QPainter painter(&wid);
+        // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
+        for (unsigned i=0;i<TextQueRot.size();i++) {
+            TextBuffer & t=*TextQueRot[i];
+            RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
+            delete TextQueRot[i];
+        }
+        painter.end();
     }
+
     TextQueRot.clear();
-    painter.end();
+    TextQue.clear();
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);

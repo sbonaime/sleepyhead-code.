@@ -110,7 +110,7 @@ int PRS1Loader::Open(QString & path,Profile *profile)
     if ((!dir.exists() || !dir.isReadable()))
         return 0;
 
-    qDebug() << "PRS1Loader::Open newpath=" << newpath;
+    //qDebug() << "PRS1Loader::Open newpath=" << newpath;
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
@@ -157,7 +157,6 @@ int PRS1Loader::Open(QString & path,Profile *profile)
             delete m;
         }
     }
-    qDebug() << "Open() Done";
     return PRS1List.size();
 }
 
@@ -287,8 +286,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         if (!OpenSummary(sess,s->second[0])) {
             //qWarning() << "PRS1Loader: Dodgy summary file " << s->second[0];
 
-           // delete sess;
-           // continue;
+            delete sess;
+            continue;
         }
         //sess->SetSessionID(sess->start().GetTicks());
         if (!s->second[1].isEmpty()) {
@@ -303,20 +302,16 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         }
         const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
         if (sess->hours()<=ignore_thresh) {
-            qDebug() << "Igoring short session" << session << "which is only" << (sess->hours()*60.0) << "minute(s) long";
+            //qDebug() << "Ignoring short session" << session << "which is only" << (sess->hours()*60.0) << "minute(s) long";
             delete sess;
             continue;
         }
-        m->AddSession(sess,profile);
-
-        //if (sess->summary.find(CPAP_Obstructive)==sess->summary.end()) {
-            sess->summary[CPAP_Obstructive]=sess->count_events(CPAP_Obstructive);
-            sess->summary[CPAP_Hypopnea]=sess->count_events(CPAP_Hypopnea);
-            sess->summary[CPAP_ClearAirway]=sess->count_events(CPAP_ClearAirway);
-            sess->summary[CPAP_RERA]=sess->count_events(CPAP_RERA);
-            sess->summary[CPAP_FlowLimit]=sess->count_events(CPAP_FlowLimit);
-            sess->summary[CPAP_VSnore]=sess->count_events(CPAP_VSnore);
-        //}
+        sess->summary[CPAP_Obstructive]=sess->count_events(CPAP_Obstructive);
+        sess->summary[CPAP_Hypopnea]=sess->count_events(CPAP_Hypopnea);
+        sess->summary[CPAP_ClearAirway]=sess->count_events(CPAP_ClearAirway);
+        sess->summary[CPAP_RERA]=sess->count_events(CPAP_RERA);
+        sess->summary[CPAP_FlowLimit]=sess->count_events(CPAP_FlowLimit);
+        sess->summary[CPAP_VSnore]=sess->count_events(CPAP_VSnore);
 
         sess->summary[CPAP_CSR]=sess->sum_event_field(CPAP_CSR,0);
         sess->summary[CPAP_Snore]=sess->sum_event_field(CPAP_Snore,0);
@@ -382,13 +377,15 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         //Printf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);
+        m->AddSession(sess,profile);
+
     }
     QString s;
     s.sprintf("%i",prs1_data_version);
     m->properties["DataVersion"]=s;
-    m->Save(); // Save any new sessions to disk in our format
+    m->Save(); // Save any new sessions to disk in our format */
     if (qprogress) qprogress->setValue(100);
-    qDebug() << "OpenMachine Done";
+    //qDebug() << "OpenMachine Done";
     return true;
 }
 
@@ -976,11 +973,27 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             pos+=length;
             continue;
         } else {
-            int diff=(lasttimestamp+duration)-timestamp;
+            int diff=timestamp-(lasttimestamp+duration);
+            if (block==1) {
+                if (diff>0)
+                    start-=diff;
+            }
             length=m_buffer[pos+0x1] | m_buffer[pos+0x2] << 8;      // block length in bytes
             duration=m_buffer[pos+0xf] | m_buffer[pos+0x10] << 8;    // block duration in seconds
-            if (diff || corrupt)  {
-                qDebug() << "Timestamp restarts" << diff << corrupt << duration;
+       /*     if (diff<0) {
+                //diff=abs(diff);
+                for (int i=0;i<num_signals;i++) {
+                    for (int j=0;j<diff;j++) {
+                        for (int k=0;k<whl[i].interleave;k++)
+                            waveform[i][wlength[i]++]=0;
+                    }
+                    wdur[i]+=diff;
+                }
+
+            } else
+            if (diff>0 && wlength[0]>0)  {
+                qDebug() << "Timestamp restarts" << block << diff << corrupt << duration << timestamp-lasttimestamp << filename;
+
 
                 for (int i=0;i<num_signals;i++) {
                     wf[i]=new SampleFormat [wlength[i]];
@@ -997,11 +1010,11 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                 }
                 start=timestamp;
                 corrupt=0;
-            }
+            } */
         }
 
         pos+=hl+1;
-        //qDebug() <<  (duration*num_signals*whl[0].interleave) << length-(hl+3);
+        //qDebug() <<  (duration*num_signals*whl[0].interleave) << duration;
         if (num_signals==1) { // no interleave.. this is much quicker.
             int bs=duration*whl[0].interleave;
             memcpy((char *)&(waveform[0])[wlength[0]],(char *)&m_buffer[pos],bs);
@@ -1037,7 +1050,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     }
     return true;
 }
-/*bool PRS1Loader::OldOpenWaveforms(Session *session,QString filename)
+/*bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
 {
     int size,sequence,seconds,br,htype,version,numsignals;
     unsigned cnt=0;
@@ -1277,8 +1290,8 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         session->AddWaveform(w);
     }
     return true;
-}
-*/
+} */
+
 void InitModelMap()
 {
     ModelMap[34]="RemStar Pro with C-Flex+";

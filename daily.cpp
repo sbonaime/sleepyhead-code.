@@ -25,13 +25,12 @@
 #include "Graphs/gBarChart.h"
 #include "Graphs/gpiechart.h"
 
-Daily::Daily(QWidget *parent,QGLContext *context) :
+
+Daily::Daily(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
     ui(new Ui::Daily)
 {
     ui->setupUi(this);
-
-    shared_context=context;
 
     QString prof=pref["Profile"].toString();
     profile=Profiles::Get(prof);
@@ -43,17 +42,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
     gSplitter->setHandleWidth(2);
-    //gSplitter->handle
     ui->graphSizer->addWidget(gSplitter);
-
-    //QPalette pal;
-    //QColor col("blue");
-    //pal.setColor(QPalette::Button, col);
-    //gSplitter->setPaletteForegroundColor(QColor("blue"));
-    //gSplitter->setBackgroundRole(QPalette::Button);
-    //ui->scrollArea->setWidgetResizable(true);
-    //gSplitter->setMinimumSize(500,500);
-    //gSplitter->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 
     AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
     AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
@@ -66,15 +55,42 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
     AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
 
-    SF=new gGraphWindow(gSplitter,tr("Event Flags"),(QGLWidget *)NULL);
-    fg=new gFlagsGroup();
+    SF=new gGraphWindow(gSplitter,tr("Event Flags"),shared);
+    FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
+    PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF);
+    LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
+    MP=new gGraphWindow(gSplitter,tr("Mask Pressure"),SF);
+    SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF);
+    FLG=new gGraphWindow(gSplitter,tr("Flow Limitation"),SF);
+    MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF);
+    TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF);
+    RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF);
+    PTB=new gGraphWindow(gSplitter,tr("Patient Trig Breaths"),SF);
+    PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF);
+
+    /*QGLFormat fmt;
+    fmt.setDepth(false);
+    fmt.setDirectRendering(false);
+    fmt.setAlpha(true);
+    fmt.setDoubleBuffer(false);
+    fmt.setRgba(true);
+    //fmt.setDefaultFormat(fmt);
+    offscreen_context=new QGLContext(fmt); */
+
+    TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
+    TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
+    TAP_IAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
+    G_AHI=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
+
 
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
+    SF->setMinimumHeight(160);
 
     int sfc=7;
     bool extras=false; //true;
+    fg=new gFlagsGroup();
     fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",false,0,sfc));
     fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",true,1,sfc));
     fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",true,2,sfc));
@@ -82,15 +98,11 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",false,4,sfc));
     fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",false,6,sfc));
     fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",false,5,sfc));
-    if (extras) {
-        fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
-        fg->AddLayer(new gFlagsLine(flags[9],QColor("red"),"VS2",8,sfc));
-        sfc++;
-    }
+    fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
+    //fg->AddLayer(new gFlagsLine(flags[9],QColor("red"),"VS2",8,sfc));
     SF->AddLayer(fg);
+    // SF Foobar must go last
     SF->AddLayer(new gFooBar(10,QColor("orange"),QColor("dark grey"),true));
-    SF->setMinimumHeight(150+(extras ? 20 : 0));
-   // SF->setMaximumHeight(350);
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
@@ -98,7 +110,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     pressure_eap->ForceMinY(0);
     pressure_eap->ForceMaxY(30);
 
-    PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF);
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
     //PRD->AddLayer(new gFooBar());
@@ -109,7 +120,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     PRD->setMinimumHeight(150);
 
     AddCPAPData(leak=new EventData(CPAP_Leak,0));
-    LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     //LEAK->AddLayer(new gFooBar());
@@ -119,7 +129,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     AddCPAPData(mp=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
-    MP=new gGraphWindow(gSplitter,tr("Mask Pressure"),SF);
     gYAxis *y=new gYAxis();
     y->SetScale(.1);
     MP->AddLayer(y);
@@ -129,10 +138,8 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     MP->AddLayer(g);
     MP->setMinimumHeight(120);
 
-
     AddCPAPData(frw=new WaveData(CPAP_FlowRate,1000000)); //FlowRate
     // Holy crap resmed stuff is huge..
-    FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
@@ -153,14 +160,12 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     FRW->setMinimumHeight(150);
 
     AddCPAPData(snore=new EventData(CPAP_Snore,0));
-    SNORE=new gGraphWindow(gSplitter,tr("Snore"),SF);
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
     SNORE->AddLayer(new gLineChart(snore,Qt::black,4096,false,false,true));
     SNORE->setMinimumHeight(150);
 
     AddCPAPData(flg=new EventData(CPAP_FlowLimitGraph,0));
-    FLG=new gGraphWindow(gSplitter,tr("Flow Limitation"),SF);
     FLG->AddLayer(new gXAxis());
     FLG->AddLayer(new gYAxis());
     FLG->AddLayer(new gLineChart(flg,Qt::black,4096,false,false,true));
@@ -168,28 +173,24 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
 
 
     AddCPAPData(mv=new EventData(CPAP_MinuteVentilation));
-    MV=new gGraphWindow(gSplitter,tr("Minute Ventilation"),SF);
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
     MV->AddLayer(new gLineChart(mv,QColor(0x20,0x20,0x7f),65536,false,false,true));
     MV->setMinimumHeight(150);
 
     AddCPAPData(tv=new EventData(CPAP_TidalVolume));
-    TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF);
     TV->AddLayer(new gXAxis());
     TV->AddLayer(new gYAxis());
     TV->AddLayer(new gLineChart(tv,QColor(0x7f,0x20,0x20),65536,false,false,true));
     TV->setMinimumHeight(150);
 
     AddCPAPData(rr=new EventData(CPAP_RespiratoryRate));
-    RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF);
     RR->AddLayer(new gXAxis());
     RR->AddLayer(new gYAxis());
     RR->AddLayer(new gLineChart(rr,Qt::gray,65536,false,false,true));
     RR->setMinimumHeight(150);
 
     AddCPAPData(ptb=new EventData(CPAP_PatientTriggeredBreaths ));
-    PTB=new gGraphWindow(gSplitter,tr("Patient Trig Breaths"),SF);
     PTB->AddLayer(new gXAxis());
     PTB->AddLayer(new gYAxis());
     PTB->AddLayer(new gLineChart(ptb,Qt::gray,65536,false,false,true));
@@ -199,7 +200,6 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddOXIData(pulse=new EventData(OXI_Pulse,0,65536,true));
     //pulse->ForceMinY(40);
     //pulse->ForceMaxY(120);
-    PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF);
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
    // PULSE->AddLayer(new gFooBar());
@@ -226,21 +226,18 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     AddCPAPData(tap=new TAPData(CPAP_Pressure));
 
 
-    TAP=new gGraphWindow(gSplitter,"",SF);
     //TAP->SetMargins(20,15,5,50);
     TAP->SetMargins(0,0,0,0);
     TAP->AddLayer(new gCandleStick(tap));
     //TAP->AddLayer(new gPieChart(tap));
 
-    TAP_EAP=new gGraphWindow(gSplitter,"",SF);
     TAP_EAP->SetMargins(0,0,0,0);
     TAP_EAP->AddLayer(new gCandleStick(tap_eap));
 
-    TAP_IAP=new gGraphWindow(gSplitter,"",SF);
     TAP_IAP->SetMargins(0,0,0,0);
     TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
-    G_AHI=new gGraphWindow(gSplitter,"",SF);
+
     G_AHI->SetMargins(0,0,0,0);
     AddCPAPData(g_ahi=new AHIData());
     //gCandleStick *l=new gCandleStick(g_ahi);
@@ -260,6 +257,7 @@ Daily::Daily(QWidget *parent,QGLContext *context) :
     l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
     G_AHI->AddLayer(l);
     G_AHI->SetGradientBackground(false);
+
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
     NoData=new QLabel(tr("No data"),gSplitter);
@@ -329,7 +327,6 @@ void Daily::ReloadGraphs()
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
-
     on_calendar_currentPageChanged(d.year(),d.month());
     ui->calendar->setSelectedDate(d);
     Load(d);
@@ -469,8 +466,8 @@ void Daily::Load(QDate date)
 
     const int gwwidth=240;
     const int gwheight=25;
-    UpdateCPAPGraphs(cpap);
     UpdateOXIGraphs(oxi);
+    UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
 
     QString epr,modestr;
@@ -496,6 +493,7 @@ void Daily::Load(QDate date)
         float rei=cpap->count(CPAP_RERA)/cpap->hours();
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
+
         //        float p90=cpap->percentile(CPAP_Pressure,0,0.9);
         eap90=cpap->percentile(CPAP_EAP,0,0.9);
         iap90=cpap->percentile(CPAP_IAP,0,0.9);
@@ -541,7 +539,8 @@ void Daily::Load(QDate date)
             "</table></td>";
         }
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-        {
+        if (1) {
+
             G_AHI->setFixedSize(gwwidth,gwheight);
             QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
@@ -620,11 +619,6 @@ void Daily::Load(QDate date)
     // Instead of doing this, check whether any data exists..
     // and show based on this factor.
 
-    //cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
-    //cpap && cpap->count(CPAP_MinuteVentilation)>0 ? MV->show() : MV->hide();
-    //cpap && cpap->count(CPAP_TidalVolume)>0 ? TV->show() : TV->hide();
-    //cpap && cpap->count(CPAP_RespiratoryRate)>0 ? RR->show() : RR->hide();
-    //cpap && cpap->count(CPAP_FlowLimitGraph)>0 ? FLG->show() : FLG->hide();
     mv->isEmpty() ? MV->hide() : MV->show();
     tv->isEmpty() ? TV->hide() : TV->show();
     rr->isEmpty() ? RR->hide() : RR->show();
@@ -882,8 +876,9 @@ void Daily::RedrawGraphs()
 
     // could recall Min & Max stuff here to reset cache
     // instead of using the dodgy notify calls.
-    for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
-        (*g)->updateGL();
+
+    for (int i=0;i<Graphs.size();i++) {
+       Graphs[i]->updateGL();
     }
 }
 

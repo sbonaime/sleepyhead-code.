@@ -247,9 +247,7 @@ bool Session::OpenEvents() {
     if(s_events_loaded)
         return true;
     bool b;
-    qDebug() << "Open Events() Start";
     b=LoadEvents(s_eventfile);
-    qDebug() << "Open Events() Done";
     if (!b) {
         qWarning() << "Error Unkpacking Events" << s_eventfile;
     }
@@ -261,18 +259,13 @@ bool Session::OpenWaveforms() {
     if (s_waves_loaded)
         return true;
     bool b;
-    qDebug() << "OpenWaveforms() Start";
     b=LoadWaveforms(s_wavefile);
-    qDebug() << "OpenWaveforms() Done";
     if (!b) {
         qWarning() << "Error Unkpacking Wavefile" << s_wavefile;
     }
     s_waves_loaded=b;
     return b;
 };
-
-
-
 
 bool Session::Store(QString path)
 // Storing Session Data in our format
@@ -285,14 +278,14 @@ bool Session::Store(QString path)
     QString base;
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
-    qDebug() << "Storing Session: " << base;
+    //qDebug() << "Storing Session: " << base;
     bool a,b,c;
     a=StoreSummary(base+".000"); // if actually has events
-    qDebug() << " Summary done";
+    //qDebug() << " Summary done";
     if (events.size()>0) b=StoreEvents(base+".001");
-    qDebug() << " Events done";
+    //qDebug() << " Events done";
     if (waveforms.size()>0) c=StoreWaveforms(base+".002");
-    qDebug() << " Waveform done";
+    //qDebug() << " Waveform done";
     if (a) {
         s_changed=false;
     }
@@ -642,13 +635,13 @@ bool Session::StoreWaveforms(QString filename)
     vector<Waveform *>::iterator j;
     int zz=0;
     for (i=waveforms.begin(); i!=waveforms.end(); i++) {
-        qDebug() << "Storing Waveform" << zz++ << filename;
+        //qDebug() << "Storing Waveform" << zz++ << filename;
         out << (quint16)i->first; 	// Machine Code
         t16=i->second.size();
         out << t16;                     // Number of (hopefully non-linear) waveform chunks
         int chnk=0;
         for (j=i->second.begin(); j!=i->second.end(); j++) {
-            qDebug() << "Storing Waveform Chunk" << chnk++;
+            //qDebug() << "Storing Waveform Chunk" << chnk++;
 
             Waveform &w=*(*j);
             // 64bit number..
@@ -666,7 +659,7 @@ bool Session::StoreWaveforms(QString filename)
             //t8=0; // 0=signed, 1=unsigned, 2=float
 
             // followed by sample data.
-            qDebug() << "Writing " << (*j)->samples() << "samples";
+            //qDebug() << "Writing " << (*j)->samples() << "samples";
             for (int k=0; k<(*j)->samples(); k++) out << w[k];
         }
     }

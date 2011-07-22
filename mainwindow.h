@@ -75,7 +75,6 @@ private:
     Daily * daily;
     Overview * overview;
     Oximetry * oximetry;
-    QGLContext *shared_context;
     bool first_load;
     Profile *profile;
 };

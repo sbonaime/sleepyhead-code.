@@ -23,10 +23,9 @@ class Overview : public QWidget
     Q_OBJECT
 
 public:
-    explicit Overview(QWidget *parent,QGLContext *context);
+    explicit Overview(QWidget *parent,QGLWidget *shared=NULL);
     ~Overview();
 
-    void SetGLContext(QGLContext *context) { shared_context=context; };
     void ReloadGraphs();
     void UpdateGraphs();
 
@@ -43,7 +42,6 @@ private slots:
 private:
     Ui::Overview *ui;
     Profile *profile;
-    QGLContext *shared_context;
 
     void AddData(HistoryData *d) { Data.push_back(d);  };
     void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };

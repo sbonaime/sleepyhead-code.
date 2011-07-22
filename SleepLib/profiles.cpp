@@ -160,6 +160,7 @@ TiXmlElement * Profile::ExtraSave()
 
 }
 
+#include <QMessageBox>
 void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     //date+=wxTimeSpan::Day();
     if (is_first_day) {
@@ -170,14 +171,12 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     if (m_last<date) m_last=date;
 
     // Check for any other machines of same type.. Throw an exception if one already exists.
-
     vector<Day *> & dl=daylist[date];
     for (vector<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
             throw OneTypePerDay();
         }
     }
-
     daylist[date].push_back(day);
 }
 
@@ -213,7 +212,7 @@ int Profile::Import(QString path)
     for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
     }
-    qDebug() << "Import Done";
+    //qDebug() << "Import Done";
     return c;
 }
 

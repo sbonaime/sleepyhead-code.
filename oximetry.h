@@ -2,6 +2,8 @@
 #define OXIMETRY_H
 
 #include <QWidget>
+#include <QGLContext>
+
 #include <QSplitter>
 #include <qextserialport/qextserialport.h>
 
@@ -21,7 +23,7 @@ class Oximetry : public QWidget
     Q_OBJECT
 
 public:
-    explicit Oximetry(QWidget *parent = 0);
+    explicit Oximetry(QWidget *parent,QGLWidget * shared=NULL);
     ~Oximetry();
 
     void AddData(gPointData *d) { Data.push_back(d);  }

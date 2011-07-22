@@ -13,6 +13,12 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "SleepLib/loader_plugins/prs1_loader.h"
+#include "SleepLib/loader_plugins/cms50_loader.h"
+#include "SleepLib/loader_plugins/zeo_loader.h"
+#include "SleepLib/loader_plugins/resmed_loader.h"
+
+
 #include "daily.h"
 #include "overview.h"
 #include "Graphs/glcommon.h"
@@ -25,6 +31,9 @@ QStatusBar *qstatusbar;
 void MainWindow::Log(QString s)
 {
     ui->logText->appendPlainText(s);
+    if (s.startsWith("Warning")) {
+        int i=5;
+    }
 }
 
 
@@ -34,21 +43,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-#ifndef Q_WS_MAC
-    this->showMaximized();
-#endif
+//#ifndef Q_WS_MAC
+//    this->showMaximized();
+//#endif
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
     ui->tabWidget->setCurrentIndex(0);
 
-    QGLFormat fmt;
+    PRS1Loader::Register();
+    CMS50Loader::Register();
+    ZEOLoader::Register();
+    ResmedLoader::Register();
+
+/*    QGLFormat fmt;
     fmt.setDepth(false);
     fmt.setDirectRendering(true);
     fmt.setAlpha(true);
     fmt.setDoubleBuffer(true);
     fmt.setRgba(true);
     fmt.setDefaultFormat(fmt);
-    shared_context=new QGLContext(fmt);
+    QGLContext smeg(fmt); */
+            //new QGLContext(fmt);
+    //shared_context->create(shared_context);
+
+    daily=NULL;
+    overview=NULL;
+    oximetry=NULL;
 
     //ui->tabWidget->setCurrentWidget(daily);
     qstatusbar=ui->statusbar;
@@ -67,8 +87,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qstatus2,0);
     ui->statusbar->addPermanentWidget(qstatus,0);
     ui->statusbar->addPermanentWidget(qprogress,10);
-    daily=NULL;
-    overview=NULL;
     Profiles::Scan();
 
     //loader_progress->Show();
@@ -76,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
     if (!pref.Exists("AppName")) pref["AppName"]="SleepyHead";
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
+
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
@@ -129,13 +148,13 @@ void MainWindow::Startup()
     profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
 
-    daily=new Daily(ui->tabWidget,shared_context);
+    daily=new Daily(ui->tabWidget);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,shared_context);
+    overview=new Overview(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    oximetry=new Oximetry(ui->tabWidget);
+    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     qprogress->hide();
@@ -152,7 +171,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (qfd.exec()) {
         qprogress->setValue(0);
         qprogress->show();
-        qstatus->setText(tr("Importing Data"));
+        //qstatus->setText(tr("Importing Data"));
         dirNames=qfd.selectedFiles();
         int c=0,d;
         for (int i=0;i<dirNames.size();i++) {
@@ -165,14 +184,16 @@ void MainWindow::on_action_Import_Data_triggered()
         qDebug() << "Finished Importing data" << c;
         if (c) {
             profile->Save();
-            qDebug() << " profile->Save();";
+            //qDebug() << " profile->Save();";
             if (daily) daily->ReloadGraphs();
-            qDebug() << " daily->ReloadGraphs();";
+
+            //qDebug() << " daily->ReloadGraphs();";
             if (overview) {
                 overview->ReloadGraphs();
                 overview->UpdateGraphs();
+
             }
-            qDebug() << "overview->ReloadGraphs();";
+            //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText(tr("Ready"));
         qprogress->hide();
@@ -285,7 +306,8 @@ void MainWindow::on_action_Link_Graphs_triggered(bool checked)
 void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
 {
     pref["UseAntiAliasing"]=checked;
-    if (daily) daily->RedrawGraphs();
+    if (daily)
+        daily->RedrawGraphs();
 
 }
 
@@ -307,5 +329,6 @@ void MainWindow::on_actionDebug_toggled(bool checked)
 void MainWindow::on_actionOverlay_Bars_toggled(bool checked)
 {
     pref["AlwaysShowOverlayBars"]=checked;
-    if (daily) daily->RedrawGraphs();
+    if (daily)
+        daily->RedrawGraphs();
 }

@@ -12,15 +12,14 @@
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 
-#include "SleepLib/loader_plugins/prs1_loader.h"
-#include "SleepLib/loader_plugins/cms50_loader.h"
-#include "SleepLib/loader_plugins/zeo_loader.h"
-#include "SleepLib/loader_plugins/resmed_loader.h"
 
-MainWindow *mainwin;
+MainWindow *mainwin=NULL;
 
 void MyOutputHandler(QtMsgType type, const char *msg) {
-    if (!mainwin) return;
+    if (!mainwin) {
+
+        return;
+    }
     switch (type) {
         case QtDebugMsg:
             mainwin->Log(msg);
@@ -42,7 +41,6 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    qInstallMsgHandler(MyOutputHandler);
 
     a.setApplicationName("SleepyHead");
 
@@ -54,12 +52,10 @@ int main(int argc, char *argv[])
 
     a.setFont(QFont("FreeSans",10));
 
-    PRS1Loader::Register();
-    CMS50Loader::Register();
-    ZEOLoader::Register();
-    ResmedLoader::Register();
+
     MainWindow w;
     mainwin=&w;
+    qInstallMsgHandler(MyOutputHandler);
 
     w.show();
     return a.exec();

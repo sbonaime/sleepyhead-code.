@@ -28,11 +28,11 @@ class Daily : public QWidget
     Q_OBJECT
 
 public:
-    explicit Daily(QWidget *parent,QGLContext *context);
+    explicit Daily(QWidget *parent,QGLWidget *shared=NULL);
     ~Daily();
-    void SetGLContext(QGLContext *context) { shared_context=context; }
     void ReloadGraphs();
     void RedrawGraphs();
+    QGLWidget *SharedWidget() { return SF; };
 
 private slots:
 
@@ -65,8 +65,8 @@ private:
 
     list<gPointData *> OXIData;
     list<gPointData *> CPAPData;
-    list<gGraphWindow *> Graphs;
-
+    vector<gGraphWindow *> Graphs;
+    QGLContext *offscreen_context;
 
     void AddCPAPData(gPointData *d) { CPAPData.push_back(d); }
     void AddOXIData(gPointData *d) { OXIData.push_back(d); }
@@ -79,10 +79,10 @@ private:
     Ui::Daily *ui;
     Profile *profile;
     QDate previous_date;
-    QGLContext *shared_context;
     QScrollArea *scrollArea;
     QSplitter *gSplitter;
     QLabel *NoData;
+
 };
 
 /*class AHIGraph:public QWebPluginFactory

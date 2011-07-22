@@ -18,12 +18,11 @@
 #include "Graphs/gFooBar.h"
 #include "Graphs/gSessionTime.h"
 
-Overview::Overview(QWidget *parent,QGLContext *context) :
+Overview::Overview(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
     ui(new Ui::Overview)
 {
     ui->setupUi(this);
-    shared_context=context;
     profile=Profiles::Get(pref["Profile"].toString());
     AddData(ahidata=new HistoryData(profile));
     AddData(pressure=new HistoryCodeData(profile,CPAP_PressureAverage));
@@ -46,7 +45,7 @@ Overview::Overview(QWidget *parent,QGLContext *context) :
     gSplitter->setHandleWidth(3);
     ui->graphLayout->addWidget(gSplitter);
 
-    AddGraph(AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),(QGLWidget *)NULL));
+    AddGraph(AHI=new gGraphWindow(ui->SummaryGraphWindow,tr("AHI"),shared)); //(QGLContext *)NULL));
     AHI->SetTopMargin(10);
     AHI->SetBottomMargin(AHI->GetBottomMargin()+gXAxis::Margin+25);
     //AHI->AddLayer(new gFooBar(7));
@@ -130,7 +129,7 @@ void Overview::RedrawGraphs()
     for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
         (*g)->updateGL();
     }
-    SESSTIMES->updateGL();
+    //SESSTIMES->updateGL();
 }
 void Overview::ReloadGraphs()
 {

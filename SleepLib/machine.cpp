@@ -223,6 +223,7 @@ Session *Machine::SessionExists(SessionID session)
         return NULL;
     }
 }
+
 Day *Machine::AddSession(Session *s,Profile *p)
 {
     double span=0;
@@ -238,8 +239,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
     //QTime time=d2.time();
 
    // pref["NoonDateSplit"]=true;
-
-    if (pref["NoonDateSplit"].toBool()) {
+    if (pref.Exists("NoonDataSplit") && pref["NoonDateSplit"].toBool()) {
         int hour=d2.time().hour();
         if (hour<12)
             date=date.addDays(-1);
@@ -302,7 +302,6 @@ Day *Machine::AddSession(Session *s,Profile *p)
         //qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
         p->AddDay(date,day[date],m_type);
     }
-
     day[date]->AddSession(s);
 
     return day[date];
@@ -432,13 +431,13 @@ bool Machine::Save()
 
     for (d=day.begin();d!=day.end();d++) {
 
-        qDebug() << "Day Save Commenced";
+        //qDebug() << "Day Save Commenced";
         for (s=d->second->begin(); s!=d->second->end(); s++) {
             cnt++;
             if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
             if ((*s)->IsChanged()) (*s)->Store(path);
         }
-        qDebug() << "Day Save Completed";
+        //qDebug() << "Day Save Completed";
 
     }
     return true;
