@@ -980,7 +980,8 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             }
             length=m_buffer[pos+0x1] | m_buffer[pos+0x2] << 8;      // block length in bytes
             duration=m_buffer[pos+0xf] | m_buffer[pos+0x10] << 8;    // block duration in seconds
-       /*     if (diff<0) {
+            if (diff<0) {
+                qDebug() << "Padding waveform to keep sync" << block;
                 //diff=abs(diff);
                 for (int i=0;i<num_signals;i++) {
                     for (int j=0;j<diff;j++) {
@@ -1010,7 +1011,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                 }
                 start=timestamp;
                 corrupt=0;
-            } */
+            }
         }
 
         pos+=hl+1;
