@@ -290,9 +290,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     gSplitter->refresh();
 
+    // Turning off collapse feature on Mac
+    #ifndef Q_WS_MAC
     gSplitter->setChildrenCollapsible(true);  // We set this per widget..
     gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
     gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
+    #endif
+
     ui->graphSizer->layout();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);

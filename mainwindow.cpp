@@ -37,7 +37,6 @@ void MainWindow::Log(QString s)
 }
 
 
-QString subversion="0";
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -47,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    this->showMaximized();
 //#endif
     ui->setupUi(this);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v0.8.")+subversion);
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number));
     ui->tabWidget->setCurrentIndex(0);
 
     PRS1Loader::Register();
@@ -140,7 +139,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::Startup()
 {
-
+    qDebug() << windowTitle() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     qstatusbar->showMessage("Your computer loads faster than JediMark's",1900);
@@ -286,12 +285,12 @@ void MainWindow::on_webView_loadProgress(int progress)
 
 void MainWindow::on_action_About_triggered()
 {
-    QString msg=tr("<html><body><div align='center'><h2>SleepyHead v0.8.0</h2><hr>"
+     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3</h2>Build Date: %4 %5<hr>"
 "Copyright &copy;2011 Mark Watkins (jedimark) <br> \n"
 "<a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>"
 "This software is released under the GNU Public License <br>"
 "<i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays."
-"</div></body></html>");
+"</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(__DATE__).arg(__TIME__);
     QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
     msgbox.setTextFormat(Qt::RichText);
     msgbox.setText(msg);

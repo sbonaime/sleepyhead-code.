@@ -14,6 +14,10 @@
 #include "overview.h"
 #include "oximetry.h"
 
+const int major_version=0;
+const int minor_version=8;
+const int revision_number=1;
+
 namespace Ui {
     class MainWindow;
 }
