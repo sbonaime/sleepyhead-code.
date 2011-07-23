@@ -70,9 +70,14 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     glColor4ub(linecol1.red(),linecol1.green(),linecol1.blue(),linecol1.alpha());
     glLineWidth(1);
+    if (min_ytick<=0) {
+        qDebug() << "min_ytick error in gYAxis::Plot()";
+        return;
+    }
     if (min_ytick>=1000000) {
         min_ytick=100;
     }
+
 
     for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
         ty=(i - miny) * ymult;

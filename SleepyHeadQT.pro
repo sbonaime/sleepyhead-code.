@@ -6,7 +6,7 @@
 
 QT += core gui webkit opengl
 
-#CONFIG += static
+CONFIG += rtti
 
 #static {
 #    CONFIG += static
