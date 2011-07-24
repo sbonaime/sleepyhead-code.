@@ -495,7 +495,7 @@ void Daily::Load(QDate date)
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
 
-        //        float p90=cpap->percentile(CPAP_Pressure,0,0.9);
+        float p90=cpap->percentile(CPAP_Pressure,0,0.9);
         eap90=cpap->percentile(CPAP_EAP,0,0.9);
         iap90=cpap->percentile(CPAP_IAP,0,0.9);
         QString submodel=tr("Unknown Model");
@@ -558,7 +558,7 @@ void Daily::Load(QDate date)
             html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
             "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;IPAP ")+QString().sprintf("%.2f",iap90)+tr("cmH2O")+"</td></tr>\n";
         } else if (mode==MODE_APAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+QString().sprintf("%.2f",cpap->summary_weighted_avg(CPAP_PressurePercentValue))+("</i></td></tr>\n");
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+QString().sprintf("%.2f",p90)+("</i></td></tr>\n"); //cpap->summary_weighted_avg(CPAP_PressurePercentValue)
         } else if (mode==MODE_CPAP) {
             html+=("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+QString().sprintf("%.2f",cpap->summary_min(CPAP_PressureMin))+("</i></td></tr>\n");
         }

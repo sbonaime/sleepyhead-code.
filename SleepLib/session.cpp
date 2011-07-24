@@ -142,7 +142,7 @@ double Session::percentile(MachineCode mc,int field,double percent)
     if (a==b) return a;
     //double c=(b-a);
     //double d=c*q;
-    return array[j]+q;
+    return a;//array[j]+q;
 }
 
 double Session::weighted_avg_event_field(MachineCode mc,int field)
