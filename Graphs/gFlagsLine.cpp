@@ -52,8 +52,8 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,bool always_visible, int _line_num,int _total_lines)
-:gLayer(d),label(_label),m_always_visible(always_visible),line_num(_line_num),total_lines(_total_lines)
+gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,bool always_visible)
+:gLayer(d),label(_label),m_always_visible(always_visible)
 {
     color.clear();
     color.push_back(col);

@@ -16,12 +16,11 @@
 class FlagData:public gPointData
 {
 public:
-    FlagData(MachineCode _code,double _value=0,int _field=-1,int _offset=-1);
+    FlagData(MachineCode _code,int _field=-1,int _offset=-1);
     virtual ~FlagData();
     virtual void Reload(Day *day=NULL);
 protected:
     MachineCode code;
-    double value;
     int field;
     int offset;
 };

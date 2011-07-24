@@ -557,7 +557,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_Snore;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
         } else if (edf.edfsignals[s]->label=="Therapy Pres") {
-            code=CPAP_Pressure;
+            code=CPAP_TherapyPressure;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
         } else if (edf.edfsignals[s]->label=="MV") {
             code=CPAP_MinuteVentilation;
@@ -584,7 +584,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_FlowLimitGraph;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
         } else if (edf.edfsignals[s]->label=="Mask Pres") {
-            code=CPAP_MaskPressureEvt;
+            code=CPAP_Pressure;
             ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
         } else if (edf.edfsignals[s]->label=="Exp Press") {
             code=CPAP_ExpPressure;

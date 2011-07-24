@@ -74,7 +74,7 @@ private:
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
 
-    gPointData *flags[10];
+    gPointData *flags[11];
 
     Ui::Daily *ui;
     Profile *profile;

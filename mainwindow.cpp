@@ -87,26 +87,26 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
-    else ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
+    ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
     if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=true;
-    else ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
+    ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
 
     if (!pref["ShowDebug"].toBool()) {
         ui->logText->hide();
     }
 
     if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
-    else ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
+    ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
 
     if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
 
     if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
-    else ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
+    ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
     first_load=true;
 
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
-    else ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
+    ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
 
     daily=new Daily(ui->tabWidget);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));

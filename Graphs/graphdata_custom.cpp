@@ -289,15 +289,15 @@ void AHIData::Reload(Day *day)
     point[0][3].setX(point[0][3].y());
     point[0][4].setY(day->count(CPAP_FlowLimit)/day->hours());
     point[0][4].setX(point[0][4].y());
-    point[0][5].setY((100.0/day->hours())*(day->sum(CPAP_CSR)/3600.0));
-    point[0][5].setX(point[0][5].y());
-    np[0]=6;
+    //point[0][5].setY((100.0/day->hours())*(day->sum(CPAP_CSR)/3600.0));
+    //point[0][5].setX(point[0][5].y());
+    np[0]=5;
     m_ready=true;
     //REFRESH??
 }
 
-FlagData::FlagData(MachineCode _code,double _value,int _field,int _offset)
-:gPointData(65536),code(_code),value(_value),field(_field),offset(_offset)
+FlagData::FlagData(MachineCode _code,int _field,int _offset)
+:gPointData(65536),code(_code),field(_field),offset(_offset)
 {
     AddSegment(max_points);
 }
@@ -330,7 +330,6 @@ void FlagData::Reload(Day *day)
             point[vc][c].setY(v2);
             v1=point[vc][c].x();
             v2=point[vc][c].y();
-            //point[vc][c].z=value;
             c++;
             if (c>=max_points) {
                 qWarning() << "FlagData: max_points exceeded";
@@ -348,8 +347,8 @@ void FlagData::Reload(Day *day)
         }
         if (done) break;
     }
-    min_y=-value;
-    max_y=value;
+    min_y=0;//-value;
+    max_y=1;//value;
     np[vc]=c;
     vc++;
     real_min_x=min_x;

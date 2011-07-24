@@ -66,16 +66,17 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //fmt.setDefaultFormat(fmt);
     offscreen_context=new QGLContext(fmt); */
 
-    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
-    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
-    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
-    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
-    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
-    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
-    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
-    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
-    AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
-    AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
+    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,1,0));
+    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway));
+    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive));
+    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea));
+    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit));
+    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore));
+    AddCPAPData(flags[6]=new FlagData(CPAP_RERA));
+    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse));
+    AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E));
+    AddCPAPData(flags[9]=new FlagData(CPAP_Apnea));
+    AddCPAPData(flags[10]=new FlagData(CPAP_Snore));
 
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
@@ -88,26 +89,27 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     SF->AddLayer(new gXAxis());
     SF->setMinimumHeight(160);
 
-    int sfc=7;
     fg=new gFlagsGroup();
-    fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",false,0,sfc));
-    fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",true,1,sfc));
-    fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",true,2,sfc));
-    fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",true,3,sfc));
-    fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL",false,4,sfc));
-    fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE",false,6,sfc));
-    fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS",false,5,sfc));
-    fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E",7,sfc));
-    //fg->AddLayer(new gFlagsLine(flags[9],QColor("red"),"VS2",8,sfc));
+    fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR"));
+    fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",true));
+    fg->AddLayer(new gFlagsLine(flags[2],QColor("#40c0ff"),"OA",true));
+    fg->AddLayer(new gFlagsLine(flags[3],QColor("blue"),"H",true));
+    fg->AddLayer(new gFlagsLine(flags[4],QColor("black"),"FL"));
+    fg->AddLayer(new gFlagsLine(flags[6],QColor("gold"),"RE"));
+    fg->AddLayer(new gFlagsLine(flags[5],QColor("red"),"VS"));
+    fg->AddLayer(new gFlagsLine(flags[8],QColor("dark green"),"U0E"));
+    fg->AddLayer(new gFlagsLine(flags[9],QColor("dark green"),"A"));
+    //fg->AddLayer(new gFlagsLine(flags[10],QColor("red"),"VS2"));
+
     SF->AddLayer(fg);
     // SF Foobar must go last
     SF->AddLayer(new gFooBar(10,QColor("orange"),QColor("dark grey"),true));
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
-    AddCPAPData(prd=new EventData(CPAP_MaskPressureEvt));
-    pressure_eap->ForceMinY(0);
-    pressure_eap->ForceMaxY(30);
+    AddCPAPData(prd=new EventData(CPAP_Pressure));
+    //pressure_eap->ForceMinY(0);
+    //pressure_eap->ForceMaxY(30);
 
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
@@ -246,14 +248,14 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     l->AddName(tr("CA"));
     l->AddName(tr("RE"));
     l->AddName(tr("FL"));
-    l->AddName(tr("CSR"));
+   // l->AddName(tr("CSR"));
     l->color.clear();
     l->color.push_back(QColor(0x40,0x40,0xff,0xff)); // blue
     l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); // aqua
     l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); // purple
     l->color.push_back(QColor(0xff,0xff,0x80,0xff));  // yellow
     l->color.push_back(QColor(0x40,0x40,0x40,0xff)); // dark grey
-    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
+    //l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
     G_AHI->AddLayer(l);
     G_AHI->SetGradientBackground(false);
 

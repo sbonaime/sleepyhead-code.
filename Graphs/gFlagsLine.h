@@ -15,7 +15,7 @@ class gFlagsLine:public gLayer
 {
     friend class gFlagsGroup;
     public:
-        gFlagsLine(gPointData *d=NULL,QColor col=Qt::black,QString _label="",bool always_visible=false, int _line_num=0,int _total_lines=0);
+        gFlagsLine(gPointData *d=NULL,QColor col=Qt::black,QString _label="",bool always_visible=false);
         virtual ~gFlagsLine();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
@@ -23,10 +23,12 @@ class gFlagsLine:public gLayer
         void setAlwaysVisible(bool b) { m_always_visible=b; }
         QString Label() { return label; }
         void Label(QString s) { label=s; }
+        void setTotalLines(int i) { total_lines=i; };
+        void setLineNum(int i) { line_num=i; };
     protected:
         QString label;
         bool m_always_visible;
-        int line_num,total_lines;
+        int total_lines,line_num;
 };
 
 class gFlagsGroup:public gLayerGroup
