@@ -105,7 +105,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     AddCPAPData(pressure_iap=new EventData(CPAP_IAP));
     AddCPAPData(pressure_eap=new EventData(CPAP_EAP));
-    AddCPAPData(prd=new EventData(CPAP_Pressure));
+    AddCPAPData(prd=new EventData(CPAP_MaskPressureEvt));
     pressure_eap->ForceMinY(0);
     pressure_eap->ForceMaxY(30);
 
@@ -129,7 +129,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     AddCPAPData(mp=new WaveData(CPAP_MaskPressure,1000000)); //FlowRate
     gYAxis *y=new gYAxis();
-    y->SetScale(.1);
+    y->SetScale(1.0/50.0);
     MP->AddLayer(y);
     MP->AddLayer(new gXAxis());
     gLineChart *g=new gLineChart(mp,Qt::blue,4000,true);
