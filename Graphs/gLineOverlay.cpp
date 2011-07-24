@@ -65,9 +65,10 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     GLshort * pointarray=vertex_array[1];
     qint32 quadcnt=0;
     GLshort * quadarray=vertex_array[2];
-    assert(vertarray!=NULL);
-    assert(quadarray!=NULL);
-    assert(pointarray!=NULL);
+    if (!vertarray || !quadarray || !pointarray) {
+        qWarning() << "VertArray/quadarray/pointarray==NULL";
+        return;
+    }
 
     float bottom=start_py+25, top=start_py+height-25;
     QColor & col=color[0];

@@ -94,7 +94,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
-    assert(vertarray!=NULL);
+    if (vertarray==NULL){
+        qWarning() << "VertArray==NULL";
+        return;
+    }
 
     float lastpx,lastpy;
     float px,py;

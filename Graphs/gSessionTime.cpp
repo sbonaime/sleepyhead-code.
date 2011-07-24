@@ -60,7 +60,7 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
     float barwidth=float(width-days)/float(days);
     qint64 dy;
     //double sd;
-    double px1,px2,py1,py2;
+    double px1,py1;//,py2,px2;
     QColor & col1=color[0];
     QColor col2("light grey");
     QString str;
@@ -69,7 +69,7 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
 
     QDateTime d;
     QTime t;
-    double start,end,total;
+    double start,total;//end,
     float textX,textY;
     map<int,bool> datedrawn;
 
@@ -82,9 +82,9 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
         d=QDateTime::fromTime_t(rp.x()*86400.0);
         t=d.time();
         start=t.hour()+(t.minute()/60.0)+(t.second()/3600.0);
-        d=QDateTime::fromTime_t(rp.y()*86400.0);
-        t=d.time();
-        end=t.hour()+(t.minute()/60.0)+(t.second()/3600.0);
+        //d=QDateTime::fromTime_t(rp.y()*86400.0);
+        //t=d.time();
+        //end=t.hour()+(t.minute()/60.0)+(t.second()/3600.0);
 
         total=(rp.y()-rp.x())*24;
 
@@ -101,9 +101,9 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
         }
         if (total<0.25) continue; // Hide sessions less than 15 minutes
 
-        double sd=floor(rp.x());
+        //double sd=floor(rp.x());
         px1=dy*(barwidth+1);            // x position for this day
-        px2=px1+barwidth;               // plus bar width
+        //px2=px1+barwidth;               // plus bar width
         py1=height/24.0*start;
         double h=height/24.0*(total);
 

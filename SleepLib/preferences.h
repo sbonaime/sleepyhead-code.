@@ -12,11 +12,12 @@ License: GPL
 
 #include <QString>
 #include <QVariant>
+#include <QDomElement>
+#include <QDomDocument>
 #include <map>
-#include "tinyxml/tinyxml.h"
 
 
-const QString AppName="Application"; // Outer tag of XML files
+const QString AppName="SleepyHead"; // Outer tag of XML files
 const QString AppRoot="SleepApp";    // The Folder Name
 
 extern const QString & GetAppRoot(); //returns app root path plus trailing path separator.
@@ -48,9 +49,6 @@ public:
     QVariant & operator[](QString name) {
         return p_preferences[name];
     };
-    QVariant & operator[](const char * name) {
-        return p_preferences[name];
-    };
     QVariant & operator[](int code) {
         return p_preferences[p_codes[code]];
     };
@@ -58,10 +56,6 @@ public:
     void Set(QString name,QVariant value) {
         p_preferences[name]=value;
     };
-    /*void Set(const char * name,QVariant value) {
-        QString t=name;
-        p_preferences[t]=value;
-    }; */
     void Set(int code,QVariant value) {
         Set(p_codes[code],value);
     };
@@ -69,16 +63,9 @@ public:
     bool Exists(QString name) {
         return (p_preferences.find(name)!=p_preferences.end());
     };
-    /*bool Exists(const char * name) {
-        //QString t(name,wxConvUTF8);
-        return Exists(name);
-    }; */
-    //bool Exists(int code) { return Exists(p_codes[code]); };
 
-    virtual void ExtraLoad(TiXmlHandle *root) { root=root; };
-    virtual TiXmlElement * ExtraSave() {
-        return NULL;
-    };
+    virtual void ExtraLoad(QDomElement & root) { root=root; }
+    virtual QDomElement ExtraSave(QDomDocument & doc) { doc=doc; QDomElement e; return e; }
 
     virtual bool Open(QString filename="");
     virtual bool Save(QString filename="");

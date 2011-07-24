@@ -116,8 +116,10 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     GLshort * vertarray=vertex_array[0];
     qint32 quadcnt=0;
     GLshort * quadarray=vertex_array[1];
-    assert(vertarray!=NULL);
-    assert(quadarray!=NULL);
+    if (!vertarray || !quadarray) {
+        qWarning() << "vertarray/quadarray==NULL";
+        return;
+    }
 
     // Draw text label
     float x,y;

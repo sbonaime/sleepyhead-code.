@@ -185,7 +185,7 @@ ResmedLoader::~ResmedLoader()
 
 Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 {
-    assert(profile!=NULL);
+    if (!profile) return NULL;
     vector<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
     for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {

@@ -7,11 +7,10 @@ License: GPL
 
 */
 
-//#include <wx/wx.h>
-//#include <wx/filename.h>
-//#include <wx/stdpaths.h>
-
 #include <QString>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
 #include <QVariant>
 #include <QDateTime>
 #include <QDir>
@@ -20,6 +19,7 @@ License: GPL
 
 #include "preferences.h"
 
+//const QString AppName="SleepyHead";
 
 const QString & getUserName()
 {
@@ -30,7 +30,7 @@ const QString & getUserName()
         userName="Windows User";
 
         // FIXME: I DONT KNOW QT'S WINDOWS DEFS
-#if defined (WINDOWS)
+#if defined (Q_WS_WIN32)
     #if defined(UNICODE)
     if ( qWinVersion() & Qt::WV_NT_based ) {
         TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
@@ -148,78 +148,96 @@ const QString Preferences::Get(QString name)
     return temp;
 }
 
+
 bool Preferences::Open(QString filename)
 {
-    if (!filename.isEmpty()) p_filename=filename;
+    if (!filename.isEmpty())
+        p_filename=filename;
 
+    QDomDocument doc(p_name);
+    QFile file(p_filename);
     qDebug() << "Opening " << p_filename;
-    TiXmlDocument xml(p_filename.toLatin1());
-    if (!xml.LoadFile()) {
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << p_filename;
         return false;
     }
-    TiXmlHandle hDoc(&xml);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    if (!doc.setContent(&file)) {
+        qWarning() << "Invalid XML Content in" << p_filename;
+        return false;
+    }
+    file.close();
+
+
+    QDomElement root=doc.documentElement();
+    if (root.tagName() != AppName) {
+        return false;
+    }
+
+    root=root.firstChildElement();
+    if (root.tagName() != p_name) {
+        return false;
+    }
+
+    bool ok;
     p_preferences.clear();
-
-    pElem=hDoc.FirstChildElement().Element();
-    // should always have a valid root but handle gracefully if it does
-    if (!pElem) return false;
-
-    hRoot=TiXmlHandle(pElem);
-
-    std::map<QString,QString> p_types;
-    pElem=hRoot.FirstChild(p_name.toLatin1()).FirstChild().Element();
-    for( ; pElem; pElem=pElem->NextSiblingElement()) {
-
-        TiXmlAttribute *attr=pElem->FirstAttribute();
-        if (!attr) {
-            qWarning() << "Preferences::Open() attr==NULL!";
-            return false;
-        }
-        QString type=attr->Value();
-        type=type.toLower();
-        QString pKey=pElem->Value();
-        QString pText=pElem->GetText();
-        bool ok;
-        if (!pKey.isEmpty() && !pText.isEmpty()) {
+    QDomNode n=root.firstChild();
+    while (!n.isNull()) {
+        QDomElement e=n.toElement();
+        if (!e.isNull()) {
+            QString name=e.tagName();
+            QString type=e.attribute("type").toLower();
+            QString value=e.text();;
             if (type=="double") {
-                double d=pText.toDouble(&ok);
-                if (!ok)
-                    qDebug() << "String to number conversion error in Preferences::Open()";
-                else
-                    p_preferences[pKey]=d;
-            } else if (type=="qlonglong") {
-                qlonglong d=pText.toLongLong(&ok);
-                if (!ok)
-                    qDebug() << "String to number conversion error in Preferences::Open()";
-                else
-                    p_preferences[pKey]=d;
-            } else if (type=="bool") {
-                int d=pText.toInt(&ok);
-                if (!ok) {
-                    if (pText.toLower()=="true")
-                        p_preferences[pKey]=true;
-                    else if (pText.toLower()=="false")
-                        p_preferences[pKey]=false;
-                    else
-                        qDebug() << "String to number conversion error in Preferences::Open()";
+                double d;
+                d=value.toDouble(&ok);
+                if (ok) {
+                    p_preferences[name]=d;
+                } else {
+                    qDebug() << "XML Error:" << name << "=" << value << "??";
+                }
+            } else
+            if (type=="qlonglong") {
+                qint64 d;
+                d=value.toLongLong(&ok);
+                if (ok) {
+                    p_preferences[name]=d;
+                } else {
+                    qDebug() << "XML Error:" << name << "=" << value << "??";
+                }
+            } else
+            if (type=="bool") {
+                QString v=value.toLower();
+                if ((v=="true") || (v=="on") || (v=="yes")) {
+                    p_preferences[name]=true;
                 } else
-                    p_preferences[pKey]=(bool)d;
+                if ((v=="false") || (v=="off") || (v=="no")) {
+                    p_preferences[name]=false;
+                } else {
+                    int d;
+                    d=value.toInt(&ok);
+                    if (ok) {
+                        p_preferences[name]=d!=0;
+                    } else {
+                        qDebug() << "XML Error:" << name << "=" << value << "??";
+                    }
+                }
             } else if (type=="qdatetime") {
                 QDateTime d;
-                d.fromString("yyyy-MM-dd HH:mm:ss");
+                d.fromString(value,"yyyy-MM-dd HH:mm:ss");
                 if (d.isValid())
-                    p_preferences[pKey]=d;
+                    p_preferences[name]=d;
                 else
-                    qWarning() << "Invalid DateTime record in " << filename;
+                    qWarning() << "XML Error: Invalid DateTime record" << name << value;
 
-            } else { // Assume string
-                p_preferences[pKey]=pText;
+            } else  {
+                p_preferences[name]=value;
             }
+
         }
+        n=n.nextSibling();
     }
-    ExtraLoad(&hRoot);
+    root=root.nextSiblingElement();
+    ExtraLoad(root);
     return true;
 }
 
@@ -228,45 +246,39 @@ bool Preferences::Save(QString filename)
     if (!filename.isEmpty())
         p_filename=filename;
 
-    TiXmlDocument xml;
-    TiXmlElement* msg;
-    TiXmlComment * comment;
-    TiXmlDeclaration *decl=new TiXmlDeclaration( "1.0", "", "" );
-    xml.LinkEndChild(decl);
-    TiXmlElement *root=new TiXmlElement(AppName.toLatin1());
-    xml.LinkEndChild(root);
+    QDomDocument doc(p_name);
 
-    if (!p_comment.isEmpty()) {
-        comment = new TiXmlComment();
-        QString s=" "+p_comment+" ";
-        comment->SetValue(s.toLatin1());
-        root->LinkEndChild(comment);
-    }
+    QDomElement droot = doc.createElement(AppName);
+    doc.appendChild( droot );
 
-    TiXmlElement * msgs = new TiXmlElement(p_name.toLatin1());
-    root->LinkEndChild(msgs);
+    QDomElement root=doc.createElement(p_name);
+    droot.appendChild(root);
+
     for (std::map<QString,QVariant>::iterator i=p_preferences.begin(); i!=p_preferences.end(); i++) {
         QVariant::Type type=i->second.type();
         if (type==QVariant::Invalid) continue;
 
-        msg=new TiXmlElement(i->first.toLatin1());
-        //qDebug() << i->first;
-        msg->SetAttribute("type",i->second.typeName());
-        QString t;
-
-
+        QDomElement cn=doc.createElement(i->first);
+        cn.setAttribute("type",i->second.typeName());
         if (type==QVariant::DateTime) {
-            t=i->second.toDateTime().toString("yyyy-MM-dd HH:mm:ss");
+            cn.appendChild(doc.createTextNode(i->second.toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
         } else {
-            t=i->second.toString();
+            cn.appendChild(doc.createTextNode(i->second.toString()));
         }
-        msg->LinkEndChild(new TiXmlText(t.toLatin1()));
-        msgs->LinkEndChild(msg);
-    }
-    TiXmlElement *extra=ExtraSave();
-    if (extra) root->LinkEndChild(extra);
 
-    xml.SaveFile(p_filename.toLatin1());
+        root.appendChild(cn);
+    }
+
+    droot.appendChild(ExtraSave(doc));
+
+    QFile file(p_filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+    QTextStream ts(&file);
+    ts << doc.toString();
+    file.close();
+
     return true;
 }
 

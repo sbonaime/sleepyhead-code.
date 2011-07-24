@@ -89,7 +89,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     SF->setMinimumHeight(160);
 
     int sfc=7;
-    bool extras=false; //true;
     fg=new gFlagsGroup();
     fg->AddLayer(new gFlagsLine(flags[0],QColor("light green"),"CSR",false,0,sfc));
     fg->AddLayer(new gFlagsLine(flags[1],QColor("purple"),"CA",true,1,sfc));
@@ -290,13 +289,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     gSplitter->refresh();
 
-    // Turning off collapse feature on Mac
-    gSplitter->setChildrenCollapsible(false);  // We set this per widget..
-/*#ifndef Q_WS_MAC
     gSplitter->setChildrenCollapsible(true);  // We set this per widget..
     gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
     gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
-#endif */
 
     ui->graphSizer->layout();
 
@@ -881,7 +876,7 @@ void Daily::RedrawGraphs()
     // could recall Min & Max stuff here to reset cache
     // instead of using the dodgy notify calls.
 
-    for (int i=0;i<Graphs.size();i++) {
+    for (unsigned i=0;i<Graphs.size();i++) {
        Graphs[i]->updateGL();
     }
 }

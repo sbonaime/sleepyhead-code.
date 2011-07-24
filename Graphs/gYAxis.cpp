@@ -66,7 +66,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
-    assert(vertarray!=NULL);
+    if (vertarray==NULL) {
+        qWarning() << "VertArray==NULL";
+        return;
+    }
 
     glColor4ub(linecol1.red(),linecol1.green(),linecol1.blue(),linecol1.alpha());
     glLineWidth(1);
@@ -92,6 +95,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
             glVertex2f(start_px+width, h);
             glEnd();
         }
+        if (vertcnt>maxverts) {
+            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
+            return;
+        }
     }
 
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
@@ -106,6 +113,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         vertarray[vertcnt++]=h;
         vertarray[vertcnt++]=start_px;
         vertarray[vertcnt++]=h;
+        if (vertcnt>maxverts) {
+            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
+            return;
+        }
 
         if (m_show_major_lines && (i > miny)) {
             glColor4ub(linecol2.red(),linecol2.green(),linecol2.blue(),linecol2.alpha());
@@ -116,7 +127,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         }
     }
     if (vertcnt>=maxverts) {
-        qDebug() << "maxverts exceeded in gYAxis::Plot()";
+        qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph";
         return;
     }
 

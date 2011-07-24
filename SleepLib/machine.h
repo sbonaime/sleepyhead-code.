@@ -15,7 +15,6 @@
 #include <vector>
 #include <list>
 
-#include "tinyxml/tinyxml.h"
 #include "SleepLib/preferences.h"
 
 #include "SleepLib/machine_common.h"

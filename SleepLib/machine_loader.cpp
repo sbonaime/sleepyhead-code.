@@ -6,7 +6,6 @@
 
 #include <QFile>
 #include <QDir>
-#include "tinyxml/tinyxml.h"
 
 #include "machine_loader.h"
 

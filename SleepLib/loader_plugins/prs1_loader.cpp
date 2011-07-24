@@ -64,8 +64,9 @@ PRS1Loader::~PRS1Loader()
 }
 Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
 {
+    if (!profile)
+        return NULL;
     qDebug() << "Create Machine " << serial;
-    assert(profile!=NULL);
 
     vector<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
@@ -419,9 +420,6 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     ext=header[6];
     htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
     version=header[4];
-    if (sequence==127) {
-        int i=0;
-    }
     sequence=sequence;
     version=version; // don't need it here?
 

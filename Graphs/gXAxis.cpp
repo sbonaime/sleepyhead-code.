@@ -110,7 +110,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
-    assert(vertarray!=NULL);
+    if (vertarray==NULL) {
+        qWarning() << "VertArray==NULL";
+        return;
+    }
 
     if (m_show_minor_ticks) {
         for (double i=st3; i<=maxx; i+=min_tick/10.0) {

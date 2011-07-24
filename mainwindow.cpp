@@ -31,9 +31,6 @@ QStatusBar *qstatusbar;
 void MainWindow::Log(QString s)
 {
     ui->logText->appendPlainText(s);
-    if (s.startsWith("Warning")) {
-        int i=5;
-    }
 }
 
 

@@ -227,9 +227,14 @@ Session *Machine::SessionExists(SessionID session)
 Day *Machine::AddSession(Session *s,Profile *p)
 {
     double span=0;
-    assert(s!=NULL);
-    assert(p!=NULL);
-
+    if (!s) {
+        qWarning() << "Empty Session in Machine::AddSession()";
+        return NULL;
+    }
+    if (!p) {
+        qWarning() << "Empty Profile in Machine::AddSession()";
+        return NULL;
+    }
     if (s->session()>highest_sessionid)
         highest_sessionid=s->session();
 

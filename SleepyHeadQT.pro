@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui webkit opengl
+QT += core gui webkit opengl xml
 
 CONFIG += rtti
 
@@ -31,10 +31,6 @@ SOURCES += main.cpp\
     SleepLib/loader_plugins/cms50_loader.cpp \
     SleepLib/loader_plugins/prs1_loader.cpp \
     SleepLib/loader_plugins/zeo_loader.cpp \
-    SleepLib/tinyxml/tinystr.cpp \
-    SleepLib/tinyxml/tinyxml.cpp \
-    SleepLib/tinyxml/tinyxmlerror.cpp \
-    SleepLib/tinyxml/tinyxmlparser.cpp \
     daily.cpp \
     overview.cpp \
     mainwindow.cpp \
@@ -85,8 +81,6 @@ HEADERS  += \
     SleepLib/loader_plugins/cms50_loader.h \
     SleepLib/loader_plugins/prs1_loader.h \
     SleepLib/loader_plugins/zeo_loader.h \
-    SleepLib/tinyxml/tinystr.h \
-    SleepLib/tinyxml/tinyxml.h \
     daily.h \
     overview.h \
     mainwindow.h \

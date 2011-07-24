@@ -15,7 +15,6 @@ License: GPL
 #include "machine.h"
 #include "machine_loader.h"
 #include "preferences.h"
-#include "tinyxml/tinyxml.h"
 
 class Machine;
 /**
@@ -46,8 +45,9 @@ public:
     Machine * GetMachine(MachineType t,QDate date);
     Machine * GetMachine(MachineType t);
 
-    virtual void ExtraLoad(TiXmlHandle *root);
-    virtual TiXmlElement * ExtraSave();
+    virtual void ExtraLoad(QDomElement & root);
+    virtual QDomElement ExtraSave(QDomDocument & doc);
+
     map<QDate,vector<Day *> > daylist;
     const QDate & FirstDay() { return m_first; }
     const QDate & LastDay() { return m_last; }

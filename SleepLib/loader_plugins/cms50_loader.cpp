@@ -48,7 +48,10 @@ int CMS50Loader::Open(QString & path,Profile *profile)
     // Data Folder
     // SpO2 Review.ini
     // SpO2.ini
-    assert(profile!=NULL);
+    if (!profile) {
+        qWarning() << "Empty Profile in CMS50Loader::Open()";
+        return 0;
+    }
 
     QDir dir(path);
     QString tmp=path+"/Data";
@@ -103,8 +106,8 @@ int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
 }
 bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 {
-    assert(mach!=NULL);
-    assert(profile!=NULL);
+    if (!mach || !profile)
+        return false;
 
     QFile f(path);
     unsigned char tmp[256];
@@ -269,7 +272,8 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 }
 Machine *CMS50Loader::CreateMachine(Profile *profile)
 {
-    assert(profile!=NULL);
+    if (!profile)
+        return NULL;
 
     // NOTE: This only allows for one CMS50 machine per profile..
     // Upgrading their oximeter will use this same record..

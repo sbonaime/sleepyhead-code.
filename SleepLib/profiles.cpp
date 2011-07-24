@@ -17,7 +17,6 @@ License: GPL
 #include "profiles.h"
 #include "machine.h"
 #include "machine_loader.h"
-#include "tinyxml/tinyxml.h"
 
 Preferences *p_pref;
 Preferences *p_layout;
@@ -90,26 +89,34 @@ void Profile::LoadMachineData()
  * @brief Machine XML section in profile.
  * @param root
  */
-void Profile::ExtraLoad(TiXmlHandle *root)
+void Profile::ExtraLoad(QDomElement & root)
 {
-    TiXmlElement *elem;
-    elem=root->FirstChild("Machines").FirstChild().Element();
-    if (!elem) {
-       // qDebug("ExtraLoad: Elem is empty.");
+    if (root.tagName()!="Machines") {
+        qDebug() << "No Machines Tag in Profiles.xml";
+        return;
     }
-    for(; elem; elem=elem->NextSiblingElement()) {
-        QString pKey=elem->Value();
+    QDomElement elem=root.firstChildElement();
+    while (!elem.isNull()) {
+        QString pKey=elem.tagName();
+
         if (pKey!="Machine") {
             qWarning() << "Profile::ExtraLoad() pKey!=\"Machine\"";
+            elem=elem.nextSiblingElement();
             continue;
         }
         int m_id;
-        elem->QueryIntAttribute("id",&m_id);
+        bool ok;
+        m_id=elem.attribute("id","").toInt(&ok);
         int mt;
-        elem->QueryIntAttribute("type",&mt);
+        mt=elem.attribute("type","").toInt(&ok);
         MachineType m_type=(MachineType)mt;
-        QString m_class=elem->Attribute("class");
+
+        QString m_class=elem.attribute("class","");
+        //MachineLoader *ml=GetLoader(m_class);
         Machine *m;
+        //if (ml) {
+        //   ml->CreateMachine
+        //}
         if (m_type==MT_CPAP) m=new CPAP(this,m_id);
         else if (m_type==MT_OXIMETER) m=new Oximeter(this,m_id);
         else if (m_type==MT_SLEEPSTAGE) m=new SleepStage(this,m_id);
@@ -119,43 +126,51 @@ void Profile::ExtraLoad(TiXmlHandle *root)
         }
         m->SetClass(m_class);
         AddMachine(m);
-        TiXmlElement *e=elem->FirstChildElement();
-        for (; e; e=e->NextSiblingElement()) {
-            QString pKey=e->Value();
-            m->properties[pKey]=e->GetText();
+        QDomElement e=elem.firstChildElement();
+        for (; !e.isNull(); e=e.nextSiblingElement()) {
+            QString pKey=e.tagName();
+            m->properties[pKey]=e.text();
         }
+        elem=elem.nextSiblingElement();
     }
 }
 void Profile::AddMachine(Machine *m) {
-    assert(m!=NULL);
+    if (!m) {
+        qWarning() << "Empty Machine in Profile::AddMachine()";
+        return;
+    }
     machlist[m->id()]=m;
 };
 void Profile::DelMachine(Machine *m) {
-    assert(m!=NULL);
+    if (!m) {
+        qWarning() << "Empty Machine in Profile::AddMachine()";
+        return;
+    }
     machlist.erase(m->id());
 };
 
-TiXmlElement * Profile::ExtraSave()
+
+// Potential Memory Leak Here..
+QDomElement Profile::ExtraSave(QDomDocument & doc)
 {
-    TiXmlElement *mach=new TiXmlElement("Machines");
+    QDomElement mach=doc.createElement("Machines");
     for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
-        TiXmlElement *me=new TiXmlElement("Machine");
+        QDomElement me=doc.createElement("Machine");
         Machine *m=i->second;
         //QString t=wxT("0x")+m->hexid();
-        me->SetAttribute("id",m->id());
-        me->SetAttribute("type",(int)m->GetType());
-        char *cc=m->GetClass().toLatin1().data();
-        me->SetAttribute("class",cc);
+        me.setAttribute("id",(int)m->id());
+        me.setAttribute("type",(int)m->GetType());
+        me.setAttribute("class",m->GetClass());
         i->second->properties["path"]="{DataFolder}/"+m->hexid();
 
         for (map<QString,QString>::iterator j=i->second->properties.begin(); j!=i->second->properties.end(); j++) {
-            TiXmlElement *mp=new TiXmlElement(j->first.toLatin1());
-            mp->LinkEndChild(new TiXmlText(j->second.toLatin1()));
-            me->LinkEndChild(mp);
+            QDomElement mp=doc.createElement(j->first);
+            mp.appendChild(doc.createTextNode(j->second));
+            //mp->LinkEndChild(new QDomText(j->second.toLatin1()));
+            me.appendChild(mp);
         }
-        mach->LinkEndChild(me);
+        mach.appendChild(me);
     }
-    //root->LinkEndChild(mach);
     return mach;
 
 }
@@ -293,7 +308,6 @@ Profile *Create(QString name,QString realname,QString password)
     QDir dir(path);
     if (!dir.exists(path)) dir.mkpath(path);
     //path+="/"+name;
-    //if (!dir.exists(path)) wxMkdir(path);
     Profile *prof=new Profile(path);
     prof->Open();
     profiles[name]=prof;

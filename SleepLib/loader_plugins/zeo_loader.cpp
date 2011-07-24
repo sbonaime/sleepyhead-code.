@@ -34,7 +34,8 @@ int ZEOLoader::Open(QString & path,Profile *profile)
 }
 Machine *ZEOLoader::CreateMachine(Profile *profile)
 {
-    assert(profile!=NULL);
+    if (!profile)
+        return NULL;
 
     // NOTE: This only allows for one ZEO machine per profile..
     // Upgrading their ZEO will use this same record..

@@ -227,7 +227,10 @@ void TAPData::Reload(Day *day)
         for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             val=ev[field]*10.0;
-            assert(field<ev.fields());
+            if (field>=ev.fields()) {
+                qWarning() << "Invalid Event field in TAPData::Reload";
+                return;
+            }
             //if (field > ev.fields()) throw BoundsError();
             if (first) {
                 first=false; // only bother setting lastval (below) this time.

@@ -417,9 +417,6 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 }
 void gGraphWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QVector<double> s;
-    s.push_back(32);
-    double * test=new double [s.size()];
     // TODO: Retest.. QT might not be so retarded
     if (event->buttons() & Qt::LeftButton) OnMouseLeftDown(event);
     else if (event->buttons() & Qt::RightButton) OnMouseRightDown(event);
@@ -700,13 +697,13 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
     int height=m_scrY-GetBottomMargin()-GetTopMargin();
     QRect hot1(GetLeftMargin(),GetTopMargin(),width,height); // Graph data area.
 
-    bool was_dragging_foo=false;
+    //bool was_dragging_foo=false;
     bool did_draw=false;
 
     // Finished Dragging the FooBar?
     if (foobar && m_drag_foobar) {
         m_drag_foobar=false;
-        was_dragging_foo=true;
+        //was_dragging_foo=true;
         if (m_foobar_moved<5) {
             double zoom_fact=0.5;
             if (event->modifiers() & Qt::ControlModifier) zoom_fact=0.25;

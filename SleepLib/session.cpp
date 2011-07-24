@@ -42,8 +42,12 @@ double Session::min_event_field(MachineCode mc,int field)
     bool first=true;
     double min=0;
     vector<Event *>::iterator i;
+
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        assert(field<(*i)->e_fields);
+        if (field>=(*i)->e_fields) {
+            qWarning() << "Invalid Event field in Session::min_event_field";
+            return 0;
+        }
         if (first) {
             first=false;
             min=(*(*i))[field];
@@ -61,7 +65,10 @@ double Session::max_event_field(MachineCode mc,int field)
     double max=0;
     vector<Event *>::iterator i;
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        assert(field<(*i)->e_fields);
+        if (field>=(*i)->e_fields) {
+            qWarning() << "Invalid Event field in Session::max_event_field";
+            return 0;
+        }
         if (first) {
             first=false;
             max=(*(*i))[field];
@@ -80,7 +87,10 @@ double Session::sum_event_field(MachineCode mc,int field)
     vector<Event *>::iterator i;
 
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        assert(field<(*i)->e_fields);
+        if (field>=(*i)->e_fields) {
+            qWarning() << "Invalid Event field in Session::sum_event_field";
+            return 0;
+        }
         sum+=(*(*i))[field];
     }
     return sum;
@@ -94,7 +104,10 @@ double Session::avg_event_field(MachineCode mc,int field)
     vector<Event *>::iterator i;
 
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
-        assert(field<(*i)->e_fields);
+        if (field>=(*i)->e_fields) {
+            qWarning() << "Invalid Event field in Session::avg_event_field";
+            return 0;
+        }
         sum+=(*(*i))[field];
         cnt++;
     }
@@ -156,7 +169,10 @@ double Session::weighted_avg_event_field(MachineCode mc,int field)
     for (i=events[mc].begin(); i!=events[mc].end(); i++) {
         Event & e =(*(*i));
         val=e[field]*mult;
-        assert(field<e.e_fields);
+        if (field>=(*i)->e_fields) {
+            qWarning() << "Invalid Event field in Session::weighted_avg_event_field";
+            return 0;
+        }
         if (first) {
             first=false;
         } else {
@@ -279,12 +295,12 @@ bool Session::Store(QString path)
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
     //qDebug() << "Storing Session: " << base;
-    bool a,b,c;
+    bool a;
     a=StoreSummary(base+".000"); // if actually has events
     //qDebug() << " Summary done";
-    if (events.size()>0) b=StoreEvents(base+".001");
+    if (events.size()>0) StoreEvents(base+".001");
     //qDebug() << " Events done";
-    if (waveforms.size()>0) c=StoreWaveforms(base+".002");
+    if (waveforms.size()>0) StoreWaveforms(base+".002");
     //qDebug() << " Waveform done";
     if (a) {
         s_changed=false;
@@ -633,13 +649,11 @@ bool Session::StoreWaveforms(QString filename)
 
     map<MachineCode,vector<Waveform *> >::iterator i;
     vector<Waveform *>::iterator j;
-    int zz=0;
     for (i=waveforms.begin(); i!=waveforms.end(); i++) {
         //qDebug() << "Storing Waveform" << zz++ << filename;
         out << (quint16)i->first; 	// Machine Code
         t16=i->second.size();
         out << t16;                     // Number of (hopefully non-linear) waveform chunks
-        int chnk=0;
         for (j=i->second.begin(); j!=i->second.end(); j++) {
             //qDebug() << "Storing Waveform Chunk" << chnk++;
 
