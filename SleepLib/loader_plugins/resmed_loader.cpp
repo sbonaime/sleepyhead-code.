@@ -206,6 +206,9 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 
     m->properties["Serial"]=serial;
     m->properties["Brand"]="ResMed";
+    QString a;
+    a.sprintf("%i",resmed_data_version);
+    m->properties["DataVersion"]=a;
 
     return m;
 
@@ -465,7 +468,6 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                             qDebug() << "Unknown ResMed annotation field: " << t;
                         }
                     }
-                    // qDebug((tt.toString("yyyy-MM-dd HH:mm:ss")+t).toLatin1());
                 }
                 if (pos>=recs) {
                     qDebug() << "Short EDF EVE file" << edf.filename;
@@ -493,7 +495,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
         else if (edf.edfsignals[s]->label=="Mask Pres") {
             code=CPAP_MaskPressure;
-           // for (int i=0;i<recs;i++) edf.edfsignals[s]->data[i]/=50.0;
+            //for (int i=0;i<recs;i++) edf.edfsignals[s]->data[i]/=50.0;
         } else {
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
@@ -501,8 +503,6 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
         edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
         sess->AddWaveform(w);
-        //t.sprintf("BRP: %li %.2f",recs,duration);
-        //qDebug((edf.edfsignals[s]->label+" "+t).toLatin1());
     }
     return true;
 }
@@ -541,8 +541,6 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 {
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres=0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
-
-    //qDebug(edf.edfsignals[MaskPres]->label.toLatin1());
 
     sess->set_first(edf.startdate);
     sess->set_last(edf.enddate);

@@ -217,7 +217,6 @@ void Session::AddEvent(Event * e)
         s_first=s_last=e->time();
         //_first_session=false;
     }
-    //qDebug((e->time().toString("yyyy-MM-dd HH:mm:ss")+" %04i %02i").toLatin1(),e->code(),e->fields());
 }
 void Session::AddWaveform(Waveform *w)
 {
@@ -390,7 +389,7 @@ bool Session::StoreSummary(QString filename)
 bool Session::LoadSummary(QString filename)
 {
     if (filename.isEmpty()) return false;
-    //qDebug(("Loading Summary "+filename).toLatin1());
+    //qDebug() << "Loading Summary " << filename;
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {

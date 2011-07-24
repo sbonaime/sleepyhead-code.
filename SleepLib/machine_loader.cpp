@@ -48,106 +48,10 @@ MachineLoader::~MachineLoader()
 
 void MachineLoader::LoadMachineList()
 {
-    QString filename=(*profile)["ProfileDirectory"]+"/"+m_classname+"/"+machine_profile_name;
-
-    QFile f(filename);
-    if (!f.exists()) {
-        qDebug() << "XML file does not exist" << filename;
-        return;
-    }
-    TiXmlDocument xml(filename.toLatin1());
-    if (!xml.LoadFile()) {
-        qDebug() << "Couldn't read XML file " << filename;
-        return;
-    }
-    TiXmlHandle hDoc(&xml);
-    TiXmlElement * pElem;
-    //TiXmlHandle hRoot(0);
-    pElem=hDoc.FirstChildElement().Element();
-
-    if (!pElem) {
-        qDebug("MachineList is empty.");
-        return;
-    }
-
-    //hRoot=TiXmlHandle(pElem);
-    //pElem=hRoot.FirstChild("MachineList").FirstChild().Element();
-
-    if (pElem->Value()!="MachineList") {
-        qDebug() << "MachineLoader::LoadMachineList expected a MachineList";
-    }
-
-    int mt;
-
-    Machine *mach;
-    pElem->QueryIntAttribute("type",&mt);
-    MachineType m_type=(MachineType)mt;
-    QString m_class=pElem->Attribute("class");
-
-    TiXmlElement *elem;
-    elem=pElem->FirstChildElement();
-    if (!elem) {
-        qDebug("Machine is empty.");
-        return;
-    }
-
-    int m_id;
-    for(; elem; elem=elem->NextSiblingElement()) {
-        QString pKey=elem->Value();
-        if (!pKey=="Machine") continue;
-
-        elem->QueryIntAttribute("id",&m_id);
-
-        mach=CreateMachine(m_id);
-
-        TiXmlElement *e=elem->FirstChildElement();
-        for (; e; e=e->NextSiblingElement()) {
-            QString pKey=e->Value();
-            mach->properties[pKey]=e->GetText();
-        }
-//        QString filename=(*profile)["ProfileDirectory"]+"/"+m_classname+"/"+mach->hexid();
-//        mach->LoadSummaries(filename);
-    }
 }
 
 void MachineLoader::StoreMachineList()
 {
-    QString filename=(*profile)["ProfileDirectory"]+"/"+m_classname+"/"+machine_profile_name;
-
-    TiXmlDocument xml;
-    TiXmlElement* msg;
-    TiXmlComment * comment;
-    TiXmlDeclaration *decl=new TiXmlDeclaration( "1.0", "", "" );
-    xml.LinkEndChild(decl);
-    TiXmlElement *root=new TiXmlElement("MachineList");
-
-    char *cc=m_class.toLatin1().data();
-    root->SetAttribute("type",(int)m_type);
-    root->SetAttribute("class",cc);
-
-    xml.LinkEndChild(root);
-
-    if (!m_comment.isEmpty()) {
-        comment = new TiXmlComment();
-        comment->SetValue((QString(" ")+m_comment+QString(" ")).toLatin1());
-        root->LinkEndChild(comment);
-    }
-
-    for (int i=0;i<m_machlist.size();i++)  {
-        Machine * m=m_machlist[i];
-        // Save any changes/new sessions to machine record.
-
-        TiXmlElement *me=new TiXmlElement("Machine");
-        me->SetAttribute("id",m->id());
-
-        for (map<QString,QString>::iterator j=i->second->properties.begin(); j!=i->second->properties.end(); j++) {
-            TiXmlElement *mp=new TiXmlElement(j->first.toLatin1());
-            mp->LinkEndChild(new TiXmlText(j->second.toLatin1()));
-            me->LinkEndChild(mp);
-        }
-        root->LinkEndChild(me);
-    }
-    xml.SaveFile(p_filename.toLatin1());
 }
 void MachineLoader::LoadSummary(Machine *m, QString &filename)
 {
