@@ -41,10 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
-//#ifndef Q_WS_MAC
-//    this->showMaximized();
-//#endif
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number));
     ui->tabWidget->setCurrentIndex(0);
@@ -62,14 +58,14 @@ MainWindow::MainWindow(QWidget *parent) :
     fmt.setRgba(true);
     fmt.setDefaultFormat(fmt);
     QGLContext smeg(fmt); */
-            //new QGLContext(fmt);
+
+    //new QGLContext(fmt);
     //shared_context->create(shared_context);
 
     daily=NULL;
     overview=NULL;
     oximetry=NULL;
 
-    //ui->tabWidget->setCurrentWidget(daily);
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
@@ -88,10 +84,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress,10);
     Profiles::Scan();
 
-    //loader_progress->Show();
+    pref["AppName"]="SleepyHead";
+    pref["VersionString"]=QString("v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
 
-    //pref["Version"]=wxString(AutoVersion::_FULLVERSION_STRING,wxConvUTF8);
-    if (!pref.Exists("AppName")) pref["AppName"]="SleepyHead";
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
@@ -116,8 +111,19 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
     else ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
 
-}
+    daily=new Daily(ui->tabWidget);
+    ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
+    overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(2,overview,tr("Overview"));
+
+    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+
+    ui->tabWidget->setCurrentWidget(ui->welcome);
+
+}
+extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
     if (daily) {
@@ -133,31 +139,32 @@ MainWindow::~MainWindow()
         delete oximetry;
     }
     DoneGraphs();
-    delete ui;
     Profiles::Done();
+    mainwin=NULL;
+    delete ui;
 }
 
 void MainWindow::Startup()
 {
-    qDebug() << windowTitle() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << pref["AppName"].toString().toAscii() << pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
-    qstatusbar->showMessage("Your computer loads faster than JediMark's",1900);
+    //qstatusbar->showMessage(tr("Loading Data"),0);
 
     profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
 
-    daily=new Daily(ui->tabWidget);
-    ui->tabWidget->insertTab(1,daily,tr("Daily"));
+    if (daily) daily->ReloadGraphs();
 
-    overview=new Overview(ui->tabWidget,daily->SharedWidget());
-    ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    if (overview) {
+        overview->ReloadGraphs();
+        overview->UpdateGraphs();
 
-    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
-    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    }
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
+    //qstatusbar->clearMessage();
 
 }
 
@@ -183,10 +190,8 @@ void MainWindow::on_action_Import_Data_triggered()
         qDebug() << "Finished Importing data" << c;
         if (c) {
             profile->Save();
-            //qDebug() << " profile->Save();";
             if (daily) daily->ReloadGraphs();
 
-            //qDebug() << " daily->ReloadGraphs();";
             if (overview) {
                 overview->ReloadGraphs();
                 overview->UpdateGraphs();

@@ -44,18 +44,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     gSplitter->setHandleWidth(2);
     ui->graphSizer->addWidget(gSplitter);
 
-    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
-    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
-    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
-    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
-    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
-    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
-    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
-    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
-    AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
-    AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
-
-    SF=new gGraphWindow(gSplitter,tr("Event Flags"),shared);
+     SF=new gGraphWindow(gSplitter,tr("Event Flags"),shared);
     FRW=new gGraphWindow(gSplitter,tr("Flow Rate"),SF);
     PRD=new gGraphWindow(gSplitter,tr("Pressure"),SF);
     LEAK=new gGraphWindow(gSplitter,tr("Leaks"),SF);
@@ -76,6 +65,17 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     fmt.setRgba(true);
     //fmt.setDefaultFormat(fmt);
     offscreen_context=new QGLContext(fmt); */
+
+    AddCPAPData(flags[3]=new FlagData(CPAP_Hypopnea,4));
+    AddCPAPData(flags[0]=new FlagData(CPAP_CSR,7,1,0));
+    AddCPAPData(flags[1]=new FlagData(CPAP_ClearAirway,6));
+    AddCPAPData(flags[2]=new FlagData(CPAP_Obstructive,5));
+    AddCPAPData(flags[4]=new FlagData(CPAP_FlowLimit,3));
+    AddCPAPData(flags[5]=new FlagData(CPAP_VSnore,2));
+    AddCPAPData(flags[6]=new FlagData(CPAP_RERA,1));
+    AddCPAPData(flags[7]=new FlagData(PRS1_PressurePulse,1));
+    AddCPAPData(flags[8]=new FlagData(PRS1_Unknown0E,1));
+    AddCPAPData(flags[9]=new FlagData(CPAP_Snore,1)); // Snore Index
 
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
@@ -306,7 +306,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
     ui->tabWidget->setCurrentWidget(ui->details);
-    ReloadGraphs();
  }
 
 Daily::~Daily()

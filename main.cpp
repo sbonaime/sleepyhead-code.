@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
 
     a.setFont(QFont("FreeSans",10));
 
-
     qInstallMsgHandler(MyOutputHandler);
     MainWindow w;
     mainwin=&w;
