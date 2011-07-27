@@ -308,7 +308,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     tree->clear();
     if (!day) return;
 
-    return;
+    //return;
     tree->setColumnCount(1); // 1 visible common.. (1 hidden)
 
     QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
@@ -325,16 +325,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 
         for (m=(*s)->eventlist.begin();m!=(*s)->eventlist.end();m++) {
             MachineCode code=m->first;
-            if (code==CPAP_Leak) continue;
-            if (code==CPAP_RespiratoryRate) continue;
-            if (code==CPAP_TidalVolume) continue;
-            if (code==CPAP_MinuteVentilation) continue;
-            if (code==CPAP_FlowLimitGraph) continue;
-
-            // Note this is not so evil on PRS1.
-            if (code==CPAP_Pressure) continue;
-            if (code==CPAP_Snore) continue;
-            if (code==PRS1_Unknown12) continue;
+            if ((code!=CPAP_Obstructive)
+                && (code!=CPAP_Hypopnea)
+                && (code!=CPAP_Apnea)
+                && (code!=CPAP_ClearAirway)
+                && (code!=CPAP_CSR)
+                && (code!=CPAP_RERA)
+                && (code!=CPAP_FlowLimit)
+                && (code!=PRS1_PressurePulse)
+                && (code!=CPAP_VSnore)) continue;
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
                 int cnt=day->count(code);

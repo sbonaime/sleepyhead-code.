@@ -164,8 +164,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     //assert(x1<x2);
                 //}
             }
-            done=false;
-            first=true;
 
             if (accel) {
                 x1=el.time(1);
@@ -264,6 +262,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             const vector<EventStoreType> & dat=el.getData();
             const vector<qint64> & tim=el.getTime();
 
+            done=false;
+            first=true;
+
             bool firstpx=true;
             if (el.type()==EVL_Waveform) {  // Waveform Plot
                 time=el.time(idx);
@@ -340,7 +341,12 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         lastpy=py;
                     }
                 }
-            } else { // Standard events/zoomed in Plot
+
+            } else {
+//////////////////////////////////////////////////////////////////
+// Standard events/zoomed in Plot
+//////////////////////////////////////////////////////////////////
+                first=true;
                 for (int i=idx;i<siz;i+=sam) {
                     time=tim[i]; //el.time(i);
 
@@ -348,6 +354,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         if (time < minx) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
+                        time=tim[i]; //el.time(i);
                     }
                     data=dat[i]*gain; //
                     //data=el.data(i); // raw access is faster
