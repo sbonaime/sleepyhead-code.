@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QFontMetrics>
+#include <QMessageBox>
 #include <QDebug>
 #include <math.h>
 #include "glcommon.h"
@@ -63,9 +64,8 @@ inline void RDrawText(QPainter & painter, QString text, int x, int  y, float ang
     //int a=fm.overlinePos(); //ascent();
     //LinedRoundedRectangle(x,wid.GetScrY()-y,w,h,0,1,QColor("black"));
     if (!font) {
-        qDebug() << "Font Problem. Forgot to call GraphInit() ?";
-        abort();
-        return;
+        QMessageBox::critical(NULL,"Critical Error","Font Problem. Forgot to call GraphInit()? Have to abort");
+        exit(-1);
     }
 
 //    glEnable(GL_TEXTURE_2D);

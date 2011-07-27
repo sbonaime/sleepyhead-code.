@@ -10,7 +10,10 @@
 #include <QMouseEvent>
 #include "SleepLib/profiles.h"
 #include "graphwindow.h"
-#include "Graphs/gTitle.h"
+#include "gTitle.h"
+#include "gXAxis.h"
+#include "gYAxis.h"
+#include "gFooBar.h"
 
 extern QLabel *qstatus2;
 
@@ -38,6 +41,8 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     //setAcceptDrops(true);
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
+    rmin_x=rmax_x=0;
+    min_x=max_x=0;
 }
 
 gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
@@ -72,9 +77,18 @@ gGraphWindow::~gGraphWindow()
     layers.clear();
 }
 
-#include "gXAxis.h"
-#include "gYAxis.h"
-#include "gFooBar.h"
+bool gGraphWindow::isEmpty()
+{
+    bool empty=true;
+    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        if (!(*l)->isEmpty()) {
+            empty=false;
+            break;
+        }
+    }
+    return empty;
+}
+
 void gGraphWindow::AddLayer(gLayer *l) {
     if (l) {
         if (dynamic_cast<gXAxis *>(l)) {
@@ -113,34 +127,31 @@ void gGraphWindow::AddLayer(gLayer *l) {
             m_marginLeft+=gTitle::Margin;
             gtitle=l;
         }
-        l->NotifyGraphWindow(this);
+        //l->NotifyGraphWindow(this);
         layers.push_back(l);
     }
 };
 
 
 // Sets a new Min & Max X clipping, refreshing the graph and all it's layers.
-void gGraphWindow::SetXBounds(double minx, double maxx)
+void gGraphWindow::SetXBounds(qint64 minx, qint64 maxx)
 {
-    //min_x=minx;
-    //max_x=maxx;
-    SetMinX(minx);
-    SetMaxX(maxx);
+    min_x=minx;
+    max_x=maxx;
 
     updateGL();
 }
-void gGraphWindow::ResetXBounds()
+void gGraphWindow::ResetBounds()
 {
-    //min_x=minx;
-    //max_x=maxx;
-    SetMinX(RealMinX());
-    SetMaxX(RealMaxX());
-  //  updateGL();
+    min_x=MinX();
+    max_x=MaxX();
+    min_y=MinY();
+    max_y=MaxY();
 }
 
 void gGraphWindow::ZoomXPixels(int x1, int x2)
 {
-    double rx1=0,rx2=0;
+    qint64 rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
     if (pref["LinkGraphMovement"].toBool()) {
         for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
@@ -150,7 +161,7 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
 
     SetXBounds(rx1,rx2);
 }
-void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
+void gGraphWindow::ZoomXPixels(int x1,int x2,qint64 &rx1,qint64 &rx2)
 {
     x1-=GetLeftMargin();
     x2-=GetLeftMargin();
@@ -159,8 +170,8 @@ void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
     if (x1>Width()) x1=Width();
     if (x2>Width()) x2=Width();
 
-    double min;
-    double max;
+    qint64 min;
+    qint64 max;
     if (!m_block_zoom) {
         min=min_x;
         max=max_x;
@@ -175,7 +186,7 @@ void gGraphWindow::ZoomXPixels(int x1,int x2,double &rx1,double &rx2)
 }
 
 // Move x-axis by the amount of space represented by integer i Pixels (negative values moves backwards)
-void gGraphWindow::MoveX(int i,double &min, double & max)
+void gGraphWindow::MoveX(int i,qint64 &min, qint64 & max)
 {
     //if (i==0) return;
     min=min_x;
@@ -198,7 +209,7 @@ void gGraphWindow::MoveX(int i,double &min, double & max)
 
 void gGraphWindow::MoveX(int i)
 {
-    double min,max;
+    qint64 min,max;
     MoveX(i,min,max);
 
 /*    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
@@ -222,8 +233,8 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
     // apply zoom
     // center on point found in step 1.
 
-    double min=min_x;
-    double max=max_x;
+    qint64 min=min_x;
+    qint64 max=max_x;
 
     double hardspan=rmax_x-rmin_x;
     double span=max-min;
@@ -234,7 +245,7 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
 
     double q=span*mult;
     if (q>hardspan) q=hardspan;
-    if (q<hardspan/400) q=hardspan/400;
+    if (q<hardspan/400.0) q=hardspan/400.0;
 
     min=min+origin-(q*ww);
     max=min+q;
@@ -254,7 +265,7 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
 void gGraphWindow::updateSelectionTime()
 {
     double f;
-    f=max_x-min_x;
+    f=(max_x-min_x)/86400000.0;
 
     int hours,minutes,seconds;
     hours=int(f*24.0);
@@ -322,8 +333,8 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 
         double mx=double(x1)/double(width);
 
-        double rminx=RealMinX();
-        double rmaxx=RealMaxX();
+        qint64 rminx=rmin_x;
+        qint64 rmaxx=rmax_x;
         double rx=rmaxx-rminx;
 
         double qx=rx*mx;
@@ -331,8 +342,8 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 
         // qx is centerpoint of new zoom area.
 
-        double minx=MinX();
-        double dx=MaxX()-minx; // zoom rect width;
+        qint64 minx=min_x;
+        double dx=max_x-minx; // zoom rect width;
 
         // Could smarten this up by remembering where the mouse was clicked on the foobar
 
@@ -366,11 +377,9 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
     if (event->buttons() & Qt::RightButton) {
         MoveX(x - m_mouseRClick.x());
         m_mouseRClick.setX(x);
-        double min=MinX();
-        double max=MaxX();
         if (pref["LinkGraphMovement"].toBool()) {
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->SetXBounds(min,max);
+                (*g)->SetXBounds(min_x,max_x);
             }
         }
     } else
@@ -393,7 +402,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
             z=max_x-min_x;
         }
         double q=double(t2-t1)/width();
-        double f=(q*z)*24.0;
+        double f=((q*z)/3600000.0);
         int hours,minutes,seconds;
         hours=int(f);
         minutes=int(f*60.0) % 60;
@@ -462,11 +471,9 @@ void gGraphWindow::keyPressEvent(QKeyEvent * event)
     }
 
     if (moved) {
-        double min=MinX();
-        double max=MaxX();
         if (pref["LinkGraphMovement"].toBool()) {
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->SetXBounds(min,max);
+                (*g)->SetXBounds(min_x,max_x);
             }
         }
         event->accept();
@@ -499,10 +506,10 @@ void gGraphWindow::OnMouseRightDown(QMouseEvent * event)
 
    // m_mouseRDown=true;
     if (foobar && m_block_zoom && (((y>GetTopMargin())) && (y<m_scrY))) {
-        double rx=RealMaxX()-RealMinX();
+        double rx=rmax_x-rmin_x;
         double qx=double(width)/rx;
-        double minx=MinX()-RealMinX();
-        double maxx=MaxX()-RealMinX();;
+        qint64 minx=min_x-rmin_x;
+        qint64 maxx=max_x-rmin_x;
 
         int x1=(qx*minx);
         int x2=(qx*maxx);  // length in pixels
@@ -574,10 +581,8 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
 
         if (did_draw) {
             if (pref["LinkGraphMovement"].toBool()) {
-                double min=MinX();
-                double max=MaxX();
                 for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                    (*g)->SetXBounds(min,max);
+                    (*g)->SetXBounds(min_x,max_x);
                 }
             }
         }
@@ -601,11 +606,8 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
             ZoomX(zoom_fact,x); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
 
             if (pref["LinkGraphMovement"].toBool()) {
-                double min=MinX();
-                double max=MaxX();
-
                 for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                    (*g)->SetXBounds(min,max);
+                    (*g)->SetXBounds(min_x,max_x);
                 }
             }
         //}
@@ -645,10 +647,10 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
     m_mouseLClick.setY(y);
 
     if (foobar && ((y>(m_scrY-GetBottomMargin())) && (y<(m_scrY)))) { //-GetBottomMargin())+20))) {
-        double rx=RealMaxX()-RealMinX();
+        double rx=rmax_x-rmin_x;
         double qx=double(width)/rx;
-        double minx=MinX()-RealMinX();
-        double maxx=MaxX()-RealMinX();;
+        double minx=min_x-rmin_x;
+        double maxx=max_x-rmin_x;
 
         int x1=(qx*minx);
         int x2=(qx*maxx);  // length in pixels
@@ -733,9 +735,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
 
             did_draw=true;
         }
-
     }
-
 
     if (!did_draw && hot1.contains(x,y) && !m_drag_foobar && m_mouseLDown) {
         if (m_block_zoom) {
@@ -744,7 +744,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             double mx=max_x-min_x;
             double qx=(rx/width)*double(x);
             if (mx>=rx) {
-                mx=1.0/(24.0*15.0);
+                mx=300000;//1.0/(24.0*15.0);
             }
             qx+=rmin_x;
             qx-=mx/2.0;
@@ -777,10 +777,8 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             updateGL();
     } else {
         if (pref["LinkGraphMovement"].toBool()) {
-            double min=MinX();
-            double max=MaxX();
             for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
-                (*g)->SetXBounds(min,max);
+                (*g)->SetXBounds(min_x,max_x);
             }
         }
     }
@@ -788,7 +786,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
     LastGraphLDown=NULL;
 }
 
-void gGraphWindow::SetMargins(float top, float right, float bottom, float left)
+void gGraphWindow::SetMargins(int top, int right, int bottom, int left)
 {
     m_marginTop=top;
     m_marginBottom=bottom;
@@ -825,7 +823,7 @@ void gGraphWindow::resizeGL(int w, int h)
 
 }
 
-void gGraphWindow::Render(float w, float h)
+void gGraphWindow::Render(int w, int h)
 {
     if (m_gradient_background) {
         glBegin(GL_QUADS);
@@ -884,241 +882,90 @@ void gGraphWindow::paintGL()
     swapBuffers(); // Dump to screen.
 }
 
-double gGraphWindow::MinX()
+qint64 gGraphWindow::MinX()
 {
-    //static bool f=true; //need a bool for each one, and reset when a layer reports data change.
-    //if (!f) return min_x;
-    //f=false;
-
     bool first=true;
-    double val=0,tmp;
+    qint64 val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        if ((*l)->isEmpty()) continue;
+        tmp=(*l)->Minx();
+        if (!tmp) continue;
         if (first) {
-            val=(*l)->MinX();
-            if (!((val==(*l)->MaxX()) && (val==0)))
-                first=false;
+            val=tmp;
+            first=false;
         } else {
-            tmp=(*l)->MinX();
-            if (!((tmp==(*l)->MaxX()) && (tmp==0))) {
-                if (tmp < val) val = tmp;
-            }
+            if (tmp < val) val = tmp;
         }
     }
-
-    return min_x=val;
+    if (val) rmin_x=val;
+    return val;
 }
-double gGraphWindow::MaxX()
+qint64 gGraphWindow::MaxX()
 {
-    //static bool f=true;
-    //if (!f) return max_x;
-    //f=false;
-
     bool first=true;
-    double val=0,tmp;
+    qint64 val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        if ((*l)->isEmpty()) continue;
+        tmp=(*l)->Maxx();
+        if (!tmp) continue;
         if (first) {
-            val=(*l)->MaxX();
-            if (!((val==(*l)->MinX()) && (val==0)))
-                first=false;
-
+            val=tmp;
+            first=false;
         } else {
-            tmp=(*l)->MaxX();
-            if (!((tmp==(*l)->MinX()) && (tmp==0))) {
-                if (tmp > val) val = tmp;
-            }
+            if (tmp > val) val = tmp;
         }
     }
-    return max_x=val;
+    if (val) rmax_x=val;
+    return val;
 }
-double gGraphWindow::MinY()
+EventDataType gGraphWindow::MinY()
 {
-    //static bool f=true;
-    //if (!f) return min_y;
-    //f=false;
-
     bool first=true;
-    double val=0,tmp;
+    EventDataType val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        if ((*l)->isEmpty()) continue;
+        tmp=(*l)->Miny();
+        if (tmp==(*l)->Maxy()) continue;
         if (first) {
-            val=(*l)->MinY();
-            if (!((val==(*l)->MaxY()) && (val==0)))
-                first=false;
+            val=tmp;
+            first=false;
         } else {
-            tmp=(*l)->MinY();
-            if (!((tmp==(*l)->MaxY()) && (tmp==0))) { // Ignore this layer if both are 0
-                if (tmp < val) val = tmp;
-            }
-        }
-    }
-    return min_y=val;
-}
-double gGraphWindow::MaxY()
-{
-    //static bool f=true;
-    //if (!f) return max_y;
-    //f=false;
-
-    bool first=true;
-    double val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        if (first) {
-            val=(*l)->MaxY();
-            if (!((val==(*l)->MinY()) && (val==0)))
-                first=false;
-        } else {
-            tmp=(*l)->MaxY();
-            if (!((tmp==(*l)->MinY()) && (tmp==0))) { // Ignore this layer if both are 0
-                if (tmp > val) val = tmp;
-            }
-        }
-    }
-    return max_y=val;
-}
-
-double gGraphWindow::RealMinX()
-{
-    //static bool f=true;
-    //if (!f) return rmin_x;
-    //f=false;
-
-    bool first=true;
-    double val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        if (first) {
-            val=(*l)->RealMinX();
-            if (!((val==(*l)->RealMaxX()) && (val==0)))
-                first=false;
-        } else {
-            tmp=(*l)->RealMinX();
-            if (!((tmp==(*l)->RealMaxX()) && (tmp==0))) { // Ignore this layer if both are 0
-                if (tmp < val) val = tmp;
-            }
-        }
-    }
-    return rmin_x=val;
-}
-double gGraphWindow::RealMaxX()
-{
-    //static bool f=true;
-    //if (!f) return rmax_x;
-    //f=false;
-
-    bool first=true;
-    double val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        if (first) {
-            val=(*l)->RealMaxX();
-            if (!((val==(*l)->RealMinX()) && (val==0)))
-                first=false;
-        } else {
-            tmp=(*l)->RealMaxX();
-            if (!((tmp==(*l)->RealMinX()) && (tmp==0))) { // Ignore this layer if both are 0
-                if (tmp > val) val = tmp;
-            }
-        }
-    }
-    return rmax_x=val;
-}
-double gGraphWindow::RealMinY()
-{
-    //static bool f=true;
-    //if (!f) return rmin_y;
-    //f=false;
-
-    bool first=true;
-    double val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        if (first) {
-            val=(*l)->RealMinY();
-            if (!((val==(*l)->RealMaxY()) && (val==0)))
-                first=false;
-        } else {
-            tmp=(*l)->RealMinY();
-            if (!((tmp==(*l)->RealMaxY()) && (tmp==0))) { // Ignore this if both are 0
-                if (tmp < val) val = tmp;
-            }
+            if (tmp < val) val = tmp;
         }
     }
     return rmin_y=val;
 }
-double gGraphWindow::RealMaxY()
+EventDataType gGraphWindow::MaxY()
 {
-    //static bool f=true;
-    //if (!f) return rmax_y;
-    //f=false;
-
     bool first=true;
-    double val=0,tmp;
+    EventDataType val=0,tmp;
     for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+        if ((*l)->isEmpty()) continue;
+        tmp=(*l)->Maxy();
+        if (tmp==(*l)->Miny()) continue;
         if (first) {
-            val=(*l)->RealMaxY();
-            if (!((val==(*l)->RealMinY()) && (val==0))) // Does this create a loop??
-                first=false;
+            val=tmp;
+            first=false;
         } else {
-            tmp=(*l)->RealMaxY();
-            if (!((tmp==(*l)->RealMinY()) && (tmp==0))) { // Ignore this if both are 0
-                if (tmp > val) val = tmp;
-            }
+            if (tmp > val) val = tmp;
         }
     }
     return rmax_y=val;
 }
 
-void gGraphWindow::SetMinX(double v)
+void gGraphWindow::SetMinX(qint64 v)
 {
     min_x=v;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->SetMinX(v);
-    }
 }
-void gGraphWindow::SetMaxX(double v)
+void gGraphWindow::SetMaxX(qint64 v)
 {
     max_x=v;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->SetMaxX(v);
-    }
 }
-void gGraphWindow::SetMinY(double v)
+void gGraphWindow::SetMinY(EventDataType v)
 {
     min_y=v;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->SetMinY(v);
-    }
 }
-void gGraphWindow::SetMaxY(double v)
+void gGraphWindow::SetMaxY(EventDataType v)
 {
     max_y=v;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
-        (*l)->SetMaxY(v);
-    }
 }
-
-void gGraphWindow::DataChanged(gLayer *layer)
-{
-    QDateTime n=QDateTime::currentDateTime();
-    double t=ti.msecsTo(n);
-    ti=n;
-
-    if (layer) {
-        MinX(); MinY(); MaxX(); MaxY();
-        RealMinX(); RealMinY(); RealMaxX(); RealMaxY();
-    } else {
-        max_x=min_x=0;
-    }
-
-    //long l=t.GetMilliseconds().GetLo();
-    //wxLogMessage(wxString::Format(wxT("%li"),l));
-    if ((t<2)  && (layer!=lastlayer)) {
-        lastlayer=layer;
-        return;
-    }
-
-    lastlayer=layer;
-    // This is possibly evil.. It needs to push one refresh event for all layers
-
-    // Assmption currently is Refresh que does skip
-
-  //  updateGL();
-}
-
-

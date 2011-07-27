@@ -60,8 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //shared_context->create(shared_context);
 
     daily=NULL;
-    overview=NULL;
-    oximetry=NULL;
+    //overview=NULL;
+    //oximetry=NULL;
 
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
@@ -111,11 +111,11 @@ MainWindow::MainWindow(QWidget *parent) :
     daily=new Daily(ui->tabWidget);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,daily->SharedWidget());
-    ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    //overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
-    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    //oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    //ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
@@ -127,14 +127,14 @@ MainWindow::~MainWindow()
         daily->close();
         delete daily;
     }
-    if (overview) {
+    /*if (overview) {
         overview->close();
         delete overview;
     }
     if (oximetry) {
         oximetry->close();
         delete oximetry;
-    }
+    }*/
     DoneGraphs();
     Profiles::Done();
     mainwin=NULL;
@@ -153,11 +153,11 @@ void MainWindow::Startup()
 
     if (daily) daily->ReloadGraphs();
 
-    if (overview) {
+    /*if (overview) {
         overview->ReloadGraphs();
         overview->UpdateGraphs();
 
-    }
+    }*/
 
     qprogress->hide();
     qstatus->setText(tr("Ready"));
@@ -189,11 +189,11 @@ void MainWindow::on_action_Import_Data_triggered()
             profile->Save();
             if (daily) daily->ReloadGraphs();
 
-            if (overview) {
+            /*if (overview) {
                 overview->ReloadGraphs();
                 overview->UpdateGraphs();
 
-            }
+            } */
             //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText(tr("Ready"));
@@ -253,7 +253,7 @@ void MainWindow::on_dailyButton_clicked()
 
 void MainWindow::on_overviewButton_clicked()
 {
-    ui->tabWidget->setCurrentWidget(overview);
+    //ui->tabWidget->setCurrentWidget(overview);
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)

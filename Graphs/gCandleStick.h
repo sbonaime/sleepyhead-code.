@@ -12,7 +12,7 @@
 class gCandleStick:public gLayer
 {
     public:
-        gCandleStick(gPointData *d=NULL,Qt::Orientation o=Qt::Horizontal);
+        gCandleStick(MachineCode code=MC_UNKNOWN,Qt::Orientation o=Qt::Horizontal);
         virtual ~gCandleStick();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

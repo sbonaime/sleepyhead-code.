@@ -9,7 +9,7 @@
 #include "gXAxis.h"
 
 gXAxis::gXAxis(QColor col)
-:gLayer(NULL)
+:gLayer(MC_UNKNOWN)
 {
     color.clear();
     color.push_back(col);
@@ -31,8 +31,8 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     float width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
-    double minx;
-    double maxx;
+    qint64 minx;
+    qint64 maxx;
     if (w.BlockZoom()) {
         minx=w.rmin_x;
         maxx=w.rmax_x;
@@ -47,7 +47,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     double xmult=width/xx;
 
     QString fd;
-    if (xx<1.5) {
+    if (xx<86400000L) {
         fd="00:00:00:0000";
     } else {
         fd="XXX";
@@ -70,9 +70,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     bool show_time=true;
 
     double min_tick;
-    if (xx<1.5) {
-        int rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
-
+    if (xx<86400000) {
+        //double rounding[16]={12,24,48,72,96,144,288,720,1440,2880,5760,8640,17280,86400,172800,345600}; // time rounding
+        double rounding[16]={7200000,3600000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,15000,10000,5000,2000,1000};
         int ri;
         for (ri=0;ri<16;ri++) {
             st=round(st2*rounding[ri])/rounding[ri];
@@ -80,11 +80,11 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             q=xx/min_tick;  // number of ticks that fits in range
             if (q<=jj) break; // compared to number of ticks that fit on screen.
         }
-        if (ri>8) show_seconds=true;
-        if (ri>=14) show_milliseconds=true;
+        if (min_tick<60000) show_seconds=true;
+        if (min_tick<10000) show_milliseconds=true;
 
-        if (min_tick<=0.25/86400.0)
-            min_tick=0.25/86400;
+        if (min_tick<=1000)
+            min_tick=1000;
     } else { // Day ticks..
         show_time=false;
         st=st2;
@@ -101,10 +101,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     double st3=st;
-    while (st3>minx) {
-        st3-=min_tick/10.0;
-    }
-    st3+=min_tick/10.0;
+    //while (st3>minx) {
+    //    st3-=min_tick/10.0;
+    //}
+    //st3+=min_tick/10.0;
 
     py=w.GetBottomMargin();
 
@@ -131,9 +131,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
 
-    while (st<minx) {
-        st+=min_tick; //10.0;  // mucking with this changes the scrollyness of the ticker.
-    }
+    //while (st<minx) {
+    //    st+=min_tick/10.0;  // mucking with this changes the scrollyness of the ticker.
+    //}
 
     int hour,minute,second,millisecond;
     QDateTime d;
@@ -144,8 +144,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     //const double extra=min_tick/10.0;
     const double extra=0;
+
     for (double i=st; i<=maxx+extra; i+=min_tick) {
-        d=QDateTime::fromMSecsSinceEpoch(i*86400000.0);
+        d=QDateTime::fromMSecsSinceEpoch(i);
 
         if (show_time) {
             minute=d.time().minute();
@@ -177,17 +178,14 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         GetTextExtent(fd,x,y);
-        //glColor3ub(0,0,0);
         if (!show_time) {
             DrawText(fd, px+y, scry-(py-(x/2)-8), 90.0);
-            //w.renderText(px-(y/2)+2, scry-(py-(x/2)-20), 90.0,fd);
         } else {
             DrawText(fd, px-(x/2), scry-(py-8-y));
-            //w.renderText(px-(x/2), scry-(py-(y/2)-20), fd);
         }
 
     }
-// Draw the little ticks.
+    // Draw the little ticks.
     if (vertcnt>=maxverts) {
         qWarning() << "maxverts exceeded in gYAxis::Plot()";
         return;

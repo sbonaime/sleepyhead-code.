@@ -27,8 +27,8 @@ const QString & gTimeYAxis::Format(double v)
 };
 
 
-gSessionTime::gSessionTime(gPointData *d,QColor col,Qt::Orientation o)
-:gLayer(d),m_orientation(o)
+gSessionTime::gSessionTime(MachineCode code,QColor col,Qt::Orientation o)
+:gLayer(code),m_orientation(o)
 {
     color.clear();
     color.push_back(col);
@@ -43,7 +43,7 @@ gSessionTime::~gSessionTime()
 void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    if (!data) return;
+    /*if (!data) return;
     if (!data->IsReady()) return;
 
     int start_px=w.GetLeftMargin();
@@ -157,5 +157,5 @@ void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
     glVertex2f (start_px, start_py+height+1);
     glVertex2f (start_px,start_py);
     glVertex2f (start_px+width, start_py);
-    glEnd ();
+    glEnd (); */
 }

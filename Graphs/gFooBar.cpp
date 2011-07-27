@@ -7,7 +7,7 @@
 #include "gFooBar.h"
 
 gFooBar::gFooBar(int offset,QColor col1,QColor col2,bool funkbar)
-:gLayer(NULL),m_funkbar(funkbar),m_offset(offset)
+:gLayer(MC_UNKNOWN),m_funkbar(funkbar),m_offset(offset)
 {
     color.clear();
     color.push_back(col2);

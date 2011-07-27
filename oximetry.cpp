@@ -2,7 +2,7 @@
 #include <QProgressBar>
 #include <QMessageBox>
 
-#include "oximetry.h"
+/*#include "oximetry.h"
 #include "ui_oximetry.h"
 #include "qextserialport/qextserialenumerator.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
@@ -374,17 +374,17 @@ void Oximetry::onReadyRead()
     if (redraw_spo2)
         SPO2->updateGL();
 
-    /*if (bytes.size()==3) {
-    } else if (bytes.size()==2) { // Data bytes in live mode
+    //if (bytes.size()==3) {
+    //} else if (bytes.size()==2) { // Data bytes in live mode
         // Plethy data
-    } else {
+    //} else {
         //qDebug() << "Got " << bytes.size() << " bytes";
-    }*/
-    /*QString aa=QString::number(bytes.size(),16)+"bytes: ";
-    for (int i=0;i<bytes.size();i++) {
-        aa+=" "+QString::number((unsigned char)bytes[i],16);
-    }
-    qDebug() << aa; */
+    //}
+    //QString aa=QString::number(bytes.size(),16)+"bytes: ";
+    //for (int i=0;i<bytes.size();i++) {
+      //  aa+=" "+QString::number((unsigned char)bytes[i],16);
+    //}
+    //qDebug() << aa;
 
     //lastsize=bytes.size();
 }
@@ -526,19 +526,19 @@ void Oximetry::on_ImportButton_clicked()
                 while (rb[startpos]!=0xf0) {
                     length=(length << 7) | (rb[startpos++] & 0x7f);
                 }
-                /*length=(rb[startpos++] & 0x7f) << 14;
-                length|=(rb[startpos++] & 0x7f) << 7;
-                length|=(rb[startpos++] & 0x7f);
-                if (!(rb[startpos]&0x80)) {
-                    length <<= 8;
-                    length|=rb[startpos++];
-                }*/
-                /*length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]);
-                startpos+=2;
-                if (!(rb[startpos]&0x80)) {
-                    length|=(rb[startpos]&0x7f) << 14;
-                    startpos++;
-                } else oneoff=true; */
+                //length=(rb[startpos++] & 0x7f) << 14;
+                //length|=(rb[startpos++] & 0x7f) << 7;
+                //length|=(rb[startpos++] & 0x7f);
+                //if (!(rb[startpos]&0x80)) {
+                //    length <<= 8;
+                //    length|=rb[startpos++];
+                //}
+                //length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]);
+                //startpos+=2;
+                //if (!(rb[startpos]&0x80)) {
+                //    length|=(rb[startpos]&0x7f) << 14;
+                //    startpos++;
+                //} else oneoff=true;
                 buffer=new unsigned char [length+32];
 
                 //qDebug() << length << startpos;
@@ -584,12 +584,12 @@ void Oximetry::on_ImportButton_clicked()
             spo2=buffer[i++];
             if (pulse!=0 && pulse!=lastpulse) {
                 data=pulse;
-                sess->AddEvent(new Event(tt,OXI_Pulse,&data,1));
+                sess->AddEvent(new Event(tt,OXI_Pulse,0,&data,1));
                 //qDebug() << "Pulse: " << int(pulse);
             }
             if (spo2 != 0 && spo2!=lastspo2) {
                 data=spo2;
-                sess->AddEvent(new Event(tt,OXI_SPO2,&data,1));
+                sess->AddEvent(new Event(tt,OXI_SPO2,0,&data,1));
                 //qDebug() << "SpO2: " << int(spo2);
             }
 
@@ -598,9 +598,9 @@ void Oximetry::on_ImportButton_clicked()
             tt+=1000;
         }
         data=pulse;
-        sess->AddEvent(new Event(tt,OXI_Pulse,&data,1));
+        sess->AddEvent(new Event(tt,OXI_Pulse,0,&data,1));
         data=spo2;
-        sess->AddEvent(new Event(tt,OXI_SPO2,&data,1));
+        sess->AddEvent(new Event(tt,OXI_SPO2,0,&data,1));
         sess->summary[OXI_PulseMin]=sess->min_event_field(OXI_Pulse,0);
         sess->summary[OXI_PulseMax]=sess->max_event_field(OXI_Pulse,0);
         sess->summary[OXI_PulseAverage]=sess->weighted_avg_event_field(OXI_Pulse,0);
@@ -621,3 +621,4 @@ void Oximetry::on_ImportButton_clicked()
     ui->SerialPortsCombo->setEnabled(true);
     qstatus->setText("Ready");
 }
+*/

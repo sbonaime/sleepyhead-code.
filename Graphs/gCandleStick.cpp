@@ -7,8 +7,8 @@
 #include <math.h>
 #include "gCandleStick.h"
 
-gCandleStick::gCandleStick(gPointData *d,Qt::Orientation o)
-:gLayer(d)
+gCandleStick::gCandleStick(MachineCode code,Qt::Orientation o)
+:gLayer(code)
 {
     m_orientation=o;
 }
@@ -18,7 +18,7 @@ gCandleStick::~gCandleStick()
 void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    if (!data) return;
+    /*if (!data) return;
     if (!data->IsReady()) return;
 
     int start_px=w.GetLeftMargin();
@@ -113,6 +113,6 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
             }
         }
     } // for (int i
-    glFlush();
+    glFlush(); */
 }
 

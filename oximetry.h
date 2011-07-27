@@ -1,6 +1,6 @@
 #ifndef OXIMETRY_H
 #define OXIMETRY_H
-
+/*
 #include <QWidget>
 #include <QGLContext>
 
@@ -61,5 +61,5 @@ private:
     int lastpulse, lastspo2;
 
 };
-
+*/
 #endif // OXIMETRY_H

@@ -18,6 +18,7 @@
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
 #include <Graphs/graphdata.h>
+#include "Graphs/gLineChart.h"
 #include <Graphs/gFlagsLine.h>
 namespace Ui {
     class Daily;
@@ -32,7 +33,7 @@ public:
     ~Daily();
     void ReloadGraphs();
     void RedrawGraphs();
-    QGLWidget *SharedWidget() { return SF; };
+    QGLWidget *SharedWidget() { return SF; }
 
 private slots:
 
@@ -57,24 +58,24 @@ private:
     void UpdateCalendarDay(QDate date);
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
-    gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
-    gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
+    //gLineChart *frw,*prd,*leak,*pr_ipap,*pr_epap,*snore,*pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
+
+    //gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
+    //gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
 
     gFlagsGroup *fg;
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB;
 
-    list<gPointData *> OXIData;
-    list<gPointData *> CPAPData;
+    list<gLayer *> OXIData;
+    list<gLayer *> CPAPData;
     vector<gGraphWindow *> Graphs;
     QGLContext *offscreen_context;
 
-    void AddCPAPData(gPointData *d) { CPAPData.push_back(d); }
-    void AddOXIData(gPointData *d) { OXIData.push_back(d); }
+    gLayer * AddCPAP(gLayer *d) { CPAPData.push_back(d); return d; }
+    gLayer * AddOXI(gLayer *d) { OXIData.push_back(d); return d; }
     void AddGraph(gGraphWindow *w);
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
-
-    gPointData *flags[11];
 
     Ui::Daily *ui;
     Profile *profile;

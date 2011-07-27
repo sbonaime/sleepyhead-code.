@@ -18,7 +18,7 @@
 #include "Graphs/gFooBar.h"
 #include "Graphs/gSessionTime.h"
 
-Overview::Overview(QWidget *parent,QGLWidget * shared) :
+/*Overview::Overview(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
     ui(new Ui::Overview)
 {
@@ -269,3 +269,4 @@ void Overview::on_rbDateRange_clicked()
 {
     UpdateGraphs();
 }
+*/

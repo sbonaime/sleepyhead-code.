@@ -8,7 +8,7 @@
 #include <QDebug>
 #include "graphdata_custom.h"
 
-
+/*
 WaveData::WaveData(MachineCode _code, int _size)
 :gPointData(_size),code(_code)
 {
@@ -336,14 +336,14 @@ void FlagData::Reload(Day *day)
                 done=true;
                 break;
             }
-            /*if (first) {
+           if (first) {
                 min_y=v1;
                 first=false;
             } else {
 
        if (v1<min_x) min_x=v1;
             }
-            if (v2>max_x) max_x=v2; */
+            if (v2>max_x) max_x=v2;
         }
         if (done) break;
     }
@@ -364,20 +364,20 @@ void FlagData::Reload(Day *day)
 SessionTimes::SessionTimes(Profile * _profile)
 :HistoryData(_profile,2048)
 {
-    /*AddSegment(max_points);
-    if (profile->LastDay().isValid()) {
-        QDateTime tmp;
-        tmp.setDate(profile->FirstDay());
-        real_min_x=tmp.toMSecsSinceEpoch()/86400000.0;
-        tmp.setDate(profile->LastDay());
-        real_max_x=(tmp.toMSecsSinceEpoch()/86400000.0)+1;
-    }
-    real_min_y=real_max_y=0; */
+    //AddSegment(max_points);
+    //if (profile->LastDay().isValid()) {
+     //   QDateTime tmp;
+     //   tmp.setDate(profile->FirstDay());
+     //   real_min_x=tmp.toMSecsSinceEpoch()/86400000.0;
+     //   tmp.setDate(profile->LastDay());
+    //   real_max_x=(tmp.toMSecsSinceEpoch()/86400000.0)+1;
+    //}
+    //real_min_y=real_max_y=0;
 }
 SessionTimes::~SessionTimes()
 {
 }
-/*void SessionTimes::ResetDateRange()
+void SessionTimes::ResetDateRange()
 {
     if (profile->LastDay().isValid()) {
         QDateTime tmp;
@@ -413,7 +413,6 @@ void SessionTimes::SetDateRange(QDate start,QDate end)
         (*i)->DataChanged(this);
     }    // Do nothing else.. Callers responsibility to Refresh window.
 }
-*/
 
 void SessionTimes::Reload(Day *day)
 {
@@ -650,3 +649,4 @@ double UsageHistoryData::Calc(Day *day)
         return 0;
 }
 
+*/

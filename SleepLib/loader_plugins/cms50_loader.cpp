@@ -196,9 +196,15 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     EventDataType cp,cs;
 
     Session *sess=new Session(mach,sessid);
-    sess->set_first(starttime);
-    sess->AddEvent(new Event(starttime,OXI_Pulse,&last_pulse,1));
-    sess->AddEvent(new Event(starttime,OXI_SPO2,&last_spo2,1));
+    sess->UpdateFirst(starttime);
+    EventList *oxip=new EventList(OXI_Pulse,EVL_Event);
+    EventList *oxis=new EventList(OXI_SPO2,EVL_Event);
+    sess->eventlist[OXI_Pulse].push_back(oxip);
+    sess->eventlist[OXI_SPO2].push_back(oxis);
+    oxip->AddEvent(starttime,last_pulse);
+    oxis->AddEvent(starttime,last_spo2);
+    //sess->AddEvent(new Event(starttime,OXI_Pulse,0,&last_pulse,1));
+    //sess->AddEvent(new Event(starttime,OXI_SPO2,0,&last_spo2,1));
 
     EventDataType PMin=0,PMax=0,SMin=0,SMax=0,PAvg=0,SAvg=0;
     int PCnt=0,SCnt=0;
@@ -213,7 +219,8 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         cp=buffer[i];
         cs=buffer[i+1];
         if (last_pulse!=cp) {
-            sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
+            oxip->AddEvent(tt,cp);
+            //sess->AddEvent(new Event(tt,OXI_Pulse,0,&cp,1));
             if (tt>lasttime) lasttime=tt;
             if (cp>0) {
                 if (first_p) {
@@ -227,7 +234,8 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
             }
         }
         if (last_spo2!=cs) {
-            sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
+            oxis->AddEvent(tt,cs);
+            //sess->AddEvent(new Event(tt,OXI_SPO2,0,&cs,1));
             if (tt>lasttime) lasttime=tt;
             if (cs>0) {
                 if (first_s) {
@@ -246,10 +254,10 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         if (SMax<cs) SMax=cs;
         tt+=1000; // An educated guess of 1 second. Verified by gcz@cpaptalk
     }
-    if (cp) sess->AddEvent(new Event(tt,OXI_Pulse,&cp,1));
-    if (cs) sess->AddEvent(new Event(tt,OXI_SPO2,&cs,1));
+    if (cp) oxip->AddEvent(tt,cp);//sess->AddEvent(new Event(tt,OXI_Pulse,0,&cp,1));
+    if (cs) oxis->AddEvent(tt,cs);//sess->AddEvent(new Event(tt,OXI_SPO2,0,&cs,1));
 
-    sess->set_last(lasttime);
+    sess->UpdateLast(tt);
     //double t=sess->last()-sess->first().toTime_t();
     //double hours=(t/3600.0);
     //sess->set_hours(hours);

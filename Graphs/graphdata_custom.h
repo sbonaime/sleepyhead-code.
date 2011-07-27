@@ -13,6 +13,7 @@
 #include "SleepLib/machine_common.h"
 #include "graphdata.h"
 
+/*
 class FlagData:public gPointData
 {
 public:
@@ -127,5 +128,5 @@ protected:
     T_UHD uhd;
 };
 
-
+*/
 #endif // GRAPHDATA_CUSTOM_H

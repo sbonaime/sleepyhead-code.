@@ -9,31 +9,27 @@
 #define SESSION_H
 
 #include <QDebug>
-#include "SleepLib/machine.h"
 
+#include "SleepLib/machine.h"
+#include "SleepLib/event.h"
+class EventList;
 class Machine;
+
 class Session
 {
 public:
     Session(Machine *,SessionID);
     virtual ~Session();
 
-    void AddEvent(Event *e);
-    void AddWaveform(Waveform *w);
-
     bool Store(QString path);
     bool StoreSummary(QString filename);
     bool StoreEvents(QString filename);
-    bool StoreWaveforms(QString filename);
     //bool Load(QString path);
     bool LoadSummary(QString filename);
     bool LoadEvents(QString filename);
-    bool LoadWaveforms(QString filename);
 
     bool OpenEvents();
-    bool OpenWaveforms();
     void TrashEvents();
-    void TrashWaveforms();
 
     const SessionID & session() {
         return s_session;
@@ -64,16 +60,6 @@ public:
         double t=(s_last-s_first)/3600000.0;
         return t;
     };
-    int count_events(MachineCode mc) {
-        if (events.find(mc)==events.end()) return 0;
-        return events[mc].size();
-    };
-    double min_event_field(MachineCode mc,int field);
-    double max_event_field(MachineCode mc,int field);
-    double sum_event_field(MachineCode mc,int field);
-    double avg_event_field(MachineCode mc,int field);
-    double weighted_avg_event_field(MachineCode mc,int field);
-    double percentile(MachineCode mc,int field,double percentile);
 
     map<MachineCode,QVariant> summary;
     void SetChanged(bool val) {
@@ -84,13 +70,26 @@ public:
     bool IsChanged() {
         return s_changed;
     };
-    map<MachineCode,vector<Event *> > events;
-    map<MachineCode,vector<Waveform *> > waveforms;
 
-    bool IsLoneSession() { return s_lonesession; };
-    void SetLoneSession(bool b) { s_lonesession=b; };
-    void SetEventFile(QString & filename) { s_eventfile=filename; };
-    void SetWaveFile(QString & filename) { s_wavefile=filename; };
+    map<MachineCode,vector<EventList *> > eventlist;
+
+    bool IsLoneSession() { return s_lonesession; }
+    void SetLoneSession(bool b) { s_lonesession=b; }
+    void SetEventFile(QString & filename) { s_eventfile=filename; }
+    void SetWaveFile(QString & filename) { s_wavefile=filename; }
+
+    inline void UpdateFirst(qint64 v) { if (!s_first) s_first=v; else if (s_first>v) s_first=v; }
+    inline void UpdateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
+
+    EventDataType min(MachineCode code);
+    EventDataType max(MachineCode code);
+    qint64 first(MachineCode code);
+    qint64 last(MachineCode code);
+    int count(MachineCode code);
+    double sum(MachineCode mc);
+    EventDataType avg(MachineCode mc);
+    EventDataType weighted_avg(MachineCode mc);
+    EventDataType percentile(MachineCode mc,double percentile);
 
 protected:
     SessionID s_session;

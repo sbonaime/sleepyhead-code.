@@ -1,8 +1,8 @@
 #include <math.h>
 #include "gpiechart.h"
 
-gPieChart::gPieChart(gPointData *d,QColor col)
-:gLayer(d)
+gPieChart::gPieChart(MachineCode code,QColor col)
+:gLayer(code)
 {
     color.clear();
     color.push_back(col);
@@ -14,7 +14,7 @@ gPieChart::~gPieChart()
 void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    if (!data) return;
+    /*if (!data) return;
     if (!data->IsReady()) return;
 
     int start_px=w.GetLeftMargin();
@@ -83,7 +83,7 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         sum=q;
     }
     glDisable(GL_POLYGON_SMOOTH);
-    glDisable(GL_BLEND);
+    glDisable(GL_BLEND); */
     //glDisable(GL_DEPTH_TEST);
     //glDisable(GL_TEXTURE_2D);
 }

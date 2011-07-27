@@ -19,7 +19,6 @@
 
 #include "SleepLib/machine_common.h"
 #include "SleepLib/event.h"
-#include "SleepLib/waveform.h"
 #include "SleepLib/session.h"
 
 #include "SleepLib/day.h"

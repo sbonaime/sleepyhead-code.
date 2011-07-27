@@ -13,7 +13,7 @@ License: GPL
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QDebug>
-#include <math.h>
+#include <cmath>
 
 #include "resmed_loader.h"
 #include "SleepLib/session.h"
@@ -100,6 +100,7 @@ bool EDFParser::Parse()
     num_data_records=QString::fromAscii(header.num_data_records,8).toLong(&ok);
     if (!ok)
         return false;
+
     dur_data_record=QString::fromAscii(header.dur_data_records,8).toDouble(&ok)*1000.0;
     if (!ok)
         return false;
@@ -121,11 +122,18 @@ bool EDFParser::Parse()
     }
 
     for (int i=0;i<num_signals;i++) edfsignals[i]->transducer_type=Read(80);
+
     for (int i=0;i<num_signals;i++) edfsignals[i]->physical_dimension=Read(8);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_minimum=Read(8).toLong(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_maximum=Read(8).toLong(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->digital_minimum=Read(8).toLong(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->digital_maximum=Read(8).toLong(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_minimum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_maximum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i]->digital_minimum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) {
+        EDFSignal & e=*edfsignals[i];
+        e.digital_maximum=Read(8).toDouble(&ok);
+        e.gain=(e.physical_maximum-e.physical_minimum)/(e.digital_maximum-e.digital_minimum);
+        e.offset=0;
+    }
+
     for (int i=0;i<num_signals;i++) edfsignals[i]->prefiltering=Read(80);
     for (int i=0;i<num_signals;i++) edfsignals[i]->nr=Read(8).toLong(&ok);
     for (int i=0;i<num_signals;i++) edfsignals[i]->reserved=Read(32);
@@ -349,26 +357,26 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             m->AddSession(sess,profile); // Adding earlier than I really like here..
         }
         if (!done && sess) {
-            sess->summary[CPAP_PressureMedian]=sess->avg_event_field(CPAP_Pressure,0);
-            sess->summary[CPAP_PressureAverage]=sess->weighted_avg_event_field(CPAP_Pressure,0);
-            sess->summary[CPAP_PressureMinAchieved]=sess->min_event_field(CPAP_Pressure,0);
-            sess->summary[CPAP_PressureMaxAchieved]=sess->max_event_field(CPAP_Pressure,0);
+            sess->summary[CPAP_PressureMedian]=sess->avg(CPAP_Pressure);
+            sess->summary[CPAP_PressureAverage]=sess->weighted_avg(CPAP_Pressure);
+            sess->summary[CPAP_PressureMinAchieved]=sess->min(CPAP_Pressure);
+            sess->summary[CPAP_PressureMaxAchieved]=sess->max(CPAP_Pressure);
             sess->summary[CPAP_PressureMin]=sess->summary[CPAP_PressureMinAchieved];
             sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMaxAchieved];
 
-            sess->summary[CPAP_LeakMinimum]=sess->min_event_field(CPAP_Leak,0);
-            sess->summary[CPAP_LeakMaximum]=sess->max_event_field(CPAP_Leak,0); // should be merged..
-            sess->summary[CPAP_LeakMedian]=sess->avg_event_field(CPAP_Leak,0);
-            sess->summary[CPAP_LeakAverage]=sess->weighted_avg_event_field(CPAP_Leak,0);
+            sess->summary[CPAP_LeakMinimum]=sess->min(CPAP_Leak);
+            sess->summary[CPAP_LeakMaximum]=sess->max(CPAP_Leak); // should be merged..
+            sess->summary[CPAP_LeakMedian]=sess->avg(CPAP_Leak);
+            sess->summary[CPAP_LeakAverage]=sess->weighted_avg(CPAP_Leak);
 
-            sess->summary[CPAP_Snore]=sess->sum_event_field(CPAP_Snore,0);
-            sess->summary[CPAP_SnoreMinimum]=sess->min_event_field(CPAP_Snore,0);
-            sess->summary[CPAP_SnoreMaximum]=sess->max_event_field(CPAP_Snore,0);
-            sess->summary[CPAP_SnoreMedian]=sess->avg_event_field(CPAP_Snore,0);
-            sess->summary[CPAP_SnoreAverage]=sess->weighted_avg_event_field(CPAP_Snore,0);
-            sess->summary[CPAP_Obstructive]=sess->count_events(CPAP_Obstructive);
-            sess->summary[CPAP_Hypopnea]=sess->count_events(CPAP_Hypopnea);
-            sess->summary[CPAP_ClearAirway]=sess->count_events(CPAP_ClearAirway);
+            sess->summary[CPAP_Snore]=sess->sum(CPAP_Snore);
+            sess->summary[CPAP_SnoreMinimum]=sess->min(CPAP_Snore);
+            sess->summary[CPAP_SnoreMaximum]=sess->max(CPAP_Snore);
+            sess->summary[CPAP_SnoreMedian]=sess->avg(CPAP_Snore);
+            sess->summary[CPAP_SnoreAverage]=sess->weighted_avg(CPAP_Snore);
+            sess->summary[CPAP_Obstructive]=sess->count(CPAP_Obstructive);
+            sess->summary[CPAP_Hypopnea]=sess->count(CPAP_Hypopnea);
+            sess->summary[CPAP_ClearAirway]=sess->count(CPAP_ClearAirway);
             sess->summary[CPAP_Mode]=MODE_APAP;
         }
 
@@ -381,21 +389,23 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
 bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 {
+    // EVEnt records have useless duration record.
+
     QString t;
     long recs;
-    double totaldur,duration;
+    double duration;
     char * data;
     char c;
     long pos;
     bool sign,ok;
     double d;
     double tt;
-    EventDataType fields[3];
     MachineCode code;
     //Event *e;
-    totaldur=edf.GetNumDataRecords()*edf.GetDuration();
+    //totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
-    //sess->set_first(edf.startdate);
+    EventList *EL[4]={NULL};
+    sess->UpdateFirst(edf.startdate);
     //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
@@ -404,6 +414,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
         data=(char *)edf.edfsignals[s]->data;
         pos=0;
         tt=edf.startdate;
+        sess->UpdateFirst(tt);
         duration=0;
         while (pos<recs) {
             c=data[pos];
@@ -423,7 +434,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                 break;
             }
             if (!sign) d=-d;
-            tt=edf.startdate+(d*1000.0);
+            tt=edf.startdate+qint64(d*1000.0);
             duration=0;
             // First entry
 
@@ -455,14 +466,35 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     t+=tolower(data[pos++]);
                 } while ((data[pos]!=20) && (pos<recs)); // start code
                 if (!t.isEmpty()) {
-                    code=MC_UNKNOWN;
-                    if (t=="obstructive apnea") code=CPAP_Obstructive;
-                    else if (t=="hypopnea") code=CPAP_Hypopnea;
-                    else if (t=="apnea") code=CPAP_Apnea;
-                    else if (t=="central apnea") code=CPAP_ClearAirway;
-                    if (code!=MC_UNKNOWN) {
-                        fields[0]=duration;
-                        sess->AddEvent(new Event(tt,code,fields,1));
+                    //code=MC_UNKNOWN;
+                    if (t=="obstructive apnea") {
+                        code=CPAP_Obstructive;
+                        if (!EL[0]) {
+                            EL[0]=new EventList(code,EVL_Event);
+                            sess->eventlist[code].push_back(EL[0]);
+                        }
+                        EL[0]->AddEvent(tt,duration);
+                    } else if (t=="hypopnea") {
+                        code=CPAP_Hypopnea;
+                        if (!EL[1]) {
+                            EL[1]=new EventList(code,EVL_Event);
+                            sess->eventlist[code].push_back(EL[1]);
+                        }
+                        EL[1]->AddEvent(tt,duration);
+                    } else if (t=="apnea") {
+                        code=CPAP_Apnea;
+                        if (!EL[2]) {
+                            EL[2]=new EventList(code,EVL_Event);
+                            sess->eventlist[code].push_back(EL[2]);
+                        }
+                        EL[2]->AddEvent(tt,duration);
+                    } else if (t=="central apnea") {
+                        code=CPAP_ClearAirway;
+                        if (!EL[3]) {
+                            EL[3]=new EventList(code,EVL_Event);
+                            sess->eventlist[code].push_back(EL[3]);
+                        }
+                        EL[3]->AddEvent(tt,duration);
                     } else {
                         if (t!="recording starts") {
                             qDebug() << "Unknown ResMed annotation field: " << t;
@@ -478,6 +510,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
             while ((data[pos]==0) && pos<recs) pos++;
             if (pos>=recs) break;
         }
+        sess->UpdateLast(tt);
        // qDebug(data);
     }
     return true;
@@ -485,49 +518,73 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
 {
     QString t;
-    sess->set_first(edf.startdate);
-    sess->set_last(edf.enddate);
+    sess->UpdateFirst(edf.startdate);
     qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
+    sess->UpdateLast(edf.startdate+duration);
 
     for (int s=0;s<edf.GetNumSignals();s++) {
+        EDFSignal & es=*edf.edfsignals[s];
+        //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         MachineCode code;
-        if (edf.edfsignals[s]->label=="Flow") code=CPAP_FlowRate;
-        else if (edf.edfsignals[s]->label=="Mask Pres") {
+        if (edf.edfsignals[s]->label=="Flow") {
+            code=CPAP_FlowRate;
+        } else if (edf.edfsignals[s]->label=="Mask Pres") {
             code=CPAP_MaskPressure;
             //for (int i=0;i<recs;i++) edf.edfsignals[s]->data[i]/=50.0;
         } else {
             qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
             continue;
         }
-        Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-        edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-        sess->AddWaveform(w);
+        double rate=double(duration)/double(recs);
+        //es.gain=1;
+        EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+
+        a->AddWaveform(edf.startdate,es.data,recs,duration);
+
+        if (code==CPAP_MaskPressure) {
+            /*int v=ceil(a->max()/1);
+            a->setMax(v*1);
+            v=floor(a->min()/1);
+            a->setMin(v*1); */
+        } else if (code==CPAP_FlowRate) {
+            a->setMax(1);
+            a->setMin(-1);
+        }
+        sess->eventlist[code].push_back(a);
+        //delete edf.edfsignals[s]->data;
+        //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
     }
     return true;
 }
-void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs, qint64 duration,EventDataType divisor)
+EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, MachineCode code, long recs, qint64 duration,EventDataType min,EventDataType max)
 {
     bool first=true;
     double rate=(duration/recs); // milliseconds per record
     double tt=edf.startdate;
+    //sess->UpdateFirst(tt);
     EventDataType c,last;
+    //if (gain==0) gain=1;
+    EventList *el=new EventList(code,EVL_Event,es.gain,es.offset,min,max);
+    sess->eventlist[code].push_back(el);
     for (int i=0;i<recs;i++) {
-        c=data[i]/divisor;
+        c=es.data[i];
 
         if (first) {
-            sess->AddEvent(new Event(tt,code,&c,1));
+            el->AddEvent(tt,c);
             first=false;
         } else {
             if (last!=c) {
-                sess->AddEvent(new Event(tt,code,&c,1));
+                el->AddEvent(tt,c);
             }
         }
         tt+=rate;
 
         last=c;
     }
-    sess->AddEvent(new Event(tt,code,&c,1)); // add one at the end..
+    el->AddEvent(tt,c);
+    sess->UpdateLast(tt);
+    return el;
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
@@ -542,66 +599,86 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres=0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
 
-    sess->set_first(edf.startdate);
-    sess->set_last(edf.enddate);
+    sess->UpdateFirst(edf.startdate);
     qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
+    sess->UpdateLast(edf.startdate+duration);
     QString t;
     int emptycnt=0;
     for (int s=0;s<edf.GetNumSignals();s++) {
-        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        EDFSignal & es=*edf.edfsignals[s];
+        long recs=es.nr*edf.GetNumDataRecords();
+        double rate=double(duration)/double(recs);
+        //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
         MachineCode code;
-       // if (s==TherapyPres) {
-//            for (int i=0;i<recs;i++) qDebug("%04i %i",i,edf.edfsignals[s]->data[i]);
-//        } else
-        if (edf.edfsignals[s]->label=="Snore Index") {
+        if (es.label=="Snore Index") {
             code=CPAP_Snore;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
-        } else if (edf.edfsignals[s]->label=="Therapy Pres") {
+
+            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
+            //sess->eventlist[code].push_back(a);
+            //a->AddWaveform(edf.startdate,es.data,recs,duration);
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            a->setMax(1);
+            a->setMin(0);
+        } else if (es.label=="Therapy Pres") {
             code=CPAP_TherapyPressure;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0); //50.0
-        } else if (edf.edfsignals[s]->label=="MV") {
+            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
+            //sess->eventlist[code].push_back(a);
+            //a->AddWaveform(edf.startdate,es.data,recs,duration);
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label=="MV") {
             code=CPAP_MinuteVentilation;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
-            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            //sess->AddWaveform(w);
-        } else if (edf.edfsignals[s]->label=="RR") {
+            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
+            //sess->eventlist[code].push_back(a);
+            //a->AddWaveform(edf.startdate,es.data,recs,duration);
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label=="RR") {
             code=CPAP_RespiratoryRate;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
-            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            //sess->AddWaveform(w);
-        } else if (edf.edfsignals[s]->label=="Vt") {
+            EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+            sess->eventlist[code].push_back(a);
+            a->AddWaveform(edf.startdate,es.data,recs,duration);
+            //ToTimeDelta(sess,edf,es, code,recs,duration);
+        } else if (es.label=="Vt") {
             code=CPAP_TidalVolume;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration);
-            //Waveform *w=new Waveform(edf.startdate,code,edf.edfsignals[s]->data,recs,duration,edf.edfsignals[s]->digital_minimum,edf.edfsignals[s]->digital_maximum);
-            //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
-            //sess->AddWaveform(w);
-        } else if (edf.edfsignals[s]->label=="Leak") {
+            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
+            //sess->eventlist[code].push_back(a);
+            //a->AddWaveform(edf.startdate,es.data,recs,duration);
+            es.physical_maximum=es.physical_minimum=0;
+            es.gain*=1000.0;
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label=="Leak") {
             code=CPAP_Leak;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
-        } else if (edf.edfsignals[s]->label=="FFL Index") {
+           // es.gain*=100.0;
+            //es.gain=1;//10.0;
+            es.offset=-0.5;
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            a->setMax(1);
+            a->setMin(0);
+        } else if (es.label=="FFL Index") {
             code=CPAP_FlowLimitGraph;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
-        } else if (edf.edfsignals[s]->label=="Mask Pres") {
+            //es.gain=1;//10.0;
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            a->setMax(1);
+            a->setMin(0);
+        } else if (es.label=="Mask Pres") {
             code=CPAP_Pressure;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
-        } else if (edf.edfsignals[s]->label=="Exp Press") {
+            //es.gain=1;
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label=="Exp Press") {
             code=CPAP_ExpPressure;
-            ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,50.0);
-        } else if (edf.edfsignals[s]->label=="") {
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label=="") {
             if (emptycnt==0) {
                 code=ResMed_Empty1;
-                ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+                ToTimeDelta(sess,edf,es, code,recs,duration);
             } else if (emptycnt==1) {
                 code=ResMed_Empty2;
-                ToTimeDelta(sess,edf,edf.edfsignals[s]->data, code,recs,duration,1.0);
+                ToTimeDelta(sess,edf,es, code,recs,duration);
             } else {
-                qDebug() << "Unobserved Empty Signal " << edf.edfsignals[s]->label;
+                qDebug() << "Unobserved Empty Signal " << es.label;
             }
             emptycnt++;
         } else {
-            qDebug() << "Unobserved Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved Signal " << es.label;
         }
     }
     return true;

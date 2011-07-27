@@ -11,42 +11,71 @@
 #include "gLineChart.h"
 
 #define EXTRA_ASSERTS 1
-gLineChart::gLineChart(gPointData *d,QColor col,int dlsize,bool _accelerate,bool _hide_axes,bool _square_plot)
-:gLayer(d),m_accelerate(_accelerate),m_drawlist_size(dlsize),m_hide_axes(_hide_axes),m_square_plot(_square_plot)
+gLineChart::gLineChart(MachineCode code,QColor col,bool _square_plot)
+:gLayer(code),m_square_plot(_square_plot)
 {
-    m_drawlist=new QPointD [dlsize];
     color.clear();
     color.push_back(col);
     m_report_empty=false;
 }
 gLineChart::~gLineChart()
 {
-    delete [] m_drawlist;
 }
+
 
 // Time Domain Line Chart
 void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
+    const int max_drawlist_size=4096;
+    static QPoint m_drawlist[max_drawlist_size];
+
     if (!m_visible)
         return;
-    if (!data)
+    if (!m_day)
         return;
-    if (!data->IsReady())
-        return;
-    if (w.Title()=="Plethysomogram") {
-        int q=0;
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetBottomMargin();
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-2;
+    double miny,maxy,minx,maxx;
+    miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
+
+    int m;
+    if (maxy>500) {
+        m=ceil(maxy/100.0);
+        maxy=m*100;
+        m=floor(miny/100.0);
+        miny=m*100;
+    } else if (maxy>150) {
+        m=ceil(maxy/50.0);
+        maxy=m*50;
+        m=floor(miny/50.0);
+        miny=m*50;
+    } else if (maxy>80) {
+        m=ceil(maxy/20.0);
+        maxy=m*20;
+        m=floor(miny/20.0);
+        miny=m*20;
+    } else if (maxy>30) {
+        m=ceil(maxy/10.0);
+        maxy=m*10;
+        m=floor(miny/10.0);
+        miny=m*10;
+    } else if (maxy>5) {
+        m=ceil(maxy/5.0);
+        maxy=m*5;
+        m=floor(miny/5.0);
+        miny=m*5;
     } else {
-//        qDebug() << w.Title();
+        maxy=ceil(maxy);
+        if (maxy<1) maxy=1;
+
+        miny=floor(miny);
+        //if (miny<1) miny=0;
     }
 
-    int start_px=w.GetLeftMargin(), start_py=w.GetBottomMargin();
-
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
-    double minx=w.min_x, miny=w.min_y, maxx=w.max_x, maxy=w.max_y;
     double xx=maxx-minx, yy=maxy-miny;
-    float xmult=width/xx, ymult=height/yy;   // time to pixel conversion multiplier
+    float xmult=width/xx, ymult=(height)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
     if ((xx<0) || (yy<0))
@@ -54,43 +83,27 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     if ((yy==0) && (miny==0))
         return;
 
-    int num_points=0;
-    for (int z=0;z<data->VC();z++) num_points+=data->np[z]; // how many points all up?
+    float lastpx,lastpy;
+    float px,py;
+    int idx,idxend,np;
+    bool done,first;
+    double x0,x1,xL;
+    double sr;
+    int sam;
+    int minz,maxz;
 
-    // Draw bounding box if something else will be drawn.
-    if (!(!m_report_empty && !num_points)) {
-        glColor3f (0.1F, 0.1F, 0.1F);
+    // Draw bounding box
+    {
+        glColor3f (0.0, 0.0, 0.0);
         glLineWidth (1);
         glBegin (GL_LINE_LOOP);
         glVertex2f (start_px, start_py);
-        glVertex2f (start_px, start_py+height);
-        glVertex2f (start_px+width,start_py+height);
+        glVertex2f (start_px, start_py+height+2);
+        glVertex2f (start_px+width,start_py+height+2);
         glVertex2f (start_px+width, start_py);
         glEnd ();
     }
-
     width--;
-    if (!num_points) { // No Data?
-        if (m_report_empty) {
-            QString msg="No Waveform Available";
-            float x,y;
-            //TextMarkup...
-            GetTextExtent(msg,x,y,bigfont);
-            //w.renderText(start_px+(width/2.0)-(x/2.0),start_py+(height/2.0)-(y/2.0),msg,*bigfont);
-            DrawText(msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);//-(y/2.0)
-        }
-        return;
-    }
-    bool square_plot=m_square_plot;
-    if (num_points>500) {
-        square_plot=false;
-    }
-    bool accel=m_accelerate;
-    double sr;
-    int dp,sam;
-
-    QColor & col=color[0];
-    // Selected the plot line color
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
@@ -99,246 +112,333 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         return;
     }
 
-    float lastpx,lastpy;
-    float px,py;
-    int idx,idxend,np;
-    bool done,first;
-    double x0,x1,xL;
+    // Selected the plot line color
+    QColor & col=color[0];
 
+    int num_points=0;
     int visible_points=0;
+    int total_points=0;
+    int total_visible=0;
+    bool square_plot,accel;
 
-    for (int n=0;n<data->VC();n++) { // for each segment
+    for (vector<Session *>::iterator s=m_day->begin(); s!=m_day->end(); s++) {
+        vector<EventList *> & evec=(*s)->eventlist[m_code];
+        if (evec.size()==0) continue; // not possible
 
-        int siz=data->np[n];
-        if (siz<=1) continue; // Don't bother drawing 1 point or less.
+        num_points=0;
+        for (unsigned i=0;i<evec.size();i++) num_points+=evec[i]->count();
 
-        QPointD * point=data->point[n];
+        if (!num_points) continue;
 
-        x0=point[0].x();
-        xL=point[siz-1].x();
+        total_points+=num_points;
 
-        if (maxx<x0) continue;
-        if (xL<minx) continue;
+        for (unsigned n=0;n<evec.size();n++) { // for each segment
+            EventList & el=*evec[n];
 
-        if (x0>xL) {
-            if (siz==2) { // this happens on CPAP
-                QPointD t=point[0];
-                point[0]=point[siz-1];
-                point[siz-1]=t;
-                x0=point[0].x();
-            } else {
-                qDebug() << "Reversed order sample fed to gLineChart - ignored.";
-                continue;
-                //assert(x1<x2);
-            }
-        }
-        done=false;
-        first=true;
-        dp=0;
+            accel=el.type()==EVL_Waveform; // Turn on acceleration if this is a waveform.
 
-        x1=point[1].x();
-//        if (accel) {
-        sr=x1-x0;           // Time distance between samples
-        if (sr<=0) {
-            qWarning() << "qLineChart::Plot() assert(sr>0)";
-            return;
-        }
-            //assert(sr>0);
-       // double qx=xL-x0;    // Full time range of this segment
-        //double gx=xx/qx;    // ratio of how much of the whole data set this represents
-        //double segwidth=width*gx;
-        double XR=xx/sr;
-        double Z1=MAX(x0,minx);
-        double Z2=MIN(xL,maxx);
-        double ZD=Z2-Z1;
-        double ZR=ZD/sr;
-        double ZQ=ZR/XR;
-        double ZW=ZR/(width*ZQ);
-        const int num_averages=15;  // Max n umber of samples taken from samples per pixel for better min/max values
-        visible_points+=ZR*ZQ;
-        if (accel && n>0) {
-            sam=1;
-        }
-        if (ZW<num_averages) {
-            sam=1;
-            accel=false;
-        } else {
-            sam=ZW/num_averages;
-            if (sam<1) {
-                sam=1;
-                accel=false;
-            }
-        }
-
-        // Prepare the min max y values if we still are accelerating this plot
-        if (accel) {
-            for (int i=0;i<width;i++) {
-                m_drawlist[i].setX(height);
-                m_drawlist[i].setY(0);
-            }
-        }
-        int minz=width,maxz=0;
-
-        // Technically shouldn't never ever get fed reverse data.
-
-
-        // these calculations over estimate
-        // The Z? values are much more accurate
-
-        idx=0;
-        idxend=0;
-        np=0;
-        if (m_accelerate)  {
-            if (minx>x1) {
-                double j=minx-x0;  // == starting min of first sample in this segment
-                idx=floor(j/sr);
-                // Loose the precision
-                idx-=idx % sam;
-
-            } // else just start from the beginning
-
-            idxend=floor(xx/sr);
-            idxend/=sam; // devide by number of samples skips
-
-            np=(idxend-idx)+sam;
-            np /= sam;
-        } else {
-
-            np=siz;
-        }
-
-        bool watch_verts_carefully=false;
-        // better to do it here than in the main loop.
-        np <<= 2;
-
-        if (!accel && square_plot)
-            np <<= 1; // double it again
-
-        if (np>=maxverts) {
-            watch_verts_carefully=true;
-            //assert(np<maxverts);
-        }
-
-        bool firstpx=true;
-        int done2=0;
-        for (int i=idx;i<siz;i+=sam) {
-
-            if (first && point[i].x() < minx) continue; // Skip stuff before the start of our data window
-
-            if (first) {
-                first=false;
-                if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
+            square_plot=m_square_plot;
+            if (accel || num_points>500) { // Don't square plot if too many points or waveform
+                square_plot=false;
             }
 
-            px=1+((point[i].x() - minx) * xmult);   // Scale the time scale X to pixel scale X
+            int siz=evec[n]->count();
+            if (siz<=1) continue; // Don't bother drawing 1 point or less.
 
+            x0=el.time(0);
+            xL=el.time(siz-1);
 
-            if (!accel) {
-                py=1+((point[i].y() - miny) * ymult);   // Same for Y scale
-                if (firstpx) {
-                    firstpx=false;
+            if (maxx<x0) continue;
+            if (xL<minx) continue;
+
+            if (x0>xL) {
+                /*if (siz==2) { // this happens on CPAP
+
+                    QPointD t=point[0];
+                    point[0]=point[siz-1];
+                    point[siz-1]=t;
+                    x0=point[0].x();
+                } else { */
+                    qDebug() << "Reversed order sample fed to gLineChart - ignored.";
+                    continue;
+                    //assert(x1<x2);
+                //}
+            }
+            done=false;
+            first=true;
+
+            if (accel) {
+                x1=el.time(1);
+                sr=el.rate();           // Time distance between samples
+                if (sr<=0) {
+                    qWarning() << "qLineChart::Plot() assert(sr>0)";
+                    continue;
+                }
+
+                double XR=xx/sr;
+                double Z1=MAX(x0,minx);
+                double Z2=MIN(xL,maxx);
+                double ZD=Z2-Z1;
+                double ZR=ZD/sr;
+                double ZQ=ZR/XR;
+                double ZW=ZR/(width*ZQ);
+                const int num_averages=15;  // Max n umber of samples taken from samples per pixel for better min/max values
+                visible_points+=ZR*ZQ;
+                if (accel && n>0) {
+                    sam=1;
+                }
+                if (ZW<num_averages) {
+                    sam=1;
+                    accel=false;
                 } else {
-                    if (m_square_plot) {
-                        vertarray[vertcnt++]=lastpx;
-                        vertarray[vertcnt++]=lastpy;
-                        vertarray[vertcnt++]=start_px+px;
-                        vertarray[vertcnt++]=lastpy;
-                        vertarray[vertcnt++]=start_px+px;
-                        vertarray[vertcnt++]=lastpy;
-                    } else {
-                        vertarray[vertcnt++]=lastpx;
-                        vertarray[vertcnt++]=lastpy;
+                    sam=ZW/num_averages;
+                    if (sam<1) {
+                        sam=1;
+                        accel=false;
+                    }
+                }
+                // Prepare the min max y values if we still are accelerating this plot
+                if (accel) {
+                    for (int i=0;i<width;i++) {
+                        m_drawlist[i].setX(height);
+                        m_drawlist[i].setY(0);
+                    }
+                    minz=width;
+                    maxz=0;
+                }
+                total_visible+=visible_points;
+            } else {
+                sam=1;
+            }
+
+            // these calculations over estimate
+            // The Z? values are much more accurate
+
+            idx=0;
+            idxend=0;
+            np=0;
+
+
+            if (el.type()==EVL_Waveform)  {
+                // We can skip data previous to minx if this is a waveform
+
+                if (minx>x1) {
+                    double j=minx-x0;  // == starting min of first sample in this segment
+                    idx=floor(j/sr);
+                    // Loose the precision
+                    idx-=idx % sam;
+
+                } // else just start from the beginning
+
+                idxend=floor(xx/sr);
+                idxend/=sam; // devide by number of samples skips
+
+                np=(idxend-idx)+sam;
+                np /= sam;
+            } else {
+
+                np=siz;
+            }
+
+            //bool watch_verts_carefully=false;
+            // better to do it here than in the main loop.
+            np <<= 2;
+
+            if (square_plot)
+                np <<= 1; // double it again
+
+            if (np>=maxverts) {
+              //  watch_verts_carefully=true;
+                //assert(np<maxverts);
+            }
+            int xst=start_px+1;
+            int yst=start_py+1;
+
+            //int done2=0;
+            qint64 time;
+            EventDataType data;
+            EventDataType gain=el.gain();
+            EventDataType nmult=ymult*gain;
+            EventDataType ymin=miny/gain;
+
+            const vector<EventStoreType> & dat=el.getData();
+            const vector<qint64> & tim=el.getTime();
+
+            bool firstpx=true;
+            if (el.type()==EVL_Waveform) {  // Waveform Plot
+                time=el.time(idx);
+                qint64 rate=sr*sam;
+
+                if (accel) {
+
+                    for (int i=idx;i<siz;i+=sam) {
+                        time+=rate;
+                        //time=el.time(i);
+                        if (time < minx)
+                            continue; // Skip stuff before the start of our data window
+
+                        //data=el.data(i);
+                        data=dat[i];//*gain;
+                        px=((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                        py=((data - ymin) * nmult);   // Same for Y scale
+
+                        // In accel mode, each pixel has a min/max Y value.
+                        // m_drawlist's index is the pixel index for the X pixel axis.
+
+                        int z=floor(px); // Hmmm... round may screw this up.
+                        if (z<minz) minz=z;  // minz=First pixel
+                        if (z>maxz) maxz=z;  // maxz=Last pixel
+
+                        // Update the Y pixel bounds.
+                        if (py<m_drawlist[z].x()) m_drawlist[z].setX(py);
+                        if (py>m_drawlist[z].y()) m_drawlist[z].setY(py);
+
+                        if (time > maxx) {
+                            done=true; // Let this iteration finish.. (This point will be in far clipping)
+                            break;
+                        }
+                    }
+                    // Plot compressed accelerated vertex list
+                    for (int i=minz;i<maxz;i++) {
+                        vertarray[vertcnt++]=xst+i;
+                        vertarray[vertcnt++]=yst+m_drawlist[i].x();
+                        vertarray[vertcnt++]=xst+i;
+                        vertarray[vertcnt++]=yst+m_drawlist[i].y();
+
+                        if (vertcnt>=maxverts) break;
                     }
 
-                    vertarray[vertcnt++]=start_px+px;
-                    vertarray[vertcnt++]=start_py+py;
+                } else { // Zoomed in Waveform
+                    for (int i=idx;i<siz;i+=sam,time+=rate) {
+                        if (time < minx)
+                            continue; // Skip stuff before the start of our data window
+                        data=dat[i];//el.data(i);
 
-                    if (vertcnt>=maxverts) break;
-                    //#if defined(EXTRA_ASSERTS)
-                    //assert(vertcnt<maxverts);
-                    //#endif
+                        px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                        py=yst+((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
+
+                        if (firstpx) {
+                            lastpx=px;
+                            lastpy=py;
+                            firstpx=false;
+                            continue;
+                        }
+                        vertarray[vertcnt++]=lastpx;
+                        vertarray[vertcnt++]=lastpy;
+                        vertarray[vertcnt++]=px;
+                        vertarray[vertcnt++]=py;
+
+                        if (vertcnt>=maxverts) {
+                            done=true;
+                            break;
+                        }
+                        if (time > maxx) {
+                            //done=true; // Let this iteration finish.. (This point will be in far clipping)
+                            break;
+                        }
+                        lastpx=px;
+                        lastpy=py;
+                    }
                 }
-                lastpx=start_px+px;
-                lastpy=start_py+py;
-                //if (lastpx>start_px+width) done=true;
-            } else {
-                // In accel mode, each pixel has a min/max Y value.
-                // m_drawlist's index is the pixel index for the X pixel axis.
+            } else { // Standard events/zoomed in Plot
+                for (int i=idx;i<siz;i+=sam) {
+                    time=tim[i]; //el.time(i);
 
-                //float zz=(maxy-miny)/2.0;  // centreline
+                    if (first) {
+                        if (time < minx) continue; // Skip stuff before the start of our data window
+                        first=false;
+                        if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
+                    }
+                    data=dat[i]*gain; //
+                    //data=el.data(i); // raw access is faster
 
-                int y1=1+(point[i].y()-miny)*ymult;
+                    px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                    //py=yst+((data - ymin) * nmult);   // Same for Y scale with precomputed gain
+                    py=yst+((data - miny) * ymult);   // Same for Y scale with precomputed gain
 
-                int z=floor(px); // Hmmm... round may screw this up.
-                if (z<minz) minz=z;  // minz=First pixel
-                if (z>maxz) maxz=z;  // maxz=Last pixel
+                    if (firstpx) {
+                        firstpx=false;
+                    } else {
+                        if (m_square_plot) {
+                            vertarray[vertcnt++]=lastpx;
+                            vertarray[vertcnt++]=lastpy;
+                            vertarray[vertcnt++]=px;
+                            vertarray[vertcnt++]=lastpy;
+                            vertarray[vertcnt++]=px;
+                            vertarray[vertcnt++]=lastpy;
+                        } else {
+                            vertarray[vertcnt++]=lastpx;
+                            vertarray[vertcnt++]=lastpy;
+                        }
 
-                // Update the Y pixel bounds.
-                if (y1<m_drawlist[z].x()) m_drawlist[z].setX(y1);
-                if (y1>m_drawlist[z].y()) m_drawlist[z].setY(y1);
-                //if (z>width) done=true;
+                        vertarray[vertcnt++]=px;
+                        vertarray[vertcnt++]=py;
 
+                        if (vertcnt>=maxverts) {
+                            done=true;
+                            break;
+                        }
+                    }
+                    lastpx=px;
+                    lastpy=py;
+                    //if (lastpx>start_px+width) done=true;
+                    if (time > maxx) {
+                        //done=true; // Let this iteration finish.. (This point will be in far clipping)
+                        break;
+                    }
+                }
             }
-            if (point[i].x() > maxx) done=true; // Let this iteration finish.. (This point will be in far clipping)
 
             if (done) break;
         }
 
-        if (accel) {
-            dp=0;
-            // Plot compressed accelerated vertex list
-            for (int i=minz;i<maxz;i++) {
-                vertarray[vertcnt++]=start_px+i+1;
-                vertarray[vertcnt++]=start_py+m_drawlist[i].x();
-                vertarray[vertcnt++]=start_px+i+1;
-                vertarray[vertcnt++]=start_py+m_drawlist[i].y();
+    }
 
-                if (vertcnt>=maxverts) break;
-                //#if defined(EXTRA_ASSERTS)
-                //assert(vertcnt<maxverts);
-                //#endif
-            }
+    if (!total_points) { // No Data?
+
+        if (m_report_empty) {
+            QString msg="No Waveform Available";
+            float x,y;
+            GetTextExtent(msg,x,y,bigfont);
+            DrawText(msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
+    } else {
+
+        /*QString b;
+        long j=vertcnt/2;
+        if (accel) j/=2;
+        b.sprintf("%i %i %i %li",visible_points,sam,num_points,j);
+        float x,y;
+        GetTextExtent(b,x,y);
+        DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetBottomMargin()-10); */
+
+        glColor4ub(col.red(),col.green(),col.blue(),255);
+
+        // Crop to inside the margins.
+        glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height+2);
+        glEnable(GL_SCISSOR_TEST);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glLineWidth (1);
+        bool antialias=pref["UseAntiAliasing"].toBool();
+        if (antialias) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_LINE_SMOOTH);
+            glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+
+        }
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, vertarray);
+        glDrawArrays(GL_LINES, 0, vertcnt>>1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+        if (antialias) {
+            glDisable(GL_LINE_SMOOTH);
+            glDisable(GL_BLEND);
+        }
+        glDisable(GL_SCISSOR_TEST);
     }
-
-
-
-    /*QString b;
-    long j=vertcnt/2;
-    if (accel) j/=2;
-    b.sprintf("%i %i %i %li",visible_points,sam,num_points,j);
-    float x,y;
-    GetTextExtent(b,x,y);
-    DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetBottomMargin()-10); */
-
-    glColor4ub(col.red(),col.green(),col.blue(),255);
-
-    // Crop to inside the margins.
-    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    glEnable(GL_SCISSOR_TEST);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_TEST);
-    //glAlphaFunc(GL_LESS,0.8);
-    glLineWidth (1);
-    bool antialias=pref["UseAntiAliasing"].toBool();
-    if (antialias) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-
-    }
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_SHORT, 0, vertarray);
-    glDrawArrays(GL_LINES, 0, vertcnt>>1);
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    if (antialias) {
-        glDisable(GL_LINE_SMOOTH);
-        glDisable(GL_BLEND);
-    }
-    glDisable(GL_SCISSOR_TEST);
 }
 

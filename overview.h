@@ -7,7 +7,7 @@
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
 
-#include <QWidget>
+/*#include <QWidget>
 #include <QGLContext>
 #include <QSplitter>
 #include <QLabel>
@@ -61,5 +61,5 @@ private:
     QSplitter *gSplitter;
     QLabel *NoData;
 };
-
+*/
 #endif // OVERVIEW_H

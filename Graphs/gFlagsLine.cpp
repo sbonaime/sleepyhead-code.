@@ -15,30 +15,45 @@ gFlagsGroup::gFlagsGroup()
 gFlagsGroup::~gFlagsGroup()
 {
 }
+qint64 gFlagsGroup::Minx()
+{
+    if (m_day) {
+        return m_day->first();
+    }
+    return 0;
+}
+qint64 gFlagsGroup::Maxx()
+{
+    if (m_day) {
+        return m_day->last();
+    }
+    return 0;
+}
 
 void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 {
     if (!m_visible) return;
+    //if (!m_day) return;
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
 
-    vector<gFlagsLine *> visible;
+    vector<gFlagsLine *> lvisible;
     for (unsigned i=0;i<layers.size();i++) {
         gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
         if (!f) continue;
 
         if (!f->isEmpty() || f->isAlwaysVisible()) {
-            visible.push_back(f);
+            lvisible.push_back(f);
         }
     }
-    int vis=visible.size();
-    for (unsigned i=0;i<visible.size();i++) {
-        visible[i]->line_num=i;
-        visible[i]->total_lines=vis;
-        visible[i]->Plot(w,scrx,scry);
+    int vis=lvisible.size();
+    for (unsigned i=0;i<lvisible.size();i++) {
+        lvisible[i]->line_num=i;
+        lvisible[i]->total_lines=vis;
+        lvisible[i]->Plot(w,scrx,scry);
     }
     glColor3f (0.0F, 0.0F, 0.0F);
     glLineWidth (1);
@@ -52,12 +67,11 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(gPointData *d,QColor col,QString _label,bool always_visible)
-:gLayer(d),label(_label),m_always_visible(always_visible)
+gFlagsLine::gFlagsLine(MachineCode code,QColor col,QString _label,bool always_visible,FLT_Type flt)
+:gLayer(code),label(_label),m_always_visible(always_visible),m_flt(flt)
 {
     color.clear();
     color.push_back(col);
-
 }
 gFlagsLine::~gFlagsLine()
 {
@@ -65,8 +79,7 @@ gFlagsLine::~gFlagsLine()
 void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    if (!data) return;
-    if (!data->IsReady()) return;
+    if (!m_day) return;
 
     double minx;
     double maxx;
@@ -132,21 +145,25 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     float top=floor(line_top)+2;
     float bottom=top+floor(line_h)-3;
 
-    for (int n=0;n<data->VC();n++) {
-        if (!data->np[n]) continue;
+    qint64 X,Y;
+    for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
 
-        for (int i=0;i<data->np[n];i++) {
-            QPointD & rp=data->point[n][i];
-            if (rp.y() < minx) continue;
-            if (rp.x() > maxx) break;
-            x1=(rp.x() - minx) * xmult + w.GetLeftMargin();
-            if (rp.x()==rp.y()) {
+        EventList & el=*((*s)->eventlist[m_code][0]);
+
+        for (int i=0;i<el.count();i++) {
+            X=el.time(i);
+            Y=X-(el.data(i)*1000);
+            if (Y < minx) continue;
+            if (X > maxx) break;
+            x1=(X - minx) * xmult + w.GetLeftMargin();
+            if (m_flt==FLT_Bar) {
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=top;
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=bottom;
-            } else {
-                x2=(rp.y()-minx)*xmult+w.GetLeftMargin();
+            } else if (m_flt==FLT_Span) {
+                x2=(Y-minx)*xmult+w.GetLeftMargin();
                 //w1=x2-x1;
                 quadarray[quadcnt++]=x1;
                 quadarray[quadcnt++]=top;

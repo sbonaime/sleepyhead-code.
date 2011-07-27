@@ -6,16 +6,16 @@
 
 #include "graphlayer.h"
 
-gLayer::gLayer(gPointData *d,QString title)
-:m_title(title),data(d)
+gLayer::gLayer(MachineCode code,QString title)
+:m_code(code),m_title(title)
 {
-    if (data) {
-        data->AddLayer(this);
-    }
     m_visible = true;
     m_movable = false;
     color.push_back(QColor("red"));
     color.push_back(QColor("green"));
+    m_day=NULL;
+    m_miny=m_maxy=0;
+    m_minx=m_maxx=0;
 }
 
 gLayer::~gLayer()
@@ -23,56 +23,47 @@ gLayer::~gLayer()
 
 }
 
-//void gLayer::Plot(gGraphWindow & w,float scrx,float scry)
-//{
-//}
-
-void gLayer::DataChanged(gGraphData *src)
+void gLayer::SetDay(Day * d)
 {
-    for (list<gGraphWindow *>::iterator i=m_graph.begin();i!=m_graph.end();i++) {
-        if (src) {
-            (*i)->DataChanged(this);
-        } else {
-            (*i)->DataChanged(NULL);
-        }
-    }
-
+    m_day=d;
+    if (!d) return;
+    m_minx=d->first(m_code);
+    m_maxx=d->last(m_code);
+    m_miny=d->min(m_code);
+    m_maxy=d->max(m_code);
 }
-// Notify signal sent from gGraphData.. pass on to the graph so it can que a refresh and update stuff.
 
-void gLayer::SetData(gPointData * gd) { data=gd; };
-gPointData * gLayer::GetData() { return data; };
-double gLayer::MinX() { if (data) return data->MinX(); return 0;};
-double gLayer::MaxX() { if (data) return data->MaxX(); return 0;};
-double gLayer::MinY() { if (data) return data->MinY(); return 0;};
-double gLayer::MaxY() { if (data) return data->MaxY(); return 0;};
 
-double gLayer::RealMinX() { if (data) return data->RealMinX(); return 0;};
-double gLayer::RealMaxX() { if (data) return data->RealMaxX(); return 0;};
-double gLayer::RealMinY() { if (data) return data->RealMinY(); return 0;};
-double gLayer::RealMaxY() { if (data) return data->RealMaxY(); return 0;};
+bool gLayer::isEmpty()
+{
+    if (m_day && (m_day->count(m_code)!=0))
+        return false;
+    return true;
+}
 
-void gLayer::SetMinX(double v) { if (data) data->SetMinX(v); };
-void gLayer::SetMaxX(double v) { if (data) data->SetMaxX(v); };
-void gLayer::SetMinY(double v) { if (data) data->SetMinY(v); };
-void gLayer::SetMaxY(double v) { if (data) data->SetMaxY(v); };
-
-void gLayer::NotifyGraphWindow(gGraphWindow *g) { m_graph.push_back(g); };
-
-bool gLayer::isEmpty() { if (!data) return false; return data->isEmpty(); };
-
-gLayerGroup::gLayerGroup()
+gLayerGroup::gLayerGroup():gLayer(MC_UNKNOWN)
 {
 }
 gLayerGroup::~gLayerGroup()
 {
 }
-//void gLayerGroup::DataChanged(gGraphData *src);
-void gLayerGroup::NotifyGraphWindow(gGraphWindow *g)
+bool gLayerGroup::isEmpty()
+{
+    bool empty=true;
+    for (unsigned i=0;i<layers.size();i++) {
+        if (layers[i]->isEmpty()) {
+            empty=false;
+            break;
+        }
+    }
+    return empty;
+}
+void gLayerGroup::SetDay(Day * d)
 {
     for (unsigned i=0;i<layers.size();i++) {
-        layers[i]->NotifyGraphWindow(g);
+         layers[i]->SetDay(d);
     }
+    m_day=d;
 }
 
 void gLayerGroup::AddLayer(gLayer *l)
@@ -80,91 +71,65 @@ void gLayerGroup::AddLayer(gLayer *l)
     layers.push_back(l);
 }
 
-double gLayerGroup::MinX()
+qint64 gLayerGroup::Minx()
 {
     bool first=true;
-    double m=0;
+    qint64 m=0,t;
     for (unsigned i=0;i<layers.size();i++)  {
+        t=layers[i]->Minx();
+        if (!t) continue;
         if (first) {
-            m=layers[i]->MinX();
+            m=t;
             first=false;
         } else
-        if (m>layers[i]->MinX()) m=layers[i]->MinX();
+        if (m>t) m=t;
     }
     return m;
 }
-double gLayerGroup::MaxX()
+qint64 gLayerGroup::Maxx()
 {
     bool first=true;
-    double m=0;
+    qint64 m=0,t;
     for (unsigned i=0;i<layers.size();i++)  {
+        t=layers[i]->Maxx();
+        if (!t) continue;
         if (first) {
-            m=layers[i]->MaxX();
+            m=t;
             first=false;
         } else
-        if (m<layers[i]->MaxX()) m=layers[i]->MaxX();
+        if (m<t) m=t;
     }
     return m;
 }
-double gLayerGroup::MinY()
+EventDataType gLayerGroup::Miny()
 {
+    bool first=true;
+    EventDataType m=0,t;
+    for (unsigned i=0;i<layers.size();i++)  {
+        t=layers[i]->Miny();
+        if (t==layers[i]->Minx()) continue;
+        if (first) {
+            m=t;
+            first=false;
+        } else {
+            if (m>t) m=t;
+        }
+    }
+    return m;
 }
-double gLayerGroup::MaxY()
+EventDataType gLayerGroup::Maxy()
 {
+    bool first=true;
+    EventDataType m=0,t;
+    for (unsigned i=0;i<layers.size();i++)  {
+        t=layers[i]->Maxy();
+        if (t==layers[i]->Miny()) continue;
+        if (first) {
+            m=t;
+            first=false;
+        } else
+        if (m<t) m=t;
+    }
+    return m;
 }
 
-double gLayerGroup::RealMinX()
-{
-    bool first=true;
-    double m=0;
-    for (unsigned i=0;i<layers.size();i++)  {
-        if (first) {
-            m=layers[i]->RealMinX();
-            first=false;
-        } else
-        if (m>layers[i]->RealMinX()) m=layers[i]->RealMinX();
-    }
-    return m;
-}
-double gLayerGroup::RealMaxX()
-{
-    bool first=true;
-    double m=0;
-    for (unsigned i=0;i<layers.size();i++)  {
-        if (first) {
-            m=layers[i]->RealMaxX();
-            first=false;
-        } else
-        if (m>layers[i]->RealMaxX()) m=layers[i]->RealMaxX();
-    }
-    return m;
-}
-double gLayerGroup::RealMinY()
-{
-    return 0;
-}
-double gLayerGroup::RealMaxY()
-{
-    return 0;
-}
-
-void gLayerGroup::SetMinX(double v)
-{
-    for (unsigned i=0;i<layers.size();i++)
-        layers[i]->SetMinX(v);
-}
-void gLayerGroup::SetMaxX(double v)
-{
-    for (unsigned i=0;i<layers.size();i++)
-        layers[i]->SetMaxX(v);
-}
-void gLayerGroup::SetMinY(double v)
-{
-    for (unsigned i=0;i<layers.size();i++)
-        layers[i]->SetMinY(v);
-}
-void gLayerGroup::SetMaxY(double v)
-{
-    for (unsigned i=0;i<layers.size();i++)
-        layers[i]->SetMaxY(v);
-}

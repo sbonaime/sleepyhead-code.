@@ -45,10 +45,12 @@ public:
     QString label;
     QString transducer_type;
     QString physical_dimension;
-    long physical_minimum;
-    long physical_maximum;
-    long digital_minimum;
-    long digital_maximum;
+    double  physical_minimum;
+    double physical_maximum;
+    double digital_minimum;
+    double digital_maximum;
+    double gain;
+    double offset;
     QString prefiltering;
     long nr;
     QString reserved;
@@ -68,10 +70,10 @@ public:
 
     vector<EDFSignal *> edfsignals;
 
-    long GetNumSignals() { return num_signals; };
-    long GetNumDataRecords() { return num_data_records; };
-    double GetDuration() { return dur_data_record; };
-    QString GetPatient() { return patientident; };
+    long GetNumSignals() { return num_signals; }
+    long GetNumDataRecords() { return num_data_records; }
+    qint64 GetDuration() { return dur_data_record; }
+    QString GetPatient() { return patientident; }
     bool Parse();
     char *buffer;
     EDFHeader header;
@@ -101,9 +103,9 @@ public:
     virtual ~ResmedLoader();
     virtual int Open(QString & path,Profile *profile);
 
-    virtual int Version() { return resmed_data_version; };
-    virtual const QString & ClassName() { return resmed_class_name; };
-    void ToTimeDelta(Session *sess,EDFParser &edf, qint16 *data, MachineCode code, long recs,qint64 duration,EventDataType divisor=1);
+    virtual int Version() { return resmed_data_version; }
+    virtual const QString & ClassName() { return resmed_class_name; }
+    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, MachineCode code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0);
 
     Machine *CreateMachine(QString serial,Profile *profile);
 

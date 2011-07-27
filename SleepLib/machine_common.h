@@ -93,7 +93,7 @@ extern map<CPAPMode,QString> CPAPModeNames;
 enum MCDataType//:wxInt8
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
-
-
+typedef float EventDataType;
+typedef qint16 EventStoreType;
 
 #endif // MACHINE_COMMON_H

@@ -19,8 +19,6 @@ License: GPL
 
 #include "preferences.h"
 
-//const QString AppName="SleepyHead";
-
 const QString & getUserName()
 {
     static QString userName;
@@ -29,7 +27,6 @@ const QString & getUserName()
     if (userName.isEmpty()) {
         userName="Windows User";
 
-        // FIXME: I DONT KNOW QT'S WINDOWS DEFS
 #if defined (Q_WS_WIN32)
     #if defined(UNICODE)
     if ( qWinVersion() & Qt::WV_NT_based ) {

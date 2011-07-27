@@ -11,11 +11,13 @@
 
 class gFlagsGroup;
 
+enum FLT_Type { FLT_Bar, FLT_Span, FLT_Dot };
+
 class gFlagsLine:public gLayer
 {
     friend class gFlagsGroup;
     public:
-        gFlagsLine(gPointData *d=NULL,QColor col=Qt::black,QString _label="",bool always_visible=false);
+        gFlagsLine(MachineCode code,QColor col=Qt::black,QString _label="",bool always_visible=false,FLT_Type flt=FLT_Bar);
         virtual ~gFlagsLine();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
@@ -23,12 +25,13 @@ class gFlagsLine:public gLayer
         void setAlwaysVisible(bool b) { m_always_visible=b; }
         QString Label() { return label; }
         void Label(QString s) { label=s; }
-        void setTotalLines(int i) { total_lines=i; };
-        void setLineNum(int i) { line_num=i; };
+        void setTotalLines(int i) { total_lines=i; }
+        void setLineNum(int i) { line_num=i; }
     protected:
         QString label;
         bool m_always_visible;
         int total_lines,line_num;
+        FLT_Type m_flt;
 };
 
 class gFlagsGroup:public gLayerGroup
@@ -38,6 +41,9 @@ public:
     virtual ~gFlagsGroup();
 
     virtual void Plot(gGraphWindow &w, float scrx, float scry);
+    virtual qint64 Minx();
+    virtual qint64 Maxx();
+
 };
 
 #endif // GFLAGSLINE_H

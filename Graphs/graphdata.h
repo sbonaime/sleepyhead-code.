@@ -11,7 +11,7 @@
 #include "SleepLib/day.h"
 #include <list>
 using namespace std;
-enum gDataType { gDT_Point, gDT_Point3D, gDT_Stacked, gDT_Segmented };
+/*enum gDataType { gDT_Point, gDT_Point3D, gDT_Stacked, gDT_Segmented };
 
 class gLayer;
 
@@ -113,5 +113,5 @@ public:
 
     vector<QPointD *> point;
 };
-
+*/
 #endif // GRAPHDATA_H

@@ -8,8 +8,8 @@
 #include <SleepLib/profiles.h>
 #include "gBarChart.h"
 
-gBarChart::gBarChart(gPointData *d,QColor col,Qt::Orientation o)
-:gLayer(d),m_orientation(o)
+gBarChart::gBarChart(MachineCode code,QColor col,Qt::Orientation o)
+:gLayer(code),m_orientation(o)
 {
     color.clear();
     color.push_back(col);
@@ -24,7 +24,7 @@ gBarChart::~gBarChart()
 void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    if (!data) return;
+    /*if (!data) return;
     if (!data->IsReady()) return;
 
     int start_px=w.GetLeftMargin();
@@ -168,6 +168,6 @@ void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
     //glVertex2f (start_px,start_py);
     //glVertex2f (start_px+width, start_py);
     glEnd ();
-
+*/
 }
 

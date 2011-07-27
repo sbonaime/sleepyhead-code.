@@ -7,7 +7,9 @@
 #ifndef DAY_H
 #define DAY_H
 
+#include "SleepLib/machine_common.h"
 #include "SleepLib/machine.h"
+#include "SleepLib/event.h"
 #include "SleepLib/session.h"
 
 class OneTypePerDay
@@ -25,13 +27,10 @@ public:
 
     MachineType machine_type();
 
-    EventDataType min(MachineCode code,int field=0);
-    EventDataType max(MachineCode code,int field=0);
-    EventDataType avg(MachineCode code,int field=0);
-    EventDataType sum(MachineCode code,int field=0);
-    int count(MachineCode code);
-    EventDataType weighted_avg(MachineCode code,int field=0);
-    EventDataType percentile(MachineCode mc,int field,double percent);
+    EventDataType avg(MachineCode code);
+    EventDataType sum(MachineCode code);
+    EventDataType weighted_avg(MachineCode code);
+    EventDataType percentile(MachineCode mc,double percent);
 
     // Note, the following convert to doubles without considering the consequences fully.
     EventDataType summary_avg(MachineCode code);
@@ -40,29 +39,31 @@ public:
     EventDataType summary_min(MachineCode code);
     EventDataType summary_max(MachineCode code);
 
+    qint64 first() { return d_first; }
+    qint64 last() { return d_last; }
     qint64 first(MachineCode code);
     qint64 last(MachineCode code);
-    qint64 first() { return d_first; };
-    qint64 last() { return d_last; };
+    EventDataType min(MachineCode code);
+    EventDataType max(MachineCode code);
+    int count(MachineCode code);
+
 
     qint64 total_time(); // in milliseconds
-    double hours() { return double(total_time())/3600000.0; };
+    double hours() { return double(total_time())/3600000.0; }
 
-    Session *operator [](int i) { return sessions[i]; };
+    Session *operator [](int i) { return sessions[i]; }
 
-    vector<Session *>::iterator begin() { return sessions.begin(); };
-    vector<Session *>::iterator end() { return sessions.end(); };
+    vector<Session *>::iterator begin() { return sessions.begin(); }
+    vector<Session *>::iterator end() { return sessions.end(); }
 
-    size_t size() { return sessions.size(); };
+    size_t size() { return sessions.size(); }
     Machine *machine;
 
     void OpenEvents();
-    void OpenWaveforms();
 
 protected:
     vector<Session *> sessions;
     qint64 d_first,d_last;
-    qint64 d_totaltime;
 private:
     bool d_firstsession;
 };

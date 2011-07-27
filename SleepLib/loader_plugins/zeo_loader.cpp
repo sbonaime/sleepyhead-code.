@@ -28,6 +28,8 @@ ZEOLoader::~ZEOLoader()
 }
 int ZEOLoader::Open(QString & path,Profile *profile)
 {
+    profile=profile;
+    path=path;
     // ZEO folder structure detection stuff here.
 
     return 0; // number of machines affected

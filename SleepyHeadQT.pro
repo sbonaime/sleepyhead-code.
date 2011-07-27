@@ -37,7 +37,6 @@ SOURCES += main.cpp\
     SleepLib/event.cpp \
     SleepLib/session.cpp \
     SleepLib/day.cpp \
-    SleepLib/waveform.cpp \
     Graphs/graphwindow.cpp \
     Graphs/graphlayer.cpp \
     Graphs/graphdata.cpp \
@@ -88,7 +87,6 @@ HEADERS  += \
     SleepLib/machine_common.h \
     SleepLib/session.h \
     SleepLib/day.h \
-    SleepLib/waveform.h \
     Graphs/graphwindow.h \
     Graphs/graphlayer.h \
     Graphs/graphdata.h \

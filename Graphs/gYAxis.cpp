@@ -9,7 +9,7 @@
 #include "gYAxis.h"
 
 gYAxis::gYAxis(QColor col)
-:gLayer(NULL)
+:gLayer(MC_UNKNOWN)
 {
     color.clear();
     color.push_back(col);
@@ -30,8 +30,45 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     double miny=w.min_y;
     double maxy=w.max_y;
-    if (maxy==miny)
+
+    double dy=maxy-miny;
+    if (dy<=0)
         return;
+
+    int m;
+    if (maxy>500) {
+        m=ceil(maxy/100.0);
+        maxy=m*100;
+        m=floor(miny/100.0);
+        miny=m*100;
+    } else if (maxy>150) {
+        m=ceil(maxy/50.0);
+        maxy=m*50;
+        m=floor(miny/50.0);
+        miny=m*50;
+    } else if (maxy>80) {
+        m=ceil(maxy/20.0);
+        maxy=m*20;
+        m=floor(miny/20.0);
+        miny=m*20;
+    } else if (maxy>30) {
+        m=ceil(maxy/10.0);
+        maxy=m*10;
+        m=floor(miny/10.0);
+        miny=m*10;
+    } else if (maxy>5) {
+        m=ceil(maxy/5.0);
+        maxy=m*5;
+        m=floor(miny/5.0);
+        miny=m*5;
+    } else {
+        maxy=ceil(maxy);
+        if (maxy<1) maxy=1;
+        miny=floor(miny);
+        if (miny<1) miny=0;
+
+    }
+
     //if ((w.max_x-w.min_x)==0)
     //    return;
 

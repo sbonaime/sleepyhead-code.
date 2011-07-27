@@ -9,9 +9,7 @@
 Day::Day(Machine *m)
 :machine(m)
 {
-
     d_firstsession=true;
-    sessions.clear();
 }
 Day::~Day()
 {
@@ -124,53 +122,7 @@ EventDataType Day::summary_weighted_avg(MachineCode code)
 
 }
 
-EventDataType Day::min(MachineCode code,int field)
-{
-    EventDataType val=0,tmp;
-    bool fir=true;
-    // Cache this?
-
-    vector<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            tmp=sess.min_event_field(code,field);
-            if (fir) {
-                val=tmp;
-                fir=false;
-            } else {
-                if (val>tmp) val=tmp;
-            }
-        }
-    }
-    return val;
-}
-
-EventDataType Day::max(MachineCode code,int field)
-{
-    EventDataType val=0,tmp;
-    bool fir=true;
-    // Cache this?
-
-    // Don't assume sessions are in order.
-    vector<Session *>::iterator s;
-    for (s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            tmp=sess.max_event_field(code,field);
-            if (fir) {
-                val=tmp;
-                fir=false;
-            } else {
-                if (val<tmp) val=tmp;
-            }
-        }
-    }
-    return val;
-}
-
-EventDataType Day::avg(MachineCode code,int field)
+EventDataType Day::avg(MachineCode code)
 {
     double val=0;
     // Cache this?
@@ -180,8 +132,8 @@ EventDataType Day::avg(MachineCode code,int field)
     // Don't assume sessions are in order.
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            val+=sess.avg_event_field(code,field);
+        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
+            val+=sess.avg(code);
             cnt++;
         }
     }
@@ -189,7 +141,7 @@ EventDataType Day::avg(MachineCode code,int field)
     return EventDataType(val/float(cnt));
 }
 
-EventDataType Day::sum(MachineCode code,int field)
+EventDataType Day::sum(MachineCode code)
 {
     // Cache this?
     EventDataType val=0;
@@ -197,33 +149,21 @@ EventDataType Day::sum(MachineCode code,int field)
 
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            val+=sess.sum_event_field(code,field);
+        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
+            val+=sess.sum(code);
         }
     }
     return val;
 }
 
-int Day::count(MachineCode code)
-{
-    int val=0;
-
-    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            val+=sess.count_events(code);
-        }
-    }
-    return val;
-}
-EventDataType Day::weighted_avg(MachineCode code,int field)
+EventDataType Day::weighted_avg(MachineCode code)
 {
     double s0=0,s1=0,s2=0;
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
+        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
             s0=sess.hours();
-            s1+=sess.weighted_avg_event_field(code,field)*s0;
+            s1+=sess.weighted_avg(code)*s0;
             s2+=s0;
         }
     }
@@ -233,22 +173,22 @@ EventDataType Day::weighted_avg(MachineCode code,int field)
 // Total session time in milliseconds
 qint64 Day::total_time()
 {
-    d_totaltime=0;
+    qint64 d_totaltime=0;
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         d_totaltime+=sess.last()-sess.first();
     }
     return d_totaltime;
 }
-EventDataType Day::percentile(MachineCode code,int field,double percent)
+EventDataType Day::percentile(MachineCode code,double percent)
 {
     double val=0;
     int cnt=0;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            val+=sess.percentile(code,field,percent);
+        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
+            val+=sess.percentile(code,percent);
             cnt++;
         }
     }
@@ -263,14 +203,12 @@ qint64 Day::first(MachineCode code)
     qint64 tmp;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            tmp=sess.events[code][0]->time();
-            if (!date) {
-                date=tmp;
-            } else {
-                if (tmp<date) date=tmp;
-            }
+        tmp=(*s)->first(code);
+        if (!tmp) continue;
+        if (!date) {
+            date=tmp;
+        } else {
+            if (tmp<date) date=tmp;
         }
     }
     return date;
@@ -282,25 +220,59 @@ qint64 Day::last(MachineCode code)
     qint64 tmp;
 
     for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        Session & sess=*(*s);
-        if (sess.events.find(code)!=sess.events.end()) {
-            vector<Event *>::reverse_iterator i=sess.events[code].rbegin();
-            if (i==sess.events[code].rend()) {
-                qWarning() << "Day::last() i==sess.events[code].rend()";
-                continue;
-            }
-            //assert(i!=sess.events[code].rend());
-            tmp=(*i)->time();
-            if (!date) {
-                date=tmp;
-            } else {
-                if (tmp>date) date=tmp;
-            }
+        tmp=(*s)->last(code);
+        if (!tmp) continue;
+        if (!date) {
+            date=tmp;
+        } else {
+            if (tmp>date) date=tmp;
         }
     }
     return date;
 }
+EventDataType Day::min(MachineCode code)
+{
+    EventDataType min=0;
+    EventDataType tmp;
+    bool first=true;
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
+        tmp=(*s)->min(code);
+        if (first) {
+            min=tmp;
+            first=false;
+        } else {
+            if (tmp<min) min=tmp;
+        }
+    }
+    return min;
+}
 
+EventDataType Day::max(MachineCode code)
+{
+    EventDataType max=0;
+    EventDataType tmp;
+    bool first=true;
+    for (vector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
+        tmp=(*s)->max(code);
+        if (first) {
+            max=tmp;
+            first=false;
+        } else {
+            if (tmp>max) max=tmp;
+        }
+    }
+    return max;
+}
+int Day::count(MachineCode code)
+{
+    int sum=0;
+    for (unsigned i=0;i<sessions.size();i++) {
+        sum+=sessions[i]->count(code);
+    }
+    return sum;
+}
 void Day::OpenEvents()
 {
     vector<Session *>::iterator s;
@@ -309,12 +281,4 @@ void Day::OpenEvents()
         (*s)->OpenEvents();
     }
 
-}
-void Day::OpenWaveforms()
-{
-    vector<Session *>::iterator s;
-
-    for (s=sessions.begin();s!=sessions.end();s++) {
-        (*s)->OpenWaveforms();
-    }
 }
