@@ -411,11 +411,18 @@ void Daily::on_calendar_selectionChanged()
 }
 void Daily::Load(QDate date)
 {
+    static Day * lastcpapday=NULL;
     previous_date=date;
     Day *cpap=profile->GetDay(date,MT_CPAP);
     Day *oxi=profile->GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
+    if (lastcpapday && (lastcpapday!=cpap)) {
+        for (vector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
+            (*s)->TrashEvents();
+        }
+    }
+    lastcpapday=cpap;
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
@@ -823,6 +830,7 @@ void Daily::UpdateCPAPGraphs(Day *day)
 void Daily::UpdateOXIGraphs(Day *day)
 {
     //if (!day) return;
+
     if (day) {
         day->OpenEvents();
     }

@@ -44,6 +44,7 @@ void Session::TrashEvents()
             delete *j;
         }
     }
+    s_events_loaded=false;
     eventlist.clear();
 }
 
@@ -77,11 +78,15 @@ bool Session::Store(QString path)
     bool a;
     a=StoreSummary(base+".000"); // if actually has events
     //qDebug() << " Summary done";
+    s_eventfile=base+".001";
     if (eventlist.size()>0) StoreEvents(base+".001");
     //qDebug() << " Events done";
     if (a) {
         s_changed=false;
+        s_events_loaded=true;
+        //TrashEvents();
     }
+
     return a;
 }
 

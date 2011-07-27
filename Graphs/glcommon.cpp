@@ -136,7 +136,7 @@ void DrawText(gGraphWindow &wid,QString text, int x, int  y, float angle, QColor
 {
     if (angle==90) {
         //TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
-        TextQueRot.push_back(TextBuffer(text,x,y,angle,color,font));
+       // TextQueRot.push_back(TextBuffer(text,x,y,angle,color,font));
     } else {
         wid.qglColor(color);
         wid.renderText(x,wid.GetScrY()-y,0,text,*font);

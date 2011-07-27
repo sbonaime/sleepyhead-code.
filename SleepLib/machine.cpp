@@ -441,6 +441,7 @@ bool Machine::Save()
             cnt++;
             if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
             if ((*s)->IsChanged()) (*s)->Store(path);
+            (*s)->TrashEvents();
         }
         //qDebug() << "Day Save Completed";
 

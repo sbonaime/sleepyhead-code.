@@ -632,12 +632,6 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
     if (x<GetLeftMargin()) {
         LastGraphLDown=this;
         m_dragGraph=true;
-  /*      QDrag *drag = new QDrag(this);
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setText("BiteMe");
-        drag->setMimeData(mimeData);
-
-        Qt::DropAction dropAction = drag->exec(); */
         return;
     }
     int width=m_scrX-GetRightMargin()-GetLeftMargin();
