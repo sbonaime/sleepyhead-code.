@@ -118,7 +118,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                }
                if (xx<(1800000)) {
                     GetTextExtent(label,x,y);
-                    DrawText(label,x1-(x/2),scry-(start_py+height-30+y));
+                    DrawText(w,label,x1-(x/2),scry-(start_py+height-30+y));
                     //w.renderText(x1-(x/2),scry-(start_py+height-30+y),label);
                }
 

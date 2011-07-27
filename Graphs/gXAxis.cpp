@@ -179,9 +179,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
         GetTextExtent(fd,x,y);
         if (!show_time) {
-            DrawText(fd, px+y, scry-(py-(x/2)-8), 90.0);
+            DrawText(w,fd, px+y, scry-(py-(x/2)-8), 90.0);
         } else {
-            DrawText(fd, px-(x/2), scry-(py-8-y));
+            DrawText(w,fd, px-(x/2), scry-(py-8-y));
         }
 
     }

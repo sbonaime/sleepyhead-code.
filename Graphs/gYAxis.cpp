@@ -144,7 +144,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=start_py+ty;
-        DrawText(fd,start_px-12-x,scry-(h-(y/2.0)),0);
+        DrawText(w,fd,start_px-12-x,scry-(h-(y/2.0)),0);
 
         vertarray[vertcnt++]=start_px-4;
         vertarray[vertcnt++]=h;

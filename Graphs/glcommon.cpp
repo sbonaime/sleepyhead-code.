@@ -95,31 +95,32 @@ struct TextBuffer
     float angle;
     QColor color;
     QFont *font;
+    TextBuffer() { x=0; y=0; }
     TextBuffer(QString _text, int _x, int  _y, float _angle, QColor _color,QFont *_font) {
         text=_text; x=_x; y=_y; angle=_angle; color=_color; font=_font;
     }
 };
-vector<TextBuffer *> TextQue;
-vector<TextBuffer *> TextQueRot;
+vector<TextBuffer> TextQue;
+vector<TextBuffer> TextQueRot;
 
 void DrawTextQueue(gGraphWindow & wid)
 {
     //glFlush();
     for (unsigned i=0;i<TextQue.size();i++) {
-        TextBuffer & t=*TextQue[i];
+        TextBuffer & t=TextQue[i];
         wid.qglColor(t.color);
         wid.renderText(t.x,wid.GetScrY()-t.y,0,t.text,*t.font);
         //RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
-        delete TextQue[i];
+        //delete TextQue[i];
     }
 
     if (wid.parentWidget()!=0) {
         QPainter painter(&wid);
         // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
         for (unsigned i=0;i<TextQueRot.size();i++) {
-            TextBuffer & t=*TextQueRot[i];
+            TextBuffer & t=TextQueRot[i];
             RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
-            delete TextQueRot[i];
+            //delete TextQueRot[i];
         }
         painter.end();
     }
@@ -131,13 +132,16 @@ void DrawTextQueue(gGraphWindow & wid)
     glDisable(GL_DEPTH_TEST);
 }
 // I bet this slows things down craploads..  should probably skip the vector and use a preallocated textbuffer array.
-void DrawText(QString text, int x, int  y, float angle, QColor color,QFont *font)
+void DrawText(gGraphWindow &wid,QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
-    TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
-    if (angle==90)
-        TextQueRot.push_back(b);
-    else
-        TextQue.push_back(b);
+    if (angle==90) {
+        //TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
+        TextQueRot.push_back(TextBuffer(text,x,y,angle,color,font));
+    } else {
+        wid.qglColor(color);
+        wid.renderText(x,wid.GetScrY()-y,0,text,*font);
+        //TextQue.push_back(b);
+    }
 }
 
 

@@ -27,7 +27,7 @@ gLineChart::~gLineChart()
 void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
     const int max_drawlist_size=4096;
-    static QPoint m_drawlist[max_drawlist_size];
+    QPoint m_drawlist[max_drawlist_size];
 
     if (!m_visible)
         return;
@@ -407,7 +407,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             QString msg="No Waveform Available";
             float x,y;
             GetTextExtent(msg,x,y,bigfont);
-            DrawText(msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
+            DrawText(w,msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
 
