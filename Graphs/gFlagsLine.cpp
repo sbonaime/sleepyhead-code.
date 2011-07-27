@@ -67,8 +67,8 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(MachineCode code,QColor col,QString _label,bool always_visible,FLT_Type flt)
-:gLayer(code),label(_label),m_always_visible(always_visible),m_flt(flt)
+gFlagsLine::gFlagsLine(MachineCode code,QColor col,QString label,bool always_visible,FlagType flt)
+:gLayer(code),m_label(label),m_always_visible(always_visible),m_flt(flt)
 {
     color.clear();
     color.push_back(col);
@@ -136,8 +136,8 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     // Draw text label
     float x,y;
-    GetTextExtent(label,x,y);
-    DrawText(w,label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
+    GetTextExtent(m_label,x,y);
+    DrawText(w,m_label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
     float x1,x2;
 
     QColor & col=color[0];
@@ -157,12 +157,12 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
             if (Y < minx) continue;
             if (X > maxx) break;
             x1=(X - minx) * xmult + w.GetLeftMargin();
-            if (m_flt==FLT_Bar) {
+            if (m_flt==FT_Bar) {
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=top;
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=bottom;
-            } else if (m_flt==FLT_Span) {
+            } else if (m_flt==FT_Span) {
                 x2=(Y-minx)*xmult+w.GetLeftMargin();
                 //w1=x2-x1;
                 quadarray[quadcnt++]=x1;

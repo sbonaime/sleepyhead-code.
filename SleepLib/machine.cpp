@@ -17,89 +17,17 @@
 
 extern QProgressBar * qprogress;
 
-map<MachineType,ChannelCode> MachLastCode;
+//map<MachineType,ChannelCode> MachLastCode;
 
-/* ChannelCode RegisterChannel(MachineType type)
-{
-    if (MachLastCode.find(type)==MachLastCode.end()) {
-        return MachLastCode[type]=0;
-    }
-    return ++(MachLastCode[type]);
-};
-
-const int CPAP_WHATEVER=RegisterChannel(MT_CPAP); */
-//map<MachineID,Machine *> MachList;
-
-/*map<MachineType,QString> MachineTypeString= {
-    {MT_UNKNOWN, 	wxT("Unknown")},
-    {MT_CPAP,	 	wxT("CPAP")},
-    {MT_OXIMETER,	wxT("Oximeter")},
-    {MT_SLEEPSTAGE,	wxT("SleepStage")}
-}; */
-
-/*map<QString,MachineType> MachineTypeLookup= {
-    { MachineTypeString[MT_UNKNOWN].Lower(),	MT_UNKNOWN },
-    { MachineTypeString[MT_CPAP].Lower(), 		MT_CPAP },
-    { MachineTypeString[MT_OXIMETER].Lower(), 	MT_OXIMETER },
-    { MachineTypeString[MT_SLEEPSTAGE].Lower(), MT_SLEEPSTAGE}
-}; */
 map<CPAPMode,QString> CPAPModeNames;
-/*={
-    {MODE_UNKNOWN,wxT("Undetermined")},
-    {MODE_CPAP,wxT("CPAP")},
-    {MODE_APAP,wxT("APAP")},
-    {MODE_BIPAP,wxT("BIPAP")},
-    {MODE_ASV,wxT("ASV")}
-};*/
+
 map<PRTypes,QString> PressureReliefNames;
-/*={
-    {PR_UNKNOWN,_("Undetermined")},
-    {PR_NONE,_("None")},
-    {PR_CFLEX,wxT("C-Flex")},
-    {PR_CFLEXPLUS,wxT("C-Flex+")},
-    {PR_AFLEX,wxT("A-Flex")},
-    {PR_BIFLEX,wxT("Bi-Flex")},
-    {PR_EPR,wxT("Exhalation Pressure Relief (EPR)")},
-    {PR_SMARTFLEX,wxT("SmartFlex")}
-}; */
-
-
 
 // Master list. Look up local name table first.. then these if not found.
 map<MachineCode,QString> DefaultMCShortNames;
-/*= {
-    {CPAP_Obstructive,	wxT("OA")},
-    {CPAP_Hypopnea,		wxT("H")},
-    {CPAP_RERA,			wxT("RE")},
-    {CPAP_ClearAirway,	wxT("CA")},
-    {CPAP_CSR,			wxT("CSR")},
-    {CPAP_VSnore,		wxT("VS")},
-    {CPAP_FlowLimit,	wxT("FL")},
-    {CPAP_Pressure,		wxT("P")},
-    {CPAP_Leak,			wxT("LR")},
-    {CPAP_EAP,			wxT("EAP")},
-    {CPAP_IAP,			wxT("IAP")},
-    {PRS1_VSnore2,		wxT("VS")},
-    {PRS1_PressurePulse,wxT("PP")}
-}; */
 
 // Master list. Look up local name table first.. then these if not found.
 map<MachineCode,QString> DefaultMCLongNames;
-/*= {
-    {CPAP_Obstructive,	wxT("Obstructive Apnea")},
-    {CPAP_Hypopnea,		wxT("Hypopnea")},
-    {CPAP_RERA,			wxT("Respiratory Effort / Arrousal")},
-    {CPAP_ClearAirway,	wxT("Clear Airway Apnea")},
-    {CPAP_CSR,			wxT("Cheyne Stokes Respiration")},
-    {CPAP_VSnore,		wxT("Vibratory Snore")},
-    {CPAP_FlowLimit,	wxT("Flow Limitation")},
-    {CPAP_Pressure,		wxT("Pressure")},
-    {CPAP_Leak,			wxT("Leak Rate")},
-    {CPAP_EAP,			wxT("BIPAP EPAP")},
-    {CPAP_IAP,			wxT("BIPAP IPAP")},
-    {PRS1_VSnore2,		wxT("Vibratory Snore")},
-    {PRS1_PressurePulse,wxT("Pressue Pulse")}
-}; */
 
 void InitMapsWithoutAwesomeInitializerLists()
 {
@@ -119,6 +47,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     PressureReliefNames[PR_SMARTFLEX]=QObject::tr("SmartFlex");
 
     DefaultMCShortNames[CPAP_Obstructive]=QObject::tr("OA");
+    DefaultMCShortNames[CPAP_Apnea]=QObject::tr("A");
     DefaultMCShortNames[CPAP_Hypopnea]=QObject::tr("H");
     DefaultMCShortNames[CPAP_RERA]=QObject::tr("RE");
     DefaultMCShortNames[CPAP_ClearAirway]=QObject::tr("CA");
@@ -134,6 +63,7 @@ void InitMapsWithoutAwesomeInitializerLists()
 
     DefaultMCLongNames[CPAP_Obstructive]=QObject::tr("Obstructive Apnea");
     DefaultMCLongNames[CPAP_Hypopnea]=QObject::tr("Hypopnea");
+    DefaultMCLongNames[CPAP_Apnea]=QObject::tr("Apnea");
     DefaultMCLongNames[CPAP_RERA]=QObject::tr("RERA");
     DefaultMCLongNames[CPAP_ClearAirway]=QObject::tr("Clear Airway Apnea");
     DefaultMCLongNames[CPAP_CSR]=QObject::tr("Periodic Breathing");
@@ -141,6 +71,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[CPAP_FlowLimit]=QObject::tr("Flow Limitation");
     DefaultMCLongNames[CPAP_Pressure]=QObject::tr("Pressure");
     DefaultMCLongNames[CPAP_Leak]=QObject::tr("Leak Rate");
+    DefaultMCLongNames[CPAP_PS]=QObject::tr("Pressure Support");
     DefaultMCLongNames[CPAP_EAP]=QObject::tr("BIPAP EPAP");
     DefaultMCLongNames[CPAP_IAP]=QObject::tr("BIPAP IPAP");
     DefaultMCLongNames[CPAP_Snore]=QObject::tr("Vibratory Snore");  // Graph data
@@ -152,35 +83,6 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[PRS1_Unknown0B]=QObject::tr("Unknown 0B");
     DefaultMCLongNames[PRS1_Unknown10]=QObject::tr("Unknown 10");
 }
-
-
-
-// This is technically gui related.. however I have something in mind for it.
-/*const map<MachineCode,FlagType> DefaultFlagTypes= {
-    {CPAP_Obstructive,	FT_BAR},
-    {CPAP_Hypopnea,		FT_BAR},
-    {CPAP_RERA,			FT_BAR},
-    {CPAP_VSnore,		FT_BAR},
-    {PRS1_VSnore2,		FT_BAR},
-    {CPAP_FlowLimit,	FT_BAR},
-    {CPAP_ClearAirway,	FT_BAR},
-    {CPAP_CSR,			FT_SPAN},
-    {PRS1_PressurePulse,FT_DOT},
-    {CPAP_Pressure,		FT_DOT}
-};
-
-const unsigned char flagalpha=0x80;
-const map<MachineCode,wxColour> DefaultFlagColours= {
-    {CPAP_Obstructive,	wxColour(0x80,0x80,0xff,flagalpha)},
-    {CPAP_Hypopnea,		wxColour(0x00,0x00,0xff,flagalpha)},
-    {CPAP_RERA,			wxColour(0x40,0x80,0xff,flagalpha)},
-    {CPAP_VSnore,		wxColour(0xff,0x20,0x20,flagalpha)},
-    {CPAP_FlowLimit,	wxColour(0x20,0x20,0x20,flagalpha)},
-    {CPAP_ClearAirway,	wxColour(0xff,0x40,0xff,flagalpha)},
-    {CPAP_CSR,			wxColour(0x40,0xff,0x40,flagalpha)},
-    {PRS1_VSnore2,		wxColour(0xff,0x20,0x20,flagalpha)},
-    {PRS1_PressurePulse,wxColour(0xff,0x40,0xff,flagalpha)}
-}; */
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -243,7 +145,6 @@ Day *Machine::AddSession(Session *s,Profile *p)
     QDate date=d2.date();
     //QTime time=d2.time();
 
-   // pref["NoonDateSplit"]=true;
     if (pref.Exists("NoonDataSplit") && pref["NoonDateSplit"].toBool()) {
         int hour=d2.time().hour();
         if (hour<12)
@@ -405,7 +306,6 @@ bool Machine::Load()
 
         if (sess->LoadSummary(s->second[0])) {
              sess->SetEventFile(s->second[1]);
-             sess->SetWaveFile(s->second[2]);
              AddSession(sess,profile);
         } else {
             qWarning() << "Error unpacking summary data";

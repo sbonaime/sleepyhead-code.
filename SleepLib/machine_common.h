@@ -17,6 +17,10 @@ typedef long SessionID;
 
 class BoundsError {};
 
+// This is the uber important database version for SleepyHeads internal storage
+// Increment this after stuffing with Session's save & load code.
+const quint16 dbversion=4;
+
 const int max_number_event_fields=10;
 
 enum MachineType//: short
@@ -25,7 +29,8 @@ enum MachineType//: short
 // Could be implimented by MachineLoader's register function requesting a block of integer space,
 // and a map to name strings.
 
-typedef int ChannelCode;
+//typedef int ChannelCode;
+
 
 // Be cautious when extending these.. add to the end of each groups to preserve file formats.
 enum MachineCode//:qint16
@@ -67,13 +72,9 @@ enum MachineCode//:qint16
 
     GEN_Weight=0x3000, GEN_Notes, GEN_Glucose, GEN_Calories, GEN_Energy, GEN_Mood, GEN_Excercise, GEN_Reminder
 
-
-
 };
 void InitMapsWithoutAwesomeInitializerLists();
 
-enum FlagType//:short
-{ FT_BAR, FT_DOT, FT_SPAN };
 
 enum CPAPMode//:short
 {

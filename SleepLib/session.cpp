@@ -9,6 +9,7 @@
 #include "math.h"
 #include <QDir>
 #include <QDebug>
+#include <QMessageBox>
 #include <QMetaType>
 #include <vector>
 #include <algorithm>
@@ -52,8 +53,7 @@ void Session::TrashEvents()
 bool Session::OpenEvents() {
     if (s_events_loaded)
         return true;
-    bool b;
-    b=LoadEvents(s_eventfile);
+    bool b=LoadEvents(s_eventfile);
     if (!b) {
         qWarning() << "Error Unkpacking Events" << s_eventfile;
         return false;
@@ -75,22 +75,28 @@ bool Session::Store(QString path)
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
     //qDebug() << "Storing Session: " << base;
-    bool a;
+    bool a,b=false;
     a=StoreSummary(base+".000"); // if actually has events
     //qDebug() << " Summary done";
-    s_eventfile=base+".001";
-    if (eventlist.size()>0) StoreEvents(base+".001");
+    if (eventlist.size()>0)
+        b=StoreEvents(base+".001");
     //qDebug() << " Events done";
-    if (a) {
-        s_changed=false;
-        s_events_loaded=true;
+    s_changed=false;
+    s_eventfile=base+".001";
+    s_events_loaded=true;
+
         //TrashEvents();
-    }
+    //} else {
+    //    qDebug() << "Session::Store() No event data saved" << s_session;
+    //}
 
     return a;
 }
 
+const quint16 filetype_summary=0;
+const quint16 filetype_data=1;
 const quint32 magic=0xC73216AB;
+
 
 bool IsPlatformLittleEndian()
 {
@@ -107,69 +113,23 @@ bool Session::StoreSummary(QString filename)
 
     QDataStream out(&file);
     out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
 
     out << (quint32)magic;
+    out << (quint16)dbversion;
+    out << (quint16)filetype_summary;
     out << (quint32)s_machine->id();
     out << (quint32)s_session;
-    out << (quint16)0 << (quint16)0;
 
-    quint32 starttime=s_first/1000L;
-    quint32 duration=(s_last-s_first)/1000L;
-
-    out << (quint32)starttime;  // Session Start Time
-    out << (quint32)duration;   // Duration of sesion in seconds.
+    out << s_first;  // Session Start Time
+    out << s_last;   // Duration of sesion in seconds.
     out << (quint16)summary.size();
 
-    map<MachineCode,MCDataType> mctype;
-
     // First output the Machine Code and type for each summary record
-    map<MachineCode,QVariant>::iterator i;
-    for (i=summary.begin(); i!=summary.end(); i++) {
+    for (map<MachineCode,QVariant>::iterator i=summary.begin(); i!=summary.end(); i++) {
         MachineCode mc=i->first;
-
-        QMetaType::Type type=(QMetaType::Type)i->second.type(); // Urkk.. this is a mess.
-        if (type==QMetaType::Bool) {
-            mctype[mc]=MC_bool;
-        } else if (type==QMetaType::Int) {
-            mctype[mc]=MC_int;
-        } else if (type==QMetaType::LongLong) {
-            mctype[mc]=MC_long;
-        } else if (type==QMetaType::Double) {
-            mctype[mc]=MC_double;
-        } else if (type==QMetaType::Float) {
-            mctype[mc]=MC_float;
-        } else if (type==QMetaType::QString) {
-            mctype[mc]=MC_string;
-        } else if (type==QMetaType::QDateTime) {
-            mctype[mc]=MC_datetime;
-        } else {
-            QString t=i->second.typeToName((QVariant::Type)type);
-            qWarning() << "Error in Session->StoreSummary: Can't pack variant type " << t;
-            return false;
-            //exit(1);
-        }
         out << (qint16)mc;
-        out << (qint8)mctype[mc];
-    }
-    // Then dump out the actual data, according to format.
-    for (i=summary.begin(); i!=summary.end(); i++) {
-        MachineCode mc=i->first;
-        if (mctype[mc]==MC_bool) {
-            out << i->second.toBool();
-        } else if (mctype[mc]==MC_int) {
-            out << (qint32)i->second.toInt();
-        } else if (mctype[mc]==MC_long) {
-            out << (qint64)i->second.toLongLong();
-        } else if (mctype[mc]==MC_double) {
-            out << (double)i->second.toDouble();
-        } else if (mctype[mc]==MC_float) {
-            float f=(float)i->second.toDouble(); // check me.
-            out << f;
-        } else if (mctype[mc]==MC_string) {
-            out << i->second.toString();
-        } else if (mctype[mc]==MC_datetime) {
-            out << i->second.toDateTime();
-        }
+        out << i->second;
     }
     file.close();
     return true;
@@ -177,17 +137,20 @@ bool Session::StoreSummary(QString filename)
 
 bool Session::LoadSummary(QString filename)
 {
-    if (filename.isEmpty()) return false;
-    //qDebug() << "Loading Summary " << filename;
+    if (filename.isEmpty()) {
+        qDebug() << "Empty summary filename";
+        return false;
+    }
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Couldn't open file" << filename;
+        qDebug() << "Couldn't open summary file" << filename;
         return false;
     }
 
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
 
     quint64 t64;
     quint32 t32;
@@ -203,67 +166,34 @@ bool Session::LoadSummary(QString filename)
         return false;
     }
 
-    in >> t32;     // MachineID (dont need this result)
-
-    in >> t32;     // Sessionid;
-    s_session=t32;
+    in >> t16;      // DB Version
+    if (t16!=dbversion) {
+        qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
+        return false;
+    }
 
     in >> t16;      // File Type
-    if (t16!=0) {
+    if (t16!=filetype_summary) {
         qDebug() << "Wrong file type"; //wrong file type
         return false;
     }
 
-    in >> t16;      // File Version
-    // dont care yet
 
-    in >> t32;      // Start time
-    s_first=qint64(t32)*1000L;
+    in >> t32;      // MachineID (dont need this result)
+    in >> t32;      // Sessionid;
+    s_session=t32;
 
-    in >> t32;       // Duration // (16bit==Limited to 18 hours)
-    s_last=s_first+qint64(t32)*1000L;
+    in >> s_first;  // Start time
+    in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
     in >> sumsize;  // Summary size (number of Machine Code lists)
 
     for (int i=0; i<sumsize; i++) {
         in >> t16;      // Machine Code
         MachineCode mc=(MachineCode)t16;
-        in >> t8;       // Data Type
-        mctype[mc]=(MCDataType)t8;
-        mcorder.push_back(mc);
+        in >> summary[mc];
     }
 
-    for (int i=0; i<sumsize; i++) {					// Load each summary entry according to type
-        MachineCode mc=mcorder[i];
-        if (mctype[mc]==MC_bool) {
-            bool b;
-            in >> b;
-            summary[mc]=b;
-        } else if (mctype[mc]==MC_int) {
-            in >> t32;
-            summary[mc]=(qint32)t32;
-        } else if (mctype[mc]==MC_long) {
-            in >> t64;
-            summary[mc]=(qint64)t64;
-        } else if (mctype[mc]==MC_double) {
-            double dl;
-            in >> dl;
-            summary[mc]=(double)dl;
-        } else if (mctype[mc]==MC_float) {
-            float fl;
-            in >> fl;
-            summary[mc]=(float)fl;
-        } else if (mctype[mc]==MC_string) {
-            QString s;
-            in >> s;
-            summary[mc]=s;
-        } else if (mctype[mc]==MC_datetime) {
-            QDateTime dt;
-            in >> dt;
-            summary[mc]=dt;
-        }
-
-    }
     return true;
 }
 
@@ -274,12 +204,13 @@ bool Session::StoreEvents(QString filename)
 
     QDataStream out(&file);
     out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
 
-    out << (quint32)magic; 			// Magic Number
-    out << (quint32)s_machine->id();  // Machine ID
-    out << (quint32)s_session;		// This session's ID
-    out << (quint16)1;				// File type 1 == Event
-    out << (quint16)0;				// File Version
+    out << (quint32)magic;          // Magic Number
+    out << (quint16)dbversion;      // File Version
+    out << (quint16)filetype_data;  // File type 1 == Event
+    out << (quint32)s_machine->id();// Machine ID
+    out << (quint32)s_session;      // This session's ID
 
     out << s_first;
     out << s_last;
@@ -302,13 +233,8 @@ bool Session::StoreEvents(QString filename)
             out << e.rate();
             out << e.gain();
             out << e.offset();
-            //if (!e.update_minmax()) {
-                out << e.min();
-                out << e.max();
-            //} else {
-              //  out << (EventDataType)0;
-               // out << (EventDataType)0;
-            //}
+            out << e.min();
+            out << e.max();
         }
     }
     qint64 t,last;
@@ -316,6 +242,7 @@ bool Session::StoreEvents(QString filename)
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
         for (unsigned j=0;j<i->second.size();j++) {
             EventList &e=*i->second[j];
+
             for (int c=0;c<e.count();c++) {
                 out << e.raw(c);
             }
@@ -331,12 +258,14 @@ bool Session::StoreEvents(QString filename)
         }
     }
 
-    //file.close();
     return true;
 }
 bool Session::LoadEvents(QString filename)
 {
-    if (filename.isEmpty()) return false;
+    if (filename.isEmpty()) {
+        qDebug() << "Session::LoadEvents() Filename is empty";
+        return false;
+    }
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -345,6 +274,7 @@ bool Session::LoadEvents(QString filename)
     }
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
 
     quint32 t32;
     quint16 t16;
@@ -356,19 +286,21 @@ bool Session::LoadEvents(QString filename)
         qWarning() << "Wrong Magic number in " << filename;
         return false;
     }
-    in >> t32;      // MachineID
-
-    in >> t32;      // Sessionid;
-    s_session=t32;
+    in >> t16;      // File Version
+    if (t16!=dbversion) {
+        qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
+        return false;
+    }
 
     in >> t16;      // File Type
-    if (t16!=1) {
+    if (t16!=filetype_data) {
         qDebug() << "Wrong File Type in " << filename;
         return false;
     }
 
-    in >> t16;      // File Version
-    // dont give a crap yet..
+    in >> t32;      // MachineID
+    in >> t32;      // Sessionid;
+    s_session=t32;
 
     in >> s_first;
     in >> s_last;
@@ -392,9 +324,7 @@ bool Session::LoadEvents(QString filename)
         sizevec.push_back(size2);
         for (int j=0;j<size2;j++) {
             in >> ts1;
-            //UpdateFirst(ts1);
             in >> ts2;
-            //UpdateLast(ts2);
             in >> evcount;
             in >> t8;
             elt=(EventListType)t8;
@@ -411,7 +341,6 @@ bool Session::LoadEvents(QString filename)
             elist->m_last=ts2;
         }
     }
-
 
     EventStoreType t;
     qint64 last;

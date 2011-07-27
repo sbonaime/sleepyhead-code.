@@ -11,11 +11,9 @@
 #include "SleepLib/day.h"
 #include "graphwindow.h"
 
-#include "graphdata.h"
+enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
 class gGraphWindow;
-class gGraphData;
-class gPointData;
 class gLayer
 {
 public:

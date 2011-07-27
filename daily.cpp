@@ -78,7 +78,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     SF->setMinimumHeight(160);
 
     fg=new gFlagsGroup();
-    fg->AddLayer(new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FLT_Span));
+    fg->AddLayer(new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span));
     fg->AddLayer(new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",true));
     fg->AddLayer(new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true));
     fg->AddLayer(new gFlagsLine(CPAP_Hypopnea,QColor("blue"),"H",true));
@@ -122,13 +122,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
     FRW->AddLayer(new gXAxis());
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",LOT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
     g=new gLineChart(CPAP_FlowRate,Qt::black,false);
     g->ReportEmpty(true);
     AddCPAP(g);
     FRW->AddLayer(g);
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_PressurePulse,QColor("red"),"PR",LOT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_PressurePulse,QColor("red"),"PR",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));

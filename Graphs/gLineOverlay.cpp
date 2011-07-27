@@ -8,8 +8,8 @@
 #include "SleepLib/profiles.h"
 #include "gLineOverlay.h"
 
-gLineOverlayBar::gLineOverlayBar(MachineCode code,QColor col,QString _label,LO_Type _lot)
-:gLayer(code),label(_label),lo_type(_lot)
+gLineOverlayBar::gLineOverlayBar(MachineCode code,QColor col,QString label,FlagType flt)
+:gLayer(code),m_label(label),m_flt(flt)
 {
     color.clear();
     color.push_back(col);
@@ -63,7 +63,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
        // bool done=false;
         for (int i=0;i<el.count();i++) {
             X=el.time(i);
-            if (lo_type==LOT_Span) {
+            if (m_flt==FT_Span) {
                 Y=X-(qint64(el.raw(i))*1000.0L); // duration
 
                 if (X < w.min_x) continue;
@@ -74,7 +74,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
             }
 
             x1=w.x2p(X);
-            if (lo_type==LOT_Span) {
+            if (m_flt==FT_Span) {
                 x2=w.x2p(Y);
                 //double w1=x2-x1;
                 quadarray[quadcnt++]=x1;
@@ -85,7 +85,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 quadarray[quadcnt++]=start_py+height;
                 quadarray[quadcnt++]=x2;
                 quadarray[quadcnt++]=start_py;
-            } else if (lo_type==LOT_Dot) {
+            } else if (m_flt==FT_Dot) {
                 //if (pref["AlwaysShowOverlayBars"].toBool()) {
 
                 if (pref["AlwaysShowOverlayBars"].toBool() || (xx<3600000.0)) {
@@ -99,7 +99,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=start_py+1+12;
                 }
-            } else if (lo_type==LOT_Bar) {
+            } else if (m_flt==FT_Bar) {
                 int z=start_py+height;
                 if (pref["AlwaysShowOverlayBars"].toBool() || (xx<3600000)) {
                     z=top;
@@ -117,8 +117,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     vertarray[vertcnt++]=z-12;
                }
                if (xx<(1800000)) {
-                    GetTextExtent(label,x,y);
-                    DrawText(w,label,x1-(x/2),scry-(start_py+height-30+y));
+                    GetTextExtent(m_label,x,y);
+                    DrawText(w,m_label,x1-(x/2),scry-(start_py+height-30+y));
                     //w.renderText(x1-(x/2),scry-(start_py+height-30+y),label);
                }
 
