@@ -45,7 +45,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
-    gSplitter->setHandleWidth(2);
+    gSplitter->setHandleWidth(3);
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->scrollArea->setWidget(gSplitter);
@@ -213,16 +213,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
 
     G_AHI->SetMargins(0,0,0,0);
-    //AddCPAPData(g_ahi=new AHIData());
-    //gCandleStick *l=new gCandleStick(g_ahi);
     gPieChart *l=new gPieChart(Qt::black);
     l->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
     l->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
     l->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
     l->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
     l->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
-    //l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
-    //G_AHI->AddLayer(AddCPAP(l));
+    G_AHI->AddLayer(AddCPAP(l));
     G_AHI->SetGradientBackground(false);
 
     //G_AHI->setMaximumSize(2000,30);
@@ -573,8 +570,7 @@ void Daily::Load(QDate date)
             "</table></td>";
         }
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-        if (0) {
-
+        if (1) {  // AHI Pie Chart
             G_AHI->setFixedSize(gwwidth,gwheight);
             QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
