@@ -23,9 +23,8 @@
 #include "Graphs/gFooBar.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gYAxis.h"
-#include "Graphs/gCandleStick.h"
 #include "Graphs/gBarChart.h"
-#include "Graphs/gpiechart.h"
+#include "Graphs/gSegmentChart.h"
 
 const int min_height=100;
 const int default_height=150;
@@ -212,8 +211,12 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
 
+    TAP->SetMargins(0,0,0,0);
+    TAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_Pressure)));
+    TAP->hide();
+
     G_AHI->SetMargins(0,0,0,0);
-    gPieChart *l=new gPieChart(Qt::black);
+    gSegmentChart *l=new gSegmentChart(GST_Pie);
     l->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
     l->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
     l->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
@@ -221,9 +224,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     l->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
     G_AHI->AddLayer(AddCPAP(l));
     G_AHI->SetGradientBackground(false);
-
-    //G_AHI->setMaximumSize(2000,30);
-    //TAP->setMaximumSize(2000,30);
     G_AHI->hide();
     /*TAP->hide();
     TAP_IAP->hide();
@@ -562,7 +562,7 @@ void Daily::Load(QDate date)
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
         if (1) {  // AHI Pie Chart
             G_AHI->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
+            QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
@@ -659,13 +659,13 @@ void Daily::Load(QDate date)
         } else if (mode==MODE_APAP) {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
 
-            //TAP->setFixedSize(gwwidth,gwheight);
-            //QPixmap pixmap=TAP->renderPixmap(gwwidth,gwheight,false);
-            //QByteArray byteArray;
-            //QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-            //buffer.open(QIODevice::WriteOnly);
-            //pixmap.save(&buffer, "PNG");
-            //html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            TAP->setFixedSize(gwwidth,gwheight);
+            QPixmap pixmap=TAP->renderPixmap(gwwidth,gwheight,false);
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+            buffer.open(QIODevice::WriteOnly);
+            pixmap.save(&buffer, "PNG");
+            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";

@@ -52,11 +52,11 @@ SOURCES += main.cpp\
     Graphs/gCandleStick.cpp \
     Graphs/gBarChart.cpp \
     SleepLib/loader_plugins/resmed_loader.cpp \
-    Graphs/gpiechart.cpp \
     SleepLib/loader_plugins/sleep_database.cpp \
     Graphs/gSessionTime.cpp \
     qextserialport/qextserialport.cpp \
-    oximetry.cpp
+    oximetry.cpp \
+    Graphs/gSegmentChart.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -100,13 +100,13 @@ HEADERS  += \
     Graphs/gCandleStick.h \
     Graphs/gBarChart.h \
     SleepLib/loader_plugins/resmed_loader.h \
-    Graphs/gpiechart.h \
     SleepLib/loader_plugins/sleep_database.h \
     Graphs/gSessionTime.h \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
     qextserialport/qextserialenumerator.h \
-    oximetry.h
+    oximetry.h \
+    Graphs/gSegmentChart.h
 
 
 FORMS    += \
