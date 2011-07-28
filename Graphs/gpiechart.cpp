@@ -76,12 +76,13 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         glVertex2f(px,py);
         glEnd();
 
-        glPolygonMode(GL_BACK,GL_LINE);
         w.qglColor(m_outline_color);
         if (m_total>m->second) { // Draw the center point first
+            glPolygonMode(GL_BACK,GL_LINE);
             glBegin(GL_POLYGON);
             glVertex2f(start_px+radius+4, start_py+radius+4);
         } else { // Only one entry, so just draw the circle
+            //glBegin(GL_POLYGON);
             glBegin(GL_LINE_LOOP);
         }
         for (q=sum;q<sum+j;q+=step) {
@@ -94,7 +95,6 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         py=start_py+radius+4+cos(q*2*M_PI)*radius;
         glVertex2f(px,py);
         glEnd();
-
         sum=q;
     }
     glDisable(GL_BLEND);

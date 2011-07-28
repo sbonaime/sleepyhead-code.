@@ -428,15 +428,15 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         glEnable(GL_SCISSOR_TEST);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
-        glLineWidth (1);
         bool antialias=pref["UseAntiAliasing"].toBool();
         if (antialias) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_LINE_SMOOTH);
             glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+            glLineWidth (1.5);
 
-        }
+        } else glLineWidth(1);
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, vertarray);
