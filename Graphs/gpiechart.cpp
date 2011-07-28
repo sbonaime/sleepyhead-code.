@@ -4,6 +4,7 @@
 gPieChart::gPieChart(QColor outline_color)
 :gLayer(MC_UNKNOWN),m_outline_color(outline_color)
 {
+    m_gradient_color=QColor(200,200,200);
 }
 gPieChart::~gPieChart()
 {
@@ -57,10 +58,12 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
     for (map<MachineCode,int>::iterator m=m_counts.begin();m!=m_counts.end();m++) {
         if (!m->second) continue;
         j=float(m->second)/float(m_total); // ratio of this pie slice
-        w.qglColor(m_colors[m->first]);
         glPolygonMode(GL_BACK,GL_FILL);
         glBegin(GL_POLYGON);
+        bool first_col;
+        w.qglColor(m_gradient_color);
         glVertex2f(start_px+radius+4, start_py+radius+4);
+        w.qglColor(m_colors[m->first]);
         double q;
         for (q=sum;q<sum+j;q+=step) {
             px=start_px+radius+4+sin(q*2*M_PI)*radius;
@@ -75,8 +78,12 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
 
         glPolygonMode(GL_BACK,GL_LINE);
         w.qglColor(m_outline_color);
-        glBegin(GL_POLYGON);
-        glVertex2f(start_px+radius+4, start_py+radius+4);
+        if (m_total>m->second) { // Draw the center point first
+            glBegin(GL_POLYGON);
+            glVertex2f(start_px+radius+4, start_py+radius+4);
+        } else { // Only one entry, so just draw the circle
+            glBegin(GL_LINE_LOOP);
+        }
         for (q=sum;q<sum+j;q+=step) {
             px=start_px+radius+4+sin(q*2*M_PI)*radius;
             py=start_py+radius+4+cos(q*2*M_PI)*radius;

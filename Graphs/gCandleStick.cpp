@@ -51,6 +51,13 @@ void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-1;
 
+
+    for (map<MachineCode,int>::iterator m=m_counts.begin();m!=m_counts.end();m++) {
+        if (!m->second) continue;
+        int j=float(m->second)/float(m_total); // ratio of this pie slice
+        //QColor & col1 = m_colors[m->first];
+        //QColor & col2 = m_gradient_color;
+    }
 /*    float sum=0;
     for (int i=0;i<data->np[0];i++)
         sum+=data->point[0][i].y();

@@ -271,9 +271,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
     //gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
 
-    gSplitter->layout();
-
     splitter_sizes=gSplitter->sizes();
+    gSplitter->layout();
+    gSplitter->update();
+
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
