@@ -276,8 +276,15 @@ void gGraphWindow::updateSelectionTime(qint64 span) // in milliseconds
     time/=24;
     days=time;
     QString s;
+    qint64 z=(max_x-min_x)/1000;
+    if (z>86400) {
+        s.sprintf("%i days",days);
+    } else if (z>3600) {
+        s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
+    } else {
+        s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
+    }
 
-    s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
     qstatus2->setText(s);
 }
 
@@ -298,6 +305,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
                 int i=splitter->indexOf(this);
                 if (i<splitter->count()-2) {
                     splitter->insertWidget(i+1,this);
+
                 }
 
             } else if (event->y()<0) {

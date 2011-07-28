@@ -152,17 +152,19 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             if (xL<minx) continue;
 
             if (x0>xL) {
-                /*if (siz==2) { // this happens on CPAP
+                if (siz==2) { // this happens on CPAP
+                    qint64 t=el.getTime()[0];
+                    el.getTime()[0]=el.getTime()[1];
+                    el.getTime()[1]=t;
+                    EventStoreType d=el.getData()[0];
+                    el.getData()[0]=el.getData()[1];
+                    el.getData()[1]=d;
 
-                    QPointD t=point[0];
-                    point[0]=point[siz-1];
-                    point[siz-1]=t;
-                    x0=point[0].x();
-                } else { */
+                } else {
                     qDebug() << "Reversed order sample fed to gLineChart - ignored.";
                     continue;
                     //assert(x1<x2);
-                //}
+                }
             }
 
             if (accel) {
@@ -351,7 +353,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     time=tim[i]; //el.time(i);
 
                     if (first) {
-                        if (time < minx) continue; // Skip stuff before the start of our data window
+                        if (num_points>5 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
                         time=tim[i]; //el.time(i);

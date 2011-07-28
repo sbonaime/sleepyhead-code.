@@ -48,8 +48,8 @@ public:
     inline const EventListType & type() { return m_type; }
     inline const MachineCode & code() { return m_code; }
     inline const bool & update_minmax() { return m_update_minmax; }
-    const vector<EventStoreType> & getData() { return m_data; }
-    const vector<qint64> & getTime() { return m_time; }
+    vector<EventStoreType> & getData() { return m_data; }
+    vector<qint64> & getTime() { return m_time; }
 protected:
     vector<qint64> m_time;
     vector<EventStoreType> m_data;

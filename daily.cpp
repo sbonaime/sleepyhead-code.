@@ -27,6 +27,7 @@
 #include "Graphs/gBarChart.h"
 #include "Graphs/gpiechart.h"
 
+const int min_height=100;
 const int default_height=150;
 
 Daily::Daily(QWidget *parent,QGLWidget * shared) :
@@ -85,7 +86,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
-    SF->setMinimumHeight(default_height);
+    SF->setMinimumHeight(min_height);
 
     fg=new gFlagsGroup();
     fg->AddLayer(new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span));
@@ -111,14 +112,14 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IAP,Qt::red,square)));
-    PRD->setMinimumHeight(default_height);
+    PRD->setMinimumHeight(min_height);
 
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
     //LEAK->AddLayer(new gFooBar());
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,QColor("purple"),true)));
 
-    LEAK->setMinimumHeight(default_height);
+    LEAK->setMinimumHeight(min_height);
 
 
     MP->AddLayer(new gYAxis());
@@ -127,7 +128,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     AddCPAP(g);
     g->ReportEmpty(true);
     MP->AddLayer(g);
-    MP->setMinimumHeight(default_height);
+    MP->setMinimumHeight(min_height);
 
     //FRW->AddLayer(new gFooBar());
     FRW->AddLayer(new gYAxis());
@@ -146,51 +147,51 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
 
-    FRW->setMinimumHeight(default_height);
+    FRW->setMinimumHeight(min_height);
 
     SNORE->AddLayer(new gXAxis());
     SNORE->AddLayer(new gYAxis());
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::black,true)));
-    SNORE->setMinimumHeight(default_height);
+    SNORE->setMinimumHeight(min_height);
 
     FLG->AddLayer(new gXAxis());
     FLG->AddLayer(new gYAxis());
     FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FlowLimitGraph,Qt::black,true)));
-    FLG->setMinimumHeight(default_height);
+    FLG->setMinimumHeight(min_height);
 
     MV->AddLayer(new gXAxis());
     MV->AddLayer(new gYAxis());
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVentilation,QColor(0x20,0x20,0x7f),true)));
-    MV->setMinimumHeight(default_height);
+    MV->setMinimumHeight(min_height);
 
     TV->AddLayer(new gXAxis());
     TV->AddLayer(new gYAxis());
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,QColor(0x7f,0x20,0x20),true)));
-    TV->setMinimumHeight(default_height);
+    TV->setMinimumHeight(min_height);
 
     RR->AddLayer(new gXAxis());
     RR->AddLayer(new gYAxis());
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::gray,true)));
-    RR->setMinimumHeight(default_height);
+    RR->setMinimumHeight(min_height);
 
     PTB->AddLayer(new gXAxis());
     PTB->AddLayer(new gYAxis());
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
-    PTB->setMinimumHeight(default_height);
+    PTB->setMinimumHeight(min_height);
 
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
    // PULSE->AddLayer(new gFooBar());
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
 
-    PULSE->setMinimumHeight(default_height);
+    PULSE->setMinimumHeight(min_height);
 
 //    SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF);
 //    SPO2->AddLayer(new gXAxis());
 //    SPO2->AddLayer(new gYAxis());
    // SPO2->AddLayer(new gFooBar());
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
-//    SPO2->setMinimumHeight(default_height);
+//    SPO2->setMinimumHeight(min_height);
 //    SPO2->LinkZoom(PULSE);
 //    PULSE->LinkZoom(SPO2);
 //    SPO2->hide();
@@ -248,18 +249,23 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     for (int i=0;i<ss;i++) {
         AddGraph(graphs[i]);
         int j=gSplitter->indexOf(graphs[i]);
-        gSplitter->setStretchFactor(j,0);
+        gSplitter->setStretchFactor(j,10);
         for (int j=0;j<ss;j++) {
             if (graphs[i]!=graphs[j])
                 graphs[i]->LinkZoom(graphs[j]);
         }
     }
+
     AddGraph(PULSE);
+
     //  AddGraph(SPO2);
     spacer=new QWidget(gSplitter);
+    //spacer->setMaximumHeight(default_height);
     gSplitter->addWidget(spacer);
     i=gSplitter->indexOf(spacer);
     gSplitter->setStretchFactor(i,1);
+    i=gSplitter->indexOf(FRW);
+    gSplitter->setStretchFactor(i,15);
 
     //gSplitter->refresh();
 
