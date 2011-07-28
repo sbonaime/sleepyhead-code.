@@ -462,7 +462,7 @@ void Daily::Load(QDate date)
     if (!cpap && !oxi) {
         gSplitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
-        if (!NoData->isVisible()) NoData->show();
+        NoData->show();
         for (unsigned i=0;i<Graphs.size();i++) {
             Graphs[i]->hide();
         }
@@ -470,7 +470,7 @@ void Daily::Load(QDate date)
             //if (SF->isVisible()) SF->hide();
 
     } else {
-        if (NoData->isVisible()) NoData->hide();
+        NoData->hide();
         int vis=1;
         for (unsigned i=0;i<Graphs.size();i++) {
             if (Graphs[i]->isEmpty()) {
