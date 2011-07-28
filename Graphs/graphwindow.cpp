@@ -296,7 +296,9 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
             if (event->y()>m_scrY) {
                 //qDebug() << "Swap Down";
                 int i=splitter->indexOf(this);
-                splitter->insertWidget(i+1,this);
+                if (i<splitter->count()-2) {
+                    splitter->insertWidget(i+1,this);
+                }
 
             } else if (event->y()<0) {
                 //qDebug() << "Swap up";
@@ -342,8 +344,6 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
 
         qint64 minx=min_x;
         double dx=max_x-minx; // zoom rect width;
-
-        // Could smarten this up by remembering where the mouse was clicked on the foobar
 
         double gx=dx*m_foobar_pos;
 
@@ -654,12 +654,15 @@ void gGraphWindow::OnMouseLeftDown(QMouseEvent * event)
 void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
 {
     if (m_dragGraph) {
+        // Graph Reorder Magic
         if (splitter && currentWidget && LastGraphLDown) {
             if (LastGraphLDown!=currentWidget) {
-                int newidx=splitter->indexOf(currentWidget);
-                //int idx=splitter->indexOf(LastGraphLDown);
-                splitter->insertWidget(newidx,LastGraphLDown);
+                //int newidx=splitter->indexOf(currentWidget);
+                //if (qobject_cast<gGraphWindow *>(splitter->widget(newidx))) {
+                 //   splitter->insertWidget(newidx,LastGraphLDown);
+                //}
                 return;
+
             }
         }
         m_dragGraph=false;
@@ -739,10 +742,9 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             //xp=0;
             double zoom_fact=0.5;
             if (event->modifiers() & Qt::ControlModifier) zoom_fact=0.25;
-            ZoomX(zoom_fact,xp); //event.GetX()); // adds origin to zoom in.. Doesn't look that cool.
+            ZoomX(zoom_fact,xp);
             did_draw=true;
         }
-        //}
     }
 
     m_drag_foobar=false;
@@ -760,7 +762,6 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             }
         }
     }
-    //}
     LastGraphLDown=NULL;
 }
 
