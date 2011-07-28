@@ -5,15 +5,20 @@
 class gPieChart : public gLayer
 {
 public:
-    gPieChart(MachineCode code=MC_UNKNOWN,QColor col=Qt::black);
+    gPieChart(QColor color=Qt::black);
     virtual ~gPieChart();
 
     virtual void Plot(gGraphWindow & w,float scrx,float scry);
-    void AddName(QString name) { m_names.push_back(name); }
+    virtual void SetDay(Day *d);
+
+    void AddSlice(MachineCode code,QColor col,QString name="");
 
 protected:
-    vector<QString> m_names;
-
+    map <MachineCode,QString> m_names;
+    map <MachineCode,int> m_counts;
+    map <MachineCode,QColor> m_colors;
+    int m_total;
+    QColor m_outline_color;
 };
 
 #endif // GPIECHART_H

@@ -1,22 +1,41 @@
 #include <math.h>
 #include "gpiechart.h"
 
-gPieChart::gPieChart(MachineCode code,QColor col)
-:gLayer(code)
+gPieChart::gPieChart(QColor outline_color)
+:gLayer(MC_UNKNOWN),m_outline_color(outline_color)
 {
-    color.clear();
-    color.push_back(col);
 }
 gPieChart::~gPieChart()
 {
+}
+void gPieChart::AddSlice(MachineCode code,QColor color,QString name)
+{
+    m_counts[code]=code;
+    m_colors[code]=color;
+    m_names[code]=name;
+    m_total=0;
+}
+void gPieChart::SetDay(Day *d)
+{
+    gLayer::SetDay(d);
+    m_total=0;
+    if (!m_day) return;
+    for (map<MachineCode,int>::iterator c=m_counts.begin();c!=m_counts.end();c++) {
+        c->second=0;
+        for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+            int cnt=(*s)->count(c->first);
+            c->second+=cnt;
+            m_total+=cnt;
+        }
+    }
+
 }
 
 void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    /*if (!data) return;
-    if (!data->IsReady()) return;
-
+    if (!m_day) return;
+    if (!m_total) return;
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
@@ -26,29 +45,19 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
     diameter-=8;
     float radius=diameter/2.0;
 
-    double total=0;
-    for (int i=0;i<data->np[0];i++)
-        total+=data->point[0][i].y();
-
-
     double j=0.0;
     double sum=0.0;
     double step=1.0/45.0;
     float px,py;
-    //glEnable(GL_TEXTURE_2D);
-    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    //glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(1.5);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE );
-    //glHint(GL_POLYGON_SMOOTH_HINT,  GL_NICEST);
 
-    for (int i=0;i<data->np[0];i++) {
-        j=(data->point[0][i].y()/total); // ratio of this pie slice
-        QColor col1=color[i % color.size()];
-        w.qglColor(col1);
+    for (map<MachineCode,int>::iterator m=m_counts.begin();m!=m_counts.end();m++) {
+        if (!m->second) continue;
+        j=float(m->second)/float(m_total); // ratio of this pie slice
+        w.qglColor(m_colors[m->first]);
         glPolygonMode(GL_BACK,GL_FILL);
         glBegin(GL_POLYGON);
         glVertex2f(start_px+radius+4, start_py+radius+4);
@@ -65,7 +74,7 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         glEnd();
 
         glPolygonMode(GL_BACK,GL_LINE);
-        w.qglColor(Qt::black);
+        w.qglColor(m_outline_color);
         glBegin(GL_POLYGON);
         glVertex2f(start_px+radius+4, start_py+radius+4);
         for (q=sum;q<sum+j;q+=step) {
@@ -79,11 +88,7 @@ void gPieChart::Plot(gGraphWindow & w,float scrx,float scry)
         glVertex2f(px,py);
         glEnd();
 
-
         sum=q;
     }
-    glDisable(GL_POLYGON_SMOOTH);
-    glDisable(GL_BLEND); */
-    //glDisable(GL_DEPTH_TEST);
-    //glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
 }

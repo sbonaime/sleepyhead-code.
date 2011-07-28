@@ -4,7 +4,7 @@
  License: GPL
 *********************************************************************/
 
-#include "graphdata.h"
+//#include "graphdata.h"
 /*
 gGraphData::gGraphData(int mp,gDataType t)
 :vc(0),type(t),max_points(mp)

@@ -201,30 +201,23 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //TAP_IAP->AddLayer(new gCandleStick(tap_iap));
 
 
-    //G_AHI->SetMargins(0,0,0,0);
+    G_AHI->SetMargins(0,0,0,0);
     //AddCPAPData(g_ahi=new AHIData());
     //gCandleStick *l=new gCandleStick(g_ahi);
-    /*gPieChart *l=new gPieChart(g_ahi);
-    l->AddName(tr("H"));
-    l->AddName(tr("OA"));
-    l->AddName(tr("CA"));
-    l->AddName(tr("RE"));
-    l->AddName(tr("FL"));
-   // l->AddName(tr("CSR"));
-    l->color.clear();
-    l->color.push_back(QColor(0x40,0x40,0xff,0xff)); // blue
-    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); // aqua
-    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); // purple
-    l->color.push_back(QColor(0xff,0xff,0x80,0xff));  // yellow
-    l->color.push_back(QColor(0x40,0x40,0x40,0xff)); // dark grey
+    gPieChart *l=new gPieChart(Qt::black);
+    l->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
+    l->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
+    l->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
+    l->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
+    l->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
     //l->color.push_back(QColor(0x60,0xff,0x60,0xff)); // green
-    G_AHI->AddLayer(l);
+    G_AHI->AddLayer(AddCPAP(l));
     G_AHI->SetGradientBackground(false);
 
     //G_AHI->setMaximumSize(2000,30);
     //TAP->setMaximumSize(2000,30);
     G_AHI->hide();
-    TAP->hide();
+    /*TAP->hide();
     TAP_IAP->hide();
     TAP_EAP->hide(); */
 
@@ -417,9 +410,11 @@ void Daily::Load(QDate date)
     Day *oxi=profile->GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
-    if (lastcpapday && (lastcpapday!=cpap)) {
-        for (vector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
-            (*s)->TrashEvents();
+    if (!pref["MemoryHog"].toBool()) {
+        if (lastcpapday && (lastcpapday!=cpap)) {
+            for (vector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
+                (*s)->TrashEvents();
+            }
         }
     }
     lastcpapday=cpap;
@@ -526,13 +521,13 @@ void Daily::Load(QDate date)
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
         if (1) {
 
-    /*        G_AHI->setFixedSize(gwwidth,gwheight);
+            G_AHI->setFixedSize(gwwidth,gwheight);
             QPixmap pixmap=G_AHI->renderPixmap(120,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
-            html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n"; */
+            html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
         html+="</table>"
         "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n"

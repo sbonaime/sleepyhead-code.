@@ -4,9 +4,9 @@
  License: GPL
 *********************************************************************/
 
-#include <cmath>
-#include <QDebug>
-#include "graphdata_custom.h"
+//#include <cmath>
+//#include <QDebug>
+//#include "graphdata_custom.h"
 
 /*
 WaveData::WaveData(MachineCode _code, int _size)

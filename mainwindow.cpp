@@ -99,10 +99,15 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
     ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
 
+    if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=true;
+    ui->action_Memory_Hog->setChecked(pref["MemoryHog"].toBool());
+
     if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
 
     if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
     ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
+
+
     first_load=true;
 
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
@@ -332,4 +337,9 @@ void MainWindow::on_actionOverlay_Bars_toggled(bool checked)
     pref["AlwaysShowOverlayBars"]=checked;
     if (daily)
         daily->RedrawGraphs();
+}
+
+void MainWindow::on_action_Memory_Hog_toggled(bool checked)
+{
+    pref["MemoryHog"]=checked;
 }

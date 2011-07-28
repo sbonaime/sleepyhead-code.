@@ -74,6 +74,8 @@ private slots:
 
     void on_actionOverlay_Bars_toggled(bool arg1);
 
+    void on_action_Memory_Hog_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

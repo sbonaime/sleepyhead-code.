@@ -23,7 +23,7 @@ public:
     vector<QColor> color;
 
     virtual void SetDay(Day * d);
-    void SetCode(MachineCode c) { m_code=c; }
+    virtual void SetCode(MachineCode c) { m_code=c; }
     virtual qint64 Minx() { if (m_day) return m_day->first(); return m_minx; }
     virtual qint64 Maxx() { if (m_day) return m_day->last(); return m_maxx; }
     virtual EventDataType Miny() { return m_miny; }
