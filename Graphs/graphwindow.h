@@ -145,7 +145,7 @@ public:
       void SetSplitter(QSplitter *s) { splitter=s; }
       bool isDraggingGraph() { return m_dragGraph; }
   protected:
-      void updateSelectionTime();
+      void updateSelectionTime(qint64 span);
 
       void initializeGL();
       QSplitter *splitter;

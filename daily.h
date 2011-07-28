@@ -84,7 +84,7 @@ private:
     QScrollArea *scrollArea;
     QSplitter *gSplitter;
     QLabel *NoData;
-
+    QWidget *spacer;
 };
 
 /*class AHIGraph:public QWebPluginFactory

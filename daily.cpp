@@ -27,6 +27,7 @@
 #include "Graphs/gBarChart.h"
 #include "Graphs/gpiechart.h"
 
+const int default_height=150;
 
 Daily::Daily(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
@@ -42,14 +43,16 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     }
 
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
-    gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
+    gSplitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     gSplitter->setHandleWidth(2);
+    ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->scrollArea->setWidget(gSplitter);
     //ui->graphSizer->addWidget(gSplitter);
     ui->scrollArea->setAutoFillBackground(false);
     gSplitter->setAutoFillBackground(false);
     ui->scrollArea->setWidgetResizable(true);
-    gSplitter->setMinimumHeight(1600);
+    //gSplitter->setMinimumHeight(1600);
     //gSplitter->setMinimumWidth(600);
 
     SF=new gGraphWindow(gSplitter,tr("Event Flags"),shared);
@@ -78,8 +81,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     fmt.setRgba(true);
     //fmt.setDefaultFormat(fmt);
     offscreen_context=new QGLContext(fmt); */
-
-    const int default_height=100;
 
     SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
@@ -255,10 +256,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     }
     AddGraph(PULSE);
     //  AddGraph(SPO2);
-    /*QLabel *space=new QLabel(gSplitter);
-    gSplitter->addWidget(space);
-    i=gSplitter->indexOf(space);
-    gSplitter->setStretchFactor(i,1); */
+    spacer=new QWidget(gSplitter);
+    gSplitter->addWidget(spacer);
+    i=gSplitter->indexOf(spacer);
+    gSplitter->setStretchFactor(i,1);
 
     //gSplitter->refresh();
 
@@ -294,8 +295,8 @@ void Daily::AddGraph(gGraphWindow *w)
 }
 void Daily::resizeEvent (QResizeEvent * event)
 {
-    const QSize &size=event->size();
-    gSplitter->setMinimumWidth(size.width()-280);
+    //const QSize &size=event->size();
+  //  gSplitter->setMinimumWidth(size.width()-280);
 }
 
 void Daily::ReloadGraphs()
@@ -378,8 +379,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                     a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                     mcr->addChild(new QTreeWidgetItem(a));
                 }
-            }
-        }
+            }        }
     }
     int cnt=0;
     for (map<MachineCode,QTreeWidgetItem *>::iterator m=mcroot.begin();m!=mcroot.end();m++) {
@@ -429,7 +429,7 @@ void Daily::Load(QDate date)
     static Day * lastcpapday=NULL;
     previous_date=date;
     Day *cpap=profile->GetDay(date,MT_CPAP);
-    //Day *oxi=profile->GetDay(date,MT_OXIMETER);
+    Day *oxi=profile->GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
     if (!pref["MemoryHog"].toBool()) {
@@ -447,7 +447,7 @@ void Daily::Load(QDate date)
     QString tmp;
     const int gwwidth=240;
     const int gwheight=25;
-    //UpdateOXIGraphs(oxi);
+    UpdateOXIGraphs(oxi);
     //gSplitter->blockSignals(true);
     //ui->scrollArea->blockSignals(true);
     //ui->scrollArea->setUpdatesEnabled(false);
@@ -457,27 +457,32 @@ void Daily::Load(QDate date)
     //}
 
     UpdateCPAPGraphs(cpap);
-    //UpdateEventsTree(ui->treeWidget,cpap);
+    UpdateEventsTree(ui->treeWidget,cpap);
 
-    if (!cpap) {// && !oxi) {
+    if (!cpap && !oxi) {
         gSplitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         if (!NoData->isVisible()) NoData->show();
         for (unsigned i=0;i<Graphs.size();i++) {
             Graphs[i]->hide();
         }
+        spacer->hide();
             //if (SF->isVisible()) SF->hide();
 
     } else {
-        gSplitter->setMinimumHeight(1600);
         if (NoData->isVisible()) NoData->hide();
+        int vis=1;
         for (unsigned i=0;i<Graphs.size();i++) {
             if (Graphs[i]->isEmpty()) {
                 Graphs[i]->hide();
             } else {
                 Graphs[i]->show();
+                vis++;
             }
         }
+        gSplitter->setMinimumHeight(vis*default_height);
+
+        spacer->show();
         //if (!SF->isVisible()) SF->show();
     }
     /*for (unsigned i=0;i<Graphs.size();i++) {
@@ -493,7 +498,7 @@ void Daily::Load(QDate date)
     RedrawGraphs();
     //ui->scrollArea->update();
 
-/*    QString epr,modestr;
+    QString epr,modestr;
     float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
     PRTypes pr;
@@ -695,7 +700,7 @@ void Daily::Load(QDate date)
     if (journal) {
         ui->JournalNotes->setHtml(journal->summary[GEN_Notes].toString());
     }
-    */
+
 }
 void Daily::Unload(QDate date)
 {

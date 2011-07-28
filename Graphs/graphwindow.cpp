@@ -259,27 +259,25 @@ void gGraphWindow::ZoomX(double mult,int origin_px)
         min=max-q;
     }
     SetXBounds(min,max);
-    updateSelectionTime();
+    updateSelectionTime(max-min);
 }
 
-void gGraphWindow::updateSelectionTime()
+void gGraphWindow::updateSelectionTime(qint64 span) // in milliseconds
 {
-    double f;
-    f=(max_x-min_x)/86400000.0;
-
-    int hours,minutes,seconds;
-    hours=int(f*24.0);
-    minutes=int(f*24*60.0) % 60;
-    seconds=int(f*24*3600.0) % 60;
+    qint64 time=span % 86400000;
+    int days,hours,minutes,seconds,milli;
+    milli=time % 1000;
+    time/=1000;
+    seconds=time%60;
+    time/=60;
+    minutes=time%60;
+    time/=60;
+    hours=time;
+    time/=24;
+    days=time;
     QString s;
-    if (f>1) {
-        s.sprintf("%.0f days",f);
-    } else if (f>(1.0/(24.0*12.0))) {
-        s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
-    } else {
-        int milli=int(f*24*3600000.0) % 1000;
-        s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
-    }
+
+    s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
     qstatus2->setText(s);
 }
 
@@ -401,22 +399,8 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         } else {
             z=max_x-min_x;
         }
-        double q=double(t2-t1)/width();
-        double f=((q*z)/3600000.0);
-        int hours,minutes,seconds;
-        hours=int(f);
-        minutes=int(f*60.0) % 60;
-        seconds=int(f*3600.0) % 60;
-        QString s;
-        if (z>1) {
-            s.sprintf("%.0f days",q*z);
-        } else if (z>(1.0/(24.0*12.0))) {
-            s.sprintf("%02i:%02i:%02i",hours,minutes,seconds);
-        } else {
-            int milli=int(f*3600000.0) % 1000;
-            s.sprintf("%02i:%02i:%02i:%04i",hours,minutes,seconds,milli);
-        }
-        qstatus2->setText(s);
+        double q=double(t2-t1)/Width();
+        this->updateSelectionTime(q*z);
         m_mouseRBlast=m_mouseRBrect;
         m_mouseRBrect=r;
 
