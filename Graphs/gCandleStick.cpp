@@ -7,26 +7,51 @@
 #include <math.h>
 #include "gCandleStick.h"
 
-gCandleStick::gCandleStick(MachineCode code,Qt::Orientation o)
-:gLayer(code)
+gCandleStick::gCandleStick(Qt::Orientation o)
+:gLayer(MC_UNKNOWN)
 {
     m_orientation=o;
 }
 gCandleStick::~gCandleStick()
 {
 }
+void gCandleStick::SetDay(Day * d)
+{
+    gLayer::SetDay(d);
+    m_total=0;
+    if (!m_day) return;
+    int cnt;
+    for (map<MachineCode,int>::iterator c=m_counts.begin();c!=m_counts.end();c++) {
+        c->second=0;
+        for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+            // check summary objects first..
+            //if (*s)->summary_exists(c->first) {
+                cnt=(*s)->count(c->first);
+            //} else
+                cnt=(*s)->summary[c->first].toInt();
+            //}
+            c->second+=cnt;
+            m_total+=cnt;
+        }
+    }
+}
+void gCandleStick::AddSlice(MachineCode code, QColor color, QString name)
+{
+    m_counts[code]=0;
+    m_names[code]=name;
+    m_colors[code]=color;
+}
 void gCandleStick::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
-    /*if (!data) return;
-    if (!data->IsReady()) return;
+    if (!m_day) return;
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-1;
 
-    float sum=0;
+/*    float sum=0;
     for (int i=0;i<data->np[0];i++)
         sum+=data->point[0][i].y();
 

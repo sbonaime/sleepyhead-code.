@@ -12,16 +12,19 @@
 class gCandleStick:public gLayer
 {
     public:
-        gCandleStick(MachineCode code=MC_UNKNOWN,Qt::Orientation o=Qt::Horizontal);
+        gCandleStick(Qt::Orientation o=Qt::Horizontal);
         virtual ~gCandleStick();
+        virtual void SetDay(Day *d);
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
-        void AddName(QString name) { m_names.push_back(name); };
+        void AddSlice(MachineCode code,QColor color,QString name="");
 
     protected:
         Qt::Orientation m_orientation;
-        vector<QString> m_names;
-
+        map<MachineCode,int> m_counts;
+        map<MachineCode,QString> m_names;
+        map<MachineCode,QColor> m_colors;
+        int m_total;
 };
 
 

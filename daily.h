@@ -48,11 +48,12 @@ private slots:
     void on_treeWidget_itemSelectionChanged();
 
     void on_JournalNotesUnderline_clicked();
+protected:
+    virtual void resizeEvent (QResizeEvent * event);
 
 private:
     Session * CreateJournalSession(QDate date);
     Session * GetJournalSession(QDate date);
-
     void Load(QDate date);
     void Unload(QDate date);
     void UpdateCalendarDay(QDate date);
