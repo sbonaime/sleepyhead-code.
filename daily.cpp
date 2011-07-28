@@ -262,8 +262,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 
     //gSplitter->refresh();
 
-    gSplitter->setChildrenCollapsible(true);  // We set this per widget..
-    gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
+    gSplitter->setChildrenCollapsible(false);  // We set this per widget..
+    //gSplitter->setCollapsible(gSplitter->indexOf(SF),false);
     //gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
 
     gSplitter->layout();
@@ -459,22 +459,29 @@ void Daily::Load(QDate date)
     UpdateCPAPGraphs(cpap);
     //UpdateEventsTree(ui->treeWidget,cpap);
 
-    for (unsigned i=0;i<Graphs.size();i++) {
-        if (Graphs[i]->isEmpty()) {
-            Graphs[i]->hide();
-        } else {
-            Graphs[i]->show();
-        }
-    }
     if (!cpap) {// && !oxi) {
+        gSplitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         if (!NoData->isVisible()) NoData->show();
-        if (SF->isVisible()) SF->hide();
+        for (unsigned i=0;i<Graphs.size();i++) {
+            Graphs[i]->hide();
+        }
+            //if (SF->isVisible()) SF->hide();
 
     } else {
+        gSplitter->setMinimumHeight(1600);
         if (NoData->isVisible()) NoData->hide();
-        if (!SF->isVisible()) SF->show();
+        for (unsigned i=0;i<Graphs.size();i++) {
+            if (Graphs[i]->isEmpty()) {
+                Graphs[i]->hide();
+            } else {
+                Graphs[i]->show();
+            }
+        }
+        //if (!SF->isVisible()) SF->show();
     }
+    /*for (unsigned i=0;i<Graphs.size();i++) {
+    } */
 
     //gSplitter->layout();
     //for (unsigned i=0;i<Graphs.size();i++) {
