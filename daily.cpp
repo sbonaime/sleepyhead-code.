@@ -196,20 +196,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 //    SPO2->hide();
     PULSE->hide();
 
-    //AddCPAPData(tap_eap=new TAPData(CPAP_EAP));
-    //AddCPAPData(tap_iap=new TAPData(CPAP_IAP));
-    //AddCPAPData(tap=new TAPData(CPAP_Pressure));
-    //TAP->SetMargins(20,15,5,50);
-    //TAP->SetMargins(0,0,0,0);
-    //TAP->AddLayer(new gCandleStick(tap));
-    //TAP->AddLayer(new gPieChart(tap));
+    TAP_EAP->SetMargins(0,0,0,0);
+    TAP_EAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_EAP)));
+    TAP_EAP->hide();
 
-    //TAP_EAP->SetMargins(0,0,0,0);
-    //TAP_EAP->AddLayer(new gCandleStick(tap_eap));
-
-    //TAP_IAP->SetMargins(0,0,0,0);
-    //TAP_IAP->AddLayer(new gCandleStick(tap_iap));
-
+    TAP_IAP->SetMargins(0,0,0,0);
+    TAP_IAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_IAP)));
+    TAP_IAP->hide();
 
     TAP->SetMargins(0,0,0,0);
     TAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_Pressure)));
@@ -225,9 +218,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     G_AHI->AddLayer(AddCPAP(l));
     G_AHI->SetGradientBackground(false);
     G_AHI->hide();
-    /*TAP->hide();
-    TAP_IAP->hide();
-    TAP_EAP->hide(); */
 
     NoData=new QLabel(tr("No data"),gSplitter);
     NoData->setAlignment(Qt::AlignCenter);
@@ -434,6 +424,7 @@ void Daily::on_calendar_selectionChanged()
 void Daily::ResetGraphLayout()
 {
     gSplitter->setSizes(splitter_sizes);
+
 }
 
 void Daily::Load(QDate date)
@@ -479,6 +470,8 @@ void Daily::Load(QDate date)
             if (Graphs[i]->isEmpty()) {
                 Graphs[i]->hide();
             } else {
+                Graphs[i]->ResetBounds();
+
                 Graphs[i]->show();
                 vis++;
             }
@@ -655,7 +648,26 @@ void Daily::Load(QDate date)
 
     if (cpap) {
         if (mode==MODE_BIPAP) {
-
+            {
+            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
+            TAP_EAP->setFixedSize(gwwidth,gwheight);
+            QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,gwheight,false);
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+            buffer.open(QIODevice::WriteOnly);
+            pixmap.save(&buffer, "PNG");
+            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            }
+            {
+            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
+            TAP_IAP->setFixedSize(gwwidth,gwheight);
+            QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,gwheight,false);
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+            buffer.open(QIODevice::WriteOnly);
+            pixmap.save(&buffer, "PNG");
+            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            }
         } else if (mode==MODE_APAP) {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
 
@@ -862,7 +874,6 @@ void Daily::UpdateOXIGraphs(Day *day)
 void Daily::RedrawGraphs()
 {
     for (unsigned i=0;i<Graphs.size();i++) {
-       Graphs[i]->ResetBounds();
        Graphs[i]->updateGL();
     }
 }

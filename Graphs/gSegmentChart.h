@@ -8,7 +8,7 @@ enum GraphSegmentType { GST_Pie, GST_CandleStick };
 class gSegmentChart : public gLayer
 {
 public:
-    gSegmentChart(GraphSegmentType gt=GST_Pie, QColor gradient_color=Qt::lightGray,QColor outline_color=Qt::black);
+    gSegmentChart(GraphSegmentType gt=GST_Pie, QColor gradient_color=Qt::white,QColor outline_color=Qt::black);
     virtual ~gSegmentChart();
 
     virtual void Plot(gGraphWindow & w,float scrx,float scry);

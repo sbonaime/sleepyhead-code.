@@ -43,7 +43,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
+    width--;
     float diameter=MIN(width,height);
     diameter-=8;
     float radius=diameter/2.0;
