@@ -76,6 +76,8 @@ private slots:
 
     void on_action_Memory_Hog_toggled(bool arg1);
 
+    void on_action_Reset_Graph_Layout_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

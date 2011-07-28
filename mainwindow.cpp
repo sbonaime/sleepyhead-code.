@@ -343,3 +343,8 @@ void MainWindow::on_action_Memory_Hog_toggled(bool checked)
 {
     pref["MemoryHog"]=checked;
 }
+
+void MainWindow::on_action_Reset_Graph_Layout_triggered()
+{
+    if (daily) daily->ResetGraphLayout();
+}

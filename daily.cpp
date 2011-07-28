@@ -264,6 +264,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     i=gSplitter->indexOf(FRW);
     gSplitter->setStretchFactor(i,15);
 
+
     //gSplitter->refresh();
 
     gSplitter->setChildrenCollapsible(false);  // We set this per widget..
@@ -271,6 +272,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     //gSplitter->setStretchFactor(gSplitter->indexOf(SF),0);
 
     gSplitter->layout();
+
+    splitter_sizes=gSplitter->sizes();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
@@ -427,6 +430,11 @@ void Daily::on_calendar_selectionChanged()
 
     Load(ui->calendar->selectedDate());
 }
+void Daily::ResetGraphLayout()
+{
+    gSplitter->setSizes(splitter_sizes);
+}
+
 void Daily::Load(QDate date)
 {
     static Day * lastcpapday=NULL;
@@ -451,14 +459,6 @@ void Daily::Load(QDate date)
     const int gwwidth=240;
     const int gwheight=25;
     UpdateOXIGraphs(oxi);
-    //gSplitter->blockSignals(true);
-    //ui->scrollArea->blockSignals(true);
-    //ui->scrollArea->setUpdatesEnabled(false);
-    //gSplitter->setUpdatesEnabled(false);
-    //for (unsigned i=0;i<Graphs.size();i++) {
-    //    Graphs[i]->setUpdatesEnabled(false);
-    //}
-
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
 
@@ -470,7 +470,6 @@ void Daily::Load(QDate date)
             Graphs[i]->hide();
         }
         spacer->hide();
-            //if (SF->isVisible()) SF->hide();
 
     } else {
         NoData->hide();
@@ -486,20 +485,10 @@ void Daily::Load(QDate date)
         gSplitter->setMinimumHeight(vis*default_height);
 
         spacer->show();
-        //if (!SF->isVisible()) SF->show();
     }
-    /*for (unsigned i=0;i<Graphs.size();i++) {
-    } */
 
-    //gSplitter->layout();
-    //for (unsigned i=0;i<Graphs.size();i++) {
-    //    Graphs[i]->setUpdatesEnabled(true);
-    //}
-    //gSplitter->layout();
-    //ui->scrollArea->update();
     gSplitter->update();
     RedrawGraphs();
-    //ui->scrollArea->update();
 
     QString epr,modestr;
     float iap90,eap90;
@@ -913,51 +902,3 @@ void Daily::on_JournalNotesUnderline_clicked()
     cursor.mergeCharFormat(format);
    //ui->JournalNotes->mergeCurrentCharFormat(format);
 }
-
-
-
-/*AHIGraph::AHIGraph(QObject * parent)
-{
-}
-AHIGraph::~AHIGraph()
-{
-}
-QObject * AHIGraph::create(const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues) const
-{
-    gGraphWindow * ahi;
-    ahi=new gGraphWindow(NULL,"",(QGLWidget *)NULL);
-    ahi->SetMargins(0,0,0,0);
-    gPointData *g_ahi=new AHIData();
-    //gCandleStick *l=new gCandleStick(g_ahi);
-    gPieChart *l=new gPieChart(g_ahi);
-    l->AddName(tr("H"));
-    l->AddName(tr("OA"));
-    l->AddName(tr("CA"));
-    l->AddName(tr("RE"));
-    l->AddName(tr("FL"));
-    l->AddName(tr("CSR"));
-    l->color.clear();
-    l->color.push_back(QColor("blue"));
-    l->color.push_back(QColor(0x40,0xaf,0xbf,0xff)); //#40afbf
-    l->color.push_back(QColor(0xb2,0x54,0xcd,0xff)); //b254cd; //wxPURPLE);
-    l->color.push_back(QColor("yellow"));
-    l->color.push_back(QColor(0x40,0x40,0x40,255));
-    l->color.push_back(QColor(0x60,0xff,0x60,0xff)); //80ff80
-
-    return ahi;
-}
-QList<QWebPluginFactory::Plugin> AHIGraph::plugins() const
-{
-    QWebPluginFactory::MimeType mimeType;
-    mimeType.name = "text/csv";
-    mimeType.description = "Comma-separated values";
-    mimeType.fileExtensions = QStringList() << "csv";
-
-    QWebPluginFactory::Plugin plugin;
-    plugin.name = "Pie Chart";
-    plugin.description = "A Pie Chart Web plugin.";
-    plugin.mimeTypes = QList<MimeType>() << mimeType;
-
-    return QList<QWebPluginFactory::Plugin>() << plugin;
-}
- */

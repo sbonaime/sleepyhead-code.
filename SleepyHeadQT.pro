@@ -89,8 +89,6 @@ HEADERS  += \
     SleepLib/day.h \
     Graphs/graphwindow.h \
     Graphs/graphlayer.h \
-    Graphs/graphdata.h \
-    Graphs/graphdata_custom.h \
     Graphs/gLineChart.h \
     Graphs/gLineOverlay.h \
     Graphs/gFooBar.h \

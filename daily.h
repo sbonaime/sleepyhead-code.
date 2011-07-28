@@ -17,7 +17,7 @@
 #include <QWebPluginFactory>
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
-#include <Graphs/graphdata.h>
+//#include <Graphs/graphdata.h>
 #include "Graphs/gLineChart.h"
 #include <Graphs/gFlagsLine.h>
 namespace Ui {
@@ -33,6 +33,7 @@ public:
     ~Daily();
     void ReloadGraphs();
     void RedrawGraphs();
+    void ResetGraphLayout();
     QGLWidget *SharedWidget() { return SF; }
 
 private slots:
@@ -72,6 +73,7 @@ private:
     vector<gGraphWindow *> Graphs;
     QGLContext *offscreen_context;
 
+    QList<int> splitter_sizes;
     gLayer * AddCPAP(gLayer *d) { CPAPData.push_back(d); return d; }
     gLayer * AddOXI(gLayer *d) { OXIData.push_back(d); return d; }
     void AddGraph(gGraphWindow *w);

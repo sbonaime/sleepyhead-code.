@@ -597,6 +597,7 @@
     <addaction name="action_Memory_Hog"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
+    <addaction name="action_Reset_Graph_Layout"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -725,6 +726,11 @@
    </property>
    <property name="text">
     <string>&amp;Memory Hog</string>
+   </property>
+  </action>
+  <action name="action_Reset_Graph_Layout">
+   <property name="text">
+    <string>&amp;Reset Graph Layout</string>
    </property>
   </action>
  </widget>
