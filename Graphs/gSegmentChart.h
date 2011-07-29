@@ -3,7 +3,7 @@
 
 #include "graphlayer.h"
 
-enum GraphSegmentType { GST_Pie, GST_CandleStick };
+enum GraphSegmentType { GST_Pie, GST_CandleStick, GST_Line };
 
 class gSegmentChart : public gLayer
 {

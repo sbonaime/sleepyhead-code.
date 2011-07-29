@@ -11,8 +11,8 @@
 #include "gLineChart.h"
 
 #define EXTRA_ASSERTS 1
-gLineChart::gLineChart(MachineCode code,QColor col,bool _square_plot)
-:gLayer(code),m_square_plot(_square_plot)
+gLineChart::gLineChart(MachineCode code,QColor col,bool square_plot, bool disable_accel)
+:gLayer(code),m_square_plot(square_plot),m_disable_accel(disable_accel)
 {
     color.clear();
     color.push_back(col);
@@ -135,7 +135,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         for (unsigned n=0;n<evec.size();n++) { // for each segment
             EventList & el=*evec[n];
 
-            accel=el.type()==EVL_Waveform; // Turn on acceleration if this is a waveform.
+            accel=!m_disable_accel && (el.type()==EVL_Waveform); // Turn on acceleration if this is a waveform.
+
 
             square_plot=m_square_plot;
             if (accel || num_points>500) { // Don't square plot if too many points or waveform
@@ -166,7 +167,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     //assert(x1<x2);
                 }
             }
-
             if (accel) {
                 x1=el.time(1);
                 sr=el.rate();           // Time distance between samples

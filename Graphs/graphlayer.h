@@ -28,7 +28,10 @@ public:
     virtual qint64 Maxx() { if (m_day) return m_day->last(); return m_maxx; }
     virtual EventDataType Miny() { return m_miny; }
     virtual EventDataType Maxy() { return m_maxy; }
-
+    virtual void setMinY(EventDataType val) { m_miny=val; }
+    virtual void setMaxY(EventDataType val) { m_maxy=val; }
+    virtual void setMinX(qint64 val) { m_minx=val; }
+    virtual void setMaxX(qint64 val) { m_maxx=val; }
     virtual void setVisible(bool v) { m_visible=v; }
     virtual bool isVisible() { return m_visible; }
     virtual bool isEmpty();

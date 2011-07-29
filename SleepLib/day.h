@@ -41,6 +41,8 @@ public:
 
     qint64 first() { return d_first; }
     qint64 last() { return d_last; }
+    void setFirst(qint64 val) { d_first=val; }
+    void setLast(qint64 val) { d_last=val; }
     qint64 first(MachineCode code);
     qint64 last(MachineCode code);
     EventDataType min(MachineCode code);
@@ -60,6 +62,7 @@ public:
     Machine *machine;
 
     void OpenEvents();
+    vector<Session *> & getSessions() { return sessions; }
 
 protected:
     vector<Session *> sessions;

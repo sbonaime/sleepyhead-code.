@@ -82,7 +82,7 @@ private:
     Ui::MainWindow *ui;
     Daily * daily;
     //Overview * overview;
-    //Oximetry * oximetry;
+    Oximetry * oximetry;
     bool first_load;
     Profile *profile;
 };

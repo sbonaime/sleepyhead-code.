@@ -19,8 +19,6 @@
 #include "SleepLib/loader_plugins/resmed_loader.h"
 
 
-#include "daily.h"
-#include "overview.h"
 #include "Graphs/glcommon.h"
 
 QProgressBar *qprogress;
@@ -119,8 +117,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //overview=new Overview(ui->tabWidget,daily->SharedWidget());
     //ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    //oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
-    //ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
@@ -135,11 +133,11 @@ MainWindow::~MainWindow()
     /*if (overview) {
         overview->close();
         delete overview;
-    }
+    } */
     if (oximetry) {
         oximetry->close();
         delete oximetry;
-    }*/
+    }
     DoneGraphs();
     Profiles::Done();
     mainwin=NULL;

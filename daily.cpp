@@ -29,6 +29,16 @@
 const int min_height=100;
 const int default_height=150;
 
+MyScrollArea::MyScrollArea(Daily * parent)
+{
+}
+MyScrollArea::~MyScrollArea()
+{
+}
+void MyScrollArea::scrollContentsBy(int dx, int dy)
+{
+}
+
 Daily::Daily(QWidget *parent,QGLWidget * shared) :
     QWidget(parent),
     ui(new Ui::Daily)
@@ -42,12 +52,15 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
         exit(-1);
     }
 
+    //scrollArea=new MyScrollArea(this);
+
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     gSplitter->setHandleWidth(3);
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->scrollArea->setWidget(gSplitter);
+    //this->connect(ui->scrollArea,
     //ui->graphSizer->addWidget(gSplitter);
     ui->scrollArea->setAutoFillBackground(false);
     gSplitter->setAutoFillBackground(false);
@@ -196,26 +209,32 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
 //    SPO2->hide();
     PULSE->hide();
 
+    gSegmentChart *seg;
+
     TAP_EAP->SetMargins(0,0,0,0);
-    TAP_EAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_EAP)));
+    TAP_EAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_EAP)));
+
     TAP_EAP->hide();
+    TAP_EAP->SetGradientBackground(false);
 
     TAP_IAP->SetMargins(0,0,0,0);
-    TAP_IAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_IAP)));
+    TAP_IAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_IAP)));
     TAP_IAP->hide();
+    TAP_IAP->SetGradientBackground(false);
 
     TAP->SetMargins(0,0,0,0);
-    TAP->AddLayer(AddCPAP(new gTAPGraph(CPAP_Pressure)));
+    TAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_Pressure,GST_Line)));
     TAP->hide();
+    TAP->SetGradientBackground(false);
 
     G_AHI->SetMargins(0,0,0,0);
-    gSegmentChart *l=new gSegmentChart(GST_Pie);
-    l->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
-    l->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
-    l->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
-    l->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
-    l->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
-    G_AHI->AddLayer(AddCPAP(l));
+    seg=new gSegmentChart(GST_Pie);
+    seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
+    seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
+    seg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
+    seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
+    seg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
+    G_AHI->AddLayer(AddCPAP(seg));
     G_AHI->SetGradientBackground(false);
     G_AHI->hide();
 
@@ -449,7 +468,7 @@ void Daily::Load(QDate date)
     "<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
     const int gwwidth=240;
-    const int gwheight=25;
+    const int gwheight=100;
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);

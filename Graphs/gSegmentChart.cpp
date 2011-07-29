@@ -58,7 +58,8 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     glLineWidth(1.5);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    float mult=float(width)/m_total;
+    float xmult=float(width)/float(m_total);
+    float ymult=float(height)/float(m_total);
 
     float xp=w.GetLeftMargin();
 
@@ -66,7 +67,17 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     int yoffset=height/2;
 
     int data;
-    for (unsigned m=0;m<m_values.size();m++) {
+    unsigned size=m_values.size();
+    float line_step=float(width)/float(size-1);
+    bool line_first=true;
+    int line_last;
+
+    if (m_graph_type==GST_Line) {
+        w.qglColor(m_outline_color);
+        glBegin(GL_LINES);
+    }
+
+    for (unsigned m=0;m<size;m++) {
         data=m_values[m];
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +128,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
 // CandleStick Chart
 /////////////////////////////////////////////////////////////////////////////////////
         } else if (m_graph_type==GST_CandleStick) {
-            float bw=mult*float(data);
+            float bw=xmult*float(data);
 
             glBegin(GL_QUADS);
             w.qglColor(m_gradient_color);
@@ -145,8 +156,20 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
             }
 
             xp+=bw;
-        } else {
+        } else if (m_graph_type==GST_Line) {
+            float h=float(data)*ymult;
+            if (line_first) {
+                line_first=false;
+            } else {
+                glVertex2f(xp,line_last);
+                xp+=line_step;
+                glVertex2f(xp,h);
+            }
+            line_last=h;
         }
+    }
+    if (m_graph_type==GST_Line) {
+        glEnd();
     }
     glDisable(GL_BLEND);
 }

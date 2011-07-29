@@ -16,7 +16,7 @@
 class gLineChart:public gLayer
 {
     public:
-        gLineChart(MachineCode code,const QColor col=QColor("black"), bool _square_plot=false);
+        gLineChart(MachineCode code,const QColor col=QColor("black"), bool square_plot=false,bool disable_accel=false);
         virtual ~gLineChart();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
@@ -25,10 +25,12 @@ class gLineChart:public gLayer
         bool GetSquarePlot() { return m_square_plot; }
         void ReportEmpty(bool b) { m_report_empty=b; }
         bool GetReportEmpty() { return m_report_empty; }
-
+        void setDisableAccel(bool b) { m_disable_accel=b; }
+        bool disableAccel() { return m_disable_accel; }
 protected:
         bool m_report_empty;
         bool m_square_plot;
+        bool m_disable_accel;
 };
 
 #endif // GLINECHART_H

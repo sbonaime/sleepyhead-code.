@@ -24,6 +24,18 @@ namespace Ui {
     class Daily;
 }
 
+class Daily;
+class MyScrollArea:public QScrollArea
+{
+public:
+    MyScrollArea(Daily * parent);
+    virtual ~MyScrollArea();
+protected:
+    virtual void scrollContentsBy(int dx, int dy);
+    Daily *daily;
+};
+
+
 class Daily : public QWidget
 {
     Q_OBJECT
@@ -83,7 +95,7 @@ private:
     Ui::Daily *ui;
     Profile *profile;
     QDate previous_date;
-    QScrollArea *scrollArea;
+    MyScrollArea *scrollArea;
     QSplitter *gSplitter;
     QLabel *NoData;
     QWidget *spacer;

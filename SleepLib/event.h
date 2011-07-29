@@ -27,6 +27,8 @@ public:
     void AddWaveform(qint64 start, char * data, int recs, qint64 duration);
 
     inline const int & count() { return m_count; }
+    void setCount(int count) { m_count=count; }
+
     inline EventStoreType raw(int i) { return m_data[i]; }
 
     EventDataType data(int i);
@@ -34,6 +36,8 @@ public:
     inline const qint64 & first() { return m_first; }
     inline const qint64 & last() { return m_last; }
     inline qint64 duration() { return m_last-m_first; }
+    void setFirst(qint64 val) { m_first=val; }
+    void setLast(qint64 val) { m_last=val; }
 
     void setGain(EventDataType v) { m_gain=v; }
     void setOffset(EventDataType v) { m_offset=v; }
@@ -48,10 +52,11 @@ public:
     inline const EventListType & type() { return m_type; }
     inline const MachineCode & code() { return m_code; }
     inline const bool & update_minmax() { return m_update_minmax; }
+
     vector<EventStoreType> & getData() { return m_data; }
     vector<qint64> & getTime() { return m_time; }
 protected:
-    vector<qint64> m_time;
+    vector<qint64> m_time; // 32bitalize this.. add offsets to m_first
     vector<EventStoreType> m_data;
     MachineCode m_code;
     EventListType m_type;

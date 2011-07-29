@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  SleepLib Event Class Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <QDebug>
 #include "event.h"
@@ -73,7 +73,6 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
         qWarning() << "Attempted to add waveform without setting sample rate";
         return;
     }
-    // duration=recs*rate;
     qint64 last=start+duration;
     if (!m_first) {
         m_first=start;

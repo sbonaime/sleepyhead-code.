@@ -45,7 +45,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     min_x=max_x=0;
 }
 
-gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
+/*gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
 : QGLWidget((QGLContext *)context, parent, 0, f )
 {
     gl_context=context;
@@ -69,7 +69,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * 
     //setAcceptDrops(true);
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
-}
+}*/
 
 gGraphWindow::~gGraphWindow()
 {

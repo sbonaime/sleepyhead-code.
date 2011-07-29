@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gGraphWindow Headers
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef GRAPHWINDOW_H
 #define GRAPHWINDOW_H
@@ -26,7 +26,7 @@ class gGraphWindow : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f=0);
+    //explicit gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f=0);
     explicit gGraphWindow(QWidget *parent, const QString & title, QGLWidget * shared,Qt::WindowFlags f=0);
     virtual ~gGraphWindow();
 
@@ -72,17 +72,11 @@ public:
       inline int Height() { return m_scrY-m_marginTop-m_marginBottom; }   // Height of ""...
 
       void LinkZoom(gGraphWindow *g) { link_zoom.push_back(g); } // Linking graphs changes zoom behaviour..
-      //void LinkMove(gGraphWindow *g) { link_move.push_back(g); } // Linking graphs changes zoom behaviour..
 
       virtual qint64 MinX();
       virtual qint64 MaxX();
       virtual EventDataType MinY();
       virtual EventDataType MaxY();
-
-    /*  virtual double RealMinX();
-      virtual double RealMaxX();
-      virtual double RealMinY();
-      virtual double RealMaxY();*/
 
       virtual void SetMinX(qint64 v);
       virtual void SetMaxX(qint64 v);
@@ -125,20 +119,14 @@ public:
 
       void Render(int scrx,int scry);
 
-      //virtual void Update();
-      //virtual void Update();
       void AddLayer(gLayer *l);
-
-      //virtual void DataChanged(gLayer *layer);
 
       qint64 max_x,min_x,max_y,min_y;
       qint64 rmax_x,rmin_x,rmax_y,rmin_y;
 
       void SetBlockZoom(bool b) { m_block_zoom=b; }
-      //void SetBlockMove(bool b) { m_block_move=b; }
       bool BlockZoom() { return m_block_zoom; }
       QGLContext *gl_context;
-      //FTFont *texfont;
       void SetGradientBackground(bool b) { m_gradient_background=b; }
       bool GradientBackground() { return m_gradient_background; }
       bool isEmpty();
@@ -150,9 +138,7 @@ public:
       void initializeGL();
       QSplitter *splitter;
       list<gGraphWindow *>link_zoom;
-      //list<gGraphWindow *>link_move;
 
-      //bool m_block_move;
       bool m_block_zoom;
       bool m_drag_foobar;
       bool m_dragGraph;
