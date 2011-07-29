@@ -36,6 +36,7 @@ public:
     void AddMachine(Machine *m);
     void DelMachine(Machine *m);
     void LoadMachineData();
+    void DataFormatError(Machine *m);
     int Import(QString path);
 
     void AddDay(QDate date,Day *day,MachineType mt);

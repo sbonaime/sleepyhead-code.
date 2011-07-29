@@ -33,7 +33,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="Resources.qrc">
-    <normaloff>:/icons/moon.png</normaloff>:/icons/moon.png</iconset>
+    <normaloff>:/docs/sheep.png</normaloff>:/docs/sheep.png</iconset>
   </property>
   <property name="iconSize">
    <size>

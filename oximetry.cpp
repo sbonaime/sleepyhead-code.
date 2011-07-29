@@ -74,11 +74,12 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
         }
         Graphs[i]->AddLayer(new gYAxis());
         Graphs[i]->AddLayer(new gXAxis());
-        Graphs[i]->AddLayer(new gFooBar());
+        //Graphs[i]->AddLayer(new gFooBar());
 
         gSplitter->addWidget(Graphs[i]);
     }
     PLETHY->AddLayer(plethy);
+    PLETHY->AddLayer(new gFooBar());
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 

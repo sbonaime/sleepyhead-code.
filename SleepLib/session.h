@@ -65,7 +65,6 @@ public:
     void SetChanged(bool val) {
         s_changed=val;
         s_events_loaded=val; // dirty hack putting this here
-        s_waves_loaded=val;
     };
     bool IsChanged() {
         return s_changed;
@@ -76,7 +75,6 @@ public:
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
     void SetEventFile(QString & filename) { s_eventfile=filename; }
-    void SetWaveFile(QString & filename) { s_wavefile=filename; }
 
     inline void UpdateFirst(qint64 v) { if (!s_first) s_first=v; else if (s_first>v) s_first=v; }
     inline void UpdateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
@@ -102,9 +100,7 @@ protected:
     bool _first_session;
 
     bool s_events_loaded;
-    bool s_waves_loaded;
     QString s_eventfile;
-    QString s_wavefile;
 };
 
 

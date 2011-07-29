@@ -28,11 +28,10 @@ EventList::~EventList()
 }
 qint64 EventList::time(int i)
 {
-    if (m_type==EVL_Waveform) {
-        qint64 t=m_first+(double(i)*m_rate);
-        return t;
+    if (m_type==EVL_Event) {
+        return m_first+qint64(m_time[i]);
     }
-    return m_time[i];
+    return m_first+(EventDataType(i)*m_rate);
 }
 
 EventDataType EventList::data(int i)
@@ -44,22 +43,31 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
 {
     // Apply gain & offset
     m_data.push_back(data);
-    EventDataType val=data;
-    val*=m_gain;
-    val+=m_offset;
-    m_count++;
+    EventDataType val=EventDataType(data)*m_gain+m_offset;
     if (m_update_minmax) {
         if (m_min>val) m_min=val;
         if (m_max<val) m_max=val;
     }
 
-    m_time.push_back(time);
     if (!m_first) {
         m_first=time;
         m_last=time;
     }
-    if (m_first>time) m_first=time;
-    if (m_last<time) m_last=time;
+    if (m_first>time) {
+        // Crud.. Update all the previous records
+        // This really shouldn't happen.
+
+        qint64 t=(m_first-time);
+        for (int i=0;i<m_count;i++) {
+            m_time[i]-=t & 0xffffffff;
+        }
+        m_first=time;
+    }
+    if (m_last < time) m_last=time;
+    quint32 t=(time-m_first) & 0xffffffff;
+
+    m_time.push_back(t);
+    m_count++;
 }
 
 // Adds a consecutive waveform chunk

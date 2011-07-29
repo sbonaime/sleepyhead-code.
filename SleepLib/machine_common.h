@@ -16,10 +16,11 @@ typedef long MachineID;
 typedef long SessionID;
 
 class BoundsError {};
+class OldDBVersion {};
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 dbversion=4;
+const quint16 dbversion=5;
 
 const int max_number_event_fields=10;
 

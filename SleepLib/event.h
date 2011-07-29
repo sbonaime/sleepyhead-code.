@@ -54,9 +54,9 @@ public:
     inline const bool & update_minmax() { return m_update_minmax; }
 
     vector<EventStoreType> & getData() { return m_data; }
-    vector<qint64> & getTime() { return m_time; }
+    vector<quint32> & getTime() { return m_time; }
 protected:
-    vector<qint64> m_time; // 32bitalize this.. add offsets to m_first
+    vector<quint32> m_time; // 32bitalize this.. add offsets to m_first
     vector<EventStoreType> m_data;
     MachineCode m_code;
     EventListType m_type;

@@ -49,6 +49,26 @@ Profile::~Profile()
     delete i->second;
     }
 }
+void Profile::DataFormatError(Machine *m)
+{
+    QString msg="Software changes have been made that require the reimporting of the following machines data:\n\n";
+    msg=msg+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["Serial"];
+    msg=msg+"\n\nThis is still only alpha software and these changes are sometimes necessary.\n\n";
+    msg=msg+"I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n";
+    msg=msg+"Would you like me to purge this data this for you so you can run the new version?";
+
+    if (QMessageBox::warning(NULL,"Machine Database Changes",msg,QMessageBox::Yes | QMessageBox::Cancel,QMessageBox::Yes)==QMessageBox::Yes) {
+
+        if (!m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
+            QMessageBox::critical(NULL,"Purge Failed","Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n"+pref["DataFolder"].toString(),QMessageBox::Ok);
+            exit(-1);
+        }
+    } else {
+        exit(-1);
+    }
+    return;
+
+}
 void Profile::LoadMachineData()
 {
     for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
@@ -64,21 +84,18 @@ void Profile::LoadMachineData()
             bool ok;
             cv=m->properties["DataVersion"].toLong(&ok);
             if (!ok || cv<v) {
-                QString msg="Software changes have been made that require the reimporting of the following machines data:\n\n";
-                msg=msg+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["Serial"];
-                msg=msg+"\n\nNo attempt will be made to load previous data.\n\n";
-                msg=msg+"Importing ALL of your data for this machine again will rectify this problem.\n\n";
-                msg=msg+"However, if you have more than one seperate datacard/stash for this machine, it would be best if the machine data was purged first.\n\nWould you like me to do this for you?";
-
-                if (QMessageBox::warning(NULL,"Machine Database Changes",msg,QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes)==QMessageBox::Yes) {
-
-                    if (m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
-                        QString s;
-                        s.sprintf("%li",v);
-                        m->properties["DataVersion"]=s; // Dont need to nag again if they are too lazy.
-                    }
+                DataFormatError(m);
+                // It may exit above and not return here..
+                QString s;
+                s.sprintf("%li",v);
+                m->properties["DataVersion"]=s; // Dont need to nag again if they are too lazy.
+            } else {
+                try {
+                    m->Load();
+                } catch (OldDBVersion e){
+                    DataFormatError(m);
                 }
-            } else  m->Load();
+            }
         } else {
             m->Load();
         }

@@ -53,6 +53,11 @@ void Session::TrashEvents()
 bool Session::OpenEvents() {
     if (s_events_loaded)
         return true;
+
+    s_events_loaded=eventlist.size() > 0;
+    if (s_events_loaded)
+        return true;
+
     bool b=LoadEvents(s_eventfile);
     if (!b) {
         qWarning() << "Error Unkpacking Events" << s_eventfile;
@@ -75,11 +80,11 @@ bool Session::Store(QString path)
     base.sprintf("%08lx",s_session);
     base=path+"/"+base;
     //qDebug() << "Storing Session: " << base;
-    bool a,b=false;
+    bool a;
     a=StoreSummary(base+".000"); // if actually has events
     //qDebug() << " Summary done";
     if (eventlist.size()>0)
-        b=StoreEvents(base+".001");
+        StoreEvents(base+".001");
     //qDebug() << " Events done";
     s_changed=false;
     s_eventfile=base+".001";
@@ -119,8 +124,8 @@ bool Session::StoreSummary(QString filename)
     out << (quint16)dbversion;
     out << (quint16)filetype_summary;
     out << (quint32)s_machine->id();
-    out << (quint32)s_session;
 
+    out << (quint32)s_session;
     out << s_first;  // Session Start Time
     out << s_last;   // Duration of sesion in seconds.
     out << (quint16)summary.size();
@@ -152,12 +157,9 @@ bool Session::LoadSummary(QString filename)
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
 
-    quint64 t64;
     quint32 t32;
     quint16 t16;
-    quint8 t8;
 
-    qint16 sumsize;
     map<MachineCode,MCDataType> mctype;
     vector<MachineCode> mcorder;
     in >> t32;
@@ -168,7 +170,8 @@ bool Session::LoadSummary(QString filename)
 
     in >> t16;      // DB Version
     if (t16!=dbversion) {
-        qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
+        throw OldDBVersion();
+        //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
         return false;
     }
 
@@ -179,13 +182,19 @@ bool Session::LoadSummary(QString filename)
     }
 
 
-    in >> t32;      // MachineID (dont need this result)
+    qint32 ts32;
+    in >> ts32;      // MachineID (dont need this result)
+    if (ts32!=s_machine->id()) {
+        qWarning() << "Machine ID does not match in" << filename << " I will try to load anyway in case you know what your doing.";
+    }
+
     in >> t32;      // Sessionid;
     s_session=t32;
 
     in >> s_first;  // Start time
     in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
+    qint16 sumsize;
     in >> sumsize;  // Summary size (number of Machine Code lists)
 
     for (int i=0; i<sumsize; i++) {
@@ -210,8 +219,8 @@ bool Session::StoreEvents(QString filename)
     out << (quint16)dbversion;      // File Version
     out << (quint16)filetype_data;  // File type 1 == Event
     out << (quint32)s_machine->id();// Machine ID
-    out << (quint32)s_session;      // This session's ID
 
+    out << (quint32)s_session;      // This session's ID
     out << s_first;
     out << s_last;
 
@@ -237,8 +246,6 @@ bool Session::StoreEvents(QString filename)
             out << e.max();
         }
     }
-    qint64 t,last;
-    quint32 x;
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
         for (unsigned j=0;j<i->second.size();j++) {
             EventList &e=*i->second[j];
@@ -247,12 +254,8 @@ bool Session::StoreEvents(QString filename)
                 out << e.raw(c);
             }
             if (e.type()!=EVL_Waveform) {
-                last=e.first();
                 for (int c=0;c<e.count();c++) {
-                    t=e.time(c);
-                    x=(t-last);
-                    out << x;
-                    last=e.time(c);
+                    out << e.getTime()[c];
                 }
             }
         }
@@ -288,7 +291,8 @@ bool Session::LoadEvents(QString filename)
     }
     in >> t16;      // File Version
     if (t16!=dbversion) {
-        qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
+        throw OldDBVersion();
+        //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
         return false;
     }
 
@@ -298,10 +302,14 @@ bool Session::LoadEvents(QString filename)
         return false;
     }
 
-    in >> t32;      // MachineID
-    in >> t32;      // Sessionid;
-    s_session=t32;
+    qint32 ts32;
+    in >> ts32;      // MachineID
+    if (ts32!=s_machine->id()) {
+        qWarning() << "Machine ID does not match in" << filename << " I will try to load anyway in case you know what your doing.";
+    }
 
+    in >> t32;      // Sessionid
+    s_session=t32;
     in >> s_first;
     in >> s_last;
 
@@ -343,25 +351,26 @@ bool Session::LoadEvents(QString filename)
     }
 
     EventStoreType t;
-    qint64 last;
     quint32 x;
     for (int i=0;i<mcsize;i++) {
         code=mcorder[i];
         size2=sizevec[i];
         for (int j=0;j<size2;j++) {
             EventList &evec=*eventlist[code][j];
-            evec.m_data.resize(evec.m_count);
+            evec.m_data.reserve(evec.m_count);
             for (int c=0;c<evec.m_count;c++) {
                 in >> t;
-                evec.m_data[c]=t;
+                //evec.m_data[c]=t;
+                evec.m_data.push_back(t);
             }
-            last=evec.first();
+            //last=evec.first();
             if (evec.type()!=EVL_Waveform) {
-                evec.m_time.resize(evec.m_count);
+                evec.m_time.reserve(evec.m_count);
                 for (int c=0;c<evec.m_count;c++) {
                     in >> x;
-                    last+=x;
-                    evec.m_time[c]=last;
+                    //last+=x;
+                    evec.m_time.push_back(x);
+                    //evec.m_time[c]=x;
                 }
             }
         }

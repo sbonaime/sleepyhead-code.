@@ -52,7 +52,6 @@ SOURCES += main.cpp\
     Graphs/gFlagsLine.cpp \
     Graphs/glcommon.cpp \
     Graphs/gTitle.cpp \
-    Graphs/gCandleStick.cpp \
     Graphs/gBarChart.cpp \
     Graphs/gSegmentChart.cpp \
     Graphs/gSessionTime.cpp \

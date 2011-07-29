@@ -247,7 +247,7 @@ bool Machine::Purge(int secret)
         bool ok;
         ext_s.toInt(&ok,10);
         if (ok) {
-            qDebug() << "TestMe: Deleting " << fullpath;
+            qDebug() << "Deleting " << fullpath;
             dir.remove(fullpath);
         } else could_not_kill++;
 

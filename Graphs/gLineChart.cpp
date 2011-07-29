@@ -135,7 +135,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         for (unsigned n=0;n<evec.size();n++) { // for each segment
             EventList & el=*evec[n];
 
-            accel=!m_disable_accel && (el.type()==EVL_Waveform); // Turn on acceleration if this is a waveform.
+            accel=(el.type()==EVL_Waveform); // Turn on acceleration if this is a waveform.
+            if (m_disable_accel) accel=false;
 
 
             square_plot=m_square_plot;
@@ -262,7 +263,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             EventDataType ymin=miny/gain;
 
             const vector<EventStoreType> & dat=el.getData();
-            const vector<qint64> & tim=el.getTime();
+            //const vector<qint32> & tim=el.getTime();
 
             done=false;
             first=true;
@@ -350,13 +351,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 //////////////////////////////////////////////////////////////////
                 first=true;
                 for (int i=idx;i<siz;i+=sam) {
-                    time=tim[i]; //el.time(i);
+                    time=el.time(i);
 
                     if (first) {
                         if (num_points>5 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
-                        time=tim[i]; //el.time(i);
+                        time=el.time(i); //el.time(i);
                     }
                     data=dat[i]*gain; //
                     //data=el.data(i); // raw access is faster
