@@ -314,7 +314,7 @@ bool Session::LoadEvents(QString filename)
     in >> s_last;
 
     qint16 mcsize;
-    in >> mcsize;   // Summary size (number of Machine Code lists)
+    in >> mcsize;   // number of Machine Code lists
 
     MachineCode code;
     qint64 ts1,ts2;

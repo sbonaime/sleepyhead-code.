@@ -43,6 +43,8 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     setFocusPolicy(Qt::StrongFocus);
     rmin_x=rmax_x=0;
     min_x=max_x=0;
+    rmin_y=rmax_y=0;
+    min_y=max_y=0;
 }
 
 /*gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)

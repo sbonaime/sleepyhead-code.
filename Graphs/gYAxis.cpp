@@ -23,8 +23,8 @@ gYAxis::~gYAxis()
 }
 void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 {
-    static QColor DARK_GREY(0xb8,0xb8,0xb8,0xa0);
-    static QColor LIGHT_GREY(0xd8,0xd8,0xd8,0xa0);
+    static QColor DARK_GREY(0xc0,0xc0,0xc0,0x80);
+    static QColor LIGHT_GREY(0xd8,0xd8,0xd8,0x80);
     float x,y;
     int labelW=0;
 

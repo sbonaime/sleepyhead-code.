@@ -223,7 +223,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     TAP_IAP->SetGradientBackground(false);
 
     TAP->SetMargins(0,0,0,0);
-    TAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_Pressure,GST_Line)));
+    TAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_Pressure,GST_CandleStick)));
     TAP->hide();
     TAP->SetGradientBackground(false);
 
@@ -573,7 +573,7 @@ void Daily::Load(QDate date)
         }
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
         if (1) {  // AHI Pie Chart
-            G_AHI->setFixedSize(gwwidth,gwheight);
+            G_AHI->setFixedSize(gwwidth,120);
             QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
@@ -669,8 +669,8 @@ void Daily::Load(QDate date)
         if (mode==MODE_BIPAP) {
             {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
-            TAP_EAP->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,gwheight,false);
+            TAP_EAP->setFixedSize(gwwidth,30);
+            QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,30,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
@@ -679,8 +679,8 @@ void Daily::Load(QDate date)
             }
             {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
-            TAP_IAP->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,gwheight,false);
+            TAP_IAP->setFixedSize(gwwidth,30);
+            QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,30,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);
@@ -690,8 +690,8 @@ void Daily::Load(QDate date)
         } else if (mode==MODE_APAP) {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
 
-            TAP->setFixedSize(gwwidth,gwheight);
-            QPixmap pixmap=TAP->renderPixmap(gwwidth,gwheight,false);
+            TAP->setFixedSize(gwwidth,30);
+            QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
             QByteArray byteArray;
             QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
             buffer.open(QIODevice::WriteOnly);

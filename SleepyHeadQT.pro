@@ -97,7 +97,6 @@ HEADERS  += \
     Graphs/gFlagsLine.h \
     Graphs/glcommon.h \
     Graphs/gTitle.h \
-    Graphs/gCandleStick.h \
     Graphs/gBarChart.h \
     Graphs/gSegmentChart.h\
     Graphs/gSessionTime.h \
