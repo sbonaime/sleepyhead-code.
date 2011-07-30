@@ -90,6 +90,18 @@ bool gGraphWindow::isEmpty()
     }
     return empty;
 }
+void gGraphWindow::resizeEvent(QResizeEvent *e)
+{
+    this->setUpdatesEnabled(false);
+    this->blockSignals(true);
+    QGLWidget::resizeEvent(e);
+    this->blockSignals(false);
+    this->setUpdatesEnabled(true);
+    //this->resizeGL(e->size().width(),e->size().height());
+    //this->paintGL();
+    //e->accept();
+}
+
 
 void gGraphWindow::AddLayer(gLayer *l) {
     if (l) {

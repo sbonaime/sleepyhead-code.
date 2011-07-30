@@ -74,9 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qstatus=new QLabel("",this);
     qprogress->hide();
     ui->statusbar->setMinimumWidth(200);
-    ui->statusbar->addPermanentWidget(qstatus2,0);
     ui->statusbar->addPermanentWidget(qstatus,0);
     ui->statusbar->addPermanentWidget(qprogress,10);
+    ui->statusbar->addPermanentWidget(qstatus2,0);
     Profiles::Scan();
 
     pref["AppName"]="SleepyHead";
@@ -163,7 +163,7 @@ void MainWindow::Startup()
     }*/
 
     qprogress->hide();
-    qstatus->setText(tr("Ready"));
+    qstatus->setText("");
     //qstatusbar->clearMessage();
 
 }
@@ -199,7 +199,7 @@ void MainWindow::on_action_Import_Data_triggered()
             } */
             //qDebug() << "overview->ReloadGraphs();";
         }
-        qstatus->setText(tr("Ready"));
+        qstatus->setText("");
         qprogress->hide();
 
     }
@@ -267,7 +267,7 @@ void MainWindow::on_webView_loadFinished(bool arg1)
         QTimer::singleShot(0,this,SLOT(Startup()));
         first_load=false;
     } else {
-        qstatus->setText(tr("Ready"));
+        qstatus->setText("");
     }
     ui->backButton->setEnabled(ui->webView->history()->canGoBack());
     ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());

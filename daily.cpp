@@ -57,6 +57,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     gSplitter->setHandleWidth(3);
+    gSplitter->setOpaqueResize(false);
+
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->scrollArea->setWidget(gSplitter);

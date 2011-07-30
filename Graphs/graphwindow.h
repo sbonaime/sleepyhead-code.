@@ -134,7 +134,7 @@ public:
       bool isDraggingGraph() { return m_dragGraph; }
   protected:
       void updateSelectionTime(qint64 span);
-
+      void resizeEvent(QResizeEvent *);
       void initializeGL();
       QSplitter *splitter;
       list<gGraphWindow *>link_zoom;
