@@ -126,14 +126,12 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     bool square_plot,accel;
 
     for (vector<Session *>::iterator s=m_day->begin(); s!=m_day->end(); s++) {
+        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
+
         vector<EventList *> & evec=(*s)->eventlist[m_code];
-        if (evec.size()==0) continue; // not possible
-
         num_points=0;
-        for (unsigned i=0;i<evec.size();i++) num_points+=evec[i]->count();
-
-        if (!num_points) continue;
-
+        for (unsigned i=0;i<evec.size();i++)
+            num_points+=evec[i]->count();
         total_points+=num_points;
 
         for (unsigned n=0;n<evec.size();n++) { // for each segment
