@@ -24,6 +24,7 @@ namespace Ui {
 
 extern QStatusBar *qstatusbar;
 
+class Daily;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -32,6 +33,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void Log(QString s);
+    QMenu * CreateMenu(QString title);
 
 private slots:
     void on_action_Import_Data_triggered();
@@ -85,6 +87,7 @@ private:
     Oximetry * oximetry;
     bool first_load;
     Profile *profile;
+
 };
 
 #endif // MAINWINDOW_H

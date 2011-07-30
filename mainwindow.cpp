@@ -111,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
     ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
 
-    daily=new Daily(ui->tabWidget);
+    daily=new Daily(ui->tabWidget,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
     //overview=new Overview(ui->tabWidget,daily->SharedWidget());
@@ -203,6 +203,12 @@ void MainWindow::on_action_Import_Data_triggered()
         qprogress->hide();
 
     }
+}
+QMenu * MainWindow::CreateMenu(QString title)
+{
+    QMenu *menu=new QMenu(title,ui->menubar);
+    ui->menubar->insertMenu(ui->menu_Help->menuAction(),menu);
+    return menu;
 }
 
 void MainWindow::on_actionView_Welcome_triggered()

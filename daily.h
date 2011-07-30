@@ -9,6 +9,8 @@
 
 
 #include <QScrollArea>
+#include <QMenu>
+#include <QAction>
 #include <QSplitter>
 #include <QWidget>
 #include <QTreeWidget>
@@ -17,6 +19,7 @@
 #include <QWebPluginFactory>
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
+#include "mainwindow.h"
 //#include <Graphs/graphdata.h>
 #include "Graphs/gLineChart.h"
 #include <Graphs/gFlagsLine.h>
@@ -35,13 +38,13 @@ protected:
     Daily *daily;
 };
 
-
+class MainWindow;
 class Daily : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Daily(QWidget *parent,QGLWidget *shared=NULL);
+    explicit Daily(QWidget *parent,QGLWidget *shared,MainWindow *mw);
     ~Daily();
     void ReloadGraphs();
     void RedrawGraphs();
@@ -61,6 +64,7 @@ private slots:
     void on_treeWidget_itemSelectionChanged();
 
     void on_JournalNotesUnderline_clicked();
+    void ShowHideGraphs();
 protected:
     virtual void resizeEvent (QResizeEvent * event);
 
@@ -83,6 +87,7 @@ private:
     list<gLayer *> OXIData;
     list<gLayer *> CPAPData;
     vector<gGraphWindow *> Graphs;
+    vector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 
     QList<int> splitter_sizes;
@@ -92,6 +97,7 @@ private:
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
 
+    MainWindow * mainwin;
     Ui::Daily *ui;
     Profile *profile;
     QDate previous_date;
@@ -99,6 +105,7 @@ private:
     QSplitter *gSplitter;
     QLabel *NoData;
     QWidget *spacer;
+    QMenu *show_graph_menu;
 };
 
 /*class AHIGraph:public QWebPluginFactory

@@ -39,9 +39,8 @@ void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
 }
 
-Daily::Daily(QWidget *parent,QGLWidget * shared) :
-    QWidget(parent),
-    ui(new Ui::Daily)
+Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
+    :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
 {
     ui->setupUi(this);
 
@@ -271,13 +270,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     AddGraph(PULSE);
 
     //  AddGraph(SPO2);
-    spacer=new QWidget(gSplitter);
+   // spacer=new QWidget(gSplitter);
     //spacer->setMaximumHeight(default_height);
-    gSplitter->addWidget(spacer);
-    i=gSplitter->indexOf(spacer);
-    gSplitter->setStretchFactor(i,1);
-    i=gSplitter->indexOf(FRW);
-    gSplitter->setStretchFactor(i,15);
+    //gSplitter->addWidget(spacer);
+    //i=gSplitter->indexOf(spacer);
+    //gSplitter->setStretchFactor(i,1);
+    //i=gSplitter->indexOf(FRW);
+    //gSplitter->setStretchFactor(i,15);
 
 
     //gSplitter->refresh();
@@ -297,6 +296,19 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
     ui->tabWidget->setCurrentWidget(ui->details);
+
+    if (mainwin) {
+        show_graph_menu=mainwin->CreateMenu("Graphs");
+        show_graph_menu->clear();
+        for (unsigned i=0;i<Graphs.size();i++) {
+            QAction * action=show_graph_menu->addAction(Graphs[i]->Title(),NULL,NULL,0);
+            action->setCheckable(true);
+            action->setChecked(true);
+            connect(action, SIGNAL(triggered()), this, SLOT(ShowHideGraphs()));
+            GraphAction.push_back(action);
+        }
+
+    } else show_graph_menu=NULL;
  }
 
 Daily::~Daily()
@@ -453,7 +465,30 @@ void Daily::ResetGraphLayout()
     gSplitter->setSizes(splitter_sizes);
 
 }
+void Daily::ShowHideGraphs()
+{
+    int vis=0;
+    for (unsigned i=0;i<Graphs.size();i++) {
+        if (Graphs[i]->isEmpty()) {
+            GraphAction[i]->setVisible(false);
+            Graphs[i]->hide();
+        } else {
+            Graphs[i]->ResetBounds();
+            GraphAction[i]->setVisible(true);
+            if (GraphAction[i]->isChecked()) {
+                Graphs[i]->show();
+            } else {
+                Graphs[i]->hide();
+            }
 
+            vis++;
+        }
+    }
+    //gSplitter->setMinimumHeight(vis*default_height);
+    gSplitter->layout();
+    gSplitter->update();
+    RedrawGraphs();
+}
 void Daily::Load(QDate date)
 {
     static Day * lastcpapday=NULL;
@@ -482,30 +517,38 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     if (!cpap && !oxi) {
-        gSplitter->setMinimumHeight(0);
+        //gSplitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
         for (unsigned i=0;i<Graphs.size();i++) {
+            GraphAction[i]->setVisible(false);
             Graphs[i]->hide();
         }
-        spacer->hide();
+        //spacer->hide();
 
     } else {
         NoData->hide();
-        int vis=1;
+        int vis=0;
         for (unsigned i=0;i<Graphs.size();i++) {
             if (Graphs[i]->isEmpty()) {
+                GraphAction[i]->setVisible(false);
                 Graphs[i]->hide();
             } else {
                 Graphs[i]->ResetBounds();
+                GraphAction[i]->setVisible(true);
+                if (GraphAction[i]->isChecked()) {
+                    Graphs[i]->show();
+                } else {
+                    Graphs[i]->hide();
+                }
 
-                Graphs[i]->show();
                 vis++;
             }
         }
-        gSplitter->setMinimumHeight(vis*default_height);
+        gSplitter->layout();
+        //gSplitter->setMinimumHeight(vis*default_height);
 
-        spacer->show();
+        //spacer->show();
     }
 
     gSplitter->update();
