@@ -13,6 +13,7 @@ License: GPL
 //********************************************************************************************
 
 #include <QProgressBar>
+#include <QApplication>
 #include <QDir>
 #include <QString>
 #include <QDateTime>
@@ -98,6 +99,7 @@ int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     int cnt=0;
     for (list<QString>::iterator n=files.begin();n!=files.end();n++,++cnt) {
         if (qprogress) qprogress->setValue((float(cnt)/float(size)*50.0));
+        QApplication::processEvents();
         OpenSPORFile((*n),mach,profile);
     }
     mach->Save();

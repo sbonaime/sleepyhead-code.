@@ -6,6 +6,8 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 
+
+#include <QApplication>
 #include <QString>
 #include <QDateTime>
 #include <QDir>
@@ -288,6 +290,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         sessfiles[sessionid].push_back(fi.canonicalFilePath());
         if (qprogress) qprogress->setValue((float(i+1)/float(size)*33.0));
+        QApplication::processEvents();
+
     }
 
     Machine *m=NULL;
@@ -348,6 +352,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             }
         }
         if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
+        QApplication::processEvents();
+
         if (!sess) continue;
         if (!sess->first()) {
             delete sess;

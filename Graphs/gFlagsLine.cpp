@@ -176,13 +176,11 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
             }
         }
     }
-    glLineWidth (1);
-
     glColor4ub(col.red(),col.green(),col.blue(),col.alpha());
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
 
-    glLineWidth (1);
+    glLineWidth (1.5);
     bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
         glEnable(GL_BLEND);

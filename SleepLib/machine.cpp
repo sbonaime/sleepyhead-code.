@@ -4,6 +4,7 @@
  License: GPL
 */
 
+#include <QApplication>
 #include <QDir>
 #include <QProgressBar>
 #include <QDebug>
@@ -342,6 +343,8 @@ bool Machine::Save()
             if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
             if ((*s)->IsChanged()) (*s)->Store(path);
             (*s)->TrashEvents();
+            QApplication::processEvents();
+
         }
         //qDebug() << "Day Save Completed";
 

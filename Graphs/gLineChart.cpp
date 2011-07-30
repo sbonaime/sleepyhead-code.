@@ -263,7 +263,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             EventDataType ymin=miny/gain;
 
             const vector<EventStoreType> & dat=el.getData();
-            //const vector<qint32> & tim=el.getTime();
+            const vector<quint32> & tim=el.getTime();
 
             done=false;
             first=true;
@@ -274,7 +274,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 qint64 rate=sr*sam;
 
                 if (accel) {
-
+//////////////////////////////////////////////////////////////////
+// Accelerated Waveform Plot
+//////////////////////////////////////////////////////////////////
                     for (int i=idx;i<siz;i+=sam) {
                         time+=rate;
                         //time=el.time(i);
@@ -313,6 +315,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     }
 
                 } else { // Zoomed in Waveform
+//////////////////////////////////////////////////////////////////
+// Normal Waveform Plot
+//////////////////////////////////////////////////////////////////
                     for (int i=idx;i<siz;i+=sam,time+=rate) {
                         if (time < minx)
                             continue; // Skip stuff before the start of our data window
@@ -350,14 +355,15 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 // Standard events/zoomed in Plot
 //////////////////////////////////////////////////////////////////
                 first=true;
+                qint64 start=el.first();
                 for (int i=idx;i<siz;i+=sam) {
-                    time=el.time(i);
+                    time=start+tim[i];//el.time(i);
 
                     if (first) {
                         if (num_points>5 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
-                        time=el.time(i); //el.time(i);
+                        time=start+tim[i];//el.time(i); //el.time(i);
                     }
                     data=dat[i]*gain; //
                     //data=el.data(i); // raw access is faster

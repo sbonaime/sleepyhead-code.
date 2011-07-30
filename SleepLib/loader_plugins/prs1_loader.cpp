@@ -6,6 +6,7 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 */
 
+#include <QApplication>
 #include <QString>
 #include <QDateTime>
 #include <QDir>
@@ -267,9 +268,11 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
                  sessfiles[session][2]=fi.canonicalFilePath();
             }
             cnt++;
-            //if (qprogress) qprogress->Pulse(); //Update((float(cnt)/float(size)*25));
 
             if (qprogress) qprogress->setValue((float(cnt)/float(size)*33.0));
+
+            QApplication::processEvents();
+
         }
     }
     size=sessfiles.size();
@@ -281,6 +284,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         session=s->first;
         cnt++;
         if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
+        QApplication::processEvents();
 
         if (m->SessionExists(session)) continue;
         if (s->second[0].isEmpty()) continue;
@@ -385,6 +389,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     m->properties["DataVersion"]=s;
     m->Save(); // Save any new sessions to disk in our format */
     if (qprogress) qprogress->setValue(100);
+
     //qDebug() << "OpenMachine Done";
     return true;
 }

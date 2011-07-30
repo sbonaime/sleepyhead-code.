@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QDebug>
 #include <QProgressBar>
 #include <QMessageBox>
@@ -469,6 +470,8 @@ void Oximetry::on_ImportButton_clicked()
                 memcpy((char *)buffer,(char *)&rb[startpos],bytes);
             } else {
                 qprogress->setValue((100.0/length)*bytes);
+                QApplication::processEvents();
+
                 memcpy((char *)&buffer[bytes],(char *)rb,res);
                 bytes+=res;
             }
