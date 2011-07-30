@@ -554,17 +554,18 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
         //if (code==0xe) {
         //    pos+=2;
         //} else
+        delta=0;
         if (code!=0x12) {
             //delta=buffer[pos];
             //duration=buffer[pos+1];
             delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
+            t+=delta*1000;
+            tt=t;//+(delta*1000);
             //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
             //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) << int(delta);
-            t+=delta*1000;
         }
-        //MachineCode cpapcode=Codes[(int)code];
-        tt=t;
+
         cnt++;
         //int fc=0;
         switch (code) {
@@ -612,7 +613,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x05: // RERA
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt=t-(data[0]*1000);
             if (!Code[7]) {
                 Code[7]=new EventList(CPAP_RERA,EVL_Event);
                 session->eventlist[CPAP_RERA].push_back(Code[7]);
@@ -622,7 +623,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
 
         case 0x06: // Obstructive Apoanea
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt=t-(data[0]*1000);
             if (!Code[8]) {
                 Code[8]=new EventList(CPAP_Obstructive,EVL_Event);
                 session->eventlist[CPAP_Obstructive].push_back(Code[8]);
@@ -631,7 +632,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x07: // Clear Airway
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt=t-(data[0]*1000);
             if (!Code[9]) {
                 Code[9]=new EventList(CPAP_ClearAirway,EVL_Event);
                 session->eventlist[CPAP_ClearAirway].push_back(Code[9]);
@@ -640,7 +641,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x0a: // Hypopnea
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt=t-(data[0]*1000);
             if (!Code[10]) {
                 Code[10]=new EventList(CPAP_Hypopnea,EVL_Event);
                 session->eventlist[CPAP_Hypopnea].push_back(Code[10]);
@@ -649,7 +650,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x0c: // Flow Limitation
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt=t-(data[0]*1000);
             if (!Code[11]) {
                 Code[11]=new EventList(CPAP_FlowLimit,EVL_Event);
                 session->eventlist[CPAP_FlowLimit].push_back(Code[11]);
@@ -724,7 +725,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
             data[1]=buffer[pos++];
-            tt-=data[1]*1000;
+            tt=t-data[1]*1000;
             if (!Code[23]) {
                 Code[23]=new EventList(CPAP_CSR,EVL_Event);
                 session->eventlist[CPAP_CSR].push_back(Code[23]);

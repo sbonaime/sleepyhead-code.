@@ -57,6 +57,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     qint64 Y;
     for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
+        if ((*s)->eventlist[m_code].size()==0) continue;
 
         EventList & el=*((*s)->eventlist[m_code][0]);
 

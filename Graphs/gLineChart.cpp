@@ -270,6 +270,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
             bool firstpx=true;
             if (el.type()==EVL_Waveform) {  // Waveform Plot
+                if (idx>sam) idx-=sam;
                 time=el.time(idx);
                 qint64 rate=sr*sam;
 
@@ -280,8 +281,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     for (int i=idx;i<siz;i+=sam) {
                         time+=rate;
                         //time=el.time(i);
-                        if (time < minx)
-                            continue; // Skip stuff before the start of our data window
+                        //if (time < minx)
+                        //    continue; // Skip stuff before the start of our data window
 
                         //data=el.data(i);
                         data=dat[i];//*gain;
@@ -319,8 +320,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 // Normal Waveform Plot
 //////////////////////////////////////////////////////////////////
                     for (int i=idx;i<siz;i+=sam,time+=rate) {
-                        if (time < minx)
-                            continue; // Skip stuff before the start of our data window
+                        //if (time < minx)
+                        //    continue; // Skip stuff before the start of our data window
                         data=dat[i];//el.data(i);
 
                         px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
@@ -357,13 +358,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 first=true;
                 qint64 start=el.first();
                 for (int i=idx;i<siz;i+=sam) {
-                    time=start+tim[i];//el.time(i);
 
+                    time=start+tim[i];
                     if (first) {
                         if (num_points>5 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
-                        time=start+tim[i];//el.time(i); //el.time(i);
+                        time=start+tim[i];
                     }
                     data=dat[i]*gain; //
                     //data=el.data(i); // raw access is faster

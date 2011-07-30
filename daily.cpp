@@ -154,6 +154,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared) :
     FRW->AddLayer(g);
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_PressurePulse,QColor("red"),"PR",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0B,QColor("blue"),"0B",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown10,QColor("orange"),"10",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("yellow"),"0E",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
@@ -387,17 +391,19 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             for (unsigned z=0;z<m->second.size();z++) {
                 for (int o=0;o<m->second[z]->count();o++) {
                     qint64 t=m->second[z]->time(o);
+
                     if (code==CPAP_CSR) {
-                        t-=(m->second[z]->data(o)/2)*1000;
+                        t-=float(m->second[z]->raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
                     QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-                    QString s=QString("#%1: %2").arg((int)mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss"));
+                    QString s=QString("#%1: %2 (%3)").arg((int)mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m->second[z]->raw(o));
                     a.append(s);
                     a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                     mcr->addChild(new QTreeWidgetItem(a));
                 }
-            }        }
+            }
+        }
     }
     int cnt=0;
     for (map<MachineCode,QTreeWidgetItem *>::iterator m=mcroot.begin();m!=mcroot.end();m++) {

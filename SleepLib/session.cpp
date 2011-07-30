@@ -58,10 +58,12 @@ bool Session::OpenEvents() {
     if (s_events_loaded)
         return true;
 
-    bool b=LoadEvents(s_eventfile);
-    if (!b) {
-        qWarning() << "Error Unkpacking Events" << s_eventfile;
-        return false;
+    if (!s_eventfile.isEmpty()) {
+        bool b=LoadEvents(s_eventfile);
+        if (!b) {
+            qWarning() << "Error Unpacking Events" << s_eventfile;
+            return false;
+        }
     }
 
 
@@ -83,11 +85,14 @@ bool Session::Store(QString path)
     bool a;
     a=StoreSummary(base+".000"); // if actually has events
     //qDebug() << " Summary done";
-    if (eventlist.size()>0)
-        StoreEvents(base+".001");
+    if (eventlist.size()>0) {
+        s_eventfile=base+".001";
+        StoreEvents(s_eventfile);
+    } else {
+        qDebug() << "Trying to save empty events file";
+    }
     //qDebug() << " Events done";
     s_changed=false;
-    s_eventfile=base+".001";
     s_events_loaded=true;
 
         //TrashEvents();
