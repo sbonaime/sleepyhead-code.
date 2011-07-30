@@ -31,7 +31,8 @@ qint64 EventList::time(int i)
     if (m_type==EVL_Event) {
         return m_first+qint64(m_time[i]);
     }
-    return m_first+(EventDataType(i)*m_rate);
+
+    return m_first+qint64((EventDataType(i)*m_rate));
 }
 
 EventDataType EventList::data(int i)

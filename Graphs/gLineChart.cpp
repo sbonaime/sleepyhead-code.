@@ -85,9 +85,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     float lastpx,lastpy;
     float px,py;
-    int idx,idxend,np;
+    int idx;
     bool done,first;
-    double x0,x1,xL;
+    qint64 x0,xL;
     double sr;
     int sam;
     int minz,maxz;
@@ -169,7 +169,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 }
             }
             if (accel) {
-                x1=el.time(1);
+                //x1=el.time(1);
                 sr=el.rate();           // Time distance between samples
                 if (sr<=0) {
                     qWarning() << "qLineChart::Plot() assert(sr>0)";
@@ -216,46 +216,22 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             // The Z? values are much more accurate
 
             idx=0;
-            idxend=0;
-            np=0;
-
 
             if (el.type()==EVL_Waveform)  {
                 // We can skip data previous to minx if this is a waveform
 
-                if (minx>x1) {
+                if (minx>x0) {
                     double j=minx-x0;  // == starting min of first sample in this segment
-                    idx=floor(j/sr);
+                    idx=(j/sr);
                     // Loose the precision
-                    idx-=idx % sam;
+                    //idx-=idx % sam;
 
                 } // else just start from the beginning
-
-                idxend=floor(xx/sr);
-                idxend/=sam; // devide by number of samples skips
-
-                np=(idxend-idx)+sam;
-                np /= sam;
-            } else {
-
-                np=siz;
             }
 
-            //bool watch_verts_carefully=false;
-            // better to do it here than in the main loop.
-            np <<= 2;
-
-            if (square_plot)
-                np <<= 1; // double it again
-
-            if (np>=maxverts) {
-              //  watch_verts_carefully=true;
-                //assert(np<maxverts);
-            }
             int xst=start_px+1;
             int yst=start_py+1;
 
-            //int done2=0;
             qint64 time;
             EventDataType data;
             EventDataType gain=el.gain();
@@ -272,7 +248,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             if (el.type()==EVL_Waveform) {  // Waveform Plot
                 if (idx>sam) idx-=sam;
                 time=el.time(idx);
-                qint64 rate=sr*sam;
+                double rate=double(sr)*double(sam);
 
                 if (accel) {
 //////////////////////////////////////////////////////////////////
@@ -319,7 +295,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 //////////////////////////////////////////////////////////////////
 // Normal Waveform Plot
 //////////////////////////////////////////////////////////////////
-                    for (int i=idx;i<siz;i+=sam,time+=rate) {
+                    for (int i=idx;i<siz;i+=sam) {
+                        time+=rate;
                         //if (time < minx)
                         //    continue; // Skip stuff before the start of our data window
                         data=dat[i];//el.data(i);
@@ -376,7 +353,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     if (firstpx) {
                         firstpx=false;
                     } else {
-                        if (m_square_plot) {
+                        if (square_plot) {
                             vertarray[vertcnt++]=lastpx;
                             vertarray[vertcnt++]=lastpy;
                             vertarray[vertcnt++]=px;
