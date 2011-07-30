@@ -350,9 +350,10 @@ void DumpBytes(int blocks, unsigned char * b,int len)
 // Move this code to CMS50 Importer??
 void Oximetry::on_ImportButton_clicked()
 {
+    ui->ImportButton->setDisabled(true);
     QMessageBox msgbox(QMessageBox::Information,"Importing","Please Wait",QMessageBox::NoButton,this);
     msgbox.show();
-
+    QApplication::processEvents();
     const int rb_size=0x200;
     static unsigned char b1[2]={0xf5,0xf5};
     static unsigned char b2[3]={0xf6,0xf6,0xf6};
@@ -468,8 +469,10 @@ void Oximetry::on_ImportButton_clicked()
                 //qDebug() << length << startpos;
                 bytes+=res-startpos;
                 memcpy((char *)buffer,(char *)&rb[startpos],bytes);
+                qprogress->setValue((75.0/length)*bytes);
+                QApplication::processEvents();
             } else {
-                qprogress->setValue((100.0/length)*bytes);
+                qprogress->setValue((75.0/length)*bytes);
                 QApplication::processEvents();
 
                 memcpy((char *)&buffer[bytes],(char *)rb,res);
@@ -499,6 +502,11 @@ void Oximetry::on_ImportButton_clicked()
         qint64 tt=sid-(bytes/3);
         tt*=1000;
         session->set_first(tt);
+        ev_pulse->setMin(999999);
+        ev_pulse->setMax(-999999);
+        ev_spo2->setMin(999999);
+        ev_spo2->setMax(-999999);
+
         ev_pulse->setFirst(tt);
         ev_spo2->setFirst(tt);
         EventDataType data;
@@ -524,9 +532,12 @@ void Oximetry::on_ImportButton_clicked()
             lastpulse=pulse;
             lastspo2=spo2;
             tt+=1000;
+            qprogress->setValue(75+(25.0/bytes)*i);
+            QApplication::processEvents();
         }
         ev_pulse->AddEvent(tt,pulse);
         ev_spo2->AddEvent(tt,spo2);
+        session->set_last(tt);
 
         session->summary[OXI_PulseMin]=ev_pulse->min();
         session->summary[OXI_PulseMax]=ev_pulse->max();
@@ -564,5 +575,7 @@ void Oximetry::on_ImportButton_clicked()
     qprogress->hide();
     ui->SerialPortsCombo->setEnabled(true);
     qstatus->setText("Ready");
+    ui->ImportButton->setDisabled(false);
+
 }
 

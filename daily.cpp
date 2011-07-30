@@ -82,7 +82,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     TV=new gGraphWindow(gSplitter,tr("Tidal Volume"),SF);
     RR=new gGraphWindow(gSplitter,tr("Respiratory Rate"),SF);
     PTB=new gGraphWindow(gSplitter,tr("Patient Trig Breaths"),SF);
-    PULSE=new gGraphWindow(gSplitter,tr("Pulse & SpO2"),SF);
+    PULSE=new gGraphWindow(gSplitter,tr("Pulse"),SF);
+    SPO2=new gGraphWindow(gSplitter,tr("SPO2"),SF);
 
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
@@ -206,16 +207,17 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     PULSE->setMinimumHeight(min_height);
 
-//    SPO2=new gGraphWindow(gSplitter,tr("SpO2"),SF);
-//    SPO2->AddLayer(new gXAxis());
-//    SPO2->AddLayer(new gYAxis());
-   // SPO2->AddLayer(new gFooBar());
-    PULSE->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
+    SPO2->AddLayer(new gXAxis());
+    SPO2->AddLayer(new gYAxis());
+    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
+    SPO2->setMinimumHeight(min_height);
+
+    // SPO2->AddLayer(new gFooBar());
 //    SPO2->setMinimumHeight(min_height);
 //    SPO2->LinkZoom(PULSE);
 //    PULSE->LinkZoom(SPO2);
 //    SPO2->hide();
-    PULSE->hide();
+//    PULSE->hide();
 
     gSegmentChart *seg;
 
@@ -264,7 +266,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     for (int i=0;i<ss;i++) {
         AddGraph(graphs[i]);
         int j=gSplitter->indexOf(graphs[i]);
-        gSplitter->setStretchFactor(j,10);
+        //gSplitter->setStretchFactor(j,1);
         for (int j=0;j<ss;j++) {
             if (graphs[i]!=graphs[j])
                 graphs[i]->LinkZoom(graphs[j]);
@@ -272,6 +274,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     }
 
     AddGraph(PULSE);
+    AddGraph(SPO2);
+
+    SPO2->LinkZoom(PULSE);
+    PULSE->LinkZoom(SPO2);
 
     //  AddGraph(SPO2);
    // spacer=new QWidget(gSplitter);
@@ -532,6 +538,7 @@ void Daily::Load(QDate date)
     } else {
         NoData->hide();
         int vis=0;
+
         for (unsigned i=0;i<Graphs.size();i++) {
             if (Graphs[i]->isEmpty()) {
                 GraphAction[i]->setVisible(false);
@@ -546,6 +553,9 @@ void Daily::Load(QDate date)
                     Graphs[i]->hide();
                 }
             }
+        }
+        if (!cpap) {
+            SF->hide();
         }
         //gSplitter->setMinimumHeight(0);
         gSplitter->setMinimumHeight(vis*default_height);
