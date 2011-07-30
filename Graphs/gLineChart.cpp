@@ -37,7 +37,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-2;
-    double miny,maxy,minx,maxx;
+    EventDataType miny,maxy;
+    double minx,maxx;
     miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
 
     int m;
@@ -74,8 +75,11 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         //if (miny<1) miny=0;
     }
 
-    double xx=maxx-minx, yy=maxy-miny;
-    EventDataType xmult=double(width)/xx, ymult=double(height)/yy;   // time to pixel conversion multiplier
+    double xx=maxx-minx;
+    double xmult=double(width)/xx;
+
+    EventDataType yy=maxy-miny;
+    EventDataType ymult=EventDataType(height)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
     if ((xx<0) || (yy<0))
@@ -83,11 +87,11 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     if ((yy==0) && (miny==0))
         return;
 
-    float lastpx,lastpy;
-    float px,py;
+    EventDataType lastpx,lastpy;
+    EventDataType px,py;
     int idx;
     bool done,first;
-    qint64 x0,xL;
+    double x0,xL;
     double sr;
     int sam;
     int minz,maxz;
@@ -155,7 +159,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
             if (x0>xL) {
                 if (siz==2) { // this happens on CPAP
-                    qint64 t=el.getTime()[0];
+                    quint32 t=el.getTime()[0];
                     el.getTime()[0]=el.getTime()[1];
                     el.getTime()[1]=t;
                     EventStoreType d=el.getData()[0];
@@ -232,11 +236,11 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             int xst=start_px+1;
             int yst=start_py+1;
 
-            qint64 time;
+            double time;
             EventDataType data;
             EventDataType gain=el.gain();
             EventDataType nmult=ymult*gain;
-            EventDataType ymin=EventDataType(miny)/EventDataType(gain);
+            EventDataType ymin=EventDataType(miny)/gain;
 
             const vector<EventStoreType> & dat=el.getData();
             const vector<quint32> & tim=el.getTime();
@@ -333,7 +337,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 // Standard events/zoomed in Plot
 //////////////////////////////////////////////////////////////////
                 first=true;
-                qint64 start=el.first();
+                double start=el.first();
                 for (int i=idx;i<siz;i+=sam) {
 
                     time=start+tim[i];
