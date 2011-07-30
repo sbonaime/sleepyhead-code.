@@ -477,14 +477,14 @@ void Daily::ShowHideGraphs()
             GraphAction[i]->setVisible(true);
             if (GraphAction[i]->isChecked()) {
                 Graphs[i]->show();
+                vis++;
             } else {
                 Graphs[i]->hide();
             }
-
-            vis++;
         }
     }
-    //gSplitter->setMinimumHeight(vis*default_height);
+    gSplitter->setMinimumHeight(vis*default_height);
+    //gSplitter->setMaximumHeight(vis*default_height);
     gSplitter->layout();
     gSplitter->update();
     RedrawGraphs();
@@ -517,7 +517,7 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     if (!cpap && !oxi) {
-        //gSplitter->setMinimumHeight(0);
+        gSplitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
         for (unsigned i=0;i<Graphs.size();i++) {
@@ -538,17 +538,21 @@ void Daily::Load(QDate date)
                 GraphAction[i]->setVisible(true);
                 if (GraphAction[i]->isChecked()) {
                     Graphs[i]->show();
+                    vis++;
                 } else {
                     Graphs[i]->hide();
                 }
-
-                vis++;
             }
         }
+        //gSplitter->setMinimumHeight(0);
+        gSplitter->setMinimumHeight(vis*default_height);
+        //if (vis>4) {
+        //gSplitter->setMaximumHeight(vis*default_height);
+        //} //else {
+       // }
         gSplitter->layout();
-        //gSplitter->setMinimumHeight(vis*default_height);
 
-        //spacer->show();
+       // spacer->show();
     }
 
     gSplitter->update();
