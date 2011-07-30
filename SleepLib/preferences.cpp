@@ -16,6 +16,10 @@ License: GPL
 #include <QDir>
 #include <QDesktopServices>
 #include <QDebug>
+#ifdef Q_WS_WIN32
+#include "windows.h"
+#include "lmcons.h"
+#endif
 
 #include "preferences.h"
 
@@ -29,11 +33,11 @@ const QString & getUserName()
 
 #if defined (Q_WS_WIN32)
     #if defined(UNICODE)
-    if ( qWinVersion() & Qt::WV_NT_based ) {
+    if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
         TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
         DWORD winUserNameSize = sizeof(winUserName);
-        GetUserName( winUserName, &winUserNameSize );
-        userName = qt_winQString( winUserName );
+        GetUserNameW( winUserName, &winUserNameSize );
+        userName = QString::fromStdWString( winUserName );
     } else
     #endif
     {

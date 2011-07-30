@@ -107,14 +107,6 @@ const quint16 filetype_summary=0;
 const quint16 filetype_data=1;
 const quint32 magic=0xC73216AB;
 
-
-bool IsPlatformLittleEndian()
-{
-    quint32 j=1;
-    *((char*)&j) = 0;
-    return j!=1;
-}
-
 bool Session::StoreSummary(QString filename)
 {
 

@@ -56,7 +56,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
     gSplitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     gSplitter->setHandleWidth(3);
+#ifdef Q_WS_MAC
     gSplitter->setOpaqueResize(false);
+#endif
 
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -159,6 +161,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("yellow"),"0E",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
@@ -235,6 +238,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     G_AHI->SetMargins(0,0,0,0);
     seg=new gSegmentChart(GST_Pie);
     seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
+    seg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
     seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
     seg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
     seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
@@ -366,7 +370,6 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     map<MachineCode,int> mccnt;
     int total_events=0;
 
-
     for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
 
         map<MachineCode,vector<EventList *> >::iterator m;
@@ -392,7 +395,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 if (st.isEmpty())  {
                     st="Fixme "+QString::number((int)code);
                 }
-                st+=" ("+QString::number(cnt)+")";
+                st+=" ("+QString::number(cnt)+" event"+((cnt>1)?"s":"")+")";
                 QStringList l(st);
                 l.append("");
                 mcroot[code]=mcr=new QTreeWidgetItem(root,l);
@@ -409,7 +412,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                     }
                     QStringList a;
                     QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-                    QString s=QString("#%1: %2 (%3)").arg((int)mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m->second[z]->raw(o));
+                    QString s=QString("#%1: %2 (%3)").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m->second[z]->raw(o));
                     a.append(s);
                     a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
                     mcr->addChild(new QTreeWidgetItem(a));
@@ -573,8 +576,9 @@ void Daily::Load(QDate date)
         }
         modestr=CPAPModeNames[mode];
 
-        float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway))/cpap->hours();
+        float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
+        float uai=cpap->count(CPAP_Apnea)/cpap->hours();
         float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
         float hi=cpap->count(CPAP_Hypopnea)/cpap->hours();
         float cai=cpap->count(CPAP_ClearAirway)/cpap->hours();
@@ -613,9 +617,12 @@ void Daily::Load(QDate date)
         } else cs="2>";
         html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>"
         "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td  bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>"+tr("Hypopnea")+"</font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n"
-        "<tr><td align='right' bgcolor='#40afbf'><b>"+tr("Obstructive")+"</b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-        "<tr><td align='right' bgcolor='#b254cd'><b>"+tr("ClearAirway")+"</b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
+        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>"+tr("Hypopnea")+"</font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+        if (cpap->machine->GetClass()=="ResMed") {
+            html+="<tr><td align='right' bgcolor='#208020'><b>"+tr("Apnea")+"</b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+        }
+        html+="<tr><td align='right' bgcolor='#40afbf'><b>"+tr("Obstructive")+"</b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+        "<tr><td align='right' bgcolor='#b254cd'><b>"+tr("Clear Airway")+"</b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
         "</table></td>";
 
         if (cpap->machine->GetClass()=="PRS1") {
@@ -626,6 +633,7 @@ void Daily::Load(QDate date)
             "<tr><td align='right' bgcolor='#80ff80'><b>"+tr("PB/CSR")+"</b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
             "</table></td>";
         }
+
         html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
         if (1) {  // AHI Pie Chart
             G_AHI->setFixedSize(gwwidth,120);
@@ -960,8 +968,8 @@ void Daily::on_treeWidget_itemSelectionChanged()
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        double st=(d.addSecs(-180)).toMSecsSinceEpoch();
-        double et=(d.addSecs(180)).toMSecsSinceEpoch();
+        double st=(d.addSecs(-120)).toMSecsSinceEpoch();
+        double et=(d.addSecs(120)).toMSecsSinceEpoch();
         FRW->SetXBounds(st,et);
         MP->SetXBounds(st,et);
         SF->SetXBounds(st,et);
