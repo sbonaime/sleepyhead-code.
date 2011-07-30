@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qprogress->hide();
     ui->statusbar->setMinimumWidth(200);
     ui->statusbar->addPermanentWidget(qstatus,0);
-    ui->statusbar->addPermanentWidget(qprogress,10);
+    ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
     Profiles::Scan();
 
@@ -177,7 +177,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (qfd.exec()) {
         qprogress->setValue(0);
         qprogress->show();
-        //qstatus->setText(tr("Importing Data"));
+        qstatus->setText(tr("Importing Data"));
         dirNames=qfd.selectedFiles();
         int c=0,d;
         for (int i=0;i<dirNames.size();i++) {

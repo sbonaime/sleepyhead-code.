@@ -128,6 +128,15 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     }
 
+    bool antialias=pref["UseAntiAliasing"].toBool();
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
+        glLineWidth (1.5);
+    } else glLineWidth (1);
+
     glColor4ub(col.red(),col.green(),col.blue(),col.alpha());
     if (quadcnt>0) {
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -149,6 +158,10 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
         glDisableClientState(GL_VERTEX_ARRAY);
     }
 
+    if (antialias) {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+    }
     glDisable(GL_SCISSOR_TEST);
 }
 
