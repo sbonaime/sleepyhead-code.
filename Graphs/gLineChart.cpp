@@ -75,7 +75,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     double xx=maxx-minx, yy=maxy-miny;
-    float xmult=width/xx, ymult=(height)/yy;   // time to pixel conversion multiplier
+    EventDataType xmult=double(width)/xx, ymult=double(height)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
     if ((xx<0) || (yy<0))
@@ -236,7 +236,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             EventDataType data;
             EventDataType gain=el.gain();
             EventDataType nmult=ymult*gain;
-            EventDataType ymin=miny/gain;
+            EventDataType ymin=EventDataType(miny)/EventDataType(gain);
 
             const vector<EventStoreType> & dat=el.getData();
             const vector<quint32> & tim=el.getTime();
