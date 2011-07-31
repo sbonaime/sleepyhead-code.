@@ -629,16 +629,19 @@ void Daily::Load(QDate date)
         }
 
         html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
-        int tt=cpap->total_time()/1000;
+        int tt=cpap->total_time()/1000.0;
         QDateTime date=QDateTime::fromMSecsSinceEpoch(cpap->first());
         QDateTime date2=QDateTime::fromMSecsSinceEpoch(cpap->last());
 
+        int h=tt/3600.0;
+        int m=(tt/60)%60;
+        int s=tt % 60;
         html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
         "<tr><td colspan=4 align=center><hr></td></tr>\n")
                 .arg(date.date().toString(Qt::SystemLocaleShortDate))
                 .arg(date.toString("HH:mm"))
                 .arg(date2.toString("HH:mm"))
-                .arg(QString().sprintf("%02i:%02i",tt/3600,tt%60));
+                .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
 
         QString cs;
         if (cpap->machine->GetClass()!="PRS1") {
