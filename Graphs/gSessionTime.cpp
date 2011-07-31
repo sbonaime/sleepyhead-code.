@@ -27,7 +27,7 @@ const QString & gTimeYAxis::Format(double v)
 };
 
 
-gSessionTime::gSessionTime(MachineCode code,QColor col,Qt::Orientation o)
+gSessionTime::gSessionTime(ChannelID code,QColor col,Qt::Orientation o)
 :gLayer(code),m_orientation(o)
 {
     color.clear();

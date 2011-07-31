@@ -7,7 +7,7 @@
 #include <QDebug>
 #include "event.h"
 
-EventList::EventList(MachineCode code,EventListType et,EventDataType gain, EventDataType offset, EventDataType min, EventDataType max,double rate)
+EventList::EventList(ChannelID code,EventListType et,EventDataType gain, EventDataType offset, EventDataType min, EventDataType max,double rate)
     :m_code(code),m_type(et),m_gain(gain),m_offset(offset),m_min(min),m_max(max),m_rate(rate)
 {
     m_first=m_last=0;

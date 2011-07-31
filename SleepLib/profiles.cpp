@@ -45,8 +45,8 @@ Profile::Profile(QString path)
 
 Profile::~Profile()
 {
-    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
-    delete i->second;
+    for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
+        delete i.value();
     }
 }
 void Profile::DataFormatError(Machine *m)
@@ -71,8 +71,8 @@ void Profile::DataFormatError(Machine *m)
 }
 void Profile::LoadMachineData()
 {
-    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
-        Machine *m=i->second;
+    for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
+        Machine *m=i.value();
 
         MachineLoader *loader=GetLoader(m->GetClass());
         if (loader) {
@@ -163,7 +163,7 @@ void Profile::DelMachine(Machine *m) {
         qWarning() << "Empty Machine in Profile::AddMachine()";
         return;
     }
-    machlist.erase(m->id());
+    machlist.erase(machlist.find(m->id()));
 };
 
 
@@ -171,18 +171,18 @@ void Profile::DelMachine(Machine *m) {
 QDomElement Profile::ExtraSave(QDomDocument & doc)
 {
     QDomElement mach=doc.createElement("Machines");
-    for (map<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
+    for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         QDomElement me=doc.createElement("Machine");
-        Machine *m=i->second;
+        Machine *m=i.value();
         //QString t=wxT("0x")+m->hexid();
         me.setAttribute("id",(int)m->id());
         me.setAttribute("type",(int)m->GetType());
         me.setAttribute("class",m->GetClass());
-        i->second->properties["path"]="{DataFolder}/"+m->hexid();
+        i.value()->properties["path"]="{DataFolder}/"+m->hexid();
 
-        for (map<QString,QString>::iterator j=i->second->properties.begin(); j!=i->second->properties.end(); j++) {
-            QDomElement mp=doc.createElement(j->first);
-            mp.appendChild(doc.createTextNode(j->second));
+        for (QHash<QString,QString>::iterator j=i.value()->properties.begin(); j!=i.value()->properties.end(); j++) {
+            QDomElement mp=doc.createElement(j.key());
+            mp.appendChild(doc.createTextNode(j.value()));
             //mp->LinkEndChild(new QDomText(j->second.toLatin1()));
             me.appendChild(mp);
         }
@@ -203,8 +203,8 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     if (m_last<date) m_last=date;
 
     // Check for any other machines of same type.. Throw an exception if one already exists.
-    vector<Day *> & dl=daylist[date];
-    for (vector<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
+    QVector<Day *> & dl=daylist[date];
+    for (QVector<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
             throw OneTypePerDay();
         }
@@ -217,7 +217,7 @@ Day * Profile::GetDay(QDate date,MachineType type)
     Day *day=NULL;
     // profile->     why did I d that??
     if (daylist.find(date)!=daylist.end()) {
-        for (vector<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
+        for (QVector<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
             if (type==MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
                 day=(*di);
                 break;
@@ -240,8 +240,8 @@ int Profile::Import(QString path)
 {
     int c=0;
     qDebug() << "Importing " << path;
-    list<MachineLoader *>loaders=GetLoaders();
-    for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
+    QVector<MachineLoader *>loaders=GetLoaders();
+    for (QVector<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
     }
     //qDebug() << "Import Done";
@@ -251,8 +251,8 @@ int Profile::Import(QString path)
 MachineLoader * GetLoader(QString name)
 {
     MachineLoader *l=NULL;
-    list<MachineLoader *>loaders=GetLoaders();
-    for (list<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
+    QVector<MachineLoader *>loaders=GetLoaders();
+    for (QVector<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if ((*i)->ClassName()==name) {
             l=*i;
             break;
@@ -262,19 +262,19 @@ MachineLoader * GetLoader(QString name)
 }
 
 
-vector<Machine *> Profile::GetMachines(MachineType t)
-// Returns a vector containing all machine objects regisered of type t
+QVector<Machine *> Profile::GetMachines(MachineType t)
+// Returns a QVector containing all machine objects regisered of type t
 {
-    vector<Machine *> vec;
-    map<MachineID,Machine *>::iterator i;
+    QVector<Machine *> vec;
+    QHash<MachineID,Machine *>::iterator i;
 
     for (i=machlist.begin(); i!=machlist.end(); i++) {
-        if (!i->second) {
+        if (!i.value()) {
             qWarning() << "Profile::GetMachines() i->second == NULL";
             continue;
         }
-        if (i->second->GetType()==t) {
-            vec.push_back(i->second);
+        if (i.value()->GetType()==t) {
+            vec.push_back(i.value());
         }
     }
     return vec;
@@ -282,7 +282,7 @@ vector<Machine *> Profile::GetMachines(MachineType t)
 
 Machine * Profile::GetMachine(MachineType t)
 {
-    vector<Machine *>vec=GetMachines(t);
+    QVector<Machine *>vec=GetMachines(t);
     if (vec.size()==0) return NULL;
     return vec[0];
 
@@ -297,15 +297,15 @@ QString SHA1(QString pass)
 namespace Profiles
 {
 
-std::map<QString,Profile *> profiles;
+QHash<QString,Profile *> profiles;
 
 void Done()
 {
     pref.Save();
     laypref.Save();
-    for (map<QString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
-        i->second->Save();
-        delete i->second;
+    for (QHash<QString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
+        i.value()->Save();
+        delete i.value();
     }
     profiles.clear();
     delete p_pref;

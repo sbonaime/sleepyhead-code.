@@ -42,9 +42,9 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
     // NOTE: This only allows for one ZEO machine per profile..
     // Upgrading their ZEO will use this same record..
 
-    vector<Machine *> ml=profile->GetMachines(MT_SLEEPSTAGE);
+    QVector<Machine *> ml=profile->GetMachines(MT_SLEEPSTAGE);
 
-    for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
+    for (QVector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
         if ((*i)->GetClass()==zeo_class_name)  {
             return (*i);
             break;

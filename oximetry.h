@@ -53,8 +53,8 @@ private:
     gLineChart *pulse,*spo2,*plethy;
     gGraphWindow *PULSE,*SPO2,*PLETHY;
 
-    vector<gGraphWindow *> Graphs;
-    vector<gLineChart *> Data;
+    QVector<gGraphWindow *> Graphs;
+    QVector<gLineChart *> Data;
 
     QextSerialPort *port;
     QString portname;

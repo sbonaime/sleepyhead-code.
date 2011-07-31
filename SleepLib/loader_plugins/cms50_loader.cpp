@@ -19,7 +19,7 @@ License: GPL
 #include <QDateTime>
 #include <QFile>
 #include <QDebug>
-#include <list>
+#include <QList>
 
 using namespace std;
 
@@ -71,7 +71,7 @@ int CMS50Loader::Open(QString & path,Profile *profile)
 int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
 {
     QString filename,pathname;
-    list<QString> files;
+    QList<QString> files;
     QDir dir(path);
 
     if (!dir.exists())
@@ -97,7 +97,7 @@ int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
 
     Machine *mach=CreateMachine(profile);
     int cnt=0;
-    for (list<QString>::iterator n=files.begin();n!=files.end();n++,++cnt) {
+    for (QList<QString>::iterator n=files.begin();n!=files.end();n++,++cnt) {
         if (qprogress) qprogress->setValue((float(cnt)/float(size)*50.0));
         QApplication::processEvents();
         OpenSPORFile((*n),mach,profile);
@@ -198,7 +198,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     EventDataType cp,cs;
 
     Session *sess=new Session(mach,sessid);
-    sess->UpdateFirst(starttime);
+    sess->updateFirst(starttime);
     EventList *oxip=new EventList(OXI_Pulse,EVL_Event);
     EventList *oxis=new EventList(OXI_SPO2,EVL_Event);
     sess->eventlist[OXI_Pulse].push_back(oxip);
@@ -222,7 +222,6 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         cs=buffer[i+1];
         if (last_pulse!=cp) {
             oxip->AddEvent(tt,cp);
-            //sess->AddEvent(new Event(tt,OXI_Pulse,0,&cp,1));
             if (tt>lasttime) lasttime=tt;
             if (cp>0) {
                 if (first_p) {
@@ -237,7 +236,6 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         }
         if (last_spo2!=cs) {
             oxis->AddEvent(tt,cs);
-            //sess->AddEvent(new Event(tt,OXI_SPO2,0,&cs,1));
             if (tt>lasttime) lasttime=tt;
             if (cs>0) {
                 if (first_s) {
@@ -259,7 +257,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     if (cp) oxip->AddEvent(tt,cp);//sess->AddEvent(new Event(tt,OXI_Pulse,0,&cp,1));
     if (cs) oxis->AddEvent(tt,cs);//sess->AddEvent(new Event(tt,OXI_SPO2,0,&cs,1));
 
-    sess->UpdateLast(tt);
+    sess->updateLast(tt);
     //double t=sess->last()-sess->first().toTime_t();
     //double hours=(t/3600.0);
     //sess->set_hours(hours);
@@ -267,12 +265,14 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     EventDataType pa=0,sa=0;
     if (PCnt>0) pa=PAvg/double(PCnt);
     if (SCnt>0) sa=SAvg/double(SCnt);
-    sess->summary[OXI_PulseAverage]=pa;
-    sess->summary[OXI_PulseMin]=PMin;
-    sess->summary[OXI_PulseMax]=PMax;
-    sess->summary[OXI_SPO2Average]=sa;
-    sess->summary[OXI_SPO2Min]=SMin;
-    sess->summary[OXI_SPO2Max]=SMax;
+
+    sess->setMin(OXI_Pulse,PMin);
+    sess->setMax(OXI_Pulse,PMax);
+    sess->setAvg(OXI_Pulse,pa);
+    sess->setMin(OXI_SPO2,SMin);
+    sess->setMax(OXI_SPO2,SMax);
+    sess->setAvg(OXI_SPO2,sa);
+    //sess->summary->UpdateSummaries();
 
     mach->AddSession(sess,profile);
     sess->SetChanged(true);
@@ -288,9 +288,9 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     // NOTE: This only allows for one CMS50 machine per profile..
     // Upgrading their oximeter will use this same record..
 
-    vector<Machine *> ml=profile->GetMachines(MT_OXIMETER);
+    QVector<Machine *> ml=profile->GetMachines(MT_OXIMETER);
 
-    for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
+    for (QVector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
         if ((*i)->GetClass()==cms50_class_name)  {
             return (*i);
             break;

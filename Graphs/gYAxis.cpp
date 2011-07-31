@@ -9,7 +9,7 @@
 #include "gYAxis.h"
 
 gYAxis::gYAxis(QColor col)
-:gLayer(MC_UNKNOWN)
+:gLayer(EmptyChannel)
 {
     color.clear();
     color.push_back(col);

@@ -1,12 +1,12 @@
-/********************************************************************
+/*
  gLayer Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include "graphlayer.h"
 
-gLayer::gLayer(MachineCode code,QString title)
+gLayer::gLayer(ChannelID code,QString title)
 :m_code(code),m_title(title)
 {
     m_visible = true;
@@ -41,7 +41,7 @@ bool gLayer::isEmpty()
     return true;
 }
 
-gLayerGroup::gLayerGroup():gLayer(MC_UNKNOWN)
+gLayerGroup::gLayerGroup():gLayer(EmptyChannel)
 {
 }
 gLayerGroup::~gLayerGroup()
@@ -50,7 +50,7 @@ gLayerGroup::~gLayerGroup()
 bool gLayerGroup::isEmpty()
 {
     bool empty=true;
-    for (unsigned i=0;i<layers.size();i++) {
+    for (int i=0;i<layers.size();i++) {
         if (layers[i]->isEmpty()) {
             empty=false;
             break;
@@ -60,7 +60,7 @@ bool gLayerGroup::isEmpty()
 }
 void gLayerGroup::SetDay(Day * d)
 {
-    for (unsigned i=0;i<layers.size();i++) {
+    for (int i=0;i<layers.size();i++) {
          layers[i]->SetDay(d);
     }
     m_day=d;
@@ -75,7 +75,7 @@ qint64 gLayerGroup::Minx()
 {
     bool first=true;
     qint64 m=0,t;
-    for (unsigned i=0;i<layers.size();i++)  {
+    for (int i=0;i<layers.size();i++)  {
         t=layers[i]->Minx();
         if (!t) continue;
         if (first) {
@@ -90,7 +90,7 @@ qint64 gLayerGroup::Maxx()
 {
     bool first=true;
     qint64 m=0,t;
-    for (unsigned i=0;i<layers.size();i++)  {
+    for (int i=0;i<layers.size();i++)  {
         t=layers[i]->Maxx();
         if (!t) continue;
         if (first) {
@@ -105,7 +105,7 @@ EventDataType gLayerGroup::Miny()
 {
     bool first=true;
     EventDataType m=0,t;
-    for (unsigned i=0;i<layers.size();i++)  {
+    for (int i=0;i<layers.size();i++)  {
         t=layers[i]->Miny();
         if (t==layers[i]->Minx()) continue;
         if (first) {
@@ -121,7 +121,7 @@ EventDataType gLayerGroup::Maxy()
 {
     bool first=true;
     EventDataType m=0,t;
-    for (unsigned i=0;i<layers.size();i++)  {
+    for (int i=0;i<layers.size();i++)  {
         t=layers[i]->Maxy();
         if (t==layers[i]->Miny()) continue;
         if (first) {

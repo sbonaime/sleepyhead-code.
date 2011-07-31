@@ -55,8 +55,8 @@ private:
 
     gLayer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
 
-    list<HistoryData *> Data;
-    list<gGraphWindow *> Graphs;
+    QList<HistoryData *> Data;
+    QList<gGraphWindow *> Graphs;
     Day *dummyday;
     QSplitter *gSplitter;
     QLabel *NoData;

@@ -9,7 +9,7 @@
 //#include "graphdata_custom.h"
 
 /*
-WaveData::WaveData(MachineCode _code, int _size)
+WaveData::WaveData(ChannelID _code, int _size)
 :gPointData(_size),code(_code)
 {
 }
@@ -33,10 +33,10 @@ void WaveData::Reload(Day *day)
     max_y=0;
     bool first=true;
    // int chunk=0;
-    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
+    for (QVector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
         //qDebug() << "Processing waveform chunk " << chunk++;
         if ((*s)->waveforms.find(code)==(*s)->waveforms.end()) continue;
-        for (vector<Waveform *>::iterator l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
+        for (QVector<Waveform *>::iterator l=(*s)->waveforms[code].begin();l!=(*s)->waveforms[code].end();l++) {
             int ps=point.size();
             if (vc>=ps) {
                 AddSegment(max_points); // TODO: Add size limit capabilities.
@@ -104,7 +104,7 @@ void WaveData::Reload(Day *day)
 }
 
 
-EventData::EventData(MachineCode _code,int _field,int _size,bool _skipzero)
+EventData::EventData(ChannelID _code,int _field,int _size,bool _skipzero)
 :gPointData(_size),code(_code),field(_field),skipzero(_skipzero)
 {
 }
@@ -129,7 +129,7 @@ void EventData::Reload(Day *day)
     int tt=0;
     bool first=true;
     EventDataType lastp=0;
-    for (vector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
+    for (QVector<Session *>::iterator s=day->begin();s!=day->end(); s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         if (vc>=(int)point.size()) {
             AddSegment(max_points);
@@ -137,7 +137,7 @@ void EventData::Reload(Day *day)
 
         int t=0;
         EventDataType p;
-        for (vector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
+        for (QVector<Event *>::iterator ev=(*s)->events[code].begin(); ev!=(*s)->events[code].end(); ev++) {
             p=(*(*ev))[field];
             if (((p!=0) && skipzero) || !skipzero) {
                 QPointD r((*ev)->time()/86400000.0,p);
@@ -195,7 +195,7 @@ void EventData::Reload(Day *day)
 }
 
 
-TAPData::TAPData(MachineCode _code)
+TAPData::TAPData(ChannelID _code)
 :gPointData(256),code(_code)
 {
     AddSegment(max_points);
@@ -221,10 +221,10 @@ void TAPData::Reload(Day *day)
 
     int field=0;
 
-    for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+    for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         first=true;
-        for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
+        for (QVector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             val=ev[field]*10.0;
             if (field>=ev.fields()) {
@@ -296,7 +296,7 @@ void AHIData::Reload(Day *day)
     //REFRESH??
 }
 
-FlagData::FlagData(MachineCode _code,int _field,int _offset)
+FlagData::FlagData(ChannelID _code,int _field,int _offset)
 :gPointData(65536),code(_code),field(_field),offset(_offset)
 {
     AddSegment(max_points);
@@ -318,10 +318,10 @@ void FlagData::Reload(Day *day)
     max_x=day->last()/86400000.0;
 
     bool done=false;
-    for (vector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+    for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if ((*s)->events.find(code)==(*s)->events.end()) continue;
         //first=true;
-        for (vector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
+        for (QVector<Event *>::iterator e=(*s)->events[code].begin(); e!=(*s)->events[code].end(); e++) {
             Event & ev =(*(*e));
             v2=v1=ev.time()/86400000.0;
             if (offset>=0)
@@ -409,7 +409,7 @@ void SessionTimes::SetDateRange(QDate start,QDate end)
     if (x2 > (real_max_x)) x2=(real_max_x);
     min_x=x1;
     max_x=x2;
-    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
+    for (QList<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
         (*i)->DataChanged(this);
     }    // Do nothing else.. Callers responsibility to Refresh window.
 }
@@ -433,8 +433,8 @@ void SessionTimes::Reload(Day *day)
         //if (profile->daylist.find(date.date())==profile->daylist.end()) continue;
         Day *dy=profile->GetDay(date.date(),MT_CPAP);
         if (!dy) continue;
-        //vector<Day *> & daylist=profile->daylist[date.date()];
-        for (vector<Session *>::iterator dd=dy->begin(); dd!=dy->end(); dd++) { // average any multiple data sets
+        //QVector<Day *> & daylist=profile->daylist[date.date()];
+        for (QVector<Session *>::iterator dd=dy->begin(); dd!=dy->end(); dd++) { // average any multiple data sets
             st=double((*dd)->first())/86400000.0;
             et=double((*dd)->last())/86400000.0;
             point[vc][i].setX(st);
@@ -528,8 +528,8 @@ void HistoryData::Reload(Day *day)
 
         y=0;
         int z=0;
-        vector<Day *> & daylist=profile->daylist[date.date()];
-        for (vector<Day *>::iterator dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
+        QVector<Day *> & daylist=profile->daylist[date.date()];
+        for (QVector<Day *>::iterator dd=daylist.begin(); dd!=daylist.end(); dd++) { // average any multiple data sets
             Day *d=(*dd);
             if (d->machine_type()==MT_CPAP) {
                 y+=Calc(d);
@@ -592,13 +592,13 @@ void HistoryData::SetDateRange(QDate start,QDate end)
     if (x2 > (real_max_x)) x2=(real_max_x);
     min_x=x1;
     max_x=x2;
-    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
+    for (QList<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
         (*i)->DataChanged(this);
     }    // Do nothing else.. Callers responsibility to Refresh window.
 }
 
 
-HistoryCodeData::HistoryCodeData(Profile *_profile,MachineCode _code)
+HistoryCodeData::HistoryCodeData(Profile *_profile,ChannelID _code)
 :HistoryData(_profile),code(_code)
 {
 }

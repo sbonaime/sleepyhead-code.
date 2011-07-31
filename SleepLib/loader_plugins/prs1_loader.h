@@ -51,7 +51,7 @@ public:
     static void Register();
 protected:
     QString last;
-    map<QString,Machine *> PRS1List;
+    QHash<QString,Machine *> PRS1List;
     int OpenMachine(Machine *m,QString path,Profile *profile);
     bool ParseProperties(Machine *m,QString filename);
     bool OpenSummary(Session *session,QString filename);

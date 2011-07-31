@@ -11,7 +11,7 @@
 #include <QGLWidget>
 #include <QSplitter>
 #include <QDateTime>
-#include <list>
+#include <QList>
 using namespace std;
 #include "graphlayer.h"
 #include "glcommon.h"
@@ -137,7 +137,7 @@ public:
       void resizeEvent(QResizeEvent *);
       void initializeGL();
       QSplitter *splitter;
-      list<gGraphWindow *>link_zoom;
+      QList<gGraphWindow *>link_zoom;
 
       bool m_block_zoom;
       bool m_drag_foobar;
@@ -145,7 +145,7 @@ public:
       double m_foobar_pos,m_foobar_moved;
 
       bool m_gradient_background;
-      std::list<gLayer *> layers;
+      QList<gLayer *> layers;
       QString m_title;
       int    m_scrX;
       int    m_scrY;

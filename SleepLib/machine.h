@@ -11,8 +11,8 @@
 #include <QVariant>
 #include <QDateTime>
 
-#include <map>
-#include <vector>
+#include <QHash>
+#include <QVector>
 #include <list>
 
 #include "SleepLib/preferences.h"
@@ -41,34 +41,34 @@ public:
     bool SaveSession(Session *sess);
     bool Purge(int secret);
 
-    map<QDate,Day *> day;
-    map<SessionID,Session *> sessionlist;
-    map<QString,QString> properties;
+    QMap<QDate,Day *> day;
+    QHash<SessionID,Session *> sessionlist;
+    QHash<QString,QString> properties;
 
     Session * SessionExists(SessionID session);
     Day *AddSession(Session *s,Profile *p);
 
     void SetClass(QString t) {
         m_class=t;
-    };
+    }
     void SetType(MachineType t) {
         m_type=t;
-    };
+    }
     const QString & GetClass() {
         return m_class;
-    };
+    }
     const MachineType & GetType() {
         return m_type;
-    };
+    }
     const QString hexid() {
         QString s;
         s.sprintf("%08lx",m_id);
         return s;
-    };
-    SessionID CreateSessionID() { return highest_sessionid+1; };
-    const MachineID & id() { return m_id; };
-    const QDate & FirstDay() { return firstday; };
-    const QDate & LastDay() { return lastday; };
+    }
+    SessionID CreateSessionID() { return highest_sessionid+1; }
+    const MachineID & id() { return m_id; }
+    const QDate & FirstDay() { return firstday; }
+    const QDate & LastDay() { return lastday; }
 
 protected:
     QDate firstday,lastday;
@@ -90,9 +90,6 @@ class CPAP:public Machine
 public:
     CPAP(Profile *p,MachineID id=0);
     virtual ~CPAP();
-   // map<MachineCode,wxColour> FlagColours;
-   // map<MachineCode,FlagType> FlagTypes;
-    //list<MachineCode> SleepFlags;
 };
 
 class Oximeter:public Machine

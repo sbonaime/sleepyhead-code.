@@ -21,7 +21,7 @@ License: GPL
 #include "SleepLib/session.h"
 
 extern QProgressBar *qprogress;
-map<int,QString> RMS9ModelMap;
+QHash<int,QString> RMS9ModelMap;
 
 EDFParser::EDFParser(QString name)
 {
@@ -30,7 +30,7 @@ EDFParser::EDFParser(QString name)
 }
 EDFParser::~EDFParser()
 {
-    vector<EDFSignal *>::iterator s;
+    QVector<EDFSignal *>::iterator s;
     for (s=edfsignals.begin();s!=edfsignals.end();s++) {
         if ((*s)->data) delete [] (*s)->data;
         delete *s;
@@ -196,16 +196,17 @@ ResmedLoader::~ResmedLoader()
 Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 {
     if (!profile) return NULL;
-    vector<Machine *> ml=profile->GetMachines(MT_CPAP);
+    QVector<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
-    for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
+    QVector<Machine *>::iterator i;
+    for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==resmed_class_name) && ((*i)->properties["Serial"]==serial)) {
             ResmedList[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
             break;
         }
     }
-    if (found) return ResmedList[serial];
+    if (found) return *i;
 
     qDebug() << "Create ResMed Machine" << serial;
     Machine *m=new CPAP(profile,0);
@@ -240,7 +241,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     }
     QString idfile=path+"/Identification.tgt";
     QFile f(idfile);
-    map<QString,QString> idmap;
+    QHash<QString,QString> idmap;
     if (f.open(QIODevice::ReadOnly)) {
         if (!f.isReadable())
             return 0;
@@ -265,7 +266,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
-    map<SessionID,vector<QString> > sessfiles;
+    QHash<SessionID,QVector<QString> > sessfiles;
 
     QString ext,rest,datestr,s,codestr;
     SessionID sessionid;
@@ -300,15 +301,15 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     Session *sess;
     int cnt=0;
     size=sessfiles.size();
-    for (map<SessionID,vector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
-        sessionid=si->first;
+    for (QHash<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+        sessionid=si.key();
         //qDebug() << "Parsing Session " << sessionid;
         bool done=false;
         bool first=true;
         sess=NULL;
-        for (size_t i=0;i<si->second.size();++i) {
-            fn=si->second[i].section("_",-1).toLower();
-            EDFParser edf(si->second[i]);
+        for (int i=0;i<si.value().size();++i) {
+            fn=si.value()[i].section("_",-1).toLower();
+            EDFParser edf(si.value()[i]);
             //qDebug() << "Parsing File " << i << " "  << edf.filesize;
 
             if (!edf.Parse())
@@ -316,21 +317,21 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
             if (first) { // First EDF file parsed, check if this data set is already imported
                 m=CreateMachine(edf.serialnumber,profile);
-                for (map<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
-                    if (i->first=="SRN") {
-                        if (edf.serialnumber!=i->second) {
+                for (QHash<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
+                    if (i.key()=="SRN") {
+                        if (edf.serialnumber!=i.value()) {
                             qDebug() << "edf Serial number doesn't match Identification.tgt";
                         }
-                    } else if (i->first=="PNA") {
-                        m->properties["Model"]=i->second;
-                    } else if (i->first=="PCD") {
+                    } else if (i.key()=="PNA") {
+                        m->properties["Model"]=i.value();
+                    } else if (i.key()=="PCD") {
                         bool ok;
-                        int j=i->second.toInt(&ok);
+                        int j=i.value().toInt(&ok);
                         if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
                             m->properties["SubModel"]=RMS9ModelMap[j];
                         }
                     } else {
-                        m->properties[i->first]=i->second;
+                        m->properties[i.key()]=i.value();
                     }
                 }
                 if (m->SessionExists(sessionid)) {
@@ -363,27 +364,40 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             m->AddSession(sess,profile); // Adding earlier than I really like here..
         }
         if (!done && sess) {
-            sess->summary[CPAP_PressureMedian]=sess->avg(CPAP_Pressure);
-            sess->summary[CPAP_PressureAverage]=sess->weighted_avg(CPAP_Pressure);
-            sess->summary[CPAP_PressureMinAchieved]=sess->min(CPAP_Pressure);
-            sess->summary[CPAP_PressureMaxAchieved]=sess->max(CPAP_Pressure);
-            sess->summary[CPAP_PressureMin]=sess->summary[CPAP_PressureMinAchieved];
-            sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMaxAchieved];
+            ChannelID e[]={
+                CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_Apnea
+            };
+            for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
 
-            sess->summary[CPAP_LeakMinimum]=sess->min(CPAP_Leak);
-            sess->summary[CPAP_LeakMaximum]=sess->max(CPAP_Leak); // should be merged..
-            sess->summary[CPAP_LeakMedian]=sess->avg(CPAP_Leak);
-            sess->summary[CPAP_LeakAverage]=sess->weighted_avg(CPAP_Leak);
+                // Merge this crap together where possible
+                sess->count(e[i]);
+                sess->max(e[i]);
+                sess->min(e[i]);
+                sess->avg(e[i]);
+                sess->p90(e[i]);
+                sess->cph(e[i]);
+                sess->sph(e[i]);
+            }
+            sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway)+sess->cph(CPAP_Apnea));
+            sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway)+sess->sph(CPAP_Apnea));
 
-            sess->summary[CPAP_Snore]=sess->sum(CPAP_Snore);
-            sess->summary[CPAP_SnoreMinimum]=sess->min(CPAP_Snore);
-            sess->summary[CPAP_SnoreMaximum]=sess->max(CPAP_Snore);
-            sess->summary[CPAP_SnoreMedian]=sess->avg(CPAP_Snore);
-            sess->summary[CPAP_SnoreAverage]=sess->weighted_avg(CPAP_Snore);
-            sess->summary[CPAP_Obstructive]=sess->count(CPAP_Obstructive);
-            sess->summary[CPAP_Hypopnea]=sess->count(CPAP_Hypopnea);
-            sess->summary[CPAP_ClearAirway]=sess->count(CPAP_ClearAirway);
-            sess->summary[CPAP_Mode]=MODE_APAP;
+            ChannelID a[]={
+                CPAP_FlowRate, CPAP_MaskPressure, CPAP_Leak, CPAP_Snore, CPAP_EPAP,
+                CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
+                CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation,
+                CPAP_FlowLimitGraph, CPAP_PressureSupport,CPAP_Pressure
+            };
+            for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
+                if (sess->eventlist.contains(a[i])) {
+                    sess->min(a[i]);
+                    sess->max(a[i]);
+                    sess->avg(a[i]);
+                    sess->wavg(a[i]);
+                    sess->p90(a[i]);
+                    sess->cph(a[i]);
+                }
+            }
+            sess->settings[CPAP_Mode]=MODE_APAP;
         }
 
     }
@@ -406,12 +420,12 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     bool sign,ok;
     double d;
     double tt;
-    MachineCode code;
+    ChannelID code;
     //Event *e;
     //totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
     EventList *EL[4]={NULL};
-    sess->UpdateFirst(edf.startdate);
+    sess->updateFirst(edf.startdate);
     //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
@@ -420,7 +434,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
         data=(char *)edf.edfsignals[s]->data;
         pos=0;
         tt=edf.startdate;
-        sess->UpdateFirst(tt);
+        sess->updateFirst(tt);
         duration=0;
         while (pos<recs) {
             c=data[pos];
@@ -516,7 +530,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
             while ((data[pos]==0) && pos<recs) pos++;
             if (pos>=recs) break;
         }
-        sess->UpdateLast(tt);
+        sess->updateLast(tt);
        // qDebug(data);
     }
     return true;
@@ -524,15 +538,15 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
 {
     QString t;
-    sess->UpdateFirst(edf.startdate);
+    sess->updateFirst(edf.startdate);
     qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
-    sess->UpdateLast(edf.startdate+duration);
+    sess->updateLast(edf.startdate+duration);
 
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
         //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
-        MachineCode code;
+        ChannelID code;
         if (edf.edfsignals[s]->label=="Flow") {
             code=CPAP_FlowRate;
         } else if (edf.edfsignals[s]->label=="Mask Pres") {
@@ -563,7 +577,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     }
     return true;
 }
-EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, MachineCode code, long recs, qint64 duration,EventDataType min,EventDataType max)
+EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType min,EventDataType max)
 {
     bool first=true;
     double rate=(duration/recs); // milliseconds per record
@@ -589,7 +603,7 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
         last=c;
     }
     el->AddEvent(tt,c);
-    sess->UpdateLast(tt);
+    sess->updateLast(tt);
     return el;
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
@@ -605,9 +619,9 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     // Is it save to assume the order does not change here?
     enum PLDType { MaskPres=0, TherapyPres, ExpPress, Leak, RR, Vt, Mv, SnoreIndex, FFLIndex, U1, U2 };
 
-    sess->UpdateFirst(edf.startdate);
+    sess->updateFirst(edf.startdate);
     qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
-    sess->UpdateLast(edf.startdate+duration);
+    sess->updateLast(edf.startdate+duration);
     QString t;
     int emptycnt=0;
     for (int s=0;s<edf.GetNumSignals();s++) {
@@ -615,7 +629,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         long recs=es.nr*edf.GetNumDataRecords();
         double rate=double(duration)/double(recs);
         //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
-        MachineCode code;
+        ChannelID code;
         if (es.label=="Snore Index") {
             code=CPAP_Snore;
 
@@ -670,14 +684,14 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             //es.gain=1;
             EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Exp Press") {
-            code=CPAP_ExpPressure;
+            code=CPAP_ExpiratoryPressure;
             EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="") {
             if (emptycnt==0) {
-                code=ResMed_Empty1;
+                code=RMS9_Empty1;
                 ToTimeDelta(sess,edf,es, code,recs,duration);
             } else if (emptycnt==1) {
-                code=ResMed_Empty2;
+                code=RMS9_Empty2;
                 ToTimeDelta(sess,edf,es, code,recs,duration);
             } else {
                 qDebug() << "Unobserved Empty Signal " << es.label;

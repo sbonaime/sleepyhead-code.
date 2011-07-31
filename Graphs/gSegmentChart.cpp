@@ -1,16 +1,22 @@
+/*
+ gSegmentChart Implementation
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #include <cmath>
 #include "gSegmentChart.h"
 
 
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
-:gLayer(MC_UNKNOWN),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
+:gLayer(EmptyChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
    // m_gradient_color=QColor(200,200,200);
 }
 gSegmentChart::~gSegmentChart()
 {
 }
-void gSegmentChart::AddSlice(MachineCode code,QColor color,QString name)
+void gSegmentChart::AddSlice(ChannelID code,QColor color,QString name)
 {
     m_codes.push_back(code);
     m_values.push_back(0);
@@ -23,9 +29,9 @@ void gSegmentChart::SetDay(Day *d)
     gLayer::SetDay(d);
     m_total=0;
     if (!m_day) return;
-    for (unsigned c=0;c<m_codes.size();c++) {
+    for (int c=0;c<m_codes.size();c++) {
         m_values[c]=0;
-        for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+        for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
             int cnt=(*s)->count(m_codes[c]);
             m_values[c]+=cnt;
             m_total+=cnt;
@@ -175,7 +181,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
 }
 
 
-gTAPGraph::gTAPGraph(MachineCode code,GraphSegmentType gt, QColor gradient_color,QColor outline_color)
+gTAPGraph::gTAPGraph(ChannelID code,GraphSegmentType gt, QColor gradient_color,QColor outline_color)
 :gSegmentChart(gt,gradient_color,outline_color),m_code(code)
 {
     m_colors.push_back(Qt::red);
@@ -189,7 +195,7 @@ void gTAPGraph::SetDay(Day *d)
     gLayer::SetDay(d);
     m_total=0;
     if (!m_day) return;
-    vector<qint64> tap;
+    QVector<qint64> tap;
     const int max_value=2600;
     tap.resize(max_value);
 
@@ -198,9 +204,9 @@ void gTAPGraph::SetDay(Day *d)
     bool first=true;
     bool rfirst=true;
     EventDataType gain=1,offset=0;
-    for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
-        for (unsigned q=0;q<(*s)->eventlist[m_code].size();q++) {
+        for (int q=0;q<(*s)->eventlist[m_code].size();q++) {
             EventList &el=*(*s)->eventlist[m_code][q];
             lasttime=el.time(0);
             first=true;

@@ -32,7 +32,7 @@ public:
     virtual ~Profile();
 
     bool is_first_day;
-    map<MachineID,Machine *> machlist;
+    QHash<MachineID,Machine *> machlist;
     void AddMachine(Machine *m);
     void DelMachine(Machine *m);
     void LoadMachineData();
@@ -42,14 +42,14 @@ public:
     void AddDay(QDate date,Day *day,MachineType mt);
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
 
-    vector<Machine *> GetMachines(MachineType t);
+    QVector<Machine *> GetMachines(MachineType t);
     Machine * GetMachine(MachineType t,QDate date);
     Machine * GetMachine(MachineType t);
 
     virtual void ExtraLoad(QDomElement & root);
     virtual QDomElement ExtraSave(QDomDocument & doc);
 
-    map<QDate,vector<Day *> > daylist;
+    QMap<QDate,QVector<Day *> > daylist;
     const QDate & FirstDay() { return m_first; }
     const QDate & LastDay() { return m_last; }
 
@@ -74,7 +74,7 @@ extern Profile *profile;
 namespace Profiles
 {
 
-extern map<QString,Profile *> profiles;
+extern QHash<QString,Profile *> profiles;
 void Scan(); // Initialize and load Profile
 void Done(); // Save all Profile objects and clear list
 

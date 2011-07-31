@@ -23,7 +23,7 @@ public:
 class gSessionTime:public gLayer
 {
     public:
-        gSessionTime(MachineCode=MC_UNKNOWN,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
+        gSessionTime(ChannelID=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gSessionTime();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

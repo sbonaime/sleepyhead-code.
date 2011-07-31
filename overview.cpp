@@ -126,14 +126,14 @@ Overview::~Overview()
 }
 void Overview::RedrawGraphs()
 {
-    for (list<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
+    for (QList<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
         (*g)->updateGL();
     }
     //SESSTIMES->updateGL();
 }
 void Overview::ReloadGraphs()
 {
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
+    for (QList<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
         if (HistoryData *hd=dynamic_cast<HistoryData *>(*h)){
             hd->SetProfile(profile);
             hd->ResetDateRange();
@@ -177,7 +177,7 @@ void Overview::UpdateGraphs()
 {
     QDate first=ui->drStart->date();
     QDate last=ui->drEnd->date();
-    for (list<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
+    for (QList<HistoryData *>::iterator h=Data.begin();h!=Data.end();h++) {
           //(*h)->Update(dummyday);
           (*h)->SetDateRange(first,last);
     }

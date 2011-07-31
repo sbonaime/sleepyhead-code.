@@ -47,8 +47,8 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     ui->graphLayout->addWidget(gSplitter);
 
     // Create the Event Lists to store / import data
-    ev_plethy=new EventList(OXI_Plethy,EVL_Event,1,0,0,0,1000.0/50.0);
-    session->eventlist[OXI_Plethy].push_back(ev_plethy);
+    ev_plethy=new EventList(OXI_Plethysomogram,EVL_Event,1,0,0,0,1000.0/50.0);
+    session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
 
     ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
     session->eventlist[OXI_Pulse].push_back(ev_pulse);
@@ -56,7 +56,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
     session->eventlist[OXI_SPO2].push_back(ev_spo2);
 
-    plethy=new gLineChart(OXI_Plethy,Qt::black,false,true);
+    plethy=new gLineChart(OXI_Plethysomogram,Qt::black,false,true);
     AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),shared));
     plethy->SetDay(day);
 
@@ -68,8 +68,8 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SPO2"),shared));
     spo2->SetDay(day);
 
-    for (unsigned i=0;i<Graphs.size();i++) {
-        for (unsigned j=0;j<Graphs.size();j++) {
+    for (int i=0;i<Graphs.size();i++) {
+        for (int j=0;j<Graphs.size();j++) {
             if (Graphs[i]!=Graphs[j])
                 Graphs[i]->LinkZoom(Graphs[j]);
         }
@@ -84,7 +84,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 
-    for (unsigned i=0;i<Graphs.size();i++) {
+    for (int i=0;i<Graphs.size();i++) {
         Graphs[i]->setMinimumHeight(150);
         Graphs[i]->SetSplitter(gSplitter);
     }
@@ -135,7 +135,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
 }
 void Oximetry::RedrawGraphs()
 {
-    for (vector<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
+    for (QVector<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
         (*g)->updateGL();
     }
 }
@@ -240,9 +240,6 @@ void Oximetry::UpdatePlethy(qint8 d)
     //    plethy->SetMaxX(lasttime/86400000.0);
     //}
 
-    if (d==55) {
-        int i=0;
-    }
     //plethy->setMinY(ev_plethy->min());
     //plethy->setMaxY(ev_plethy->max());
     //plethy->setMinY(ev_plethy->min());
@@ -497,7 +494,7 @@ void Oximetry::on_ImportButton_clicked()
         session->SetSessionID(sid);
         qDebug() << "Read " << bytes << "Bytes";
         qDebug() << "Creating session " << sid;
-        char pulse,spo2,lastpulse=-1,lastspo2=-1;
+        unsigned short pulse,spo2,lastpulse=0,lastspo2=0;
 
         qint64 tt=sid-(bytes/3);
         tt*=1000;
@@ -509,21 +506,27 @@ void Oximetry::on_ImportButton_clicked()
 
         ev_pulse->setFirst(tt);
         ev_spo2->setFirst(tt);
+
+        EventList *oxf1=NULL,*oxf2=NULL;
         EventDataType data;
         unsigned i=0;
+        const int rb_size=60; // last rb_size seconds of data
+        unsigned rb_pulse[rb_size]={0};
+        unsigned rb_spo2[rb_size]={0};
+        int rb_pos=0;
         while (i<bytes) {
             if (buffer[i++]!=0xf0) {
                 qDebug() << "Faulty PulseOx data";
                 continue;
             }
-            pulse=buffer[i++] ^ 0x80;
+            pulse=buffer[i++] & 0x7f;
             spo2=buffer[i++];
-            if (pulse!=0 && pulse!=lastpulse) {
+            if (pulse!=lastpulse) {
                 data=pulse;
                 ev_pulse->AddEvent(tt,data);
                 //qDebug() << "Pulse: " << int(pulse);
             }
-            if (spo2 != 0 && spo2!=lastspo2) {
+            if (spo2!=lastspo2) {
                 data=spo2;
                 ev_spo2->AddEvent(tt,data);
                 //qDebug() << "SpO2: " << int(spo2);
@@ -531,6 +534,49 @@ void Oximetry::on_ImportButton_clicked()
 
             lastpulse=pulse;
             lastspo2=spo2;
+
+            rb_pulse[rb_pos]=(unsigned)pulse;
+            rb_spo2[rb_pos]=(unsigned)spo2;
+
+            unsigned int min=255,max=0;
+            for (int k=rb_pos;k>rb_pos-4;k--) {
+                int j=abs(k % rb_size);
+                if (rb_pulse[j]<min) min=rb_pulse[j];
+                if (rb_pulse[j]>min) max=rb_pulse[j];
+            }
+            if (min>0 && max>0) {
+                int drop=max-min;
+                if (drop>6) {
+                    if (!oxf1) {
+                        oxf1=new EventList(OXI_PulseChange,EVL_Event);
+                        session->eventlist[OXI_PulseChange].push_back(oxf1);
+                    }
+                    oxf1->AddEvent(tt,drop);
+                }
+            }
+
+            min=255,max=0;
+            for (int k=rb_pos;k>rb_pos-10;k--) {
+                int j=abs(k % rb_size);
+                if (rb_spo2[j]<min) min=rb_spo2[j];
+                if (rb_spo2[j]>min) max=rb_spo2[j];
+            }
+            if (min>0 && max>0) {
+                int drop=max-min;
+                if (drop>4) {
+                    if (!oxf1) {
+                        oxf2=new EventList(OXI_SPO2Drop,EVL_Event);
+                        session->eventlist[OXI_SPO2Drop].push_back(oxf2);
+                    }
+                    oxf2->AddEvent(tt,drop);
+                }
+            }
+
+
+
+            ++rb_pos;
+            rb_pos=rb_pos % rb_size;
+
             tt+=1000;
             qprogress->setValue(75+(25.0/bytes)*i);
             QApplication::processEvents();
@@ -539,13 +585,19 @@ void Oximetry::on_ImportButton_clicked()
         ev_spo2->AddEvent(tt,spo2);
         session->set_last(tt);
 
-        session->summary[OXI_PulseMin]=ev_pulse->min();
-        session->summary[OXI_PulseMax]=ev_pulse->max();
-        session->summary[OXI_PulseAverage]=session->weighted_avg(OXI_Pulse);
+        session->setMin(OXI_Pulse,ev_pulse->min());
+        session->setMax(OXI_Pulse,ev_pulse->max());
+        session->avg(OXI_Pulse);
+        session->p90(OXI_Pulse);
+        session->cph(OXI_Pulse);
+        session->wavg(OXI_Pulse);
 
-        session->summary[OXI_SPO2Min]=ev_spo2->min();
-        session->summary[OXI_SPO2Max]=ev_spo2->max();
-        session->summary[OXI_SPO2Average]=session->weighted_avg(OXI_SPO2);
+        session->setMin(OXI_SPO2,ev_pulse->min());
+        session->setMax(OXI_SPO2,ev_pulse->max());
+        session->avg(OXI_SPO2);
+        session->p90(OXI_SPO2);
+        session->cph(OXI_SPO2);
+        session->wavg(OXI_SPO2);
 
         session->SetChanged(true);
         mach->AddSession(session,profile);
@@ -560,8 +612,8 @@ void Oximetry::on_ImportButton_clicked()
         day->AddSession(session);
 
         // As did these
-        ev_plethy=new EventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1.0/50.0);
-        session->eventlist[OXI_Plethy].push_back(ev_plethy);
+        ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1.0/50.0);
+        session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
 
         ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
         session->eventlist[OXI_Pulse].push_back(ev_pulse);

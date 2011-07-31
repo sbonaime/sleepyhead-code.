@@ -1,13 +1,13 @@
-/********************************************************************
+/*
  gLineChart Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef GLINECHART_H
 #define GLINECHART_H
 
-#include <vector>
+#include <QVector>
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
 #include "graphwindow.h"
@@ -16,7 +16,7 @@
 class gLineChart:public gLayer
 {
     public:
-        gLineChart(MachineCode code,const QColor col=QColor("black"), bool square_plot=false,bool disable_accel=false);
+        gLineChart(ChannelID code,const QColor col=QColor("black"), bool square_plot=false,bool disable_accel=false);
         virtual ~gLineChart();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

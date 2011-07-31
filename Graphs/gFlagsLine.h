@@ -15,7 +15,7 @@ class gFlagsLine:public gLayer
 {
     friend class gFlagsGroup;
     public:
-        gFlagsLine(MachineCode code,QColor col=Qt::black,QString label="",bool always_visible=false,FlagType flt=FT_Bar);
+        gFlagsLine(ChannelID code,QColor col=Qt::black,QString label="",bool always_visible=false,FlagType flt=FT_Bar);
         virtual ~gFlagsLine();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

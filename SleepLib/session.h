@@ -9,6 +9,8 @@
 #define SESSION_H
 
 #include <QDebug>
+#include <QHash>
+#include <QVector>
 
 #include "SleepLib/machine.h"
 #include "SleepLib/event.h"
@@ -61,7 +63,6 @@ public:
         return t;
     };
 
-    map<MachineCode,QVariant> summary;
     void SetChanged(bool val) {
         s_changed=val;
         s_events_loaded=val; // dirty hack putting this here
@@ -70,24 +71,58 @@ public:
         return s_changed;
     };
 
-    map<MachineCode,vector<EventList *> > eventlist;
+    QHash<ChannelID,QVector<EventList *> > eventlist;
+    QHash<ChannelID,QVariant> settings;
+    QHash<ChannelID,int> m_cnt;
+    QHash<ChannelID,double> m_sum;
+    QHash<ChannelID,EventDataType> m_avg;
+    QHash<ChannelID,EventDataType> m_wavg;
+    QHash<ChannelID,EventDataType> m_90p;
+    QHash<ChannelID,EventDataType> m_min;
+    QHash<ChannelID,EventDataType> m_max;
+    QHash<ChannelID,EventDataType> m_cph;  // Counts per hour (eg AHI)
+    QHash<ChannelID,EventDataType> m_sph;  // % indice (eg % night in CSR)
+    QHash<ChannelID,quint64> m_firstchan;
+    QHash<ChannelID,quint64> m_lastchan;
+
+
+    // UpdateSummaries may recalculate all these, but it may be faster setting upfront
+    void setCount(ChannelID id,int val) { m_cnt[id]=val; }
+    void setSum(ChannelID id,EventDataType val) { m_sum[id]=val; }
+    void setMin(ChannelID id,EventDataType val) { m_min[id]=val; }
+    void setMax(ChannelID id,EventDataType val) { m_max[id]=val; }
+    void setAvg(ChannelID id,EventDataType val) { m_avg[id]=val; }
+    void setWavg(ChannelID id,EventDataType val) { m_wavg[id]=val; }
+    void set90p(ChannelID id,EventDataType val) { m_90p[id]=val; }
+    void setCph(ChannelID id,EventDataType val) { m_cph[id]=val; }
+    void setSph(ChannelID id,EventDataType val) { m_sph[id]=val; }
+    void setFirst(ChannelID id,qint64 val) { m_firstchan[id]=val; }
+    void setLast(ChannelID id,qint64 val) { m_lastchan[id]=val; }
+
+    int count(ChannelID id);
+    double sum(ChannelID id);
+    EventDataType avg(ChannelID id);
+    EventDataType wavg(ChannelID i);
+    EventDataType min(ChannelID id);
+    EventDataType max(ChannelID id);
+    EventDataType p90(ChannelID id);
+    EventDataType cph(ChannelID id);
+    EventDataType sph(ChannelID id);
+
+    EventDataType percentile(ChannelID id,EventDataType percentile);
+
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
     void SetEventFile(QString & filename) { s_eventfile=filename; }
 
-    inline void UpdateFirst(qint64 v) { if (!s_first) s_first=v; else if (s_first>v) s_first=v; }
-    inline void UpdateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
+    inline void updateFirst(qint64 v) { if (!s_first) s_first=v; else if (s_first>v) s_first=v; }
+    inline void updateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
 
-    EventDataType min(MachineCode code);
-    EventDataType max(MachineCode code);
-    qint64 first(MachineCode code);
-    qint64 last(MachineCode code);
-    int count(MachineCode code);
-    double sum(MachineCode mc);
-    EventDataType avg(MachineCode mc);
-    EventDataType weighted_avg(MachineCode mc);
-    EventDataType percentile(MachineCode mc,double percentile);
+    qint64 first(ChannelID code);
+    qint64 last(ChannelID code);
+
+    void UpdateSummaries();
 
 protected:
     SessionID s_session;

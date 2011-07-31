@@ -12,6 +12,7 @@ License: GPL
 
 #include <QString>
 #include <QVariant>
+#include <QHash>
 #include <QDomElement>
 #include <QDomDocument>
 #include <map>
@@ -75,9 +76,9 @@ public:
     };
     int  GetCode(QString name); // For registering/looking up new preference code.
 
-    std::map<QString,QVariant> p_preferences;
+    QHash<QString,QVariant> p_preferences;
 protected:
-    std::map<int,QString> p_codes;
+    QHash<int,QString> p_codes;
     QString p_comment;
     QString p_name;
     QString p_filename;

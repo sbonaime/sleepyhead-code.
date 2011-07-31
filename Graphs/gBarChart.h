@@ -12,7 +12,7 @@
 class gBarChart:public gLayer
 {
     public:
-        gBarChart(MachineCode code=MC_UNKNOWN,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
+        gBarChart(ChannelID code=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gBarChart();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

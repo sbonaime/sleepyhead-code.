@@ -12,7 +12,7 @@
 class gLineOverlayBar:public gLayer
 {
     public:
-        gLineOverlayBar(MachineCode code,QColor col=QColor("black"),QString _label="",FlagType _flt=FT_Bar);
+        gLineOverlayBar(ChannelID code,QColor col=QColor("black"),QString _label="",FlagType _flt=FT_Bar);
         virtual ~gLineOverlayBar();
 
         virtual void Plot(gGraphWindow & w,float scrx,float scry);

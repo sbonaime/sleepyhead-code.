@@ -8,7 +8,7 @@
 #include <SleepLib/profiles.h>
 #include "gBarChart.h"
 
-gBarChart::gBarChart(MachineCode code,QColor col,Qt::Orientation o)
+gBarChart::gBarChart(ChannelID code,QColor col,Qt::Orientation o)
 :gLayer(code),m_orientation(o)
 {
     color.clear();

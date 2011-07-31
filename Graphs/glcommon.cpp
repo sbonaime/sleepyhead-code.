@@ -100,13 +100,13 @@ struct TextBuffer
         text=_text; x=_x; y=_y; angle=_angle; color=_color; font=_font;
     }
 };
-vector<TextBuffer> TextQue;
-vector<TextBuffer> TextQueRot;
+QVector<TextBuffer> TextQue;
+QVector<TextBuffer> TextQueRot;
 
 void DrawTextQueue(gGraphWindow & wid)
 {
     //glFlush();
-    for (unsigned i=0;i<TextQue.size();i++) {
+    for (int i=0;i<TextQue.size();i++) {
         TextBuffer & t=TextQue[i];
         wid.qglColor(t.color);
         wid.renderText(t.x,wid.GetScrY()-t.y,0,t.text,*t.font);
@@ -117,7 +117,7 @@ void DrawTextQueue(gGraphWindow & wid)
     if (wid.parentWidget()!=0) {
         QPainter painter(&wid);
         // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
-        for (unsigned i=0;i<TextQueRot.size();i++) {
+        for (int i=0;i<TextQueRot.size();i++) {
             TextBuffer & t=TextQueRot[i];
             RDrawText(painter,t.text,t.x,t.y,t.angle,t.color,t.font);
             //delete TextQueRot[i];

@@ -17,13 +17,13 @@ class gGraphWindow;
 class gLayer
 {
 public:
-    gLayer(MachineCode code=MC_UNKNOWN,QString title="");
+    gLayer(ChannelID code=EmptyChannel,QString title="");
     virtual ~gLayer();
     virtual void Plot(gGraphWindow & w,float scrx,float scry)=0;
-    vector<QColor> color;
+    QVector<QColor> color;
 
     virtual void SetDay(Day * d);
-    virtual void SetCode(MachineCode c) { m_code=c; }
+    virtual void SetCode(ChannelID c) { m_code=c; }
     virtual qint64 Minx() { if (m_day) return m_day->first(); return m_minx; }
     virtual qint64 Maxx() { if (m_day) return m_day->last(); return m_maxx; }
     virtual EventDataType Miny() { return m_miny; }
@@ -35,7 +35,7 @@ public:
     virtual void setVisible(bool v) { m_visible=v; }
     virtual bool isVisible() { return m_visible; }
     virtual bool isEmpty();
-    inline const MachineCode & code() { return m_code; }
+    inline const ChannelID & code() { return m_code; }
 protected:
     bool m_visible;
     bool m_movable;
@@ -43,7 +43,7 @@ protected:
     qint64 m_minx,m_maxx;
     EventDataType m_miny,m_maxy;
     Day *m_day;
-    MachineCode m_code;
+    ChannelID m_code;
     QString m_title;
 };
 
@@ -62,7 +62,7 @@ public:
     virtual void SetDay(Day * d);
 
 protected:
-    vector<gLayer *> layers;
+    QVector<gLayer *> layers;
 };
 
 #endif // GRAPHLAYER_H

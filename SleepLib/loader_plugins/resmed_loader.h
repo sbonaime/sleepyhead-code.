@@ -10,7 +10,7 @@ License: GPL
 #define RESMED_LOADER_H
 //#include <map>
 //using namespace std;
-#include <vector>
+#include <QVector>
 #include "SleepLib/machine.h" // Base class: MachineLoader
 #include "SleepLib/machine_loader.h"
 #include "SleepLib/profiles.h"
@@ -68,7 +68,7 @@ public:
     QString Read(int si);
     qint16 Read16();
 
-    vector<EDFSignal *> edfsignals;
+    QVector<EDFSignal *> edfsignals;
 
     long GetNumSignals() { return num_signals; }
     long GetNumDataRecords() { return num_data_records; }
@@ -105,13 +105,13 @@ public:
 
     virtual int Version() { return resmed_data_version; }
     virtual const QString & ClassName() { return resmed_class_name; }
-    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, MachineCode code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0);
+    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0);
 
     Machine *CreateMachine(QString serial,Profile *profile);
 
     static void Register();
 protected:
-    map<QString,Machine *> ResmedList;
+    QHash<QString,Machine *> ResmedList;
     bool LoadEVE(Session *sess,EDFParser &edf);
     bool LoadBRP(Session *sess,EDFParser &edf);
     bool LoadSAD(Session *sess,EDFParser &edf);

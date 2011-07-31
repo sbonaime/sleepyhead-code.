@@ -5,7 +5,7 @@
 *********************************************************************/
 
 #include <cmath>
-#include <vector>
+#include <QVector>
 #include "SleepLib/profiles.h"
 #include "gFlagsLine.h"
 
@@ -40,8 +40,8 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
 
-    vector<gFlagsLine *> lvisible;
-    for (unsigned i=0;i<layers.size();i++) {
+    QVector<gFlagsLine *> lvisible;
+    for (int i=0;i<layers.size();i++) {
         gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
         if (!f) continue;
 
@@ -50,7 +50,7 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
         }
     }
     int vis=lvisible.size();
-    for (unsigned i=0;i<lvisible.size();i++) {
+    for (int i=0;i<lvisible.size();i++) {
         lvisible[i]->line_num=i;
         lvisible[i]->total_lines=vis;
         lvisible[i]->Plot(w,scrx,scry);
@@ -67,7 +67,7 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(MachineCode code,QColor col,QString label,bool always_visible,FlagType flt)
+gFlagsLine::gFlagsLine(ChannelID code,QColor col,QString label,bool always_visible,FlagType flt)
 :gLayer(code),m_label(label),m_always_visible(always_visible),m_flt(flt)
 {
     color.clear();
@@ -146,7 +146,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     float bottom=top+floor(line_h)-3;
 
     qint64 X,Y;
-    for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
 
         EventList & el=*((*s)->eventlist[m_code][0]);

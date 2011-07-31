@@ -27,27 +27,29 @@ public:
 
     MachineType machine_type();
 
-    EventDataType avg(MachineCode code);
-    EventDataType sum(MachineCode code);
-    EventDataType weighted_avg(MachineCode code);
-    EventDataType percentile(MachineCode mc,double percent);
+    int count(ChannelID code);
+    EventDataType min(ChannelID code);
+    EventDataType max(ChannelID code);
+    EventDataType p90(ChannelID code);
+    EventDataType avg(ChannelID code);
+    EventDataType sum(ChannelID code);
+    EventDataType wavg(ChannelID code);
+
+    EventDataType percentile(ChannelID mc,double percent);
 
     // Note, the following convert to doubles without considering the consequences fully.
-    EventDataType summary_avg(MachineCode code);
-    EventDataType summary_weighted_avg(MachineCode code);
-    EventDataType summary_sum(MachineCode code);
-    EventDataType summary_min(MachineCode code);
-    EventDataType summary_max(MachineCode code);
+    EventDataType settings_avg(ChannelID code);
+    EventDataType settings_wavg(ChannelID code);
+    EventDataType settings_sum(ChannelID code);
+    EventDataType settings_min(ChannelID code);
+    EventDataType settings_max(ChannelID code);
 
     qint64 first() { return d_first; }
     qint64 last() { return d_last; }
     void setFirst(qint64 val) { d_first=val; }
     void setLast(qint64 val) { d_last=val; }
-    qint64 first(MachineCode code);
-    qint64 last(MachineCode code);
-    EventDataType min(MachineCode code);
-    EventDataType max(MachineCode code);
-    int count(MachineCode code);
+    qint64 first(ChannelID code);
+    qint64 last(ChannelID code);
 
 
     qint64 total_time(); // in milliseconds
@@ -55,17 +57,17 @@ public:
 
     Session *operator [](int i) { return sessions[i]; }
 
-    vector<Session *>::iterator begin() { return sessions.begin(); }
-    vector<Session *>::iterator end() { return sessions.end(); }
+    QVector<Session *>::iterator begin() { return sessions.begin(); }
+    QVector<Session *>::iterator end() { return sessions.end(); }
 
     size_t size() { return sessions.size(); }
     Machine *machine;
 
     void OpenEvents();
-    vector<Session *> & getSessions() { return sessions; }
+    QVector<Session *> & getSessions() { return sessions; }
 
 protected:
-    vector<Session *> sessions;
+    QVector<Session *> sessions;
     qint64 d_first,d_last;
 private:
     bool d_firstsession;

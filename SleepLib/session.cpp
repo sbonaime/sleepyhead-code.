@@ -6,12 +6,11 @@
 */
 
 #include "session.h"
-#include "math.h"
+#include <cmath>
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
 #include <QMetaType>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
@@ -38,10 +37,10 @@ Session::~Session()
 void Session::TrashEvents()
 // Trash this sessions Events and release memory.
 {
-    map<MachineCode,vector<EventList *> >::iterator i;
-    vector<EventList *>::iterator j;
+    QHash<ChannelID,QVector<EventList *> >::iterator i;
+    QVector<EventList *>::iterator j;
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
-        for (j=i->second.begin(); j!=i->second.end(); j++) {
+        for (j=i.value().begin(); j!=i.value().end(); j++) {
             delete *j;
         }
     }
@@ -125,14 +124,29 @@ bool Session::StoreSummary(QString filename)
     out << (quint32)s_session;
     out << s_first;  // Session Start Time
     out << s_last;   // Duration of sesion in seconds.
-    out << (quint16)summary.size();
+    //out << (quint16)settings.size();
+
+    out << settings;
+    out << m_cnt;
+    out << m_sum;
+    out << m_avg;
+    out << m_wavg;
+    out << m_90p;
+    out << m_min;
+    out << m_max;
+    out << m_cph;
+    out << m_sph;
+    out << m_firstchan;
+    out << m_lastchan;
+
+
 
     // First output the Machine Code and type for each summary record
-    for (map<MachineCode,QVariant>::iterator i=summary.begin(); i!=summary.end(); i++) {
-        MachineCode mc=i->first;
+/*    for (QHash<ChannelID,QVariant>::iterator i=settings.begin(); i!=settings.end(); i++) {
+        ChannelID mc=i.key();
         out << (qint16)mc;
-        out << i->second;
-    }
+        out << i.value();
+    } */
     file.close();
     return true;
 }
@@ -157,8 +171,8 @@ bool Session::LoadSummary(QString filename)
     quint32 t32;
     quint16 t16;
 
-    map<MachineCode,MCDataType> mctype;
-    vector<MachineCode> mcorder;
+    QHash<ChannelID,MCDataType> mctype;
+    QVector<ChannelID> mcorder;
     in >> t32;
     if (t32!=magic) {
         qDebug() << "Wrong magic number in " << filename;
@@ -191,14 +205,28 @@ bool Session::LoadSummary(QString filename)
     in >> s_first;  // Start time
     in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
-    qint16 sumsize;
+
+    in >> settings;
+    in >> m_cnt;
+    in >> m_sum;
+    in >> m_avg;
+    in >> m_wavg;
+    in >> m_90p;
+    in >> m_min;
+    in >> m_max;
+    in >> m_cph;
+    in >> m_sph;
+    in >> m_firstchan;
+    in >> m_lastchan;
+
+    /*qint16 sumsize;
     in >> sumsize;  // Summary size (number of Machine Code lists)
 
     for (int i=0; i<sumsize; i++) {
         in >> t16;      // Machine Code
-        MachineCode mc=(MachineCode)t16;
-        in >> summary[mc];
-    }
+        ChannelID mc=(ChannelID)t16;
+        in >> settings[mc];
+    } */
 
     return true;
 }
@@ -224,14 +252,13 @@ bool Session::StoreEvents(QString filename)
     out << (qint16)eventlist.size(); // Number of event categories
 
 
-    map<MachineCode,vector<EventList *> >::iterator i;
-    vector<EventList *>::iterator j;
+    QHash<ChannelID,QVector<EventList *> >::iterator i;
 
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
-        out << (qint16)i->first; // MachineCode
-        out << (qint16)i->second.size();
-        for (unsigned j=0;j<i->second.size();j++) {
-            EventList &e=*i->second[j];
+        out << (qint16)i.key(); // ChannelID
+        out << (qint16)i.value().size();
+        for (int j=0;j<i.value().size();j++) {
+            EventList &e=*i.value()[j];
             out << e.first();
             out << e.last();
             out << (qint32)e.count();
@@ -244,8 +271,8 @@ bool Session::StoreEvents(QString filename)
         }
     }
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
-        for (unsigned j=0;j<i->second.size();j++) {
-            EventList &e=*i->second[j];
+        for (int j=0;j<i.value().size();j++) {
+            EventList &e=*i.value()[j];
 
             for (int c=0;c<e.count();c++) {
                 out << e.raw(c);
@@ -313,17 +340,17 @@ bool Session::LoadEvents(QString filename)
     qint16 mcsize;
     in >> mcsize;   // number of Machine Code lists
 
-    MachineCode code;
+    ChannelID code;
     qint64 ts1,ts2;
     qint32 evcount;
     EventListType elt;
     EventDataType rate,gain,offset,mn,mx;
     qint16 size2;
-    vector<MachineCode> mcorder;
-    vector<qint16> sizevec;
+    QVector<ChannelID> mcorder;
+    QVector<qint16> sizevec;
     for (int i=0;i<mcsize;i++) {
         in >> t16;
-        code=(MachineCode)t16;
+        code=(ChannelID)t16;
         mcorder.push_back(code);
         in >> size2;
         sizevec.push_back(size2);
@@ -375,16 +402,39 @@ bool Session::LoadEvents(QString filename)
     return true;
 }
 
-
-
-EventDataType Session::min(MachineCode code)
+void Session::UpdateSummaries()
 {
-    if (eventlist.find(code)==eventlist.end())
+    ChannelID id;
+    QHash<ChannelID,QVector<EventList *> >::iterator c;
+    for (c=eventlist.begin();c!=eventlist.end();c++) {
+        id=c.key();
+        if ((channel[id].channeltype()==CT_Event) || (channel[id].channeltype()==CT_Graph)) {
+            //sum(id); // avg calculates this and cnt.
+            min(id);
+            max(id);
+            avg(id);
+            wavg(id);
+            p90(id);
+            last(id);
+            first(id);
+        }
+    }
+}
+
+EventDataType Session::min(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_min.find(id);
+    if (i!=m_min.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
         return 0;
-    vector<EventList *> & evec=eventlist[code];
+    QVector<EventList *> & evec=j.value();
+
     bool first=true;
     EventDataType min,t1;
-    for (unsigned i=0;i<evec.size();i++) {
+    for (int i=0;i<evec.size();i++) {
         t1=evec[i]->min();
         if (t1==evec[i]->max()) continue;
         if (first) {
@@ -394,16 +444,23 @@ EventDataType Session::min(MachineCode code)
             if (min>t1) min=t1;
         }
     }
+    m_min[id]=min;
     return min;
 }
-EventDataType Session::max(MachineCode code)
+EventDataType Session::max(ChannelID id)
 {
-    if (eventlist.find(code)==eventlist.end())
+    QHash<ChannelID,EventDataType>::iterator i=m_max.find(id);
+    if (i!=m_max.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
         return 0;
-    vector<EventList *> & evec=eventlist[code];
+    QVector<EventList *> & evec=j.value();
+
     bool first=true;
     EventDataType max,t1;
-    for (unsigned i=0;i<evec.size();i++) {
+    for (int i=0;i<evec.size();i++) {
         t1=evec[i]->max();
         if (t1==evec[i]->min()) continue;
         if (first) {
@@ -413,16 +470,23 @@ EventDataType Session::max(MachineCode code)
             if (max<t1) max=t1;
         }
     }
+    m_max[id]=max;
     return max;
 }
-qint64 Session::first(MachineCode code)
+qint64 Session::first(ChannelID id)
 {
-    if (eventlist.find(code)==eventlist.end())
+    QHash<ChannelID,quint64>::iterator i=m_firstchan.find(id);
+    if (i!=m_firstchan.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
         return 0;
-    vector<EventList *> & evec=eventlist[code];
+    QVector<EventList *> & evec=j.value();
+
     bool first=true;
-    qint64 min,t1;
-    for (unsigned i=0;i<evec.size();i++) {
+    qint64 min=0,t1;
+    for (int i=0;i<evec.size();i++) {
         t1=evec[i]->first();
         if (first) {
             min=t1;
@@ -431,16 +495,23 @@ qint64 Session::first(MachineCode code)
             if (min>t1) min=t1;
         }
     }
+    m_firstchan[id]=min;
     return min;
 }
-qint64 Session::last(MachineCode code)
+qint64 Session::last(ChannelID id)
 {
-    if (eventlist.find(code)==eventlist.end())
+    QHash<ChannelID,quint64>::iterator i=m_lastchan.find(id);
+    if (i!=m_lastchan.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
         return 0;
-    vector<EventList *> & evec=eventlist[code];
+    QVector<EventList *> & evec=j.value();
+
     bool first=true;
-    qint64 max,t1;
-    for (unsigned i=0;i<evec.size();i++) {
+    qint64 max=0,t1;
+    for (int i=0;i<evec.size();i++) {
         t1=evec[i]->last();
         if (first) {
             max=t1;
@@ -449,124 +520,209 @@ qint64 Session::last(MachineCode code)
             if (max<t1) max=t1;
         }
     }
+
+    m_lastchan[id]=max;
     return max;
 }
-int Session::count(MachineCode code)
+
+int Session::count(ChannelID id)
 {
-    if (eventlist.find(code)==eventlist.end())
+    QHash<ChannelID,int>::iterator i=m_cnt.find(id);
+    if (i!=m_cnt.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
         return 0;
-    vector<EventList *> & evec=eventlist[code];
+    QVector<EventList *> & evec=j.value();
+
     int sum=0;
-    for (unsigned i=0;i<evec.size();i++) {
+    for (int i=0;i<evec.size();i++) {
         sum+=evec[i]->count();
     }
+    m_cnt[id]=sum;
     return sum;
 }
-double Session::sum(MachineCode mc)
-{
-    if (eventlist.find(mc)==eventlist.end()) return 0;
 
-    vector<EventList *> & evec=eventlist[mc];
+double Session::sum(ChannelID id)
+{
+    QHash<ChannelID,double>::iterator i=m_sum.find(id);
+    if (i!=m_sum.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
+        return 0;
+    QVector<EventList *> & evec=j.value();
+
     double sum=0;
-    for (unsigned i=0;i<evec.size();i++) {
+    for (int i=0;i<evec.size();i++) {
         for (int j=0;j<evec[i]->count();j++) {
             sum+=evec[i]->data(j);
         }
     }
+    m_sum[id]=sum;
     return sum;
 }
-EventDataType Session::avg(MachineCode mc)
+
+EventDataType Session::avg(ChannelID id)
 {
-    if (eventlist.find(mc)==eventlist.end()) return 0;
+    QHash<ChannelID,EventDataType>::iterator i=m_avg.find(id);
+    if (i!=m_avg.end())
+        return i.value();
 
-    double cnt=count(mc);
-    if (cnt==0) return 0;
-    EventDataType val=sum(mc)/cnt;
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
+        return 0;
+    QVector<EventList *> & evec=j.value();
 
+    double val=0;
+    int cnt=0;
+    for (int i=0;i<evec.size();i++) {
+        for (int j=0;j<evec[i]->count();j++) {
+            val+=evec[i]->data(j);
+            cnt++;
+        }
+    }
+
+    if (cnt>0) { // Shouldn't really happen.. Should aways contain data
+        val/=double(cnt);
+    }
+    m_avg[id]=val;
+    return val;
+}
+EventDataType Session::cph(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_cph.find(id);
+    if (i!=m_cph.end())
+        return i.value();
+
+    EventDataType val=count(id);
+    val/=hours();
+
+    m_cph[id]=val;
+    return val;
+}
+EventDataType Session::sph(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_sph.find(id);
+    if (i!=m_sph.end())
+        return i.value();
+
+    EventDataType val=sum(id)/3600.0;
+    val=100.0 / hours() * val;
+    m_sph[id]=val;
     return val;
 }
 
-bool sortfunction (double i,double j) { return (i<j); }
-
-EventDataType Session::percentile(MachineCode mc,double percent)
+EventDataType Session::p90(ChannelID id)
 {
-    if (eventlist.find(mc)==eventlist.end()) return 0;
+    QHash<ChannelID,EventDataType>::iterator i=m_90p.find(id);
+    if (i!=m_90p.end())
+        return i.value();
 
-    vector<EventDataType> array;
+    if (!eventlist.contains(id))
+        return 0;
 
-    vector<EventList *> & evec=eventlist[mc];
-    for (unsigned i=0;i<evec.size();i++) {
-        for (int j=0;j<evec[i]->count();j++) {
-            array.push_back(evec[i]->data(j));
+    EventDataType val=percentile(id,0.9);
+    m_90p[id]=val;
+    return val;
+}
+bool sortfunction (EventStoreType i,EventStoreType j) { return (i<j); }
+
+EventDataType Session::percentile(ChannelID id,EventDataType percent)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator jj=eventlist.find(id);
+    if (jj==eventlist.end())
+        return 0;
+    QVector<EventList *> & evec=jj.value();
+
+    if (percent > 1.0) {
+        qWarning() << "Session::percentile() called with > 1.0";
+        return 0;
+    }
+
+    int size=evec.size();
+    if (size==0)
+        return 0;
+
+    QVector<EventStoreType> array;
+
+    EventDataType gain=evec[0]->gain();
+
+    int tt=0,cnt;
+    for (int i=0;i<size;i++) {
+        cnt=evec[i]->count();
+        tt+=cnt;
+        array.reserve(tt);
+        for (int j=0;j<cnt;j++) {
+            array.push_back(evec[i]->raw(j));
         }
     }
     std::sort(array.begin(),array.end(),sortfunction);
-    int size=array.size();
-    if (!size) return 0;
-    double i=size*percent;
+    double s=array.size();
+    if (!s)
+        return 0;
+    double i=s*percent;
     double t;
     modf(i,&t);
     int j=t;
 
     //if (j>=size-1) return array[j];
 
-    return array[j];
+    return EventDataType(array[j])*gain;
 }
 
-EventDataType Session::weighted_avg(MachineCode mc)
+EventDataType Session::wavg(ChannelID id)
 {
-    if (eventlist.find(mc)==eventlist.end()) return 0;
+    QHash<ChannelID,EventDataType>::iterator i=m_wavg.find(id);
+    if (i!=m_wavg.end())
+        return i.value();
 
-    int cnt=0;
+    QHash<ChannelID,QVector<EventList *> >::iterator jj=eventlist.find(id);
+    if (jj==eventlist.end())
+        return 0;
+    QVector<EventList *> & evec=jj.value();
 
     bool first=true;
-    qint64 last;
-    int lastval=0,val;
-    const int max_slots=4096;
-    qint64 vtime[max_slots]={0};
+    qint64 lasttime=0,time,td;
+    EventStoreType val,lastval=0;
 
+    QHash<EventStoreType,quint32> vtime;
 
-    double mult=10.0;
-    //if ((mc==CPAP_Pressure) || (mc==CPAP_EAP) ||  (mc==CPAP_IAP) | (mc==CPAP_PS)) {
-    //    mult=10.0;
-    //} else mult=10.0;
+    EventDataType gain=evec[0]->gain();
 
-   // vector<Event *>::iterator i;
-
-    vector<EventList *> & evec=eventlist[mc];
-    for (unsigned i=0;i<evec.size();i++) {
+    for (int i=0;i<evec.size();i++) {
         for (int j=0;j<evec[i]->count();j++) {
-            val=evec[i]->data(j)*mult;
+            val=evec[i]->raw(j);
+            time=evec[i]->time(j);
             if (first) {
                 first=false;
             } else {
-                int d=(evec[i]->time(j)-last)/1000L;
-                if (lastval>max_slots) {
-                    qWarning("max_slots to small in Session::weighted_avg()");
-                    return 0;
-                }
-                vtime[lastval]+=d;
+                td=(time-lasttime);
+                if (vtime.contains(lastval)) {
+                    vtime[lastval]+=td;
+                } else vtime[lastval]=td;
             }
-            cnt++;
-            last=evec[i]->time(j);
+
+            lasttime=time;
             lastval=val;
         }
     }
+    /*td=last()-lasttime;
+    if (vtime.contains(lastval)) {
+        vtime[lastval]+=td;
+    } else vtime[lastval]=td; */
 
-    qint64 total=0;
-    for (int i=0; i<max_slots; i++) total+=vtime[i];
-    //double hours=total.GetSeconds().GetLo()/3600.0;
-
-    qint64 s0=0,s1=0,s2=0;
-    if (total==0) return 0;
-    for (int i=0; i<max_slots; i++) {
-        if (vtime[i] > 0) {
-            s0=vtime[i];
-            s1+=i*s0;
-            s2+=s0;
-        }
+    qint64 s0=0,s1=0,s2=0; // 32bit may all be thats needed here..
+    for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
+       s0=i.value();
+       s1+=i.key()*s0;
+       s2+=s0;
     }
-    double j=double(s1)/double(total);
-    return j/mult;
+    double j=double(s1)/double(s_last-s_first);
+    EventDataType v=j*gain;
+    m_wavg[id]=v;
+    return v;
 }
 

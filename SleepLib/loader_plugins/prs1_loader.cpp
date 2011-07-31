@@ -35,7 +35,7 @@ const int PRS1_WAVEFORM_FILE=5;
 
 extern QProgressBar *qprogress;
 
-map<int,QString> ModelMap;
+QHash<int,QString> ModelMap;
 
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
@@ -58,8 +58,8 @@ PRS1Loader::PRS1Loader()
 
 PRS1Loader::~PRS1Loader()
 {
-    for (map<QString,Machine *>::iterator i=PRS1List.begin(); i!=PRS1List.end(); i++) {
-        delete i->second;
+    for (QHash<QString,Machine *>::iterator i=PRS1List.begin(); i!=PRS1List.end(); i++) {
+        delete i.value();
     }
 }
 Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
@@ -68,16 +68,17 @@ Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
         return NULL;
     qDebug() << "Create Machine " << serial;
 
-    vector<Machine *> ml=profile->GetMachines(MT_CPAP);
+    QVector<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
-    for (vector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
+    QVector<Machine *>::iterator i;
+    for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()=="PRS1") && ((*i)->properties["Serial"]==serial)) {
             PRS1List[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
             break;
         }
     }
-    if (found) return PRS1List[serial];
+    if (found) return *i;
 
     //assert(PRS1List.find(serial)==PRS1List.end())
     Machine *m=new PRS1(profile,0);
@@ -118,8 +119,8 @@ int PRS1Loader::Open(QString & path,Profile *profile)
     QFileInfoList flist=dir.entryInfoList();
 
 
-    list<QString> SerialNumbers;
-    list<QString>::iterator sn;
+    QList<QString> SerialNumbers;
+    QList<QString>::iterator sn;
 
     for (int i=0;i<flist.size();i++) {
         QFileInfo fi=flist.at(i);
@@ -155,7 +156,7 @@ int PRS1Loader::Open(QString & path,Profile *profile)
             if (m) OpenMachine(m,newpath+"/"+(*sn),profile);
         } catch(OneTypePerDay e) {
             profile->DelMachine(m);
-            PRS1List.erase(s);
+            PRS1List.erase(PRS1List.find(s));
             QMessageBox::warning(NULL,"Import Error","This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",QMessageBox::Ok);
             delete m;
         }
@@ -171,7 +172,7 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
         return false;
 
     QString line;
-    map<QString,QString> prop;
+    QHash<QString,QString> prop;
 
     QString s=f.readLine();
     QChar sep='=';
@@ -195,10 +196,10 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
     }
     if (prop["SerialNumber"]!=m->properties["Serial"]) {
         qDebug() << "Serial Number in PRS1 properties.txt doesn't match directory structure";
-    } else prop.erase("SerialNumber"); // already got it stored.
+    } else prop.erase(prop.find("SerialNumber")); // already got it stored.
 
-    for (map<QString,QString>::iterator i=prop.begin(); i!=prop.end(); i++) {
-        m->properties[i->first]=i->second;
+    for (QHash<QString,QString>::iterator i=prop.begin(); i!=prop.end(); i++) {
+        m->properties[i.key()]=i.value();
     }
 
     f.close();
@@ -221,7 +222,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     QString filename;
     if (qprogress) qprogress->setValue(0);
 
-    list<QString> paths;
+    QList<QString> paths;
     for (int i=0;i<flist.size();i++) {
         QFileInfo fi=flist.at(i);
         filename=fi.fileName();
@@ -238,12 +239,12 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
     SessionID session;
     long ext;
-    typedef vector<QString> StringList;
-    map<SessionID,StringList> sessfiles;
+    typedef QVector<QString> StringList;
+    QHash<SessionID,StringList> sessfiles;
     int size=paths.size();
     int cnt=0;
     bool ok;
-    for (list<QString>::iterator p=paths.begin(); p!=paths.end(); p++) {
+    for (QList<QString>::iterator p=paths.begin(); p!=paths.end(); p++) {
         dir.setPath(*p);
         if (!dir.exists() || !dir.isReadable()) continue;
         flist=dir.entryInfoList();
@@ -280,31 +281,31 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         return 0;
 
     cnt=0;
-    for (map<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
-        session=s->first;
+    for (QHash<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
+        session=s.key();
         cnt++;
         if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
         QApplication::processEvents();
 
         if (m->SessionExists(session)) continue;
-        if (s->second[0].isEmpty()) continue;
+        if (s.value()[0].isEmpty()) continue;
 
         Session *sess=new Session(m,session);
-        if (!OpenSummary(sess,s->second[0])) {
-            //qWarning() << "PRS1Loader: Dodgy summary file " << s->second[0];
+        if (!OpenSummary(sess,s.value()[0])) {
+            //qWarning() << "PRS1Loader: Dodgy summary file " << s.value()[0];
 
             delete sess;
             continue;
         }
         //sess->SetSessionID(sess->start().GetTicks());
-        if (!s->second[1].isEmpty()) {
-            if (!OpenEvents(sess,s->second[1])) {
-                qWarning() << "PRS1Loader: Couldn't open event file " << s->second[1];
+        if (!s.value()[1].isEmpty()) {
+            if (!OpenEvents(sess,s.value()[1])) {
+                qWarning() << "PRS1Loader: Couldn't open event file " << s.value()[1];
             }
         }
-        if (!s->second[2].isEmpty()) {
-            if (!OpenWaveforms(sess,s->second[2])) {
-                qWarning() << "PRS1Loader: Couldn't open event file " << s->second[2];
+        if (!s.value()[2].isEmpty()) {
+            if (!OpenWaveforms(sess,s.value()[2])) {
+                qWarning() << "PRS1Loader: Couldn't open event file " << s.value()[2];
             }
         }
         const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
@@ -313,71 +314,78 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             delete sess;
             continue;
         }
-        sess->summary[CPAP_Obstructive]=sess->count(CPAP_Obstructive);
-        sess->summary[CPAP_Hypopnea]=sess->count(CPAP_Hypopnea);
-        sess->summary[CPAP_ClearAirway]=sess->count(CPAP_ClearAirway);
-        sess->summary[CPAP_RERA]=sess->count(CPAP_RERA);
-        sess->summary[CPAP_FlowLimit]=sess->count(CPAP_FlowLimit);
-        sess->summary[CPAP_VSnore]=sess->count(CPAP_VSnore);
 
-        sess->summary[CPAP_CSR]=sess->sum(CPAP_CSR);
-        sess->summary[CPAP_Snore]=sess->sum(CPAP_Snore);
+        ChannelID e[]={
+            CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_FlowLimit, CPAP_VSnore,
+            CPAP_CSR, PRS1_VSnore2
+        };
+        for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
+            sess->count(e[i]);
+            sess->max(e[i]);
+            sess->min(e[i]);
+            sess->avg(e[i]);
+            sess->p90(e[i]);
+            sess->cph(e[i]);
+            sess->sph(e[i]);
+        }
+        sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway));
+        sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway));
 
-
-        if (sess->count(CPAP_IAP)>0) {
-            //sess->summary[CPAP_Mode]!=MODE_ASV)
-            sess->summary[CPAP_Mode]=MODE_BIPAP;
-
-            sess->summary[BIPAP_PSAverage]=sess->weighted_avg(CPAP_PS);
-            sess->summary[BIPAP_PSMin]=sess->min(CPAP_PS);
-            sess->summary[BIPAP_PSMax]=sess->max(CPAP_PS);
-
-            if (sess->summary[CPAP_PressureReliefType].toInt()!=PR_NONE) {
-                sess->summary[CPAP_PressureReliefType]=PR_BIFLEX;
+        ChannelID a[]={
+            CPAP_FlowRate, CPAP_MaskPressure, CPAP_Leak, CPAP_Snore, CPAP_EPAP,
+            CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
+            CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation, CPAP_IPAP_Low,
+            CPAP_IPAP_High, CPAP_FlowLimitGraph, CPAP_PressureSupport, CPAP_PressurePulse
+        };
+        for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
+            if (sess->eventlist.contains(a[i])) {
+                sess->min(a[i]);
+                sess->max(a[i]);
+                sess->avg(a[i]);
+                sess->wavg(a[i]);
+                sess->p90(a[i]);
+                sess->cph(a[i]);
             }
-            sess->summary[CPAP_PressureMedian]=(sess->avg(CPAP_EAP)+sess->avg(CPAP_IAP))/2.0;
-            sess->summary[CPAP_PressureAverage]=(sess->weighted_avg(CPAP_IAP)+sess->weighted_avg(CPAP_EAP))/2.0;
-            sess->summary[CPAP_PressureMinAchieved]=sess->min(CPAP_IAP);
-            sess->summary[CPAP_PressureMaxAchieved]=sess->max(CPAP_EAP);
+        }
 
-            sess->summary[BIPAP_EAPAverage]=sess->weighted_avg(CPAP_EAP);
-            sess->summary[BIPAP_EAPMin]=sess->min(CPAP_EAP);
-            sess->summary[BIPAP_EAPMax]=sess->max(CPAP_EAP);
+        if (sess->count(CPAP_IPAP)>0) {
+            //sess->summaryCPAP_Mode]!=MODE_ASV)
+            sess->settings[CPAP_Mode]=MODE_BIPAP;
 
-            sess->summary[BIPAP_IAPAverage]=sess->weighted_avg(CPAP_IAP);
-            sess->summary[BIPAP_IAPMin]=sess->min(CPAP_IAP);
-            sess->summary[BIPAP_IAPMax]=sess->max(CPAP_IAP);
+            if (sess->settings[PRS1_PressureReliefType].toInt()!=PR_NONE) {
+                sess->settings[PRS1_PressureReliefType]=PR_BIFLEX;
+            }
+
+            sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
+            sess->setWavg(CPAP_Pressure,(sess->wavg(CPAP_EPAP)+sess->wavg(CPAP_IPAP))/2.0);
+            sess->setMin(CPAP_Pressure,sess->min(CPAP_EPAP));
+            sess->setMax(CPAP_Pressure,sess->min(CPAP_IPAP));
+            sess->set90p(CPAP_Pressure,sess->min(CPAP_IPAP));
+            sess->p90(CPAP_EPAP);
+            sess->p90(CPAP_IPAP);
         } else {
-            sess->summary[CPAP_PressureMedian]=sess->weighted_avg(CPAP_Pressure);
-            sess->summary[CPAP_PressureAverage]=sess->weighted_avg(CPAP_Pressure);
-            sess->summary[CPAP_PressureMinAchieved]=sess->min(CPAP_Pressure);
-            sess->summary[CPAP_PressureMaxAchieved]=sess->max(CPAP_Pressure);
-            if (sess->summary.find(CPAP_PressureMin)==sess->summary.end()) {
-                sess->summary[CPAP_BrokenSummary]=true;
+            sess->avg(CPAP_Pressure);
+            sess->wavg(CPAP_Pressure);
+            sess->p90(CPAP_Pressure);
+            sess->min(CPAP_Pressure);
+            sess->max(CPAP_Pressure);
+            sess->cph(CPAP_Pressure);
+
+            if (!sess->settings.contains(PRS1_PressureMin)) {
+                sess->settings[CPAP_BrokenSummary]=true;
                 //sess->set_last(sess->first());
-                if (sess->summary[CPAP_PressureMinAchieved]==sess->summary[CPAP_PressureMaxAchieved]) {
-                    sess->summary[CPAP_Mode]=MODE_CPAP;
+                if (sess->min(CPAP_Pressure)==sess->max(CPAP_Pressure)) {
+                    sess->settings[CPAP_Mode]=MODE_CPAP; // no ramp
                 } else {
-                    sess->summary[CPAP_Mode]=MODE_UNKNOWN;
+                    sess->settings[CPAP_Mode]=MODE_UNKNOWN;
                 }
-                sess->summary[CPAP_PressureReliefType]=PR_UNKNOWN;
+                sess->settings[PRS1_PressureReliefType]=PR_UNKNOWN;
             }
 
         }
-        if (sess->summary[CPAP_Mode]==MODE_CPAP) {
-            sess->summary[CPAP_PressureAverage]=sess->summary[CPAP_PressureMin];
-            sess->summary[CPAP_PressureMax]=sess->summary[CPAP_PressureMin];
+        if (sess->settings[CPAP_Mode]==MODE_CPAP) {
+            sess->settings[PRS1_PressureMax]=sess->settings[PRS1_PressureMin];
         }
-
-        sess->summary[CPAP_LeakMinimum]=sess->min(CPAP_Leak);
-        sess->summary[CPAP_LeakMaximum]=sess->max(CPAP_Leak); // should be merged..
-        sess->summary[CPAP_LeakMedian]=sess->avg(CPAP_Leak);
-        sess->summary[CPAP_LeakAverage]=sess->weighted_avg(CPAP_Leak);
-
-        sess->summary[CPAP_SnoreMinimum]=sess->min(CPAP_Snore);
-        sess->summary[CPAP_SnoreMaximum]=sess->max(CPAP_Snore);
-        sess->summary[CPAP_SnoreMedian]=sess->avg(CPAP_Snore);
-        sess->summary[CPAP_SnoreAverage]=sess->weighted_avg(CPAP_Snore);
 
         //Printf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
         sess->SetChanged(true);
@@ -460,42 +468,42 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     session->set_first(date);
 
     double max;
-    session->summary[CPAP_PressureMin]=(double)buffer[0x03]/10.0;
-    session->summary[CPAP_PressureMax]=max=(double)buffer[0x04]/10.0;
+    session->settings[PRS1_PressureMin]=(EventDataType)buffer[0x03]/10.0;
+    session->settings[PRS1_PressureMax]=max=(EventDataType)buffer[0x04]/10.0;
     int offset=0;
     if (buffer[0x05]!=0) { // This is a time value for ASV stuff
         // non zero adds extra fields..
         offset=4;
     }
 
-    session->summary[CPAP_RampTime]=(int)buffer[offset+0x06]; // Minutes. Convert to seconds/hours here?
-    session->summary[CPAP_RampStartingPressure]=(double)buffer[offset+0x07]/10.0;
+    session->settings[PRS1_RampTime]=(int)buffer[offset+0x06]; // Minutes. Convert to seconds/hours here?
+    session->settings[PRS1_RampPressure]=(EventDataType)buffer[offset+0x07]/10.0;
 
     if (max>0) { // Ignoring bipap until I see some more data.
-        session->summary[CPAP_Mode]=(int)MODE_APAP;
-    } else session->summary[CPAP_Mode]=(int)MODE_CPAP;
+        session->settings[CPAP_Mode]=(int)MODE_APAP;
+    } else session->settings[CPAP_Mode]=(int)MODE_CPAP;
 
     // This is incorrect..
     if (buffer[offset+0x08] & 0x80) { // Flex Setting
         if (buffer[offset+0x08] & 0x08) {
-            if (max>0) session->summary[CPAP_PressureReliefType]=(int)PR_AFLEX;
-            else session->summary[CPAP_PressureReliefType]=(int)PR_CFLEXPLUS;
-        } else session->summary[CPAP_PressureReliefType]=(int)PR_CFLEX;
-    } else session->summary[CPAP_PressureReliefType]=(int)PR_NONE;
+            if (max>0) session->settings[PRS1_PressureReliefType]=(int)PR_AFLEX;
+            else session->settings[PRS1_PressureReliefType]=(int)PR_CFLEXPLUS;
+        } else session->settings[PRS1_PressureReliefType]=(int)PR_CFLEX;
+    } else session->settings[PRS1_PressureReliefType]=(int)PR_NONE;
 
-    session->summary[CPAP_PressureReliefSetting]=(int)buffer[offset+0x08] & 3;
-    session->summary[CPAP_HumidifierSetting]=(int)buffer[offset+0x09]&0x0f;
-    session->summary[CPAP_HumidifierStatus]=(buffer[offset+0x09]&0x80)==0x80;
-    session->summary[PRS1_SystemLockStatus]=(buffer[offset+0x0a]&0x80)==0x80;
-    session->summary[PRS1_SystemResistanceStatus]=(buffer[offset+0x0a]&0x40)==0x40;
-    session->summary[PRS1_SystemResistanceSetting]=(int)buffer[offset+0x0a]&7;
-    session->summary[PRS1_HoseDiameter]=(int)((buffer[offset+0x0a]&0x08)?15:22);
-    session->summary[PRS1_AutoOff]=(buffer[offset+0x0c]&0x10)==0x10;
-    session->summary[PRS1_MaskAlert]=(buffer[offset+0x0c]&0x08)==0x08;
-    session->summary[PRS1_ShowAHI]=(buffer[offset+0x0c]&0x04)==0x04;
+    session->settings[PRS1_PressureReliefSetting]=(int)buffer[offset+0x08] & 3;
+    session->settings[PRS1_HumidifierSetting]=(int)buffer[offset+0x09]&0x0f;
+    session->settings[PRS1_HumidifierStatus]=(buffer[offset+0x09]&0x80)==0x80;
+    session->settings[PRS1_SystemLockStatus]=(buffer[offset+0x0a]&0x80)==0x80;
+    session->settings[PRS1_SystemOneResistanceStatus]=(buffer[offset+0x0a]&0x40)==0x40;
+    session->settings[PRS1_SystemOneResistanceSetting]=(int)buffer[offset+0x0a]&7;
+    session->settings[PRS1_HoseDiameter]=(int)((buffer[offset+0x0a]&0x08)?15:22);
+    session->settings[PRS1_AutoOff]=(buffer[offset+0x0c]&0x10)==0x10;
+    session->settings[PRS1_MaskAlert]=(buffer[offset+0x0c]&0x08)==0x08;
+    session->settings[PRS1_ShowAHI]=(buffer[offset+0x0c]&0x04)==0x04;
 
     unsigned duration=buffer[offset+0x14] | (buffer[0x15] << 8);
-    session->summary[CPAP_Duration]=(int)duration;
+    //session->settings[CPAP_Duration]=(int)duration;
     //qDebug() << "ID: " << session->session() << " " << duration;
     //float hours=float(duration)/3600.0;
     //session->set_hours(hours);
@@ -503,23 +511,23 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
         return false;
 
     session->set_last(date+qint64(duration)*1000L);
-
-    session->summary[CPAP_PressureMinAchieved]=buffer[offset+0x16]/10.0;
-    session->summary[CPAP_PressureMaxAchieved]=buffer[offset+0x17]/10.0;
-    session->summary[CPAP_PressureAverage]=buffer[offset+0x18]/10.0;
-    session->summary[CPAP_PressurePercentValue]=buffer[offset+0x19]/10.0;
-    session->summary[CPAP_PressurePercentName]=90.0;
+    session->settings[PRS1_PressureMinAchieved]=buffer[offset+0x16]/10.0;
+    session->settings[PRS1_PressureMaxAchieved]=buffer[offset+0x17]/10.0;
+    session->settings[PRS1_PressureAvg]=buffer[offset+0x18]/10.0;
+    session->settings[PRS1_Pressure90]=buffer[offset+0x19]/10.0;
 
     if (max==0) {
-        session->summary[CPAP_PressureAverage]=session->summary[CPAP_PressureMin];
+        session->settings[PRS1_PressureAvg]=session->settings[PRS1_PressureMin];
     }
+
+    // Not using these because sometimes this summary is broken.
    /*/if (size==0x4d) {
 
-        session->summary[CPAP_Obstructive]=(int)buffer[offset+0x1C] | (buffer[offset+0x1D] << 8);
-        session->summary[CPAP_ClearAirway]=(int)buffer[offset+0x20] | (buffer[offset+0x21] << 8);
-        session->summary[CPAP_Hypopnea]=(int)buffer[offset+0x2A] | (buffer[offset+0x2B] << 8);
-        session->summary[CPAP_RERA]=(int)buffer[offset+0x2E] | (buffer[offset+0x2F] << 8);
-        session->summary[CPAP_FlowLimit]=(int)buffer[offset+0x30] | (buffer[offset+0x31] << 8);
+        session->settings[CPAP_Obstructive]=(int)buffer[offset+0x1C] | (buffer[offset+0x1D] << 8);
+        session->settings[CPAP_ClearAirway]=(int)buffer[offset+0x20] | (buffer[offset+0x21] << 8);
+        session->settings[CPAP_Hypopnea]=(int)buffer[offset+0x2A] | (buffer[offset+0x2B] << 8);
+        session->settings[CPAP_RERA]=(int)buffer[offset+0x2E] | (buffer[offset+0x2F] << 8);
+        session->settings[CPAP_FlowLimit]=(int)buffer[offset+0x30] | (buffer[offset+0x31] << 8);
     }*/
     return true;
 }
@@ -527,18 +535,18 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
 // v2 event parser.
 bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
-    MachineCode Codes[]={
-        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
+    ChannelID Codes[]={
+        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
         PRS1_Unknown08, PRS1_Unknown09, CPAP_Hypopnea, PRS1_Unknown0B, CPAP_FlowLimit, CPAP_VSnore, PRS1_Unknown0E, CPAP_CSR, PRS1_Unknown10,
         CPAP_Leak, PRS1_Unknown12
     };
-    int ncodes=sizeof(Codes)/sizeof(MachineCode);
+    int ncodes=sizeof(Codes)/sizeof(ChannelID);
 
     EventList * Code[0x20]={NULL};
 
     EventDataType data[10];
 
-    session->UpdateFirst(timestamp);
+    session->updateFirst(timestamp);
     //qint64 start=timestamp;
     qint64 t=timestamp;
     qint64 tt;
@@ -592,12 +600,12 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x03: // BIPAP Pressure
             if (!Code[3]) {
-                Code[3]=new EventList(CPAP_EAP,EVL_Event,0.1);
-                session->eventlist[CPAP_EAP].push_back(Code[3]);
-                Code[4]=new EventList(CPAP_IAP,EVL_Event,0.1);
-                session->eventlist[CPAP_IAP].push_back(Code[4]);
-                Code[5]=new EventList(CPAP_PS,EVL_Event,0.1);
-                session->eventlist[CPAP_PS].push_back(Code[5]);
+                Code[3]=new EventList(CPAP_EPAP,EVL_Event,0.1);
+                session->eventlist[CPAP_EPAP].push_back(Code[3]);
+                Code[4]=new EventList(CPAP_IPAP,EVL_Event,0.1);
+                session->eventlist[CPAP_IPAP].push_back(Code[4]);
+                Code[5]=new EventList(CPAP_PressureSupport,EVL_Event,0.1);
+                session->eventlist[CPAP_PressureSupport].push_back(Code[5]);
             }
             Code[3]->AddEvent(t,data[0]=buffer[pos++]);
             Code[4]->AddEvent(t,data[1]=buffer[pos++]);
@@ -605,8 +613,8 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x04: // Pressure Pulse
             if (!Code[6]) {
-                Code[6]=new EventList(PRS1_PressurePulse,EVL_Event);
-                session->eventlist[PRS1_PressurePulse].push_back(Code[6]);
+                Code[6]=new EventList(CPAP_PressurePulse,EVL_Event);
+                session->eventlist[CPAP_PressurePulse].push_back(Code[6]);
             }
             Code[6]->AddEvent(t,buffer[pos++]);
             //qDebug() << hex << data[0];
@@ -749,26 +757,26 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             return false;
         }
     }
-    session->UpdateLast(t);
+    session->updateLast(t);
 
     return true;
 }
 
 bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
-    MachineCode Codes[]={
-        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EAP, PRS1_PressurePulse, CPAP_Obstructive,
+    ChannelID Codes[]={
+        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
         CPAP_ClearAirway, CPAP_Hypopnea, PRS1_Unknown08,  CPAP_FlowLimit, PRS1_Unknown0A, CPAP_CSR,
         PRS1_Unknown0C, CPAP_VSnore, PRS1_Unknown0E, PRS1_Unknown0F, PRS1_Unknown10,
         CPAP_Leak, PRS1_Unknown12
     };
 
-    int ncodes=sizeof(Codes)/sizeof(MachineCode);
+    int ncodes=sizeof(Codes)/sizeof(ChannelID);
 
     EventList * Code[0x20]={NULL};
     //for (int i=0;i<0x20;i++) Code[i]=NULL;
 
-    session->UpdateFirst(timestamp);
+    session->updateFirst(timestamp);
     EventDataType data[10];
 
     //qint64 start=timestamp;
@@ -795,7 +803,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             pos+=2;
             t+=delta*1000;
         }
-        MachineCode cpapcode=Codes[(int)code];
+        ChannelID cpapcode=Codes[(int)code];
         //EventDataType PS;
         tt=t;
         cnt++;
@@ -926,14 +934,14 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x0d: // All the other ASV graph stuff.
             if (!Code[12]) {
-                Code[12]=new EventList(CPAP_IAP,EVL_Event,0.1);
-                session->eventlist[CPAP_IAP].push_back(Code[12]);
+                Code[12]=new EventList(CPAP_IPAP,EVL_Event,0.1);
+                session->eventlist[CPAP_IPAP].push_back(Code[12]);
 
-                Code[13]=new EventList(CPAP_IAPLO,EVL_Event,0.1);
-                session->eventlist[CPAP_IAPLO].push_back(Code[13]);
+                Code[13]=new EventList(CPAP_IPAP_Low,EVL_Event,0.1);
+                session->eventlist[CPAP_IPAP_Low].push_back(Code[13]);
 
-                Code[14]=new EventList(CPAP_IAPHI,EVL_Event,0.1);
-                session->eventlist[CPAP_IAPHI].push_back(Code[14]);
+                Code[14]=new EventList(CPAP_IPAP_High,EVL_Event,0.1);
+                session->eventlist[CPAP_IPAP_High].push_back(Code[14]);
 
                 Code[15]=new EventList(CPAP_Leak,EVL_Event);
                 session->eventlist[CPAP_Leak].push_back(Code[15]);
@@ -953,11 +961,11 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
                 Code[20]=new EventList(CPAP_Snore,EVL_Event);
                 session->eventlist[CPAP_Snore].push_back(Code[20]);
 
-                Code[22]=new EventList(CPAP_EAP,EVL_Event,0.1);
-                session->eventlist[CPAP_EAP].push_back(Code[22]);
+                Code[22]=new EventList(CPAP_EPAP,EVL_Event,0.1);
+                session->eventlist[CPAP_EPAP].push_back(Code[22]);
 
-                Code[23]=new EventList(CPAP_PS,EVL_Event,0.1);
-                session->eventlist[CPAP_PS].push_back(Code[23]);
+                Code[23]=new EventList(CPAP_PressureSupport,EVL_Event,0.1);
+                session->eventlist[CPAP_PressureSupport].push_back(Code[23]);
 
             }
             Code[12]->AddEvent(t,data[0]=buffer[pos++]); // IAP
@@ -1043,7 +1051,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             a->setMin(v*5);
         }
     }*/
-    session->UpdateLast(t);
+    session->updateLast(t);
     return true;
 }
 
@@ -1142,7 +1150,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     //quint8 version=m_buffer[4];
     quint32 start=m_buffer[0xb] | m_buffer[0xc] << 8 | m_buffer[0xd] << 16 | m_buffer[0x0e] << 24;
 
-    session->UpdateFirst(qint64(start)*1000L);
+    session->updateFirst(qint64(start)*1000L);
 
     quint16 num_signals=m_buffer[0x12] | m_buffer[0x13] << 8;
     if (num_signals>2) {
@@ -1183,7 +1191,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     //EventList *FlowData=EventList(CPAP_FlowRate, EVL_Waveform,1,0,-128,128);
     //EventList *MaskData=EventList(CPAP_MaskPressure, EVL_Waveform,1,0,-128,128);
 
-    MachineCode wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
+    ChannelID wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
     do {
         timestamp=m_buffer[pos+0xb] | m_buffer[pos+0xc] << 8 | m_buffer[pos+0xd] << 16 | m_buffer[pos+0x0e] << 24;
         register unsigned char sum8=0;
@@ -1245,7 +1253,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                     }
 
                     session->eventlist[wc[i]].push_back(a);
-                    session->UpdateLast(start+(qint64(wdur[i])*1000L));
+                    session->updateLast(start+(qint64(wdur[i])*1000L));
                     wlength[i]=0;
                     wdur[i]=0;
                 }
@@ -1299,7 +1307,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             a->setMin(v*5); */
         }
         session->eventlist[wc[i]].push_back(a);
-        session->UpdateLast(start+qint64(wdur[i])*1000L);
+        session->updateLast(start+qint64(wdur[i])*1000L);
     }
     return true;
 }

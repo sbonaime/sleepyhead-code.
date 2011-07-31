@@ -10,9 +10,9 @@
 #include "machine_loader.h"
 
 // This crap moves to Profile
-list<MachineLoader *> m_loaders;
+QVector<MachineLoader *> m_loaders;
 
-list<MachineLoader *> GetLoaders()
+QVector<MachineLoader *> GetLoaders()
 {
     return m_loaders;
 }
@@ -23,7 +23,7 @@ void RegisterLoader(MachineLoader *loader)
 }
 void DestroyLoaders()
 {
-    for (list<MachineLoader *>::iterator i=m_loaders.begin(); i!=m_loaders.end(); i++) {
+    for (QVector<MachineLoader *>::iterator i=m_loaders.begin(); i!=m_loaders.end(); i++) {
         delete (*i);
     }
     m_loaders.clear();
@@ -40,7 +40,7 @@ MachineLoader::MachineLoader()
 }*/
 MachineLoader::~MachineLoader()
 {
-    for (vector<Machine *>::iterator m=m_machlist.begin();m!=m_machlist.end();m++) {
+    for (QVector<Machine *>::iterator m=m_machlist.begin();m!=m_machlist.end();m++) {
         delete *m;
     }
 }

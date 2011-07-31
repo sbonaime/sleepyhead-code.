@@ -18,7 +18,7 @@ class EventList
 {
     friend class Session;
 public:
-    EventList(MachineCode code,EventListType et,EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, double rate=0.0);
+    EventList(ChannelID code,EventListType et,EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, double rate=0.0);
     ~EventList();
 
     void AddEvent(qint64 time, EventStoreType data);
@@ -50,15 +50,15 @@ public:
     inline const EventDataType & offset() { return m_offset; }
     inline const EventDataType & rate() { return m_rate; }
     inline const EventListType & type() { return m_type; }
-    inline const MachineCode & code() { return m_code; }
+    inline const ChannelID & code() { return m_code; }
     inline const bool & update_minmax() { return m_update_minmax; }
 
-    vector<EventStoreType> & getData() { return m_data; }
-    vector<quint32> & getTime() { return m_time; }
+    QVector<EventStoreType> & getData() { return m_data; }
+    QVector<quint32> & getTime() { return m_time; }
 protected:
-    vector<quint32> m_time; // 32bitalize this.. add offsets to m_first
-    vector<EventStoreType> m_data;
-    MachineCode m_code;
+    QVector<quint32> m_time; // 32bitalize this.. add offsets to m_first
+    QVector<EventStoreType> m_data;
+    ChannelID m_code;
     EventListType m_type;
     int m_count;
 

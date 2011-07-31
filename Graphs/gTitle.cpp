@@ -1,13 +1,13 @@
-/********************************************************************
+/*
  gTitle (Graph Title) Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include "gTitle.h"
 
 gTitle::gTitle(const QString & _title,QColor color,QFont font)
-:gLayer(MC_UNKNOWN),m_title(_title),m_color(color),m_font(font)
+:gLayer(EmptyChannel),m_title(_title),m_color(color),m_font(font)
 {
 }
 gTitle::~gTitle()

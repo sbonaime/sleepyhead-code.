@@ -11,7 +11,7 @@
 #include "gLineChart.h"
 
 #define EXTRA_ASSERTS 1
-gLineChart::gLineChart(MachineCode code,QColor col,bool square_plot, bool disable_accel)
+gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_accel)
 :gLayer(code),m_square_plot(square_plot),m_disable_accel(disable_accel)
 {
     color.clear();
@@ -125,16 +125,17 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     int total_visible=0;
     bool square_plot,accel;
 
-    for (vector<Session *>::iterator s=m_day->begin(); s!=m_day->end(); s++) {
-        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
+    for (QVector<Session *>::iterator s=m_day->begin(); s!=m_day->end(); s++) {
+        QHash<ChannelID,QVector<EventList *> >::iterator ci=(*s)->eventlist.find(m_code);
+        if (ci==(*s)->eventlist.end()) continue;
 
-        vector<EventList *> & evec=(*s)->eventlist[m_code];
+        QVector<EventList *> & evec=ci.value();
         num_points=0;
-        for (unsigned i=0;i<evec.size();i++)
+        for (int i=0;i<evec.size();i++)
             num_points+=evec[i]->count();
         total_points+=num_points;
 
-        for (unsigned n=0;n<evec.size();n++) { // for each segment
+        for (int n=0;n<evec.size();n++) { // for each segment
             EventList & el=*evec[n];
 
             accel=(el.type()==EVL_Waveform); // Turn on acceleration if this is a waveform.
@@ -142,7 +143,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
 
             square_plot=m_square_plot;
-            if (accel || num_points>500) { // Don't square plot if too many points or waveform
+            if (accel || num_points>1000) { // Don't square plot if too many points or waveform
                 square_plot=false;
             }
 
@@ -240,8 +241,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             EventDataType nmult=ymult*gain;
             EventDataType ymin=EventDataType(miny)/gain;
 
-            const vector<EventStoreType> & dat=el.getData();
-            const vector<quint32> & tim=el.getTime();
+            const QVector<EventStoreType> & dat=el.getData();
+            const QVector<quint32> & tim=el.getTime();
 
             done=false;
             first=true;

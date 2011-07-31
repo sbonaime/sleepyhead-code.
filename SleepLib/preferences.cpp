@@ -99,8 +99,8 @@ Preferences::~Preferences()
 int Preferences::GetCode(QString s)
 {
     int prefcode=0;
-    for (std::map<int,QString>::iterator i=p_codes.begin(); i!=p_codes.end(); i++) {
-        if (i->second==s) return i->first;
+    for (QHash<int,QString>::iterator i=p_codes.begin(); i!=p_codes.end(); i++) {
+        if (i.value()==s) return i.key();
         prefcode++;
     }
     p_codes[prefcode]=s;
@@ -255,16 +255,16 @@ bool Preferences::Save(QString filename)
     QDomElement root=doc.createElement(p_name);
     droot.appendChild(root);
 
-    for (std::map<QString,QVariant>::iterator i=p_preferences.begin(); i!=p_preferences.end(); i++) {
-        QVariant::Type type=i->second.type();
+    for (QHash<QString,QVariant>::iterator i=p_preferences.begin(); i!=p_preferences.end(); i++) {
+        QVariant::Type type=i.value().type();
         if (type==QVariant::Invalid) continue;
 
-        QDomElement cn=doc.createElement(i->first);
-        cn.setAttribute("type",i->second.typeName());
+        QDomElement cn=doc.createElement(i.key());
+        cn.setAttribute("type",i.value().typeName());
         if (type==QVariant::DateTime) {
-            cn.appendChild(doc.createTextNode(i->second.toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+            cn.appendChild(doc.createTextNode(i.value().toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
         } else {
-            cn.appendChild(doc.createTextNode(i->second.toString()));
+            cn.appendChild(doc.createTextNode(i.value().toString()));
         }
 
         root.appendChild(cn);

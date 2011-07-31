@@ -82,12 +82,12 @@ private:
     //gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
 
     gFlagsGroup *fg;
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF;
 
-    list<gLayer *> OXIData;
-    list<gLayer *> CPAPData;
-    vector<gGraphWindow *> Graphs;
-    vector<QAction *> GraphAction;
+    QList<gLayer *> OXIData;
+    QList<gLayer *> CPAPData;
+    QVector<gGraphWindow *> Graphs;
+    QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 
     QList<int> splitter_sizes;

@@ -12,27 +12,233 @@
 #include <QObject>
 #include <tr1/random>
 #include <sys/time.h>
+
 #include "machine.h"
 #include "profiles.h"
 #include <algorithm>
 
+ChannelGroup CPAP_CODES;
+ChannelGroup PRS1_CODES;
+ChannelGroup RMS9_CODES;
+ChannelGroup OXI_CODES;
+ChannelGroup ZEO_CODES;
+ChannelGroup JOURNAL_CODES;
+
+
+ChannelID CPAP_Obstructive,CPAP_Hypopnea,CPAP_Apnea, CPAP_ClearAirway, CPAP_RERA, CPAP_FlowLimit,
+CPAP_CSR, CPAP_VSnore, CPAP_PressurePulse, CPAP_Mode, CPAP_FlowRate, CPAP_MaskPressure, CPAP_Pressure,
+CPAP_EPAP, CPAP_IPAP, CPAP_IPAP_Low, CPAP_IPAP_High, CPAP_PressureSupport, CPAP_Snore, CPAP_Leak,
+CPAP_RespiratoryRate, CPAP_TidalVolume, CPAP_MinuteVentilation, CPAP_PatientTriggeredBreaths,
+CPAP_FlowLimitGraph, CPAP_TherapyPressure, CPAP_ExpiratoryPressure, CPAP_AHI, CPAP_BrokenSummary,
+CPAP_BrokenWaveform;
+
+ChannelID RMS9_PressureReliefType, RMS9_PressureReliefSetting, RMS9_Empty1, RMS9_Empty2;
+ChannelID PRS1_PressureMin,PRS1_PressureMax, PRS1_PressureMinAchieved, PRS1_PressureMaxAchieved,
+PRS1_PressureAvg, PRS1_Pressure90, PRS1_RampTime, PRS1_RampPressure, PRS1_HumidifierStatus,
+PRS1_HumidifierSetting, PRS1_PressureReliefType, PRS1_PressureReliefSetting, PRS1_SystemOneResistanceStatus,
+PRS1_SystemOneResistanceSetting, PRS1_SystemLockStatus, PRS1_HoseDiameter, PRS1_AutoOff, PRS1_AutoOn,
+PRS1_MaskAlert, PRS1_ShowAHI, PRS1_Unknown00, PRS1_Unknown01, PRS1_Unknown08, PRS1_Unknown09,
+PRS1_Unknown0A, PRS1_Unknown0B, PRS1_Unknown0C, PRS1_Unknown0E, PRS1_Unknown0F, PRS1_Unknown10,
+PRS1_Unknown12, PRS1_VSnore2;
+
+ChannelID OXI_Pulse, OXI_SPO2, OXI_Plethysomogram, OXI_PulseChange, OXI_SPO2Drop, OXI_Error, OXI_SignalError;
+ChannelID ZEO_SleepStage, ZEO_Waveform;
+ChannelID JOURNAL_Notes, JOURNAL_Weight;
+
+ChannelID ChannelGroup::Get(ChannelType ctype,QString description,QString label,QString lookup)
+{
+    ChannelID id=m_first+m_pos;
+    if (++m_pos>=m_size) {
+        qCritical("Not enough slots allocated for channel group");
+        abort();
+    }
+    channel[id]=Channel(id,m_type,ctype,description,label);
+    m_channelsbytype[ctype][id]=channel_lookup[lookup]=m_channel[id]=&channel[id];
+
+    return id;
+}
+ChannelGroup::ChannelGroup()
+{
+    m_pos=0; m_first=0xf000, m_size=0x1000;
+}
+ChannelGroup::ChannelGroup(MachineType type, ChannelID first, ChannelID reserved)
+    :m_type(type),m_first(first),m_size(reserved)
+{
+    m_pos=0;
+}
+
+
 extern QProgressBar * qprogress;
 
-//map<MachineType,ChannelCode> MachLastCode;
+// Master Lists..
+QHash<ChannelID, Channel> channel;
+QHash<QString,Channel *> channel_lookup;
+QHash<QString,ChannelGroup *> channel_group;
 
-map<CPAPMode,QString> CPAPModeNames;
-
-map<PRTypes,QString> PressureReliefNames;
-
-// Master list. Look up local name table first.. then these if not found.
-map<MachineCode,QString> DefaultMCShortNames;
-
-// Master list. Look up local name table first.. then these if not found.
-map<MachineCode,QString> DefaultMCLongNames;
 
 void InitMapsWithoutAwesomeInitializerLists()
 {
-    CPAPModeNames[MODE_UNKNOWN]=QObject::tr("Undetermined");
+    CPAP_CODES=ChannelGroup(MT_CPAP,0x1000,0x400);
+    PRS1_CODES=ChannelGroup(MT_CPAP,0x1400,0x200);
+    RMS9_CODES=ChannelGroup(MT_CPAP,0x1600,0x200);
+    OXI_CODES=ChannelGroup(MT_OXIMETER,0x2000,0x800);
+    ZEO_CODES=ChannelGroup(MT_SLEEPSTAGE,0x2800,0x800);
+    JOURNAL_CODES=ChannelGroup(MT_JOURNAL,0x3000,0x800);
+
+    // ******************** IMPORTANT ********************
+    // Add to the end of each group or be eaten by a Grue!
+    // ******************** IMPORTANT ********************
+
+    // Flagable Events
+        CPAP_Obstructive=CPAP_CODES.Get(CT_Event,QObject::tr("Obstructive Apnea"),QObject::tr("OA"),"OA"),
+        CPAP_Hypopnea=CPAP_CODES.Get(CT_Event,QObject::tr("Hypopnea"),QObject::tr("H"),"OA"),
+        CPAP_Apnea=CPAP_CODES.Get(CT_Event,QObject::tr("Unspecified Apnea"),QObject::tr("UA"),"UA"),
+        CPAP_ClearAirway=CPAP_CODES.Get(CT_Event,QObject::tr("Clear Airway Apnea"),QObject::tr("CA"),"CA"),
+        CPAP_RERA=CPAP_CODES.Get(CT_Event,QObject::tr("Respiratory Effort Related Arousal"),QObject::tr("RE"),"RE"),
+        CPAP_FlowLimit=CPAP_CODES.Get(CT_Event,QObject::tr("Flow Limitation"),QObject::tr("FL"),"FL"),
+        CPAP_CSR=CPAP_CODES.Get(CT_Event,QObject::tr("Periodic Breathing"),QObject::tr("PB"),"PB"),
+        CPAP_VSnore=CPAP_CODES.Get(CT_Event,QObject::tr("Vibratory Snore"),QObject::tr("VS"),"VS"),
+        CPAP_PressurePulse=CPAP_CODES.Get(CT_Event,QObject::tr("Pressure Pulse"),QObject::tr("PP"),"PP"),
+        CPAP_Mode=CPAP_CODES.Get(CT_Lookup,QObject::tr("CPAP Mode"),QObject::tr("CPAPMode"),"CPAPMode"),
+        // Alternate names at the end of each section
+
+    // Graphable Events & Waveforms
+        CPAP_FlowRate=CPAP_CODES.Get(CT_Graph,QObject::tr("Flow Rate Waveform"),QObject::tr("Flow Rate"),"FR"),
+        CPAP_MaskPressure=CPAP_CODES.Get(CT_Graph,QObject::tr("Mask Pressure"),QObject::tr("Mask Pressure"),"MP"),
+        CPAP_Pressure=CPAP_CODES.Get(CT_Graph,QObject::tr("Pressure"),QObject::tr("Pressure"),"P"),
+        CPAP_EPAP=CPAP_CODES.Get(CT_Graph,QObject::tr("Expiratory Pressure"),QObject::tr("EPAP"),"EPAP"),
+        CPAP_IPAP=CPAP_CODES.Get(CT_Graph,QObject::tr("Inhalation Pressure"),QObject::tr("IPAP"),"IPAP"),
+        CPAP_IPAP_Low=CPAP_CODES.Get(CT_Graph,QObject::tr("IPAP Low"),QObject::tr("IPAP Low"),"IPAPL"),
+        CPAP_IPAP_High=CPAP_CODES.Get(CT_Graph,QObject::tr("IPAP Low"),QObject::tr("IPAP High"),"IPAPH"),
+        CPAP_PressureSupport=CPAP_CODES.Get(CT_Graph,QObject::tr("Pressure Support"),QObject::tr("Pressure Support"),"PS"),
+        CPAP_Snore=CPAP_CODES.Get(CT_Graph,QObject::tr("Snore"),QObject::tr("Snore"),"Snore"),
+        CPAP_Leak=CPAP_CODES.Get(CT_Graph,QObject::tr("Leak Rate"),QObject::tr("Leak Rate"),"Leak"),
+        CPAP_RespiratoryRate=CPAP_CODES.Get(CT_Graph,QObject::tr("Respiratory Rate"),QObject::tr("Respiratory Rate"),"RR"),
+        CPAP_TidalVolume=CPAP_CODES.Get(CT_Graph,QObject::tr("Tidal Volume"),QObject::tr("Tidal Volume"),"TV"),
+        CPAP_MinuteVentilation=CPAP_CODES.Get(CT_Graph,QObject::tr("Minute Ventilation"),QObject::tr("Minute Ventilation"),"MV"),
+        CPAP_PatientTriggeredBreaths=CPAP_CODES.Get(CT_Graph,QObject::tr("Patient Triggered Breaths"),QObject::tr("Patient Trig Breaths"),"PTB"),
+        CPAP_FlowLimitGraph=CPAP_CODES.Get(CT_Graph,QObject::tr("Flow Limitation Graph"),QObject::tr("Flow Limitation"),"FLG"),
+        CPAP_TherapyPressure=CPAP_CODES.Get(CT_Graph,QObject::tr("Therapy Pressure"),QObject::tr("Therapy Pressure"),"TP"),
+        CPAP_ExpiratoryPressure=CPAP_CODES.Get(CT_Graph,QObject::tr("Expiratory Pressure"),QObject::tr("Expiratory Pressure"),"EXP"),
+
+
+        CPAP_AHI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Apnea-Hypopnea Index"),QObject::tr("AHI"),"AHI"),
+        /*CPAP_AI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Apnea Index"),QObject::tr("AI"),"AI"),
+        CPAP_HI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Hypopnea Index"),QObject::tr("HI"),"HI"),
+        CPAP_CAI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Central Apnea Index"),QObject::tr("CAI"),"CAI"),
+        CPAP_RAI=CPAP_CODES.Get(CT_Calculation,QObject::tr("RERA+AHI Index"),QObject::tr("RAI"),"RAI"),
+        CPAP_RI=CPAP_CODES.Get(CT_Calculation,QObject::tr("RERA Index"),QObject::tr("RI"),"RI"),
+        CPAP_FLI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Flow Limitation Index"),QObject::tr("FLI"),"FLI"),
+        CPAP_VSI=CPAP_CODES.Get(CT_Calculation,QObject::tr("Vibratory Snore Index"),QObject::tr("VSI"),"VSI"),
+        CPAP_PBI=CPAP_CODES.Get(CT_Calculation,QObject::tr("% Night in Periodic Breathing"),QObject::tr("PBI"),"PBI"), */
+        //CPAP_PressureReliefType=CPAP_CODES.Get(CT_Lookup,QObject::tr("Pressure Relief Type"),"","PRType"),
+        //CPAP_PressureReliefSetting=CPAP_CODES.Get(CT_Lookup,QObject::tr("Pressure Relief Setting"),"","PRSet"),
+        CPAP_BrokenSummary=CPAP_CODES.Get(CT_Boolean,QObject::tr("Broken Summary"),QObject::tr(""),"BrokenSummary"),
+        CPAP_BrokenWaveform=CPAP_CODES.Get(CT_Boolean,QObject::tr("Broken Waveform"),QObject::tr(""),"BrokenWaveform");
+
+
+        RMS9_PressureReliefType=RMS9_CODES.Get(CT_Lookup,QObject::tr("Pressure Relief Type"),"","RMS9_PRType"),
+        RMS9_PressureReliefSetting=RMS9_CODES.Get(CT_Decimal,QObject::tr("Pressure Relief Setting"),"","RMS9_PRSet"),
+        RMS9_Empty1=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown Empty 1"),"","RMS9_UE1"),
+        RMS9_Empty2=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown Empty 2"),"","RMS9_UE2"),
+
+        PRS1_PressureMin=PRS1_CODES.Get(CT_Decimal,QObject::tr("Minimum Pressure"),"","PRS1_MinPres"),
+        PRS1_PressureMax=PRS1_CODES.Get(CT_Decimal,QObject::tr("Maximum Pressure"),"","PRS1_MaxPres"),
+        PRS1_PressureMinAchieved=PRS1_CODES.Get(CT_Decimal,QObject::tr("Minimum Pressure Achieved"),"","PRS1_MinPresAch"),
+        PRS1_PressureMaxAchieved=PRS1_CODES.Get(CT_Decimal,QObject::tr("Maximum Pressure Achieved"),"","PRS1_MaxPresAch"),
+        PRS1_PressureAvg=PRS1_CODES.Get(CT_Decimal,QObject::tr("Average Pressure"),"","PRS1_AvgPres"),
+        PRS1_Pressure90=PRS1_CODES.Get(CT_Decimal,QObject::tr("90% Pressure"),"","PRS1_90Pres"),
+        PRS1_RampTime=PRS1_CODES.Get(CT_Timespan,QObject::tr("Ramp Time"),"","PRS1_RampTime"),
+        PRS1_RampPressure=PRS1_CODES.Get(CT_Decimal,QObject::tr("Ramp Pressure"),"","PRS1_RampPressure"),
+        PRS1_HumidifierStatus=PRS1_CODES.Get(CT_Boolean,QObject::tr("Humidifier Status"),"","PRS1_HumiStat"),
+        PRS1_HumidifierSetting=PRS1_CODES.Get(CT_Lookup,QObject::tr("Humidifier Setting"),"","PRS1_HumiSet"),
+        PRS1_PressureReliefType=PRS1_CODES.Get(CT_Lookup,QObject::tr("Pressure Relief Type"),"","PRS1_PRType"),
+        PRS1_PressureReliefSetting=PRS1_CODES.Get(CT_Lookup,QObject::tr("Pressure Relief Setting"),"","PRS1_PRSet"),
+        PRS1_SystemOneResistanceStatus=PRS1_CODES.Get(CT_Boolean,QObject::tr("System-One Resistance Status"),"","PRS1_ResistStat"),
+        PRS1_SystemOneResistanceSetting=PRS1_CODES.Get(CT_Lookup,QObject::tr("System-One Resistance Setting"),"","PRS1_ResistSet"),
+        PRS1_SystemLockStatus=PRS1_CODES.Get(CT_Boolean,QObject::tr("System Lock Status"),"","PRS1_SysLockStat"),
+        PRS1_HoseDiameter=PRS1_CODES.Get(CT_Lookup,QObject::tr("Hose Diameter"),"","PRS1_HoseDiam"),
+        PRS1_AutoOff=PRS1_CODES.Get(CT_Boolean,QObject::tr("Auto Off"),"","PRS1_AutoOff"),
+        PRS1_AutoOn=PRS1_CODES.Get(CT_Boolean,QObject::tr("Auto On"),"","PRS1_AutoOn"),
+        PRS1_MaskAlert=PRS1_CODES.Get(CT_Boolean,QObject::tr("Mask Alert"),"","PRS1_MaskAlert"),
+        PRS1_ShowAHI=PRS1_CODES.Get(CT_Boolean,QObject::tr("Show AHI"),"","PRS1_ShowAHI"),
+        PRS1_Unknown00=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 00 Event"),QObject::tr("U00"),"PRS1_U00"),
+        PRS1_Unknown01=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 01 Event"),QObject::tr("U01"),"PRS1_U01"),
+        PRS1_Unknown08=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 08 Event"),QObject::tr("U08"),"PRS1_U08"),
+        PRS1_Unknown09=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 09 Event"),QObject::tr("U09"),"PRS1_U09"),
+        PRS1_Unknown0A=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 0A Event"),QObject::tr("U0A"),"PRS1_U0A"),
+        PRS1_Unknown0B=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 0B Event"),QObject::tr("U0B"),"PRS1_U0B"),
+        PRS1_Unknown0C=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 0C Event"),QObject::tr("U0C"),"PRS1_U0C"),
+        PRS1_Unknown0E=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 0E Event"),QObject::tr("U0E"),"PRS1_U0E"),
+        PRS1_Unknown0F=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 0F Event"),QObject::tr("U0F"),"PRS1_U0F"),
+        PRS1_Unknown10=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 10 Event"),QObject::tr("U10"),"PRS1_U10"),
+        PRS1_Unknown12=CPAP_CODES.Get(CT_Event,QObject::tr("Unknown 12 Event"),QObject::tr("U12"),"PRS1_U12"),
+        PRS1_VSnore2=CPAP_CODES.Get(CT_Event,QObject::tr("Vibratory Snore (Type 2)"),QObject::tr("VS2"),"VS2");
+
+
+        OXI_Pulse=OXI_CODES.Get(CT_Graph,QObject::tr("Pulse Rate"),QObject::tr("PR"),"PR"),
+        OXI_SPO2=OXI_CODES.Get(CT_Graph,QObject::tr("Oxygen Saturation"),QObject::tr("SPO2"),"SPO2"),
+        OXI_Plethysomogram=OXI_CODES.Get(CT_Graph,QObject::tr("Plethysomogram"),QObject::tr("PLE"),"PLE"),
+
+        OXI_PulseChange=OXI_CODES.Get(CT_Event,QObject::tr("Pulse Change"),QObject::tr("PC"),"PC"),
+        OXI_SPO2Drop=OXI_CODES.Get(CT_Event,QObject::tr("Oxigen Saturation Drop"),QObject::tr("SD"),"SD"),
+        OXI_Error=OXI_CODES.Get(CT_Event,QObject::tr("Oximeter Error"),QObject::tr("ER1"),"ER1"),
+        OXI_SignalError=OXI_CODES.Get(CT_Event,QObject::tr("Oximeter Signal Error"),QObject::tr("ER2"),"ER2");
+
+
+        ZEO_SleepStage=ZEO_CODES.Get(CT_Graph,QObject::tr("Sleep Stage"),QObject::tr("SS"),"SS"),
+        ZEO_Waveform=ZEO_CODES.Get(CT_Graph,QObject::tr("Brainwaves"),QObject::tr("BW"),"BW");
+
+
+
+        JOURNAL_Notes=JOURNAL_CODES.Get(CT_Text,"Journal/Notes","JN"),
+        JOURNAL_Weight=JOURNAL_CODES.Get(CT_Decimal,"Weight","W");
+
+    channel[CPAP_Mode].addOption("CPAP");
+    channel[CPAP_Mode].addOption("Auto");
+    channel[CPAP_Mode].addOption("BIPAP/VPAP");
+    channel[CPAP_Mode].addOption("ASV");
+
+    channel[PRS1_HoseDiameter].addOption("22mm");
+    channel[PRS1_HoseDiameter].addOption("15mm");
+    channel[PRS1_HumidifierSetting].addOption("Off");
+    channel[PRS1_HumidifierSetting].addOption("1");
+    channel[PRS1_HumidifierSetting].addOption("2");
+    channel[PRS1_HumidifierSetting].addOption("3");
+    channel[PRS1_HumidifierSetting].addOption("4");
+    channel[PRS1_HumidifierSetting].addOption("5");
+    channel[PRS1_SystemOneResistanceSetting].addOption("x1");
+    channel[PRS1_SystemOneResistanceSetting].addOption("x2");
+    channel[PRS1_SystemOneResistanceSetting].addOption("x3");
+    channel[PRS1_SystemOneResistanceSetting].addOption("x4");
+    channel[PRS1_SystemOneResistanceSetting].addOption("x5");
+    channel[PRS1_PressureReliefType].addOption("None");
+    channel[PRS1_PressureReliefType].addOption("C-Flex");
+    channel[PRS1_PressureReliefType].addOption("C-Flex+");
+    channel[PRS1_PressureReliefType].addOption("A-Flex");
+    channel[PRS1_PressureReliefType].addOption("Bi-Flex");
+    channel[PRS1_PressureReliefType].addOption("Bi-Flex+");
+    channel[PRS1_PressureReliefSetting].addOption("Off");
+    channel[PRS1_PressureReliefSetting].addOption("1");
+    channel[PRS1_PressureReliefSetting].addOption("2");
+    channel[PRS1_PressureReliefSetting].addOption("3");
+    channel[RMS9_PressureReliefType].addOption("None");
+    channel[RMS9_PressureReliefType].addOption("EPR");
+    channel[RMS9_PressureReliefSetting].addOption("0");
+    channel[RMS9_PressureReliefSetting].addOption("0.5");
+    channel[RMS9_PressureReliefSetting].addOption("1");
+    channel[RMS9_PressureReliefSetting].addOption("1.5");
+    channel[RMS9_PressureReliefSetting].addOption("2");
+    channel[RMS9_PressureReliefSetting].addOption("2.5");
+    channel[RMS9_PressureReliefSetting].addOption("3.0");
+
+    channel[ZEO_SleepStage].addOption("Unknown");
+    channel[ZEO_SleepStage].addOption("Awake");
+    channel[ZEO_SleepStage].addOption("REM");
+    channel[ZEO_SleepStage].addOption("Light Sleep");
+    channel[ZEO_SleepStage].addOption("Deep Sleep");
+
+/*    CPAPModeNames[MODE_UNKNOWN]=QObject::tr("Undetermined");
     CPAPModeNames[MODE_CPAP]=QObject::tr("CPAP");
     CPAPModeNames[MODE_APAP]=QObject::tr("Auto");
     CPAPModeNames[MODE_BIPAP]=QObject::tr("BIPAP");
@@ -82,7 +288,7 @@ void InitMapsWithoutAwesomeInitializerLists()
     DefaultMCLongNames[PRS1_Unknown00]=QObject::tr("Unknown 00");
     DefaultMCLongNames[PRS1_Unknown01]=QObject::tr("Unknown 01");
     DefaultMCLongNames[PRS1_Unknown0B]=QObject::tr("Unknown 0B");
-    DefaultMCLongNames[PRS1_Unknown10]=QObject::tr("Unknown 10");
+    DefaultMCLongNames[PRS1_Unknown10]=QObject::tr("Unknown 10"); */
 }
 
 
@@ -113,9 +319,8 @@ Machine::Machine(Profile *p,MachineID id)
 Machine::~Machine()
 {
     qDebug() << "Destroy Machine";
-    map<QDate,Day *>::iterator d;
-    for (d=day.begin();d!=day.end();d++) {
-        delete d->second;
+    for (QMap<QDate,Day *>::iterator d=day.begin();d!=day.end();d++) {
+        delete d.value();
     }
 }
 Session *Machine::SessionExists(SessionID session)
@@ -275,9 +480,9 @@ bool Machine::Load()
 
     QFileInfoList list=dir.entryInfoList();
 
-    typedef vector<QString> StringList;
-    map<SessionID,StringList> sessfiles;
-    map<SessionID,StringList>::iterator s;
+    typedef QVector<QString> StringList;
+    QHash<SessionID,StringList> sessfiles;
+    QHash<SessionID,StringList>::iterator s;
 
     QString fullpath,ext_s,sesstr;
     int ext;
@@ -303,10 +508,10 @@ bool Machine::Load()
         if ((cnt % 10)==0)
             if (qprogress) qprogress->setValue((float(cnt)/float(size)*100.0));
 
-        Session *sess=new Session(this,s->first);
+        Session *sess=new Session(this,s.key());
 
-        if (sess->LoadSummary(s->second[0])) {
-             sess->SetEventFile(s->second[1]);
+        if (sess->LoadSummary(s.value()[0])) {
+             sess->SetEventFile(s.value()[1]);
              AddSession(sess,profile);
         } else {
             qWarning() << "Error unpacking summary data";
@@ -324,8 +529,8 @@ bool Machine::SaveSession(Session *sess)
 }
 bool Machine::Save()
 {
-    map<QDate,Day *>::iterator d;
-    vector<Session *>::iterator s;
+    QMap<QDate,Day *>::iterator d;
+    QVector<Session *>::iterator s;
     int size=0;
     int cnt=0;
 
@@ -333,12 +538,12 @@ bool Machine::Save()
 
     // Calculate size for progress bar
     for (d=day.begin();d!=day.end();d++)
-        size+=d->second->size();
+        size+=d.value()->size();
 
     for (d=day.begin();d!=day.end();d++) {
 
         //qDebug() << "Day Save Commenced";
-        for (s=d->second->begin(); s!=d->second->end(); s++) {
+        for (s=d.value()->begin(); s!=d.value()->end(); s++) {
             cnt++;
             if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
             if ((*s)->IsChanged()) (*s)->Store(path);

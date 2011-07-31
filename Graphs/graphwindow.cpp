@@ -75,14 +75,14 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
 
 gGraphWindow::~gGraphWindow()
 {
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) delete (*l);
     layers.clear();
 }
 
 bool gGraphWindow::isEmpty()
 {
     bool empty=true;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if (!(*l)->isEmpty()) {
             empty=false;
             break;
@@ -168,7 +168,7 @@ void gGraphWindow::ZoomXPixels(int x1, int x2)
     qint64 rx1=0,rx2=0;
     ZoomXPixels(x1,x2,rx1,rx2);
     if (pref["LinkGraphMovement"].toBool()) {
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+        for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->SetXBounds(rx1,rx2);
         }
     }
@@ -226,7 +226,7 @@ void gGraphWindow::MoveX(int i)
     qint64 min,max;
     MoveX(i,min,max);
 
-/*    for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+/*    for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
         (*g)->SetXBounds(min,max);
     } */
     //if (!m_block_zoom) {
@@ -385,7 +385,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         //else
         SetXBounds(qx,ex);
         if (pref["LinkGraphMovement"].toBool()) {
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 if (*g==this) {
                     qWarning() << "mouseMoveEvent *g should not equal this";
                     continue;
@@ -398,7 +398,7 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
         MoveX(x - m_mouseRClick.x());
         m_mouseRClick.setX(x);
         if (pref["LinkGraphMovement"].toBool()) {
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 (*g)->SetXBounds(min_x,max_x);
             }
         }
@@ -478,7 +478,7 @@ void gGraphWindow::keyPressEvent(QKeyEvent * event)
 
     if (moved) {
         if (pref["LinkGraphMovement"].toBool()) {
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 (*g)->SetXBounds(min_x,max_x);
             }
         }
@@ -587,7 +587,7 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
 
         if (did_draw) {
             if (pref["LinkGraphMovement"].toBool()) {
-                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                     (*g)->SetXBounds(min_x,max_x);
                 }
             }
@@ -605,14 +605,14 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
 
     if (event->modifiers() & Qt::ControlModifier) zoom_fact=5.0;
     if (abs(x-m_mouseRClick_start.x())<3 && abs(y-m_mouseRClick_start.y())<3) {
-      //  for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+      //  for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             //(*g)->ZoomX(zoom_fact,0);
         //}
         //if (!m_block_zoom) {
             ZoomX(zoom_fact,x); //event.GetX()); // adds origin to zoom out.. Doesn't look that cool.
 
             if (pref["LinkGraphMovement"].toBool()) {
-                for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+                for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                     (*g)->SetXBounds(min_x,max_x);
                 }
             }
@@ -621,7 +621,7 @@ void gGraphWindow::OnMouseRightRelease(QMouseEvent * event)
     }/* else {
         double min=MinX();
         double max=MaxX();
-        for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+        for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
             (*g)->SetXBounds(min,max);
         }
     }*/
@@ -779,7 +779,7 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             updateGL();
     } else {
         if (pref["LinkGraphMovement"].toBool()) {
-            for (list<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
+            for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 (*g)->SetXBounds(min_x,max_x);
             }
         }
@@ -842,7 +842,7 @@ void gGraphWindow::Render(int w, int h)
     }
 
 
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(*this,w,h);
     }
     DrawTextQueue(*this);
@@ -887,7 +887,7 @@ qint64 gGraphWindow::MinX()
 {
     bool first=true;
     qint64 val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Minx();
         if (!tmp) continue;
@@ -905,7 +905,7 @@ qint64 gGraphWindow::MaxX()
 {
     bool first=true;
     qint64 val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxx();
         if (!tmp) continue;
@@ -923,7 +923,7 @@ EventDataType gGraphWindow::MinY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Miny();
         if (tmp==(*l)->Maxy()) continue;
@@ -940,7 +940,7 @@ EventDataType gGraphWindow::MaxY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    for (list<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
+    for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxy();
         if (tmp==(*l)->Miny()) continue;

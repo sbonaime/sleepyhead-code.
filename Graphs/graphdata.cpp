@@ -19,7 +19,7 @@ void gGraphData::Update(Day *day)
 {
     Reload(day);
 
-    for (list<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
+    for (QList<gLayer *>::iterator i=notify_layers.begin();i!=notify_layers.end();i++) {
         gGraphData *g=this;
         if (!day) g=NULL;
         (*i)->DataChanged(g);
@@ -41,7 +41,7 @@ gPointData::gPointData(int mp)
 }
 gPointData::~gPointData()
 {
-    for (vector<QPointD *>::iterator i=point.begin();i!=point.end();i++)
+    for (QVector<QPointD *>::iterator i=point.begin();i!=point.end();i++)
         delete [] (*i);
 }
 void gPointData::AddSegment(int max_points)

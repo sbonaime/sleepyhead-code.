@@ -8,7 +8,7 @@
 #include "SleepLib/profiles.h"
 #include "gLineOverlay.h"
 
-gLineOverlayBar::gLineOverlayBar(MachineCode code,QColor col,QString label,FlagType flt)
+gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor col,QString label,FlagType flt)
 :gLayer(code),m_label(label),m_flt(flt)
 {
     color.clear();
@@ -55,11 +55,13 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     qint64 X;
     qint64 Y;
-    for (vector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
-        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
-        if ((*s)->eventlist[m_code].size()==0) continue;
+    QHash<ChannelID,QVector<EventList *> >::iterator cei;
+    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        cei=(*s)->eventlist.find(m_code);
+        if (cei==(*s)->eventlist.end()) continue;
+        if (cei.value().size()==0) continue;
 
-        EventList & el=*((*s)->eventlist[m_code][0]);
+        EventList & el=*cei.value()[0];
 
        // bool done=false;
         for (int i=0;i<el.count();i++) {
