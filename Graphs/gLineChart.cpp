@@ -37,6 +37,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
     int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-2;
+    if (width<40)
+        return;
     EventDataType miny,maxy;
     double minx,maxx;
     miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
@@ -125,9 +127,15 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     int total_visible=0;
     bool square_plot,accel;
 
-    for (QVector<Session *>::iterator s=m_day->begin(); s!=m_day->end(); s++) {
-        QHash<ChannelID,QVector<EventList *> >::iterator ci=(*s)->eventlist.find(m_code);
-        if (ci==(*s)->eventlist.end()) continue;
+    QHash<ChannelID,QVector<EventList *> >::iterator ci;
+
+    for (int svi=0;svi<m_day->size();svi++) {
+        if (!(*m_day)[svi]) {
+            qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
+            continue;
+        }
+        ci=(*m_day)[svi]->eventlist.find(m_code);
+        if (ci==(*m_day)[svi]->eventlist.end()) continue;
 
         QVector<EventList *> & evec=ci.value();
         num_points=0;
@@ -274,6 +282,18 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         int z=floor(px); // Hmmm... round may screw this up.
                         if (z<minz) minz=z;  // minz=First pixel
                         if (z>maxz) maxz=z;  // maxz=Last pixel
+                        if (minz<0) {
+                            qDebug() << "gLineChart::Plot() minz<0  should never happen!! minz =" << minz;
+                            minz=0;
+                        }
+                        if (maxz>width) {
+                            qDebug() << "gLineChart::Plot() maxz>width" << "maxz = " << maxz << "width =" << width << "scrx =" <<scrx;
+                            maxz=width;
+                        }
+                        if (maxz>max_drawlist_size) {
+                            qDebug() << "gLineChart::Plot() maxz>max_drawlist_size!!!! maxz = " << maxz << " max_drawlist_size =" << max_drawlist_size;
+                            maxz=max_drawlist_size;
+                        }
 
                         // Update the Y pixel bounds.
                         if (py<m_drawlist[z].x()) m_drawlist[z].setX(py);

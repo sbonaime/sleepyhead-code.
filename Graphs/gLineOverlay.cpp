@@ -53,8 +53,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     float bottom=start_py+25, top=start_py+height-25;
     QColor & col=color[0];
 
-    qint64 X;
-    qint64 Y;
+    double X;
+    double Y;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);

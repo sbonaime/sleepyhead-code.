@@ -60,7 +60,7 @@ public:
     QVector<Session *>::iterator begin() { return sessions.begin(); }
     QVector<Session *>::iterator end() { return sessions.end(); }
 
-    size_t size() { return sessions.size(); }
+    int size() { return sessions.size(); }
     Machine *machine;
 
     void OpenEvents();
