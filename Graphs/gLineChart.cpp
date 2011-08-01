@@ -78,7 +78,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     double xx=maxx-minx;
-    double xmult=double(width)/xx;
+    double xmult=double(width-1)/xx;
 
     EventDataType yy=maxy-miny;
     EventDataType ymult=EventDataType(height)/yy;   // time to pixel conversion multiplier
@@ -286,10 +286,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                             qDebug() << "gLineChart::Plot() minz<0  should never happen!! minz =" << minz;
                             minz=0;
                         }
-                        if (maxz>width) {
-                            qDebug() << "gLineChart::Plot() maxz>width" << "maxz = " << maxz << "width =" << width << "scrx =" <<scrx;
-                            maxz=width;
-                        }
                         if (maxz>max_drawlist_size) {
                             qDebug() << "gLineChart::Plot() maxz>max_drawlist_size!!!! maxz = " << maxz << " max_drawlist_size =" << max_drawlist_size;
                             maxz=max_drawlist_size;
@@ -305,6 +301,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         }
                     }
                     // Plot compressed accelerated vertex list
+                    if (maxz>width) {
+                        qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width << "scrx =" <<scrx;
+                        maxz=width;
+                    }
                     for (int i=minz;i<maxz;i++) {
                         vertarray[vertcnt++]=xst+i;
                         vertarray[vertcnt++]=yst+m_drawlist[i].x();
