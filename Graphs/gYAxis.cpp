@@ -65,7 +65,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         maxy=ceil(maxy);
         if (maxy<1) maxy=1;
         miny=floor(miny);
-        if (miny<1) miny=0;
+        //if (miny<1) miny=0;
 
     }
 
