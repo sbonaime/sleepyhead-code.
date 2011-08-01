@@ -395,7 +395,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     sess->max(a[i]);
                     sess->avg(a[i]);
                     sess->wavg(a[i]);
-                    //sess->p90(a[i]);
+                    sess->p90(a[i]);
                     sess->cph(a[i]);
                 }
             }

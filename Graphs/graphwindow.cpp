@@ -757,6 +757,8 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
             if (qx+mx>rmax_x) {
                 qx=rmax_x-mx;
             }
+            glFlush();
+            glFinish();
             SetXBounds(qx,qx+mx);
             did_draw=true;
         } else {
@@ -775,13 +777,15 @@ void gGraphWindow::OnMouseLeftRelease(QMouseEvent * event)
     m_mouseLDown=false;
     m_drag_foobar=false;
     if (!did_draw) {
-        if (r!=m_mouseRBrect)
+        if (r!=m_mouseRBrect) {
             updateGL();
+        }
     } else {
         if (pref["LinkGraphMovement"].toBool()) {
             for (QList<gGraphWindow *>::iterator g=link_zoom.begin();g!=link_zoom.end();g++) {
                 (*g)->SetXBounds(min_x,max_x);
             }
+            glFinish();
         }
     }
     LastGraphLDown=NULL;
@@ -801,7 +805,7 @@ void gGraphWindow::initializeGL()
     setAutoBufferSwap(false);
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
     m_scrX=width();
     m_scrY=height();
 
@@ -846,6 +850,8 @@ void gGraphWindow::Render(int w, int h)
         (*l)->Plot(*this,w,h);
     }
     DrawTextQueue(*this);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
 }
 
 void gGraphWindow::paintGL()
@@ -857,27 +863,29 @@ void gGraphWindow::paintGL()
     if (m_scrY<=0) return;
 
     InitGraphs();
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
     Render(m_scrX,m_scrY);
 
     if (m_mouseLDown) {
         if (m_mouseRBrect.width()>0)
-            glDisable(GL_DEPTH_TEST);
-            glColor4ub(50,50,200,64);
+            //glDisable(GL_DEPTH_TEST);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_QUADS);
+            glColor4ub(140,50,200,64);
             glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y());
             glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y());
+            glColor4ub(50,50,200,64);
             glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y()+m_mouseRBrect.height());
             glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y()+m_mouseRBrect.height());
             glEnd();
             glDisable(GL_BLEND);
+            //glFinish();
             //RoundedRectangle(m_mouseRBrect.x(),m_mouseRBrect.y(),m_mouseRBrect.width(),m_mouseRBrect.height(),5,QColor(50,50,200,64));
             //glEnable(GL_DEPTH_TEST);
     }
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
 
     swapBuffers(); // Dump to screen.

@@ -14,8 +14,7 @@
 gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_accel)
 :gLayer(code),m_square_plot(square_plot),m_disable_accel(disable_accel)
 {
-    color.clear();
-    color.push_back(col);
+    m_line_color=col;
     m_report_empty=false;
 }
 gLineChart::~gLineChart()
@@ -100,7 +99,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     // Draw bounding box
     {
-        glColor3f (0.0, 0.0, 0.0);
+        w.qglColor(Qt::black);
         glLineWidth (1);
         glBegin (GL_LINE_LOOP);
         glVertex2f (start_px, start_py);
@@ -117,9 +116,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         qWarning() << "VertArray==NULL";
         return;
     }
-
-    // Selected the plot line color
-    QColor & col=color[0];
 
     int num_points=0;
     int visible_points=0;
@@ -194,7 +190,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 double ZR=ZD/sr;
                 double ZQ=ZR/XR;
                 double ZW=ZR/(width*ZQ);
-                const int num_averages=15;  // Max n umber of samples taken from samples per pixel for better min/max values
+                const int num_averages=20;  // Max n umber of samples taken from samples per pixel for better min/max values
                 visible_points+=ZR*ZQ;
                 if (accel && n>0) {
                     sam=1;
@@ -279,7 +275,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         // In accel mode, each pixel has a min/max Y value.
                         // m_drawlist's index is the pixel index for the X pixel axis.
 
-                        int z=floor(px); // Hmmm... round may screw this up.
+                        int z=round(px); // Hmmm... round may screw this up.
                         if (z<minz) minz=z;  // minz=First pixel
                         if (z>maxz) maxz=z;  // maxz=Last pixel
                         if (minz<0) {
@@ -305,11 +301,16 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width << "scrx =" <<scrx;
                         maxz=width;
                     }
-                    for (int i=minz;i<maxz;i++) {
+                    float ax1,ay1;
+                    for (int i=minz+1;i<maxz-1;i++) {
+                       // ax1=(m_drawlist[i-1].x()+m_drawlist[i].x()+m_drawlist[i+1].x())/3.0;
+                       // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
+                        ax1=m_drawlist[i].x();
+                        ay1=m_drawlist[i].y();
                         vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst+m_drawlist[i].x();
+                        vertarray[vertcnt++]=yst+ax1;
                         vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst+m_drawlist[i].y();
+                        vertarray[vertcnt++]=yst+ay1;
 
                         if (vertcnt>=maxverts) break;
                     }
@@ -429,14 +430,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         GetTextExtent(b,x,y);
         DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetBottomMargin()-10); */
 
-        glColor4ub(col.red(),col.green(),col.blue(),255);
 
         // Crop to inside the margins.
         glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height+2);
         glEnable(GL_SCISSOR_TEST);
-        glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
         bool antialias=pref["UseAntiAliasing"].toBool();
+        glDisable(GL_TEXTURE_2D);
         if (antialias) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -448,6 +448,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, vertarray);
+        //glColor4ub(m_line_color.red(),m_line_color.green(),m_line_color.blue(),255);
+        w.qglColor(m_line_color);
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
         glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -457,5 +459,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
         glDisable(GL_SCISSOR_TEST);
     }
+    glFinish();
 }
 

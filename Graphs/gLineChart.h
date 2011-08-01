@@ -31,6 +31,7 @@ protected:
         bool m_report_empty;
         bool m_square_plot;
         bool m_disable_accel;
+        QColor m_line_color;
 };
 
 #endif // GLINECHART_H
