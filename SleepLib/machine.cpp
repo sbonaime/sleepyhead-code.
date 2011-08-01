@@ -346,12 +346,18 @@ Day *Machine::AddSession(Session *s,Profile *p)
     if (s->session()>highest_sessionid)
         highest_sessionid=s->session();
 
+
     QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
 
     QDate date=d2.date();
-    //QTime time=d2.time();
+    QTime time=d2.time();
 
-    if (pref.Exists("NoonDataSplit") && pref["NoonDateSplit"].toBool()) {
+    if (s->session()==1311991200) {
+        int q=03;
+    }
+    QMap<QDate,Day *>::iterator dit;
+
+    if (pref.Exists("NoonDateSplit") && pref["NoonDateSplit"].toBool()) {
         int hour=d2.time().hour();
         if (hour<12)
             date=date.addDays(-1);
@@ -364,11 +370,12 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
         bool previous=false;
         // Find what day session belongs to.
-        if (day.find(date)!=day.end()) {
+        dit=day.find(date);
+        if (dit!=day.end()) {
             // Previous day record exists...
 
             // Calculate time since end of previous days last session
-            span=(s->first() - day[date]->last())/3600000.0;
+            span=(s->first() - (*dit)->last())/3600000.0;
 
             // less than n hours since last session yesterday?
             if (span < hours_since_last_session) {
@@ -405,18 +412,24 @@ Day *Machine::AddSession(Session *s,Profile *p)
         firstsession=false;
     }
 
-    if (day.find(date)==day.end()) {
+
+    Day *dd=NULL;
+    dit=day.find(date);
+    if (dit==day.end()) {
         //QString dstr=date.toString("yyyyMMdd");
         //qDebug("Adding Profile Day %s",dstr.toAscii().data());
-        day[date]=new Day(this);
+        dd=new Day(this);
+        day[date]=dd;
         // Add this Day record to profile
         //QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
         //qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
-        p->AddDay(date,day[date],m_type);
+        p->AddDay(date,dd,m_type);
+    } else {
+        dd=*dit;
     }
-    day[date]->AddSession(s);
+    dd->AddSession(s);
 
-    return day[date];
+    return dd;
 }
 
 // This functions purpose is murder and mayhem... It deletes all of a machines data.
@@ -481,8 +494,8 @@ bool Machine::Load()
     QFileInfoList list=dir.entryInfoList();
 
     typedef QVector<QString> StringList;
-    QHash<SessionID,StringList> sessfiles;
-    QHash<SessionID,StringList>::iterator s;
+    QMap<SessionID,StringList> sessfiles;
+    QMap<SessionID,StringList>::iterator s;
 
     QString fullpath,ext_s,sesstr;
     int ext;

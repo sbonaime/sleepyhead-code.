@@ -240,7 +240,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     SessionID session;
     long ext;
     typedef QVector<QString> StringList;
-    QHash<SessionID,StringList> sessfiles;
+    QMap<SessionID,StringList> sessfiles;
     int size=paths.size();
     int cnt=0;
     bool ok;
@@ -281,7 +281,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         return 0;
 
     cnt=0;
-    for (QHash<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
+    for (QMap<SessionID,StringList>::iterator s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         session=s.key();
         cnt++;
         if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));

@@ -266,7 +266,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
-    QHash<SessionID,QVector<QString> > sessfiles;
+    QMap<SessionID,QVector<QString> > sessfiles;
 
     QString ext,rest,datestr,s,codestr;
     SessionID sessionid;
@@ -285,8 +285,10 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         sessionid=date.toTime_t();
         // Resmed bugs up on the session filenames.. 1 second either way
         if (sessfiles.find(sessionid)==sessfiles.end()) {
-            if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
-            if (sessfiles.find(sessionid-1)!=sessfiles.end()) sessionid--;
+            if (sessfiles.find(sessionid+2)!=sessfiles.end()) sessionid+=2;
+            else if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
+            else if (sessfiles.find(sessionid-1)!=sessfiles.end()) sessionid--;
+            else if (sessfiles.find(sessionid-2)!=sessfiles.end()) sessionid-=2;
         }
 
         sessfiles[sessionid].push_back(fi.canonicalFilePath());
@@ -301,7 +303,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     Session *sess;
     int cnt=0;
     size=sessfiles.size();
-    for (QHash<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+    for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si.key();
         //qDebug() << "Parsing Session " << sessionid;
         bool done=false;
