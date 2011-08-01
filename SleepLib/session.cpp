@@ -632,6 +632,7 @@ bool sortfunction (EventStoreType i,EventStoreType j) { return (i<j); }
 
 EventDataType Session::percentile(ChannelID id,EventDataType percent)
 {
+    //if (channel[id].channeltype()==CT_Graph) return 0;
     QHash<ChannelID,QVector<EventList *> >::iterator jj=eventlist.find(id);
     if (jj==eventlist.end())
         return 0;
