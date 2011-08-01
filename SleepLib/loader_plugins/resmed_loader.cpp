@@ -376,7 +376,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->max(e[i]);
                 sess->min(e[i]);
                 sess->avg(e[i]);
-                sess->p90(e[i]);
+                //sess->p90(e[i]);
                 sess->cph(e[i]);
                 sess->sph(e[i]);
             }
@@ -384,7 +384,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway)+sess->sph(CPAP_Apnea));
 
             ChannelID a[]={
-                CPAP_FlowRate, CPAP_MaskPressure, CPAP_Leak, CPAP_Snore, CPAP_EPAP,
+                CPAP_Leak, CPAP_Snore, CPAP_EPAP,
                 CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
                 CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation,
                 CPAP_FlowLimitGraph, CPAP_PressureSupport,CPAP_Pressure
@@ -395,8 +395,21 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     sess->max(a[i]);
                     sess->avg(a[i]);
                     sess->wavg(a[i]);
-                    sess->p90(a[i]);
+                    //sess->p90(a[i]);
                     sess->cph(a[i]);
+                }
+            }
+            ChannelID b[]={
+                CPAP_FlowRate, CPAP_MaskPressure
+            };
+            for (unsigned i=0;i<sizeof(b)/sizeof(ChannelID);i++) {
+                if (sess->eventlist.contains(b[i])) {
+                    sess->min(b[i]);
+                    sess->max(b[i]);
+                    sess->avg(b[i]);
+                    //sess->wavg(b[i]);
+                    //sess->p90(b[i]);
+                    sess->cph(b[i]);
                 }
             }
             sess->settings[CPAP_Mode]=MODE_APAP;
