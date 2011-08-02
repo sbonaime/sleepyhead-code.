@@ -125,7 +125,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             vertarray[vertcnt++]=py;
             vertarray[vertcnt++]=px;
             vertarray[vertcnt++]=py-4;
-            if (vertcnt>maxverts) {
+            if (vertcnt>=maxverts) {
                 qWarning() << "gXAxis::Plot() maxverts exceeded trying to draw minor ticks";
                 return;
             }
@@ -173,7 +173,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             vertarray[vertcnt++]=py;
             vertarray[vertcnt++]=px;
             vertarray[vertcnt++]=py-6;
-            if (vertcnt>maxverts) {
+            if (vertcnt>=maxverts) {
                 qWarning() << "gXAxis::Plot() maxverts exceeded trying to draw Major ticks";
                 return;
             }

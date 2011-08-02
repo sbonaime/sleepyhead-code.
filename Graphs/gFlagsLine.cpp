@@ -142,7 +142,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
 
     float top=floor(line_top)+2;
     float bottom=top+floor(line_h)-3;
-
+    bool verts_exceeded=false;
     qint64 X,Y;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
@@ -160,6 +160,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
                 vertarray[vertcnt++]=top;
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=bottom;
+                if (vertcnt>maxverts) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
                 x2=(Y-minx)*xmult+w.GetLeftMargin();
                 //w1=x2-x1;
@@ -171,8 +172,12 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
                 quadarray[quadcnt++]=bottom;
                 quadarray[quadcnt++]=x2;
                 quadarray[quadcnt++]=top;
+                if (quadcnt>maxverts) { verts_exceeded=true; break; }
             }
         }
+    }
+    if (verts_exceeded) {
+        qWarning() << "maxverts exceeded in gFlagsLine::plot()";
     }
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);

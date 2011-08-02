@@ -53,6 +53,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
     double X;
     double Y;
+
+    bool verts_exceeded=false;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);
@@ -61,7 +63,6 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
         EventList & el=*cei.value()[0];
 
-       // bool done=false;
         for (int i=0;i<el.count();i++) {
             X=el.time(i);
             if (m_flt==FT_Span) {
@@ -86,6 +87,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 quadarray[quadcnt++]=start_py+height;
                 quadarray[quadcnt++]=x2;
                 quadarray[quadcnt++]=start_py;
+                if (quadcnt>=maxverts) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
                 //if (pref["AlwaysShowOverlayBars"].toBool()) {
 
@@ -93,12 +95,15 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     // show the fat dots in the middle
                     pointarray[pointcnt++]=x1;
                     pointarray[pointcnt++]=w.y2p(20);
+                    if (pointcnt>=maxverts) { verts_exceeded=true; break; }
                 } else {
                     // thin lines down the bottom
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=start_py+1;
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=start_py+1+12;
+                    if (vertcnt>=maxverts) { verts_exceeded=true; break; }
+
                 }
             } else if (m_flt==FT_Bar) {
                 int z=start_py+height;
@@ -111,12 +116,14 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                     vertarray[vertcnt++]=top;
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=bottom;
+                    if (pointcnt>=maxverts) { verts_exceeded=true; break; }
                } else {
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=z;
                     vertarray[vertcnt++]=x1;
                     vertarray[vertcnt++]=z-12;
                }
+               if (vertcnt>=maxverts) { verts_exceeded=true; break; }
                if (xx<(1800000)) {
                     GetTextExtent(m_label,x,y);
                     DrawText(w,m_label,x1-(x/2),scry-(start_py+height-30+y));
@@ -125,8 +132,10 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
 
            }
         }
-        if ((vertcnt>=maxverts) || (quadcnt>=maxverts) || (pointcnt>=maxverts)) break;
-
+        if (verts_exceeded) break;
+    }
+    if (verts_exceeded) {
+        qWarning() << "exceeded maxverts in gLineOverlay::Plot()";
     }
 
     bool antialias=pref["UseAntiAliasing"].toBool();
