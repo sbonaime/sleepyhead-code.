@@ -11,7 +11,6 @@
 #include <QScrollArea>
 #include <QMenu>
 #include <QAction>
-#include <QSplitter>
 #include <QWidget>
 #include <QTreeWidget>
 #include <QLabel>
@@ -20,9 +19,9 @@
 #include <SleepLib/profiles.h>
 #include <Graphs/graphwindow.h>
 #include "mainwindow.h"
-//#include <Graphs/graphdata.h>
+#include "Graphs/gSplitter.h"
 #include "Graphs/gLineChart.h"
-#include <Graphs/gFlagsLine.h>
+#include "Graphs/gFlagsLine.h"
 namespace Ui {
     class Daily;
 }
@@ -102,7 +101,7 @@ private:
     Profile *profile;
     QDate previous_date;
     MyScrollArea *scrollArea;
-    QSplitter *gSplitter;
+    gSplitter *splitter;
     QLabel *NoData;
     QWidget *spacer;
     QMenu *show_graph_menu;

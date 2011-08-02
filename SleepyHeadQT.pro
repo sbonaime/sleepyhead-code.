@@ -55,7 +55,8 @@ SOURCES += main.cpp\
     Graphs/gBarChart.cpp \
     Graphs/gSegmentChart.cpp \
     Graphs/gSessionTime.cpp \
-    qextserialport/qextserialport.cpp
+    qextserialport/qextserialport.cpp \
+    Graphs/gSplitter.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -104,7 +105,8 @@ HEADERS  += \
     SleepLib/loader_plugins/sleep_database.h \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
-    qextserialport/qextserialenumerator.h
+    qextserialport/qextserialenumerator.h \
+    Graphs/gSplitter.h
 
 
 FORMS    += \

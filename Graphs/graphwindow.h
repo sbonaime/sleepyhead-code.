@@ -132,9 +132,10 @@ public:
       bool isEmpty();
       void SetSplitter(QSplitter *s) { splitter=s; }
       bool isDraggingGraph() { return m_dragGraph; }
+      void setScry(int h) { m_scrY=h; }
   protected:
       void updateSelectionTime(qint64 span);
-      void resizeEvent(QResizeEvent *);
+      //virtual void resizeEvent(QResizeEvent *);
       void initializeGL();
       QSplitter *splitter;
       QList<gGraphWindow *>link_zoom;

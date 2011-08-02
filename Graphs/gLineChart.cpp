@@ -147,7 +147,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
 
             square_plot=m_square_plot;
-            if (accel || num_points>1000) { // Don't square plot if too many points or waveform
+            if (accel || num_points>5000) { // Don't square plot if too many points or waveform
                 square_plot=false;
             }
 
