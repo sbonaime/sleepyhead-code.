@@ -118,6 +118,11 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         min_ytick=100;
     }
 
+    double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
+    if (q>=maxverts) {
+        qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
+    }
+
 
     for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
         ty=(i - miny) * ymult;
@@ -132,7 +137,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
             minorvertarray[minorvertcnt++]=start_px+width;
             minorvertarray[minorvertcnt++]=h;
         }
-        if (vertcnt>maxverts) {
+        if (vertcnt>=maxverts) { // Should only need to check one.. The above check should be enough.
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }
@@ -150,9 +155,9 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         vertarray[vertcnt++]=h;
         vertarray[vertcnt++]=start_px;
         vertarray[vertcnt++]=h;
-        if (vertcnt>maxverts) {
+        if (vertcnt>=maxverts) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
-            return;
+            break;
         }
 
         if (m_show_major_lines && (i > miny)) {
@@ -163,7 +168,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         }
     }
     if (vertcnt>=maxverts) {
-        qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph";
+        qWarning() << "yAxis tickers and display should be corrupted, because something dumb is happening in " << w.Title() << "graph";
         return;
     }
 

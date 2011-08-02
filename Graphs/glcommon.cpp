@@ -30,6 +30,7 @@ void InitGraphs()
         bigfont=new QFont("FreeSans",35);
         mediumfont=new QFont("FreeSans",18);
         for (int i=0;i<num_vert_arrays;i++) {
+            // The extra 8 vertexes are important..
             GLshort *a=(GLshort *)calloc(maxverts+8,sizeof(GLshort));
             vertex_array[i]=a;
         }
