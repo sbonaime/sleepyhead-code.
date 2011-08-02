@@ -313,7 +313,8 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
                 int i=splitter->indexOf(this);
                 if (i<splitter->count()-2) {
                     splitter->insertWidget(i+1,this);
-
+                    splitter->setStretchFactor(this,1);
+                    splitter->layout();
                 }
 
             } else if (event->y()<0) {
@@ -321,6 +322,8 @@ void gGraphWindow::mouseMoveEvent(QMouseEvent * event)
                 int i=splitter->indexOf(this);
                 if (i>0) {
                     splitter->insertWidget(i-1,this);
+                    splitter->setStretchFactor(this,1);
+                    splitter->layout();
                 }
             }
         }

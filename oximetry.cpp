@@ -41,10 +41,11 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     session=new Session(mach,0);
     day->AddSession(session);
 
-    gSplitter=new QSplitter(Qt::Vertical,ui->scrollArea);
-    gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
-    gSplitter->setHandleWidth(2);
-    ui->graphLayout->addWidget(gSplitter);
+    splitter=ui->graphLayout;
+    //splitter=new QSplitter(Qt::Vertical,ui->scrollArea);
+    //gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
+    //gSplitter->setHandleWidth(2);
+    //ui->graphLayout->addWidget(splitter);
 
     // Create the Event Lists to store / import data
     ev_plethy=new EventList(OXI_Plethysomogram,EVL_Event,1,0,0,0,1000.0/50.0);
@@ -56,16 +57,17 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
     session->eventlist[OXI_SPO2].push_back(ev_spo2);
 
+    QWidget * parental=ui->scrollArea;
     plethy=new gLineChart(OXI_Plethysomogram,Qt::black,false,true);
-    AddGraph(PLETHY=new gGraphWindow(gSplitter,tr("Plethysomogram"),shared));
+    AddGraph(PLETHY=new gGraphWindow(parental,tr("Plethysomogram"),shared));
     plethy->SetDay(day);
 
     pulse=new gLineChart(OXI_Pulse,Qt::red,true);
-    AddGraph(PULSE=new gGraphWindow(gSplitter,tr("Pulse Rate"),shared));
+    AddGraph(PULSE=new gGraphWindow(parental,tr("Pulse Rate"),shared));
     pulse->SetDay(day);
 
     spo2=new gLineChart(OXI_SPO2,Qt::blue,true);
-    AddGraph(SPO2=new gGraphWindow(gSplitter,tr("SPO2"),shared));
+    AddGraph(SPO2=new gGraphWindow(parental,tr("SPO2"),shared));
     spo2->SetDay(day);
 
     for (int i=0;i<Graphs.size();i++) {
@@ -77,7 +79,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
         Graphs[i]->AddLayer(new gXAxis());
         //Graphs[i]->AddLayer(new gFooBar());
 
-        gSplitter->addWidget(Graphs[i]);
+        splitter->addWidget(Graphs[i]);
     }
     PLETHY->AddLayer(plethy);
     PLETHY->AddLayer(new gFooBar());
@@ -86,7 +88,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
 
     for (int i=0;i<Graphs.size();i++) {
         Graphs[i]->setMinimumHeight(150);
-        Graphs[i]->SetSplitter(gSplitter);
+        Graphs[i]->SetSplitter(splitter);
     }
 
     on_RefreshPortsButton_clicked();

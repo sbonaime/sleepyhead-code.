@@ -26,7 +26,7 @@
 #include "Graphs/gBarChart.h"
 #include "Graphs/gSegmentChart.h"
 
-const int min_height=100;
+const int min_height=150;
 const int default_height=150;
 
 MyScrollArea::MyScrollArea(Daily * parent)
@@ -53,38 +53,40 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     //scrollArea=new MyScrollArea(this);
 
-    splitter=new gSplitter(Qt::Vertical,ui->scrollArea);
-    splitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
-    splitter->setHandleWidth(3);
+    splitter=ui->graphSizer;
+    //gSplitter(Qt::Vertical,ui->scrollArea);
+    //splitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
+    //splitter->setHandleWidth(3);
 #ifdef Q_WS_MAC
-    splitter->setOpaqueResize(false);
+    //splitter->setOpaqueResize(false);
 #endif
 
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->scrollArea->setWidget(splitter);
+    //ui->scrollArea->setWidget(splitter);
     //this->connect(ui->scrollArea,
     //ui->graphSizer->addWidget(splitter);
     ui->scrollArea->setAutoFillBackground(false);
-    splitter->setAutoFillBackground(false);
+    //splitter->setAutoFillBackground(false);
     ui->scrollArea->setWidgetResizable(true);
     //splitter->setMinimumHeight(1600);
     //splitter->setMinimumWidth(600);
 
-    SF=new gGraphWindow(splitter,tr("Event Flags"),shared);
-    FRW=new gGraphWindow(splitter,tr("Flow Rate"),SF);
-    PRD=new gGraphWindow(splitter,tr("Pressure"),SF);
-    LEAK=new gGraphWindow(splitter,tr("Leaks"),SF);
-    MP=new gGraphWindow(splitter,tr("Mask Pressure"),SF);
-    SNORE=new gGraphWindow(splitter,tr("Snore"),SF);
-    FLG=new gGraphWindow(splitter,tr("Flow Limitation"),SF);
-    MV=new gGraphWindow(splitter,tr("Minute Ventilation"),SF);
-    TV=new gGraphWindow(splitter,tr("Tidal Volume"),SF);
-    RR=new gGraphWindow(splitter,tr("Respiratory Rate"),SF);
-    PTB=new gGraphWindow(splitter,tr("Patient Trig Breaths"),SF);
-    //OF=new gGraphWindow(splitter,tr("Oxi-Flags"),SF);
-    PULSE=new gGraphWindow(splitter,tr("Pulse"),SF);
-    SPO2=new gGraphWindow(splitter,tr("SPO2"),SF);
+    QWidget * parental=ui->scrollArea;
+    SF=new gGraphWindow(parental,tr("Event Flags"),shared);
+    FRW=new gGraphWindow(parental,tr("Flow Rate"),SF);
+    PRD=new gGraphWindow(parental,tr("Pressure"),SF);
+    LEAK=new gGraphWindow(parental,tr("Leaks"),SF);
+    MP=new gGraphWindow(parental,tr("Mask Pressure"),SF);
+    SNORE=new gGraphWindow(parental,tr("Snore"),SF);
+    FLG=new gGraphWindow(parental,tr("Flow Limitation"),SF);
+    MV=new gGraphWindow(parental,tr("Minute Ventilation"),SF);
+    TV=new gGraphWindow(parental,tr("Tidal Volume"),SF);
+    RR=new gGraphWindow(parental,tr("Respiratory Rate"),SF);
+    PTB=new gGraphWindow(parental,tr("Patient Trig Breaths"),SF);
+    //OF=new gGraphWindow(parental,tr("Oxi-Flags"),SF);
+    PULSE=new gGraphWindow(parental,tr("Pulse"),SF);
+    SPO2=new gGraphWindow(parental,tr("SPO2"),SF);
 
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
@@ -261,7 +263,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     G_AHI->SetGradientBackground(false);
     G_AHI->hide();
 
-    NoData=new QLabel(tr("No data"),splitter);
+    NoData=new QLabel(tr("No data"),parental);
     NoData->setAlignment(Qt::AlignCenter);
     QFont font("FreeSans",20); //NoData->font();
     //font.setBold(true);
@@ -269,8 +271,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     NoData->hide();
 
     splitter->addWidget(NoData);
-    int i=splitter->indexOf(NoData);
-    splitter->setStretchFactor(i,1);
+    //int i=splitter->indexOf(NoData);
+    splitter->setStretchFactor(NoData,1);
 
     gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,LEAK,FLG,SNORE};
     int ss=sizeof(graphs)/sizeof(gGraphWindow *);
@@ -278,7 +280,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     for (int i=0;i<ss;i++) {
         AddGraph(graphs[i]);
         //int j=splitter->indexOf(graphs[i]);
-        //splitter->setStretchFactor(j,1);
+        splitter->setStretchFactor(graphs[i],1);
         for (int j=0;j<ss;j++) {
             if (graphs[i]!=graphs[j])
                 graphs[i]->LinkZoom(graphs[j]);
@@ -308,11 +310,11 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     //splitter->refresh();
 
-    splitter->setChildrenCollapsible(false);  // We set this per widget..
+    //splitter->setChildrenCollapsible(false);  // We set this per widget..
     //splitter->setCollapsible(splitter->indexOf(SF),false);
     //splitter->setStretchFactor(splitter->indexOf(SF),0);
 
-    splitter_sizes=splitter->sizes();
+    //splitter_sizes=splitter->sizes();
     splitter->layout();
     splitter->update();
 
@@ -344,7 +346,7 @@ Daily::~Daily()
     if (previous_date.isValid())
         Unload(previous_date);
 
-    delete splitter;
+//    delete splitter;
     delete ui;
 }
 void Daily::AddGraph(gGraphWindow *w)
@@ -489,7 +491,7 @@ void Daily::on_calendar_selectionChanged()
 }
 void Daily::ResetGraphLayout()
 {
-    splitter->setSizes(splitter_sizes);
+    //splitter->setSizes(splitter_sizes);
 
 }
 void Daily::ShowHideGraphs()
@@ -510,7 +512,7 @@ void Daily::ShowHideGraphs()
             }
         }
     }
-    splitter->setMinimumHeight(vis*default_height);
+    //splitter->setMinimumHeight(vis*default_height);
     //splitter->setMaximumHeight(vis*default_height);
     splitter->layout();
     splitter->update();
@@ -544,7 +546,7 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     if (!cpap && !oxi) {
-        splitter->setMinimumHeight(0);
+        //splitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
         for (int i=0;i<Graphs.size();i++) {
@@ -576,7 +578,7 @@ void Daily::Load(QDate date)
             SF->hide();
         }
         //splitter->setMinimumHeight(0);
-        splitter->setMinimumHeight(vis*default_height);
+        //splitter->setMinimumHeight(vis*default_height);
         //if (vis>4) {
         //splitter->setMaximumHeight(vis*default_height);
         //} //else {

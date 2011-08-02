@@ -28,11 +28,11 @@ void gSplitter::mySplitterMoved (int pos, int index)
     if (z_timer->isActive()) z_timer->stop();
     z_pos=pos;
     z_index=index;
-    this->setUpdatesEnabled(true);
+    //this->setUpdatesEnabled(true);
     if (gGraphWindow *w=qobject_cast<gGraphWindow *>(widget(index-1))) {
         int s=sizes().at(index-1);
-        w->updateGL();
         //w->resizeGL(w->width(),pos);
+        //w->updateGL();
         //w->updateGL();
         //w->paintGL();
     }
@@ -45,7 +45,6 @@ void gSplitter::mySplitterMoved (int pos, int index)
     qDebug() << ++icnt;
     z_timer->singleShot(50,this,SLOT(doUpdateGraph()));
     tm.start();
-    this->setUpdatesEnabled(false);
 }
 
 void gSplitter::doUpdateGraph()
@@ -53,13 +52,25 @@ void gSplitter::doUpdateGraph()
 
     if (tm.elapsed()<50)
         return;
+    //this->setUpdatesEnabled(true);
 
+    if (gGraphWindow *w=qobject_cast<gGraphWindow *>(widget(z_index-1))) {
+        //qDebug() << icnt << "Height" << w->height() << z_index << z_pos << w->Title();
+
+        int s=sizes().at(z_index-1);
+
+        QSize n(w->width(),s);
+        QSize o(w->width(),s);
+        //QResizeEvent e(n,o);
+        //w->resizeEvent(&e);
+        //w->resizeGL(w->width(),s);
+        //w->paintGL();
+    }
     if (gGraphWindow *w=qobject_cast<gGraphWindow *>(widget(z_index))) {
         qDebug() << icnt << "Height" << w->height() << z_index << z_pos << w->Title();
 
         int s=sizes().at(z_index);
 
-        this->setUpdatesEnabled(true);
         w->resizeGL(w->width(),s);
         w->paintGL();
     }

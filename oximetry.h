@@ -49,7 +49,7 @@ private:
 
     Ui::Oximetry *ui;
     Profile *profile;
-    QSplitter *gSplitter;
+    QVBoxLayout *splitter;
     gLineChart *pulse,*spo2,*plethy;
     gGraphWindow *PULSE,*SPO2,*PLETHY;
 

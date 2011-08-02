@@ -7,6 +7,7 @@
 #ifndef GRAPHWINDOW_H
 #define GRAPHWINDOW_H
 
+#include<QVBoxLayout>
 #include <QGLContext>
 #include <QGLWidget>
 #include <QSplitter>
@@ -130,14 +131,14 @@ public:
       void SetGradientBackground(bool b) { m_gradient_background=b; }
       bool GradientBackground() { return m_gradient_background; }
       bool isEmpty();
-      void SetSplitter(QSplitter *s) { splitter=s; }
+      void SetSplitter(QVBoxLayout *s) { splitter=s; }
       bool isDraggingGraph() { return m_dragGraph; }
       void setScry(int h) { m_scrY=h; }
   protected:
       void updateSelectionTime(qint64 span);
       //virtual void resizeEvent(QResizeEvent *);
       void initializeGL();
-      QSplitter *splitter;
+      QVBoxLayout *splitter;
       QList<gGraphWindow *>link_zoom;
 
       bool m_block_zoom;

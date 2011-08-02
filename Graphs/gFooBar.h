@@ -18,10 +18,10 @@ class gFooBar:public gLayer
         static const int Margin=15;
     protected:
         int m_offset;
-        QColor m_line_color;
         QColor m_handle_color;
-        QColor m_shadow_color;
+        QColor m_line_color;
         bool m_shadow;
+        QColor m_shadow_color;
 };
 
 #endif // GFOOBAR_H

@@ -101,7 +101,7 @@ private:
     Profile *profile;
     QDate previous_date;
     MyScrollArea *scrollArea;
-    gSplitter *splitter;
+    QVBoxLayout *splitter;
     QLabel *NoData;
     QWidget *spacer;
     QMenu *show_graph_menu;
