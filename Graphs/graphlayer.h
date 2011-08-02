@@ -37,14 +37,13 @@ public:
     virtual bool isEmpty();
     inline const ChannelID & code() { return m_code; }
 protected:
+    Day *m_day;
     bool m_visible;
     bool m_movable;
-
     qint64 m_minx,m_maxx;
     EventDataType m_miny,m_maxy;
-    Day *m_day;
-    ChannelID m_code;
     QString m_title;
+    ChannelID m_code;
 };
 
 class gLayerGroup:public gLayer

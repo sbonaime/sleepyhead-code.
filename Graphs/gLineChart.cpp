@@ -448,7 +448,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, vertarray);
-        //glColor4ub(m_line_color.red(),m_line_color.green(),m_line_color.blue(),255);
         w.qglColor(m_line_color);
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
         glDisableClientState(GL_VERTEX_ARRAY);

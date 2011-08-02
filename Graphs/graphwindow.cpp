@@ -873,10 +873,10 @@ void gGraphWindow::paintGL()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_QUADS);
-            glColor4ub(140,50,200,64);
+            glColor4ub(140,140,140,64);
             glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y());
             glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y());
-            glColor4ub(50,50,200,64);
+            glColor4ub(50,50,200,128);
             glVertex2f(m_mouseRBrect.x()+m_mouseRBrect.width(),m_mouseRBrect.y()+m_mouseRBrect.height());
             glVertex2f(m_mouseRBrect.x(),m_mouseRBrect.y()+m_mouseRBrect.height());
             glEnd();
