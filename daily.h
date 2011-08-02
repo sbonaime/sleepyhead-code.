@@ -105,6 +105,7 @@ private:
     QLabel *NoData;
     QWidget *spacer;
     QMenu *show_graph_menu;
+    QWidget *GraphLayout;
 };
 
 /*class AHIGraph:public QWebPluginFactory

@@ -53,7 +53,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     //scrollArea=new MyScrollArea(this);
 
-    splitter=ui->graphSizer;
+    GraphLayout=new QWidget();
+    ui->graphSizer->addWidget(GraphLayout,1);
+
+    ui->graphSizer->setMargin(0);
+    splitter=new QVBoxLayout(GraphLayout);
+    splitter->setMargin(0);
+    splitter->setContentsMargins(0,0,0,0);
     //gSplitter(Qt::Vertical,ui->scrollArea);
     //splitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     //splitter->setHandleWidth(3);
@@ -69,6 +75,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     ui->scrollArea->setAutoFillBackground(false);
     //splitter->setAutoFillBackground(false);
     ui->scrollArea->setWidgetResizable(true);
+
+
     //splitter->setMinimumHeight(1600);
     //splitter->setMinimumWidth(600);
 
@@ -281,6 +289,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         AddGraph(graphs[i]);
         //int j=splitter->indexOf(graphs[i]);
         splitter->setStretchFactor(graphs[i],1);
+        //splitter->setAlignment(graphs[i],Qt::AlignTop);
         for (int j=0;j<ss;j++) {
             if (graphs[i]!=graphs[j])
                 graphs[i]->LinkZoom(graphs[j]);
@@ -315,8 +324,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //splitter->setStretchFactor(splitter->indexOf(SF),0);
 
     //splitter_sizes=splitter->sizes();
-    splitter->layout();
-    splitter->update();
+    //splitter->layout();
+    //splitter->update();
 
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
@@ -512,10 +521,10 @@ void Daily::ShowHideGraphs()
             }
         }
     }
-    //splitter->setMinimumHeight(vis*default_height);
+    GraphLayout->setMinimumHeight(vis*default_height);
     //splitter->setMaximumHeight(vis*default_height);
     splitter->layout();
-    splitter->update();
+    //splitter->update();
     RedrawGraphs();
 }
 void Daily::Load(QDate date)
@@ -546,6 +555,7 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     if (!cpap && !oxi) {
+        GraphLayout->setMinimumHeight(0);
         //splitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
@@ -558,8 +568,9 @@ void Daily::Load(QDate date)
     } else {
         NoData->hide();
         int vis=0;
-
+        ui->scrollArea->setUpdatesEnabled(false);
         for (int i=0;i<Graphs.size();i++) {
+            Graphs[i]->setUpdatesEnabled(false);
             if (Graphs[i]->isEmpty()) {
                 GraphAction[i]->setVisible(false);
                 Graphs[i]->hide();
@@ -577,18 +588,35 @@ void Daily::Load(QDate date)
         if (!cpap) {
             SF->hide();
         }
+        //splitter->layout();
+        for (int i=0;i<Graphs.size();i++) {
+            Graphs[i]->setUpdatesEnabled(true);
+        }
+        //splitter->addStrut(vis*default_height);
+        //QSize aa(this->width(),vis*default_height);
+        //splitter->SetMinimumSize(aa);
+        //splitter->SetFixedSize(aa);
+
+        GraphLayout->setMinimumHeight(vis*default_height);
+
         //splitter->setMinimumHeight(0);
         //splitter->setMinimumHeight(vis*default_height);
         //if (vis>4) {
         //splitter->setMaximumHeight(vis*default_height);
         //} //else {
        // }
-        splitter->layout();
+//        splitter->blockSignals(true);
+
+        //splitter->layout();
+        ui->scrollArea->setUpdatesEnabled(true);
+        ui->scrollArea->update();
+        //ui->scrollArea->update();
+        //splitter->layout();
 
        // spacer->show();
     }
 
-    splitter->update();
+    //splitter->update();
     RedrawGraphs();
 
     QString epr,modestr;
