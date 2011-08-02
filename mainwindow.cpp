@@ -17,6 +17,7 @@
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
+#include "preferencesdialog.h"
 
 
 #include "Graphs/glcommon.h"
@@ -60,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     daily=NULL;
     //overview=NULL;
     //oximetry=NULL;
-
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
@@ -351,4 +351,12 @@ void MainWindow::on_action_Memory_Hog_toggled(bool checked)
 void MainWindow::on_action_Reset_Graph_Layout_triggered()
 {
     if (daily) daily->ResetGraphLayout();
+}
+
+void MainWindow::on_action_Preferences_triggered()
+{
+    PreferencesDialog pd(this);
+    if (pd.exec()==PreferencesDialog::Accepted) {
+        qDebug() << "Preferences Accepted";
+    }
 }

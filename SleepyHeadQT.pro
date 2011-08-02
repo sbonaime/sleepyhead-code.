@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     Graphs/gSegmentChart.cpp \
     Graphs/gSessionTime.cpp \
     qextserialport/qextserialport.cpp \
-    Graphs/gSplitter.cpp
+    Graphs/gSplitter.cpp \
+    preferencesdialog.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -106,14 +107,16 @@ HEADERS  += \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
     qextserialport/qextserialenumerator.h \
-    Graphs/gSplitter.h
+    Graphs/gSplitter.h \
+    preferencesdialog.h
 
 
 FORMS    += \
     daily.ui \
     overview.ui \
     mainwindow.ui \
-    oximetry.ui
+    oximetry.ui \
+    preferencesdialog.ui
 
 RESOURCES += \
     Resources.qrc

@@ -57,6 +57,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     ui->graphSizer->addWidget(GraphLayout,1);
 
     ui->graphSizer->setMargin(0);
+    ui->graphSizer->setContentsMargins(0,0,0,0);
     splitter=new QVBoxLayout(GraphLayout);
     splitter->setMargin(0);
     splitter->setContentsMargins(0,0,0,0);
@@ -559,6 +560,7 @@ void Daily::Load(QDate date)
         //splitter->setMinimumHeight(0);
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
+
         for (int i=0;i<Graphs.size();i++) {
             GraphAction[i]->setVisible(false);
             Graphs[i]->hide();
@@ -599,6 +601,7 @@ void Daily::Load(QDate date)
 
         GraphLayout->setMinimumHeight(vis*default_height);
 
+
         //splitter->setMinimumHeight(0);
         //splitter->setMinimumHeight(vis*default_height);
         //if (vis>4) {
@@ -607,7 +610,7 @@ void Daily::Load(QDate date)
        // }
 //        splitter->blockSignals(true);
 
-        //splitter->layout();
+        splitter->layout();
         ui->scrollArea->setUpdatesEnabled(true);
         ui->scrollArea->update();
         //ui->scrollArea->update();

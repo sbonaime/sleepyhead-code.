@@ -80,6 +80,8 @@ private slots:
 
     void on_action_Reset_Graph_Layout_triggered();
 
+    void on_action_Preferences_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;
@@ -87,7 +89,6 @@ private:
     Oximetry * oximetry;
     bool first_load;
     Profile *profile;
-
 };
 
 #endif // MAINWINDOW_H
