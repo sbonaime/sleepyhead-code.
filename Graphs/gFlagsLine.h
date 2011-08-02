@@ -30,6 +30,7 @@ class gFlagsLine:public gLayer
         bool m_always_visible;
         int total_lines,line_num;
         FlagType m_flt;
+        QColor m_flag_color;
 };
 
 class gFlagsGroup:public gLayerGroup

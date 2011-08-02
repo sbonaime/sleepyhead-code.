@@ -11,8 +11,7 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor col,QString label,FlagType flt)
 :gLayer(code),m_label(label),m_flt(flt)
 {
-    color.clear();
-    color.push_back(col);
+    m_flag_color=col;
 }
 gLineOverlayBar::~gLineOverlayBar()
 {
@@ -51,7 +50,6 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     float bottom=start_py+25, top=start_py+height-25;
-    QColor & col=color[0];
 
     double X;
     double Y;
@@ -141,7 +139,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     } else glLineWidth (1);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glColor4ub(col.red(),col.green(),col.blue(),col.alpha());
+    w.qglColor(m_flag_color);
     if (quadcnt>0) {
         //glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, quadarray);

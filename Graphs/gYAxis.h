@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gYAxis Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef GYAXIS_H
 #define GYAXIS_H
@@ -34,6 +34,12 @@ class gYAxis:public gLayer
         bool m_show_minor_ticks;
         bool m_show_major_ticks;
         float m_yaxis_scale;
+
+        QColor m_line_color;
+        QColor m_text_color;
+        QColor m_major_color;
+        QColor m_minor_color;
+
 };
 
 #endif // GYAXIS_H

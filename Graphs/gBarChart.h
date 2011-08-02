@@ -28,6 +28,7 @@ class gBarChart:public gLayer
         virtual const QString & FormatY(double v) { static QString t; t.sprintf("%.1f",v); return t; }
 
         gXAxis *Xaxis;
+        QVector<QColor> color;
 };
 
 #endif // GBARCHART_H

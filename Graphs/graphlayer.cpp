@@ -11,8 +11,8 @@ gLayer::gLayer(ChannelID code,QString title)
 {
     m_visible = true;
     m_movable = false;
-    color.push_back(QColor("red"));
-    color.push_back(QColor("green"));
+    //color.push_back(QColor("red"));
+    //color.push_back(QColor("green"));
     m_day=NULL;
     m_miny=m_maxy=0;
     m_minx=m_maxx=0;

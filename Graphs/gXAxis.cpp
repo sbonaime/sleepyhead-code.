@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gXAxis Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <math.h>
 #include <QDebug>
@@ -11,8 +11,10 @@
 gXAxis::gXAxis(QColor col)
 :gLayer(EmptyChannel)
 {
-    color.clear();
-    color.push_back(col);
+    m_line_color=col;
+    m_text_color=col;
+    m_major_color=Qt::darkGray;
+    m_minor_color=Qt::lightGray;
     m_show_major_lines=false;
     m_show_minor_lines=false;
     m_show_minor_ticks=true;

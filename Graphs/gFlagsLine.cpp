@@ -67,11 +67,9 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
 }
 
 
-gFlagsLine::gFlagsLine(ChannelID code,QColor col,QString label,bool always_visible,FlagType flt)
-:gLayer(code),m_label(label),m_always_visible(always_visible),m_flt(flt)
+gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
+:gLayer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
-    color.clear();
-    color.push_back(col);
 }
 gFlagsLine::~gFlagsLine()
 {
@@ -111,16 +109,18 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     float line_top=(start_py+height-line_h)-line_num*line_h;
 
     // Alternating box color
-    QColor *barcol=&col2;
+    QColor * barcol=&col2;
     if (line_num & 1)
         barcol=&col1;
 
+    int qo=0;
+    //if (evil_intel_graphics_card) qo=1;
 
     // Filled rectangle
-    glColor4ub(barcol->red(),barcol->green(),barcol->blue(),barcol->alpha());
+    w.qglColor(*barcol);
     glBegin(GL_QUADS);
-    glVertex2f(start_px+1, line_top);
-    glVertex2f(start_px+1, line_top+line_h);
+    glVertex2f(start_px+qo, line_top);
+    glVertex2f(start_px+qo, line_top+line_h);
     glVertex2f(start_px+width-1, line_top+line_h);
     glVertex2f(start_px+width-1, line_top);
     glEnd();
@@ -139,8 +139,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     GetTextExtent(m_label,x,y);
     DrawText(w,m_label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
     float x1,x2;
-
-    QColor & col=color[0];
 
     float top=floor(line_top)+2;
     float bottom=top+floor(line_h)-3;
@@ -176,7 +174,6 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
             }
         }
     }
-    glColor4ub(col.red(),col.green(),col.blue(),col.alpha());
     glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
     glEnable(GL_SCISSOR_TEST);
 
@@ -190,6 +187,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     } else glLineWidth (1);
 
     glEnableClientState(GL_VERTEX_ARRAY);
+    w.qglColor(m_flag_color);
     if (quadcnt>0) {
         glVertexPointer(2, GL_SHORT, 0, quadarray);
         glDrawArrays(GL_QUADS, 0, quadcnt>>1);

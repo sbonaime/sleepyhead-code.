@@ -11,8 +11,10 @@
 gYAxis::gYAxis(QColor col)
 :gLayer(EmptyChannel)
 {
-    color.clear();
-    color.push_back(col);
+    m_line_color=col;
+    m_text_color=col;
+    m_major_color=Qt::darkGray;
+    m_minor_color=Qt::lightGray;
 
     m_show_major_lines=true;
     m_show_minor_lines=true;
@@ -23,8 +25,6 @@ gYAxis::~gYAxis()
 }
 void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 {
-    static QColor DARK_GREY(0xc0,0xc0,0xc0,0x80);
-    static QColor LIGHT_GREY(0xd8,0xd8,0xd8,0x80);
     float x,y;
     int labelW=0;
 
@@ -79,9 +79,6 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     int height=scry-(topm+start_py);
     if (height<0) return;
 
-    const QColor & linecol1=LIGHT_GREY;
-    const QColor & linecol2=DARK_GREY;
-
     QString fd="0";
     GetTextExtent(fd,x,y);
 
@@ -102,14 +99,17 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     float ty,h;
 
     qint32 vertcnt=0;
-    GLshort * vertarray=vertex_array[0];
-    if (vertarray==NULL) {
-        qWarning() << "VertArray==NULL";
+    GLshort * vertarray=(GLshort *)vertex_array[0];
+    qint32 minorvertcnt=0;
+    GLshort * minorvertarray=(GLshort *)vertex_array[1];
+    qint32 majorvertcnt=0;
+    GLshort * majorvertarray=(GLshort *)vertex_array[2];
+
+    if ((vertarray==NULL) || (minorvertarray==NULL) || (majorvertarray==NULL)) {
+        qWarning() << "gYAxis::Plot()  VertArray==NULL";
         return;
     }
 
-    glColor4ub(linecol1.red(),linecol1.green(),linecol1.blue(),linecol1.alpha());
-    glLineWidth(1);
     if (min_ytick<=0) {
         qDebug() << "min_ytick error in gYAxis::Plot()";
         return;
@@ -127,14 +127,14 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         vertarray[vertcnt++]=start_px;
         vertarray[vertcnt++]=h;
         if (m_show_minor_lines && (i > miny)) {
-            glBegin(GL_LINES);
-            glVertex2f(start_px+1, h);
-            glVertex2f(start_px+width, h);
-            glEnd();
+            minorvertarray[minorvertcnt++]=start_px+1;
+            minorvertarray[minorvertcnt++]=h;
+            minorvertarray[minorvertcnt++]=start_px+width;
+            minorvertarray[minorvertcnt++]=h;
         }
         if (vertcnt>maxverts) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
-            return;
+            break;
         }
     }
 
@@ -144,7 +144,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=start_py+ty;
-        DrawText(w,fd,start_px-12-x,scry-(h-(y/2.0)),0);
+        DrawText(w,fd,start_px-12-x,scry-(h-(y/2.0)),0,m_text_color);
 
         vertarray[vertcnt++]=start_px-4;
         vertarray[vertcnt++]=h;
@@ -156,11 +156,10 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         }
 
         if (m_show_major_lines && (i > miny)) {
-            glColor4ub(linecol2.red(),linecol2.green(),linecol2.blue(),linecol2.alpha());
-            glBegin(GL_LINES);
-            glVertex2f(start_px+1, h);
-            glVertex2f(start_px+width, h);
-            glEnd();
+            majorvertarray[majorvertcnt++]=start_px+1;
+            majorvertarray[majorvertcnt++]=h;
+            majorvertarray[majorvertcnt++]=start_px+width;
+            majorvertarray[majorvertcnt++]=h;
         }
     }
     if (vertcnt>=maxverts) {
@@ -168,12 +167,19 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         return;
     }
 
-    // Draw the little ticks.
+    // Draw the lines & ticks
+    // Turn on blending??
     glLineWidth(1);
-    glColor3f(0,0,0);
+    w.qglColor(m_line_color);
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
+    w.qglColor(m_minor_color);
+    glVertexPointer(2, GL_SHORT, 0, minorvertarray);
+    glDrawArrays(GL_LINES, 0, minorvertcnt>>1);
+    w.qglColor(m_major_color);
+    glVertexPointer(2, GL_SHORT, 0, majorvertarray);
+    glDrawArrays(GL_LINES, 0, majorvertcnt>>1);
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 }
 

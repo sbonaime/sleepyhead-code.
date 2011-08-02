@@ -20,7 +20,7 @@ public:
     gLayer(ChannelID code=EmptyChannel,QString title="");
     virtual ~gLayer();
     virtual void Plot(gGraphWindow & w,float scrx,float scry)=0;
-    QVector<QColor> color;
+    //QVector<QColor> color;
 
     virtual void SetDay(Day * d);
     virtual void SetCode(ChannelID c) { m_code=c; }
@@ -42,8 +42,8 @@ protected:
     bool m_movable;
     qint64 m_minx,m_maxx;
     EventDataType m_miny,m_maxy;
-    QString m_title;
     ChannelID m_code;
+    QString m_title;
 };
 
 class gLayerGroup:public gLayer

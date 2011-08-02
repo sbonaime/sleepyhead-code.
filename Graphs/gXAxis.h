@@ -31,5 +31,10 @@ class gXAxis:public gLayer
         bool m_show_minor_ticks;
         bool m_show_major_ticks;
 
+        QColor m_line_color;
+        QColor m_text_color;
+        QColor m_major_color;
+        QColor m_minor_color;
+
 };
 #endif // GXAXIS_H

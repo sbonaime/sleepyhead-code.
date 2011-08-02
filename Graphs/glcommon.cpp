@@ -19,19 +19,19 @@ QFont * defaultfont=NULL;
 QFont * mediumfont=NULL;
 QFont * bigfont=NULL;
 
-GLshort *vertex_array[num_vert_arrays]={NULL};
+GLshort * vertex_array[num_vert_arrays]={0};
 bool evil_intel_graphics_chip=false;
 
 // Must be called from a thread inside the application.
 void InitGraphs()
 {
     if (!_graph_init) {
-
         defaultfont=new QFont("FreeSans",10);
         bigfont=new QFont("FreeSans",35);
         mediumfont=new QFont("FreeSans",18);
         for (int i=0;i<num_vert_arrays;i++) {
-            vertex_array[i]=new GLshort[maxverts];
+            GLshort *a=(GLshort *)calloc(maxverts+8,sizeof(GLshort));
+            vertex_array[i]=a;
         }
         _graph_init=true;
     }
@@ -43,7 +43,7 @@ void DoneGraphs()
         delete bigfont;
         delete mediumfont;
         for (int i=0;i<num_vert_arrays;i++) {
-            delete [] vertex_array[i];
+            free(vertex_array[i]);
         }
         _graph_init=false;
     }

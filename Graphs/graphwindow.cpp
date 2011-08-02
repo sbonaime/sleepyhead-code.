@@ -45,6 +45,7 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     min_x=max_x=0;
     rmin_y=rmax_y=0;
     min_y=max_y=0;
+    InitGraphs();
 }
 
 /*gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
@@ -862,7 +863,6 @@ void gGraphWindow::paintGL()
     if (m_scrX<=0) return;
     if (m_scrY<=0) return;
 
-    InitGraphs();
     //glDisable(GL_DEPTH_TEST);
     Render(m_scrX,m_scrY);
 

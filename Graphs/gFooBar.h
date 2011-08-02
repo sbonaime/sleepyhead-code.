@@ -12,13 +12,16 @@
 class gFooBar:public gLayer
 {
     public:
-        gFooBar(int offset=10,QColor color1=QColor("orange"),QColor color2=QColor("dark grey"),bool funkbar=false);
+        gFooBar(int offset=10,QColor handle_color=QColor("orange"),QColor line_color=QColor("dark grey"),bool shadow=false,QColor shadow_color=QColor(40,40,40,40));
         virtual ~gFooBar();
         virtual void Plot(gGraphWindow & w,float scrx,float scry);
         static const int Margin=15;
     protected:
-        bool m_funkbar;
         int m_offset;
+        QColor m_line_color;
+        QColor m_handle_color;
+        QColor m_shadow_color;
+        bool m_shadow;
 };
 
 #endif // GFOOBAR_H
