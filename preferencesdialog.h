@@ -2,7 +2,7 @@
 #define PREFERENCESDIALOG_H
 
 #include <QDialog>
-
+#include <QModelIndex>
 namespace Ui {
     class PreferencesDialog;
 }
@@ -14,6 +14,14 @@ class PreferencesDialog : public QDialog
 public:
     explicit PreferencesDialog(QWidget *parent = 0);
     ~PreferencesDialog();
+
+private slots:
+    void on_combineSlider_sliderMoved(int position);
+
+    void on_IgnoreSlider_sliderMoved(int position);
+
+    void on_eventColor_selected(QString);
+    void on_eventTable_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::PreferencesDialog *ui;
