@@ -366,10 +366,6 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
     sessionlist[s->session()]=s; // To make sure it get's saved later even if it's not wanted.
 
-    if (session_length<ignore_sessions) {
-        return NULL;
-    }
-
     QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
 
     QDate date=d2.date();
@@ -379,7 +375,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
 
     bool combine_next_day=false;
-    int closest_session=-1;
+    int closest_session=0;
 
     if (time<split_time) {
         date=date.addDays(-1);
@@ -402,6 +398,11 @@ Day *Machine::AddSession(Session *s,Profile *p)
                 }
             }
         }
+    }
+
+    if (session_length<ignore_sessions) {
+        //if (!closest_session || (closest_session>=60))
+        return NULL;
     }
 
     if (!firstsession) {

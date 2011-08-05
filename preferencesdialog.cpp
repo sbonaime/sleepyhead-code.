@@ -15,23 +15,39 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         QTime t=pref["DaySplitTime"].toTime();
         ui->timeEdit->setTime(t);
     }
+    int val;
+
     if (pref.Exists("CombineCloserSessions")) {
-        int i=pref["CombineCloserSessions"].toInt();
-        ui->combineSlider->setValue(i);
-        if (i>0) {
-            ui->combineLCD->display(i);
-        } else ui->combineLCD->display(tr("OFF"));
+        val=pref["CombineCloserSessions"].toInt();
+        ui->combineSlider->setValue(val);
+    } else {
+        ui->combineSlider->setValue(val=0);
+        pref["CombineCloserSessions"]=val;
     }
+    if (val>0) {
+        ui->combineLCD->display(val);
+    } else ui->combineLCD->display(tr("OFF"));
+
+
     if (pref.Exists("IgnoreShorterSessions")) {
-        int i=pref["IgnoreShorterSessions"].toInt();
-        ui->IgnoreSlider->setValue(i);
-        if (i>0) {
-            ui->IgnoreLCD->display(i);
-        } else ui->IgnoreLCD->display(tr("OFF"));
+        val=pref["IgnoreShorterSessions"].toInt();
+        ui->IgnoreSlider->setValue(val);
+    } else {
+        ui->IgnoreSlider->setValue(val=0);
+        pref["IgnoreShorterSessions"]=val;
     }
+    if (val>0) {
+        ui->IgnoreLCD->display(val);
+    } else ui->IgnoreLCD->display(tr("OFF"));
+
+
+    bool b;
     if (pref.Exists("MemoryHog")) {
-        ui->memoryHogCheckbox->setChecked(pref["MemoryHog"].toBool());
+        b=pref["MemoryHog"].toBool();
+    } else {
+        pref["MemoryHog"]=b=false;
     }
+    ui->memoryHogCheckbox->setChecked(b);
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
