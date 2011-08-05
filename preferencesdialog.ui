@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -99,7 +99,7 @@ It will be faster changing to days you've already been to if you leave it on. </
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Combine Sessions</string>
+            <string>Combine Close Sessions </string>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

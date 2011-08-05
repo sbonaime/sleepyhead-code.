@@ -120,10 +120,12 @@ void Oximetry::on_RefreshPortsButton_clicked()
             if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
             ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
             z++;
-            qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
         }
-        //qDebug() << "port name:" << ports.at(i).portName;
-        //qDebug() << "enumerator name:" << ports.at(i).enumName;
+        //qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
+        qDebug() << "port name:" << ports.at(i).portName;
+        qDebug() << "phys name:" << ports.at(i).physName;
+        qDebug() << "friendly name:" << ports.at(i).friendName;
+        qDebug() << "enumerator name:" << ports.at(i).enumName;
     }
     if (z>0) {
         ui->RunButton->setEnabled(true);
