@@ -699,6 +699,10 @@ void Daily::Load(QDate date)
             "</table></td>";
         }
 
+
+        // Note, this may not be a problem since Qt bug 13622 was discovered
+        // as it only relates to text drawing, which the Pie chart does not do
+
         if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
             html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
             G_AHI->setFixedSize(gwwidth,120);

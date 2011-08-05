@@ -28,11 +28,13 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 {
     float px,py;
 
-    //int start_px=w.GetLeftMargin();
-    //int start_py=w.GetTopMargin();
+    int start_px=w.GetLeftMargin();
+    int start_py=w.GetBottomMargin();
     float width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
+    if (width<40)
+        return;
     qint64 minx;
     qint64 maxx;
     if (w.BlockZoom()) {
@@ -42,26 +44,133 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         minx=w.min_x;
         maxx=w.max_x;
     }
-    double xx=maxx-minx;
-
+    qint64 xx=maxx-minx;
     if (xx<=0) return;
 
-    double xmult=width/xx;
+    qint64 rxx=w.rmax_x-w.rmin_x;
 
-    QString fd;
-    if (xx<86400000L) {
-        fd="00:00:00:0000";
-    } else {
-        fd="XXX";
+    QString fd,fmt;
+    int divisors[]={86400000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50};
+    int divcnt=sizeof(divisors)/sizeof(int);
+    int divmax,dividx;
+    int fitmode;
+    if (xx>86400000L) {         // Day
+        fd="00 MMM";
+        fmt="dd MMM";
+        dividx=0;
+        divmax=1;
+        fitmode=0;
+    } else if (xx>60000) {    // Minutes
+        fd="00:00";
+        dividx=1;
+        divmax=10;
+        fitmode=1;
+    } else if (xx>5000) {      // Seconds
+        fd="00:00:00";
+        dividx=9;
+        divmax=16;
+        fitmode=2;
+    } else {                   // Microseconds
+        fd="00:00:00:000";
+        dividx=15;
+        divmax=divcnt;
+        fitmode=3;
     }
+
     float x,y;
     GetTextExtent(fd,x,y);
-    if (x<=0) {
+
+    if (x<=0) { // font size bug
         qWarning() << "gXAxis::Plot() x<=0";
         return;
     }
 
-    double max_ticks=(x+25.0)/width; // y+50 for rotated text
+    float max_ticks=float(width)/(x+10);  // Max number of ticks that will fit
+
+    float fit_ticks=0;
+    int div=-1;
+    float closest=0,tmp,tmpft;
+    for (int i=dividx;i<divmax;i++){
+        tmpft=ceil(float(xx)/float(divisors[i]));
+        tmp=max_ticks-tmpft;
+        if (tmp<0) continue;
+        if (tmpft>closest) {     // Find the closest scale to the number
+            closest=tmpft;       // that will fit
+            div=i;
+            fit_ticks=tmpft;
+        }
+    }
+    if (fit_ticks==0) {
+        qDebug() << "FitTicks==0!";
+        return;
+    }
+    if (div<0) {
+        qDebug() << "div<0";
+        return;
+    }
+    qint64 step=divisors[div];
+
+    qint64 zqvx=minx-w.rmin_x;              // Amount of time before minx
+    qint64 zz=zqvx/step;                  // Number of ticks that fit up to minx
+
+    //Align left minimum to divisor
+    qint64 rm=w.rmin_x % step;     // Offset from rminx of an aligned time
+    rm=step-rm;
+    rm+=w.rmin_x;
+    //qint64 rd=w.rmin_x / divisors[div];
+    //rd*=divisors[div];
+    qint64 aligned_start=(zz*step)+rm; // First location of aligned point.
+    aligned_start/=step;
+    aligned_start*=step;
+
+
+    while (aligned_start<minx) {
+        aligned_start+=step;
+    }
+    double xmult=double(width)/double(xx);
+    w.qglColor(Qt::black);
+    QString tmpstr;
+    QTime t1=QDateTime::currentDateTime().time();
+    QTime t2=QDateTime::currentDateTimeUtc().time();
+    qint64 offset=t2.secsTo(t1)*1000;
+    for (qint64 i=aligned_start;i<maxx;i+=step) {
+        px=double(i-minx)*xmult;
+        px+=start_px;
+        glBegin(GL_LINES);
+        glVertex2f(px,start_py);
+        glVertex2f(px,start_py-6);
+        glEnd();
+
+
+        if (fitmode==0) {
+        } else {
+            qint64 j=i+offset;
+            short m=(j/60000) % 60;
+            short h=(j/3600000) % 24;
+            short s=(j/1000) % 60;
+            if (fitmode==1) { // minute
+                tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+            } else if (fitmode==2) { // second
+                tmpstr=QString("%1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0'));
+            } else if (fitmode==3) { // milli
+                short ms=j % 1000;
+                tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
+            }
+        }
+        DrawText(w,tmpstr,px-(x/2),scry-(w.GetBottomMargin()-12),0);
+
+    }
+    int i=0;
+    return;
+    // subtract 1.. align to first div unit
+
+
+    float zwv2=zqvx/max_ticks;              // Number of ticks that would fit before
+    float gv;
+    float res=fmodf(zwv2,gv);
+
+
+
     double jj=1/max_ticks;
     double minor_tick=max_ticks*xx;
     double st2=minx; //double(int(frac*1440.0))/1440.0;
