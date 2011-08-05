@@ -45,14 +45,14 @@ ChannelID OXI_Pulse, OXI_SPO2, OXI_Plethysomogram, OXI_PulseChange, OXI_SPO2Drop
 ChannelID ZEO_SleepStage, ZEO_Waveform;
 ChannelID JOURNAL_Notes, JOURNAL_Weight;
 
-ChannelID ChannelGroup::Get(ChannelType ctype,QString description,QString label,QString lookup)
+ChannelID ChannelGroup::Get(ChannelType ctype,QString description,QString label,QString lookup,QColor color)
 {
     ChannelID id=m_first+m_pos;
     if (++m_pos>=m_size) {
         qCritical("Not enough slots allocated for channel group");
         abort();
     }
-    channel[id]=Channel(id,m_type,ctype,description,label);
+    channel[id]=Channel(id,m_type,ctype,description,label,color);
     m_channelsbytype[ctype][id]=channel_lookup[lookup]=m_channel[id]=&channel[id];
 
     return id;

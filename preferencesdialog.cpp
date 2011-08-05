@@ -10,7 +10,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->eventTable->setColumnWidth(0,40);
-    ui->eventTable->setColumnWidth(1,50);
+    ui->eventTable->setColumnWidth(1,55);
     int row=0;
     QTableWidgetItem *item;
     QHash<ChannelID, Channel>::iterator ci;
@@ -20,11 +20,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
             item=new QTableWidgetItem(ci.value().details());
             ui->eventTable->setItem(row,2,item);
             QCheckBox *c=new QCheckBox(ui->eventTable);
+            c->setChecked(true);
             QLabel *pb=new QLabel(ui->eventTable);
             pb->setText("foo");
             ui->eventTable->setCellWidget(row,0,c);
             ui->eventTable->setCellWidget(row,1,pb);
-            QColor a(random() % 255, random() %255, random()%255, 255);
+            QColor a(random() % 255, random() % 255, random() % 255, 255);
             QPalette p(a,a,a,a,a,a,a);
 
             pb->setPalette(p);

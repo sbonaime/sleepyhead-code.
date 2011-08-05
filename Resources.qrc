@@ -12,5 +12,6 @@
         <file>icons/back.png</file>
         <file>fonts/FreeSans.ttf</file>
         <file>icons/refresh.png</file>
+        <file>docs/usage.html</file>
     </qresource>
 </RCC>

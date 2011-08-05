@@ -82,9 +82,6 @@ protected:
     bool firstsession;
 };
 
-
-
-
 class CPAP:public Machine
 {
 public:

@@ -1,3 +1,9 @@
+/*
+ SleepyHead Preferences Dialog GUI Headers
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef PREFERENCESDIALOG_H
 #define PREFERENCESDIALOG_H
 

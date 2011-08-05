@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  MainWindow Headers
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
@@ -81,6 +81,8 @@ private slots:
     void on_action_Reset_Graph_Layout_triggered();
 
     void on_action_Preferences_triggered();
+
+    void on_actionDisplay_Graph_Snapshots_toggled(bool arg1);
 
 private:
     Ui::MainWindow *ui;

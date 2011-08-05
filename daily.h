@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  Daily GUI Headers
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef DAILY_H
 #define DAILY_H
@@ -100,7 +100,7 @@ private:
     Ui::Daily *ui;
     Profile *profile;
     QDate previous_date;
-    MyScrollArea *scrollArea;
+    QScrollArea *scrollArea;
     QVBoxLayout *splitter;
     QLabel *NoData;
     QWidget *spacer;

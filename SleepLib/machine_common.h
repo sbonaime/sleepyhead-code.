@@ -8,6 +8,7 @@
 #define MACHINE_COMMON_H
 
 #include <QHash>
+#include <QColor>
 #include <QVector>
 #include <QVariant>
 #include <QString>
@@ -41,14 +42,15 @@ protected:
     ChannelType m_ctype;
     QString m_details;
     QString m_label;
+    QColor m_color;
     QVector<QVariant> m_option;
     EventDataType m_min_value;
     EventDataType m_max_value;
 public:
     Channel()
-        :m_id(0),m_mtype(MT_UNKNOWN), m_ctype(CT_Unknown), m_details(""), m_label("") {}
-    Channel(ChannelID id, MachineType mtype, ChannelType ctype, QString details, QString label)
-        :m_id(id),m_mtype(mtype),m_ctype(ctype),m_details(details),m_label(label) {}
+        :m_id(0),m_mtype(MT_UNKNOWN), m_ctype(CT_Unknown), m_details(""), m_label(""),m_color(Qt::black) {}
+    Channel(ChannelID id, MachineType mtype, ChannelType ctype, QString details, QString label, QColor color)
+        :m_id(id),m_mtype(mtype),m_ctype(ctype),m_details(details),m_label(label),m_color(color) {}
     ChannelID & id() { return m_id; }
     MachineType & machinetype() { return m_mtype; }
     ChannelType & channeltype() { return m_ctype; }
@@ -92,7 +94,7 @@ public:
     Channel & operator [](QString lookup) { return *m_channel_lookup[lookup]; }
     QHash<ChannelID, Channel *> & operator [](ChannelType type) { return m_channelsbytype[type]; }
 
-    ChannelID Get(ChannelType ctype,QString description="",QString label="",QString lookup="");
+    ChannelID Get(ChannelType ctype,QString description="",QString label="",QString lookup="",QColor color=Qt::black);
     ChannelGroup();
     ChannelGroup(MachineType type, ChannelID first, ChannelID reserved=0x200);
 };

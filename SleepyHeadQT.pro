@@ -122,4 +122,5 @@ RESOURCES += \
     Resources.qrc
 
 OTHER_FILES += \
-    docs/index.html
+    docs/index.html \
+    docs/usage.html

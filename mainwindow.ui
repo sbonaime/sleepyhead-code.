@@ -592,6 +592,7 @@
     <addaction name="separator"/>
     <addaction name="actionUse_AntiAliasing"/>
     <addaction name="actionOverlay_Bars"/>
+    <addaction name="actionDisplay_Graph_Snapshots"/>
     <addaction name="action_Link_Graphs"/>
     <addaction name="action_Noon_Date_Split"/>
     <addaction name="action_Memory_Hog"/>
@@ -731,6 +732,18 @@
   <action name="action_Reset_Graph_Layout">
    <property name="text">
     <string>&amp;Reset Graph Layout</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Graph_Snapshots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Crashy Snapshots</string>
+   </property>
+   <property name="toolTip">
+    <string>Warning: Enabling this feature may require you to either hand edit the Preferences.xml or delete SleepyHeads data folder.
+</string>
    </property>
   </action>
  </widget>

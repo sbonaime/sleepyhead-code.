@@ -699,8 +699,8 @@ void Daily::Load(QDate date)
             "</table></td>";
         }
 
-        html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-        if (1) {  // AHI Pie Chart
+        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+            html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
             G_AHI->setFixedSize(gwwidth,120);
             QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
             QByteArray byteArray;
@@ -795,7 +795,8 @@ void Daily::Load(QDate date)
 
     if (cpap) {
         if (mode==MODE_BIPAP) {
-            {
+            if (pref["EnableGraphSnapshots"].toBool()) {
+                {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
             TAP_EAP->setFixedSize(gwwidth,30);
             QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,30,false);
@@ -804,8 +805,8 @@ void Daily::Load(QDate date)
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
             html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            }
-            {
+                }
+                {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
             TAP_IAP->setFixedSize(gwwidth,30);
             QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,30,false);
@@ -814,10 +815,11 @@ void Daily::Load(QDate date)
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
             html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+                }
             }
         } else if (mode==MODE_APAP) {
+            if (pref["EnableGraphSnapshots"].toBool()) {
             html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
-
             TAP->setFixedSize(gwwidth,30);
             QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
             QByteArray byteArray;
@@ -825,6 +827,7 @@ void Daily::Load(QDate date)
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
             html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            }
         }
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";

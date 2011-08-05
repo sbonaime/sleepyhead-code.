@@ -97,6 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
     ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
 
+    if (!pref.Exists("EnableGraphSnapshots")) pref["EnableGraphSnapshots"]=false;
+    ui->actionDisplay_Graph_Snapshots->setChecked(pref["EnableGraphSnapshots"].toBool());
+
+
     if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=true;
     ui->action_Memory_Hog->setChecked(pref["MemoryHog"].toBool());
 
@@ -359,4 +363,11 @@ void MainWindow::on_action_Preferences_triggered()
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
     }
+}
+
+void MainWindow::on_actionDisplay_Graph_Snapshots_toggled(bool checked)
+{
+    //if (QMessageBox::question(this,"Warning","Turning this feature on has caused crashes on some hardware configurations due to OpenGL/Qt bugs.\nIf you have already seen Pie Charts & CandleSticks in the left panel of daily view previously, you're not affected by this bug.\nAre you sure you want to enable this?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
+        pref["EnableGraphSnapshots"]=checked;
+    //}
 }

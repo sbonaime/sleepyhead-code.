@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  Overview GUI Headers
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
