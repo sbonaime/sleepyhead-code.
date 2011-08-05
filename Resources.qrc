@@ -13,5 +13,6 @@
         <file>fonts/FreeSans.ttf</file>
         <file>icons/refresh.png</file>
         <file>docs/usage.html</file>
+        <file>icons/oximeter.png</file>
     </qresource>
 </RCC>

@@ -363,3 +363,10 @@ void MainWindow::on_actionDisplay_Graph_Snapshots_toggled(bool checked)
         pref["EnableGraphSnapshots"]=checked;
     //}
 }
+
+void MainWindow::on_oximetryButton_clicked()
+{
+    if (oximetry) {
+        ui->tabWidget->setCurrentWidget(oximetry);
+    }
+}

@@ -82,6 +82,8 @@ private slots:
 
     void on_actionDisplay_Graph_Snapshots_toggled(bool arg1);
 
+    void on_oximetryButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

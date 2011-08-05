@@ -494,7 +494,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="preferencesButton">
+              <widget class="QToolButton" name="oximetryButton">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
@@ -508,11 +508,11 @@
                 </size>
                </property>
                <property name="text">
-                <string>Preferences</string>
+                <string>Oximetry</string>
                </property>
                <property name="icon">
                 <iconset resource="Resources.qrc">
-                 <normaloff>:/icons/preferences.png</normaloff>:/icons/preferences.png</iconset>
+                 <normaloff>:/icons/oximeter.png</normaloff>:/icons/oximeter.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -578,7 +578,6 @@
     </property>
     <addaction name="action_Import_Data"/>
     <addaction name="action_Preferences"/>
-    <addaction name="action_Profiles"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
