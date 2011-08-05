@@ -70,8 +70,6 @@ private slots:
 
     void on_actionUse_AntiAliasing_triggered(bool checked);
 
-    void on_action_Noon_Date_Split_toggled(bool );
-
     void on_actionDebug_toggled(bool arg1);
 
     void on_actionOverlay_Bars_toggled(bool arg1);

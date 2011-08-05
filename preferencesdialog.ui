@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -82,7 +82,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="memoryHogCheckbox">
            <property name="toolTip">
             <string>Turn this off if your worried about SleepyHead consuming too much memory. 
 It will be faster changing to days you've already been to if you leave it on. </string>

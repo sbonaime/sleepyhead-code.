@@ -308,9 +308,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
                 qWarning() << "PRS1Loader: Couldn't open event file " << s.value()[2];
             }
         }
-        const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
-        if (sess->hours()<=ignore_thresh) {
-            qDebug() << "Ignoring short session" << session << "which is only" << (sess->hours()*60.0) << "minute(s) long";
+        if ((sess->last() - sess->first()) == 0) {
+        //const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
+        //if (sess->hours()<=ignore_thresh) {
+            qDebug() << "Ignoring empty session" << session;//  << "which is only" << (sess->hours()*60.0) << "minute(s) long";
             delete sess;
             continue;
         }

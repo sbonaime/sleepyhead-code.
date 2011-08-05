@@ -157,7 +157,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             millisecond=d.time().msec();
 
             if (show_milliseconds) {
-                fd.sprintf("%02i:%02i:%02i:%04i",hour,minute,second,millisecond);
+                fd.sprintf("%02i:%02i:%02i:%03i",hour,minute,second,millisecond);
             } else if (show_seconds) {
                 fd.sprintf("%02i:%02i:%02i",hour,minute,second);
             } else {

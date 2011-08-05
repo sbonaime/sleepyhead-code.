@@ -94,9 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
-    if (!pref.Exists("NoonDateSplit")) pref["NoonDateSplit"]=false;
-    ui->action_Noon_Date_Split->setChecked(pref["NoonDateSplit"].toBool());
-
     if (!pref.Exists("EnableGraphSnapshots")) pref["EnableGraphSnapshots"]=false;
     ui->actionDisplay_Graph_Snapshots->setChecked(pref["EnableGraphSnapshots"].toBool());
 
@@ -323,11 +320,6 @@ void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
     if (daily)
         daily->RedrawGraphs();
 
-}
-
-void MainWindow::on_action_Noon_Date_Split_toggled(bool checked)
-{
-    pref["NoonDateSplit"]=checked;
 }
 
 void MainWindow::on_actionDebug_toggled(bool checked)

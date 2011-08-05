@@ -1,5 +1,6 @@
 #include <QLabel>
 #include <QColorDialog>
+#include "SleepLib/profiles.h"
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -9,6 +10,29 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui(new Ui::PreferencesDialog)
 {
     ui->setupUi(this);
+
+    if (pref.Exists("DaySplitTime")) {
+        QTime t=pref["DaySplitTime"].toTime();
+        ui->timeEdit->setTime(t);
+    }
+    if (pref.Exists("CombineCloserSessions")) {
+        int i=pref["CombineCloserSessions"].toInt();
+        ui->combineSlider->setValue(i);
+        if (i>0) {
+            ui->combineLCD->display(i);
+        } else ui->combineLCD->display(tr("OFF"));
+    }
+    if (pref.Exists("IgnoreShorterSessions")) {
+        int i=pref["IgnoreShorterSessions"].toInt();
+        ui->IgnoreSlider->setValue(i);
+        if (i>0) {
+            ui->IgnoreLCD->display(i);
+        } else ui->IgnoreLCD->display(tr("OFF"));
+    }
+    if (pref.Exists("MemoryHog")) {
+        ui->memoryHogCheckbox->setChecked(pref["MemoryHog"].toBool());
+    }
+
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
     int row=0;
@@ -35,25 +59,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         }
     }
 }
-void PreferencesDialog::on_eventColor_selected(QString col)
-{
-}
+
 
 PreferencesDialog::~PreferencesDialog()
 {
     delete ui;
-}
-
-void PreferencesDialog::on_combineSlider_sliderMoved(int position)
-{
-    ui->combineLCD->display(position);
-}
-
-void PreferencesDialog::on_IgnoreSlider_sliderMoved(int position)
-{
-    if (position>0) {
-        ui->IgnoreLCD->display(position);
-    } else ui->IgnoreLCD->display(tr("OFF"));
 }
 
 void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
@@ -72,4 +82,30 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
             qDebug() << "Color accepted" << col;
         }
     }
+}
+
+void PreferencesDialog::on_timeEdit_editingFinished()
+{
+    pref["DaySplitTime"]=ui->timeEdit->time();
+}
+
+void PreferencesDialog::on_memoryHogCheckbox_toggled(bool checked)
+{
+    pref["MemoryHog"]=checked;
+}
+
+void PreferencesDialog::on_combineSlider_valueChanged(int position)
+{
+    if (position>0) {
+        ui->combineLCD->display(position);
+    } else ui->combineLCD->display(tr("OFF"));
+    pref["CombineCloserSessions"]=position;
+}
+
+void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
+{
+    if (position>0) {
+        ui->IgnoreLCD->display(position);
+    } else ui->IgnoreLCD->display(tr("OFF"));
+    pref["IgnoreShorterSessions"]=position;
 }

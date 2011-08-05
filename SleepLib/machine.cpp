@@ -347,62 +347,62 @@ Day *Machine::AddSession(Session *s,Profile *p)
         highest_sessionid=s->session();
 
 
+    QTime split_time(12,0,0);
+    if (pref.Exists("DaySplitTime")) {
+        split_time=pref["DaySplitTime"].toTime();
+    }
+    int combine_sessions;
+    if (pref.Exists("CombineCloserSessions")) {
+        combine_sessions=pref["CombineCloserSessions"].toInt(); // In Minutes
+    } else combine_sessions=0;
+
+    int ignore_sessions;
+    if (pref.Exists("IgnoreShorterSessions")) {
+        ignore_sessions=pref["IgnoreShorterSessions"].toInt(); // In Minutes
+    } else ignore_sessions=0;
+
+    int session_length=s->last()-s->first();
+    session_length/=60000;
+
+    sessionlist[s->session()]=s; // To make sure it get's saved later even if it's not wanted.
+
+    if (session_length<ignore_sessions) {
+        return NULL;
+    }
+
     QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
 
     QDate date=d2.date();
     QTime time=d2.time();
 
-    if (s->session()==1311991200) {
-        int q=03;
-    }
-    QMap<QDate,Day *>::iterator dit;
+    QMap<QDate,Day *>::iterator dit,nextday;
 
-    if (pref.Exists("NoonDateSplit") && pref["NoonDateSplit"].toBool()) {
-        int hour=d2.time().hour();
-        if (hour<12)
-            date=date.addDays(-1);
-            //date=date.addDays(1);
-    } else {
+
+    bool combine_next_day=false;
+    int closest_session=-1;
+
+    if (time<split_time) {
         date=date.addDays(-1);
-
-        const int hours_since_last_session=4;
-        const int hours_since_midnight=12;
-
-        bool previous=false;
-        // Find what day session belongs to.
-        dit=day.find(date);
+    } else if (combine_sessions > 0) {
+        dit=day.find(date.addDays(-1)); // Check Day Before
         if (dit!=day.end()) {
-            // Previous day record exists...
-
-            // Calculate time since end of previous days last session
-            span=(s->first() - (*dit)->last())/3600000.0;
-
-            // less than n hours since last session yesterday?
-            if (span < hours_since_last_session) {
-                previous=true;
+            QDateTime lt=QDateTime::fromMSecsSinceEpoch(dit.value()->last());
+            closest_session=lt.secsTo(d2)/60;
+            if (closest_session<combine_sessions) {
+                date=date.addDays(-1);
             }
-        }
-
-        if (!previous) {
-            // Calculate Hours since midnight.
-            d1=d2;
-            d1.setTime(QTime(0,0,0));
-            float secsto=d1.secsTo(d2);
-            span=secsto/3600.0;
-
-            // Bedtime was late last night.
-            if (span < hours_since_midnight) {
-
-                previous=true;
+        } else {
+            nextday=day.find(date.addDays(1));// Check Day Afterwards
+            if (nextday!=day.end()) {
+                QDateTime lt=QDateTime::fromMSecsSinceEpoch(nextday.value()->first());
+                closest_session=d2.secsTo(lt)/60;
+                if (closest_session < combine_sessions) {
+                    // add todays here. pull all tomorrows records to this date.
+                    combine_next_day=true;
+                }
             }
-        }
-
-        if (!previous) {
-            // Revert to sessions original day.
-            date=date.addDays(1);
         }
     }
-    sessionlist[s->session()]=s;
 
     if (!firstsession) {
         if (firstday>date) firstday=date;
@@ -429,6 +429,18 @@ Day *Machine::AddSession(Session *s,Profile *p)
     }
     dd->AddSession(s);
 
+    if (combine_next_day) {
+        for (QVector<Session *>::iterator i=nextday.value()->begin();i!=nextday.value()->end();i++) {
+            dd->AddSession(*i);
+        }
+        QMap<QDate,QVector<Day *> >::iterator nd=p->daylist.find(date.addDays(1));
+        for (QVector<Day *>::iterator i=nd->begin();i!=nd->end();i++) {
+            if (*i==nextday.value()) {
+                nd.value().erase(i);
+            }
+        }
+        day.erase(nextday);
+    }
     return dd;
 }
 
@@ -542,30 +554,22 @@ bool Machine::SaveSession(Session *sess)
 }
 bool Machine::Save()
 {
-    QMap<QDate,Day *>::iterator d;
-    QVector<Session *>::iterator s;
     int size=0;
     int cnt=0;
 
     QString path=profile->Get("DataFolder")+"/"+hexid();
 
     // Calculate size for progress bar
-    for (d=day.begin();d!=day.end();d++)
-        size+=d.value()->size();
+    size=sessionlist.size();
 
-    for (d=day.begin();d!=day.end();d++) {
+    QHash<SessionID,Session *>::iterator s;
 
-        //qDebug() << "Day Save Commenced";
-        for (s=d.value()->begin(); s!=d.value()->end(); s++) {
-            cnt++;
-            if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
-            if ((*s)->IsChanged()) (*s)->Store(path);
-            (*s)->TrashEvents();
-            QApplication::processEvents();
-
-        }
-        //qDebug() << "Day Save Completed";
-
+    for (s=sessionlist.begin(); s!=sessionlist.end(); s++) {
+        cnt++;
+        if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
+        if ((*s)->IsChanged()) (*s)->Store(path);
+        (*s)->TrashEvents();
+        QApplication::processEvents();
     }
     return true;
 }

@@ -196,10 +196,17 @@ bool Preferences::Open(QString filename)
                 } else {
                     qDebug() << "XML Error:" << name << "=" << value << "??";
                 }
-            } else
-            if (type=="qlonglong") {
+            } else if (type=="qlonglong") {
                 qint64 d;
                 d=value.toLongLong(&ok);
+                if (ok) {
+                    p_preferences[name]=d;
+                } else {
+                    qDebug() << "XML Error:" << name << "=" << value << "??";
+                }
+            } else if (type=="int") {
+                int d;
+                d=value.toInt(&ok);
                 if (ok) {
                     p_preferences[name]=d;
                 } else {
@@ -224,11 +231,19 @@ bool Preferences::Open(QString filename)
                 }
             } else if (type=="qdatetime") {
                 QDateTime d;
-                d.fromString(value,"yyyy-MM-dd HH:mm:ss");
+                d=QDateTime::fromString(value,"yyyy-MM-dd HH:mm:ss");
                 if (d.isValid())
                     p_preferences[name]=d;
                 else
                     qWarning() << "XML Error: Invalid DateTime record" << name << value;
+
+            } else if (type=="qtime") {
+                QTime d;
+                d=QTime::fromString(value,"hh:mm:ss");
+                if (d.isValid())
+                    p_preferences[name]=d;
+                else
+                    qWarning() << "XML Error: Invalid Time record" << name << value;
 
             } else  {
                 p_preferences[name]=value;
@@ -263,6 +278,8 @@ bool Preferences::Save(QString filename)
         cn.setAttribute("type",i.value().typeName());
         if (type==QVariant::DateTime) {
             cn.appendChild(doc.createTextNode(i.value().toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+        } else if (type==QVariant::Time) {
+            cn.appendChild(doc.createTextNode(i.value().toTime().toString("hh:mm:ss")));
         } else {
             cn.appendChild(doc.createTextNode(i.value().toString()));
         }
