@@ -96,6 +96,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     RR=new gGraphWindow(parental,tr("Respiratory Rate"),SF);
     PTB=new gGraphWindow(parental,tr("Patient Trig Breaths"),SF);
     //OF=new gGraphWindow(parental,tr("Oxi-Flags"),SF);
+    INTPULSE=new gGraphWindow(parental,tr("Pulse"),SF); // Integrated Pulse
+    INTSPO2=new gGraphWindow(parental,tr("SPO2"),SF);   // Integrated Pulse
     PULSE=new gGraphWindow(parental,tr("Pulse"),SF);
     SPO2=new gGraphWindow(parental,tr("SPO2"),SF);
 
@@ -214,9 +216,18 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
     PTB->setMinimumHeight(min_height);
 
+    INTPULSE->AddLayer(new gXAxis());
+    INTPULSE->AddLayer(new gYAxis());
+    INTPULSE->AddLayer(AddCPAP(new gLineChart(CPAP_Pulse,Qt::red,true)));
+    INTPULSE->setMinimumHeight(min_height);
+
+    INTSPO2->AddLayer(new gXAxis());
+    INTSPO2->AddLayer(new gYAxis());
+    INTSPO2->AddLayer(AddCPAP(new gLineChart(CPAP_SPO2,Qt::blue,true)));
+    INTSPO2->setMinimumHeight(min_height);
+
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
-   // PULSE->AddLayer(new gFooBar());
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
     PULSE->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,Qt::green,"PC",FT_Bar)));
     PULSE->setMinimumHeight(min_height);
@@ -285,7 +296,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //int i=splitter->indexOf(NoData);
     splitter->setStretchFactor(NoData,1);
 
-    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,LEAK,FLG,SNORE};
+    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
     int ss=sizeof(graphs)/sizeof(gGraphWindow *);
 
     for (int i=0;i<ss;i++) {
@@ -294,8 +305,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         splitter->setStretchFactor(graphs[i],1);
         //splitter->setAlignment(graphs[i],Qt::AlignTop);
         for (int j=0;j<ss;j++) {
-            if (graphs[i]!=graphs[j])
+            if (graphs[i]!=graphs[j]) {
                 graphs[i]->LinkZoom(graphs[j]);
+            }
         }
     }
 

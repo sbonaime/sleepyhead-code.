@@ -81,7 +81,7 @@ private:
     //gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
 
     gFlagsGroup *fg;
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF;
+    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,*SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2;
 
     QList<gLayer *> OXIData;
     QList<gLayer *> CPAPData;

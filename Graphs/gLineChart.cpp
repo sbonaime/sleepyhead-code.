@@ -139,6 +139,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             num_points+=evec[i]->count();
         total_points+=num_points;
 
+        const int num_averages=20;  // Max n umber of samples taken from samples per pixel for better min/max values
         for (int n=0;n<evec.size();n++) { // for each segment
             EventList & el=*evec[n];
 
@@ -190,7 +191,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 double ZR=ZD/sr;
                 double ZQ=ZR/XR;
                 double ZW=ZR/(width*ZQ);
-                const int num_averages=20;  // Max n umber of samples taken from samples per pixel for better min/max values
                 visible_points+=ZR*ZQ;
                 if (accel && n>0) {
                     sam=1;
@@ -230,8 +230,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 if (minx>x0) {
                     double j=minx-x0;  // == starting min of first sample in this segment
                     idx=(j/sr);
+                    idx/=(sam*num_averages);
+                    idx*=(sam*num_averages);
                     // Loose the precision
-                    //idx-=idx % sam;
+                    //idx+=sam-(idx % sam);
 
                 } // else just start from the beginning
             }

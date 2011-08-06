@@ -625,8 +625,40 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
-    // Oximeter bull crap.. this oximeter is not reported of highly..
-    // nonetheless, the data is easy to access.
+    QString t;
+    sess->updateFirst(edf.startdate);
+    qint64 duration=edf.GetNumDataRecords()*edf.GetDuration();
+    sess->updateLast(edf.startdate+duration);
+
+    for (int s=0;s<edf.GetNumSignals();s++) {
+        EDFSignal & es=*edf.edfsignals[s];
+        qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
+        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        ChannelID code;
+        if (edf.edfsignals[s]->label=="Pulse") {
+            code=CPAP_Pulse;
+        } else if (edf.edfsignals[s]->label=="SpO2") {
+            code=CPAP_SPO2;
+        } else {
+            qDebug() << "Unknown SAD.edf Signal " << edf.edfsignals[s]->label;
+            continue;
+        }
+        bool hasdata=false;
+        for (int i=0;i<recs;i++) {
+            if (es.data[i]!=-1) {
+                hasdata=true;
+                break;
+            }
+        }
+        if (hasdata) {
+            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            if (a) {
+                sess->setMin(code,a->min());
+                sess->setMax(code,a->max());
+            }
+        }
+
+    }
     return true;
 }
 
