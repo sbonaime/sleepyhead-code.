@@ -230,10 +230,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 if (minx>x0) {
                     double j=minx-x0;  // == starting min of first sample in this segment
                     idx=(j/sr);
-                    idx/=(sam*num_averages);
-                    idx*=(sam*num_averages);
+                    //idx/=(sam*num_averages);
+                    //idx*=(sam*num_averages);
                     // Loose the precision
-                    //idx+=sam-(idx % sam);
+                    idx+=sam-(idx % sam);
 
                 } // else just start from the beginning
             }
