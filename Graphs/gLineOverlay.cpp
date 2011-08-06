@@ -150,16 +150,12 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(m_flag_color);
     if (quadcnt>0) {
-        //glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, quadarray);
         glDrawArrays(GL_QUADS, 0, quadcnt>>1);
-        //glDisableClientState(GL_VERTEX_ARRAY);
     }
     if (vertcnt>0) {
-        //glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, vertarray);
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
-        //glDisableClientState(GL_VERTEX_ARRAY);
     }
     if (pointcnt>0) {
         glPointSize(4);

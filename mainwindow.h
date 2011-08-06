@@ -74,8 +74,6 @@ private slots:
 
     void on_actionOverlay_Bars_toggled(bool arg1);
 
-    void on_action_Memory_Hog_toggled(bool arg1);
-
     void on_action_Reset_Graph_Layout_triggered();
 
     void on_action_Preferences_triggered();

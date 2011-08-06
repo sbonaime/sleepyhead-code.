@@ -8,6 +8,9 @@
 #include <QDebug>
 #include "gXAxis.h"
 
+const int divisors[]={86400000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
+const int divcnt=sizeof(divisors)/sizeof(int);
+
 gXAxis::gXAxis(QColor col)
 :gLayer(EmptyChannel)
 {
@@ -53,10 +56,8 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     qint64 xx=maxx-minx;
     if (xx<=0) return;
 
-
+    //Most of this could be precalculated when min/max is set..
     QString fd,tmpstr;
-    int divisors[]={86400000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50};
-    int divcnt=sizeof(divisors)/sizeof(int);
     int divmax,dividx;
     int fitmode;
     if (xx>86400000L) {         // Day
@@ -69,14 +70,14 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         dividx=1;
         divmax=10;
         fitmode=1;
-    } else if (xx>60000) {      // Seconds
+    } else if (xx>5000) {      // Seconds
         fd="00:00:00";
-        dividx=9;
-        divmax=16;
+        dividx=6;
+        divmax=17;
         fitmode=2;
     } else {                   // Microseconds
         fd="00:00:00:000";
-        dividx=15;
+        dividx=16;
         divmax=divcnt;
         fitmode=3;
     }
@@ -84,12 +85,12 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     float x,y;
     GetTextExtent(fd,x,y);
 
-    if (x<=0) { // font size bug
-        qWarning() << "gXAxis::Plot() x<=0";
+    if (x<=0) {
+        qWarning() << "gXAxis::Plot() x<=0 font size bug";
         return;
     }
 
-    int max_ticks=width/(x+10);  // Max number of ticks that will fit
+    int max_ticks=width/(x+15);  // Max number of ticks that will fit
 
     int fit_ticks=0;
     int div=-1;
@@ -105,7 +106,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
     }
     if (fit_ticks==0) {
-        qDebug() << "gXAxis::Plot() FitTicks==0!";
+        qDebug() << "gXAxis::Plot() What exactly do you expect to find at this zoom level?";
         return;
     }
     if ((div<0) || (div>divcnt)) {
@@ -189,7 +190,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 
-    glDisable(GL_SCISSOR_TEST);
+   // glDisable(GL_SCISSOR_TEST);
 
 }
 

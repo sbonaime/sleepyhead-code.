@@ -170,7 +170,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FRW->AddLayer(g);
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown10,QColor("orange"),"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("yellow"),"0E",FT_Dot)));

@@ -593,7 +593,6 @@
     <addaction name="actionOverlay_Bars"/>
     <addaction name="actionDisplay_Graph_Snapshots"/>
     <addaction name="action_Link_Graphs"/>
-    <addaction name="action_Memory_Hog"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Reset_Graph_Layout"/>

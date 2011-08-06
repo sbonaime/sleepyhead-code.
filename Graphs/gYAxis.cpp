@@ -13,8 +13,8 @@ gYAxis::gYAxis(QColor col)
 {
     m_line_color=col;
     m_text_color=col;
-    m_major_color=Qt::darkGray;
-    m_minor_color=Qt::lightGray;
+    m_major_color=QColor(190,190,190,64);
+    m_minor_color=QColor(220,220,220,64);
 
     m_show_major_lines=true;
     m_show_minor_lines=true;
