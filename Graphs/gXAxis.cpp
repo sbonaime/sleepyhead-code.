@@ -141,6 +141,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         vertarray[vertcnt++]=py;
         vertarray[vertcnt++]=start_py-4;
     }
+    w.qglColor(Qt::black);
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
         px+=start_px;
@@ -163,7 +164,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
                 tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
             }
         }
-        DrawText(w,tmpstr,px-(x/2),scry-(w.GetBottomMargin()-18),0);
+
+        w.renderText(px-(x/2),(w.GetBottomMargin()-18),0,tmpstr);
+        //DrawText(w,tmpstr,px-(x/2),scry-(w.GetBottomMargin()-18),0);
         py=px;
         for (int j=1;j<10;j++) {
             py+=step_pixels;

@@ -53,8 +53,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     //scrollArea=new MyScrollArea(this);
 
-    QString s="QTreeWidget::selection-background-color { qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); }";
-    ui->treeWidget->setStyleSheet(s);
+    //ui->webView->setStyleSheet("QWebView { background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); }");
+    //ui->treeWidget->setAlternatingRowColors(true);
     GraphLayout=new QWidget();
     ui->graphSizer->addWidget(GraphLayout,1);
 

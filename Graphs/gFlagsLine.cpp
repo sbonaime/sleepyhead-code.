@@ -137,7 +137,9 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     // Draw text label
     float x,y;
     GetTextExtent(m_label,x,y);
-    DrawText(w,m_label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
+    w.qglColor(Qt::black);
+    w.renderText(start_px-x-10,(line_top)+(line_h/2)-(y/2),0,m_label);
+    //DrawText(w,m_label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
     float x1,x2;
 
     float top=floor(line_top)+2;
