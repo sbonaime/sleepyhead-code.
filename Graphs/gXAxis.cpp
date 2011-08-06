@@ -165,7 +165,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
             }
         }
 
-        w.renderText(px-(x/2),(w.GetBottomMargin()-18),0,tmpstr);
+        w.renderText(px-(x/2),scry-(w.GetBottomMargin()-18),tmpstr);
         //DrawText(w,tmpstr,px-(x/2),scry-(w.GetBottomMargin()-18),0);
         py=px;
         for (int j=1;j<10;j++) {
