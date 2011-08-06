@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -255,6 +255,13 @@ p, li { white-space: pre-wrap; }
        <string>&amp;Events</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>This doesn't work yet.. The colours shown are random.</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QTableWidget" name="eventTable">
          <property name="sortingEnabled">

@@ -65,7 +65,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
             pb->setText("foo");
             ui->eventTable->setCellWidget(row,0,c);
             ui->eventTable->setCellWidget(row,1,pb);
-            QColor a(random() % 255, random() % 255, random() % 255, 255);
+            QColor a(rand() % 255, rand() % 255, rand() % 255, 255);
             QPalette p(a,a,a,a,a,a,a);
 
             pb->setPalette(p);

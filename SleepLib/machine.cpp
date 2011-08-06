@@ -94,7 +94,7 @@ void InitMapsWithoutAwesomeInitializerLists()
         CPAP_Hypopnea=CPAP_CODES.Get(CT_Event,QObject::tr("Hypopnea"),QObject::tr("H"),"OA"),
         CPAP_Apnea=CPAP_CODES.Get(CT_Event,QObject::tr("Unspecified Apnea"),QObject::tr("UA"),"UA"),
         CPAP_ClearAirway=CPAP_CODES.Get(CT_Event,QObject::tr("Clear Airway Apnea"),QObject::tr("CA"),"CA"),
-        CPAP_RERA=CPAP_CODES.Get(CT_Event,QObject::tr("Respiratory Effort Related Arousal"),QObject::tr("RE"),"RE"),
+        CPAP_RERA=CPAP_CODES.Get(CT_Event,QObject::tr("RERA"),QObject::tr("RE"),"RE"),
         CPAP_FlowLimit=CPAP_CODES.Get(CT_Event,QObject::tr("Flow Limitation"),QObject::tr("FL"),"FL"),
         CPAP_CSR=CPAP_CODES.Get(CT_Event,QObject::tr("Periodic Breathing"),QObject::tr("PB"),"PB"),
         CPAP_VSnore=CPAP_CODES.Get(CT_Event,QObject::tr("Vibratory Snore"),QObject::tr("VS"),"VS"),
