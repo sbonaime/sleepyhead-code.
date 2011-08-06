@@ -35,6 +35,6 @@ class gXAxis:public gLayer
         QColor m_text_color;
         QColor m_major_color;
         QColor m_minor_color;
-
+        qint64 tz_offset;
 };
 #endif // GXAXIS_H

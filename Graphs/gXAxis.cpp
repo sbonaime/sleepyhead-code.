@@ -19,6 +19,12 @@ gXAxis::gXAxis(QColor col)
     m_show_minor_lines=false;
     m_show_minor_ticks=true;
     m_show_major_ticks=true;
+    QDateTime d=QDateTime::currentDateTime();
+    QTime t1=d.time();
+    QTime t2=d.toUTC().time();
+    tz_offset=t2.secsTo(t1)/60L;
+    tz_offset*=60000L;
+    //offset=0;
 
 }
 gXAxis::~gXAxis()
@@ -30,7 +36,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
-    float width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     if (width<40)
@@ -85,13 +91,13 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         return;
     }
 
-    float max_ticks=float(width)/(x+10);  // Max number of ticks that will fit
+    int max_ticks=width/(x+10);  // Max number of ticks that will fit
 
-    float fit_ticks=0;
+    int fit_ticks=0;
     int div=-1;
-    float closest=0,tmp,tmpft;
+    qint64 closest=0,tmp,tmpft;
     for (int i=dividx;i<divmax;i++){
-        tmpft=ceil(float(xx)/float(divisors[i]));
+        tmpft=xx/divisors[i];
         tmp=max_ticks-tmpft;
         if (tmp<0) continue;
         if (tmpft>closest) {     // Find the closest scale to the number
@@ -114,25 +120,26 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     qint64 zz=zqvx/step;                  // Number of ticks that fit up to minx
 
     //Align left minimum to divisor
-    qint64 rm=w.rmin_x % step;     // Offset from rminx of an aligned time
+    qint64 aligned_start=minx/step;
+    aligned_start*=step;
+
+    /*qint64 rm=w.rmin_x % step;     // Offset from rminx of an aligned time
     rm=step-rm;
     rm+=w.rmin_x;
     //qint64 rd=w.rmin_x / divisors[div];
     //rd*=divisors[div];
     qint64 aligned_start=(zz*step)+rm; // First location of aligned point.
-    aligned_start/=step;
-    aligned_start*=step;
-
+*/
 
     while (aligned_start<minx) {
         aligned_start+=step;
     }
+    aligned_start/=step;
+    aligned_start*=step;
+
     double xmult=double(width)/double(xx);
     w.qglColor(Qt::black);
     QString tmpstr;
-    QTime t1=QDateTime::currentDateTime().time();
-    QTime t2=QDateTime::currentDateTimeUtc().time();
-    qint64 offset=t2.secsTo(t1)*1000;
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
         px+=start_px;
@@ -144,16 +151,16 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
         if (fitmode==0) {
         } else {
-            qint64 j=i+offset;
-            short m=(j/60000) % 60;
-            short h=(j/3600000) % 24;
-            short s=(j/1000) % 60;
+            qint64 j=i+tz_offset;
+            int ms=j % 1000;
+            int m=(j/60000L) % 60L;
+            int h=(j/3600000L) % 24L;
+            int s=(j/1000L) % 60L;
             if (fitmode==1) { // minute
                 tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
             } else if (fitmode==2) { // second
                 tmpstr=QString("%1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0'));
             } else if (fitmode==3) { // milli
-                short ms=j % 1000;
                 tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
             }
         }
@@ -161,7 +168,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     }
     int i=0;
-    return;
+  /*  return;
     // subtract 1.. align to first div unit
 
 
@@ -172,7 +179,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
 
     double jj=1/max_ticks;
-    double minor_tick=max_ticks*xx;
+    double minor_tick=max_ticks*double(xx);
     double st2=minx; //double(int(frac*1440.0))/1440.0;
     double st,q;
 
@@ -311,6 +318,6 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     glDisable(GL_SCISSOR_TEST);
 
-
+*/
 }
 
