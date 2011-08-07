@@ -28,7 +28,11 @@ void InitGraphs()
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
         bigfont=new QFont("Sans Serif",35);
-        mediumfont=new QFont("Sans Serif",11);
+        mediumfont=new QFont("Sans Serif",10,QFont::DemiBold);
+        defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+        mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+        bigfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+
         for (int i=0;i<num_vert_arrays;i++) {
             // The extra 8 vertexes are important..
             GLshort *a=(GLshort *)calloc(maxverts+8,sizeof(GLshort));
@@ -117,7 +121,7 @@ void DrawTextQueue(gGraphWindow & wid)
 
     if (wid.parentWidget()!=0) {
         QPainter painter(&wid);
-        painter.setRenderHint(QPainter::HighQualityAntialiasing,true);
+
         // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
         for (int i=0;i<TextQueRot.size();i++) {
             TextBuffer & t=TextQueRot[i];

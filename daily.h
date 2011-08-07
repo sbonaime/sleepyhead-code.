@@ -84,6 +84,8 @@ private:
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
                  *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR;
 
+    gLineChart *pressure, *epap, *ipap;
+
     QList<gLayer *> OXIData;
     QList<gLayer *> CPAPData;
     QVector<gGraphWindow *> Graphs;

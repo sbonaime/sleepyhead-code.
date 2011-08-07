@@ -142,9 +142,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     bool square=true;
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(pressure=new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
+    PRD->AddLayer(AddCPAP(epap=new gLineChart(CPAP_EPAP,Qt::blue,square)));
+    PRD->AddLayer(AddCPAP(ipap=new gLineChart(CPAP_IPAP,Qt::red,square)));
     PRD->setMinimumHeight(min_height);
 
     THPR->AddLayer(new gXAxis());
@@ -172,6 +172,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     AddCPAP(g);
     g->ReportEmpty(true);
     MP->AddLayer(g);
+    //MP->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::yellow,square)));
+    //MP->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
     MP->setMinimumHeight(min_height);
 
     //FRW->AddLayer(new gFooBar());

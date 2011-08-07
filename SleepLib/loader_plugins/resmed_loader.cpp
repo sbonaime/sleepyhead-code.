@@ -692,7 +692,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a->setMax(1);
             a->setMin(0);
         } else if (es.label=="Therapy Pres") {
-            code=CPAP_TherapyPressure;
+            code=CPAP_IPAP; //TherapyPressure;
             //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
             //sess->eventlist[code].push_back(a);
             //a->AddWaveform(edf.startdate,es.data,recs,duration);
@@ -736,7 +736,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             //es.gain=1;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Exp Press") {
-            code=CPAP_ExpiratoryPressure;
+            code=CPAP_EPAP;//ExpiratoryPressure;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="") {
             if (emptycnt==0) {
