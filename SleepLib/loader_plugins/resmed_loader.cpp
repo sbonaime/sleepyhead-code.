@@ -689,8 +689,8 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             //sess->eventlist[code].push_back(a);
             //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            a->setMax(1);
-            a->setMin(0);
+            //a->setMax(1);
+            //a->setMin(0);
         } else if (es.label=="Therapy Pres") {
             code=CPAP_IPAP; //TherapyPressure;
             //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
@@ -719,18 +719,18 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Leak") {
             code=CPAP_Leak;
-           // es.gain*=100.0;
+            es.gain*=60;
             //es.gain=1;//10.0;
-            es.offset=-0.5;
+            //es.offset=-0.5;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            a->setMax(1);
-            a->setMin(0);
+            //a->setMax(1);
+            //a->setMin(0);
         } else if (es.label=="FFL Index") {
             code=CPAP_FlowLimitGraph;
             //es.gain=1;//10.0;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            a->setMax(1);
-            a->setMin(0);
+            //a->setMax(1);
+            //a->setMin(0);
         } else if (es.label=="Mask Pres") {
             code=CPAP_Pressure;
             //es.gain=1;
