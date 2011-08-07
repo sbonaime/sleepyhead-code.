@@ -436,7 +436,7 @@ EventDataType Session::min(ChannelID id)
     EventDataType min,t1;
     for (int i=0;i<evec.size();i++) {
         t1=evec[i]->min();
-        if (t1==evec[i]->max()) continue;
+        if (t1==0 && t1==evec[i]->max()) continue;
         if (first) {
             min=t1;
             first=false;
@@ -462,7 +462,7 @@ EventDataType Session::max(ChannelID id)
     EventDataType max,t1;
     for (int i=0;i<evec.size();i++) {
         t1=evec[i]->max();
-        if (t1==evec[i]->min()) continue;
+        if (t1==0 && t1==evec[i]->min()) continue;
         if (first) {
             max=t1;
             first=false;
@@ -523,6 +523,13 @@ qint64 Session::last(ChannelID id)
 
     m_lastchan[id]=max;
     return max;
+}
+bool Session::hasChannel(ChannelID id)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end())
+        return false;
+    return true;
 }
 
 int Session::count(ChannelID id)

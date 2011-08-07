@@ -111,6 +111,7 @@ public:
 
     EventDataType percentile(ChannelID id,EventDataType percentile);
 
+    bool hasChannel(ChannelID id);
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }

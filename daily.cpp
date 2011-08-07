@@ -61,16 +61,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     ui->graphLayout->addWidget(scrollArea,1);
 
     scrollArea->setWidgetResizable(true);
-    //QVBoxLayout *lay=new QVBoxLayout(scrollArea);
-    //scrollArea->setWidget(lay);
+
     GraphLayout=new QWidget(scrollArea);
     scrollArea->setWidget(GraphLayout);
 
-    //lay->addWidget(GraphLayout,1);
-    //ui->webView->setStyleSheet("QWebView { background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); }");
-    //ui->treeWidget->setAlternatingRowColors(true);
     splitter=new QVBoxLayout(GraphLayout);
     GraphLayout->setLayout(splitter);
+    splitter->setSpacing(0);
     splitter->setMargin(0);
     splitter->setContentsMargins(0,0,0,0);
 
