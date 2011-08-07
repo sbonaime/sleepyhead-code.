@@ -28,7 +28,7 @@ void InitGraphs()
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
         bigfont=new QFont("Sans Serif",35);
-        mediumfont=new QFont("Sans Serif",18);
+        mediumfont=new QFont("Sans Serif",11);
         for (int i=0;i<num_vert_arrays;i++) {
             // The extra 8 vertexes are important..
             GLshort *a=(GLshort *)calloc(maxverts+8,sizeof(GLshort));

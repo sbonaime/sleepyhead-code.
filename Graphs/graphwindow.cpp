@@ -33,10 +33,11 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     m_foobar_moved=0;
     SetMargins(10, 15, 0, 0);
     lastlayer=NULL;
+    InitGraphs();
     ti=QDateTime::currentDateTime();
     gtitle=foobar=xaxis=yaxis=NULL;
     if (!title.isEmpty()) {
-        AddLayer(new gTitle(title));
+        AddLayer(new gTitle(title,Qt::black,*mediumfont));
     }
     //setAcceptDrops(true);
     setMouseTracking(true);
@@ -45,7 +46,6 @@ gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLWidget * s
     min_x=max_x=0;
     rmin_y=rmax_y=0;
     min_y=max_y=0;
-    InitGraphs();
 }
 
 /*gGraphWindow::gGraphWindow(QWidget *parent, const QString & title, QGLContext * context,Qt::WindowFlags f)
