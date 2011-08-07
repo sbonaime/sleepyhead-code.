@@ -8,7 +8,7 @@
 #include <QDebug>
 #include "gXAxis.h"
 
-const int divisors[]={86400000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
+const int divisors[]={86400000,2880000,14400000,7200000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
 const int divcnt=sizeof(divisors)/sizeof(int);
 
 gXAxis::gXAxis(QColor col)
@@ -67,17 +67,17 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
-        dividx=1;
-        divmax=15;
+        dividx=4;
+        divmax=18;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
         fd="00:00:00";
-        dividx=6;
-        divmax=17;
+        dividx=9;
+        divmax=20;
         fitmode=2;
     } else {                   // Microseconds
         fd="00:00:00:000";
-        dividx=16;
+        dividx=19;
         divmax=divcnt;
         fitmode=3;
     }
