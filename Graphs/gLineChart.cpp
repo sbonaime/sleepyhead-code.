@@ -364,7 +364,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
                     time=start+tim[i];
                     if (first) {
-                        if (num_points>5 && (time < minx)) continue; // Skip stuff before the start of our data window
+                        if (num_points>15 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
                         if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
                         time=start+tim[i];

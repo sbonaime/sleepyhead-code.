@@ -106,7 +106,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
     }
     if (fit_ticks==0) {
-        qDebug() << "gXAxis::Plot() Short days and zooming in too much screws this up.";
+        qDebug() << "gXAxis::Plot() Couldn't fit ticks.. Too short?" << minx << maxx << xx;
         return;
     }
     if ((div<0) || (div>divcnt)) {

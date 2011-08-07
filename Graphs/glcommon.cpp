@@ -121,7 +121,7 @@ void DrawTextQueue(gGraphWindow & wid)
 
     if (wid.parentWidget()!=0) {
         QPainter painter(&wid);
-
+        painter.setRenderHint(QPainter::HighQualityAntialiasing,true);
         // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
         for (int i=0;i<TextQueRot.size();i++) {
             TextBuffer & t=TextQueRot[i];

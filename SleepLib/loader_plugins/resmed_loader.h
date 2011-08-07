@@ -20,7 +20,7 @@ License: GPL
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int resmed_data_version=1;
+const int resmed_data_version=2;
 //
 //********************************************************************************************
 
