@@ -28,7 +28,7 @@ void InitGraphs()
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
         bigfont=new QFont("Sans Serif",35);
-        mediumfont=new QFont("Sans Serif",10);
+        mediumfont=new QFont("Sans Serif",11);
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
