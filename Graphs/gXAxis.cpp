@@ -61,14 +61,14 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     int divmax,dividx;
     int fitmode;
     if (xx>86400000L) {         // Day
-        fd="000 00:00";
+        fd="00:00";
         dividx=0;
-        divmax=1;
+        divmax=10;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
         dividx=1;
-        divmax=10;
+        divmax=15;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
         fd="00:00:00";
