@@ -115,11 +115,20 @@ void Oximetry::on_RefreshPortsButton_clicked()
 #define qesPORTNAME physName
 #endif
     for (int i = 0; i < ports.size(); i++) {
-        if (ports.at(i).friendName.toUpper().contains("USB")) {
-            if (firstport.isEmpty()) firstport=ports.at(i). qesPORTNAME;
-            if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
-            ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
-            z++;
+        if (!ports.at(i).friendName.isEmpty()) {
+            if (ports.at(i).friendName.toUpper().contains("USB")) {
+                if (firstport.isEmpty()) firstport=ports.at(i). qesPORTNAME;
+                if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
+                ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
+                z++;
+            }
+        } else { // Mac stuff.
+            if (ports.at(i).portName.toUpper().contains("USB") || ports.at(i).portName.toUpper().contains("SPO2")) {
+                if (firstport.isEmpty()) firstport=ports.at(i).portName;
+                if (!portname.isEmpty() && ports.at(i).portName==portname) current_found=true;
+                ui->SerialPortsCombo->addItem(ports.at(i).portName);
+                z++;
+            }
         }
         //qDebug() << "Serial Port:" << ports.at(i).qesPORTNAME << ports.at(i).friendName;
         qDebug() << "port name:" << ports.at(i).portName;
