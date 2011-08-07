@@ -80,7 +80,11 @@ MainWindow::MainWindow(QWidget *parent) :
     Profiles::Scan();
 
     pref["AppName"]="SleepyHead";
-    pref["VersionString"]=QString("v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
+    QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
+    if (pref.Exists("VersionString") && pref["VersionString"]!=Version) {
+        QMessageBox::warning(this,"Potential Crash Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete your SleepApp folder (which is currently located in your Documents folder), and things should then work normally.",QMessageBox::Ok);
+    }
+    pref["VersionString"]=Version;
 
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
@@ -146,7 +150,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::Startup()
 {
-    qDebug() << pref["AppName"].toString().toAscii() << pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << pref["AppName"].toString().toAscii()+" v"+pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);

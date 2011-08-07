@@ -30,7 +30,7 @@ void InitGraphs()
         bigfont=new QFont("Sans Serif",35);
         mediumfont=new QFont("Sans Serif",10);
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
-        mediumfont->setStyleHint(QFont::SansSerif,QFont::NoAntialias);
+        mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
 
         for (int i=0;i<num_vert_arrays;i++) {
