@@ -30,7 +30,7 @@ CPAP_CSR, CPAP_VSnore, CPAP_PressurePulse, CPAP_Mode, CPAP_FlowRate, CPAP_MaskPr
 CPAP_EPAP, CPAP_IPAP, CPAP_IPAP_Low, CPAP_IPAP_High, CPAP_PressureSupport, CPAP_Snore, CPAP_Leak,
 CPAP_RespiratoryRate, CPAP_TidalVolume, CPAP_MinuteVentilation, CPAP_PatientTriggeredBreaths,
 CPAP_FlowLimitGraph, CPAP_TherapyPressure, CPAP_ExpiratoryPressure, CPAP_AHI, CPAP_BrokenSummary,
-CPAP_BrokenWaveform, CPAP_Pulse, CPAP_SPO2;
+CPAP_BrokenWaveform, CPAP_Pulse, CPAP_SPO2, CPAP_Plethy;
 
 ChannelID RMS9_PressureReliefType, RMS9_PressureReliefSetting, RMS9_Empty1, RMS9_Empty2;
 ChannelID PRS1_PressureMin,PRS1_PressureMax, PRS1_PressureMinAchieved, PRS1_PressureMaxAchieved,
@@ -176,8 +176,9 @@ void InitMapsWithoutAwesomeInitializerLists()
         PRS1_VSnore2=CPAP_CODES.Get(CT_Event,QObject::tr("Vibratory Snore (Type 2)"),QObject::tr("VS2"),"VS2");
 
         // CPAP Integrated oximetery codes..
-        CPAP_Pulse=CPAP_CODES.Get(CT_Event,QObject::tr("Pulse Rate"),QObject::tr("Pulse"),"CPPR");
-        CPAP_SPO2=CPAP_CODES.Get(CT_Event,QObject::tr("SpO2"),QObject::tr("SpO2"),"CPSP");
+        CPAP_Pulse=CPAP_CODES.Get(CT_Graph,QObject::tr("Pulse Rate"),QObject::tr("Pulse"),"CPPR");
+        CPAP_SPO2=CPAP_CODES.Get(CT_Graph,QObject::tr("SpO2"),QObject::tr("SpO2"),"CPSP");
+        CPAP_Plethy=CPAP_CODES.Get(CT_Graph,QObject::tr("Plethysomagram"),QObject::tr("Plethysomagram"),"CPPL");
 
         OXI_Pulse=OXI_CODES.Get(CT_Graph,QObject::tr("Pulse Rate"),QObject::tr("PR"),"PR"),
         OXI_SPO2=OXI_CODES.Get(CT_Graph,QObject::tr("Oxygen Saturation"),QObject::tr("SPO2"),"SPO2"),

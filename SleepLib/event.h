@@ -44,6 +44,8 @@ public:
     void setMin(EventDataType v) { m_min=v; }
     void setMax(EventDataType v) { m_max=v; }
     void setRate(EventDataType v) { m_rate=v; }
+    void setCode(ChannelID id) { m_code=id; }
+
     inline const EventDataType & min() { return m_min; }
     inline const EventDataType & max() { return m_max; }
     inline const EventDataType & gain() { return m_gain; }

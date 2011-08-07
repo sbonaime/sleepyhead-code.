@@ -35,20 +35,23 @@ public:
 
     const SessionID & session() {
         return s_session;
-    };
+    }
     qint64 first() {
         return s_first;
-    };
+    }
     qint64 last() {
         return s_last;
-    };
+    }
+    qint64 length() {
+        return s_last-s_first;
+    }
     void SetSessionID(SessionID s) {
         s_session=s;
-    };
+    }
     void set_first(qint64 d) {
         if (!s_first) s_first=d;
         else if (d<s_first) s_first=d;
-    };
+    }
     void set_last(qint64 d) {
         if (d<=s_first) {
             qWarning() << "Session::set_last() d<=s_first";
@@ -56,20 +59,20 @@ public:
         }
         if (!s_last) s_last=d;
         else if (s_last<d) s_last=d;
-    };
+    }
 
     double hours() {
         double t=(s_last-s_first)/3600000.0;
         return t;
-    };
+    }
 
     void SetChanged(bool val) {
         s_changed=val;
         s_events_loaded=val; // dirty hack putting this here
-    };
+    }
     bool IsChanged() {
         return s_changed;
-    };
+    }
 
     QHash<ChannelID,QVector<EventList *> > eventlist;
     QHash<ChannelID,QVariant> settings;

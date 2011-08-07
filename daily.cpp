@@ -77,7 +77,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     scrollArea=new MyScrollArea(ui->graphMainArea,this);
     ui->graphLayout->addWidget(scrollArea,1);
-
+    ui->graphLayout->setSpacing(0);
+    ui->graphLayout->setMargin(0);
+    ui->graphLayout->setContentsMargins(0,0,0,0);
     scrollArea->setWidgetResizable(true);
     scrollArea->setAutoFillBackground(false);
 
@@ -130,6 +132,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     INTSPO2=new gGraphWindow(parental,tr("SPO2"),SF);   // Integrated Pulse
     PULSE=new gGraphWindow(parental,tr("Pulse"),SF);
     SPO2=new gGraphWindow(parental,tr("SPO2"),SF);
+    PLETHY=new gGraphWindow(parental,tr("Plethysomogram"),SF);
 
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
@@ -268,6 +271,11 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     INTSPO2->AddLayer(AddCPAP(new gLineChart(CPAP_SPO2,Qt::blue,true)));
     INTSPO2->setMinimumHeight(min_height);
 
+    PLETHY->AddLayer(new gXAxis());
+    PLETHY->AddLayer(new gYAxis());
+    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkCyan,true)));
+    PLETHY->setMinimumHeight(min_height);
+
     PULSE->AddLayer(new gXAxis());
     PULSE->AddLayer(new gYAxis());
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
@@ -356,11 +364,16 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //AddGraph(OF);
     AddGraph(PULSE);
     AddGraph(SPO2);
+    AddGraph(PLETHY);
 
     //SPO2->LinkZoom(OF);
     //PULSE->LinkZoom(OF);
     SPO2->LinkZoom(PULSE);
+    SPO2->LinkZoom(PLETHY);
     PULSE->LinkZoom(SPO2);
+    PULSE->LinkZoom(PLETHY);
+    PLETHY->LinkZoom(PULSE);
+    PLETHY->LinkZoom(SPO2);
     //OF->LinkZoom(PULSE);
     //OF->LinkZoom(SPO2);
 
@@ -634,9 +647,9 @@ void Daily::Load(QDate date)
                 GraphAction[i]->setVisible(false);
                 Graphs[i]->hide();
             } else {
-                Graphs[i]->ResetBounds();
                 GraphAction[i]->setVisible(true);
                 if (GraphAction[i]->isChecked()) {
+                    Graphs[i]->ResetBounds();
                     Graphs[i]->show();
                     vis++;
                 } else {
@@ -645,7 +658,10 @@ void Daily::Load(QDate date)
             }
         }
         if (!cpap) {
-            SF->hide();
+           GraphAction[0]->setVisible(false);
+           SF->hide();
+           vis--;
+
         }
         //splitter->layout();
         for (int i=0;i<Graphs.size();i++) {
@@ -668,6 +684,8 @@ void Daily::Load(QDate date)
        // }
 //        splitter->blockSignals(true);
 
+        splitter->setSpacing(0);
+        splitter->setMargin(0);
         splitter->layout();
         scrollArea->setUpdatesEnabled(true);
         scrollArea->update();
@@ -760,6 +778,7 @@ void Daily::Load(QDate date)
 
         // Note, this may not be a problem since Qt bug 13622 was discovered
         // as it only relates to text drawing, which the Pie chart does not do
+        // ^^ Scratch that.. pie now includes text..
 
         if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
             html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
@@ -771,9 +790,11 @@ void Daily::Load(QDate date)
             pixmap.save(&buffer, "PNG");
             html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
         }
-        html+="</table>"
-        "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n"
-        "<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
+    }
+    html+="</table>"
+    "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    if (cpap || oxi) {
+        html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
 
 /*        if (mode==MODE_BIPAP) {
             html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp; EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
@@ -787,12 +808,11 @@ void Daily::Load(QDate date)
         //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
         html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
-
-        ChannelID chans[]={CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths, CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_FlowLimitGraph,CPAP_Leak,CPAP_Snore,CPAP_TidalVolume,CPAP_Pulse,CPAP_SPO2};
+        ChannelID chans[]={CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths, CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_FlowLimitGraph,CPAP_Leak,CPAP_Snore,CPAP_TidalVolume,CPAP_Pulse,CPAP_SPO2,OXI_Pulse,OXI_SPO2};
         int numchans=sizeof(chans)/sizeof(ChannelID);
         for (int i=0;i<numchans;i++) {
             ChannelID code=chans[i];
-            if (cpap->channelExists(code)) {
+            if (cpap && cpap->channelExists(code)) {
                 html+="<tr><td align=left>"+channel[code].label();
                 html+="</td><td>"+a.sprintf("%.2f",cpap->min(code));
                 html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code));
@@ -800,58 +820,25 @@ void Daily::Load(QDate date)
                 html+="</td><td>"+a.sprintf("%.2f",cpap->max(code));
                 html+="</td><tr>";
             }
+            if (oxi && oxi->channelExists(code)) {
+                html+="<tr><td align=left>"+channel[code].label();
+                html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->max(code));
+                html+="</td><tr>";
+            }
         }
 
-        /*html+="<tr><td align=left>"+tr("Snore:");
-        html+="</td><td>"+a.sprintf("%.2f",cpap->min(CPAP_Snore));
-        html+="</td><td>"+a.sprintf("%.2f",cpap->avg(CPAP_Snore));
-        html+="</td><td>"+a.sprintf("%.2f",cpap->max(CPAP_Snore))+("</td><tr>");
-*/
-
     } else {
-        html+="<tr><td colspan=5 align=center><i>"+tr("No CPAP data available")+"</i></td></tr>";
+        html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
-    // Instead of doing this, check whether any data exists..
-    // and show based on this factor.
-
-
-    bool merge_oxi_graphs=true;
-    if (!merge_oxi_graphs) {
-        //spo2->isEmpty() ? SPO2->hide() : SPO2->show();
-        //pulse->isEmpty() ? PULSE->hide() : PULSE->show();
-    } else {
-        //pulse->isEmpty() && spo2->isEmpty() ? PULSE->hide() : PULSE->show();
-    }
-
-    if (oxi) {
-        html+="<tr><td>"+tr("Pulse:");
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->min(OXI_Pulse));
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->wavg(OXI_Pulse));
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->p90(OXI_Pulse));
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->max(OXI_Pulse));
-        html+="</td><tr>";
-
-        html+="<tr><td>"+tr("SpO2:");
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->min(OXI_SPO2));
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->wavg(OXI_SPO2));
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->p90(OXI_SPO2));
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->max(OXI_SPO2));
-        html+="</td><tr>";
-
-        //html+=wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
-
-        //PULSE->show();
-        //SPO2->show();
-    } else {
-        //PULSE->hide();
-        //SPO2->hide();
-    }
+    html+="</table>";
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     if (cpap) {
-        html+="</table>"
-        "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
         if (pref["EnableGraphSnapshots"].toBool()) {
             if (cpap->channelExists(CPAP_Pressure)) {
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");

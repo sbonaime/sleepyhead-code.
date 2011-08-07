@@ -174,6 +174,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
         lasttime=QDateTime::currentMSecsSinceEpoch();
         starttime=lasttime;
 
+        session->SetSessionID(lasttime/1000L);
+
         day->setFirst(lasttime);
         day->setLast(lasttime+30000);
         session->set_first(lasttime);
@@ -245,6 +247,81 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PLETHY->updateGL();
         SPO2->updateGL();
         PULSE->updateGL();
+
+        qint64 d=session->length();
+       // if (d<=30000)
+        //    return;
+        if (QMessageBox::question(this,"Keep This Recording?","Would you like to keep this oximeter recording?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
+            qDebug() << "Saving oximeter session data";
+            Session *sess=new Session(mach,starttime/1000L);
+
+            /*ev_spo2->setCode(CPAP_SPO2);
+            ev_pulse->setCode(CPAP_Pulse);
+            ev_plethy->setCode(CPAP_Plethy); */
+            sess->eventlist[OXI_SPO2].push_back(ev_spo2);
+            sess->eventlist[OXI_Pulse].push_back(ev_pulse);
+            sess->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+            //Session *sess=session;
+            sess->SetSessionID(starttime/1000L);
+
+            sess->setMin(OXI_Pulse,ev_pulse->min());
+            sess->setMax(OXI_Pulse,ev_pulse->min());
+            sess->setFirst(OXI_Pulse,ev_pulse->first());
+            sess->setLast(OXI_Pulse,ev_pulse->last());
+            sess->avg(OXI_Pulse);
+            sess->wavg(OXI_Pulse);
+            sess->p90(OXI_Pulse);
+            //sess->min(OXI_Pulse);
+            //sess->max(OXI_Pulse);
+
+            sess->setMin(OXI_SPO2,ev_spo2->min());
+            sess->setMax(OXI_SPO2,ev_spo2->max());
+            sess->setFirst(OXI_SPO2,ev_spo2->first());
+            sess->setLast(OXI_SPO2,ev_spo2->last());
+            sess->avg(OXI_SPO2);
+            sess->wavg(OXI_SPO2);
+            sess->p90(OXI_SPO2);
+            //sess->min(OXI_SPO2);
+            //sess->max(OXI_SPO2);
+
+            sess->setMin(OXI_SPO2,ev_spo2->min());
+            sess->setMax(OXI_SPO2,ev_spo2->max());
+            sess->setFirst(OXI_SPO2,ev_spo2->first());
+            sess->setLast(OXI_SPO2,ev_spo2->last());
+
+            //sess->min(OXI_Plethysomogram);
+            //sess->max(OXI_Plethysomogram);
+            sess->avg(OXI_Plethysomogram);
+            sess->wavg(OXI_Plethysomogram);
+            sess->p90(OXI_Plethysomogram);
+            sess->setMin(OXI_Plethysomogram,ev_plethy->min());
+            sess->setMax(OXI_Plethysomogram,ev_plethy->max());
+            sess->setFirst(OXI_Plethysomogram,ev_plethy->first());
+            sess->setLast(OXI_Plethysomogram,ev_plethy->last());
+
+            sess->updateFirst(sess->first(OXI_Pulse));
+            sess->updateLast(sess->last(OXI_Pulse));
+            sess->updateFirst(sess->first(OXI_SPO2));
+            sess->updateLast(sess->last(OXI_SPO2));
+            sess->updateFirst(sess->first(OXI_Plethysomogram));
+            sess->updateLast(sess->last(OXI_Plethysomogram));
+
+            sess->SetChanged(true);
+            mach->AddSession(sess,profile);
+            mach->Save();
+
+
+            session->eventlist.clear();
+            ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
+            session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+
+            ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
+            session->eventlist[OXI_Pulse].push_back(ev_pulse);
+
+            ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
+            session->eventlist[OXI_SPO2].push_back(ev_spo2);
+        }
+
     }
 }
 
@@ -627,7 +704,7 @@ void Oximetry::on_ImportButton_clicked()
         day->AddSession(session);
 
         // As did these
-        ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1.0/50.0);
+        ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
         session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
 
         ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);

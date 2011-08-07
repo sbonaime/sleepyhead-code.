@@ -119,7 +119,7 @@ CPAP_CSR, CPAP_VSnore, CPAP_PressurePulse, CPAP_Mode, CPAP_FlowRate, CPAP_MaskPr
 CPAP_EPAP, CPAP_IPAP, CPAP_IPAP_Low, CPAP_IPAP_High, CPAP_PressureSupport, CPAP_Snore, CPAP_Leak,
 CPAP_RespiratoryRate, CPAP_TidalVolume, CPAP_MinuteVentilation, CPAP_PatientTriggeredBreaths,
 CPAP_FlowLimitGraph, CPAP_TherapyPressure, CPAP_ExpiratoryPressure, CPAP_AHI, CPAP_BrokenSummary,
-CPAP_BrokenWaveform, CPAP_Pulse, CPAP_SPO2;
+CPAP_BrokenWaveform, CPAP_Pulse, CPAP_SPO2, CPAP_Plethy;
 
 extern ChannelID RMS9_PressureReliefType, RMS9_PressureReliefSetting, RMS9_Empty1, RMS9_Empty2;
 extern ChannelID PRS1_PressureMin,PRS1_PressureMax, PRS1_PressureMinAchieved, PRS1_PressureMaxAchieved,
