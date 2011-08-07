@@ -67,7 +67,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
-        dividx=4;
+        dividx=0;
         divmax=18;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
