@@ -692,7 +692,6 @@ EventDataType Session::wavg(ChannelID id)
         return 0;
     QVector<EventList *> & evec=jj.value();
 
-    bool first=true;
     qint64 lasttime=0,time,td;
     EventStoreType val,lastval=0;
 
@@ -701,26 +700,20 @@ EventDataType Session::wavg(ChannelID id)
     EventDataType gain=evec[0]->gain();
 
     for (int i=0;i<evec.size();i++) {
-        for (int j=0;j<evec[i]->count();j++) {
+        lastval=evec[i]->raw(0);
+        lasttime=evec[i]->time(0);
+        for (int j=1;j<evec[i]->count();j++) {
             val=evec[i]->raw(j);
             time=evec[i]->time(j);
-            if (first) {
-                first=false;
-            } else {
-                td=(time-lasttime);
-                if (vtime.contains(lastval)) {
-                    vtime[lastval]+=td;
-                } else vtime[lastval]=td;
-            }
+            td=(time-lasttime);
 
+            if (vtime.contains(lastval)) {
+                vtime[lastval]+=td;
+            } else vtime[lastval]=td;
             lasttime=time;
             lastval=val;
         }
     }
-    /*td=last()-lasttime;
-    if (vtime.contains(lastval)) {
-        vtime[lastval]+=td;
-    } else vtime[lastval]=td; */
 
     qint64 s0=0,s1=0,s2=0; // 32bit may all be thats needed here..
     for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
@@ -728,8 +721,14 @@ EventDataType Session::wavg(ChannelID id)
        s1+=i.key()*s0;
        s2+=s0;
     }
-    double j=double(s1)/double(s_last-s_first);
+    double j=double(s1)/double(s2);
     EventDataType v=j*gain;
+    if (v>32768*gain) {
+        v=0;
+    }
+    if (v<-(32768*gain)) {
+        v=0;
+    }
     m_wavg[id]=v;
     return v;
 }

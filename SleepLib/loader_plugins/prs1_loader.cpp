@@ -360,10 +360,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
             sess->setWavg(CPAP_Pressure,(sess->wavg(CPAP_EPAP)+sess->wavg(CPAP_IPAP))/2.0);
             sess->setMin(CPAP_Pressure,sess->min(CPAP_EPAP));
-            sess->setMax(CPAP_Pressure,sess->min(CPAP_IPAP));
-            sess->set90p(CPAP_Pressure,sess->min(CPAP_IPAP));
+            sess->setMax(CPAP_Pressure,sess->max(CPAP_IPAP));
+            sess->set90p(CPAP_Pressure,sess->p90(CPAP_IPAP));
             sess->p90(CPAP_EPAP);
-            sess->p90(CPAP_IPAP);
+            //sess->p90(CPAP_IPAP);
         } else {
             sess->avg(CPAP_Pressure);
             sess->wavg(CPAP_Pressure);

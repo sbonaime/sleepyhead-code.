@@ -183,15 +183,21 @@ EventDataType Day::sum(ChannelID code)
 EventDataType Day::wavg(ChannelID code)
 {
     double s0=0,s1=0,s2=0;
+    qint64 d;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
-            s0=sess.hours();
-            s1+=sess.wavg(code)*s0;
-            s2+=s0;
+        if (sess.eventlist.contains(code)) {
+            d=sess.last(code)-sess.first(code);
+            s0=double(d)/1000.0;
+            if (s0>0) {
+                s1+=sess.wavg(code)*s0;
+                s2+=s0;
+            }
         }
     }
-    if (s2==0) return 0;
+    if (s2==0)
+        return 0;
+
     return (s1/s2);
 }
 // Total session time in milliseconds
@@ -297,6 +303,15 @@ int Day::count(ChannelID code)
     }
     return sum;
 }
+bool Day::channelExists(ChannelID id)
+{
+    for (int i=0;i<sessions.size();i++) {
+        if (sessions[i]->channelExists(id))
+            return true;
+    }
+    return false;
+}
+
 void Day::OpenEvents()
 {
     QVector<Session *>::iterator s;

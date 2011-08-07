@@ -34,7 +34,7 @@
      <widget class="QSplitter" name="splitter">
       <property name="maximumSize">
        <size>
-        <width>265</width>
+        <width>300</width>
         <height>16777215</height>
        </size>
       </property>
@@ -56,7 +56,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>265</width>
+         <width>300</width>
          <height>180</height>
         </size>
        </property>
@@ -85,7 +85,7 @@
       <widget class="QTabWidget" name="tabWidget">
        <property name="maximumSize">
         <size>
-         <width>265</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
        </property>

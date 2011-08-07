@@ -563,6 +563,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         ChannelID code;
         if (edf.edfsignals[s]->label=="Flow") {
+            es.gain*=60;
             code=CPAP_FlowRate;
         } else if (edf.edfsignals[s]->label=="Mask Pres") {
             code=CPAP_MaskPressure;
@@ -583,8 +584,8 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             v=floor(a->min()/1);
             a->setMin(v*1); */
         } else if (code==CPAP_FlowRate) {
-            a->setMax(1);
-            a->setMin(-1);
+            //a->setMax(1);
+            //a->setMin(-1);
         }
         sess->setMin(code,a->min());
         sess->setMax(code,a->max());

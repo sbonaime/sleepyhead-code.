@@ -217,63 +217,67 @@ void gTAPGraph::SetDay(Day *d)
     gLayer::SetDay(d);
     m_total=0;
     if (!m_day) return;
-    QVector<qint64> tap;
-    const int max_value=2600;
-    tap.resize(max_value);
+    QMap<EventStoreType,qint64> tap;
 
     EventStoreType data=0,lastval=0;
-    qint64 time=0,lasttime=0,lastlasttime=0;
+    qint64 time=0,lasttime=0,firsttime=0;
     bool first=true;
     bool rfirst=true;
+    bool changed;
     EventDataType gain=1,offset=0;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
         for (int q=0;q<(*s)->eventlist[m_code].size();q++) {
             EventList &el=*(*s)->eventlist[m_code][q];
-            lasttime=el.time(0);
-            first=true;
-
-            for (int i=0;i<el.count();i++) {
-                data=el.raw(i);
-                if (data>max_value) {
-                    qWarning() << "max_value is too small in gTAPGraph::SetDay()";
-                    break;
-                }
-                time=el.time(i);
-                if (rfirst) {
-                    gain=el.gain();
-                    offset=el.offset();
-                    rfirst=false;
-                }
-                if (first) {
-                    first=false;
-                } else {
-                    if (lastval!=data) {
-                        int v=(time-lasttime)/1000;
-                        tap[lastval]+=v;
-                    }
-                }
-                lastlasttime=lasttime;
-                lasttime=time;
-                lastval=data;
+            firsttime=lasttime=el.time(0);
+            lastval=el.raw(0);
+            if (rfirst) {
+                gain=el.gain();
+                offset=el.offset();
+                rfirst=false;
             }
-            if (lastval!=data){
+            first=true;
+            changed=false;
+            EventStoreType lastlastval;
+            for (int i=1;i<el.count();i++) {
+                data=el.raw(i);
+                time=el.time(i);
+                if (lastval!=data) {
+                    qint64 v=(time-lasttime);
+                    if (tap.find(lastval)!=tap.end()) {
+                        tap[lastval]+=v;
+                    } else {
+                        tap[lastval]=v;
+                    }
+                    changed=true;
+                    lasttime=time;
+                    lastval=data;
+                }
+            }
+            if (time!=lasttime) {
+                qint64 v=(time-lasttime);
+                if (tap.find(lastval)!=tap.end()) {
+                    tap[data]+=v;
+                } else {
+                    tap[data]=v;
+                }
+            }
+            /*if (lastval!=data){
                 int v=(time-lastlasttime)/1000L;
                 tap[data]+=v;
-            }
+            } */
         }
     }
     m_values.clear();
     m_names.clear();
     m_total=0;
     EventDataType val;
-    for (int i=0;i<max_value;i++) {
-        if (tap[i]>0) {
-            val=float(i)*gain+offset;
-            m_values.push_back(tap[i]);
-            m_total+=tap[i];
 
-            m_names.push_back(QString::number(val,'f',2));
-        }
+    for (QMap<EventStoreType,qint64>::iterator i=tap.begin();i!=tap.end();i++) {
+        val=float(i.key())*gain+offset;
+
+        m_values.push_back(i.value()/1000L);
+        m_total+=i.value()/1000L;
+        m_names.push_back(QString::number(val,'f',2));
     }
 }

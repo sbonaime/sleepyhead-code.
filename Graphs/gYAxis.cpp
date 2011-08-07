@@ -31,12 +31,16 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     double miny=w.min_y;
     double maxy=w.max_y;
 
+    if (miny<0) {
+        miny=-MAX(fabs(miny),fabs(maxy));
+    }
     double dy=maxy-miny;
     if (dy<=0) {
         //miny=miny;
         maxy++;
         dy=1;
     }
+
 
     int m;
     if (maxy>500) {
@@ -91,9 +95,14 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
 
     double mxy=MAX(fabs(maxy),fabs(miny));
-    double mny=MIN(fabs(maxy),fabs(miny));
-    if (miny<0) mny=-mny;
-    if (maxy<0) mxy=-mxy;
+    double mny=miny;
+    if (miny<0) {
+        mny=-mxy;
+    } else {
+    }
+    //double mny=MIN(fabs(maxy),fabs(miny));
+    //if (miny<0) mny=-mny;
+    //if (maxy<0) mxy=-mxy;
     //mny=miny;
     //mxy=maxy;
 
@@ -170,7 +179,7 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         vertarray[vertcnt++]=h;
 
         if (m_show_major_lines && (i > miny)) {
-            majorvertarray[majorvertcnt++]=start_px+1;
+            majorvertarray[majorvertcnt++]=start_px;
             majorvertarray[majorvertcnt++]=h;
             majorvertarray[majorvertcnt++]=start_px+width;
             majorvertarray[majorvertcnt++]=h;

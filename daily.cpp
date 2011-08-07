@@ -755,54 +755,44 @@ void Daily::Load(QDate date)
         }
         html+="</table>"
         "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n"
-        "<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n";
+        "<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
 
-        if (mode==MODE_BIPAP) {
-            html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
-            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp;IPAP ")+QString().sprintf("%.2f",iap90)+tr("cmH2O")+"</td></tr>\n";
+/*        if (mode==MODE_BIPAP) {
+            html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp; EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
+            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp; IPAP ")+QString().sprintf("%.2f",iap90)+tr("cmH2O")+"</td></tr>\n";
         } else if (mode==MODE_APAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp;Pressure ")+QString().sprintf("%.2f",p90)+("</i></td></tr>\n"); //cpap->summary_weighted_avg(CPAP_PressurePercentValue)
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp; Auto Pressure ")+QString().sprintf("%.2f",p90)+("</i></td></tr>\n"); //cpap->summary_weighted_avg(CPAP_PressurePercentValue)
         } else if (mode==MODE_CPAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("Pressure ")+QString().sprintf("%.2f",cpap->max(CPAP_Pressure))+("</i></td></tr>\n");
-        }
+            html+=("<tr><td colspan=4 align='center'><i>")+tr("CPAP Pressure ")+QString().sprintf("%.2f",cpap->max(CPAP_Pressure))+("</i></td></tr>\n");
+        }*/
+
         //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
-        html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>Max</b></td></tr>");
+        html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
 
-        if (mode==MODE_APAP) {
-            html+="<tr><td align=left>"+tr("Pressure:")+"</td><td>"+a.sprintf("%.2f",cpap->min(CPAP_Pressure));
-            html+=(" </td><td>")+a.sprintf("%.2f",cpap->wavg(CPAP_Pressure));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->max(CPAP_Pressure))+("</td></tr>");
-
-            //  html+=wxT("<tr><td><b>")+_("90%&nbsp;Pressure")+wxT("</b></td><td>")+wxString::Format(wxT("%.1fcmH2O"),p90)+wxT("</td></tr>\n");
-        } else if (mode==MODE_BIPAP) {
-            html+=("<tr><td align=left>"+tr("EPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->min(CPAP_EPAP));
-            html+=(" </td><td>")+a.sprintf("%.2f",cpap->wavg(CPAP_EPAP));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->max(CPAP_EPAP))+("</td></tr>");
-
-            html+=("<tr><td align=left>"+tr("IPAP:")+"</td><td>")+a.sprintf("%.2f",cpap->min(CPAP_IPAP));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->wavg(CPAP_IPAP));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->max(CPAP_IPAP))+("</td></tr>");
-
-            html+=("<tr><td align=left>"+tr("PS:")+"</td><td>")+a.sprintf("%.2f",cpap->min(CPAP_PressureSupport));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->wavg(CPAP_PressureSupport));
-            html+=("</td><td>")+a.sprintf("%.2f",cpap->max(CPAP_PressureSupport))+("</td></tr>");
-
+        ChannelID chans[]={CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths, CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_FlowLimitGraph,CPAP_Leak,CPAP_Snore,CPAP_TidalVolume,CPAP_Pulse,CPAP_SPO2};
+        int numchans=sizeof(chans)/sizeof(ChannelID);
+        for (int i=0;i<numchans;i++) {
+            ChannelID code=chans[i];
+            if (cpap->channelExists(code)) {
+                html+="<tr><td align=left>"+channel[code].label();
+                html+="</td><td>"+a.sprintf("%.2f",cpap->min(code));
+                html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code));
+                html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code));
+                html+="</td><td>"+a.sprintf("%.2f",cpap->max(code));
+                html+="</td><tr>";
+            }
         }
-        html+="<tr><td align=left>"+tr("Leak:");
-        html+="</td><td>"+a.sprintf("%.2f",cpap->min(CPAP_Leak));
-        html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(CPAP_Leak));
-        html+="</td><td>"+a.sprintf("%.2f",cpap->max(CPAP_Leak))+("</td><tr>");
 
-        html+="<tr><td align=left>"+tr("Snore:");
+        /*html+="<tr><td align=left>"+tr("Snore:");
         html+="</td><td>"+a.sprintf("%.2f",cpap->min(CPAP_Snore));
         html+="</td><td>"+a.sprintf("%.2f",cpap->avg(CPAP_Snore));
         html+="</td><td>"+a.sprintf("%.2f",cpap->max(CPAP_Snore))+("</td><tr>");
-
+*/
 
     } else {
-        html+="<tr><td colspan=4 align=center><i>"+tr("No CPAP data available")+"</i></td></tr>";
-        html+="<tr><td colspan=4>&nbsp;</td></tr>\n";
+        html+="<tr><td colspan=5 align=center><i>"+tr("No CPAP data available")+"</i></td></tr>";
+        html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
     // Instead of doing this, check whether any data exists..
@@ -820,13 +810,17 @@ void Daily::Load(QDate date)
     if (oxi) {
         html+="<tr><td>"+tr("Pulse:");
         html+="</td><td>"+a.sprintf("%.2fbpm",oxi->min(OXI_Pulse));
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->avg(OXI_Pulse));
-        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->max(OXI_Pulse))+"</td><tr>";
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->wavg(OXI_Pulse));
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->p90(OXI_Pulse));
+        html+="</td><td>"+a.sprintf("%.2fbpm",oxi->max(OXI_Pulse));
+        html+="</td><tr>";
 
         html+="<tr><td>"+tr("SpO2:");
         html+="</td><td>"+a.sprintf("%.2f%%",oxi->min(OXI_SPO2));
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->avg(OXI_SPO2));
-        html+="</td><td>"+a.sprintf("%.2f%%",oxi->max(OXI_SPO2))+"</td><tr>";
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->wavg(OXI_SPO2));
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->p90(OXI_SPO2));
+        html+="</td><td>"+a.sprintf("%.2f%%",oxi->max(OXI_SPO2));
+        html+="</td><tr>";
 
         //html+=wxT("<tr><td colspan=4>&nbsp;</td></tr>\n");
 
@@ -838,39 +832,39 @@ void Daily::Load(QDate date)
     }
 
     if (cpap) {
-        if (mode==MODE_BIPAP) {
-            if (pref["EnableGraphSnapshots"].toBool()) {
-                {
-            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
-            TAP_EAP->setFixedSize(gwwidth,30);
-            QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,30,false);
-            QByteArray byteArray;
-            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-            buffer.open(QIODevice::WriteOnly);
-            pixmap.save(&buffer, "PNG");
-            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-                }
-                {
-            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
-            TAP_IAP->setFixedSize(gwwidth,30);
-            QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,30,false);
-            QByteArray byteArray;
-            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-            buffer.open(QIODevice::WriteOnly);
-            pixmap.save(&buffer, "PNG");
-            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-                }
+        html+="</table>"
+        "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+        if (pref["EnableGraphSnapshots"].toBool()) {
+            if (cpap->channelExists(CPAP_Pressure)) {
+                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
+                TAP->setFixedSize(gwwidth,30);
+                QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                buffer.open(QIODevice::WriteOnly);
+                pixmap.save(&buffer, "PNG");
+                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             }
-        } else if (mode==MODE_APAP) {
-            if (pref["EnableGraphSnapshots"].toBool()) {
-            html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
-            TAP->setFixedSize(gwwidth,30);
-            QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
-            QByteArray byteArray;
-            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-            buffer.open(QIODevice::WriteOnly);
-            pixmap.save(&buffer, "PNG");
-            html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            if (cpap->channelExists(CPAP_EPAP)) {
+                //html+="<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n";
+                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
+                TAP_EAP->setFixedSize(gwwidth,30);
+                QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,30,false);
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                buffer.open(QIODevice::WriteOnly);
+                pixmap.save(&buffer, "PNG");
+                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            }
+            if (cpap->channelExists(CPAP_IPAP)) {
+                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
+                TAP_IAP->setFixedSize(gwwidth,30);
+                QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,30,false);
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                buffer.open(QIODevice::WriteOnly);
+                pixmap.save(&buffer, "PNG");
+                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             }
         }
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";

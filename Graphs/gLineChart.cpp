@@ -41,6 +41,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     EventDataType miny,maxy;
     double minx,maxx;
     miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
+    if (miny<0) {
+        miny=-MAX(fabs(miny),fabs(maxy));
+    }
 
     int m;
     if (maxy>500) {

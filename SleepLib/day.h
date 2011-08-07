@@ -65,7 +65,7 @@ public:
 
     void OpenEvents();
     QVector<Session *> & getSessions() { return sessions; }
-
+    bool channelExists(ChannelID id);
 protected:
     QVector<Session *> sessions;
     qint64 d_first,d_last;
