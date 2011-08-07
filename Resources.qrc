@@ -14,5 +14,6 @@
         <file>icons/refresh.png</file>
         <file>docs/usage.html</file>
         <file>icons/oximeter.png</file>
+        <file>docs/0.0.gif</file>
     </qresource>
 </RCC>

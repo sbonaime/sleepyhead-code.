@@ -724,9 +724,9 @@ void Daily::Load(QDate date)
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
 
-        float p90=cpap->p90(CPAP_Pressure);
-        eap90=cpap->p90(CPAP_EPAP);
-        iap90=cpap->p90(CPAP_IPAP);
+        //float p90=cpap->p90(CPAP_Pressure);
+        //eap90=cpap->p90(CPAP_EPAP);
+        //iap90=cpap->p90(CPAP_IPAP);
         QString submodel=tr("Unknown Model");
 
         //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
@@ -781,14 +781,18 @@ void Daily::Load(QDate date)
         // ^^ Scratch that.. pie now includes text..
 
         if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
-            html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-            G_AHI->setFixedSize(gwwidth,120);
-            QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
-            QByteArray byteArray;
-            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-            buffer.open(QIODevice::WriteOnly);
-            pixmap.save(&buffer, "PNG");
-            html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            if (ahi+rei+fli>0) {
+                html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
+                G_AHI->setFixedSize(gwwidth,120);
+                QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                buffer.open(QIODevice::WriteOnly);
+                pixmap.save(&buffer, "PNG");
+                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            } else {
+                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+            }
         }
     }
     html+="</table>"

@@ -265,7 +265,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->SetSessionID(starttime/1000L);
 
             sess->setMin(OXI_Pulse,ev_pulse->min());
-            sess->setMax(OXI_Pulse,ev_pulse->min());
+            sess->setMax(OXI_Pulse,ev_pulse->max());
             sess->setFirst(OXI_Pulse,ev_pulse->first());
             sess->setLast(OXI_Pulse,ev_pulse->last());
             sess->avg(OXI_Pulse);
@@ -283,11 +283,6 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->p90(OXI_SPO2);
             //sess->min(OXI_SPO2);
             //sess->max(OXI_SPO2);
-
-            sess->setMin(OXI_SPO2,ev_spo2->min());
-            sess->setMax(OXI_SPO2,ev_spo2->max());
-            sess->setFirst(OXI_SPO2,ev_spo2->first());
-            sess->setLast(OXI_SPO2,ev_spo2->last());
 
             //sess->min(OXI_Plethysomogram);
             //sess->max(OXI_Plethysomogram);
