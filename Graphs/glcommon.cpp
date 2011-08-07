@@ -117,6 +117,7 @@ void DrawTextQueue(gGraphWindow & wid)
 
     if (wid.parentWidget()!=0) {
         QPainter painter(&wid);
+        painter.setRenderHint(QPainter::TextAntialiasing,true);
         // TODO.. Prerotate the 90degree stuff here and keep the matrix for all of these..
         for (int i=0;i<TextQueRot.size();i++) {
             TextBuffer & t=TextQueRot[i];
@@ -142,6 +143,7 @@ void DrawText(gGraphWindow &wid,QString text, int x, int  y, float angle, QColor
         //wid.qglColor(color);
         //wid.renderText(x,wid.GetScrY()-y,0,text,*font);
         QPainter painter(&wid);
+        painter.setRenderHint(QPainter::TextAntialiasing,true);
         RDrawText(painter,text,x,y,0,color,font);
         painter.end();
     }

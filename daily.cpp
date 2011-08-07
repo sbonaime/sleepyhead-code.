@@ -87,8 +87,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF=new gGraphWindow(parental,tr("Event Flags"),shared);
     FRW=new gGraphWindow(parental,tr("Flow Rate"),SF);
     PRD=new gGraphWindow(parental,tr("Pressure"),SF);
-    EXPR=new gGraphWindow(parental,tr("Therapy Pressure"),SF);
-    THPR=new gGraphWindow(parental,tr("Exp. Pressure"),SF);
+    //EXPR=new gGraphWindow(parental,tr("Exp. Pressure"),SF);
+    THPR=new gGraphWindow(parental,tr("Therapy Pressure"),SF);
     LEAK=new gGraphWindow(parental,tr("Leaks"),SF);
     MP=new gGraphWindow(parental,tr("Mask Pressure"),SF);
     SNORE=new gGraphWindow(parental,tr("Snore"),SF);
@@ -150,12 +150,12 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     THPR->AddLayer(new gXAxis());
     THPR->AddLayer(new gYAxis());
     THPR->AddLayer(AddCPAP(new gLineChart(CPAP_TherapyPressure,QColor("dark green"),square)));
+    THPR->AddLayer(AddCPAP(new gLineChart(CPAP_ExpiratoryPressure,QColor("dark blue"),square)));
     THPR->setMinimumHeight(min_height);
 
-    EXPR->AddLayer(new gXAxis());
-    EXPR->AddLayer(new gYAxis());
-    EXPR->AddLayer(AddCPAP(new gLineChart(CPAP_ExpiratoryPressure,QColor("dark green"),square)));
-    EXPR->setMinimumHeight(min_height);
+    //EXPR->AddLayer(new gXAxis());
+    //EXPR->AddLayer(new gYAxis());
+    //EXPR->setMinimumHeight(min_height);
 
 
     LEAK->AddLayer(new gXAxis());
@@ -308,7 +308,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //int i=splitter->indexOf(NoData);
     splitter->setStretchFactor(NoData,1);
 
-    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,EXPR,THPR,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
+    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,THPR,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
     int ss=sizeof(graphs)/sizeof(gGraphWindow *);
 
     for (int i=0;i<ss;i++) {

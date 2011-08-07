@@ -847,6 +847,7 @@ void gGraphWindow::Render(int w, int h)
     for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         (*l)->Plot(*this,w,h);
     }
+
     DrawTextQueue(*this);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);

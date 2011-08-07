@@ -632,7 +632,7 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
-        qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
+        //qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         ChannelID code;
         if (edf.edfsignals[s]->label=="Pulse") {
