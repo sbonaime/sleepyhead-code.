@@ -154,8 +154,10 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         int m=(j/60000L) % 60L;
         int h=(j/3600000L) % 24L;
         int s=(j/1000L) % 60L;
+
         if (fitmode==0) {
-            tmpstr=QString("XX %1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+            int day=(j/86400000) % 7;
+            tmpstr=QString("XXX %1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==1) { // minute
             tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==2) { // second
