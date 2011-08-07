@@ -337,7 +337,6 @@ Session *Machine::SessionExists(SessionID session)
 
 Day *Machine::AddSession(Session *s,Profile *p)
 {
-    double span=0;
     if (!s) {
         qWarning() << "Empty Session in Machine::AddSession()";
         return NULL;

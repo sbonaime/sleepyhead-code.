@@ -61,7 +61,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     int divmax,dividx;
     int fitmode;
     if (xx>86400000L) {         // Day
-        fd="00:00";
+        fd="MMM 00:00";
         dividx=0;
         divmax=10;
         fitmode=0;
@@ -156,8 +156,9 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         int s=(j/1000L) % 60L;
 
         if (fitmode==0) {
-            int day=(j/86400000) % 7;
-            tmpstr=QString("XXX %1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+            static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+            int d=(j/86400000) % 7;
+            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==1) { // minute
             tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==2) { // second

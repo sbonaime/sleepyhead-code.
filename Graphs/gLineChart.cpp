@@ -88,7 +88,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     if (yy<=0) {
         if (miny==0)
             return;
-        int i=5;
      }
 
     EventDataType lastpx,lastpy;
@@ -164,9 +163,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             if (maxx<x0) continue;
             if (xL<minx) continue;
 
-            if (siz==2) {
-                int i=0;
-            }
             if (x0>xL) {
                 if (siz==2) { // this happens on CPAP
                     quint32 t=el.getTime()[0];

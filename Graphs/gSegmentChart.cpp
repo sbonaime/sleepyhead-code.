@@ -123,11 +123,24 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
                 py=start_py+yoffset+cos(q*2*M_PI)*radius;
                 glVertex2f(px,py);
             }
+            double tpx=start_px+xoffset+sin((sum+(j/2.0))*2*M_PI)*(radius/1.7);
+            double tpy=start_py+yoffset+cos((sum+(j/2.0))*2*M_PI)*(radius/1.7);
             q=sum+j;
             px=start_px+xoffset+sin(q*2*M_PI)*radius;
             py=start_py+yoffset+cos(q*2*M_PI)*radius;
             glVertex2f(px,py);
             glEnd();
+
+            if (j>.09) {
+                //glBegin(GL_POINTS);
+                //glVertex2f(tpx,tpy);
+                //glEnd();
+                QString a=m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
+                float x,y;
+                GetTextExtent(a,x,y);
+                w.renderText(tpx-(x/2.0),scry-(tpy-y/2.0),a);
+            }
+
             sum=q;
 
 /////////////////////////////////////////////////////////////////////////////////////
