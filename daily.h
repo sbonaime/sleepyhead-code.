@@ -29,13 +29,18 @@ namespace Ui {
 class Daily;
 class MyScrollArea:public QScrollArea
 {
+    Q_OBJECT
 public:
     MyScrollArea(QWidget * parent, Daily * daily);
     virtual ~MyScrollArea();
+protected slots:
+    void UpdateGraphs();
 protected:
     virtual void scrollContentsBy(int dx, int dy);
+
     Daily *m_daily;
     QTimer *timer;
+    QTime m_time;
 };
 
 class MainWindow;
@@ -49,9 +54,8 @@ public:
     void ReloadGraphs();
     void ResetGraphLayout();
     QGLWidget *SharedWidget() { return SF; }
-
-public slots:
     void RedrawGraphs();
+
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);
