@@ -175,8 +175,10 @@ void MainWindow::Startup()
 void MainWindow::on_action_Import_Data_triggered()
 {
     QStringList dirNames;
+
     QFileDialog qfd(this);
-    qfd.setFileMode(QFileDialog::DirectoryOnly);
+    qfd.setFileMode(QFileDialog::Directory);
+    qfd.setOption(QFileDialog::ShowDirsOnly,true);
 
     if (qfd.exec()) {
         qprogress->setValue(0);
