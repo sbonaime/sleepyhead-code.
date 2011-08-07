@@ -174,17 +174,23 @@ void MainWindow::Startup()
 
 void MainWindow::on_action_Import_Data_triggered()
 {
-    QStringList dirNames;
+    //QStringList dirNames;
 
-    QFileDialog qfd(this);
-    qfd.setFileMode(QFileDialog::Directory);
-    qfd.setOption(QFileDialog::ShowDirsOnly,true);
+    //QFileDialog qfd(this);
+    //qfd.setFileMode(QFileDialog::Directory);
+    //qfd.setOption(QFileDialog::ShowDirsOnly,true);
+    QString dir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
 
-    if (qfd.exec()) {
+    if (!dir.isEmpty()) {
+    //if (qfd.exec()) {
         qprogress->setValue(0);
         qprogress->show();
         qstatus->setText(tr("Importing Data"));
-        dirNames=qfd.selectedFiles();
+        int c=profile->Import(dir);
+        if (!c) {
+            QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dir,QMessageBox::Ok);
+        }
+        /*dirNames=qfd.selectedFiles();
         int c=0,d;
         for (int i=0;i<dirNames.size();i++) {
             d=profile->Import(dirNames[i]);
@@ -192,7 +198,7 @@ void MainWindow::on_action_Import_Data_triggered()
                 QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dirNames[i],QMessageBox::Ok);
             }
             c+=d;
-        }
+        }*/
         qDebug() << "Finished Importing data" << c;
         if (c) {
             profile->Save();
