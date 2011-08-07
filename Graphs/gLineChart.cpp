@@ -360,13 +360,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 //////////////////////////////////////////////////////////////////
                 first=true;
                 double start=el.first();
-                for (int i=idx;i<siz;i+=sam) {
+                for (int i=0;i<siz;i++) {
 
                     time=start+tim[i];
                     if (first) {
                         if (num_points>15 && (time < minx)) continue; // Skip stuff before the start of our data window
                         first=false;
-                        if (i>=sam)  i-=sam; // Start with the previous sample (which will be in clipping area)
+                        if (i>0)  i--; // Start with the previous sample (which will be in clipping area)
                         time=start+tim[i];
                     }
                     data=dat[i]*gain; //
@@ -376,6 +376,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     //py=yst+((data - ymin) * nmult);   // Same for Y scale with precomputed gain
                     py=yst+((data - miny) * ymult);   // Same for Y scale with precomputed gain
 
+                    if (px<start_px) px=start_px;
+                    if (px>start_px+width) px=start_px+width;
                     if (firstpx) {
                         firstpx=false;
                     } else {
