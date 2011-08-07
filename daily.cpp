@@ -87,6 +87,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF=new gGraphWindow(parental,tr("Event Flags"),shared);
     FRW=new gGraphWindow(parental,tr("Flow Rate"),SF);
     PRD=new gGraphWindow(parental,tr("Pressure"),SF);
+    EXPR=new gGraphWindow(parental,tr("Therapy Pressure"),SF);
+    THPR=new gGraphWindow(parental,tr("Exp. Pressure"),SF);
     LEAK=new gGraphWindow(parental,tr("Leaks"),SF);
     MP=new gGraphWindow(parental,tr("Mask Pressure"),SF);
     SNORE=new gGraphWindow(parental,tr("Snore"),SF);
@@ -137,14 +139,24 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF->AddLayer(new gFooBar(10,QColor("orange"),QColor("dark grey"),true));
 
 
+    bool square=true;
     PRD->AddLayer(new gXAxis());
     PRD->AddLayer(new gYAxis());
-    //PRD->AddLayer(new gFooBar());
-    bool square=true;
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
     PRD->setMinimumHeight(min_height);
+
+    THPR->AddLayer(new gXAxis());
+    THPR->AddLayer(new gYAxis());
+    THPR->AddLayer(AddCPAP(new gLineChart(CPAP_TherapyPressure,QColor("dark green"),square)));
+    THPR->setMinimumHeight(min_height);
+
+    EXPR->AddLayer(new gXAxis());
+    EXPR->AddLayer(new gYAxis());
+    EXPR->AddLayer(AddCPAP(new gLineChart(CPAP_ExpiratoryPressure,QColor("dark green"),square)));
+    EXPR->setMinimumHeight(min_height);
+
 
     LEAK->AddLayer(new gXAxis());
     LEAK->AddLayer(new gYAxis());
@@ -296,7 +308,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //int i=splitter->indexOf(NoData);
     splitter->setStretchFactor(NoData,1);
 
-    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
+    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,EXPR,THPR,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
     int ss=sizeof(graphs)/sizeof(gGraphWindow *);
 
     for (int i=0;i<ss;i++) {

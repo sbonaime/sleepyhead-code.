@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
 
     a.setApplicationName("SleepyHead");
 
-    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
+   /* int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     QStringList ffam=QFontDatabase::applicationFontFamilies(id);
     for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
         qDebug() << "Loaded Font: " << (*i);
-    }
+    } */
 
-    a.setFont(QFont("FreeSans",10));
+    a.setFont(QFont("Sans Serif",10));
 
     qInstallMsgHandler(MyOutputHandler);
     MainWindow w;
