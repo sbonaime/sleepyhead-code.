@@ -44,7 +44,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
 {
     if (!m_visible) return;
     if (!m_day) return;
-    if (!m_total) return;
+    //if (!m_total) return;
     int start_px=w.GetLeftMargin();
     int start_py=w.GetBottomMargin();
     int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
@@ -59,10 +59,6 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     float step=1.0/45.0;
     float px,py;
     float q;
-    glEnable(GL_BLEND);
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(1.5);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float xmult=float(width)/float(m_total);
     float ymult=float(height)/float(m_total);
@@ -71,12 +67,25 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
 
     int xoffset=width/2;
     int yoffset=height/2;
+    if (m_total==0) {
+        w.qglColor(Qt::green);
+        QString a=":-)";
+        float x,y;
+        GetTextExtent(a,x,y,bigfont);
+        w.renderText(start_px+xoffset-x/2, scry-(start_py+yoffset-y/2),a,*bigfont);
+        return;
+    }
 
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(1.5);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int data;
     unsigned size=m_values.size();
     float line_step=float(width)/float(size-1);
     bool line_first=true;
     int line_last;
+
 
     if (m_graph_type==GST_Line) {
         w.qglColor(m_outline_color);

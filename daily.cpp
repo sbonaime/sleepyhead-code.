@@ -61,8 +61,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     ui->graphLayout->addWidget(scrollArea,1);
 
     scrollArea->setWidgetResizable(true);
+    scrollArea->setAutoFillBackground(false);
 
     GraphLayout=new QWidget(scrollArea);
+    GraphLayout->setAutoFillBackground(false);
     scrollArea->setWidget(GraphLayout);
 
     splitter=new QVBoxLayout(GraphLayout);
