@@ -32,8 +32,15 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     double maxy=w.max_y;
 
     double dy=maxy-miny;
-    if (dy<=0)
-        return;
+    if (dy<=0) {
+        if (miny==0)
+            return;
+        else {
+            miny+=1;
+            maxy-=1;
+            dy=2;
+        }
+    }
 
     int m;
     if (maxy>500) {

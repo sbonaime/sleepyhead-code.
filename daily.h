@@ -30,11 +30,11 @@ class Daily;
 class MyScrollArea:public QScrollArea
 {
 public:
-    MyScrollArea(Daily * parent);
+    MyScrollArea(QWidget * parent, Daily * daily);
     virtual ~MyScrollArea();
 protected:
     virtual void scrollContentsBy(int dx, int dy);
-    Daily *daily;
+    Daily *m_daily;
 };
 
 class MainWindow;

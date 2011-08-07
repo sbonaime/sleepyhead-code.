@@ -1,13 +1,13 @@
-/********************************************************************
+/*
  gFooBar Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include "gFooBar.h"
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color,bool shadow,QColor shadow_color)
-:gLayer(EmptyChannel),m_offset(offset),m_shadow(shadow),m_handle_color(handle_color),m_line_color(line_color),m_shadow_color(shadow_color)
+:gLayer(EmptyChannel),m_offset(offset),m_handle_color(handle_color),m_line_color(line_color),m_shadow(shadow),m_shadow_color(shadow_color)
 {
 }
 gFooBar::~gFooBar()

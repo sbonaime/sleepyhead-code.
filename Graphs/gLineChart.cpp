@@ -83,10 +83,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     EventDataType ymult=EventDataType(height)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
-    if ((xx<0) || (yy<0))
+    if (xx<0)
         return;
-    if ((yy==0) && (miny==0))
-        return;
+    if (yy<=0) {
+        if (miny==0)
+            return;
+        int i=5;
+     }
 
     EventDataType lastpx,lastpy;
     EventDataType px,py;
@@ -161,6 +164,9 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             if (maxx<x0) continue;
             if (xL<minx) continue;
 
+            if (siz==2) {
+                int i=0;
+            }
             if (x0>xL) {
                 if (siz==2) { // this happens on CPAP
                     quint32 t=el.getTime()[0];

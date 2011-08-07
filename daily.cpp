@@ -29,7 +29,8 @@
 const int min_height=150;
 const int default_height=150;
 
-MyScrollArea::MyScrollArea(Daily * parent)
+MyScrollArea::MyScrollArea(QWidget *parent, Daily * daily)
+    :QScrollArea(parent),m_daily(daily)
 {
 }
 MyScrollArea::~MyScrollArea()
@@ -37,6 +38,10 @@ MyScrollArea::~MyScrollArea()
 }
 void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
+    QScrollArea::scrollContentsBy(dx,dy);
+#ifdef Q_WS_MAC
+    m_daily->RedrawGraphs();
+#endif
 }
 
 Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
@@ -51,18 +56,25 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         exit(-1);
     }
 
-    //scrollArea=new MyScrollArea(this);
 
+    scrollArea=new MyScrollArea(ui->graphMainArea,this);
+    ui->graphLayout->addWidget(scrollArea,1);
+
+    scrollArea->setWidgetResizable(true);
+    //QVBoxLayout *lay=new QVBoxLayout(scrollArea);
+    //scrollArea->setWidget(lay);
+    GraphLayout=new QWidget(scrollArea);
+    scrollArea->setWidget(GraphLayout);
+
+    //lay->addWidget(GraphLayout,1);
     //ui->webView->setStyleSheet("QWebView { background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); }");
     //ui->treeWidget->setAlternatingRowColors(true);
-    GraphLayout=new QWidget();
-    ui->graphSizer->addWidget(GraphLayout,1);
-
-    ui->graphSizer->setMargin(0);
-    ui->graphSizer->setContentsMargins(0,0,0,0);
     splitter=new QVBoxLayout(GraphLayout);
+    GraphLayout->setLayout(splitter);
     splitter->setMargin(0);
     splitter->setContentsMargins(0,0,0,0);
+
+    //ui->splitter->layout();
     //gSplitter(Qt::Vertical,ui->scrollArea);
     //splitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     //splitter->setHandleWidth(3);
@@ -70,20 +82,19 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //splitter->setOpaqueResize(false);
 #endif
 
-    ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //ui->scrollArea->setWidget(splitter);
     //this->connect(ui->scrollArea,
     //ui->graphSizer->addWidget(splitter);
-    ui->scrollArea->setAutoFillBackground(false);
+    scrollArea->setAutoFillBackground(false);
     //splitter->setAutoFillBackground(false);
-    ui->scrollArea->setWidgetResizable(true);
 
 
     //splitter->setMinimumHeight(1600);
     //splitter->setMinimumWidth(600);
 
-    QWidget * parental=ui->scrollArea;
+    QWidget * parental=GraphLayout;
     SF=new gGraphWindow(parental,tr("Event Flags"),shared);
     FRW=new gGraphWindow(parental,tr("Flow Rate"),SF);
     PRD=new gGraphWindow(parental,tr("Pressure"),SF);
@@ -337,7 +348,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //OF->LinkZoom(SPO2);
 
     //  AddGraph(SPO2);
-    spacer=new gGraphWindow(ui->scrollArea,"",SF);
+    spacer=new gGraphWindow(scrollArea,"",SF);
     spacer->setMinimumHeight(1);
     spacer->setMaximumHeight(1);
     splitter->addWidget(spacer);
@@ -599,7 +610,7 @@ void Daily::Load(QDate date)
     } else {
         NoData->hide();
         int vis=0;
-        ui->scrollArea->setUpdatesEnabled(false);
+        scrollArea->setUpdatesEnabled(false);
         for (int i=0;i<Graphs.size();i++) {
             Graphs[i]->setUpdatesEnabled(false);
             if (Graphs[i]->isEmpty()) {
@@ -641,8 +652,8 @@ void Daily::Load(QDate date)
 //        splitter->blockSignals(true);
 
         splitter->layout();
-        ui->scrollArea->setUpdatesEnabled(true);
-        ui->scrollArea->update();
+        scrollArea->setUpdatesEnabled(true);
+        scrollArea->update();
         //ui->scrollArea->update();
         //splitter->layout();
 

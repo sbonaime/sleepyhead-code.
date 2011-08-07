@@ -932,7 +932,7 @@ EventDataType gGraphWindow::MinY()
     for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Miny();
-        if (tmp==(*l)->Maxy()) continue;
+        if (tmp==0 && tmp==(*l)->Maxy()) continue;
         if (first) {
             val=tmp;
             first=false;
@@ -949,7 +949,7 @@ EventDataType gGraphWindow::MaxY()
     for (QList<gLayer *>::iterator l=layers.begin();l!=layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxy();
-        if (tmp==(*l)->Miny()) continue;
+        if (tmp==0 && tmp==(*l)->Miny()) continue;
         if (first) {
             val=tmp;
             first=false;
