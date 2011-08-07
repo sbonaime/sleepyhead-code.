@@ -32,16 +32,24 @@ const int default_height=150;
 MyScrollArea::MyScrollArea(QWidget *parent, Daily * daily)
     :QScrollArea(parent),m_daily(daily)
 {
+    timer=new QTimer(parent);
 }
 MyScrollArea::~MyScrollArea()
 {
+    delete timer;
 }
 void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
-#ifdef Q_WS_MAC
-    m_daily->RedrawGraphs();
-#endif
+
+//#ifdef Q_WS_MAC || Q_WS_WIN
+    if (timer->isActive()) timer->stop();
+    timer->setInterval(100);
+    timer->setSingleShot(true);
+    connect(timer,SIGNAL(timeout()),SLOT(RedrawGraphs()));
+    timer->start();
+    //m_daily->RedrawGraphs();
+//#endif
 }
 
 Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)

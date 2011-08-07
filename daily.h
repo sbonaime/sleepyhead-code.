@@ -35,6 +35,7 @@ public:
 protected:
     virtual void scrollContentsBy(int dx, int dy);
     Daily *m_daily;
+    QTimer *timer;
 };
 
 class MainWindow;
@@ -46,10 +47,11 @@ public:
     explicit Daily(QWidget *parent,QGLWidget *shared,MainWindow *mw);
     ~Daily();
     void ReloadGraphs();
-    void RedrawGraphs();
     void ResetGraphLayout();
     QGLWidget *SharedWidget() { return SF; }
 
+public slots:
+    void RedrawGraphs();
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);
