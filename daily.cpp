@@ -337,9 +337,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //OF->LinkZoom(SPO2);
 
     //  AddGraph(SPO2);
-   // spacer=new QWidget(splitter);
-    //spacer->setMaximumHeight(default_height);
-    //splitter->addWidget(spacer);
+    spacer=new gGraphWindow(ui->scrollArea,"",SF);
+    spacer->setMinimumHeight(1);
+    spacer->setMaximumHeight(1);
+    splitter->addWidget(spacer);
     //i=splitter->indexOf(spacer);
     //splitter->setStretchFactor(i,1);
     //i=splitter->indexOf(FRW);
@@ -550,7 +551,7 @@ void Daily::ShowHideGraphs()
             }
         }
     }
-    GraphLayout->setMinimumHeight(vis*default_height);
+    GraphLayout->setMinimumHeight(vis*default_height+10);
     //splitter->setMaximumHeight(vis*default_height);
     splitter->layout();
     //splitter->update();
@@ -593,7 +594,7 @@ void Daily::Load(QDate date)
             GraphAction[i]->setVisible(false);
             Graphs[i]->hide();
         }
-        //spacer->hide();
+        spacer->hide();
 
     } else {
         NoData->hide();
@@ -622,12 +623,13 @@ void Daily::Load(QDate date)
         for (int i=0;i<Graphs.size();i++) {
             Graphs[i]->setUpdatesEnabled(true);
         }
+        spacer->show();
         //splitter->addStrut(vis*default_height);
         //QSize aa(this->width(),vis*default_height);
         //splitter->SetMinimumSize(aa);
         //splitter->SetFixedSize(aa);
 
-        GraphLayout->setMinimumHeight(vis*default_height);
+        GraphLayout->setMinimumHeight(vis*default_height+20);
 
 
         //splitter->setMinimumHeight(0);
