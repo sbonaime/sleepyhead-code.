@@ -29,7 +29,9 @@ QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
 {
-    ui->logText->appendPlainText(s);
+    static int start=QDateTime::currentDateTime().toTime_t();
+    QString tmp=QString("%1: %2").arg(QDateTime::currentDateTime().toTime_t()-start,5,10,QChar('0')).arg(s);
+    ui->logText->appendPlainText(tmp);
 }
 
 

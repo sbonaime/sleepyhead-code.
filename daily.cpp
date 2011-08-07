@@ -43,22 +43,22 @@ void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
 
-//#ifdef Q_WS_MAC || Q_WS_WIN
+#ifdef Q_WS_MAC
     if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);
-    timer->setInterval(200);
+    timer->setInterval(250);
     connect(timer,SIGNAL(timeout()),SLOT(UpdateGraphs()));
     timer->start();
     m_time.start();
     //m_daily->RedrawGraphs();
-//#endif
+#endif
 }
 void MyScrollArea::UpdateGraphs()
 {
-    if (m_time.elapsed()<200)
+    if (m_time.elapsed()<250)
         return;
     m_time.start();
-    //qDebug() << "Foo!";
+    qDebug() << "Redraw!";
     m_daily->RedrawGraphs();
 }
 

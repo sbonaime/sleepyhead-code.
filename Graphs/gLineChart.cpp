@@ -149,6 +149,13 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             EventList & el=*evec[n];
 
             accel=(el.type()==EVL_Waveform); // Turn on acceleration if this is a waveform.
+            if (accel) {
+                sr=el.rate();           // Time distance between samples
+                if (sr<=0) {
+                    qWarning() << "qLineChart::Plot() assert(sr>0)";
+                    continue;
+                }
+            }
             if (m_disable_accel) accel=false;
 
 
@@ -183,11 +190,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             }
             if (accel) {
                 //x1=el.time(1);
-                sr=el.rate();           // Time distance between samples
-                if (sr<=0) {
-                    qWarning() << "qLineChart::Plot() assert(sr>0)";
-                    continue;
-                }
 
                 double XR=xx/sr;
                 double Z1=MAX(x0,minx);

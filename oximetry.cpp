@@ -48,7 +48,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     //ui->graphLayout->addWidget(splitter);
 
     // Create the Event Lists to store / import data
-    ev_plethy=new EventList(OXI_Plethysomogram,EVL_Event,1,0,0,0,1000.0/50.0);
+    ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
     session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
 
     ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
@@ -157,8 +157,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
 {
     if (checked) {
         lasttime=0;
-        lastpulse=-1;
-        lastspo2=-1;
+        lastpulse=0;
+        lastspo2=0;
 
         // Wipe any current data
         ev_plethy->getData().clear();
@@ -220,11 +220,14 @@ void Oximetry::on_RunButton_toggled(bool checked)
         delete port;
         port=NULL;
 
+        ev_pulse->AddEvent(lasttime,lastpulse);
+        ev_spo2->AddEvent(lasttime,lastspo2);
         ev_spo2->setLast(lasttime);
         ev_pulse->setLast(lasttime);
         ev_plethy->setLast(lasttime);
         day->setLast(lasttime);
         session->set_last(lasttime);
+
 
         SPO2->SetMinX(ev_spo2->first());
         SPO2->SetMaxX(lasttime);
@@ -232,6 +235,12 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PULSE->SetMaxX(lasttime);
         PLETHY->SetMinX(ev_plethy->first());
         PLETHY->SetMaxX(lasttime);
+        SPO2->MinX();
+        SPO2->MaxX();
+        PULSE->MinX();
+        PULSE->MaxX();
+        PLETHY->MinX();
+        PLETHY->MaxX();
 
         PLETHY->updateGL();
         SPO2->updateGL();
@@ -245,22 +254,13 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 }
 void Oximetry::UpdatePlethy(qint8 d)
 {
-    ev_plethy->AddEvent(lasttime,d);
+    ev_plethy->getData().push_back(d);
+    if (d<ev_plethy->min()) ev_plethy->setMin(d);
+    if (d>ev_plethy->max()) ev_plethy->setMax(d);
+    ev_plethy->setCount(ev_plethy->count()+1);
+    //ev_plethy->AddEvent(lasttime,d);
     lasttime+=20;  // 50 samples per second
-    //ev_plethy->setLast(lasttime);
-    //if (plethy->RealMaxX()-plethy->RealMinX()>(1.0/(24.0*120.0))) {
-    //    plethy->SetMinX(lasttime/86400000.0-(1.0/(24.0*120.0)));
-    //    plethy->SetMaxX(lasttime/86400000.0);
-    //}
 
-    //plethy->setMinY(ev_plethy->min());
-    //plethy->setMaxY(ev_plethy->max());
-    //plethy->setMinY(ev_plethy->min());
-    //plethy->setMaxY(ev_plethy->max());
-    PLETHY->MinX();
-    PLETHY->MaxX();
-    //PLETHY->MinY();
-    //PLETHY->MaxY();
     PLETHY->SetMinY(ev_plethy->min());
     PLETHY->SetMaxY(ev_plethy->max());
     PULSE->SetMinY(ev_pulse->min());
@@ -276,6 +276,8 @@ void Oximetry::UpdatePlethy(qint8 d)
     SPO2->SetMinX(lasttime-30000);
     session->set_last(lasttime);
     day->setLast(lasttime);
+    PLETHY->MinX();
+    PLETHY->MaxX();
 }
 bool Oximetry::UpdatePulse(qint8 pul)
 {
