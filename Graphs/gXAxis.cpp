@@ -61,7 +61,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
     int divmax,dividx;
     int fitmode;
     if (xx>86400000L) {         // Day
-        fd="00 MMM";
+        fd="000 00:00";
         dividx=0;
         divmax=1;
         fitmode=0;
@@ -106,7 +106,7 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
     }
     if (fit_ticks==0) {
-        qDebug() << "gXAxis::Plot() What exactly do you expect to find at this zoom level?";
+        qDebug() << "gXAxis::Plot() Short days and zooming in too much screws this up.";
         return;
     }
     if ((div<0) || (div>divcnt)) {
@@ -149,20 +149,19 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         vertarray[vertcnt++]=start_py;
         vertarray[vertcnt++]=px;
         vertarray[vertcnt++]=start_py-6;
+        qint64 j=i+tz_offset;
+        int ms=j % 1000;
+        int m=(j/60000L) % 60L;
+        int h=(j/3600000L) % 24L;
+        int s=(j/1000L) % 60L;
         if (fitmode==0) {
-        } else {
-            qint64 j=i+tz_offset;
-            int ms=j % 1000;
-            int m=(j/60000L) % 60L;
-            int h=(j/3600000L) % 24L;
-            int s=(j/1000L) % 60L;
-            if (fitmode==1) { // minute
-                tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
-            } else if (fitmode==2) { // second
-                tmpstr=QString("%1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0'));
-            } else if (fitmode==3) { // milli
-                tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
-            }
+            tmpstr=QString("XX %1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+        } else if (fitmode==1) { // minute
+            tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+        } else if (fitmode==2) { // second
+            tmpstr=QString("%1:%2:%3").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0'));
+        } else if (fitmode==3) { // milli
+            tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
         }
 
         //w.renderText(px-(x/2),scry-(w.GetBottomMargin()-18),tmpstr);
