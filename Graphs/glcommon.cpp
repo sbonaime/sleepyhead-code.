@@ -136,13 +136,14 @@ void DrawTextQueue(gGraphWindow & wid)
 void DrawText(gGraphWindow &wid,QString text, int x, int  y, float angle, QColor color,QFont *font)
 {
     if (angle!=0) {
-        //TextBuffer *b=new TextBuffer(text,x,y,angle,color,font);
         TextQueRot.push_back(TextBuffer(text,x,y,angle,color,font));
     } else {
-        TextQue.push_back(TextBuffer(text,x,y,0,color,font));
+        //TextQue.push_back(TextBuffer(text,x,y,0,color,font));
         //wid.qglColor(color);
         //wid.renderText(x,wid.GetScrY()-y,0,text,*font);
-        //TextQue.push_back(b);
+        QPainter painter(&wid);
+        RDrawText(painter,text,x,y,0,color,font);
+        painter.end();
     }
 }
 
