@@ -44,18 +44,18 @@ void MyScrollArea::scrollContentsBy(int dx, int dy)
     QScrollArea::scrollContentsBy(dx,dy);
     m_daily->RedrawGraphs();
 #ifdef Q_WS_MAC
-   /* if (timer->isActive()) timer->stop();
+    if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);
-    timer->setInterval(250);
+    timer->setInterval(200);
     connect(timer,SIGNAL(timeout()),SLOT(UpdateGraphs()));
     timer->start();
-    m_time.start();*/
+    m_time.start();
     //m_daily->RedrawGraphs();
 #endif
 }
 void MyScrollArea::UpdateGraphs()
 {
-    if (m_time.elapsed()<250)
+    if (m_time.elapsed()<200)
         return;
     m_time.start();
     qDebug() << "Redraw!";
@@ -81,10 +81,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     ui->graphLayout->setMargin(0);
     ui->graphLayout->setContentsMargins(0,0,0,0);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setAutoFillBackground(true);
+    scrollArea->setAutoFillBackground(false);
 
     GraphLayout=new QWidget(scrollArea);
-    GraphLayout->setAutoFillBackground(true);
+    GraphLayout->setAutoFillBackground(false);
     scrollArea->setWidget(GraphLayout);
 
     splitter=new QVBoxLayout(GraphLayout);
