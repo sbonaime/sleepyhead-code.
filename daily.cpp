@@ -83,7 +83,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     scrollArea->setWidgetResizable(true);
     scrollArea->setAutoFillBackground(true);
 
-    GraphLayout=new QGLWidget(scrollArea);
+    GraphLayout=new QWidget(scrollArea);
     GraphLayout->setAutoFillBackground(true);
     scrollArea->setWidget(GraphLayout);
 
