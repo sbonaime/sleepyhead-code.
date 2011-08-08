@@ -42,14 +42,14 @@ MyScrollArea::~MyScrollArea()
 void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
-   // m_daily->RedrawGraphs();
+    m_daily->RedrawGraphs();
 #ifdef Q_WS_MAC
-    if (timer->isActive()) timer->stop();
+   /* if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);
     timer->setInterval(250);
     connect(timer,SIGNAL(timeout()),SLOT(UpdateGraphs()));
     timer->start();
-    m_time.start();
+    m_time.start();*/
     //m_daily->RedrawGraphs();
 #endif
 }
