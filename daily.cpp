@@ -42,7 +42,7 @@ MyScrollArea::~MyScrollArea()
 void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
-
+   // m_daily->RedrawGraphs();
 #ifdef Q_WS_MAC
     if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);

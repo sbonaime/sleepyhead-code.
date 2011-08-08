@@ -828,17 +828,30 @@ void gGraphWindow::resizeGL(int w, int h)
 void gGraphWindow::Render(int w, int h)
 {
     if (m_gradient_background) {
+        glClearColor(255,255,255,255);
+        //glClearDepth(1);
+        glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
+
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBegin(GL_QUADS);
-        glColor4f(1.0,1.0,1.0,.5); // Gradient start
+        glColor4f(1.0,1.0,1.0,1.0); // Gradient start
         glVertex2f(0, h);
         glVertex2f(0, 0);
 
-        glColor4f(0.8,0.8,1.0,.5); // Gradient End
+        glColor4f(0.8,0.8,1.0,1.0); // Gradient End
         glVertex2f(w, 0);
         glVertex2f(w, h);
+
+        /*glColor4f(1.0,1.0,1.0,0.5); // Gradient start
+        glVertex2f(GetLeftMargin(), h-GetTopMargin());
+        glVertex2f(GetLeftMargin(), GetBottomMargin());
+        glVertex2f(w-GetRightMargin(), GetBottomMargin());
+        glVertex2f(w-GetRightMargin(), h-GetTopMargin()); */
         glEnd();
+        //glDisable(GL_BLEND);
     } else {
-        glClearColor(255,255,255,0);
+        glClearColor(255,255,255,255);
         glClearDepth(1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
