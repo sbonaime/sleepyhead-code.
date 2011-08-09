@@ -43,6 +43,7 @@ void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
     m_daily->RedrawGraphs();
+    //gGraphWindow g;
 #ifdef Q_WS_MAC
     if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);
@@ -127,6 +128,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     TV=new gGraphWindow(parental,tr("Tidal Volume"),SF);
     RR=new gGraphWindow(parental,tr("Respiratory Rate"),SF);
     PTB=new gGraphWindow(parental,tr("Patient Trig Breaths"),SF);
+    RE=new gGraphWindow(parental,tr("Respiratory Event"),SF);
+    IE=new gGraphWindow(parental,tr("I:E"),SF);
+    TI=new gGraphWindow(parental,tr("Ti"),SF);
+    TE=new gGraphWindow(parental,tr("Te"),SF);
     //OF=new gGraphWindow(parental,tr("Oxi-Flags"),SF);
     INTPULSE=new gGraphWindow(parental,tr("Pulse"),SF); // Integrated Pulse
     INTSPO2=new gGraphWindow(parental,tr("SPO2"),SF);   // Integrated Pulse
@@ -256,6 +261,28 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::gray,true)));
     RR->setMinimumHeight(min_height);
 
+    RE->AddLayer(new gXAxis());
+    RE->AddLayer(new gYAxis());
+    RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::darkYellow,false)));
+    RE->setMinimumHeight(min_height);
+
+    IE->AddLayer(new gXAxis());
+    IE->AddLayer(new gYAxis());
+    IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkMagenta,false)));
+    IE->setMinimumHeight(min_height);
+
+    TE->AddLayer(new gXAxis());
+    TE->AddLayer(new gYAxis());
+    TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkBlue,false)));
+    TE->setMinimumHeight(min_height);
+
+    TI->AddLayer(new gXAxis());
+    TI->AddLayer(new gYAxis());
+    TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkRed,false)));
+    TI->setMinimumHeight(min_height);
+
+
+
     PTB->AddLayer(new gXAxis());
     PTB->AddLayer(new gYAxis());
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
@@ -346,7 +373,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //int i=splitter->indexOf(NoData);
     splitter->setStretchFactor(NoData,1);
 
-    gGraphWindow * graphs[]={SF,FRW,MP,MV,TV,PTB,RR,PRD,THPR,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
+    gGraphWindow * graphs[]={SF,FRW,MP,RE,MV,TV,PTB,RR,IE,TE,TI,PRD,THPR,LEAK,FLG,SNORE,INTPULSE,INTSPO2};
     int ss=sizeof(graphs)/sizeof(gGraphWindow *);
 
     for (int i=0;i<ss;i++) {
@@ -812,7 +839,12 @@ void Daily::Load(QDate date)
         //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
         html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
-        ChannelID chans[]={CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths, CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_FlowLimitGraph,CPAP_Leak,CPAP_Snore,CPAP_TidalVolume,CPAP_Pulse,CPAP_SPO2,OXI_Pulse,OXI_SPO2};
+        ChannelID chans[]={
+            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths,
+            CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_RespiratoryEvent,CPAP_FlowLimitGraph,
+            CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te,CPAP_TidalVolume,
+            CPAP_Pulse,CPAP_SPO2,OXI_Pulse,OXI_SPO2
+        };
         int numchans=sizeof(chans)/sizeof(ChannelID);
         for (int i=0;i<numchans;i++) {
             ChannelID code=chans[i];

@@ -268,6 +268,7 @@ bool Session::StoreEvents(QString filename)
             out << e.offset();
             out << e.min();
             out << e.max();
+            out << e.dimension();
         }
     }
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
@@ -348,6 +349,7 @@ bool Session::LoadEvents(QString filename)
     qint16 size2;
     QVector<ChannelID> mcorder;
     QVector<qint16> sizevec;
+    QString dim;
     for (int i=0;i<mcsize;i++) {
         in >> t16;
         code=(ChannelID)t16;
@@ -365,7 +367,9 @@ bool Session::LoadEvents(QString filename)
             in >> offset;
             in >> mn;
             in >> mx;
+            in >> dim;
             EventList *elist=new EventList(code,elt,gain,offset,mn,mx,rate);
+            elist->setDimension(dim);
 
             eventlist[code].push_back(elist);
             elist->m_count=evcount;

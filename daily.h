@@ -89,7 +89,7 @@ private:
     gFlagsGroup *fg;
     gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
                  *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
-                 *PLETHY;
+                 *PLETHY,*TI,*TE, *RE, *IE;
 
     gLineChart *pressure, *epap, *ipap;
 

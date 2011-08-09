@@ -55,6 +55,9 @@ public:
     inline const ChannelID & code() { return m_code; }
     inline const bool & update_minmax() { return m_update_minmax; }
 
+    QString dimension() { return m_dimension; }
+    void setDimension(QString dimension) { m_dimension=dimension; }
+
     QVector<EventStoreType> & getData() { return m_data; }
     QVector<quint32> & getTime() { return m_time; }
 protected:
@@ -69,6 +72,8 @@ protected:
     EventDataType m_min;
     EventDataType m_max;
     EventDataType m_rate;     // Waveform sample rate
+
+    QString m_dimension;
 
     qint64 m_first,m_last;
     bool m_update_minmax;

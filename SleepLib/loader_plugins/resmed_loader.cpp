@@ -387,7 +387,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 CPAP_Leak, CPAP_Snore, CPAP_EPAP,
                 CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
                 CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation,
-                CPAP_FlowLimitGraph, CPAP_PressureSupport,CPAP_Pressure
+                CPAP_FlowLimitGraph, CPAP_PressureSupport,CPAP_Pressure,CPAP_RespiratoryEvent,
+                CPAP_Te,CPAP_Ti,CPAP_IE
             };
             for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
                 if (sess->eventlist.contains(a[i])) {
@@ -532,7 +533,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                         EL[3]->AddEvent(tt,duration);
                     } else {
                         if (t!="recording starts") {
-                            qDebug() << "Unknown ResMed annotation field: " << t;
+                            qDebug() << "Unobserved ResMed annotation field: " << t;
                         }
                     }
                 }
@@ -564,18 +565,20 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         ChannelID code;
         if (edf.edfsignals[s]->label=="Flow") {
             es.gain*=60;
+            es.physical_dimension="L/M";
             code=CPAP_FlowRate;
-        } else if (edf.edfsignals[s]->label=="Mask Pres") {
+        } else if (edf.edfsignals[s]->label.startsWith("Mask Pres")) {
             code=CPAP_MaskPressure;
-            //for (int i=0;i<recs;i++) edf.edfsignals[s]->data[i]/=50.0;
+        } else if (es.label.startsWith("Resp Event")) {
+            code=CPAP_RespiratoryEvent;
         } else {
-            qDebug() << "Unknown Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved ResMed BRP Signal " << edf.edfsignals[s]->label;
             continue;
         }
         double rate=double(duration)/double(recs);
         //es.gain=1;
         EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
-
+        a->setDimension(es.physical_dimension);
         a->AddWaveform(edf.startdate,es.data,recs,duration);
 
         if (code==CPAP_MaskPressure) {
@@ -641,7 +644,7 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         } else if (edf.edfsignals[s]->label=="SpO2") {
             code=CPAP_SPO2;
         } else {
-            qDebug() << "Unknown SAD.edf Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved ResMed SAD Signal " << edf.edfsignals[s]->label;
             continue;
         }
         bool hasdata=false;
@@ -699,7 +702,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             //sess->eventlist[code].push_back(a);
             //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="Insp Pres") {
+        } else if (es.label=="Insp Pressure") {
             code=CPAP_IPAP; //TherapyPressure;
             sess->settings[CPAP_Mode]=MODE_BIPAP;
             //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
@@ -729,6 +732,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         } else if (es.label=="Leak") {
             code=CPAP_Leak;
             es.gain*=60;
+            es.physical_dimension="L/M";
             //es.gain=1;//10.0;
             //es.offset=-0.5;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
@@ -740,13 +744,31 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
             //a->setMax(1);
             //a->setMin(0);
-        } else if (es.label=="Mask Pres") {
+        } else if (es.label.startsWith("Mask Pres")) {
             code=CPAP_Pressure;
             //es.gain=1;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="Exp Press") {
+        } else if (es.label.startsWith("Exp Press")) {
             code=CPAP_EPAP;//ExpiratoryPressure;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label.startsWith("I:E")) {
+            code=CPAP_IE;//I:E;
+            a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+            sess->eventlist[code].push_back(a);
+            a->AddWaveform(edf.startdate,es.data,recs,duration);
+            //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label.startsWith("Ti")) {
+            code=CPAP_Ti;//Ti;
+            a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+            sess->eventlist[code].push_back(a);
+            a->AddWaveform(edf.startdate,es.data,recs,duration);
+            //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label.startsWith("Te")) {
+            code=CPAP_Te;//Te;
+            a=new EventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+            sess->eventlist[code].push_back(a);
+            a->AddWaveform(edf.startdate,es.data,recs,duration);
+            //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="") {
             if (emptycnt==0) {
                 code=RMS9_Empty1;
@@ -759,12 +781,13 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             }
             emptycnt++;
         } else {
-            qDebug() << "Unobserved Signal " << es.label;
+            qDebug() << "Unobserved ResMed PLD Signal " << es.label;
             a=NULL;
         }
         if (a) {
             sess->setMin(code,a->min());
             sess->setMax(code,a->max());
+            a->setDimension(es.physical_dimension);
         }
     }
     return true;
