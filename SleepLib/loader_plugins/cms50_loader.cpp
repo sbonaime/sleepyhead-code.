@@ -31,12 +31,10 @@ extern QProgressBar *qprogress;
 
 CMS50Loader::CMS50Loader()
 {
-    //ctor
 }
 
 CMS50Loader::~CMS50Loader()
 {
-    //dtor
 }
 int CMS50Loader::Open(QString & path,Profile *profile)
 {
@@ -54,16 +52,15 @@ int CMS50Loader::Open(QString & path,Profile *profile)
         return 0;
     }
 
+    // This bit needs modifying for the SPO2 folder detection.
     QDir dir(path);
-    QString tmp=path+"/Data";
-    if ((dir.exists("SpO2 Review.ini"))
-        && (dir.exists("SpO2.ini"))
-        && (dir.exists("Data"))) {
-             // Their software
+    QString tmp=path+"/Data";  // The directory path containing the .spor/.spo2 files
+
+    if ((dir.exists("SpO2 Review.ini") || dir.exists("SpO2.ini"))
+            && dir.exists("Data")) {
+             // SPO2Review/etc software
 
             return OpenCMS50(tmp,profile);
-    } else {
-        // My Logger
     }
 
     return 0;
@@ -83,10 +80,11 @@ int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
 
+    QString fn;
     for (int i=0;i<flist.size();i++) {
         QFileInfo fi=flist.at(i);
-
-        if (fi.fileName().toLower().endsWith(".spor")) {
+        fn=fi.fileName().toLower();
+        if (fn.endsWith(".spor") || fn.endsWith(".spo2")) {
             files.push_back(fi.canonicalFilePath());
         }
         //if (loader_progress) loader_progress->Pulse();
@@ -106,6 +104,7 @@ int CMS50Loader::OpenCMS50(QString & path, Profile *profile)
     if (qprogress) qprogress->setValue(100);
     return 1;
 }
+
 bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 {
     if (!mach || !profile)
@@ -117,7 +116,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     qint16 data_starts;
     qint16 some_code;
     qint16 some_more_code;
-    int num_records;
+    int seconds=0,num_records;
     int br;
 
     if (!f.open(QIODevice::ReadOnly))
@@ -125,11 +124,19 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 
     // Find everything after the last _
 
-    QString str=path.section("/",-1); //AfterLast(wxChar('/'));
+    QString str=path.section("/",-1);
     str=str.section("_",-1);
-    str=str.section(".",0,0); //BeforeFirst(wxChar('.'));
+    str=str.section(".",0,0);
 
-    QDateTime dt=QDateTime::fromString(str,"yyyyMMddHHmm");
+    QDateTime dt;
+    if (str.length()==14) {
+        dt=QDateTime::fromString(str,"yyyyMMddHHmmss");
+    } else if (str.length()==12) {
+        dt=QDateTime::fromString(str,"yyyyMMddHHmm");
+    } else {
+        qDebug() << "CMS50::Spo[r2] Dodgy date field";
+        return false;
+    }
     if (!dt.isValid())
         return false;
 
@@ -138,54 +145,72 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     if (mach->SessionExists(sessid))
         return false; // Already imported
 
-
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
     data_starts=tmp[0] | (tmp[1] << 8);
 
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
-    some_code=tmp[0] | (tmp[1] << 8); // == 512
+    some_code=tmp[0] | (tmp[1] << 8); // 512 or 256 observed
 
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
-    num_records=tmp[0] | (tmp[1] << 8);
-    if (num_records<300) return false; // dont bother.
+    seconds=tmp[0] | (tmp[1] << 8);
 
-    num_records <<= 1;
+    if (!seconds) {
+        num_records=(f.size()-data_starts);
+        seconds=num_records/2;
+    } else {
+        num_records=seconds << 1;
+    }
+    if (seconds<60) {
+        // Don't bother importing short sessions
+        return false;
+    }
 
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
     some_more_code=tmp[0] | (tmp[1] << 8);  // == 0
 
-    br=f.read((char *)tmp,34);
+    br=f.read((char *)tmp,34); // Read widechar date record
     if (br!=34) return false;
 
-    for (int i=0;i<17;i++) {
+    for (int i=0;i<17;i++) {   // Convert to 8bit
         tmp[i]=tmp[i << 1];
     }
     tmp[17]=0;
     QString datestr=(char *)tmp;
+    QDateTime date;
+    qint64 starttime;
+    if (datestr.isEmpty()) { // Has Internal date record, so use it
+        date=QDateTime::fromString(datestr,"MM/dd/yy HH:mm:ss");
+        QDate d2=date.date();
 
-    QDateTime date=QDateTime::fromString(datestr,"MM/dd/yy HH:mm:ss");
-    QDate d2=date.date();
-
-    if (d2.year()<2000) {
-        d2.setYMD(d2.year()+100,d2.month(),d2.day());
-        date.setDate(d2);
+        if (d2.year()<2000) { // Nice to see CMS50 is Y2K friendly..
+            d2.setYMD(d2.year()+100,d2.month(),d2.day());
+            date.setDate(d2);
+        }
+        if (!date.isValid()) {
+            qDebug() << "Invalid date time retreieved in CMS50::OpenSPO[R2]File";
+            return false;
+        }
+        starttime=date.toMSecsSinceEpoch();
+    } else if (dt.isValid()) { // Else take the filenames date
+        date=dt;
+        starttime=dt.toMSecsSinceEpoch();
+    } else {  // Has nothing, so add it up to current time
+        qDebug() << "CMS50: Couldn't get any start date indication";
+        date=QDateTime::currentDateTime();
+        date=date.addSecs(-seconds);
+        starttime=date.toMSecsSinceEpoch();
     }
-    if (!date.isValid()) {
-        qDebug() << "Invalid date time retreieved in CMS50::OpenSPORFile";
-        return false;
-    }
-    qint64 starttime=date.toMSecsSinceEpoch();
 
     f.seek(data_starts);
 
     buffer=new char [num_records];
     br=f.read(buffer,num_records);
     if (br!=num_records) {
-        qDebug() << "Short .spoR File: " << path;
+        qDebug() << "Short .spo[R2] File: " << path;
         delete [] buffer;
         return false;
     }
@@ -205,12 +230,9 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     sess->eventlist[OXI_SPO2].push_back(oxis);
     oxip->AddEvent(starttime,last_pulse);
     oxis->AddEvent(starttime,last_spo2);
-    //sess->AddEvent(new Event(starttime,OXI_Pulse,0,&last_pulse,1));
-    //sess->AddEvent(new Event(starttime,OXI_SPO2,0,&last_spo2,1));
 
     EventDataType PMin=0,PMax=0,SMin=0,SMax=0,PAvg=0,SAvg=0;
     int PCnt=0,SCnt=0;
-    //wxDateTime
     qint64 tt=starttime;
     //fixme: Need two lasttime values here..
     qint64 lasttime=starttime;
@@ -254,13 +276,10 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         if (SMax<cs) SMax=cs;
         tt+=1000; // An educated guess of 1 second. Verified by gcz@cpaptalk
     }
-    if (cp) oxip->AddEvent(tt,cp);//sess->AddEvent(new Event(tt,OXI_Pulse,0,&cp,1));
-    if (cs) oxis->AddEvent(tt,cs);//sess->AddEvent(new Event(tt,OXI_SPO2,0,&cs,1));
+    if (cp) oxip->AddEvent(tt,cp);
+    if (cs) oxis->AddEvent(tt,cs);
 
     sess->updateLast(tt);
-    //double t=sess->last()-sess->first().toTime_t();
-    //double hours=(t/3600.0);
-    //sess->set_hours(hours);
 
     EventDataType pa=0,sa=0;
     if (PCnt>0) pa=PAvg/double(PCnt);
@@ -272,7 +291,6 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     sess->setMin(OXI_SPO2,SMin);
     sess->setMax(OXI_SPO2,SMax);
     sess->setAvg(OXI_SPO2,sa);
-    //sess->summary->UpdateSummaries();
 
     mach->AddSession(sess,profile);
     sess->SetChanged(true);
