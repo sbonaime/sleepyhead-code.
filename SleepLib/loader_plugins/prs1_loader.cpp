@@ -553,30 +553,24 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
     qint64 tt;
     int pos=0;
     int cnt=0;
-    short delta;//,duration;
+    short delta;
     while (pos<size) {
         unsigned char code=buffer[pos++];
         if (code>=ncodes) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos+16;
             return false;
         }
-        //if (code==0xe) {
-        //    pos+=2;
-        //} else
         delta=0;
         if (code!=0x12) {
-            //delta=buffer[pos];
-            //duration=buffer[pos+1];
             delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
-            t+=delta*1000;
-            tt=t;//+(delta*1000);
+            t+=qint64(delta)*1000L;
+            tt=t;;
             //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
             //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) << int(delta);
         }
 
         cnt++;
-        //int fc=0;
         switch (code) {
         case 0x00: // Unknown 00
             if (!Code[0]) {
@@ -622,7 +616,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x05: // RERA
             data[0]=buffer[pos++];
-            tt=t-(data[0]*1000);
+            tt=t-(qint64(data[0])*1000L);
             if (!Code[7]) {
                 Code[7]=new EventList(CPAP_RERA,EVL_Event);
                 session->eventlist[CPAP_RERA].push_back(Code[7]);
@@ -632,7 +626,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
 
         case 0x06: // Obstructive Apoanea
             data[0]=buffer[pos++];
-            tt=t-(data[0]*1000);
+            tt=t-(qint64(data[0])*1000L);
             if (!Code[8]) {
                 Code[8]=new EventList(CPAP_Obstructive,EVL_Event);
                 session->eventlist[CPAP_Obstructive].push_back(Code[8]);
@@ -641,7 +635,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x07: // Clear Airway
             data[0]=buffer[pos++];
-            tt=t-(data[0]*1000);
+            tt=t-(qint64(data[0])*1000L);
             if (!Code[9]) {
                 Code[9]=new EventList(CPAP_ClearAirway,EVL_Event);
                 session->eventlist[CPAP_ClearAirway].push_back(Code[9]);
@@ -650,7 +644,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x0a: // Hypopnea
             data[0]=buffer[pos++];
-            tt=t-(data[0]*1000);
+            tt=t-(qint64(data[0])*1000L);
             if (!Code[10]) {
                 Code[10]=new EventList(CPAP_Hypopnea,EVL_Event);
                 session->eventlist[CPAP_Hypopnea].push_back(Code[10]);
@@ -659,7 +653,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x0c: // Flow Limitation
             data[0]=buffer[pos++];
-            tt=t-(data[0]*1000);
+            tt=t-(qint64(data[0])*1000L);
             if (!Code[11]) {
                 Code[11]=new EventList(CPAP_FlowLimit,EVL_Event);
                 session->eventlist[CPAP_FlowLimit].push_back(Code[11]);
@@ -734,7 +728,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
             data[1]=buffer[pos++];
-            tt=t-data[1]*1000;
+            tt=t-qint64(data[1])*1000L;
             if (!Code[23]) {
                 Code[23]=new EventList(CPAP_CSR,EVL_Event);
                 session->eventlist[CPAP_CSR].push_back(Code[23]);
@@ -802,7 +796,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             //duration=buffer[pos+1];
             //delta=buffer[pos+1] << 8 | buffer[pos];
             pos+=2;
-            t+=delta*1000;
+            t+=qint64(delta)*1000L;
         }
         ChannelID cpapcode=Codes[(int)code];
         //EventDataType PS;
@@ -851,7 +845,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
         case 0x05:
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[4]) {
                 Code[4]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[4]);
@@ -861,7 +855,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
         case 0x06:
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[5]) {
                 Code[5]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[5]);
@@ -870,7 +864,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x07:
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[6]) {
                 Code[6]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[6]);
@@ -879,7 +873,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x08: // ASV Codes
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[10]) {
                 Code[10]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[10]);
@@ -888,7 +882,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x09: // ASV Codes
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[11]) {
                 Code[11]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[11]);
@@ -899,7 +893,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
         case 0x0a:
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[7]) {
                 Code[7]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[7]);
@@ -909,7 +903,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
 
         case 0x0c:
             data[0]=buffer[pos++];
-            tt-=data[0]*1000; // Subtract Time Offset
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[8]) {
                 Code[8]=new EventList(cpapcode,EVL_Event);
                 session->eventlist[cpapcode].push_back(Code[8]);
@@ -925,7 +919,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[1]=((unsigned char *)buffer)[pos]; //|buffer[pos+1] << 8
             pos+=1;
             //tt-=delta;
-            tt-=data[1]*1000;
+            tt-=qint64(data[1])*1000L;
             if (!Code[9]) {
                 Code[9]=new EventList(cpapcode,EVL_Event,2.0);
                 session->eventlist[cpapcode].push_back(Code[9]);
@@ -1025,7 +1019,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             pos+=2;
             data[1]=buffer[pos]; //|buffer[pos+1] << 8
             pos+=1;
-            tt-=data[1]*1000;
+            tt-=qint64(data[1])*1000L;
             //session->AddEvent(new Event(tt,cpapcode, 0, data, 2));
             break;
         case 0x12: // Summary
@@ -1168,7 +1162,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         pos-=3;
     }
     int hl=15+5+(num_signals*3);
-    quint16 duration,length;
+    quint16 duration,length=0;
     quint32 timestamp,lasttimestamp;
 
 
