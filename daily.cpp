@@ -90,7 +90,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     scrollArea->setAutoFillBackground(true);
 
     GraphLayout=new QWidget(scrollArea);
-    GraphLayout->setAutoFillBackground(false);
+    GraphLayout->setAutoFillBackground(true);
+    GraphLayout->setPalette(p);
+    GraphLayout->setBackgroundRole(QPalette::Window);
     scrollArea->setWidget(GraphLayout);
 
     splitter=new QVBoxLayout(GraphLayout);
