@@ -8,6 +8,7 @@
 #include "ui_daily.h"
 
 #include <QTextCharFormat>
+#include <QPalette>
 #include <QTextBlock>
 #include <QColorDialog>
 #include <QSpacerItem>
@@ -77,12 +78,16 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
 
     scrollArea=new MyScrollArea(ui->graphMainArea,this);
+    QPalette p;
+    p.setColor(QPalette::Window,Qt::white);
+    scrollArea->setPalette(p);
+    scrollArea->setBackgroundRole(QPalette::Window);
     ui->graphLayout->addWidget(scrollArea,1);
     ui->graphLayout->setSpacing(0);
     ui->graphLayout->setMargin(0);
     ui->graphLayout->setContentsMargins(0,0,0,0);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setAutoFillBackground(false);
+    scrollArea->setAutoFillBackground(true);
 
     GraphLayout=new QWidget(scrollArea);
     GraphLayout->setAutoFillBackground(false);
