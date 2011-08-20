@@ -811,11 +811,11 @@ void gGraphWindow::initializeGL()
     m_scrX=width();
     m_scrY=height();
 
-    QGLFormat glFormat(QGL::SampleBuffers);
+    /*QGLFormat glFormat(QGL::SampleBuffers);
     glFormat.setAlpha(true);
     glFormat.setDirectRendering(true);
     glFormat.setSwapInterval(1);
-    setFormat(glFormat);
+    setFormat(glFormat);*/
 
 }
 
