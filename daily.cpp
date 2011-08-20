@@ -16,6 +16,7 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QScrollBar>
 
 #include "SleepLib/session.h"
 #include "Graphs/graphdata_custom.h"
@@ -43,15 +44,17 @@ MyScrollArea::~MyScrollArea()
 void MyScrollArea::scrollContentsBy(int dx, int dy)
 {
     QScrollArea::scrollContentsBy(dx,dy);
+    widget()->repaint(horizontalScrollBar()->value(), verticalScrollBar()->value(), width(), height());
+
     //m_daily->RedrawGraphs();
     //gGraphWindow g;
 #ifdef Q_WS_MAC
-    if (timer->isActive()) timer->stop();
+    /*if (timer->isActive()) timer->stop();
     timer->setSingleShot(true);
     timer->setInterval(200);
     connect(timer,SIGNAL(timeout()),SLOT(UpdateGraphs()));
     timer->start();
-    m_time.start();
+    m_time.start(); */
     //m_daily->RedrawGraphs();
 #endif
 }
