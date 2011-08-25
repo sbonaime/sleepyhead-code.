@@ -19,7 +19,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     ui(new Ui::Oximetry)
 {
     ui->setupUi(this);
-    port=NULL;
+/*    port=NULL;
     portname="";
     QString prof=pref["Profile"].toString();
     profile=Profiles::Get(prof);
@@ -91,7 +91,7 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
         Graphs[i]->SetSplitter(splitter);
     }
 
-    on_RefreshPortsButton_clicked();
+    on_RefreshPortsButton_clicked(); */
 }
 
 Oximetry::~Oximetry()

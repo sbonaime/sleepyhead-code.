@@ -7,14 +7,26 @@
 #ifndef GYAXIS_H
 #define GYAXIS_H
 
-#include "graphlayer.h"
+#include "gGraphView.h"
 
-class gYAxis:public gLayer
+class gYSpacer:public Layer
+{
+    public:
+        gYSpacer(int spacer=20);
+        virtual void paint(gGraph & w,int left,int top, int width, int height) {}
+
+};
+
+/*class gYGrid:public Layer
+{
+};*/
+
+class gYAxis:public Layer
 {
     public:
         gYAxis(QColor col=QColor("black"));
         virtual ~gYAxis();
-        virtual void Plot(gGraphWindow & w,float scrx,float scry);
+        virtual void paint(gGraph & w,int left,int top, int width, int height);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
         void SetShowMajorLines(bool b) { m_show_major_lines=b; }
         bool ShowMinorLines() { return m_show_minor_lines; }

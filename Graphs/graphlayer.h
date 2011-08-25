@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gLayer Headers
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef GRAPHLAYER_H
 #define GRAPHLAYER_H
@@ -36,6 +36,7 @@ public:
     virtual bool isVisible() { return m_visible; }
     virtual bool isEmpty();
     inline const ChannelID & code() { return m_code; }
+
 protected:
     Day *m_day;
     bool m_visible;

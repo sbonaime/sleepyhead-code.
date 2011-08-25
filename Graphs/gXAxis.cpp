@@ -12,7 +12,7 @@ const int divisors[]={86400000,2880000,14400000,7200000,3600000,2700000,1800000,
 const int divcnt=sizeof(divisors)/sizeof(int);
 
 gXAxis::gXAxis(QColor col)
-:gLayer(EmptyChannel)
+:Layer(EmptyChannel)
 {
     m_line_color=col;
     m_text_color=col;
@@ -27,26 +27,24 @@ gXAxis::gXAxis(QColor col)
     QTime t2=d.toUTC().time();
     tz_offset=t2.secsTo(t1)/60L;
     tz_offset*=60000L;
-    //offset=0;
-
 }
 gXAxis::~gXAxis()
 {
 }
-void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
+void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
     double px,py;
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    int start_px=left;
+    int start_py=top;
+    //int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     if (width<40)
         return;
     qint64 minx;
     qint64 maxx;
-    if (w.BlockZoom()) {
+    if (w.blockZoom()) {
         minx=w.rmin_x;
         maxx=w.rmax_x;
     } else {
@@ -132,23 +130,23 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
 
     double xmult=double(width)/double(xx);
     double step_pixels=double(step/10.0)*xmult;
-    py=start_px+double(aligned_start-minx)*xmult;
+    py=left+double(aligned_start-minx)*xmult;
     for (int i=0;i<10;i++) {
         py-=step_pixels;
         if (py<start_px) continue;
         vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=start_py;
+        vertarray[vertcnt++]=top;
         vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=start_py-4;
+        vertarray[vertcnt++]=top+4;
     }
     w.qglColor(Qt::black);
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
-        px+=start_px;
+        px+=left;
         vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=start_py;
+        vertarray[vertcnt++]=top;
         vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=start_py-6;
+        vertarray[vertcnt++]=top+6;
         qint64 j=i+tz_offset;
         int ms=j % 1000;
         int m=(j/60000L) % 60L;
@@ -168,15 +166,16 @@ void gXAxis::Plot(gGraphWindow & w,float scrx,float scry)
         }
 
         //w.renderText(px-(x/2),scry-(w.GetBottomMargin()-18),tmpstr);
-        DrawText(w,tmpstr,px-(x/2),scry-(w.GetBottomMargin()-18),0);
+        //DrawText(w,tmpstr,,0);
+        w.renderText(tmpstr,px-(x/2),top+18);
         py=px;
         for (int j=1;j<10;j++) {
             py+=step_pixels;
-            if (py>=scrx-w.GetRightMargin()) break;
+            if (py>=left+width) break;
             vertarray[vertcnt++]=py;
-            vertarray[vertcnt++]=start_py;
+            vertarray[vertcnt++]=top;
             vertarray[vertcnt++]=py;
-            vertarray[vertcnt++]=start_py-4;
+            vertarray[vertcnt++]=top+4;
             if (vertcnt>=maxverts) {
                 break;
             }

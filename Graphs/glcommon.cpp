@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  glcommon GL code & font stuff
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <QApplication>
 #include <QFontMetrics>

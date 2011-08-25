@@ -32,22 +32,10 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QSplitter" name="splitter">
-      <property name="maximumSize">
-       <size>
-        <width>300</width>
-        <height>16777215</height>
-       </size>
-      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QCalendarWidget" name="calendar">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -57,7 +45,13 @@
        <property name="maximumSize">
         <size>
          <width>300</width>
-         <height>180</height>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="font">
@@ -67,7 +61,7 @@
         </font>
        </property>
        <property name="firstDayOfWeek">
-        <enum>Qt::Sunday</enum>
+        <enum>Qt::Monday</enum>
        </property>
        <property name="gridVisible">
         <bool>false</bool>
@@ -83,10 +77,22 @@
        </property>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>300</width>
          <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>300</width>
+         <height>0</height>
         </size>
        </property>
        <property name="font">
@@ -114,6 +120,12 @@
          </property>
          <item>
           <widget class="QWebView" name="webView">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <family>Sans Serif</family>
@@ -476,14 +488,12 @@
       </widget>
      </widget>
      <widget class="QWidget" name="graphMainArea" native="true">
-      <layout class="QVBoxLayout" name="graphLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-      </layout>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
      </widget>
     </widget>
    </item>

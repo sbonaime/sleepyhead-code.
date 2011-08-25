@@ -12,7 +12,7 @@
 
 #define EXTRA_ASSERTS 1
 gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_accel)
-:gLayer(code),m_square_plot(square_plot),m_disable_accel(disable_accel)
+:Layer(code),m_square_plot(square_plot),m_disable_accel(disable_accel)
 {
     m_line_color=col;
     m_report_empty=false;
@@ -23,21 +23,20 @@ gLineChart::~gLineChart()
 
 
 // Time Domain Line Chart
-void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
+void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     const int max_drawlist_size=4096;
     QPoint m_drawlist[max_drawlist_size];
 
     if (!m_visible)
         return;
+
     if (!m_day)
         return;
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin())-2;
-    if (width<40)
+
+    if (width<0)
         return;
+
     EventDataType miny,maxy;
     double minx,maxx;
     miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
@@ -80,10 +79,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
     }
 
     double xx=maxx-minx;
-    double xmult=double(width-1)/xx;
+    double xmult=double(width)/xx;
 
     EventDataType yy=maxy-miny;
-    EventDataType ymult=EventDataType(height)/yy;   // time to pixel conversion multiplier
+    EventDataType ymult=EventDataType(height-2)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
     if (xx<0)
@@ -107,13 +106,14 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         w.qglColor(Qt::black);
         glLineWidth (1);
         glBegin (GL_LINE_LOOP);
-        glVertex2f (start_px, start_py);
-        glVertex2f (start_px, start_py+height+2);
-        glVertex2f (start_px+width,start_py+height+2);
-        glVertex2f (start_px+width, start_py);
+        glVertex2i (left, top);
+        glVertex2i (left, top+height);
+        glVertex2i (left+width,top+height);
+        glVertex2i (left+width, top);
         glEnd ();
     }
     width--;
+    height-=2;
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
@@ -245,8 +245,8 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                 } // else just start from the beginning
             }
 
-            int xst=start_px+1;
-            int yst=start_py+1;
+            int xst=left+1;
+            int yst=top+height-1;
 
             double time;
             EventDataType data;
@@ -307,19 +307,19 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                     }
                     // Plot compressed accelerated vertex list
                     if (maxz>width) {
-                        qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width << "scrx =" <<scrx;
+                        qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width;
                         maxz=width;
                     }
                     float ax1,ay1;
-                    for (int i=minz+1;i<maxz-1;i++) {
+                    for (int i=minz;i<maxz;i++) {
                        // ax1=(m_drawlist[i-1].x()+m_drawlist[i].x()+m_drawlist[i+1].x())/3.0;
                        // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
                         ax1=m_drawlist[i].x();
                         ay1=m_drawlist[i].y();
                         vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst+ax1;
+                        vertarray[vertcnt++]=yst-ax1;
                         vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst+ay1;
+                        vertarray[vertcnt++]=yst-ay1;
 
                         if (vertcnt>=maxverts) break;
                     }
@@ -335,7 +335,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
                         data=dat[i];//el.data(i);
 
                         px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
-                        py=yst+((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
+                        py=yst-((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
 
                         if (firstpx) {
                             lastpx=px;
@@ -381,10 +381,10 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
                     px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                     //py=yst+((data - ymin) * nmult);   // Same for Y scale with precomputed gain
-                    py=yst+((data - miny) * ymult);   // Same for Y scale with precomputed gain
+                    py=yst-((data - miny) * ymult);   // Same for Y scale with precomputed gain
 
-                    if (px<start_px) px=start_px;
-                    if (px>start_px+width) px=start_px+width;
+                    if (px<left) px=left;
+                    if (px>left+width) px=left+width;
                     if (firstpx) {
                         firstpx=false;
                     } else {
@@ -429,7 +429,7 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
             QString msg="No Waveform Available";
             float x,y;
             GetTextExtent(msg,x,y,bigfont);
-            DrawText(w,msg,start_px+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
+            //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
 
@@ -443,8 +443,22 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
 
 
         // Crop to inside the margins.
-        glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height+2);
+        int h1=top+height;
+        int h2=height;
+        if (h1<0) {
+            h2=h1+height;
+            h1=0;
+        }
+        glScissor(left,w.flipY(top+height+2),width+1,height+1);
         glEnable(GL_SCISSOR_TEST);
+
+        /*w.qglColor(Qt::black);
+        glBegin(GL_QUADS);
+        glVertex2i(0,0);
+        glVertex2i(2000,0);
+        glVertex2i(2000,1200);
+        glVertex2i(0,1200);
+        glEnd(); */
         glDisable(GL_DEPTH_TEST);
         bool antialias=pref["UseAntiAliasing"].toBool();
         glDisable(GL_TEXTURE_2D);
@@ -469,6 +483,6 @@ void gLineChart::Plot(gGraphWindow & w,float scrx,float scry)
         }
         glDisable(GL_SCISSOR_TEST);
     }
-    glFinish();
+    glFlush();
 }
 

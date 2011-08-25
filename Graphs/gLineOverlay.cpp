@@ -1,15 +1,15 @@
-/********************************************************************
+/*
  gLineOverlayBar Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <math.h>
 #include "SleepLib/profiles.h"
 #include "gLineOverlay.h"
 
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor col,QString label,FlagType flt)
-:gLayer(code),m_label(label),m_flt(flt)
+:Layer(code),m_label(label),m_flt(flt)
 {
     m_flag_color=col;
 }
@@ -17,17 +17,18 @@ gLineOverlayBar::~gLineOverlayBar()
 {
 }
 
-void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
+void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
 
     //int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+    int start_py=topp;
+    //int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
+    //int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 
     double xx=w.max_x-w.min_x;
+    double yy=w.max_y-w.min_y;
     if (xx<=0) return;
 
     float x1,x2;
@@ -35,8 +36,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
     float x,y;
 
     // Crop to inside the margins.
-    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    glEnable(GL_SCISSOR_TEST);
+   // glScissor(left,topp,width,height);
+   // glEnable(GL_SCISSOR_TEST);
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
@@ -49,7 +50,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
         return;
     }
 
-    float bottom=start_py+25, top=start_py+height-25;
+    float bottom=start_py+height-25, top=start_py+25;
 
     double X;
     double Y;
@@ -75,9 +76,11 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 if (X > w.max_x) break;
             }
 
-            x1=w.x2p(X);
+            //x1=w.x2p(X);
+            x1=double(width)/double(xx)*double(X-w.min_x)+left;
             if (m_flt==FT_Span) {
-                x2=w.x2p(Y);
+                //x2=w.x2p(Y);
+                x2=double(width)/double(xx)*double(X-w.min_x)+left;
                 //double w1=x2-x1;
                 quadarray[quadcnt++]=x1;
                 quadarray[quadcnt++]=start_py;
@@ -94,7 +97,7 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                 if (pref["AlwaysShowOverlayBars"].toBool() || (xx<3600000.0)) {
                     // show the fat dots in the middle
                     pointarray[pointcnt++]=x1;
-                    pointarray[pointcnt++]=w.y2p(20);
+                    pointarray[pointcnt++]=double(height)/double(yy)*double(-20-w.min_y)+topp;
                     if (pointcnt>=maxverts) { verts_exceeded=true; break; }
                 } else {
                     // thin lines down the bottom
@@ -126,7 +129,8 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
                if (vertcnt>=maxverts) { verts_exceeded=true; break; }
                if (xx<(1800000)) {
                     GetTextExtent(m_label,x,y);
-                    DrawText(w,m_label,x1-(x/2),scry-(start_py+height-30+y));
+                    //DrawText(w,m_label,x1-(x/2),scry-(start_py+height-30+y));
+                    w.renderText(m_label,x1-(x/2),top-y+3);
                     //w.renderText(x1-(x/2),scry-(start_py+height-30+y),label);
                }
 
@@ -168,6 +172,6 @@ void gLineOverlayBar::Plot(gGraphWindow & w,float scrx,float scry)
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
     }
-    glDisable(GL_SCISSOR_TEST);
+    //glDisable(GL_SCISSOR_TEST);
 }
 

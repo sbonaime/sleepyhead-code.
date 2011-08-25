@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  glcommon GL code & font stuff Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef GLCOMMON_H
 #define GLCOMMON_H

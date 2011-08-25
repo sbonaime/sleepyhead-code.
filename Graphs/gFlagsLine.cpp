@@ -8,6 +8,7 @@
 #include <QVector>
 #include "SleepLib/profiles.h"
 #include "gFlagsLine.h"
+#include "gYAxis.h"
 
 gFlagsGroup::gFlagsGroup()
 {
@@ -30,15 +31,10 @@ qint64 gFlagsGroup::Maxx()
     return 0;
 }
 
-void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
+void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) return;
     //if (!m_day) return;
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
 
     QVector<gFlagsLine *> lvisible;
     for (int i=0;i<layers.size();i++) {
@@ -50,31 +46,56 @@ void gFlagsGroup::Plot(gGraphWindow &w, float scrx, float scry)
         }
     }
     int vis=lvisible.size();
+    float barh=float(height)/float(vis);
+    float linetop=top;
+
+    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
+    static QColor col2=QColor(0xff,0xff,0xff,0xff);
+
     for (int i=0;i<lvisible.size();i++) {
-        lvisible[i]->line_num=i;
-        lvisible[i]->total_lines=vis;
-        lvisible[i]->Plot(w,scrx,scry);
+        // Alternating box color
+        QColor * barcol=&col2;
+        if (i & 1)
+            barcol=&col1;
+
+        //int qo=0;
+        //if (evil_intel_graphics_card) qo=1;
+
+        // Draw the bars with filled quads
+        w.qglColor(*barcol);
+        glBegin(GL_QUADS);
+        glVertex2f(left, linetop);
+        glVertex2f(left, linetop+barh);
+        glVertex2f(left+width-1, linetop+barh);
+        glVertex2f(left+width-1, linetop);
+        glEnd();
+
+        // Paint the actual flags
+        lvisible[i]->paint(w,left,linetop,width,barh);
+        linetop+=barh;
     }
+
+    // Draw the outer rectangle outline
     glColor3f (0.0F, 0.0F, 0.0F);
     glLineWidth (1);
     glBegin (GL_LINE_LOOP);
-    glVertex2f (start_px-1, start_py);
-    glVertex2f (start_px-1, start_py+height);
-    glVertex2f (start_px+width,start_py+height);
-    glVertex2f (start_px+width, start_py);
+    glVertex2f (left-1, top);
+    glVertex2f (left-1, top+height);
+    glVertex2f (left+width, top+height);
+    glVertex2f (left+width, top);
     glEnd ();
 
 }
 
 
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
-:gLayer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
+:Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
 }
 gFlagsLine::~gFlagsLine()
 {
 }
-void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
+void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
@@ -82,7 +103,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     double minx;
     double maxx;
 
-    if (w.BlockZoom()) {
+    if (w.blockZoom()) {
         minx=w.rmin_x;
         maxx=w.rmax_x;
     } else {
@@ -93,37 +114,7 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     double xx=maxx-minx;
     if (xx<=0) return;
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin())-1;
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
-
     double xmult=width/xx;
-
-    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
-    static QColor col2=QColor(0xff,0xff,0xff,0xff);
-
-
-    float line_h=float(height-2)/float(total_lines);
-    line_h=line_h;
-    float line_top=(start_py+height-line_h)-line_num*line_h;
-
-    // Alternating box color
-    QColor * barcol=&col2;
-    if (line_num & 1)
-        barcol=&col1;
-
-    int qo=0;
-    //if (evil_intel_graphics_card) qo=1;
-
-    // Filled rectangle
-    w.qglColor(*barcol);
-    glBegin(GL_QUADS);
-    glVertex2f(start_px+qo, line_top);
-    glVertex2f(start_px+qo, line_top+line_h);
-    glVertex2f(start_px+width-1, line_top+line_h);
-    glVertex2f(start_px+width-1, line_top);
-    glEnd();
 
     qint32 vertcnt=0;
     GLshort * vertarray=vertex_array[0];
@@ -137,13 +128,14 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     // Draw text label
     float x,y;
     GetTextExtent(m_label,x,y);
-    //w.qglColor(Qt::black);
+    w.qglColor(Qt::black);
     //w.renderText(start_px-x-10,(scry-line_top)-(line_h/2)+(y/2),m_label);
-    DrawText(w,m_label,start_px-x-10,(scry-line_top)-(line_h/2)+(y/2));
+    //DrawText(w,m_label);
+    w.renderText(m_label,left-x-10,top+(height/2)+(y/2));
     float x1,x2;
 
-    float top=floor(line_top)+2;
-    float bottom=top+floor(line_h)-3;
+    float bartop=top+2;
+    float bottom=top+height-2;
     bool verts_exceeded=false;
     qint64 X,Y;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
@@ -156,24 +148,24 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
             Y=X-(el.data(i)*1000);
             if (Y < minx) continue;
             if (X > maxx) break;
-            x1=(X - minx) * xmult + w.GetLeftMargin();
+            x1=(X - minx) * xmult + left;
             if (m_flt==FT_Bar) {
                 vertarray[vertcnt++]=x1;
-                vertarray[vertcnt++]=top;
+                vertarray[vertcnt++]=bartop;
                 vertarray[vertcnt++]=x1;
                 vertarray[vertcnt++]=bottom;
                 if (vertcnt>maxverts) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
-                x2=(Y-minx)*xmult+w.GetLeftMargin();
+                x2=(Y-minx)*xmult+left;
                 //w1=x2-x1;
                 quadarray[quadcnt++]=x1;
-                quadarray[quadcnt++]=top;
+                quadarray[quadcnt++]=bartop;
                 quadarray[quadcnt++]=x1;
                 quadarray[quadcnt++]=bottom;
                 quadarray[quadcnt++]=x2;
                 quadarray[quadcnt++]=bottom;
                 quadarray[quadcnt++]=x2;
-                quadarray[quadcnt++]=top;
+                quadarray[quadcnt++]=bartop;
                 if (quadcnt>maxverts) { verts_exceeded=true; break; }
             }
         }
@@ -181,8 +173,8 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
     if (verts_exceeded) {
         qWarning() << "maxverts exceeded in gFlagsLine::plot()";
     }
-    glScissor(w.GetLeftMargin(),w.GetBottomMargin(),width,height);
-    glEnable(GL_SCISSOR_TEST);
+   // glScissor(left,top,width,height);
+    //glEnable(GL_SCISSOR_TEST);
 
     bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
@@ -209,5 +201,5 @@ void gFlagsLine::Plot(gGraphWindow & w,float scrx,float scry)
         glDisable(GL_BLEND);
     }
 
-    glDisable(GL_SCISSOR_TEST);
+    //glDisable(GL_SCISSOR_TEST);
 }

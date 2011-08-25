@@ -10,16 +10,16 @@
 #include <QVector>
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
-#include "graphwindow.h"
-#include "graphlayer.h"
+#include "gGraphView.h"
+//#include "graphlayer.h"
 
-class gLineChart:public gLayer
+class gLineChart:public Layer
 {
     public:
         gLineChart(ChannelID code,const QColor col=QColor("black"), bool square_plot=false,bool disable_accel=false);
         virtual ~gLineChart();
 
-        virtual void Plot(gGraphWindow & w,float scrx,float scry);
+        virtual void paint(gGraph & w,int left, int top, int width, int height);
 
         void SetSquarePlot(bool b) { m_square_plot=b; }
         bool GetSquarePlot() { return m_square_plot; }

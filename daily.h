@@ -8,40 +8,27 @@
 #define DAILY_H
 
 
-#include <QScrollArea>
 #include <QMenu>
 #include <QAction>
 #include <QWidget>
 #include <QTreeWidget>
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
+#include <QScrollBar>
 #include <QWebPluginFactory>
+
 #include <SleepLib/profiles.h>
-#include <Graphs/graphwindow.h>
+//#include <Graphs/graphwindow.h>
 #include "mainwindow.h"
-#include "Graphs/gSplitter.h"
+#include "Graphs/gGraphView.h"
+
+//#include "Graphs/gSplitter.h"
 #include "Graphs/gLineChart.h"
-#include "Graphs/gFlagsLine.h"
+//#include "Graphs/gFlagsLine.h"
 namespace Ui {
     class Daily;
 }
 
-class Daily;
-class MyScrollArea:public QScrollArea
-{
-    Q_OBJECT
-public:
-    MyScrollArea(QWidget * parent, Daily * daily);
-    virtual ~MyScrollArea();
-protected slots:
-    void UpdateGraphs();
-protected:
-    virtual void scrollContentsBy(int dx, int dy);
-
-    Daily *m_daily;
-    QTimer *timer;
-    QTime m_time;
-};
 
 class MainWindow;
 class Daily : public QWidget
@@ -53,7 +40,7 @@ public:
     ~Daily();
     void ReloadGraphs();
     void ResetGraphLayout();
-    QGLWidget *SharedWidget() { return SF; }
+    QGLWidget *SharedWidget() { return GraphView; }
     void RedrawGraphs();
 
 private slots:
@@ -86,23 +73,23 @@ private:
     //gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
     //gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
 
-    gFlagsGroup *fg;
-    gGraphWindow *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
-                 *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
-                 *PLETHY,*TI,*TE, *RE, *IE;
+    //gFlagsGroup *fg;
+    gGraph *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
+           *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
+           *PLETHY,*TI,*TE, *RE, *IE;
 
-    gLineChart *pressure, *epap, *ipap;
+    //gLineChart *pressure, *epap, *ipap;
 
-    QList<gLayer *> OXIData;
-    QList<gLayer *> CPAPData;
-    QVector<gGraphWindow *> Graphs;
+    QList<Layer *> OXIData;
+    QList<Layer *> CPAPData;
+    //QVector<gGraph *> Graphs;
     QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 
     QList<int> splitter_sizes;
-    gLayer * AddCPAP(gLayer *d) { CPAPData.push_back(d); return d; }
-    gLayer * AddOXI(gLayer *d) { OXIData.push_back(d); return d; }
-    void AddGraph(gGraphWindow *w);
+    Layer * AddCPAP(Layer *d) { CPAPData.push_back(d); return d; }
+    Layer * AddOXI(Layer *d) { OXIData.push_back(d); return d; }
+    //void AddGraph(gGraph *w);
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
 
@@ -110,22 +97,15 @@ private:
     Ui::Daily *ui;
     Profile *profile;
     QDate previous_date;
-    QScrollArea *scrollArea;
-    QVBoxLayout *splitter;
+    //QScrollArea *scrollArea;
+    //QVBoxLayout *splitter;
     QLabel *NoData;
     QWidget *spacer;
     QMenu *show_graph_menu;
     QWidget *GraphLayout;
+    gGraphView *GraphView;
+    MyScrollBar *scrollbar;
+    QHBoxLayout *layout;
 };
-
-/*class AHIGraph:public QWebPluginFactory
-{
-public:
-    AHIGraph(QObject * parent = 0);
-    virtual ~AHIGraph();
-    virtual QObject * 	create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues) const;
-    virtual QList<Plugin> plugins () const;
-    //virtual void refreshPlugins ();
-}; */
 
 #endif // DAILY_H

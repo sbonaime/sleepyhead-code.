@@ -8,8 +8,13 @@
 #include <QDebug>
 #include "gYAxis.h"
 
+gYSpacer::gYSpacer(int spacer)
+    :Layer(EmptyChannel)
+{
+};
+
 gYAxis::gYAxis(QColor col)
-:gLayer(EmptyChannel)
+:Layer(EmptyChannel)
 {
     m_line_color=col;
     m_text_color=col;
@@ -23,7 +28,7 @@ gYAxis::gYAxis(QColor col)
 gYAxis::~gYAxis()
 {
 }
-void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
+void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
     float x,y;
     int labelW=0;
@@ -79,11 +84,6 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
     //if ((w.max_x-w.min_x)==0)
     //    return;
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetRightMargin()+start_px);
-    int topm=w.GetTopMargin();
-    int height=scry-(topm+start_py);
     if (height<0) return;
 
     QString fd="0";
@@ -91,8 +91,6 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
 
     double max_yticks=round(height / (y+15.0)); // plus spacing between lines
     double yt=1/max_yticks;
-
-
 
     double mxy=MAX(fabs(maxy),fabs(miny));
     double mny=miny;
@@ -138,81 +136,57 @@ void gYAxis::Plot(gGraphWindow &w,float scrx,float scry)
         qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
     }
 
-
-    /*for (double i=miny+(min_ytick/2.0); i<maxy; i+=min_ytick) {
-        ty=(i - miny) * ymult;
-        h=(start_py+height)-ty;
-        vertarray[vertcnt++]=start_px-4;
-        vertarray[vertcnt++]=h;
-        vertarray[vertcnt++]=start_px;
-        vertarray[vertcnt++]=h;
-        if (m_show_minor_lines) {// && (i > miny)) {
-            double z=(min_ytick/5)*ymult;
-            double g=h;
-            for (int i=0;i<4;i++) {
-                g+=z;
-                minorvertarray[minorvertcnt++]=start_px+1;
-                minorvertarray[minorvertcnt++]=g;
-                minorvertarray[minorvertcnt++]=start_px+width;
-                minorvertarray[minorvertcnt++]=g;
-            }
-        }
-        if (vertcnt>=maxverts) { // Should only need to check one.. The above check should be enough.
-            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
-            break;
-        }
-    } */
-
     w.qglColor(m_text_color);
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         fd=Format(i*m_yaxis_scale); // Override this as a function.
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
-        h=start_py+ty;
+        h=top+height-ty;
         //w.renderText(start_px-12-x,scry-(h-(y/2.0)),fd);
-        DrawText(w,fd,start_px-8-x,scry-(h-(y/2.0)),0,m_text_color);
+        //DrawText(w,fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
+        w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
 
-        vertarray[vertcnt++]=start_px-4;
+        vertarray[vertcnt++]=left+width-4;
         vertarray[vertcnt++]=h;
-        vertarray[vertcnt++]=start_px;
+        vertarray[vertcnt++]=left+width;
         vertarray[vertcnt++]=h;
 
-        if (m_show_major_lines && (i > miny)) {
+        /*if (m_show_major_lines && (i > miny)) {
             majorvertarray[majorvertcnt++]=start_px;
             majorvertarray[majorvertcnt++]=h;
             majorvertarray[majorvertcnt++]=start_px+width;
             majorvertarray[majorvertcnt++]=h;
-        }
+        } */
         double z=(min_ytick/4)*ymult;
         double g=h;
         for (int i=0;i<3;i++) {
             g+=z;
-            if (g>start_py+height) break;
-            vertarray[vertcnt++]=start_px-3;
+            if (g>top+height) break;
+            vertarray[vertcnt++]=left+width-3;
             vertarray[vertcnt++]=g;
-            vertarray[vertcnt++]=start_px;
+            vertarray[vertcnt++]=left+width;
             vertarray[vertcnt++]=g;
             if (vertcnt>=maxverts) {
-                qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
+                qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
                 break;
             }
-            if (m_show_minor_lines) {// && (i > miny)) {
+            /*if (m_show_minor_lines) {// && (i > miny)) {
                 minorvertarray[minorvertcnt++]=start_px;
                 minorvertarray[minorvertcnt++]=g;
                 minorvertarray[minorvertcnt++]=start_px+width;
                 minorvertarray[minorvertcnt++]=g;
-            }
+            } */
         }
         if (vertcnt>=maxverts) {
-            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.Title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
+            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }
 
 
     }
     if (vertcnt>=maxverts) {
-        qWarning() << "yAxis tickers and display should be corrupted, because something dumb is happening in " << w.Title() << "graph";
+        qWarning() << "yAxis tickers and display should be corrupted, because something dumb is happening in " << w.title() << "graph";
         return;
     }
 

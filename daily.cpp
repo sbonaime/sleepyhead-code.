@@ -29,40 +29,6 @@
 const int min_height=150;
 const int default_height=150;
 
-MyScrollArea::MyScrollArea(QWidget *parent, Daily * daily)
-    :QScrollArea(parent),m_daily(daily)
-{
-    timer=new QTimer(this);
-    m_time.start();
-}
-MyScrollArea::~MyScrollArea()
-{
-    delete timer;
-}
-void MyScrollArea::scrollContentsBy(int dx, int dy)
-{
-    QScrollArea::scrollContentsBy(dx,dy);
-    //m_daily->RedrawGraphs();
-    //gGraphWindow g;
-#ifdef Q_WS_MAC
-    if (timer->isActive()) timer->stop();
-    timer->setSingleShot(true);
-    timer->setInterval(200);
-    connect(timer,SIGNAL(timeout()),SLOT(UpdateGraphs()));
-    timer->start();
-    m_time.start();
-    //m_daily->RedrawGraphs();
-#endif
-}
-void MyScrollArea::UpdateGraphs()
-{
-    if (m_time.elapsed()<200)
-        return;
-    m_time.start();
-    qDebug() << "Redraw!";
-    m_daily->RedrawGraphs();
-}
-
 Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
 {
@@ -75,8 +41,125 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         exit(-1);
     }
 
+    layout=new QHBoxLayout(ui->graphMainArea);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->setContentsMargins(0,0,0,0);
+    ui->graphMainArea->setLayout(layout);
+    //ui->graphMainArea->setLayout(layout);
 
-    scrollArea=new MyScrollArea(ui->graphMainArea,this);
+    ui->graphMainArea->setAutoFillBackground(false);
+
+    GraphView=new gGraphView(ui->graphMainArea);
+    GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    scrollbar=new MyScrollBar(ui->graphMainArea);
+    scrollbar->setOrientation(Qt::Vertical);
+    scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
+    scrollbar->setMaximumWidth(20);
+
+    GraphView->setScrollBar(scrollbar);
+    layout->addWidget(GraphView,1);
+    layout->addWidget(scrollbar,0);
+
+
+    SF=new gGraph(GraphView,"Event Flags",180);
+    FRW=new gGraph(GraphView,"Flow Rate",180);
+    MP=new gGraph(GraphView,"Mask Pressure",180);
+    PRD=new gGraph(GraphView,"Pressure",180);
+    LEAK=new gGraph(GraphView,"Leak",180);
+    SNORE=new gGraph(GraphView,"Snore",180);
+    RR=new gGraph(GraphView,"Respiratory Rate",180);
+    TV=new gGraph(GraphView,"Tidal Volume",180);
+    MV=new gGraph(GraphView,"Minute Ventilation",180);
+    FLG=new gGraph(GraphView,"Flow Limitation Graph",180);
+
+    gFlagsGroup *fg=new gFlagsGroup();
+    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",true)));
+    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true)));
+    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),"A")));
+    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),"H",true)));
+    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),"FL")));
+    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),"RE")));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
+    //fg->AddLayer(AddCPAP(new gFlagsLine(flags[8],QColor("dark green"),"U0E")));
+    //fg->AddLayer(AddCPAP(new gFlagsLine(flags[10],QColor("red"),"VS2"));
+    SF->AddLayer(AddCPAP(fg));
+    SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
+    SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
+    PRD->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PRD->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    gLineChart *l;
+    l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
+    AddCPAP(l);
+    FRW->AddLayer(l);
+    FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0B,QColor("blue"),"0B",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown10,QColor("orange"),"10",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("yellow"),"0E",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
+
+    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,true)));
+    LEAK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    LEAK->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
+    SNORE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    SNORE->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
+    MP->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    MP->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::darkMagenta,true)));
+    RR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    RR->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVentilation,Qt::darkCyan,true)));
+    MV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    MV->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,true)));
+    TV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    TV->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FlowLimitGraph,Qt::darkBlue,true)));
+    FLG->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    FLG->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    //AddGraph(SF);
+    //AddGraph(FRW);
+    //AddGraph(PRD);
+
+    NoData=new QLabel(tr("No data"),ui->graphMainArea);
+    NoData->setAlignment(Qt::AlignCenter);
+    QFont font("FreeSans",20); //NoData->font();
+    //font.setBold(true);
+    NoData->setFont(font);
+    layout->addWidget(NoData,1);
+    NoData->hide();
+
+    layout->layout();
+
+
+/*    scrollArea=new MyScrollArea(ui->graphMainArea,this);
     ui->graphLayout->addWidget(scrollArea,1);
     ui->graphLayout->setSpacing(0);
     ui->graphLayout->setMargin(0);
@@ -98,9 +181,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //gSplitter(Qt::Vertical,ui->scrollArea);
     //splitter->setStyleSheet("QSplitter::handle { background-color: 'light grey'; }");
     //splitter->setHandleWidth(3);
-#ifdef Q_WS_MAC
-    //splitter->setOpaqueResize(false);
-#endif
 
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -142,7 +222,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     TAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_EAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
     TAP_IAP=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
-    G_AHI=new gGraphWindow(NULL,"",(QGLWidget* )NULL);
+    G_AHI=new gGraphWindow(NULL,"",(QGLWidget* )NULL); */
 
     /*QGLFormat fmt;
     fmt.setDepth(false);
@@ -153,7 +233,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //fmt.setDefaultFormat(fmt);
     offscreen_context=new QGLContext(fmt); */
 
-    SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
+    /*SF->SetLeftMargin(SF->GetLeftMargin()+gYAxis::Margin);
     SF->SetBlockZoom(true);
     SF->AddLayer(new gXAxis());
     SF->setMinimumHeight(min_height);
@@ -220,6 +300,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     g->ReportEmpty(true);
     AddCPAP(g);
     FRW->AddLayer(g);
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
@@ -313,7 +394,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SPO2->AddLayer(new gYAxis());
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
     SPO2->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,Qt::red,"SC",FT_Bar)));
-    SPO2->setMinimumHeight(min_height);
+    SPO2->setMinimumHeight(min_height); */
 
     /*fg=new gFlagsGroup();
     fg->AddLayer(AddOXI(new gFlagsLine(OXI_PulseChange,QColor("orange"),"PUL",true)));
@@ -332,7 +413,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 //    SPO2->hide();
 //    PULSE->hide();
 
-    gSegmentChart *seg;
+    /*gSegmentChart *seg;
 
     TAP_EAP->SetMargins(0,0,0,0);
     TAP_EAP->AddLayer(AddCPAP(seg=new gTAPGraph(CPAP_EPAP)));
@@ -362,12 +443,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     G_AHI->SetGradientBackground(false);
     G_AHI->hide();
 
-    NoData=new QLabel(tr("No data"),parental);
-    NoData->setAlignment(Qt::AlignCenter);
-    QFont font("FreeSans",20); //NoData->font();
-    //font.setBold(true);
-    NoData->setFont(font);
-    NoData->hide();
 
     splitter->addWidget(NoData);
     //int i=splitter->indexOf(NoData);
@@ -444,7 +519,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
             GraphAction.push_back(action);
         }
 
-    } else show_graph_menu=NULL;
+    } else show_graph_menu=NULL; */
  }
 
 Daily::~Daily()
@@ -456,13 +531,7 @@ Daily::~Daily()
 //    delete splitter;
     delete ui;
 }
-void Daily::AddGraph(gGraphWindow *w)
-{
-    Graphs.push_back(w);
 
-    splitter->addWidget(w);
-    w->SetSplitter(splitter);
-}
 void Daily::resizeEvent (QResizeEvent * event)
 {
     //const QSize &size=event->size();
@@ -603,7 +672,7 @@ void Daily::ResetGraphLayout()
 }
 void Daily::ShowHideGraphs()
 {
-    int vis=0;
+/*    int vis=0;
     for (int i=0;i<Graphs.size();i++) {
         if (Graphs[i]->isEmpty()) {
             GraphAction[i]->setVisible(false);
@@ -623,7 +692,7 @@ void Daily::ShowHideGraphs()
     //splitter->setMaximumHeight(vis*default_height);
     splitter->layout();
     //splitter->update();
-    RedrawGraphs();
+    RedrawGraphs(); */
 }
 void Daily::Load(QDate date)
 {
@@ -652,78 +721,22 @@ void Daily::Load(QDate date)
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
 
+    GraphView->ResetBounds();
+
+    GraphView->updateGL();
     if (!cpap && !oxi) {
-        GraphLayout->setMinimumHeight(0);
         //splitter->setMinimumHeight(0);
+        scrollbar->hide();
+        GraphView->hide();
         NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
         NoData->show();
-
-        for (int i=0;i<Graphs.size();i++) {
-            GraphAction[i]->setVisible(false);
-            Graphs[i]->hide();
-        }
-        spacer->hide();
-
     } else {
         NoData->hide();
-        int vis=0;
-        scrollArea->setUpdatesEnabled(false);
-        for (int i=0;i<Graphs.size();i++) {
-            Graphs[i]->setUpdatesEnabled(false);
-            if (Graphs[i]->isEmpty()) {
-                GraphAction[i]->setVisible(false);
-                Graphs[i]->hide();
-            } else {
-                GraphAction[i]->setVisible(true);
-                if (GraphAction[i]->isChecked()) {
-                    Graphs[i]->ResetBounds();
-                    Graphs[i]->show();
-                    vis++;
-                } else {
-                    Graphs[i]->hide();
-                }
-            }
-        }
-        if (!cpap) {
-           GraphAction[0]->setVisible(false);
-           SF->hide();
-           vis--;
-
-        }
-        //splitter->layout();
-        for (int i=0;i<Graphs.size();i++) {
-            Graphs[i]->setUpdatesEnabled(true);
-        }
-        spacer->show();
-        //splitter->addStrut(vis*default_height);
-        //QSize aa(this->width(),vis*default_height);
-        //splitter->SetMinimumSize(aa);
-        //splitter->SetFixedSize(aa);
-
-        GraphLayout->setMinimumHeight(vis*default_height+20);
-
-
-        //splitter->setMinimumHeight(0);
-        //splitter->setMinimumHeight(vis*default_height);
-        //if (vis>4) {
-        //splitter->setMaximumHeight(vis*default_height);
-        //} //else {
-       // }
-//        splitter->blockSignals(true);
-
-        splitter->setSpacing(0);
-        splitter->setMargin(0);
-        splitter->layout();
-        scrollArea->setUpdatesEnabled(true);
-        scrollArea->update();
-        //ui->scrollArea->update();
-        //splitter->layout();
-
-       // spacer->show();
+        GraphView->show();
+        scrollbar->show();
     }
 
-    //splitter->update();
-    RedrawGraphs();
+    //RedrawGraphs();
 
     QString epr,modestr;
     float iap90,eap90;
@@ -739,7 +752,6 @@ void Daily::Load(QDate date)
             epr=channel[PRS1_PressureReliefSetting].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_PressureReliefSetting));
         }
         modestr=channel[CPAP_Mode].optionString(mode);
-
 
         float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
@@ -808,33 +820,24 @@ void Daily::Load(QDate date)
         // ^^ Scratch that.. pie now includes text..
 
         if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
-            if (ahi+rei+fli>0) {
-                html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-                G_AHI->setFixedSize(gwwidth,120);
-                QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
-                QByteArray byteArray;
-                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "PNG");
-                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            } else {
-                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
-            }
+//            if (ahi+rei+fli>0) {
+//                html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
+//                G_AHI->setFixedSize(gwwidth,120);
+//                QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
+//                QByteArray byteArray;
+//                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+//                buffer.open(QIODevice::WriteOnly);
+//                pixmap.save(&buffer, "PNG");
+//                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+//            } else {
+//                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+//            }
         }
     }
-    html+="</table>"
-    "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    html+="</table>";
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
     if (cpap || oxi) {
         html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
-
-/*        if (mode==MODE_BIPAP) {
-            html+="<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp; EPAP ")+QString().sprintf("%.2f",eap90)+tr("cmH2O")+"</td></tr>\n"
-            "<tr><td colspan=4 align='center'><i>"+tr("90%&nbsp; IPAP ")+QString().sprintf("%.2f",iap90)+tr("cmH2O")+"</td></tr>\n";
-        } else if (mode==MODE_APAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("90%&nbsp; Auto Pressure ")+QString().sprintf("%.2f",p90)+("</i></td></tr>\n"); //cpap->summary_weighted_avg(CPAP_PressurePercentValue)
-        } else if (mode==MODE_CPAP) {
-            html+=("<tr><td colspan=4 align='center'><i>")+tr("CPAP Pressure ")+QString().sprintf("%.2f",cpap->max(CPAP_Pressure))+("</i></td></tr>\n");
-        }*/
 
         //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
@@ -876,7 +879,7 @@ void Daily::Load(QDate date)
 
     if (cpap) {
         if (pref["EnableGraphSnapshots"].toBool()) {
-            if (cpap->channelExists(CPAP_Pressure)) {
+      /*      if (cpap->channelExists(CPAP_Pressure)) {
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
                 TAP->setFixedSize(gwwidth,30);
                 QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
@@ -906,7 +909,8 @@ void Daily::Load(QDate date)
                 buffer.open(QIODevice::WriteOnly);
                 pixmap.save(&buffer, "PNG");
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            }
+            } */
+
         }
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
@@ -925,7 +929,7 @@ void Daily::Load(QDate date)
             html+="<hr><div align=center><i>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</i></div>";
         }
     }
-    html+="</html>";
+    html+="</body></html>";
 
     ui->webView->setHtml(html);
 
@@ -1084,7 +1088,7 @@ void Daily::UpdateCPAPGraphs(Day *day)
     if (day) {
         day->OpenEvents();
     }
-    for (QList<gLayer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
+    for (QList<Layer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
         (*g)->SetDay(day);
     }
 };
@@ -1096,16 +1100,16 @@ void Daily::UpdateOXIGraphs(Day *day)
     if (day) {
         day->OpenEvents();
     }
-    for (QList<gLayer *>::iterator g=OXIData.begin();g!=OXIData.end();g++) {
+    for (QList<Layer *>::iterator g=OXIData.begin();g!=OXIData.end();g++) {
         (*g)->SetDay(day);
     }
 }
 
 void Daily::RedrawGraphs()
 {
-    for (int i=0;i<Graphs.size();i++) {
+    /*for (int i=0;i<Graphs.size();i++) {
        Graphs[i]->updateGL();
-    }
+    } */
 }
 
 void Daily::on_treeWidget_itemSelectionChanged()
@@ -1118,7 +1122,8 @@ void Daily::on_treeWidget_itemSelectionChanged()
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
         double st=(d.addSecs(-120)).toMSecsSinceEpoch();
         double et=(d.addSecs(120)).toMSecsSinceEpoch();
-        FRW->SetXBounds(st,et);
+        GraphView->SetXBounds(st,et);
+        /*FRW->SetXBounds(st,et);
         MP->SetXBounds(st,et);
         SF->SetXBounds(st,et);
         PRD->SetXBounds(st,et);
@@ -1127,7 +1132,7 @@ void Daily::on_treeWidget_itemSelectionChanged()
         MV->SetXBounds(st,et);
         TV->SetXBounds(st,et);
         RR->SetXBounds(st,et);
-        FLG->SetXBounds(st,et);
+        FLG->SetXBounds(st,et); */
     }
 }
 

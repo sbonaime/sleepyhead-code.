@@ -7,15 +7,15 @@
 #ifndef GLINEOVERLAY_H
 #define GLINEOVERLAY_H
 
-#include "graphlayer.h"
+#include "gGraphView.h"
 
-class gLineOverlayBar:public gLayer
+class gLineOverlayBar:public Layer
 {
     public:
         gLineOverlayBar(ChannelID code,QColor col,QString _label="",FlagType _flt=FT_Bar);
         virtual ~gLineOverlayBar();
 
-        virtual void Plot(gGraphWindow & w,float scrx,float scry);
+        virtual void paint(gGraph & w,int left, int top, int width, int height);
         virtual EventDataType Miny() { return 0; }
         virtual EventDataType Maxy() { return 0; }
         virtual bool isEmpty() { return true; }
