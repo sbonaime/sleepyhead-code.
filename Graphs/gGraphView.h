@@ -176,7 +176,9 @@ protected:
     bool m_visible;
     bool m_blockzoom;
     QRect m_lastbounds;
-
+    QRect m_selection;
+    bool m_selecting_area;
+    QPoint m_current;
 };
 
 class gGraphView : public QGLWidget
@@ -205,6 +207,9 @@ public:
     QPoint globalPointClicked() { return m_global_point_clicked; }
 
     QPainter *painter;
+
+    gGraph *m_selected_graph;
+
 protected:
 
     float totalHeight();
@@ -245,7 +250,6 @@ protected:
 
     bool m_graph_dragging;
     int m_graph_index;
-
 signals:
 
 

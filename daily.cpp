@@ -88,7 +88,9 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[10],QColor("red"),"VS2"));
     SF->setBlockZoom(true);
     SF->AddLayer(AddCPAP(fg));
+    SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
+    SF->AddLayer(new gFooBar(),LayerBottom,0,10);
     SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
 
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
