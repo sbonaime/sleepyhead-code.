@@ -368,8 +368,34 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 qint64 jj=j2-j1;
                 min_x+=jj;
                 max_x+=jj;
+                if (min_x<rmin_x) {
+                    min_x=rmin_x;
+                    max_x=rmin_x+xx;
+                }
+                if (max_x>rmax_x) {
+                    max_x=rmax_x;
+                    min_x=rmax_x-xx;
+                }
                 //if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(min_x,max_x);
+            } else {
+                qint64 qq=rmax_x-rmin_x;
+                xx=max_x-min_x;
+                w-=m_marginleft+left;
+                xmult=qq/double(w);
+                qint64 j1=(xmult*x);
+                min_x=rmin_x+j1-(xx/2);
+                max_x=min_x+xx;
+                if (min_x<rmin_x) {
+                    min_x=rmin_x;
+                    max_x=rmin_x+xx;
+                }
+                if (max_x>rmax_x) {
+                    max_x=rmax_x;
+                    min_x=rmax_x-xx;
+                }
+                m_graphview->SetXBounds(min_x,max_x);
+
             }
 
         }
