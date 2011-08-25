@@ -307,7 +307,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     }
                     // Plot compressed accelerated vertex list
                     if (maxz>width) {
-                        qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width;
+                        //qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width;
                         maxz=width;
                     }
                     float ax1,ay1;

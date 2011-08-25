@@ -1,3 +1,5 @@
+// This can die. titles are now handled by gGraphView.
+
 /*
  gTitle (Graph Title) Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>

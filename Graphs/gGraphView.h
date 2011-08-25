@@ -160,6 +160,8 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
 
+    void ZoomX(double mult,int origin_px);
+
     gGraphView * m_graphview;
     QString m_title;
     QVector<Layer *> m_layers;

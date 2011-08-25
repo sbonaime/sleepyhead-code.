@@ -42,8 +42,6 @@ SOURCES += main.cpp\
     SleepLib/day.cpp \
     Graphs/graphwindow.cpp \
     Graphs/graphlayer.cpp \
-    Graphs/graphdata.cpp \
-    Graphs/graphdata_custom.cpp \
     Graphs/gLineChart.cpp \
     Graphs/gLineOverlay.cpp \
     Graphs/gFooBar.cpp \

@@ -1,3 +1,5 @@
+// This file is Scheduled for destruction..
+
 /*
  gLayer Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>

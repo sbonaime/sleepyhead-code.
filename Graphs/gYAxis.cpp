@@ -1,15 +1,14 @@
-/********************************************************************
+/*
  gYAxis Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <math.h>
 #include <QDebug>
 #include "gYAxis.h"
 
-gYSpacer::gYSpacer(int spacer)
-    :Layer(EmptyChannel)
+gYSpacer::gYSpacer(int spacer) :Layer(EmptyChannel)
 {
 };
 

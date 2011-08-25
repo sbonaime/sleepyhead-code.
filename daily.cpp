@@ -86,6 +86,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[8],QColor("dark green"),"U0E")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[10],QColor("red"),"VS2"));
+    SF->setBlockZoom(true);
     SF->AddLayer(AddCPAP(fg));
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
     SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);

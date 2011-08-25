@@ -1,3 +1,5 @@
+// This can die.
+
 #include "gSplitter.h"
 #include "graphwindow.h"
 #include <QDebug>

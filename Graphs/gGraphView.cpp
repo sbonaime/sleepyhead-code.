@@ -159,6 +159,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height) :
     m_marginbottom=10;
     m_marginleft=5;
     m_marginright=10;
+    m_blockzoom=false;
 }
 gGraph::~gGraph()
 {
@@ -174,7 +175,6 @@ bool gGraph::isEmpty()
     }
     return empty;
 }
-
 void gGraph::invalidate()
 { // this may not be necessary, as scrollbar & resize issues a full redraw..
 
@@ -345,45 +345,101 @@ void gGraph::mousePressEvent(QMouseEvent * event)
         qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
     }
 }
+
+
 void gGraph::mouseReleaseEvent(QMouseEvent * event)
 {
     int y=event->pos().y();
     int x=event->pos().x();
     int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
     int h=m_height-(bottom+m_marginbottom);
-    int x2,y2;
+    int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
     double xx=max_x-min_x;
     double xmult=xx/double(w);
     if (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h) { // main area
         if (event->button() & Qt::RightButton) {
+            ZoomX(2,x);
             // zoom out.
         } else if (event->button() & Qt::LeftButton) {
-            x-=left+m_marginleft;
-            y-=top+m_margintop;
-            x2=m_graphview->pointClicked().x()-left-m_marginleft;
-            y2=m_graphview->pointClicked().y()-top-m_margintop;
-            qint64 j1=min_x+xmult*x;
-            qint64 j2=min_x+xmult*x2;
-            qint64 a1=MIN(j1,j2)
-            qint64 a2=MAX(j1,j2)
-            m_graphview->SetXBounds(a1,a2);
-            qDebug() << m_title << "Released" << min_x << max_x << j1 << j2 << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
+            if (abs(x-x2)<4) {
+                ZoomX(0.5,x);
+            } else {
+                x-=left+m_marginleft;
+                y-=top+m_margintop;
+                x2-=left+m_marginleft;
+                y2-=top+m_margintop;
+                qint64 j1=min_x+xmult*x;
+                qint64 j2=min_x+xmult*x2;
+                qint64 a1=MIN(j1,j2)
+                qint64 a2=MAX(j1,j2)
+                m_graphview->SetXBounds(a1,a2);
+            }
         }
+        qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
    // qDebug() << m_title << "Released" << event->pos() << m_graphview->pointClicked() << left << top;
     }
 }
+
+
 void gGraph::mouseWheelEvent(QMouseEvent * event)
 {
     qDebug() << m_title << "Wheel" << event->x() << event->y();
 }
 void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 {
-  //  qDebug() << m_title << "Double Clicked" << event->x() << event->y();
+    mousePressEvent(event);
+    qDebug() << m_title << "Double Clicked" << event->x() << event->y();
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
 {
     qDebug() << m_title << "Key Pressed" << event->key();
 }
+
+void gGraph::ZoomX(double mult,int origin_px)
+{
+
+    int width=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
+    if (origin_px==0) origin_px=(width/2); else origin_px-=m_marginleft+left;
+
+    if (origin_px<0) origin_px=0;
+    if (origin_px>width) origin_px=width;
+
+
+    // Okay, I want it to zoom in centered on the mouse click area..
+    // Find X graph position of mouse click
+    // find current zoom width
+    // apply zoom
+    // center on point found in step 1.
+
+    qint64 min=min_x;
+    qint64 max=max_x;
+
+    double hardspan=rmax_x-rmin_x;
+    double span=max-min;
+    double ww=double(origin_px) / double(width);
+    double origin=ww * span;
+    //double center=0.5*span;
+    //double dist=(origin-center);
+
+    double q=span*mult;
+    if (q>hardspan) q=hardspan;
+    if (q<hardspan/400.0) q=hardspan/400.0;
+
+    min=min+origin-(q*ww);
+    max=min+q;
+
+    if (min<rmin_x) {
+        min=rmin_x;
+        max=min+q;
+    }
+    if (max>rmax_x) {
+        max=rmax_x;
+        min=max-q;
+    }
+    m_graphview->SetXBounds(min,max);
+    //updateSelectionTime(max-min);
+}
+
 
 // margin recalcs..
 void gGraph::resize(int width, int height)
