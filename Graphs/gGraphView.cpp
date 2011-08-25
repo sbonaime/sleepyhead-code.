@@ -221,6 +221,11 @@ void gGraph::renderText(QString text, int x,int y, float angle, QColor color, QF
     // I tried queuing this but got crappy memory leaks.. for now I don't give a crap if this is slow.
 
     QPainter *painter=m_graphview->painter;
+
+    glPushAttrib(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    //glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_DEPTH_BUFFER);
     painter->endNativePainting();
     QBrush b(color);
     painter->setBrush(b);
@@ -238,8 +243,10 @@ void gGraph::renderText(QString text, int x,int y, float angle, QColor color, QF
         painter->translate(-x,-y);
     }
     painter->beginNativePainting();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_BUFFER);
+    glDisable(GL_BLEND);
+    //glDisable(GL_TEXTURE_2D);
+    glPopAttrib();
+    //glEnable(GL_DEPTH_BUFFER);
 }
 
 
@@ -310,16 +317,16 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     if (m_selection.width()>0 && m_selecting_area) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glBegin(GL_QUADS);
         glEnable(GL_BLEND);
+        glBegin(GL_QUADS);
         glColor4ub(128,128,128,128);
         glVertex2i(originX+m_selection.x(),originY+top);
         glVertex2i(originX+m_selection.x()+m_selection.width(),originY+top);
         glColor4ub(128,128,255,128);
         glVertex2i(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom);
         glVertex2i(originX+m_selection.x(),originY+height-top-bottom);
-        glDisable(GL_BLEND);
         glEnd();
+        glDisable(GL_BLEND);
     }
 
 }

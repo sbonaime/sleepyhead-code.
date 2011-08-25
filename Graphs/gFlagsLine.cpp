@@ -76,8 +76,8 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     }
 
     // Draw the outer rectangle outline
-    glLineWidth(1);
     glBegin(GL_LINE_LOOP);
+    glLineWidth(1);
     w.qglColor(Qt::black);
     glVertex2f(left-1, top);
     glVertex2f(left-1, top+height);
@@ -176,6 +176,8 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
    // glScissor(left,top,width,height);
     //glEnable(GL_SCISSOR_TEST);
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+
     bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
         glEnable(GL_BLEND);
@@ -185,7 +187,6 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
         glLineWidth (1.5);
     } else glLineWidth (1);
 
-    glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(m_flag_color);
     if (quadcnt>0) {
         glVertexPointer(2, GL_SHORT, 0, quadarray);
@@ -195,11 +196,11 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
         glVertexPointer(2, GL_SHORT, 0, vertarray);
         glDrawArrays(GL_LINES, 0, vertcnt>>1);
     }
-    glDisableClientState(GL_VERTEX_ARRAY);
     if (antialias) {
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
     }
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     //glDisable(GL_SCISSOR_TEST);
 }
