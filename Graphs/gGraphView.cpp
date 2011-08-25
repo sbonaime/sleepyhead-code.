@@ -382,6 +382,24 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
     int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
     int h=m_height-(bottom+m_marginbottom);
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
+
+
+    qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
+    if (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h) { // main area
+        if (event->button() & Qt::RightButton) {
+            if (abs(x-x2)<4) {
+                ZoomX(2,x);
+                return;
+            }
+            // zoom out.
+        } else if (event->button() & Qt::LeftButton) {
+            if (abs(x-x2)<4) {
+                ZoomX(0.5,x);
+                return;
+            }
+        }
+   // qDebug() << m_title << "Released" << event->pos() << m_graphview->pointClicked() << left << top;
+    }
     if (m_selecting_area) {
         m_selecting_area=false;
         m_selection.setWidth(0);
@@ -412,30 +430,27 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         }
         return;
     }
-    if (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h) { // main area
-        if (event->button() & Qt::RightButton) {
-            ZoomX(2,x);
-            // zoom out.
-        } else if (event->button() & Qt::LeftButton) {
-            if (abs(x-x2)<4) {
-                ZoomX(0.5,x);
-            } else {
-            }
-        }
-        qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
-   // qDebug() << m_title << "Released" << event->pos() << m_graphview->pointClicked() << left << top;
-    }
     //m_graphview->updateGL();
 }
 
 
-void gGraph::mouseWheelEvent(QMouseEvent * event)
+void gGraph::wheelEvent(QWheelEvent * event)
 {
-    qDebug() << m_title << "Wheel" << event->x() << event->y();
+    qDebug() << m_title << "Wheel" << event->x() << event->y() << event->delta();
+    //int y=event->pos().y();
+    int x=event->pos().x()-m_graphview->titleWidth;//(left+m_marginleft);
+    if (event->delta()>0) {
+        ZoomX(0.75,x);
+    } else {
+        ZoomX(1.5,x);
+    }
 }
 void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 {
     mousePressEvent(event);
+    mouseReleaseEvent(event);
+    mousePressEvent(event);
+    mouseReleaseEvent(event);
     qDebug() << m_title << "Double Clicked" << event->x() << event->y();
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
@@ -989,10 +1004,9 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
                     m_selected_graph=m_graphs[i];
 
                     QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
-                    m_graphs[i]->mousePressEvent(&e);
                     m_graph_index=i;
                     m_button_down=true;
-                    //m_graphs[i]->mousePressEvent(event);
+                    m_graphs[i]->mousePressEvent(&e);
                 }
             } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                 this->setCursor(Qt::SplitVCursor);
@@ -1074,7 +1088,40 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 {
     // Hmm.. I could optionalize this to change mousewheel behaviour without affecting the scrollbar now..
 
-    m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+    if (!(event->modifiers() & Qt::ControlModifier)) {
+        int x=event->x();
+        int y=event->y();
+
+        float py=-m_offsetY;
+        float h;
+
+        for (int i=0;i<m_graphs.size();i++) {
+
+            if (m_graphs[i]->isEmpty()) continue;
+
+            h=m_graphs[i]->height()*m_scaleY;
+            if (py>height())
+                break;
+
+            if ((py + h + graphSpacer) >= 0) {
+                if ((y >= py) && (y <= py + h)) {
+                    if (x < titleWidth) {
+                        // What to do when ctrl+wheel is used on the graph title ??
+                    } else {
+                        // send event to graph..
+                        m_graphs[i]->wheelEvent(event);
+                    }
+                } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                    // What to do when the wheel is used on the resize handle?
+                }
+
+            }
+            py+=h;
+            py+=graphSpacer; // do we want the extra spacer down the bottom?
+        }
+    } else {
+        m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+    }
 }
 
 void gGraphView::keyPressEvent(QKeyEvent * event)
