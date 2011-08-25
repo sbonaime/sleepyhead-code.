@@ -57,6 +57,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
     bool verts_exceeded=false;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
+
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;
@@ -80,16 +81,19 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
             x1=double(width)/double(xx)*double(X-w.min_x)+left;
             if (m_flt==FT_Span) {
                 //x2=w.x2p(Y);
-                x2=double(width)/double(xx)*double(X-w.min_x)+left;
+                x2=double(width)/double(xx)*double(Y-w.min_x)+left;
+                if (x2<left) x2=left;
+                if (x1>width+left) x1=width+left;
                 //double w1=x2-x1;
                 quadarray[quadcnt++]=x1;
                 quadarray[quadcnt++]=start_py;
-                quadarray[quadcnt++]=x1;
-                quadarray[quadcnt++]=start_py+height;
-                quadarray[quadcnt++]=x2;
-                quadarray[quadcnt++]=start_py+height;
                 quadarray[quadcnt++]=x2;
                 quadarray[quadcnt++]=start_py;
+                quadarray[quadcnt++]=x2;
+                quadarray[quadcnt++]=start_py+height;
+                quadarray[quadcnt++]=x1;
+                quadarray[quadcnt++]=start_py+height;
+                qDebug()<< x1 << x2 << start_py << height;
                 if (quadcnt>=maxverts) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
                 //if (pref["AlwaysShowOverlayBars"].toBool()) {
@@ -143,6 +147,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     }
 
     bool antialias=pref["UseAntiAliasing"].toBool();
+    glEnableClientState(GL_VERTEX_ARRAY);
     if (antialias) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
@@ -151,7 +156,6 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
         glLineWidth (1.5);
     } else glLineWidth (1);
 
-    glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(m_flag_color);
     if (quadcnt>0) {
         glVertexPointer(2, GL_SHORT, 0, quadarray);
@@ -166,12 +170,12 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
         glVertexPointer(2, GL_SHORT, 0, pointarray);
         glDrawArrays(GL_POINTS, 0, pointcnt>>1);
     }
-    glDisableClientState(GL_VERTEX_ARRAY);
 
     if (antialias) {
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
     }
+    glDisableClientState(GL_VERTEX_ARRAY);
     //glDisable(GL_SCISSOR_TEST);
 }
 

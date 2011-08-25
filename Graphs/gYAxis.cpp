@@ -302,12 +302,6 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         vertarray[vertcnt++]=left+width;
         vertarray[vertcnt++]=h;
 
-        /*if (m_show_major_lines && (i > miny)) {
-            majorvertarray[majorvertcnt++]=start_px;
-            majorvertarray[majorvertcnt++]=h;
-            majorvertarray[majorvertcnt++]=start_px+width;
-            majorvertarray[majorvertcnt++]=h;
-        } */
         double z=(min_ytick/4)*ymult;
         double g=h;
         for (int i=0;i<3;i++) {
@@ -321,12 +315,6 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
                 qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
                 break;
             }
-            /*if (m_show_minor_lines) {// && (i > miny)) {
-                minorvertarray[minorvertcnt++]=start_px;
-                minorvertarray[minorvertcnt++]=g;
-                minorvertarray[minorvertcnt++]=start_px+width;
-                minorvertarray[minorvertcnt++]=g;
-            } */
         }
         if (vertcnt>=maxverts) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
@@ -343,16 +331,10 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     // Draw the lines & ticks
     // Turn on blending??
     glLineWidth(1);
-    w.qglColor(m_line_color);
     glEnableClientState(GL_VERTEX_ARRAY);
+    w.qglColor(m_line_color);
     glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
-    /*w.qglColor(m_minor_color);
-    glVertexPointer(2, GL_SHORT, 0, minorvertarray);
-    glDrawArrays(GL_LINES, 0, minorvertcnt>>1);
-    w.qglColor(m_major_color);
-    glVertexPointer(2, GL_SHORT, 0, majorvertarray);
-    glDrawArrays(GL_LINES, 0, majorvertcnt>>1); */
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 }
 

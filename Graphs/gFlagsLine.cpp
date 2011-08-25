@@ -62,8 +62,8 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
         //if (evil_intel_graphics_card) qo=1;
 
         // Draw the bars with filled quads
-        w.qglColor(*barcol);
         glBegin(GL_QUADS);
+        w.qglColor(*barcol);
         glVertex2f(left, linetop);
         glVertex2f(left, linetop+barh);
         glVertex2f(left+width-1, linetop+barh);
@@ -76,13 +76,13 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     }
 
     // Draw the outer rectangle outline
-    glColor3f (0.0F, 0.0F, 0.0F);
-    glLineWidth (1);
-    glBegin (GL_LINE_LOOP);
-    glVertex2f (left-1, top);
-    glVertex2f (left-1, top+height);
-    glVertex2f (left+width, top+height);
-    glVertex2f (left+width, top);
+    glLineWidth(1);
+    glBegin(GL_LINE_LOOP);
+    w.qglColor(Qt::black);
+    glVertex2f(left-1, top);
+    glVertex2f(left-1, top+height);
+    glVertex2f(left+width, top+height);
+    glVertex2f(left+width, top);
     glEnd ();
 
 }
@@ -128,7 +128,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     // Draw text label
     float x,y;
     GetTextExtent(m_label,x,y);
-    w.qglColor(Qt::black);
+    //w.qglColor(Qt::black);
     //w.renderText(start_px-x-10,(scry-line_top)-(line_h/2)+(y/2),m_label);
     //DrawText(w,m_label);
     w.renderText(m_label,left-x-10,top+(height/2)+(y/2));

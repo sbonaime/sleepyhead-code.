@@ -31,10 +31,10 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     glBegin(GL_QUADS);
+    glEnable(GL_BLEND);
     w.qglColor(m_shadow_color);
 
     glVertex2f(start_px, top);
@@ -46,8 +46,10 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     glVertex2f(start_px+py, top+height);
     glVertex2f(end_px, top+height);
     glVertex2f(end_px, top);
-    glEnd();
     glDisable(GL_BLEND);
+    glEnd();
+
+    //glFlush();
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)
