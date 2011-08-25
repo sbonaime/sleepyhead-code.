@@ -1137,7 +1137,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 {
     // Hmm.. I could optionalize this to change mousewheel behaviour without affecting the scrollbar now..
 
-    if (!(event->modifiers() & Qt::ControlModifier)) {
+    if ((event->modifiers() & Qt::ControlModifier)) {
         int x=event->x();
         int y=event->y();
 

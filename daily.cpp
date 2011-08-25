@@ -73,7 +73,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     RR=new gGraph(GraphView,"Respiratory Rate",180);
     TV=new gGraph(GraphView,"Tidal Volume",180);
     MV=new gGraph(GraphView,"Minute Ventilation",180);
-    FLG=new gGraph(GraphView,"Flow Limitation Graph",180);
+    FLG=new gGraph(GraphView,"Flow Limitation",180);
+    PTB=new gGraph(GraphView,"Patient Trig. Breath",180);
 
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
@@ -131,6 +132,11 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
     SNORE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     SNORE->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    PTB->AddLayer(new gXGrid());
+    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
+    PTB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PTB->AddLayer(new gXAxis(),LayerBottom,0,20);
 
     MP->AddLayer(new gXGrid());
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
