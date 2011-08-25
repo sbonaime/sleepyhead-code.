@@ -344,6 +344,8 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
         qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
         int a1=MIN(x,x2);
         int a2=MAX(x,x2);
+        if (a1<m_marginleft+left) a1=m_marginleft+left;
+        if (a2>w) a2=w;
         m_selecting_area=true;
         m_selection=QRect(a1-m_marginleft,0,a2-a1,m_height);
         m_graphview->updateGL();
@@ -380,8 +382,36 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
     int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
     int h=m_height-(bottom+m_marginbottom);
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
-    m_selecting_area=false;
-    m_selection.setWidth(0);
+    if (m_selecting_area) {
+        m_selecting_area=false;
+        m_selection.setWidth(0);
+        x-=left+m_marginleft;
+        y-=top+m_margintop;
+        x2-=left+m_marginleft;
+        y2-=top+m_margintop;
+        if (x<0) x=0;
+        if (x>w) x=w;
+        if (!m_blockzoom) {
+            double xx=max_x-min_x;
+            double xmult=xx/double(w);
+            qint64 j1=min_x+xmult*x;
+            qint64 j2=min_x+xmult*x2;
+            qint64 a1=MIN(j1,j2)
+            qint64 a2=MAX(j1,j2)
+            if (a2>rmax_x) a2=rmax_x;
+            m_graphview->SetXBounds(a1,a2);
+        } else {
+            double xx=rmax_x-rmin_x;
+            double xmult=xx/double(w);
+            qint64 j1=rmin_x+xmult*x;
+            qint64 j2=rmin_x+xmult*x2;
+            qint64 a1=MIN(j1,j2)
+            qint64 a2=MAX(j1,j2)
+            if (a2>rmax_x) a2=rmax_x;
+            m_graphview->SetXBounds(a1,a2);
+        }
+        return;
+    }
     if (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h) { // main area
         if (event->button() & Qt::RightButton) {
             ZoomX(2,x);
@@ -390,27 +420,6 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             if (abs(x-x2)<4) {
                 ZoomX(0.5,x);
             } else {
-                x-=left+m_marginleft;
-                y-=top+m_margintop;
-                x2-=left+m_marginleft;
-                y2-=top+m_margintop;
-                if (!m_blockzoom) {
-                    double xx=max_x-min_x;
-                    double xmult=xx/double(w);
-                    qint64 j1=min_x+xmult*x;
-                    qint64 j2=min_x+xmult*x2;
-                    qint64 a1=MIN(j1,j2)
-                    qint64 a2=MAX(j1,j2)
-                    m_graphview->SetXBounds(a1,a2);
-                } else {
-                    double xx=rmax_x-rmin_x;
-                    double xmult=xx/double(w);
-                    qint64 j1=rmin_x+xmult*x;
-                    qint64 j2=rmin_x+xmult*x2;
-                    qint64 a1=MIN(j1,j2)
-                    qint64 a2=MAX(j1,j2)
-                    m_graphview->SetXBounds(a1,a2);
-                }
             }
         }
         qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
@@ -932,6 +941,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     this->setCursor(Qt::ArrowCursor);
                     QPoint p(x-titleWidth,y-py);
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
+
                     m_graphs[i]->mouseMoveEvent(&e);
                 } else {
                     this->setCursor(Qt::OpenHandCursor);
