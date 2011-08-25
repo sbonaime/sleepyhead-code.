@@ -339,18 +339,41 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     int h=m_height-(bottom+m_marginbottom);
     double xx=max_x-min_x;
     double xmult=xx/w;
+    m_selecting_area=false;
 
-    if ((event->buttons() & Qt::LeftButton) && (m_graphview->m_selected_graph==this)) {
-        qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
-        int a1=MIN(x,x2);
-        int a2=MAX(x,x2);
-        if (a1<m_marginleft+left) a1=m_marginleft+left;
-        if (a2>w) a2=w;
-        m_selecting_area=true;
-        m_selection=QRect(a1-m_marginleft,0,a2-a1,m_height);
-        m_graphview->updateGL();
-        //repaint();
-    } else m_selecting_area=false;
+    if (m_graphview->m_selected_graph==this) {
+        if (event->buttons() & Qt::LeftButton) {
+            qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
+            int a1=MIN(x,x2);
+            int a2=MAX(x,x2);
+            if (a1<m_marginleft+left) a1=m_marginleft+left;
+            if (a2>w) a2=w;
+            m_selecting_area=true;
+            m_selection=QRect(a1-m_marginleft,0,a2-a1,m_height);
+            m_graphview->updateGL();
+        } else if (event->buttons() & Qt::RightButton) {
+            m_graphview->setPointClicked(event->pos());
+            x-=left+m_marginleft;
+            x2-=left+m_marginleft;
+            //int a1=MIN(x,x2);
+            //int a2=MAX(x,x2);
+            //if (a1<m_marginleft+left) a1=m_marginleft+left;
+            //if (a2>w) a2=w;
+            if (!m_blockzoom) {
+                xx=max_x-min_x;
+                w-=m_marginleft+left;
+                xmult=xx/double(w);
+                qint64 j1=xmult*x;
+                qint64 j2=xmult*x2;
+                qint64 jj=j2-j1;
+                min_x+=jj;
+                max_x+=jj;
+                //if (a2>rmax_x) a2=rmax_x;
+                m_graphview->SetXBounds(min_x,max_x);
+            }
+
+        }
+    }
 
     if (x>left+m_marginleft && x<m_width-(m_graphview->titleWidth+right+m_marginright) && y>top+m_margintop && y<m_height-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
@@ -950,9 +973,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
         if (py > height())
             break; // we are done.. can't draw anymore
 
-        if ((py + h + graphSpacer) >= 0) {
-            if ((y >= py) && (y < py + h)) {
-                if (x >= titleWidth) {
+        if (m_button_down || ((py + h + graphSpacer) >= 0)) {
+            if (m_button_down || ((y >= py) && (y < py + h))) {
+                if (m_button_down || (x >= titleWidth)) {
                     this->setCursor(Qt::ArrowCursor);
                     QPoint p(x-titleWidth,y-py);
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());

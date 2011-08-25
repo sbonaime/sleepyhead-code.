@@ -205,6 +205,8 @@ public:
 
     QPoint pointClicked() { return m_point_clicked; }
     QPoint globalPointClicked() { return m_global_point_clicked; }
+    void setPointClicked(QPoint p) { m_point_clicked=p; }
+    void setGlobalPointClicked(QPoint p) { m_global_point_clicked=p; }
 
     QPainter *painter;
 
