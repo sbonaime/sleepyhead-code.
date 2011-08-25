@@ -8,6 +8,7 @@
 #include "ui_daily.h"
 
 #include <QTextCharFormat>
+#include <QPalette>
 #include <QTextBlock>
 #include <QColorDialog>
 #include <QSpacerItem>
@@ -15,6 +16,7 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QScrollBar>
 
 #include "SleepLib/session.h"
 #include "Graphs/graphdata_custom.h"
@@ -61,7 +63,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     GraphView->setScrollBar(scrollbar);
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
-
 
     SF=new gGraph(GraphView,"Event Flags",180);
     FRW=new gGraph(GraphView,"Flow Rate",180);
@@ -160,15 +161,24 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
 
 /*    scrollArea=new MyScrollArea(ui->graphMainArea,this);
+=======
+    scrollArea=new MyScrollArea(ui->graphMainArea,this);
+    QPalette p;
+    p.setColor(QPalette::Window,Qt::white);
+    scrollArea->setPalette(p);
+    scrollArea->setBackgroundRole(QPalette::Window);
+>>>>>>> 70c348c1e196c10bbd34b1ce73bce9dda7fdbd29
     ui->graphLayout->addWidget(scrollArea,1);
     ui->graphLayout->setSpacing(0);
     ui->graphLayout->setMargin(0);
     ui->graphLayout->setContentsMargins(0,0,0,0);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setAutoFillBackground(false);
+    scrollArea->setAutoFillBackground(true);
 
     GraphLayout=new QWidget(scrollArea);
-    GraphLayout->setAutoFillBackground(false);
+    GraphLayout->setAutoFillBackground(true);
+    GraphLayout->setPalette(p);
+    GraphLayout->setBackgroundRole(QPalette::Window);
     scrollArea->setWidget(GraphLayout);
 
     splitter=new QVBoxLayout(GraphLayout);
@@ -1123,16 +1133,6 @@ void Daily::on_treeWidget_itemSelectionChanged()
         double st=(d.addSecs(-120)).toMSecsSinceEpoch();
         double et=(d.addSecs(120)).toMSecsSinceEpoch();
         GraphView->SetXBounds(st,et);
-        /*FRW->SetXBounds(st,et);
-        MP->SetXBounds(st,et);
-        SF->SetXBounds(st,et);
-        PRD->SetXBounds(st,et);
-        LEAK->SetXBounds(st,et);
-        SNORE->SetXBounds(st,et);
-        MV->SetXBounds(st,et);
-        TV->SetXBounds(st,et);
-        RR->SetXBounds(st,et);
-        FLG->SetXBounds(st,et); */
     }
 }
 

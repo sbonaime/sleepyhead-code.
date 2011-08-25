@@ -8,6 +8,11 @@
 #include <QDebug>
 #include <QLabel>
 #include <QMouseEvent>
+
+#ifdef __APPLE__
+#include <AGL/agl.h>
+#endif
+
 #include "SleepLib/profiles.h"
 #include "graphwindow.h"
 #include "gTitle.h"
@@ -806,8 +811,15 @@ void gGraphWindow::initializeGL()
     m_scrX=width();
     m_scrY=height();
 
+    /*QGLFormat glFormat(QGL::SampleBuffers);
+    glFormat.setAlpha(true);
+    glFormat.setDirectRendering(true);
+    glFormat.setSwapInterval(1);
+    setFormat(glFormat);*/
+
 }
 
+bool first_draw_event=true;
 void gGraphWindow::resizeGL(int w, int h)
 {
     m_scrX=w;
@@ -868,11 +880,16 @@ void gGraphWindow::Render(int w, int h)
 
 void gGraphWindow::paintGL()
 {
-
     if (m_scrX<=0) m_scrX=width();
     if (m_scrY<=0) m_scrY=height();
     if (m_scrX<=0) return;
     if (m_scrY<=0) return;
+#ifdef __APPLE__
+    AGLContext aglContext;
+    aglContext=aglGetCurrentContext();
+    GLint swapInt=1;
+    aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+#endif
 
     //glDisable(GL_DEPTH_TEST);
     Render(m_scrX,m_scrY);
