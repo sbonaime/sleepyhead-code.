@@ -806,11 +806,18 @@ void gGraphView::paintGL()
             glColor4f(0,0,0,1);
             //if (i<numgraphs-1) {
                 glBegin(GL_QUADS);
+                glColor4f(.5,.5,.5,1.0);
+                glVertex2f(0,py+h);
+                glVertex2f(w,py+h);
+                glColor4f(.7,.7,.7,1.0);
+                glVertex2f(w,py+h+graphSpacer/2.0);
+                glVertex2f(0,py+h+graphSpacer/2.0);
+                glColor4f(1,1,1,1.0);
+                glVertex2f(0,py+h+graphSpacer/2.0);
+                glVertex2f(w,py+h+graphSpacer/2.0);
                 glColor4f(.3,.3,.3,1.0);
-                glVertex2i(0,py+h);
-                glVertex2i(w,py+h);
-                glVertex2i(w,py+h+graphSpacer);
-                glVertex2i(0,py+h+graphSpacer);
+                glVertex2f(w,py+h+graphSpacer);
+                glVertex2f(0,py+h+graphSpacer);
                 glEnd();
             //}
         }
@@ -968,6 +975,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
                 } else { // send event to graph..
                     m_global_point_clicked=QPoint(x,y);
                     m_point_clicked=QPoint (x-titleWidth,y-py);
+
                     m_selected_graph=m_graphs[i];
 
                     QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
@@ -1033,7 +1041,7 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
 
         h=m_graphs[i]->height()*m_scaleY;
         if (py>height())
-            break; // we are done.. can't draw anymore
+            break;
 
         if ((py + h + graphSpacer) >= 0) {
             if ((y >= py) && (y <= py + h)) {

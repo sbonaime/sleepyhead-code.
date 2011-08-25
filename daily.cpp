@@ -93,6 +93,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF->AddLayer(new gFooBar(),LayerBottom,0,10);
     SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
 
+    PRD->AddLayer(new gXGrid());
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
@@ -102,6 +103,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
     AddCPAP(l);
+    FRW->AddLayer(new gXGrid());
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -120,30 +122,37 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
 
+    LEAK->AddLayer(new gXGrid());
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,true)));
     LEAK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     LEAK->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    SNORE->AddLayer(new gXGrid());
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
     SNORE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     SNORE->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    MP->AddLayer(new gXGrid());
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
     MP->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     MP->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    RR->AddLayer(new gXGrid());
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::darkMagenta,true)));
     RR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     RR->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    MV->AddLayer(new gXGrid());
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVentilation,Qt::darkCyan,true)));
     MV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     MV->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    TV->AddLayer(new gXGrid());
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,true)));
     TV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     TV->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+    FLG->AddLayer(new gXGrid());
     FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FlowLimitGraph,Qt::darkBlue,true)));
     FLG->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FLG->AddLayer(new gXAxis(),LayerBottom,0,20);

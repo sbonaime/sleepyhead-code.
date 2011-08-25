@@ -17,9 +17,23 @@ class gYSpacer:public Layer
 
 };
 
-/*class gYGrid:public Layer
+class gXGrid:public Layer
 {
-};*/
+public:
+    gXGrid(QColor col=QColor("black"));
+    virtual ~gXGrid();
+    virtual void paint(gGraph & w,int left,int top, int width, int height);
+
+    void setShowMinorLines(bool b) { m_show_minor_lines=b; }
+    void setShowMajorLines(bool b) { m_show_major_lines=b; }
+    bool showMinorLines() { return m_show_minor_lines; }
+    bool showMajorLines() { return m_show_major_lines; }
+protected:
+    bool m_show_major_lines;
+    bool m_show_minor_lines;
+    QColor m_major_color;
+    QColor m_minor_color;
+};
 
 class gYAxis:public Layer
 {
@@ -49,8 +63,6 @@ class gYAxis:public Layer
 
         QColor m_line_color;
         QColor m_text_color;
-        QColor m_major_color;
-        QColor m_minor_color;
 
 };
 
