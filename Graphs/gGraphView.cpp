@@ -362,7 +362,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             } else {
                 qint64 qq=rmax_x-rmin_x;
                 xx=max_x-min_x;
-                if (xx=qq) xx=1800000;
+                if (xx==qq) xx=1800000;
                 w-=m_marginleft+left;
                 xmult=qq/double(w);
                 qint64 j1=(xmult*x);
