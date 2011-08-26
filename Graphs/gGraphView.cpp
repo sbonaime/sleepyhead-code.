@@ -142,7 +142,7 @@ EventDataType LayerGroup::Maxy()
 
 
 
-gGraph::gGraph(gGraphView *graphview,QString title,int height) :
+gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_graphview(graphview),
     m_title(title),
     m_height(height),
@@ -150,8 +150,9 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height) :
 {
     m_min_height=50;
     m_layers.clear();
+
     if (graphview) {
-        graphview->AddGraph(this);
+        graphview->AddGraph(this,group);
     } else {
         qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
@@ -357,7 +358,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                     min_x=rmax_x-xx;
                 }
                 //if (a2>rmax_x) a2=rmax_x;
-                m_graphview->SetXBounds(min_x,max_x);
+                m_graphview->SetXBounds(min_x,max_x,m_group);
             } else {
                 qint64 qq=rmax_x-rmin_x;
                 xx=max_x-min_x;
@@ -374,7 +375,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                     max_x=rmax_x;
                     min_x=rmax_x-xx;
                 }
-                m_graphview->SetXBounds(min_x,max_x);
+                m_graphview->SetXBounds(min_x,max_x,m_group);
 
             }
 
@@ -446,7 +447,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             qint64 a1=MIN(j1,j2)
             qint64 a2=MAX(j1,j2)
             if (a2>rmax_x) a2=rmax_x;
-            m_graphview->SetXBounds(a1,a2);
+            m_graphview->SetXBounds(a1,a2,m_group);
         } else {
             double xx=rmax_x-rmin_x;
             double xmult=xx/double(w);
@@ -455,7 +456,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             qint64 a1=MIN(j1,j2)
             qint64 a2=MAX(j1,j2)
             if (a2>rmax_x) a2=rmax_x;
-            m_graphview->SetXBounds(a1,a2);
+            m_graphview->SetXBounds(a1,a2,m_group);
         }
         return;
     }
@@ -528,7 +529,7 @@ void gGraph::ZoomX(double mult,int origin_px)
         max=rmax_x;
         min=max-q;
     }
-    m_graphview->SetXBounds(min,max);
+    m_graphview->SetXBounds(min,max,m_group);
     //updateSelectionTime(max-min);
 }
 
@@ -697,9 +698,11 @@ void gGraphView::DrawTextQue()
             painter.translate(-q.x, -q.y);
         }
         q.text.clear();
+        //q.text.squeeze();
     }
     painter.end();
     glPopAttrib();
+    qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
 }
 
@@ -718,9 +721,10 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
     m_textque_items++;
 }
 
-void gGraphView::AddGraph(gGraph *g)
+void gGraphView::AddGraph(gGraph *g,short group)
 {
     if (!m_graphs.contains(g)) {
+        g->setGroup(group);
         m_graphs.push_back(g);
 
         updateScrollBar();
@@ -770,18 +774,20 @@ void gGraphView::scrollbarValueChanged(int val)
     m_offsetY=val;
     updateGL(); // do this on a timer?
 }
-void gGraphView::ResetBounds()
+void gGraphView::ResetBounds(short group)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        m_graphs[i]->ResetBounds();
+        if (m_graphs[i]->group()==group)
+            m_graphs[i]->ResetBounds();
     }
     updateScale();
 }
 
-void gGraphView::SetXBounds(qint64 minx, qint64 maxx)
+void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        m_graphs[i]->SetXBounds(minx,maxx);
+        if (m_graphs[i]->group()==group)
+            m_graphs[i]->SetXBounds(minx,maxx);
     }
     updateGL();
 }

@@ -112,7 +112,7 @@ class gGraph
 {
     friend class gGraphView;
 public:
-    gGraph(gGraphView * graphview=NULL, QString title="",int height=100);
+    gGraph(gGraphView * graphview=NULL, QString title="",int height=100,short group=0);
     virtual ~gGraph();
 
     void setVisible(bool b) { m_visible=b; }
@@ -160,6 +160,9 @@ public:
     void setBlockZoom(bool b) { m_blockzoom=b; }
     int flipY(int y); // flip GL coordinates
 
+    short group() { return m_group; }
+    void setGroup(short group) { m_group=group; }
+
 protected:
     virtual void paint(int originX, int originY, int width, int height);
     void invalidate();
@@ -190,6 +193,7 @@ protected:
     QRect m_selection;
     bool m_selecting_area;
     QPoint m_current;
+    short m_group;
 };
 
 class gGraphView : public QGLWidget
@@ -198,7 +202,7 @@ class gGraphView : public QGLWidget
 public:
     explicit gGraphView(QWidget *parent = 0);
     virtual ~gGraphView();
-    void AddGraph(gGraph *g);
+    void AddGraph(gGraph *g,short group=0);
 
     void setScrollBar(MyScrollBar *sb);
     MyScrollBar * scrollBar() { return m_scrollbar; }
@@ -209,8 +213,8 @@ public:
 
     float scaleY() { return m_scaleY; }
 
-    void ResetBounds();
-    void SetXBounds(qint64 minx, qint64 maxx);
+    void ResetBounds(short group=0);
+    void SetXBounds(qint64 minx, qint64 maxx, short group=0);
 
     bool hasGraphs() { return m_graphs.size()>0; }
 

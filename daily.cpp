@@ -76,6 +76,11 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FLG=new gGraph(GraphView,"Flow Limitation",180);
     PTB=new gGraph(GraphView,"Patient Trig. Breath",180);
 
+    PULSE=new gGraph(GraphView,"Pulse",180,1);
+    SPO2=new gGraph(GraphView,"SPO2",180,1);
+    PLETHY=new gGraph(GraphView,"Plethy",180,1);
+
+
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",true)));
@@ -163,6 +168,23 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FLG->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FLG->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+
+    PULSE->AddLayer(new gXGrid());
+    PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
+    PULSE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PULSE->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    SPO2->AddLayer(new gXGrid());
+    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
+    SPO2->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    SPO2->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    PLETHY->AddLayer(new gXGrid());
+    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkBlue,false)));
+    PLETHY->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PLETHY->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+
     //AddGraph(SF);
     //AddGraph(FRW);
     //AddGraph(PRD);
@@ -176,6 +198,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     NoData->hide();
 
     layout->layout();
+
+    QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
+
+    ui->tabWidget->setCurrentWidget(ui->details);
 
 
 /*    scrollArea=new MyScrollArea(ui->graphMainArea,this);
@@ -529,12 +558,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //splitter->update();
 
 
-    QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
-    ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
-    ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
-
-    ui->tabWidget->setCurrentWidget(ui->details);
 
     if (mainwin) {
         show_graph_menu=mainwin->CreateMenu("Graphs");
