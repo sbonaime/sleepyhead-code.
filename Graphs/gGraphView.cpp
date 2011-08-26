@@ -547,6 +547,10 @@ void gGraph::ZoomX(double mult,int origin_px)
     //updateSelectionTime(max-min);
 }
 
+void gGraph::DrawTextQue()
+{
+    m_graphview->DrawTextQue();
+}
 
 // margin recalcs..
 void gGraph::resize(int width, int height)

@@ -72,12 +72,12 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
 
     float h=top;
 
-    glLineWidth(1);
+  /*  glLineWidth(1);
     glBegin(GL_LINES);
     w.qglColor(m_line_color);
     glVertex2f(start_px, h);
     glVertex2f(start_px+width, h);
-    glEnd();
+    glEnd(); */
 
     double rmx=w.rmax_x-w.rmin_x;
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
@@ -86,23 +86,24 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     int extra=0;
     if (abs(px-py)<2) extra=2;
 
-    int hh=40;
+    int hh=25;
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glBegin(GL_QUADS);
 
-    glColor4ub(255,255,255,128);
+    w.qglColor(m_handle_color);
     glVertex2f(start_px+px-extra,top-hh);
     glVertex2f(start_px+py+extra,top-hh);
     //glColor4ub(255,255,255,128);
-    w.qglColor(m_handle_color);
+    glColor4ub(255,255,255,128);
     glVertex2f(start_px+py+extra,top-hh/2.0);
     glVertex2f(start_px+px-extra,top-hh/2.0);
 //    glColor4ub(255,255,255,128);
-    w.qglColor(m_handle_color);
+    glColor4ub(255,255,255,128);
     glVertex2f(start_px+px-extra,top-hh/2.0);
     glVertex2f(start_px+py+extra,top-hh/2.0);
-    glColor4ub(192,192,192,128);
+    w.qglColor(m_handle_color);
+//    glColor4ub(192,192,192,128);
     glVertex2f(start_px+py+extra,h);
     glVertex2f(start_px+px-extra,h);
     glEnd();

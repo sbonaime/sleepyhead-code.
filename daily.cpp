@@ -97,7 +97,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
     SF->AddLayer(new gFooBar(),LayerBottom,0,10);
-    SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+    SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,gXAxis::Margin);
 
     PRD->AddLayer(new gXGrid());
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));

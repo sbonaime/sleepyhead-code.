@@ -162,6 +162,7 @@ public:
 
     short group() { return m_group; }
     void setGroup(short group) { m_group=group; }
+    void DrawTextQue();
 
 protected:
     virtual void paint(int originX, int originY, int width, int height);
@@ -227,9 +228,9 @@ public:
 
     void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
     int horizTravel() { return m_horiz_travel; }
+    void DrawTextQue();
 protected:
 
-    void DrawTextQue();
 
     float totalHeight();
     float scaleHeight();

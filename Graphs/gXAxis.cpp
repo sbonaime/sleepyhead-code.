@@ -11,7 +11,7 @@
 const int divisors[]={86400000,2880000,14400000,7200000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
 const int divcnt=sizeof(divisors)/sizeof(int);
 
-gXAxis::gXAxis(QColor col)
+gXAxis::gXAxis(QColor col,bool fadeout)
 :Layer(EmptyChannel)
 {
     m_line_color=col;
@@ -22,6 +22,7 @@ gXAxis::gXAxis(QColor col)
     m_show_minor_lines=false;
     m_show_minor_ticks=true;
     m_show_major_ticks=true;
+    m_fadeout=fadeout;
     QDateTime d=QDateTime::currentDateTime();
     QTime t1=d.time();
     QTime t2=d.toUTC().time();
@@ -194,6 +195,31 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 
+
+    if (m_fadeout) {
+
+        glFlush();
+        w.DrawTextQue();
+
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glBegin(GL_QUADS);
+        glColor4ub(255,255,255,255);
+        glVertex2f(left-20,top+5);
+        glVertex2f(left-20,top+height);
+        glColor4ub(255,255,255,0);
+        glVertex2f(left+40,top+height);
+        glVertex2f(left+40,top+5);
+
+        glColor4ub(255,255,255,0);
+        glVertex2f(left+width-40,top+5);
+        glVertex2f(left+width-40,top+height);
+        glColor4ub(255,255,255,255);
+        glVertex2f(left+width+20,top+height);
+        glVertex2f(left+width+20,top+5);
+        glEnd();
+        glDisable(GL_BLEND);
+   }
    // glDisable(GL_SCISSOR_TEST);
 
 }
