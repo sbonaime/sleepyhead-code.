@@ -401,8 +401,8 @@ void gGraph::mousePressEvent(QMouseEvent * event)
     if (x>left+m_marginleft && x<m_width-(m_graphview->titleWidth+right+m_marginright) && y>top+m_margintop && y<m_height-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
         y-=top+m_margintop;
-        //qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
     }
+    //qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
 }
 
 
@@ -419,10 +419,10 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
-            ZoomX(2,x);  // Zoon out
+            ZoomX(1.33,x);  // Zoon out
             return;
         } else if (event->button() & Qt::LeftButton) {
-            ZoomX(0.5,x); // zoom in.
+            ZoomX(0.75,x); // zoom in.
             return;
         }
     }
@@ -474,7 +474,21 @@ void gGraph::wheelEvent(QWheelEvent * event)
 void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 {
     //mousePressEvent(event);
-    mouseReleaseEvent(event);
+    //mouseReleaseEvent(event);
+    int y=event->pos().y();
+    int x=event->pos().x();
+    int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
+    int h=m_height-(bottom+m_marginbottom);
+    int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
+    if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
+        if (event->button() & Qt::RightButton) {
+            ZoomX(1.66,x);  // Zoon out
+            return;
+        } else if (event->button() & Qt::LeftButton) {
+            ZoomX(0.75/2.0,x); // zoom in.
+            return;
+        }
+    }
     //mousePressEvent(event);
     //mouseReleaseEvent(event);
     //qDebug() << m_title << "Double Clicked" << event->x() << event->y();
@@ -1132,9 +1146,10 @@ void gGraphView::mouseReleaseEvent(QMouseEvent * event)
 
 void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    // A single click gets sent first.. Need to set a timer to check for this event..
+    mousePressEvent(event);
+    return;
 
-    int x=event->x();
+/*    int x=event->x();
     int y=event->y();
 
     float py=-m_offsetY;
@@ -1163,7 +1178,7 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
         }
         py+=h;
         py+=graphSpacer; // do we want the extra spacer down the bottom?
-    }
+    } */
 }
 void gGraphView::wheelEvent(QWheelEvent * event)
 {
