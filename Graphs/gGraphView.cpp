@@ -217,36 +217,7 @@ void gGraph::qglColor(QColor col)
 }
 void gGraph::renderText(QString text, int x,int y, float angle, QColor color, QFont *font)
 {
-    // GL Font drawing is ass in Qt.. :(
-    // I tried queuing this but got crappy memory leaks.. for now I don't give a crap if this is slow.
-
-    QPainter *painter=m_graphview->painter;
-
-    glPushAttrib(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_BLEND);
-    //glEnable(GL_TEXTURE_2D);
-    //glEnable(GL_DEPTH_BUFFER);
-    painter->endNativePainting();
-    QBrush b(color);
-    painter->setBrush(b);
-    painter->setFont(*font);
-    if (angle==0) {
-        painter->drawText(x,y,text);
-    } else {
-        float w,h;
-        GetTextExtent(text, w, h, font);
-
-        painter->translate(x,y);
-        painter->rotate(-angle);
-        painter->drawText(floor(-w/2.0),floor(-h/2.0),text);
-        painter->rotate(+angle);
-        painter->translate(-x,-y);
-    }
-    painter->beginNativePainting();
-    glDisable(GL_BLEND);
-    //glDisable(GL_TEXTURE_2D);
-    glPopAttrib();
-    //glEnable(GL_DEPTH_BUFFER);
+    m_graphview->AddTextQue(text,x,y,angle,color,font);
 }
 
 
@@ -685,6 +656,7 @@ gGraphView::gGraphView(QWidget *parent) :
     m_offsetY(0),m_offsetX(0),m_scaleY(1.0),m_scrollbar(NULL)
 {
     m_sizer_index=m_graph_index=0;
+    m_textque_items=0;
     m_button_down=m_graph_dragging=m_sizer_dragging=false;
     this->setMouseTracking(true);
     InitGraphs();
@@ -698,6 +670,52 @@ gGraphView::~gGraphView()
     if (m_scrollbar) {
         this->disconnect(SIGNAL(sliderMoved(int)),this);
     }
+}
+void gGraphView::DrawTextQue()
+{
+    glPushAttrib(GL_COLOR_BUFFER_BIT);
+    glFlush();
+    //glEnable(GL_BLEND);
+    QPainter painter(this);
+    for (int i=0;i<m_textque_items;i++) {
+        // GL Font drawing is ass in Qt.. :(
+        TextQue & q=m_textque[i];
+
+        QBrush b(q.color);
+        painter.setBrush(b);
+        painter.setFont(*q.font);
+        if (q.angle==0) {
+            painter.drawText(q.x, q.y, q.text);
+        } else {
+            float w,h;
+            GetTextExtent(q.text, w, h, q.font);
+
+            painter.translate(q.x, q.y);
+            painter.rotate(-q.angle);
+            painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
+            painter.rotate(+q.angle);
+            painter.translate(-q.x, -q.y);
+        }
+        q.text.clear();
+    }
+    painter.end();
+    glPopAttrib();
+    m_textque_items=0;
+}
+
+void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font)
+{
+    if (m_textque_items>=textque_max) {
+        DrawTextQue();
+    }
+    TextQue & q=m_textque[m_textque_items];
+    q.text=text;
+    q.x=x;
+    q.y=y;
+    q.angle=angle;
+    q.color=color;
+    q.font=font;
+    m_textque_items++;
 }
 
 void gGraphView::AddGraph(gGraph *g)
@@ -840,11 +858,6 @@ void gGraphView::paintGL()
     if (width()<=0) return;
     if (height()<=0) return;
 
-
-    QPainter qp(this);
-    qp.beginNativePainting();
-    painter=&qp;
-
     glClearColor(255,255,255,255);
     //glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
@@ -909,10 +922,9 @@ void gGraphView::paintGL()
         py=ceil(py);
     }
 
+    DrawTextQue();
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
-    qp.endNativePainting();
-    qp.end();
 
     swapBuffers(); // Dump to screen.
 }

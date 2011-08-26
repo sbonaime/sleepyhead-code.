@@ -14,6 +14,17 @@
 class gGraphView;
 class gGraph;
 
+const int textque_max=2048;
+
+struct TextQue
+{
+    short x,y;
+    float angle;
+    QString text;
+    QColor color;
+    QFont *font;
+};
+
 class MyScrollBar:public QScrollBar
 {
 public:
@@ -208,11 +219,12 @@ public:
     void setPointClicked(QPoint p) { m_point_clicked=p; }
     void setGlobalPointClicked(QPoint p) { m_global_point_clicked=p; }
 
-    QPainter *painter;
-
     gGraph *m_selected_graph;
 
+    void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
 protected:
+
+    void DrawTextQue();
 
     float totalHeight();
     float scaleHeight();
@@ -252,6 +264,9 @@ protected:
 
     bool m_graph_dragging;
     int m_graph_index;
+
+    TextQue m_textque[textque_max];
+    int m_textque_items;
 signals:
 
 
