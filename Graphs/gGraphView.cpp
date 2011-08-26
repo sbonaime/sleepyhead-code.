@@ -330,7 +330,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (a1<m_marginleft+left) a1=m_marginleft+left;
             if (a2>w) a2=w;
             m_selecting_area=true;
-            m_selection=QRect(a1-m_marginleft,0,a2-a1,m_height);
+            m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_height);
             m_graphview->updateGL();
         } else if (event->buttons() & Qt::RightButton) {
             m_graphview->setPointClicked(event->pos());
@@ -434,7 +434,9 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         x2-=left+m_marginleft;
         y2-=top+m_margintop;
         if (x<0) x=0;
+        if (x2<0) x2=0;
         if (x>w) x=w;
+        if (x2>w) x2=w;
         if (!m_blockzoom) {
             double xx=max_x-min_x;
             double xmult=xx/double(w);
@@ -442,6 +444,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             qint64 j2=min_x+xmult*x2;
             qint64 a1=MIN(j1,j2)
             qint64 a2=MAX(j1,j2)
+            //if (a1<rmin_x) a1=rmin_x;
             if (a2>rmax_x) a2=rmax_x;
             m_graphview->SetXBounds(a1,a2,m_group);
         } else {
@@ -451,6 +454,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             qint64 j2=rmin_x+xmult*x2;
             qint64 a1=MIN(j1,j2)
             qint64 a2=MAX(j1,j2)
+            //if (a1<rmin_x) a1=rmin_x;
             if (a2>rmax_x) a2=rmax_x;
             m_graphview->SetXBounds(a1,a2,m_group);
         }
@@ -788,10 +792,10 @@ void gGraphView::scrollbarValueChanged(int val)
         updateGL(); // do this on a timer?
     }
 }
-void gGraphView::ResetBounds(short group)
+void gGraphView::ResetBounds() //short group)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->group()==group)
+        //if (m_graphs[i]->group()==group)
             m_graphs[i]->ResetBounds();
     }
     updateScale();

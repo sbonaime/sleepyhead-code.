@@ -213,7 +213,7 @@ public:
 
     float scaleY() { return m_scaleY; }
 
-    void ResetBounds(short group=0);
+    void ResetBounds(); //short group=0);
     void SetXBounds(qint64 minx, qint64 maxx, short group=0);
 
     bool hasGraphs() { return m_graphs.size()>0; }

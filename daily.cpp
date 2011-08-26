@@ -773,6 +773,7 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     GraphView->ResetBounds();
+    //GraphView->ResetBounds(1);
 
     GraphView->updateGL();
     if (!cpap && !oxi) {
