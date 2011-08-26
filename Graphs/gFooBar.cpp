@@ -3,7 +3,7 @@
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
 */
-
+#include <cmath>
 #include "gFooBar.h"
 
 gShadowArea::gShadowArea(QColor shadow_color)
