@@ -152,8 +152,9 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     // Draw the lines & ticks
     // Turn on blending??
-    glLineWidth(1);
+
     glEnableClientState(GL_VERTEX_ARRAY);
+    glLineWidth(1);
     w.qglColor(m_minor_color);
     glVertexPointer(2, GL_SHORT, 0, minorvertarray);
     glDrawArrays(GL_LINES, 0, minorvertcnt>>1);
@@ -330,8 +331,8 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     // Draw the lines & ticks
     // Turn on blending??
-    glLineWidth(1);
     glEnableClientState(GL_VERTEX_ARRAY);
+    glLineWidth(1);
     w.qglColor(m_line_color);
     glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
