@@ -324,7 +324,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
 
     if (m_graphview->m_selected_graph==this) {
         if (event->buttons() & Qt::LeftButton) {
-            qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
+            //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
             int a1=MIN(x,x2);
             int a2=MAX(x,x2);
             if (a1<m_marginleft+left) a1=m_marginleft+left;
@@ -400,7 +400,7 @@ void gGraph::mousePressEvent(QMouseEvent * event)
     if (x>left+m_marginleft && x<m_width-(m_graphview->titleWidth+right+m_marginright) && y>top+m_margintop && y<m_height-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
         y-=top+m_margintop;
-        qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
+        //qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
     }
 }
 
@@ -414,7 +414,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
 
 
-    qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
+    //qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
 
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
@@ -461,7 +461,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
 void gGraph::wheelEvent(QWheelEvent * event)
 {
-    qDebug() << m_title << "Wheel" << event->x() << event->y() << event->delta();
+    //qDebug() << m_title << "Wheel" << event->x() << event->y() << event->delta();
     //int y=event->pos().y();
     int x=event->pos().x()-m_graphview->titleWidth;//(left+m_marginleft);
     if (event->delta()>0) {
@@ -476,11 +476,11 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
     mouseReleaseEvent(event);
     //mousePressEvent(event);
     //mouseReleaseEvent(event);
-    qDebug() << m_title << "Double Clicked" << event->x() << event->y();
+    //qDebug() << m_title << "Double Clicked" << event->x() << event->y();
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
 {
-    qDebug() << m_title << "Key Pressed" << event->key();
+    qDebug() << m_title << "Key Pressed.. implement me" << event->key();
 }
 
 void gGraph::ZoomX(double mult,int origin_px)
@@ -699,7 +699,7 @@ void gGraphView::DrawTextQue()
     }
     painter.end();
     glPopAttrib();
-    qDebug() << "rendered" << m_textque_items << "text items";
+    //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
 }
 
@@ -768,8 +768,10 @@ void gGraphView::resizeEvent(QResizeEvent *e)
 void gGraphView::scrollbarValueChanged(int val)
 {
     //qDebug() << "Scrollbar Changed" << val;
-    m_offsetY=val;
-    updateGL(); // do this on a timer?
+    if (m_offsetY!=val) {
+        m_offsetY=val;
+        updateGL(); // do this on a timer?
+    }
 }
 void gGraphView::ResetBounds(short group)
 {
@@ -935,17 +937,19 @@ void gGraphView::paintGL()
 // For manual scrolling
 void gGraphView::setOffsetY(int offsetY)
 {
-    m_offsetY=offsetY;
-    //issue full redraw..
-    updateGL();
+    if (m_offsetY!=offsetY) {
+        m_offsetY=offsetY;
+        updateGL(); //issue full redraw..
+    }
 }
 
 // For manual X scrolling (not really needed)
 void gGraphView::setOffsetX(int offsetX)
 {
-    m_offsetX=offsetX;
-    //issue redraw
-    updateGL();
+    if (m_offsetX!=offsetX) {
+        m_offsetX=offsetX;
+        updateGL(); //issue redraw
+    }
 }
 
 void gGraphView::mouseMoveEvent(QMouseEvent * event)
@@ -980,7 +984,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                 int yy2=yy-graphSpacer-m_graphs[i]->height()*m_scaleY;
                 yy2+=m_graphs[m_graph_index]->height()*m_scaleY;
                 if (y<yy2) {
-                    qDebug() << "Graph Reorder" << m_graph_index;
+                    //qDebug() << "Graph Reorder" << m_graph_index;
                     p=m_graphs[m_graph_index];
                     m_graphs[m_graph_index]=m_graphs[i];
                     m_graphs[i]=p;
@@ -995,7 +999,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             }
         } else if (y > yy+graphSpacer+m_graphs[m_graph_index]->height()*m_scaleY) {
             // swapping downwards
-            qDebug() << "Graph Reorder" << m_graph_index;
+            //qDebug() << "Graph Reorder" << m_graph_index;
             for (int i=m_graph_index+1;i<m_graphs.size();i++) {
                 empty=m_graphs[i]->isEmpty();
                 p=m_graphs[m_graph_index];
