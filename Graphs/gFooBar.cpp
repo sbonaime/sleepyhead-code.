@@ -84,7 +84,7 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
     int extra=0;
-    if (abs(px-py)<2) extra=2;
+    if (fabs(px-py)<2) extra=2;
 
     int hh=25;
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
