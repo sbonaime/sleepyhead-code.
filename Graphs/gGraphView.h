@@ -14,7 +14,7 @@
 class gGraphView;
 class gGraph;
 
-const int textque_max=2048;
+const int textque_max=512;
 
 struct TextQue
 {
@@ -226,6 +226,7 @@ public:
     gGraph *m_selected_graph;
 
     void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
+    int horizTravel() { return m_horiz_travel; }
 protected:
 
     void DrawTextQue();
@@ -263,6 +264,7 @@ protected:
     QPoint m_point_clicked;
     QPoint m_global_point_clicked;
     QPoint m_sizer_point;
+    int m_horiz_travel;
 
     MyScrollBar * m_scrollbar;
 
@@ -271,6 +273,7 @@ protected:
 
     TextQue m_textque[textque_max];
     int m_textque_items;
+    int m_lastxpos;
 signals:
 
 

@@ -415,20 +415,15 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
 
     qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
-    if (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h) { // main area
+
+    if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
-            if (abs(x-x2)<4) {
-                ZoomX(2,x);
-                return;
-            }
-            // zoom out.
+            ZoomX(2,x);  // Zoon out
+            return;
         } else if (event->button() & Qt::LeftButton) {
-            if (abs(x-x2)<4) {
-                ZoomX(0.5,x);
-                return;
-            }
+            ZoomX(0.5,x); // zoom in.
+            return;
         }
-   // qDebug() << m_title << "Released" << event->pos() << m_graphview->pointClicked() << left << top;
     }
     if (m_selecting_area) {
         m_selecting_area=false;
@@ -477,10 +472,10 @@ void gGraph::wheelEvent(QWheelEvent * event)
 }
 void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    mousePressEvent(event);
+    //mousePressEvent(event);
     mouseReleaseEvent(event);
-    mousePressEvent(event);
-    mouseReleaseEvent(event);
+    //mousePressEvent(event);
+    //mouseReleaseEvent(event);
     qDebug() << m_title << "Double Clicked" << event->x() << event->y();
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
@@ -659,6 +654,8 @@ gGraphView::gGraphView(QWidget *parent) :
     m_sizer_index=m_graph_index=0;
     m_textque_items=0;
     m_button_down=m_graph_dragging=m_sizer_dragging=false;
+    m_lastxpos=0;
+    m_horiz_travel=0;
     this->setMouseTracking(true);
     InitGraphs();
 }
@@ -1030,6 +1027,8 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             if (m_button_down || ((y >= py) && (y < py + h))) {
                 if (m_button_down || (x >= titleWidth)) {
                     this->setCursor(Qt::ArrowCursor);
+                    m_horiz_travel+=abs(x-m_lastxpos);
+                    m_lastxpos=x;
                     QPoint p(x-titleWidth,y-py);
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
 
@@ -1082,6 +1081,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
                     QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
                     m_graph_index=i;
                     m_button_down=true;
+                    m_horiz_travel=0;
                     m_graphs[i]->mousePressEvent(&e);
                 }
             } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
