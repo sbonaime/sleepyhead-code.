@@ -96,7 +96,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF->AddLayer(AddCPAP(fg));
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
-    SF->AddLayer(new gFooBar(),LayerBottom,0,10);
+    SF->AddLayer(new gFooBar(),LayerBottom,0,1);
     SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,gXAxis::Margin);
 
     PRD->AddLayer(new gXGrid());

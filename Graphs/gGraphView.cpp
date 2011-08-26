@@ -148,7 +148,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_height(height),
     m_visible(true)
 {
-    m_min_height=50;
+    m_min_height=80;
     m_layers.clear();
 
     if (graphview) {
@@ -157,7 +157,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
         qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
     m_margintop=10;
-    m_marginbottom=10;
+    m_marginbottom=5;
     m_marginleft=5;
     m_marginright=10;
     m_selecting_area=m_blockzoom=false;
@@ -316,21 +316,21 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     int y=event->pos().y();
     int x=event->pos().x();
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
-    int w=m_width-(m_graphview->titleWidth+right+m_marginright);
-    int h=m_height-(bottom+m_marginbottom);
+    int w=m_lastbounds.width()-(right+m_marginright);
+    int h=m_lastbounds.height()-(bottom+m_marginbottom);
     double xx=max_x-min_x;
     double xmult=xx/w;
     m_selecting_area=false;
 
     if (m_graphview->m_selected_graph==this) {
         if (event->buttons() & Qt::LeftButton) {
-            //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
+            //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << h;
             int a1=MIN(x,x2);
             int a2=MAX(x,x2);
             if (a1<m_marginleft+left) a1=m_marginleft+left;
             if (a2>w) a2=w;
             m_selecting_area=true;
-            m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_height);
+            m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
             m_graphview->updateGL();
         } else if (event->buttons() & Qt::RightButton) {
             m_graphview->setPointClicked(event->pos());
@@ -379,11 +379,10 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 m_graphview->SetXBounds(min_x,max_x,m_group);
 
             }
-
         }
     }
 
-    if (x>left+m_marginleft && x<m_width-(m_graphview->titleWidth+right+m_marginright) && y>top+m_margintop && y<m_height-(bottom+m_marginbottom)) { // main area
+    if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
         y-=top+m_margintop;
         //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
@@ -393,12 +392,12 @@ void gGraph::mousePressEvent(QMouseEvent * event)
 {
     int y=event->pos().y();
     int x=event->pos().x();
-    int w=m_width-(m_graphview->titleWidth+right+m_marginright);
-    int h=m_height-(bottom+m_marginbottom);
+    int w=m_lastbounds.width()-(right+m_marginright);
+    int h=m_lastbounds.height()-(bottom+m_marginbottom);
     int x2,y2;
     double xx=max_x-min_x;
     double xmult=xx/w;
-    if (x>left+m_marginleft && x<m_width-(m_graphview->titleWidth+right+m_marginright) && y>top+m_margintop && y<m_height-(bottom+m_marginbottom)) { // main area
+    if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
         y-=top+m_margintop;
     }
@@ -410,8 +409,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 {
     int y=event->pos().y();
     int x=event->pos().x();
-    int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
-    int h=m_height-(bottom+m_marginbottom);
+    int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
+    int h=m_lastbounds.height()-(bottom+m_marginbottom);
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
 
 
@@ -481,8 +480,8 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
     //mouseReleaseEvent(event);
     int y=event->pos().y();
     int x=event->pos().x();
-    int w=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
-    int h=m_height-(bottom+m_marginbottom);
+    int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
+    int h=m_lastbounds.height()-(bottom+m_marginbottom);
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
@@ -505,7 +504,7 @@ void gGraph::keyPressEvent(QKeyEvent * event)
 void gGraph::ZoomX(double mult,int origin_px)
 {
 
-    int width=m_width-(m_graphview->titleWidth+m_marginleft+left+right+m_marginright);
+    int width=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
     if (origin_px==0) origin_px=(width/2); else origin_px-=m_marginleft+left;
 
     if (origin_px<0) origin_px=0;
@@ -555,8 +554,8 @@ void gGraph::DrawTextQue()
 // margin recalcs..
 void gGraph::resize(int width, int height)
 {
-    m_height=height;
-    m_width=width;
+    //m_height=height;
+    //m_width=width;
 }
 
 qint64 gGraph::MinX()
@@ -677,7 +676,7 @@ gGraphView::gGraphView(QWidget *parent) :
     m_sizer_index=m_graph_index=0;
     m_textque_items=0;
     m_button_down=m_graph_dragging=m_sizer_dragging=false;
-    m_lastxpos=0;
+    m_lastypos=m_lastxpos=0;
     m_horiz_travel=0;
     this->setMouseTracking(true);
     InitGraphs();
@@ -1054,8 +1053,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             if (m_button_down || ((y >= py) && (y < py + h))) {
                 if (m_button_down || (x >= titleWidth)) {
                     this->setCursor(Qt::ArrowCursor);
-                    m_horiz_travel+=abs(x-m_lastxpos);
+                    m_horiz_travel+=abs(x-m_lastxpos)+abs(y-m_lastypos);
                     m_lastxpos=x;
+                    m_lastypos=y;
                     QPoint p(x-titleWidth,y-py);
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
 

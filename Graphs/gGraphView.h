@@ -182,9 +182,8 @@ protected:
     QVector<Layer *> m_layers;
     float m_height,m_width;
 
-    int m_marginleft, m_marginright, m_margintop, m_marginbottom;
-
-    int left,right,top,bottom; // dirty magin hacks..
+    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+    short left,right,top,bottom; // dirty magin hacks..
 
     int m_min_height;
     int m_max_height;
@@ -208,7 +207,7 @@ public:
     void setScrollBar(MyScrollBar *sb);
     MyScrollBar * scrollBar() { return m_scrollbar; }
     static const int titleWidth=30;
-    static const int graphSpacer=5;
+    static const int graphSpacer=4;
 
     float findTop(gGraph * graph);
 
@@ -274,7 +273,7 @@ protected:
 
     TextQue m_textque[textque_max];
     int m_textque_items;
-    int m_lastxpos;
+    int m_lastxpos,m_lastypos;
 signals:
 
 
