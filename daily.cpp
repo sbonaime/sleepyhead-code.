@@ -42,6 +42,12 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         QMessageBox::critical(this,"Profile Error",QString("Couldn't get profile '%1'.. Have to abort!").arg(pref["Profile"].toString()));
         exit(-1);
     }
+    QList<int> a;
+    a.push_back(300);
+    a.push_back(this->width()-300);
+    ui->splitter_2->setStretchFactor(0,0);
+    ui->splitter_2->setSizes(a);
+    ui->splitter_2->setStretchFactor(1,1);
 
     layout=new QHBoxLayout(ui->graphMainArea);
     layout->setSpacing(0);

@@ -28,24 +28,36 @@
    </property>
    <item>
     <widget class="QSplitter" name="splitter_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QSplitter" name="splitter">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QCalendarWidget" name="calendar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>180</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>300</width>
-         <height>16777215</height>
         </size>
        </property>
        <property name="baseSize">
@@ -77,18 +89,6 @@
          <height>0</height>
         </size>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>300</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="font">
         <font>
          <family>Sans Serif</family>
@@ -96,7 +96,7 @@
         </font>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -484,7 +484,7 @@
      <widget class="QWidget" name="graphMainArea" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
+        <horstretch>1</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
