@@ -415,6 +415,43 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
 
     //qDebug() << m_title << "Released" << min_x << max_x << x << y << x2 << y2 << left << right << top << bottom << m_width << m_height;
+    if (m_selecting_area) {
+        m_selecting_area=false;
+        m_selection.setWidth(0);
+
+        if (m_graphview->horizTravel()>4) {
+            x-=left+m_marginleft;
+            y-=top+m_margintop;
+            x2-=left+m_marginleft;
+            y2-=top+m_margintop;
+            if (x<0) x=0;
+            if (x2<0) x2=0;
+            if (x>w) x=w;
+            if (x2>w) x2=w;
+            if (!m_blockzoom) {
+                double xx=max_x-min_x;
+                double xmult=xx/double(w);
+                qint64 j1=min_x+xmult*x;
+                qint64 j2=min_x+xmult*x2;
+                qint64 a1=MIN(j1,j2)
+                qint64 a2=MAX(j1,j2)
+                //if (a1<rmin_x) a1=rmin_x;
+                if (a2>rmax_x) a2=rmax_x;
+                m_graphview->SetXBounds(a1,a2,m_group);
+            } else {
+                double xx=rmax_x-rmin_x;
+                double xmult=xx/double(w);
+                qint64 j1=rmin_x+xmult*x;
+                qint64 j2=rmin_x+xmult*x2;
+                qint64 a1=MIN(j1,j2)
+                qint64 a2=MAX(j1,j2)
+                //if (a1<rmin_x) a1=rmin_x;
+                if (a2>rmax_x) a2=rmax_x;
+                m_graphview->SetXBounds(a1,a2,m_group);
+            }
+            return;
+        } else m_graphview->updateGL();
+    }
 
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (!m_blockzoom) {
@@ -448,42 +485,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 min_x=rmax_x-xx;
             }
             m_graphview->SetXBounds(min_x,max_x,m_group);
-
         }
-    }
-    if (m_selecting_area) {
-        m_selecting_area=false;
-        m_selection.setWidth(0);
-        x-=left+m_marginleft;
-        y-=top+m_margintop;
-        x2-=left+m_marginleft;
-        y2-=top+m_margintop;
-        if (x<0) x=0;
-        if (x2<0) x2=0;
-        if (x>w) x=w;
-        if (x2>w) x2=w;
-        if (!m_blockzoom) {
-            double xx=max_x-min_x;
-            double xmult=xx/double(w);
-            qint64 j1=min_x+xmult*x;
-            qint64 j2=min_x+xmult*x2;
-            qint64 a1=MIN(j1,j2)
-            qint64 a2=MAX(j1,j2)
-            //if (a1<rmin_x) a1=rmin_x;
-            if (a2>rmax_x) a2=rmax_x;
-            m_graphview->SetXBounds(a1,a2,m_group);
-        } else {
-            double xx=rmax_x-rmin_x;
-            double xmult=xx/double(w);
-            qint64 j1=rmin_x+xmult*x;
-            qint64 j2=rmin_x+xmult*x2;
-            qint64 a1=MIN(j1,j2)
-            qint64 a2=MAX(j1,j2)
-            //if (a1<rmin_x) a1=rmin_x;
-            if (a2>rmax_x) a2=rmax_x;
-            m_graphview->SetXBounds(a1,a2,m_group);
-        }
-        return;
     }
     //m_graphview->updateGL();
 }
