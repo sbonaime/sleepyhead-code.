@@ -207,14 +207,14 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         glColor4ub(255,255,255,255);
         glVertex2f(left-20,top+5);
         glVertex2f(left-20,top+height);
-        glColor4ub(255,255,255,0);
-        glVertex2f(left+40,top+height);
-        glVertex2f(left+40,top+5);
+        //glColor4ub(255,255,255,0);
+        glVertex2f(left,top+height);
+        glVertex2f(left,top+5);
 
-        glColor4ub(255,255,255,0);
-        glVertex2f(left+width-40,top+5);
-        glVertex2f(left+width-40,top+height);
-        glColor4ub(255,255,255,255);
+        //glColor4ub(255,255,255,0);
+        glVertex2f(left+width,top+5);
+        glVertex2f(left+width,top+height);
+        //glColor4ub(255,255,255,255);
         glVertex2f(left+width+20,top+height);
         glVertex2f(left+width+20,top+5);
         glEnd();

@@ -21,7 +21,7 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     if (xx==0)
         return;
 
-    int start_px=left;
+    int start_px=left-1;
     int end_px=left+width;
 
     float h=top;
@@ -47,6 +47,17 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     glVertex2f(end_px, top);
     glEnd();
     glDisable(GL_BLEND);
+
+    glLineWidth(2);
+    w.qglColor(Qt::blue);
+    glBegin(GL_LINES);
+    glVertex2f(start_px+px, top);
+    glVertex2f(start_px+py, top);
+    glVertex2f(start_px+px, top+height+1);
+    glVertex2f(start_px+py, top+height+1);
+    glEnd();
+
+    glLineWidth(1);
 
     //glFlush();
 }
