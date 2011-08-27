@@ -11,7 +11,7 @@
 class gXAxis:public Layer
 {
     public:
-        gXAxis(QColor col=QColor("black"));
+        gXAxis(QColor col=QColor("black"),bool fadeout=true);
         virtual ~gXAxis();
         virtual void paint(gGraph & w,int left,int top, int width, int height);
         static const int Margin=25; // How much room does this take up. (Bottom margin)
@@ -31,10 +31,12 @@ class gXAxis:public Layer
         bool m_show_minor_ticks;
         bool m_show_major_ticks;
 
+
         QColor m_line_color;
         QColor m_text_color;
         QColor m_major_color;
         QColor m_minor_color;
+        bool m_fadeout;
         qint64 tz_offset;
 };
 #endif // GXAXIS_H

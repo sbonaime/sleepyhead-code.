@@ -14,6 +14,17 @@
 class gGraphView;
 class gGraph;
 
+const int textque_max=512;
+
+struct TextQue
+{
+    short x,y;
+    float angle;
+    QString text;
+    QColor color;
+    QFont *font;
+};
+
 class MyScrollBar:public QScrollBar
 {
 public:
@@ -101,7 +112,7 @@ class gGraph
 {
     friend class gGraphView;
 public:
-    gGraph(gGraphView * graphview=NULL, QString title="",int height=100);
+    gGraph(gGraphView * graphview=NULL, QString title="",int height=100,short group=0);
     virtual ~gGraph();
 
     void setVisible(bool b) { m_visible=b; }
@@ -149,6 +160,10 @@ public:
     void setBlockZoom(bool b) { m_blockzoom=b; }
     int flipY(int y); // flip GL coordinates
 
+    short group() { return m_group; }
+    void setGroup(short group) { m_group=group; }
+    void DrawTextQue();
+
 protected:
     virtual void paint(int originX, int originY, int width, int height);
     void invalidate();
@@ -167,9 +182,8 @@ protected:
     QVector<Layer *> m_layers;
     float m_height,m_width;
 
-    int m_marginleft, m_marginright, m_margintop, m_marginbottom;
-
-    int left,right,top,bottom; // dirty magin hacks..
+    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+    short left,right,top,bottom; // dirty magin hacks..
 
     int m_min_height;
     int m_max_height;
@@ -179,6 +193,7 @@ protected:
     QRect m_selection;
     bool m_selecting_area;
     QPoint m_current;
+    short m_group;
 };
 
 class gGraphView : public QGLWidget
@@ -187,19 +202,19 @@ class gGraphView : public QGLWidget
 public:
     explicit gGraphView(QWidget *parent = 0);
     virtual ~gGraphView();
-    void AddGraph(gGraph *g);
+    void AddGraph(gGraph *g,short group=0);
 
     void setScrollBar(MyScrollBar *sb);
     MyScrollBar * scrollBar() { return m_scrollbar; }
     static const int titleWidth=30;
-    static const int graphSpacer=5;
+    static const int graphSpacer=4;
 
     float findTop(gGraph * graph);
 
     float scaleY() { return m_scaleY; }
 
-    void ResetBounds();
-    void SetXBounds(qint64 minx, qint64 maxx);
+    void ResetBounds(); //short group=0);
+    void SetXBounds(qint64 minx, qint64 maxx, short group=0);
 
     bool hasGraphs() { return m_graphs.size()>0; }
 
@@ -208,11 +223,13 @@ public:
     void setPointClicked(QPoint p) { m_point_clicked=p; }
     void setGlobalPointClicked(QPoint p) { m_global_point_clicked=p; }
 
-    QPainter *painter;
-
     gGraph *m_selected_graph;
 
+    void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
+    int horizTravel() { return m_horiz_travel; }
+    void DrawTextQue();
 protected:
+
 
     float totalHeight();
     float scaleHeight();
@@ -247,11 +264,16 @@ protected:
     QPoint m_point_clicked;
     QPoint m_global_point_clicked;
     QPoint m_sizer_point;
+    int m_horiz_travel;
 
     MyScrollBar * m_scrollbar;
 
     bool m_graph_dragging;
     int m_graph_index;
+
+    TextQue m_textque[textque_max];
+    int m_textque_items;
+    int m_lastxpos,m_lastypos;
 signals:
 
 

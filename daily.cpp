@@ -42,6 +42,12 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
         QMessageBox::critical(this,"Profile Error",QString("Couldn't get profile '%1'.. Have to abort!").arg(pref["Profile"].toString()));
         exit(-1);
     }
+    QList<int> a;
+    a.push_back(300);
+    a.push_back(this->width()-300);
+    ui->splitter_2->setStretchFactor(0,0);
+    ui->splitter_2->setSizes(a);
+    ui->splitter_2->setStretchFactor(1,1);
 
     layout=new QHBoxLayout(ui->graphMainArea);
     layout->setSpacing(0);
@@ -76,6 +82,11 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FLG=new gGraph(GraphView,"Flow Limitation",180);
     PTB=new gGraph(GraphView,"Patient Trig. Breath",180);
 
+    PULSE=new gGraph(GraphView,"Pulse",180,1);
+    SPO2=new gGraph(GraphView,"SPO2",180,1);
+    PLETHY=new gGraph(GraphView,"Plethy",180,1);
+
+
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",true)));
@@ -91,8 +102,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     SF->AddLayer(AddCPAP(fg));
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
-    //SF->AddLayer(new gFooBar(),LayerBottom,0,10);
-    SF->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+    //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
+    SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,gXAxis::Margin);
 
     PRD->AddLayer(new gXGrid());
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
@@ -104,8 +115,8 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
     AddCPAP(l);
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
     FRW->AddLayer(new gXGrid());
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -163,6 +174,23 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     FLG->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FLG->AddLayer(new gXAxis(),LayerBottom,0,20);
 
+
+    PULSE->AddLayer(new gXGrid());
+    PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
+    PULSE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PULSE->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    SPO2->AddLayer(new gXGrid());
+    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
+    SPO2->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    SPO2->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    PLETHY->AddLayer(new gXGrid());
+    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkBlue,false)));
+    PLETHY->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    PLETHY->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+
     //AddGraph(SF);
     //AddGraph(FRW);
     //AddGraph(PRD);
@@ -176,6 +204,13 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     NoData->hide();
 
     layout->layout();
+
+    QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
+
+    ui->tabWidget->setCurrentWidget(ui->details);
 
 
 /*    scrollArea=new MyScrollArea(ui->graphMainArea,this);
@@ -529,12 +564,6 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //splitter->update();
 
 
-    QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
-    ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
-    ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
-
-    ui->tabWidget->setCurrentWidget(ui->details);
 
     if (mainwin) {
         show_graph_menu=mainwin->CreateMenu("Graphs");
@@ -750,6 +779,7 @@ void Daily::Load(QDate date)
     UpdateEventsTree(ui->treeWidget,cpap);
 
     GraphView->ResetBounds();
+    //GraphView->ResetBounds(1);
 
     GraphView->updateGL();
     if (!cpap && !oxi) {
