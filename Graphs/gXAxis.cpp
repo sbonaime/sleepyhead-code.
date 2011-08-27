@@ -196,7 +196,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
 
 
-    if (m_fadeout) {
+   /* if (m_fadeout) {
 
         glFlush();
         w.DrawTextQue();
@@ -219,7 +219,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         glVertex2f(left+width+20,top+5);
         glEnd();
         glDisable(GL_BLEND);
-   }
+   }*/
    // glDisable(GL_SCISSOR_TEST);
 
 }
