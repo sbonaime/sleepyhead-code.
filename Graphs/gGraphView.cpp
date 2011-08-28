@@ -474,7 +474,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             //if (xx==qq) xx=1800000;
 
             xmult=qq/double(w);
-            if (x==m_lastx23) {
+            if ((xx==qq) || (x==m_lastx23)) {
                 if (event->button() & Qt::RightButton) {
                     xx*=1.33;
                 } else if (event->button() & Qt::LeftButton) {
