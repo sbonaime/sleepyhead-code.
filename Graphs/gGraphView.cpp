@@ -161,6 +161,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_marginleft=5;
     m_marginright=10;
     m_selecting_area=m_blockzoom=false;
+    m_lastx23=0;
 }
 gGraph::~gGraph()
 {
@@ -470,16 +471,16 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             double xmult;
 
             double xx=max_x-min_x;
-            if (xx==qq) xx=1800000;
+            //if (xx==qq) xx=1800000;
 
             xmult=qq/double(w);
-            static int lastx=0;
-            if (x==lastx) {
+            if (x==m_lastx23) {
                 if (event->button() & Qt::RightButton) {
                     xx*=1.33;
                 } else if (event->button() & Qt::LeftButton) {
                     xx*=0.75;
                 }
+                if (xx>qq) xx=qq;
             }
             double j1=xmult*x;
             min_x=rmin_x+j1-(xx/2.0);
@@ -487,13 +488,13 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             if (min_x<rmin_x) {
                 min_x=rmin_x;
                 max_x=rmin_x+xx;
-            }
+            } else
             if (max_x>rmax_x) {
                 max_x=rmax_x;
                 min_x=rmax_x-xx;
             }
             m_graphview->SetXBounds(min_x,max_x,m_group);
-            lastx=x;
+            m_lastx23=x;
         }
     }
     //m_graphview->updateGL();

@@ -194,6 +194,7 @@ protected:
     bool m_selecting_area;
     QPoint m_current;
     short m_group;
+    short m_lastx23;
 };
 
 class gGraphView : public QGLWidget
