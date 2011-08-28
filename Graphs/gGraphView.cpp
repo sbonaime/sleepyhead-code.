@@ -456,11 +456,16 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (!m_blockzoom) {
+            double zoom;
             if (event->button() & Qt::RightButton) {
-                ZoomX(1.33,x);  // Zoom out
+                zoom=1.33;
+                if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;
+                ZoomX(zoom,x);  // Zoom out
                 return;
             } else if (event->button() & Qt::LeftButton) {
-                ZoomX(0.75,x); // zoom in.
+                zoom=0.75;
+                if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
+                ZoomX(zoom,x); // zoom in.
                 return;
             }
         } else {
@@ -475,11 +480,15 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
             xmult=qq/double(w);
             if ((xx==qq) || (x==m_lastx23)) {
+                double zoom;
                 if (event->button() & Qt::RightButton) {
-                    xx*=1.33;
+                    zoom=1.33;
+                    if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;
                 } else if (event->button() & Qt::LeftButton) {
-                    xx*=0.75;
+                    zoom=0.75;
+                    if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
                 }
+                xx*=zoom;
                 if (xx>qq) xx=qq;
             }
             double j1=xmult*x;
