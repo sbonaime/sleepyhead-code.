@@ -125,7 +125,7 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown10,QColor("orange"),"10",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("yellow"),"0E",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("dark red"),"0E",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A")));

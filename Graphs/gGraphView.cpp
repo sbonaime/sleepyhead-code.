@@ -456,7 +456,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (!m_blockzoom) {
             if (event->button() & Qt::RightButton) {
-                ZoomX(1.33,x);  // Zoon out
+                ZoomX(1.33,x);  // Zoom out
                 return;
             } else if (event->button() & Qt::LeftButton) {
                 ZoomX(0.75,x); // zoom in.
@@ -467,14 +467,22 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             y-=top+m_margintop;
             //w-=m_marginleft+left;
             double qq=rmax_x-rmin_x;
-            double xmult,j1;
+            double xmult;
 
             double xx=max_x-min_x;
             if (xx==qq) xx=1800000;
 
             xmult=qq/double(w);
-            j1=(xmult*x);
-            min_x=rmin_x+j1-(xx/2);
+            static int lastx=0;
+            if (x==lastx) {
+                if (event->button() & Qt::RightButton) {
+                    xx*=1.33;
+                } else if (event->button() & Qt::LeftButton) {
+                    xx*=0.75;
+                }
+            }
+            double j1=xmult*x;
+            min_x=rmin_x+j1-(xx/2.0);
             max_x=min_x+xx;
             if (min_x<rmin_x) {
                 min_x=rmin_x;
@@ -485,6 +493,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 min_x=rmax_x-xx;
             }
             m_graphview->SetXBounds(min_x,max_x,m_group);
+            lastx=x;
         }
     }
     //m_graphview->updateGL();
