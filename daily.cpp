@@ -70,21 +70,37 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    SF=new gGraph(GraphView,"Event Flags",180);
-    FRW=new gGraph(GraphView,"Flow Rate",180);
-    MP=new gGraph(GraphView,"Mask Pressure",180);
-    PRD=new gGraph(GraphView,"Pressure",180);
-    LEAK=new gGraph(GraphView,"Leak",180);
-    SNORE=new gGraph(GraphView,"Snore",180);
-    RR=new gGraph(GraphView,"Respiratory Rate",180);
-    TV=new gGraph(GraphView,"Tidal Volume",180);
-    MV=new gGraph(GraphView,"Minute Ventilation",180);
-    FLG=new gGraph(GraphView,"Flow Limitation",180);
-    PTB=new gGraph(GraphView,"Patient Trig. Breath",180);
+    const int default_height=150;
+    SF=new gGraph(GraphView,"Event Flags",default_height);
 
-    PULSE=new gGraph(GraphView,"Pulse",180,1);
-    SPO2=new gGraph(GraphView,"SPO2",180,1);
-    PLETHY=new gGraph(GraphView,"Plethy",180,1);
+  //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
+    gSegmentChart * seg=new gSegmentChart(GST_Pie);
+    seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
+    seg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
+    seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
+    seg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
+    seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
+    seg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
+
+    SF->AddLayer(AddCPAP(seg),LayerRight,100);
+
+    FRW=new gGraph(GraphView,"Flow Rate",default_height);
+    MP=new gGraph(GraphView,"Mask Pressure",default_height);
+    PRD=new gGraph(GraphView,"Pressure",default_height);
+    LEAK=new gGraph(GraphView,"Leak",default_height);
+    SNORE=new gGraph(GraphView,"Snore",default_height);
+    RR=new gGraph(GraphView,"Respiratory Rate",default_height);
+    TV=new gGraph(GraphView,"Tidal Volume",default_height);
+    MV=new gGraph(GraphView,"Minute Ventilation",default_height);
+    FLG=new gGraph(GraphView,"Flow Limitation",default_height);
+    PTB=new gGraph(GraphView,"Patient Trig. Breath",default_height);
+    RE=new gGraph(GraphView,"Respiratory Event",default_height);
+    IE=new gGraph(GraphView,"I:E",default_height);
+    TE=new gGraph(GraphView,"Te",default_height);
+    TI=new gGraph(GraphView,"Ti",default_height);
+    PULSE=new gGraph(GraphView,"Pulse",default_height,1);
+    SPO2=new gGraph(GraphView,"SPO2",default_height,1);
+    PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
 
 
     gFlagsGroup *fg=new gFlagsGroup();
@@ -105,12 +121,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
     SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,gXAxis::Margin);
 
-    PRD->AddLayer(new gXGrid());
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
-    PRD->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    PRD->AddLayer(new gXAxis(),LayerBottom,0,20);
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
@@ -134,74 +144,35 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
 
-    LEAK->AddLayer(new gXGrid());
+
+    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE };
+    int ng=sizeof(graphs)/sizeof(gGraph*);
+    for (int i=0;i<ng;i++){
+        graphs[i]->AddLayer(new gXGrid());
+    }
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,true)));
-    LEAK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    LEAK->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    SNORE->AddLayer(new gXGrid());
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
-    SNORE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    SNORE->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    PTB->AddLayer(new gXGrid());
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
-    PTB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    PTB->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    MP->AddLayer(new gXGrid());
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    MP->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    MP->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    RR->AddLayer(new gXGrid());
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::darkMagenta,true)));
-    RR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    RR->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    MV->AddLayer(new gXGrid());
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVentilation,Qt::darkCyan,true)));
-    MV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    MV->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    TV->AddLayer(new gXGrid());
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,true)));
-    TV->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    TV->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    FLG->AddLayer(new gXGrid());
     FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FlowLimitGraph,Qt::darkBlue,true)));
-    FLG->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    FLG->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-
-    PULSE->AddLayer(new gXGrid());
+    //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::magenta,true)));
+    IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,true)));
+    TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,true)));
+    TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkBlue,true)));
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
-    PULSE->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    PULSE->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    SPO2->AddLayer(new gXGrid());
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
-    SPO2->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    SPO2->AddLayer(new gXAxis(),LayerBottom,0,20);
-
-    PLETHY->AddLayer(new gXGrid());
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkBlue,false)));
-    PLETHY->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    PLETHY->AddLayer(new gXAxis(),LayerBottom,0,20);
 
-
-    //AddGraph(SF);
-    //AddGraph(FRW);
-    //AddGraph(PRD);
-
-    NoData=new QLabel(tr("No data"),ui->graphMainArea);
-    NoData->setAlignment(Qt::AlignCenter);
-    QFont font("Sans Serif",20); //NoData->font();
-    //font.setBold(true);
-    NoData->setFont(font);
-    layout->addWidget(NoData,0);
-    NoData->hide();
+    for (int i=0;i<ng;i++){
+        graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+        graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
+    }
 
     layout->layout();
 
@@ -494,15 +465,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     TAP->hide();
     TAP->SetGradientBackground(false);
 
-    G_AHI->SetMargins(0,0,0,0);
-    seg=new gSegmentChart(GST_Pie);
-    seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
-    seg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
-    seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
-    seg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
-    seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
-    seg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
-    G_AHI->AddLayer(AddCPAP(seg));
     G_AHI->SetGradientBackground(false);
     G_AHI->hide();
 

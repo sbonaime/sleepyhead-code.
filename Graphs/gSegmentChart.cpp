@@ -9,7 +9,7 @@
 
 
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
-:gLayer(EmptyChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
+:Layer(EmptyChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
    // m_gradient_color=QColor(200,200,200);
 }
@@ -26,7 +26,7 @@ void gSegmentChart::AddSlice(ChannelID code,QColor color,QString name)
 }
 void gSegmentChart::SetDay(Day *d)
 {
-    gLayer::SetDay(d);
+    Layer::SetDay(d);
     m_total=0;
     if (!m_day) return;
     for (int c=0;c<m_codes.size();c++) {
@@ -39,16 +39,27 @@ void gSegmentChart::SetDay(Day *d)
     }
 
 }
+bool gSegmentChart::isEmpty()
+{
+    bool res=true;
+    if (!m_day) return true;
+    for (int i=0;i<m_codes.size();i++) {
+        if (m_day->count(m_codes[i])>0) {
+            res=false;
+            break;
+        }
+    }
+    return res;
+}
 
-void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
+void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
     //if (!m_total) return;
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+    int start_px=left;
+    int start_py=top;
+
     width--;
     float diameter=MIN(width,height);
     diameter-=8;
@@ -63,23 +74,24 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     float xmult=float(width)/float(m_total);
     float ymult=float(height)/float(m_total);
 
-    float xp=w.GetLeftMargin();
+    float xp=left;
 
     int xoffset=width/2;
     int yoffset=height/2;
     if (m_total==0) {
-        w.qglColor(Qt::green);
+        QColor col=Qt::green;
         QString a=":-)";
         float x,y;
         GetTextExtent(a,x,y,bigfont);
-        w.renderText(start_px+xoffset-x/2, scry-(start_py+yoffset-y/2),a,*bigfont);
+
+        w.renderText(a,start_px+xoffset-x/2, (start_py+yoffset-y/2),0,col,bigfont);
         return;
     }
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(1.5);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int data;
     unsigned size=m_values.size();
     float line_step=float(width)/float(size-1);
@@ -102,41 +114,42 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
             j=float(data)/float(m_total); // ratio of this pie slice
 
             // Draw Filling
-            glPolygonMode(GL_BACK,GL_FILL);
             glBegin(GL_POLYGON);
+            glPolygonMode(GL_BACK,GL_FILL);
             w.qglColor(m_gradient_color);
-            glVertex2f(start_px+xoffset, start_py+yoffset);
+            glVertex2f(start_px+xoffset, start_py+height-yoffset);
             w.qglColor(m_colors[m % m_colors.size()]);
             for (q=sum;q<sum+j;q+=step) {
                 px=start_px+xoffset+sin(q*2*M_PI)*radius;
-                py=start_py+yoffset+cos(q*2*M_PI)*radius;
+                py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
                 glVertex2f(px,py);
             }
             q=sum+j;
             px=start_px+xoffset+sin(q*2*M_PI)*radius;
-            py=start_py+yoffset+cos(q*2*M_PI)*radius;
+            py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
             glVertex2f(px,py);
             glEnd();
 
             // Draw Outline
+            //m_outline_color=Qt::red;
             w.qglColor(m_outline_color);
             if (m_total>data) { // Draw the center point first
-                glPolygonMode(GL_BACK,GL_LINE);
-                glBegin(GL_POLYGON);
-                glVertex2f(start_px+xoffset, start_py+yoffset);
+                //glPolygonMode(GL_BACK,GL_LINE);
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(start_px+xoffset, start_py+height-yoffset);
             } else { // Only one entry, so just draw the circle
                 glBegin(GL_LINE_LOOP);
             }
             for (q=sum;q<sum+j;q+=step) {
                 px=start_px+xoffset+sin(q*2*M_PI)*radius;
-                py=start_py+yoffset+cos(q*2*M_PI)*radius;
+                py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
                 glVertex2f(px,py);
             }
             double tpx=start_px+xoffset+sin((sum+(j/2.0))*2*M_PI)*(radius/1.7);
-            double tpy=start_py+yoffset+cos((sum+(j/2.0))*2*M_PI)*(radius/1.7);
+            double tpy=start_py+height-(yoffset+cos((sum+(j/2.0))*2*M_PI)*(radius/1.7));
             q=sum+j;
             px=start_px+xoffset+sin(q*2*M_PI)*radius;
-            py=start_py+yoffset+cos(q*2*M_PI)*radius;
+            py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
             glVertex2f(px,py);
             glEnd();
 
@@ -147,7 +160,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
                 QString a=m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 float x,y;
                 GetTextExtent(a,x,y);
-                w.renderText(tpx-(x/2.0),scry-(tpy-y/2.0),a);
+                w.renderText(a,tpx-(x/2.0),(tpy+y/2.0));
             }
 
             sum=q;
@@ -179,7 +192,7 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
             if (!m_names[m].isEmpty()) {
                 GetTextExtent(m_names[m],px,py);
                 if (px+5<bw) {
-                    DrawText(w,m_names[m],(xp+bw/2)-(px/2),scry-((height/2)-(py/2)),0,Qt::black);
+                    w.renderText(m_names[m],(xp+bw/2)-(px/2),top+((height/2)-(py/2)),0,Qt::black);
                 }
             }
 
@@ -199,6 +212,8 @@ void gSegmentChart::Plot(gGraphWindow & w,float scrx,float scry)
     if (m_graph_type==GST_Line) {
         glEnd();
     }
+    glPolygonMode(GL_BACK,GL_FILL);
+    glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
 }
 
@@ -214,7 +229,7 @@ gTAPGraph::~gTAPGraph()
 }
 void gTAPGraph::SetDay(Day *d)
 {
-    gLayer::SetDay(d);
+    Layer::SetDay(d);
     m_total=0;
     if (!m_day) return;
     QMap<EventStoreType,qint64> tap;

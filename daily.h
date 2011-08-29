@@ -68,17 +68,9 @@ private:
     void UpdateCalendarDay(QDate date);
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
-    //gLineChart *frw,*prd,*leak,*pr_ipap,*pr_epap,*snore,*pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
-
-    //gPointData *tap,*tap_eap,*tap_iap,*g_ahi,*frw,*prd,*leak,*pressure_iap,*pressure_eap,*snore;
-    //gPointData *pulse,*spo2,*rr,*mv,*tv,*mp,*flg,*ptb;
-
-    //gFlagsGroup *fg;
-    gGraph *PRD,*FRW,*G_AHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
+    gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
            *PLETHY,*TI,*TE, *RE, *IE;
-
-    //gLineChart *pressure, *epap, *ipap;
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
@@ -99,10 +91,8 @@ private:
     QDate previous_date;
     //QScrollArea *scrollArea;
     //QVBoxLayout *splitter;
-    QLabel *NoData;
-    QWidget *spacer;
     QMenu *show_graph_menu;
-    QWidget *GraphLayout;
+
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;

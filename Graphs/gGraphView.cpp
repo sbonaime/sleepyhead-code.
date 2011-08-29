@@ -948,7 +948,7 @@ void gGraphView::paintGL()
     glVertex2f(0, height());
     glVertex2f(0, 0);
 
-    glColor4f(0.3,0.3,1.0,1.0); // Gradient End
+    glColor4f(0.6,0.6,1.0,1.0); // Gradient End
     glVertex2f(width(), 0);
     glVertex2f(width(), height());
 

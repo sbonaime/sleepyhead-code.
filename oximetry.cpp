@@ -107,6 +107,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 
+    GraphView->setEmptyText("");
     GraphView->updateGL();
 
     on_RefreshPortsButton_clicked();
@@ -202,6 +203,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
         ev_plethy->setLast(lasttime+3600000);
         PLETHY->SetMinX(lasttime);
         PLETHY->SetMaxX(lasttime+30000);
+        CONTROL->SetMinX(lasttime);
+        CONTROL->SetMaxX(lasttime+30000);
 
         ev_pulse->setFirst(lasttime);
         ev_pulse->setLast(lasttime+3600000);
@@ -263,9 +266,14 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PLETHY->MinX();
         PLETHY->MaxX();
         //GraphView->ResetBounds();
-        CONTROL->SetMinX(ev_plethy->first());
-        CONTROL->SetMaxX(lasttime);
-        CONTROL->ResetBounds();
+        //CONTROL->SetMinX(PLETHY->MinX());
+        //CONTROL->SetMaxX(PLETHY->MaxX());
+        //CONTROL->SetMinY(ev_plethy->min());
+        //CONTROL->SetMaxY(ev_plethy->max());
+        CONTROL->MinX();
+        CONTROL->MaxX();
+
+        //CONTROL->ResetBounds();
 
         qint64 d=session->length();
        // if (d<=30000)
@@ -366,6 +374,8 @@ void Oximetry::UpdatePlethy(qint8 d)
     lasttime+=20;  // 50 samples per second
     PLETHY->SetMinY(ev_plethy->min());
     PLETHY->SetMaxY(ev_plethy->max());
+    CONTROL->SetMinY(ev_plethy->min());
+    CONTROL->SetMaxY(ev_plethy->max());
     PULSE->SetMinY(ev_pulse->min());
     PULSE->SetMaxY(ev_pulse->max());
     SPO2->SetMinY(ev_spo2->min());
@@ -377,10 +387,14 @@ void Oximetry::UpdatePlethy(qint8 d)
     PULSE->SetMinX(lasttime-30000);
     SPO2->SetMaxX(lasttime);
     SPO2->SetMinX(lasttime-30000);
+    CONTROL->SetMaxX(lasttime);
+    CONTROL->SetMinX(lasttime-30000);
     session->set_last(lasttime);
     day->setLast(lasttime);
     PLETHY->MinX();
     PLETHY->MaxX();
+    CONTROL->MinX();
+    CONTROL->MaxX();
 }
 bool Oximetry::UpdatePulse(qint8 pul)
 {
@@ -438,7 +452,7 @@ void Oximetry::onReadyRead()
         }
     }
 
-    if ((ev_plethy->count()==1) || (ev_pulse->count()==1) || (ev_spo2->count()==1)) {
+    if ((ev_plethy->count()<=2) || (ev_pulse->count()<=2) || (ev_spo2->count()<=2)) {
         GraphView->updateScale();
     }
     GraphView->updateGL(); // damn...

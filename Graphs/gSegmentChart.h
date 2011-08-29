@@ -1,18 +1,19 @@
 #ifndef GSEGMENTCHART_H
 #define GSEGMENTCHART_H
 
-#include "graphlayer.h"
+#include "gGraphView.h"
 
 enum GraphSegmentType { GST_Pie, GST_CandleStick, GST_Line };
 
-class gSegmentChart : public gLayer
+class gSegmentChart : public Layer
 {
 public:
     gSegmentChart(GraphSegmentType gt=GST_Pie, QColor gradient_color=Qt::white,QColor outline_color=Qt::black);
     virtual ~gSegmentChart();
 
-    virtual void Plot(gGraphWindow & w,float scrx,float scry);
+    virtual void paint(gGraph & w,int left, int top, int width, int height);
     virtual void SetDay(Day *d);
+    virtual bool isEmpty();
 
     void AddSlice(ChannelID code,QColor col,QString name="");
     void setGradientColor(QColor & color) { m_gradient_color=color; }

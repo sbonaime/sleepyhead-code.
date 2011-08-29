@@ -39,7 +39,15 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
     EventDataType miny,maxy;
     double minx,maxx;
-    miny=w.min_y, maxy=w.max_y, maxx=w.max_x, minx=w.min_x;
+    miny=w.min_y, maxy=w.max_y;
+
+    if (w.blockZoom()) {
+        minx=w.rmin_x, maxx=w.rmax_x;
+    } else {
+        maxx=w.max_x, minx=w.min_x;
+    }
+
+
     if (miny<0) {
         miny=-MAX(fabs(miny),fabs(maxy));
     }
@@ -82,7 +90,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     double xmult=double(width)/xx;
 
     EventDataType yy=maxy-miny;
-    EventDataType ymult=EventDataType(height-2)/yy;   // time to pixel conversion multiplier
+    EventDataType ymult=EventDataType(height-3)/yy;   // time to pixel conversion multiplier
 
     // Return on screwy min/max conditions
     if (xx<0)
@@ -246,7 +254,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             }
 
             int xst=left+1;
-            int yst=top+height-1;
+            int yst=top+height+1;
 
             double time;
             EventDataType data;
