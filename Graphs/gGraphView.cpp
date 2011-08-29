@@ -141,6 +141,7 @@ EventDataType LayerGroup::Maxy()
 }
 
 
+const double zoom_hard_limit=500.0;
 
 gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_graphview(graphview),
@@ -489,6 +490,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                     if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
                 }
                 xx*=zoom;
+                if (xx<qq/zoom_hard_limit) xx=qq/zoom_hard_limit;
                 if (xx>qq) xx=qq;
             }
             double j1=xmult*x;
@@ -576,7 +578,7 @@ void gGraph::ZoomX(double mult,int origin_px)
 
     double q=span*mult;
     if (q>hardspan) q=hardspan;
-    if (q<hardspan/400.0) q=hardspan/400.0;
+    if (q<hardspan/zoom_hard_limit) q=hardspan/zoom_hard_limit;
 
     min=min+origin-(q*ww);
     max=min+q;
