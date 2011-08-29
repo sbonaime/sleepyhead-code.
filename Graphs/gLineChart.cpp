@@ -328,6 +328,11 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 //////////////////////////////////////////////////////////////////
 // Normal Waveform Plot
 //////////////////////////////////////////////////////////////////
+                    if (idx>sam) {
+                        idx-=sam;
+                        time=el.time(idx);
+                        //double rate=double(sr)*double(sam);
+                    }
                     for (int i=idx;i<siz;i+=sam) {
                         time+=rate;
                         //if (time < minx)

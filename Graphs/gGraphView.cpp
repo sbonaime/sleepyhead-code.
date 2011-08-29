@@ -149,7 +149,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_height(height),
     m_visible(true)
 {
-    m_min_height=80;
+    m_min_height=60;
     m_layers.clear();
 
     if (graphview) {
@@ -948,7 +948,7 @@ void gGraphView::paintGL()
     glVertex2f(0, height());
     glVertex2f(0, 0);
 
-    glColor4f(0.8,0.8,1.0,1.0); // Gradient End
+    glColor4f(0.3,0.3,1.0,1.0); // Gradient End
     glVertex2f(width(), 0);
     glVertex2f(width(), height());
 
