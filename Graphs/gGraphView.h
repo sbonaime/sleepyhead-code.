@@ -201,7 +201,7 @@ class gGraphView : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit gGraphView(QWidget *parent = 0);
+    explicit gGraphView(QWidget *parent = 0,gGraphView * shared=0);
     virtual ~gGraphView();
     void AddGraph(gGraph *g,short group=0);
 
@@ -229,6 +229,13 @@ public:
     void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
     int horizTravel() { return m_horiz_travel; }
     void DrawTextQue();
+
+    int size() { return m_graphs.size(); }
+    gGraph * operator[](int i) { return m_graphs[i]; }
+
+    void updateScrollBar();
+    void updateScale();         // update scale & Scrollbar
+    void setEmptyText(QString s) { m_emptytext=s; }
 protected:
 
 
@@ -251,9 +258,8 @@ protected:
     virtual void wheelEvent(QWheelEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
 
-    void updateScrollBar();
-    void updateScale();         // update scale & Scrollbar
 
+    gGraphView *m_shared;       // convenient link to daily's graphs.
     QVector<gGraph *> m_graphs;
     int m_offsetY,m_offsetX;          // Scroll Offsets
     float m_scaleY;
@@ -275,6 +281,8 @@ protected:
     TextQue m_textque[textque_max];
     int m_textque_items;
     int m_lastxpos,m_lastypos;
+
+    QString m_emptytext;
 signals:
 
 

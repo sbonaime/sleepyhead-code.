@@ -12,14 +12,14 @@
 #include "Graphs/gBarChart.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
-#include "Graphs/gFooBar.h"
 
-Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
+Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Oximetry)
 {
+    m_shared=shared;
     ui->setupUi(this);
-/*    port=NULL;
+    port=NULL;
     portname="";
     QString prof=pref["Profile"].toString();
     profile=Profiles::Get(prof);
@@ -41,11 +41,44 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     session=new Session(mach,0);
     day->AddSession(session);
 
-    splitter=ui->graphLayout;
-    //splitter=new QSplitter(Qt::Vertical,ui->scrollArea);
-    //gSplitter->setStyleSheet("QSplitter::handle { background-color: 'dark grey'; }");
-    //gSplitter->setHandleWidth(2);
-    //ui->graphLayout->addWidget(splitter);
+    layout=new QHBoxLayout(ui->graphArea);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->setContentsMargins(0,0,0,0);
+    ui->graphArea->setLayout(layout);
+    ui->graphArea->setAutoFillBackground(false);
+
+    GraphView=new gGraphView(ui->graphArea,m_shared);
+    GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    scrollbar=new MyScrollBar(ui->graphArea);
+    scrollbar->setOrientation(Qt::Vertical);
+    scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
+    scrollbar->setMaximumWidth(20);
+
+    GraphView->setScrollBar(scrollbar);
+    layout->addWidget(GraphView,1);
+    layout->addWidget(scrollbar,0);
+
+    layout->layout();
+
+    PLETHY=new gGraph(GraphView,tr("Plethy"),120);
+    CONTROL=new gGraph(GraphView,tr("Control"),75);
+    PULSE=new gGraph(GraphView,tr("Pulse Rate"),120);
+    SPO2=new gGraph(GraphView,tr("SPO2"),120);
+    foobar=new gShadowArea();
+    CONTROL->AddLayer(foobar);
+    Layer *cl=new gLineChart(OXI_Plethysomogram);
+    CONTROL->AddLayer(cl);
+    cl->SetDay(day);
+    CONTROL->setBlockZoom(true);
+
+    for (int i=0;i<GraphView->size();i++) {
+        gGraph *g=(*GraphView)[i];
+        g->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+        g->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+        g->AddLayer(new gXGrid());
+    }
 
     // Create the Event Lists to store / import data
     ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
@@ -57,41 +90,27 @@ Oximetry::Oximetry(QWidget *parent,QGLWidget * shared) :
     ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
     session->eventlist[OXI_SPO2].push_back(ev_spo2);
 
-    QWidget * parental=ui->scrollArea;
     plethy=new gLineChart(OXI_Plethysomogram,Qt::black,false,true);
-    AddGraph(PLETHY=new gGraphWindow(parental,tr("Plethysomogram"),shared));
     plethy->SetDay(day);
 
+    CONTROL->AddLayer(plethy); //new gLineChart(OXI_Plethysomogram));
+
+
     pulse=new gLineChart(OXI_Pulse,Qt::red,true);
-    AddGraph(PULSE=new gGraphWindow(parental,tr("Pulse Rate"),shared));
     pulse->SetDay(day);
 
     spo2=new gLineChart(OXI_SPO2,Qt::blue,true);
-    AddGraph(SPO2=new gGraphWindow(parental,tr("SPO2"),shared));
     spo2->SetDay(day);
 
-    for (int i=0;i<Graphs.size();i++) {
-        for (int j=0;j<Graphs.size();j++) {
-            if (Graphs[i]!=Graphs[j])
-                Graphs[i]->LinkZoom(Graphs[j]);
-        }
-        Graphs[i]->AddLayer(new gYAxis());
-        Graphs[i]->AddLayer(new gXAxis());
-        //Graphs[i]->AddLayer(new gFooBar());
-
-        splitter->addWidget(Graphs[i]);
-    }
     PLETHY->AddLayer(plethy);
-    PLETHY->AddLayer(new gFooBar());
+
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 
-    for (int i=0;i<Graphs.size();i++) {
-        Graphs[i]->setMinimumHeight(150);
-        Graphs[i]->SetSplitter(splitter);
-    }
+    GraphView->updateGL();
 
-    on_RefreshPortsButton_clicked(); */
+    on_RefreshPortsButton_clicked();
+
 }
 
 Oximetry::~Oximetry()
@@ -148,9 +167,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
 }
 void Oximetry::RedrawGraphs()
 {
-    for (QVector<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {
-        (*g)->updateGL();
-    }
+    GraphView->updateGL();
 }
 
 void Oximetry::on_RunButton_toggled(bool checked)
@@ -209,14 +226,16 @@ void Oximetry::on_RunButton_toggled(bool checked)
             connect(port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
             connect(port, SIGNAL(dsrChanged(bool)), this, SLOT(onDsrChanged(bool)));
             if (!(port->lineStatus() & LS_DSR))
-                qDebug() << "warning: device is not turned on";
+                qDebug() << "check device is turned on";
             qDebug() << "listening for data on" << port->portName();
         } else {
             qDebug() << "device failed to open:" << port->errorString();
         }
         portmode=PM_LIVE;
-
+        //foobar->setVisible(false);
+        CONTROL->setVisible(false);
     } else {
+        //foobar->setVisible(true);
         ui->RunButton->setText("&Start");
         ui->SerialPortsCombo->setEnabled(true);
         delete port;
@@ -243,21 +262,26 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PULSE->MaxX();
         PLETHY->MinX();
         PLETHY->MaxX();
-
-        PLETHY->updateGL();
-        SPO2->updateGL();
-        PULSE->updateGL();
+        //GraphView->ResetBounds();
+        CONTROL->SetMinX(ev_plethy->first());
+        CONTROL->SetMaxX(lasttime);
+        CONTROL->ResetBounds();
 
         qint64 d=session->length();
        // if (d<=30000)
         //    return;
+        if (ev_pulse->count()>1 && (ev_spo2->count()>1))
         if (QMessageBox::question(this,"Keep This Recording?","Would you like to keep this oximeter recording?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
             qDebug() << "Saving oximeter session data";
+
+            session->eventlist.clear();
+
             Session *sess=new Session(mach,starttime/1000L);
 
             /*ev_spo2->setCode(CPAP_SPO2);
             ev_pulse->setCode(CPAP_Pulse);
             ev_plethy->setCode(CPAP_Plethy); */
+
             sess->eventlist[OXI_SPO2].push_back(ev_spo2);
             sess->eventlist[OXI_Pulse].push_back(ev_pulse);
             sess->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
@@ -271,8 +295,6 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->avg(OXI_Pulse);
             sess->wavg(OXI_Pulse);
             sess->p90(OXI_Pulse);
-            //sess->min(OXI_Pulse);
-            //sess->max(OXI_Pulse);
 
             sess->setMin(OXI_SPO2,ev_spo2->min());
             sess->setMax(OXI_SPO2,ev_spo2->max());
@@ -281,16 +303,13 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->avg(OXI_SPO2);
             sess->wavg(OXI_SPO2);
             sess->p90(OXI_SPO2);
-            //sess->min(OXI_SPO2);
-            //sess->max(OXI_SPO2);
 
-            //sess->min(OXI_Plethysomogram);
-            //sess->max(OXI_Plethysomogram);
             sess->avg(OXI_Plethysomogram);
             sess->wavg(OXI_Plethysomogram);
             sess->p90(OXI_Plethysomogram);
             sess->setMin(OXI_Plethysomogram,ev_plethy->min());
             sess->setMax(OXI_Plethysomogram,ev_plethy->max());
+
             sess->setFirst(OXI_Plethysomogram,ev_plethy->first());
             sess->setLast(OXI_Plethysomogram,ev_plethy->last());
 
@@ -305,8 +324,6 @@ void Oximetry::on_RunButton_toggled(bool checked)
             mach->AddSession(sess,profile);
             mach->Save();
 
-
-            session->eventlist.clear();
             ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
             session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
 
@@ -315,8 +332,21 @@ void Oximetry::on_RunButton_toggled(bool checked)
 
             ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
             session->eventlist[OXI_SPO2].push_back(ev_spo2);
+
+            session->setCount(OXI_Plethysomogram,0);
+            session->setCount(OXI_Pulse,0);
+            session->setCount(OXI_SPO2,0);
+
+            //m_shared->ResetBounds();
+            //m_shared->updateScale();
+            //m_shared->updateGL();
+
         }
 
+        CONTROL->setVisible(true);
+        GraphView->updateScale();
+        //CONTROL->ResetBounds();
+        GraphView->updateGL();
     }
 }
 
@@ -329,10 +359,11 @@ void Oximetry::UpdatePlethy(qint8 d)
     ev_plethy->getData().push_back(d);
     if (d<ev_plethy->min()) ev_plethy->setMin(d);
     if (d>ev_plethy->max()) ev_plethy->setMax(d);
-    ev_plethy->setCount(ev_plethy->count()+1);
+    int i=ev_plethy->count()+1;
+    ev_plethy->setCount(i);
+    session->setCount(OXI_Plethysomogram,i); // update the cache
     //ev_plethy->AddEvent(lasttime,d);
     lasttime+=20;  // 50 samples per second
-
     PLETHY->SetMinY(ev_plethy->min());
     PLETHY->SetMaxY(ev_plethy->max());
     PULSE->SetMinY(ev_pulse->min());
@@ -360,6 +391,8 @@ bool Oximetry::UpdatePulse(qint8 pul)
     if (lastpulse!=pul)
     {
         ev_pulse->AddEvent(lasttime,pul);
+        session->setCount(OXI_Pulse,ev_pulse->count()); // update the cache
+
         ret=true;
         //qDebug() << "Pulse=" << int(bytes[0]);
     }
@@ -373,6 +406,7 @@ bool Oximetry::UpdateSPO2(qint8 sp)
     if (lastspo2!=sp)
     {
         ev_spo2->AddEvent(lasttime,sp);
+        session->setCount(OXI_SPO2,ev_spo2->count()); // update the cache
         ret=true;
         //qDebug() << "SpO2=" << int(bytes[1]);
     }
@@ -403,11 +437,16 @@ void Oximetry::onReadyRead()
             i+=2;
         }
     }
-    PLETHY->updateGL();
+
+    if ((ev_plethy->count()==1) || (ev_pulse->count()==1) || (ev_spo2->count()==1)) {
+        GraphView->updateScale();
+    }
+    GraphView->updateGL(); // damn...
+    /*PLETHY->updateGL();
     if (redraw_pulse)
         PULSE->updateGL();
     if (redraw_spo2)
-        SPO2->updateGL();
+        SPO2->updateGL(); */
 
 }
 void Oximetry::onDsrChanged(bool status) // Doesn't work for CMS50's

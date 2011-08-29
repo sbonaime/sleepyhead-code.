@@ -35,6 +35,8 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     }
     double dy=maxy-miny;
     if (dy<=0) {
+        if ((maxy==0) && (miny==0))
+            return;
         //miny=miny;
         maxy++;
         dy=1;
@@ -137,8 +139,11 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
                 minorvertarray[minorvertcnt++]=left+width;
                 minorvertarray[minorvertcnt++]=g;
             }
+            if (minorvertcnt>=maxverts) {
+                break;
+            }
         }
-        if (vertcnt>=maxverts) {
+        if ((majorvertcnt>=maxverts)||(minorvertcnt>=maxverts)) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }
@@ -192,6 +197,8 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
     double dy=maxy-miny;
     if (dy<=0) {
+        if ((maxy==0) && (miny==0))
+            return;
         //miny=miny;
         maxy++;
         dy=1;

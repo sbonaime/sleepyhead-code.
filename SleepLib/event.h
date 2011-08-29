@@ -26,7 +26,12 @@ public:
     void AddWaveform(qint64 start, unsigned char * data, int recs, qint64 duration);
     void AddWaveform(qint64 start, char * data, int recs, qint64 duration);
 
-    inline const int & count() { return m_count; }
+    inline const int & count() {
+        if (m_count>m_data.size()) {
+            int i=0;
+        }
+        return m_count;
+    }
     void setCount(int count) { m_count=count; }
 
     inline EventStoreType raw(int i) { return m_data[i]; }

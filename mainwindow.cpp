@@ -123,10 +123,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //overview=new Overview(ui->tabWidget,daily->SharedWidget());
     //ui->tabWidget->insertTab(2,overview,tr("Overview"));
-    oximetry=NULL;
+    //oximetry=NULL;
     //overview=NULL;
-   // oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
-    //ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 

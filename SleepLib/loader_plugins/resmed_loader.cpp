@@ -785,8 +785,11 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=NULL;
         }
         if (a) {
-            sess->setMin(code,a->min());
-            sess->setMax(code,a->max());
+            double min=floor(a->min()), max=ceil(a->max());
+            if (min==max) max+=1;
+
+            sess->setMin(code,min);
+            sess->setMax(code,max);
             a->setDimension(es.physical_dimension);
         }
     }

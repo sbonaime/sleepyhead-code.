@@ -718,16 +718,18 @@ void gGraph::ResetBounds()
 }
 
 
-gGraphView::gGraphView(QWidget *parent) :
-    QGLWidget(parent),
+gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
+    QGLWidget(parent,shared),
     m_offsetY(0),m_offsetX(0),m_scaleY(1.0),m_scrollbar(NULL)
 {
+    m_shared=shared;
     m_sizer_index=m_graph_index=0;
     m_textque_items=0;
     m_button_down=m_graph_dragging=m_sizer_dragging=false;
     m_lastypos=m_lastxpos=0;
     m_horiz_travel=0;
     this->setMouseTracking(true);
+    m_emptytext=QObject::tr("No Data");
     InitGraphs();
 }
 gGraphView::~gGraphView()
@@ -802,7 +804,7 @@ float gGraphView::totalHeight()
 {
     float th=0;
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
         th += m_graphs[i]->height() + graphSpacer;
     }
     return ceil(th);
@@ -812,7 +814,7 @@ float gGraphView::findTop(gGraph * graph)
     float th=-m_offsetY;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]==graph) break;
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
         th += m_graphs[i]->height()*m_scaleY + graphSpacer;
     }
     //th-=m_offsetY;
@@ -822,7 +824,7 @@ float gGraphView::scaleHeight()
 {
     float th=0;
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
         th += m_graphs[i]->height() * m_scaleY + graphSpacer;
     }
     return ceil(th);
@@ -884,7 +886,7 @@ void gGraphView::updateScrollBar()
     float h=height();       // height of main widget
 
     float vis=0;
-    for (int i=0;i<m_graphs.size();i++) vis+=m_graphs[i]->isEmpty() ? 0 : 1;
+    for (int i=0;i<m_graphs.size();i++) vis+=m_graphs[i]->isEmpty()  || (!m_graphs[i]->visible()) ? 0 : 1;
 
     if (th<h) { // less graphs than fits on screen
 
@@ -954,16 +956,13 @@ void gGraphView::paintGL()
 
     float px=titleWidth-m_offsetX;
     float py=-m_offsetY;
-    int numgraphs=m_graphs.size();
+    int numgraphs=0;
     float h,w;
     //ax=px;//-m_offsetX;
-    if (!numgraphs) {
-        QString ts="No Data";
 
-    } else
-    for (int i=0;i<numgraphs;i++) {
-        if (m_graphs[i]->isEmpty()) continue;
-
+    for (int i=0;i<m_graphs.size();i++) {
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
+        numgraphs++;
         h=m_graphs[i]->height() * m_scaleY;
 
         // set clipping?
@@ -997,7 +996,12 @@ void gGraphView::paintGL()
         py+=graphSpacer;
         py=ceil(py);
     }
-
+    if (!numgraphs) {
+        QColor col=Qt::black;
+        float x,y;
+        GetTextExtent(m_emptytext,x,y,bigfont);
+        AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+    }
     DrawTextQue();
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
@@ -1050,7 +1054,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
         if (y < yy) {
 
             for (int i=m_graph_index-1;i>=0;i--) {
-                empty=m_graphs[i]->isEmpty();
+                empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 // swapping upwards.
                 int yy2=yy-graphSpacer-m_graphs[i]->height()*m_scaleY;
                 yy2+=m_graphs[m_graph_index]->height()*m_scaleY;
@@ -1072,7 +1076,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             // swapping downwards
             //qDebug() << "Graph Reorder" << m_graph_index;
             for (int i=m_graph_index+1;i<m_graphs.size();i++) {
-                empty=m_graphs[i]->isEmpty();
+                empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 p=m_graphs[m_graph_index];
                 m_graphs[m_graph_index]=m_graphs[i];
                 m_graphs[i]=p;
@@ -1092,7 +1096,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
     for (int i=0; i < m_graphs.size(); i++) {
 
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
 
         h=m_graphs[i]->height() * m_scaleY;
         if (py > height())
@@ -1133,7 +1137,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
 
     for (int i=0;i<m_graphs.size();i++) {
 
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
 
         h=m_graphs[i]->height()*m_scaleY;
         if (py>height())
@@ -1250,7 +1254,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 
         for (int i=0;i<m_graphs.size();i++) {
 
-            if (m_graphs[i]->isEmpty()) continue;
+            if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
 
             h=m_graphs[i]->height()*m_scaleY;
             if (py>height())

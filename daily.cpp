@@ -31,7 +31,7 @@
 const int min_height=150;
 const int default_height=150;
 
-Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
+Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
 {
     ui->setupUi(this);
@@ -197,10 +197,10 @@ Daily::Daily(QWidget *parent,QGLWidget * shared, MainWindow *mw)
 
     NoData=new QLabel(tr("No data"),ui->graphMainArea);
     NoData->setAlignment(Qt::AlignCenter);
-    QFont font("FreeSans",20); //NoData->font();
+    QFont font("Sans Serif",20); //NoData->font();
     //font.setBold(true);
     NoData->setFont(font);
-    layout->addWidget(NoData,1);
+    layout->addWidget(NoData,0);
     NoData->hide();
 
     layout->layout();
@@ -781,18 +781,17 @@ void Daily::Load(QDate date)
     GraphView->ResetBounds();
     //GraphView->ResetBounds(1);
 
-    GraphView->updateGL();
+    //GraphView->setEmptyText(tr("No Data")); //tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
     if (!cpap && !oxi) {
         //splitter->setMinimumHeight(0);
         scrollbar->hide();
-        GraphView->hide();
-        NoData->setText(tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
-        NoData->show();
+ //       GraphView->hide();
     } else {
-        NoData->hide();
-        GraphView->show();
+        //NoData->hide();
+   //     GraphView->show();
         scrollbar->show();
     }
+    GraphView->updateGL();
 
     //RedrawGraphs();
 

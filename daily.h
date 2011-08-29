@@ -36,11 +36,11 @@ class Daily : public QWidget
     Q_OBJECT
 
 public:
-    explicit Daily(QWidget *parent,QGLWidget *shared,MainWindow *mw);
+    explicit Daily(QWidget *parent,gGraphView *shared,MainWindow *mw);
     ~Daily();
     void ReloadGraphs();
     void ResetGraphLayout();
-    QGLWidget *SharedWidget() { return GraphView; }
+    gGraphView *SharedWidget() { return GraphView; }
     void RedrawGraphs();
 
 private slots:

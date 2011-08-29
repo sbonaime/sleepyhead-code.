@@ -27,11 +27,12 @@ void InitGraphs()
 {
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
-        bigfont=new QFont("Sans Serif",35);
         mediumfont=new QFont("Sans Serif",11);
+        bigfont=new QFont("Serif",35);
+
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
-        bigfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+        bigfont->setStyleHint(QFont::Serif ,QFont::OpenGLCompatible);
 
         for (int i=0;i<num_vert_arrays;i++) {
             // The extra 8 vertexes are important..

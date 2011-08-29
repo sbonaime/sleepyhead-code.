@@ -17,8 +17,9 @@
 #include "SleepLib/day.h"
 #include "SleepLib/session.h"
 
-#include "Graphs/graphwindow.h"
+//#include "Graphs/graphwindow.h"
 #include "Graphs/gLineChart.h"
+#include "Graphs/gFooBar.h"
 
 namespace Ui {
     class Oximetry;
@@ -32,10 +33,9 @@ class Oximetry : public QWidget
     Q_OBJECT
 
 public:
-    explicit Oximetry(QWidget *parent,QGLWidget * shared=NULL);
+    explicit Oximetry(QWidget *parent,gGraphView * shared=NULL);
     ~Oximetry();
 
-    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); }
     void RedrawGraphs();
 
 private slots:
@@ -55,11 +55,14 @@ private:
 
     Ui::Oximetry *ui;
     Profile *profile;
-    QVBoxLayout *splitter;
-    gLineChart *pulse,*spo2,*plethy;
-    gGraphWindow *PULSE,*SPO2,*PLETHY;
 
-    QVector<gGraphWindow *> Graphs;
+    gGraphView *GraphView;
+    MyScrollBar *scrollbar;
+    QHBoxLayout *layout;
+
+    gLineChart *pulse,*spo2,*plethy;
+    gGraph *PULSE,*SPO2,*PLETHY,*CONTROL;
+
     QVector<gLineChart *> Data;
 
     QextSerialPort *port;
@@ -74,6 +77,8 @@ private:
     EventList * ev_pulse;
     EventList * ev_spo2;
     EventList * ev_plethy;
+    Layer * foobar;
+    gGraphView * m_shared;
 };
 
 #endif // OXIMETRY_H
