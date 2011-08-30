@@ -59,7 +59,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     ui->graphMainArea->setAutoFillBackground(false);
 
-    GraphView=new gGraphView(ui->graphMainArea);
+    GraphView=new gGraphView(ui->graphMainArea,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     scrollbar=new MyScrollBar(ui->graphMainArea);
@@ -574,12 +574,6 @@ Daily::~Daily()
     delete ui;
 }
 
-void Daily::resizeEvent (QResizeEvent * event)
-{
-    //const QSize &size=event->size();
-  //  splitter->setMinimumWidth(size.width()-280);
-}
-
 void Daily::ReloadGraphs()
 {
     QDate d=profile->LastDay();
@@ -757,8 +751,8 @@ void Daily::Load(QDate date)
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
     "<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
     QString tmp;
-    const int gwwidth=240;
-    const int gwheight=100;
+    //const int gwwidth=240;
+    //const int gwheight=100;
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
@@ -781,7 +775,7 @@ void Daily::Load(QDate date)
     //RedrawGraphs();
 
     QString epr,modestr;
-    float iap90,eap90;
+    //float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
     PRTypes pr;
     QString a;
@@ -1116,6 +1110,7 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 }
 void Daily::on_EnergySlider_sliderMoved(int position)
 {
+    position=position;
     //Session *s=GetJournalSession(previous_date);
     //if (!s)
       //  s=CreateJournalSession(previous_date);

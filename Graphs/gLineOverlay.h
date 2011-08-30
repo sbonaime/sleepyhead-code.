@@ -23,6 +23,8 @@ class gLineOverlayBar:public Layer
         QColor m_flag_color;
         QString m_label;
         FlagType m_flt;
+
+        GLBuffer *points,*quads, *lines;
 };
 
 #endif // GLINEOVERLAY_H

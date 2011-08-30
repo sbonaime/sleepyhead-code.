@@ -32,6 +32,7 @@ protected:
         bool m_square_plot;
         bool m_disable_accel;
         QColor m_line_color;
+        GLBuffer * lines;
 };
 
 #endif // GLINECHART_H

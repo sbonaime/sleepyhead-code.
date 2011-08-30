@@ -12,6 +12,7 @@
 #include <QAction>
 #include <QWidget>
 #include <QTreeWidget>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
@@ -58,7 +59,6 @@ private slots:
     void on_JournalNotesUnderline_clicked();
     void ShowHideGraphs();
 protected:
-    virtual void resizeEvent (QResizeEvent * event);
 
 private:
     Session * CreateJournalSession(QDate date);

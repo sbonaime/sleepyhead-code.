@@ -1,5 +1,132 @@
 #include <cmath>
+#include <QFontMetrics>
 #include "gGraphView.h"
+#include "SleepLib/profiles.h"
+
+bool _graph_init=false;
+
+QFont * defaultfont=NULL;
+QFont * mediumfont=NULL;
+QFont * bigfont=NULL;
+
+bool evil_intel_graphics_chip=false;
+
+// Must be called from a thread inside the application.
+void InitGraphs()
+{
+    if (!_graph_init) {
+        defaultfont=new QFont("Sans Serif",10);
+        mediumfont=new QFont("Sans Serif",11);
+        bigfont=new QFont("Serif",35);
+
+        defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+        mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
+        bigfont->setStyleHint(QFont::Serif ,QFont::OpenGLCompatible);
+
+        _graph_init=true;
+    }
+}
+void DoneGraphs()
+{
+    if (_graph_init) {
+        delete defaultfont;
+        delete bigfont;
+        delete mediumfont;
+        _graph_init=false;
+    }
+}
+
+void GetTextExtent(QString text, float & width, float & height, QFont *font)
+{
+    QFontMetrics fm(*font);
+    //QRect r=fm.tightBoundingRect(text);
+    width=fm.width(text); //fm.width(text);
+    height=fm.xHeight()+2; //fm.ascent();
+}
+
+GLBuffer::GLBuffer(QColor color,int max,int type)
+    :m_color(color), m_max(max), m_type(type)
+{
+    m_scissor=false;
+    buffer=new GLshort [max+8];
+    m_cnt=0;
+    m_size=1;
+}
+GLBuffer::~GLBuffer()
+{
+    delete [] buffer;
+}
+void GLBuffer::add(GLshort s)
+{
+    if (m_cnt<m_max) {
+        buffer[m_cnt++]=s;
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+void GLBuffer::add(GLshort x, GLshort y)
+{
+    if (m_cnt<m_max+2) {
+        buffer[m_cnt++]=x;
+        buffer[m_cnt++]=y;
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
+{
+    if (m_cnt<m_max+4) {
+        buffer[m_cnt++]=x1;
+        buffer[m_cnt++]=y1;
+        buffer[m_cnt++]=x2;
+        buffer[m_cnt++]=y2;
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+
+void GLBuffer::draw()
+{
+    if (m_cnt>0) {
+        bool antialias=pref["UseAntiAliasing"].toBool() && m_antialias;
+        float size=m_size;
+        if (antialias) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            if (m_type==GL_LINES) {
+                glEnable(GL_LINE_SMOOTH);
+                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                size+=0.5;
+            }
+        }
+        if (m_type==GL_LINES) {
+            glLineWidth(size);
+        } else if (m_type==GL_POINTS) {
+            glPointSize(size);
+        }
+        if (m_scissor) {
+            glScissor(s1,s2,s3,s4);
+            glEnable(GL_SCISSOR_TEST);
+        }
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_SHORT, 0, buffer);
+        glColor4ub(m_color.red(),m_color.green(),m_color.blue(),m_color.alpha());
+        glDrawArrays(m_type, 0, m_cnt >> 1);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        //qDebug() << "I Drawed" << m_cnt << "vertices";
+        m_cnt=0;
+        if (m_scissor) {
+            glDisable(GL_SCISSOR_TEST);
+            m_scissor=false;
+        }
+        if (antialias) {
+            if (m_type==GL_LINES) {
+                glDisable(GL_LINE_SMOOTH);
+            }
+            glDisable(GL_BLEND);
+        }
+    }
+}
 
 Layer::Layer(ChannelID code)
 {
@@ -178,7 +305,7 @@ bool gGraph::isEmpty()
     }
     return empty;
 }
-void gGraph::invalidate()
+/*void gGraph::invalidate()
 { // this may not be necessary, as scrollbar & resize issues a full redraw..
 
     //m_lastbounds.setWidth(m_graphview->width());
@@ -213,7 +340,7 @@ void gGraph::repaint()
         m_graphview->updateGL();
     }
 }
-
+*/
 void gGraph::qglColor(QColor col)
 {
     m_graphview->qglColor(col);
@@ -697,6 +824,10 @@ void gGraph::SetMaxY(EventDataType v)
 {
     max_y=v;
 }
+void gGraph::DrawStaticText(QStaticText & text, short x, short y)
+{
+    m_graphview->DrawStaticText(text,x,y);
+}
 
 // Sets a new Min & Max X clipping, refreshing the graph and all it's layers.
 void gGraph::SetXBounds(qint64 minx, qint64 maxx)
@@ -781,6 +912,7 @@ void gGraphView::DrawTextQue()
 
 void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font)
 {
+    text_mutex.lock();
     if (m_textque_items>=textque_max) {
         DrawTextQue();
     }
@@ -792,6 +924,14 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
     q.color=color;
     q.font=font;
     m_textque_items++;
+    text_mutex.unlock();
+}
+void gGraphView::DrawStaticText(QStaticText & text, short x, short y)
+{
+    // don't use this for multithread
+    QPainter painter(this);
+    painter.drawStaticText(x,y,text);
+    painter.end();
 }
 
 void gGraphView::AddGraph(gGraph *g,short group)
@@ -936,8 +1076,12 @@ void gGraphView::resizeGL(int w, int h)
 
 void gGraphView::paintGL()
 {
+
     if (width()<=0) return;
     if (height()<=0) return;
+
+    QTime time;
+    time.start();
 
     glClearColor(255,255,255,255);
     //glClearDepth(1);
@@ -946,16 +1090,16 @@ void gGraphView::paintGL()
     //glEnable(GL_BLEND);
 
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_QUADS);
+    /*glBegin(GL_QUADS);
     glColor4f(1.0,1.0,1.0,1.0); // Gradient start
     glVertex2f(0, height());
     glVertex2f(0, 0);
 
-    glColor4f(0.7,0.7,1.0,1.0); // Gradient End
+    //glColor4f(0.9,0.9,0.9,1.0); // Gradient End
     glVertex2f(width(), 0);
     glVertex2f(width(), height());
 
-    glEnd();
+    glEnd();*/
 
     float px=titleWidth-m_offsetX;
     float py=-m_offsetY;
@@ -978,6 +1122,8 @@ void gGraphView::paintGL()
             m_graphs[i]->paint(px,py,width()-titleWidth,h);
             glColor4f(0,0,0,1);
             //if (i<numgraphs-1) {
+
+            // draw the splitter handle
                 glBegin(GL_QUADS);
                 glColor4f(.5,.5,.5,1.0);
                 glVertex2f(0,py+h);
@@ -1010,6 +1156,7 @@ void gGraphView::paintGL()
     //glDisable(GL_DEPTH_TEST);
 
     swapBuffers(); // Dump to screen.
+    qDebug() << "Graph Draw" << time.elapsed() << "ms";
 }
 
 // For manual scrolling

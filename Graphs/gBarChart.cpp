@@ -21,7 +21,7 @@ gBarChart::~gBarChart()
     delete Xaxis;
 }
 
-void gBarChart::paint(gGraphWindow & w,int left, int top, int width, int height)
+void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
    // if (!data) return;

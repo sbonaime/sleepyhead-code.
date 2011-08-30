@@ -16,7 +16,7 @@ class gBarChart:public Layer
         gBarChart(ChannelID code=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gBarChart();
 
-        virtual void paint(gGraphWindow & w,int left, int top, int width, int height);
+        virtual void paint(gGraph & w,int left, int top, int width, int height);
 
     protected:
         Qt::Orientation m_orientation;

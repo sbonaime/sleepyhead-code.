@@ -28,9 +28,12 @@ gXAxis::gXAxis(QColor col,bool fadeout)
     QTime t2=d.toUTC().time();
     tz_offset=t2.secsTo(t1)/60L;
     tz_offset*=60000L;
+
+    vertarray=new GLBuffer(m_line_color);
 }
 gXAxis::~gXAxis()
 {
+    delete vertarray;
 }
 void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
@@ -118,12 +121,12 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     qint64 aligned_start=minx/step;
     aligned_start*=step;
 
-    qint32 vertcnt=0;
-    GLshort * vertarray=vertex_array[0];
+    //qint32 vertcnt=0;
+    /*GLshort * vertarray=vertex_array[0];
     if (vertarray==NULL) {
         qWarning() << "VertArray==NULL";
         return;
-    }
+    } */
 
     while (aligned_start<minx) {
         aligned_start+=step;
@@ -135,19 +138,15 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     for (int i=0;i<10;i++) {
         py-=step_pixels;
         if (py<start_px) continue;
-        vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=top;
-        vertarray[vertcnt++]=py;
-        vertarray[vertcnt++]=top+4;
+        vertarray->add(py,top);
+        vertarray->add(py,top+4);
     }
     w.qglColor(Qt::black);
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
         px+=left;
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=top;
-        vertarray[vertcnt++]=px;
-        vertarray[vertcnt++]=top+6;
+        vertarray->add(px,top);
+        vertarray->add(px,top+6);
         qint64 j=i+tz_offset;
         int ms=j % 1000;
         int m=(j/60000L) % 60L;
@@ -173,27 +172,23 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         for (int j=1;j<10;j++) {
             py+=step_pixels;
             if (py>=left+width) break;
-            vertarray[vertcnt++]=py;
-            vertarray[vertcnt++]=top;
-            vertarray[vertcnt++]=py;
-            vertarray[vertcnt++]=top+4;
-            if (vertcnt>=maxverts) {
-                break;
-            }
+            vertarray->add(py,top);
+            vertarray->add(py,top+4);
         }
 
-        if (vertcnt>=maxverts) {
+        if (vertarray->full()) {
             qWarning() << "maxverts exceeded in gXAxis::Plot()";
             break;
         }
     }
 
-    glEnableClientState(GL_VERTEX_ARRAY);
     glLineWidth(1);
+    vertarray->draw();
+/*    glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(Qt::black);
     glVertexPointer(2, GL_SHORT, 0, vertarray);
     glDrawArrays(GL_LINES, 0, vertcnt>>1);
-    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
+    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing*/
 
 
    /* if (m_fadeout) {

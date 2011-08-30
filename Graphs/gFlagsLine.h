@@ -31,6 +31,8 @@ class gFlagsLine:public Layer
         int total_lines,line_num;
         FlagType m_flt;
         QColor m_flag_color;
+        GLBuffer *quads, *lines;
+
 };
 
 class gFlagsGroup:public LayerGroup

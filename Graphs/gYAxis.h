@@ -13,7 +13,7 @@ class gYSpacer:public Layer
 {
     public:
         gYSpacer(int spacer=20);
-        virtual void paint(gGraph & w,int left,int top, int width, int height) {}
+        virtual void paint(gGraph & w,int left,int top, int width, int height) {w=w; left=left; top=top; width=width; height=height; }
 
 };
 
@@ -33,6 +33,7 @@ protected:
     bool m_show_minor_lines;
     QColor m_major_color;
     QColor m_minor_color;
+    GLBuffer * minorvert, * majorvert;
 };
 
 class gYAxis:public Layer
@@ -63,7 +64,7 @@ class gYAxis:public Layer
 
         QColor m_line_color;
         QColor m_text_color;
-
+        GLBuffer * vertarray;
 };
 
 #endif // GYAXIS_H

@@ -275,7 +275,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
 
         //CONTROL->ResetBounds();
 
-        qint64 d=session->length();
+       // qint64 d=session->length();
        // if (d<=30000)
         //    return;
         if (ev_pulse->count()>1 && (ev_spo2->count()>1))
@@ -437,8 +437,6 @@ void Oximetry::onReadyRead()
     port->read(bytes.data(), bytes.size());
 
     int i=0;
-    bool redraw_pulse,redraw_spo2;
-    redraw_pulse=redraw_spo2=false;
     while (i<bytes.size()) {
         if (bytes[i]&0x80) {
             EventDataType d=bytes[i+1] & 0x7f;
@@ -446,8 +444,8 @@ void Oximetry::onReadyRead()
             //qDebug() << d;
             i+=3;
         } else {
-            if (UpdatePulse(bytes[i])) redraw_pulse=true;
-            if (UpdateSPO2(bytes[i+1])) redraw_spo2=true;
+            UpdatePulse(bytes[i]);
+            UpdateSPO2(bytes[i+1]);
             i+=2;
         }
     }
@@ -455,12 +453,7 @@ void Oximetry::onReadyRead()
     if ((ev_plethy->count()<=2) || (ev_pulse->count()<=2) || (ev_spo2->count()<=2)) {
         GraphView->updateScale();
     }
-    GraphView->updateGL(); // damn...
-    /*PLETHY->updateGL();
-    if (redraw_pulse)
-        PULSE->updateGL();
-    if (redraw_spo2)
-        SPO2->updateGL(); */
+    GraphView->updateGL();
 
 }
 void Oximetry::onDsrChanged(bool status) // Doesn't work for CMS50's

@@ -40,8 +40,6 @@ SOURCES += main.cpp\
     SleepLib/event.cpp \
     SleepLib/session.cpp \
     SleepLib/day.cpp \
-    Graphs/graphwindow.cpp \
-    Graphs/graphlayer.cpp \
     Graphs/gLineChart.cpp \
     Graphs/gLineOverlay.cpp \
     Graphs/gFooBar.cpp \
@@ -49,12 +47,10 @@ SOURCES += main.cpp\
     Graphs/gYAxis.cpp \
     Graphs/gFlagsLine.cpp \
     Graphs/glcommon.cpp \
-    Graphs/gTitle.cpp \
     Graphs/gBarChart.cpp \
     Graphs/gSegmentChart.cpp \
     Graphs/gSessionTime.cpp \
     qextserialport/qextserialport.cpp \
-    Graphs/gSplitter.cpp \
     preferencesdialog.cpp \
     Graphs/gGraphView.cpp \
     Graphs/gStatsLine.cpp
@@ -89,8 +85,6 @@ HEADERS  += \
     SleepLib/machine_common.h \
     SleepLib/session.h \
     SleepLib/day.h \
-    Graphs/graphwindow.h \
-    Graphs/graphlayer.h \
     Graphs/gLineChart.h \
     Graphs/gLineOverlay.h \
     Graphs/gFooBar.h \
@@ -98,7 +92,6 @@ HEADERS  += \
     Graphs/gYAxis.h \
     Graphs/gFlagsLine.h \
     Graphs/glcommon.h \
-    Graphs/gTitle.h \
     Graphs/gBarChart.h \
     Graphs/gSegmentChart.h\
     Graphs/gSessionTime.h \
@@ -107,7 +100,6 @@ HEADERS  += \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
     qextserialport/qextserialenumerator.h \
-    Graphs/gSplitter.h \
     preferencesdialog.h \
     Graphs/gGraphView.h \
     Graphs/gStatsLine.h

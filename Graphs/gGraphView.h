@@ -5,16 +5,56 @@
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <SleepLib/day.h>
+#include <QMutex>
 #include <Graphs/glcommon.h>
 
 
 #define MIN(a,b) (((a)<(b)) ? (a) : (b));
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
+enum FlagType { FT_Bar, FT_Dot, FT_Span };
+
+
+void InitGraphs();
+void DoneGraphs();
+
+extern QFont * defaultfont;
+extern QFont * mediumfont;
+extern QFont * bigfont;
+
+void GetTextExtent(QString text, float & width, float & height, QFont *font=defaultfont);
 
 class gGraphView;
 class gGraph;
 
 const int textque_max=512;
+class GLBuffer
+{
+public:
+    GLBuffer(QColor color,int max=2048,int type=GL_LINES);
+    ~GLBuffer();
+    void add(GLshort s);
+    void add(GLshort x, GLshort y);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+    void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
+    void draw();
+    inline GLshort & operator [](int i) { return buffer[i]; }
+    void reset() { m_cnt=0; }
+    int max() { return m_max; }
+    int cnt() { return m_cnt; }
+    bool full() { return m_cnt>=m_max; }
+    void setSize(float f) { m_size=f; }
+    void setAntiAlias(bool b) { m_antialias=b; }
+protected:
+    QColor m_color;
+    GLshort * buffer;
+    int m_type;     // type (GL_LINES, GL_QUADS, etc)
+    int m_max;
+    int m_cnt;      // cnt
+    float m_size;
+    int s1,s2,s3,s4;
+    bool m_scissor;
+    bool m_antialias;
+};
 
 struct TextQue
 {
@@ -136,7 +176,7 @@ public:
 
     QString title() { return m_title; }
 
-    virtual void repaint(); // Repaint individual graph..
+    //virtual void repaint(); // Repaint individual graph..
 
     virtual void ResetBounds();
     virtual void SetXBounds(qint64 minx, qint64 maxx);
@@ -163,10 +203,10 @@ public:
     short group() { return m_group; }
     void setGroup(short group) { m_group=group; }
     void DrawTextQue();
-
+    void DrawStaticText(QStaticText & text, short x, short y);
 protected:
     virtual void paint(int originX, int originY, int width, int height);
-    void invalidate();
+    //void invalidate();
 
     virtual void wheelEvent(QWheelEvent * event);
     virtual void mouseMoveEvent(QMouseEvent * event);
@@ -227,6 +267,7 @@ public:
     gGraph *m_selected_graph;
 
     void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
+    void DrawStaticText(QStaticText & text, short x, short y);
     int horizTravel() { return m_horiz_travel; }
     void DrawTextQue();
 
@@ -236,6 +277,7 @@ public:
     void updateScrollBar();
     void updateScale();         // update scale & Scrollbar
     void setEmptyText(QString s) { m_emptytext=s; }
+    QMutex text_mutex;
 protected:
 
 

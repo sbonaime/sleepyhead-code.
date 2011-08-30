@@ -9,7 +9,7 @@
 
 #include <QWidget>
 #include <QGLContext>
-
+#include <QHBoxLayout>
 #include <QSplitter>
 #include <qextserialport/qextserialport.h>
 

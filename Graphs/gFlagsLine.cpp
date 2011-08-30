@@ -91,9 +91,15 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
+    quads=new GLBuffer(flag_color,2048,GL_QUADS);
+    lines=new GLBuffer(flag_color,2048,GL_LINES);
+    quads->setAntiAlias(true);
+    lines->setAntiAlias(true);
 }
 gFlagsLine::~gFlagsLine()
 {
+    delete lines;
+    delete quads;
 }
 void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 {
@@ -116,21 +122,10 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
     double xmult=width/xx;
 
-    qint32 vertcnt=0;
-    GLshort * vertarray=vertex_array[0];
-    qint32 quadcnt=0;
-    GLshort * quadarray=vertex_array[1];
-    if (!vertarray || !quadarray) {
-        qWarning() << "vertarray/quadarray==NULL";
-        return;
-    }
 
     // Draw text label
     float x,y;
     GetTextExtent(m_label,x,y);
-    //w.qglColor(Qt::black);
-    //w.renderText(start_px-x-10,(scry-line_top)-(line_h/2)+(y/2),m_label);
-    //DrawText(w,m_label);
     w.renderText(m_label,left-x-10,top+(height/2)+(y/2));
     float x1,x2;
 
@@ -150,23 +145,14 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
             if (X > maxx) break;
             x1=(X - minx) * xmult + left;
             if (m_flt==FT_Bar) {
-                vertarray[vertcnt++]=x1;
-                vertarray[vertcnt++]=bartop;
-                vertarray[vertcnt++]=x1;
-                vertarray[vertcnt++]=bottom;
-                if (vertcnt>maxverts) { verts_exceeded=true; break; }
+                lines->add(x1,bartop,x1,bottom);
+                if (lines->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
                 x2=(Y-minx)*xmult+left;
                 //w1=x2-x1;
-                quadarray[quadcnt++]=x1;
-                quadarray[quadcnt++]=bartop;
-                quadarray[quadcnt++]=x1;
-                quadarray[quadcnt++]=bottom;
-                quadarray[quadcnt++]=x2;
-                quadarray[quadcnt++]=bottom;
-                quadarray[quadcnt++]=x2;
-                quadarray[quadcnt++]=bartop;
-                if (quadcnt>maxverts) { verts_exceeded=true; break; }
+                quads->add(x1,bartop,x1,bottom);
+                quads->add(x2,bottom,x2,bartop);
+                if (quads->full()) { verts_exceeded=true; break; }
             }
         }
     }
@@ -176,7 +162,10 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
    // glScissor(left,top,width,height);
     //glEnable(GL_SCISSOR_TEST);
 
-    glEnableClientState(GL_VERTEX_ARRAY);
+
+    quads->draw();
+    lines->draw();
+    /*glEnableClientState(GL_VERTEX_ARRAY);
 
     bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
@@ -201,6 +190,6 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
         glDisable(GL_BLEND);
     }
     glDisableClientState(GL_VERTEX_ARRAY);
-
+*/
     //glDisable(GL_SCISSOR_TEST);
 }

@@ -7,7 +7,7 @@
 #ifndef GSESSIONTIME_H
 #define GSESSIONTIME_H
 
-#include "graphlayer.h"
+#include "gGraphView.h"
 #include "gXAxis.h"
 #include "gYAxis.h"
 
@@ -20,13 +20,13 @@ public:
 };
 
 
-class gSessionTime:public gLayer
+class gSessionTime:public Layer
 {
     public:
         gSessionTime(ChannelID=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gSessionTime();
 
-        virtual void Plot(gGraphWindow & w,float scrx,float scry);
+        virtual void paint(gGraph & w,int left,int top, int width, int height);
 
     protected:
         Qt::Orientation m_orientation;

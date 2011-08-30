@@ -16,9 +16,13 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
 {
     m_line_color=col;
     m_report_empty=false;
+    lines=new GLBuffer(col,40000,GL_LINES);
+    lines->setAntiAlias(true);
+
 }
 gLineChart::~gLineChart()
 {
+    delete lines;
 }
 
 
@@ -122,13 +126,6 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     }
     width--;
     height-=2;
-
-    qint32 vertcnt=0;
-    GLshort * vertarray=vertex_array[0];
-    if (vertarray==NULL){
-        qWarning() << "VertArray==NULL";
-        return;
-    }
 
     int num_points=0;
     int visible_points=0;
@@ -324,12 +321,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                        // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
                         ax1=m_drawlist[i].x();
                         ay1=m_drawlist[i].y();
-                        vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst-ax1;
-                        vertarray[vertcnt++]=xst+i;
-                        vertarray[vertcnt++]=yst-ay1;
+                        lines->add(xst+i,yst-ax1,xst+i,yst-ay1);
 
-                        if (vertcnt>=maxverts) break;
+                        if (lines->full()) break;
                     }
 
                 } else { // Zoomed in Waveform
@@ -356,12 +350,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             firstpx=false;
                             continue;
                         }
-                        vertarray[vertcnt++]=lastpx;
-                        vertarray[vertcnt++]=lastpy;
-                        vertarray[vertcnt++]=px;
-                        vertarray[vertcnt++]=py;
+                        lines->add(lastpx,lastpy,px,py);
 
-                        if (vertcnt>=maxverts) {
+                        if (lines->full()) {
                             done=true;
                             break;
                         }
@@ -402,21 +393,15 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         firstpx=false;
                     } else {
                         if (square_plot) {
-                            vertarray[vertcnt++]=lastpx;
-                            vertarray[vertcnt++]=lastpy;
-                            vertarray[vertcnt++]=px;
-                            vertarray[vertcnt++]=lastpy;
-                            vertarray[vertcnt++]=px;
-                            vertarray[vertcnt++]=lastpy;
+                            lines->add(lastpx,lastpy,px,lastpy);
+                            lines->add(px,lastpy);
                         } else {
-                            vertarray[vertcnt++]=lastpx;
-                            vertarray[vertcnt++]=lastpy;
+                            lines->add(lastpx,lastpy);
                         }
 
-                        vertarray[vertcnt++]=px;
-                        vertarray[vertcnt++]=py;
+                        lines->add(px,py);
 
-                        if (vertcnt>=maxverts) {
+                        if (lines->full()) {
                             done=true;
                             break;
                         }
@@ -445,57 +430,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
-
-        /*QString b;
-        long j=vertcnt/2;
-        if (accel) j/=2;
-        b.sprintf("%i %i %i %li",visible_points,sam,num_points,j);
-        float x,y;
-        GetTextExtent(b,x,y);
-        DrawText(b,scrx-w.GetRightMargin()-x-15,scry-w.GetBottomMargin()-10); */
-
-
-        // Crop to inside the margins.
-        int h1=top+height;
-        int h2=height;
-        if (h1<0) {
-            h2=h1+height;
-            h1=0;
-        }
-        glScissor(left,w.flipY(top+height+2),width+1,height+1);
-        glEnable(GL_SCISSOR_TEST);
-
-        /*w.qglColor(Qt::black);
-        glBegin(GL_QUADS);
-        glVertex2i(0,0);
-        glVertex2i(2000,0);
-        glVertex2i(2000,1200);
-        glVertex2i(0,1200);
-        glEnd(); */
-        glDisable(GL_DEPTH_TEST);
-        bool antialias=pref["UseAntiAliasing"].toBool();
-        glDisable(GL_TEXTURE_2D);
-        if (antialias) {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-            glLineWidth (1.5);
-
-        } else glLineWidth(1);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_SHORT, 0, vertarray);
-        w.qglColor(m_line_color);
-        glDrawArrays(GL_LINES, 0, vertcnt>>1);
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        if (antialias) {
-            glDisable(GL_LINE_SMOOTH);
-            glDisable(GL_BLEND);
-        }
-        glDisable(GL_SCISSOR_TEST);
+        lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
+        lines->draw();
     }
-    glFlush();
 }
 

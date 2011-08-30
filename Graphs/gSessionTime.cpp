@@ -28,7 +28,7 @@ const QString & gTimeYAxis::Format(double v)
 
 
 gSessionTime::gSessionTime(ChannelID code,QColor col,Qt::Orientation o)
-:gLayer(code),m_orientation(o)
+:Layer(code),m_orientation(o)
 {
     color.clear();
     color.push_back(col);
@@ -40,7 +40,7 @@ gSessionTime::~gSessionTime()
     delete Xaxis;
 }
 
-void gSessionTime::Plot(gGraphWindow & w,float scrx,float scry)
+void gSessionTime::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
     /*if (!data) return;
