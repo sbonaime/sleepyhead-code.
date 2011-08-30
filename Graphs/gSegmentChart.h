@@ -31,6 +31,7 @@ protected:
     GraphSegmentType m_graph_type;
     QColor m_gradient_color;
     QColor m_outline_color;
+    bool m_empty;
 };
 
 class gTAPGraph:public gSegmentChart

@@ -17,7 +17,6 @@
 #include "SleepLib/day.h"
 #include "SleepLib/session.h"
 
-//#include "Graphs/graphwindow.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gFooBar.h"
 

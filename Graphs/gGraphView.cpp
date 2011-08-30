@@ -228,14 +228,17 @@ void gGraph::paint(int originX, int originY, int width, int height)
 {
     m_lastbounds=QRect(originX,originY,width,height);
 
+    /*glEnable(GL_BLEND);
     glBegin(GL_QUADS);
-    glColor4f(1,1,1,1.0); // Gradient End
+    glColor4f(1,1,1,0.4); // Gradient End
     glVertex2i(originX,originY);
     glVertex2i(originX+width,originY);
-    glColor4f(1,1,1.0,1.0); // Gradient End
+    glColor4f(1,1,1.0,.7); // Gradient End
     glVertex2i(originX+width,originY+height);
     glVertex2i(originX,originY+height);
     glEnd();
+    glDisable(GL_BLEND);
+    */
     glColor4f(0,0,0,1);
     renderText(title(),20,originY+height/2,90);
 
@@ -948,7 +951,7 @@ void gGraphView::paintGL()
     glVertex2f(0, height());
     glVertex2f(0, 0);
 
-    glColor4f(0.6,0.6,1.0,1.0); // Gradient End
+    glColor4f(0.7,0.7,1.0,1.0); // Gradient End
     glVertex2f(width(), 0);
     glVertex2f(width(), height());
 

@@ -27,6 +27,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gBarChart.h"
 #include "Graphs/gSegmentChart.h"
+#include "Graphs/gStatsLine.h"
 
 const int min_height=150;
 const int default_height=150;
@@ -98,6 +99,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     IE=new gGraph(GraphView,"I:E",default_height);
     TE=new gGraph(GraphView,"Te",default_height);
     TI=new gGraph(GraphView,"Ti",default_height);
+    INTPULSE=new gGraph(GraphView,"Pulse",default_height,1);
+    INTSPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
@@ -145,16 +148,32 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
 
 
-    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE };
+    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
     }
+    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_Pressure,"Pressure")),LayerBottom,0,20,1);
+    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_EPAP,"EPAP")),LayerBottom,0,20,1);
+    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_IPAP,"IPAP")),LayerBottom,0,20,1);
+    LEAK->AddLayer(AddCPAP(new gStatsLine(CPAP_Leak)),LayerBottom,0,20,1);
+    SNORE->AddLayer(AddCPAP(new gStatsLine(CPAP_Snore)),LayerBottom,0,20,1);
+    PTB->AddLayer(AddCPAP(new gStatsLine(CPAP_PatientTriggeredBreaths)),LayerBottom,0,20,1);
+    RR->AddLayer(AddCPAP(new gStatsLine(CPAP_RespiratoryRate)),LayerBottom,0,20,1);
+    MV->AddLayer(AddCPAP(new gStatsLine(CPAP_MinuteVentilation)),LayerBottom,0,20,1);
+    TV->AddLayer(AddCPAP(new gStatsLine(CPAP_TidalVolume)),LayerBottom,0,20,1);
+    FLG->AddLayer(AddCPAP(new gStatsLine(CPAP_FlowLimitGraph)),LayerBottom,0,20,1);
+    IE->AddLayer(AddCPAP(new gStatsLine(CPAP_IE)),LayerBottom,0,20,1);
+    TE->AddLayer(AddCPAP(new gStatsLine(CPAP_Te)),LayerBottom,0,20,1);
+    TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1);
+
+
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,true)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
+
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::darkMagenta,true)));
@@ -165,6 +184,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,true)));
     TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,true)));
     TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkBlue,true)));
+    INTPULSE->AddLayer(AddCPAP(new gLineChart(CPAP_Pulse,Qt::red,true)));
+    INTSPO2->AddLayer(AddCPAP(new gLineChart(CPAP_SPO2,Qt::blue,true)));
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkBlue,false)));
@@ -173,6 +194,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
         graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
     }
+
+
 
     layout->layout();
 

@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     qextserialport/qextserialport.cpp \
     Graphs/gSplitter.cpp \
     preferencesdialog.cpp \
-    Graphs/gGraphView.cpp
+    Graphs/gGraphView.cpp \
+    Graphs/gStatsLine.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -108,7 +109,8 @@ HEADERS  += \
     qextserialport/qextserialenumerator.h \
     Graphs/gSplitter.h \
     preferencesdialog.h \
-    Graphs/gGraphView.h
+    Graphs/gGraphView.h \
+    Graphs/gStatsLine.h
 
 
 FORMS    += \

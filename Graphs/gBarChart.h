@@ -7,15 +7,16 @@
 #ifndef GBARCHART_H
 #define GBARCHART_H
 
-#include "graphlayer.h"
+#include "gGraphView.h"
 #include "gXAxis.h"
-class gBarChart:public gLayer
+
+class gBarChart:public Layer
 {
     public:
         gBarChart(ChannelID code=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gBarChart();
 
-        virtual void Plot(gGraphWindow & w,float scrx,float scry);
+        virtual void paint(gGraphWindow & w,int left, int top, int width, int height);
 
     protected:
         Qt::Orientation m_orientation;

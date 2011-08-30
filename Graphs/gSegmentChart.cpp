@@ -12,6 +12,7 @@ gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor 
 :Layer(EmptyChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
    // m_gradient_color=QColor(200,200,200);
+    m_empty=true;
 }
 gSegmentChart::~gSegmentChart()
 {
@@ -37,19 +38,18 @@ void gSegmentChart::SetDay(Day *d)
             m_total+=cnt;
         }
     }
+    m_empty=true;
+    for (int i=0;i<m_codes.size();i++) {
+        if (m_day->count(m_codes[i])>0) {
+            m_empty=false;
+            break;
+        }
+    }
 
 }
 bool gSegmentChart::isEmpty()
 {
-    bool res=true;
-    if (!m_day) return true;
-    for (int i=0;i<m_codes.size();i++) {
-        if (m_day->count(m_codes[i])>0) {
-            res=false;
-            break;
-        }
-    }
-    return res;
+    return m_empty;
 }
 
 void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
@@ -84,7 +84,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
         float x,y;
         GetTextExtent(a,x,y,bigfont);
 
-        w.renderText(a,start_px+xoffset-x/2, (start_py+yoffset-y/2),0,col,bigfont);
+        w.renderText(a,start_px+xoffset-x/2, (start_py+yoffset+y/2),0,col,bigfont);
         return;
     }
 

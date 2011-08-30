@@ -9,7 +9,7 @@
 #include "gBarChart.h"
 
 gBarChart::gBarChart(ChannelID code,QColor col,Qt::Orientation o)
-:gLayer(code),m_orientation(o)
+:Layer(code),m_orientation(o)
 {
     color.clear();
     color.push_back(col);
@@ -21,23 +21,21 @@ gBarChart::~gBarChart()
     delete Xaxis;
 }
 
-void gBarChart::Plot(gGraphWindow & w,float scrx,float scry)
+void gBarChart::paint(gGraphWindow & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
-    /*if (!data) return;
-    if (!data->IsReady()) return;
+   // if (!data) return;
+   //if (!data->IsReady()) return;
 
-    int start_px=w.GetLeftMargin();
-    int start_py=w.GetBottomMargin();
-    int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
-    int height=scry-(w.GetTopMargin()+w.GetBottomMargin());
+    int start_px=left;
+    int start_py=top;
 
     double xx=w.max_x - w.min_x;
     double days=int(xx);
     //days=data->np[0];
 
     days=0;
-    for (int i=0;i<data->np[0];i++) {
+/*    for (int i=0;i<data->np[0];i++) {
        if ((data->point[0][i].x() >= w.min_x) && (data->point[0][i].x()<w.max_x)) days+=1;
     }
     if (days==0) return;
