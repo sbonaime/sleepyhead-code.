@@ -1218,7 +1218,6 @@ void gGraphView::paintGL()
         threaded=true;
     } else threaded=false;
 
-    threaded=true;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
