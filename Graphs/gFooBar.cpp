@@ -24,7 +24,7 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     int start_px=left-1;
     int end_px=left+width;
 
-    float h=top;
+    //float h=top;
 
     double rmx=w.rmax_x-w.rmin_x;
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
@@ -78,8 +78,10 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     if (xx==0)
         return;
 
+    height=height;
+
     int start_px=left;
-    int end_px=left+width;
+    //int end_px=left+width;
 
     float h=top;
 

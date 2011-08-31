@@ -29,7 +29,7 @@ gXAxis::gXAxis(QColor col,bool fadeout)
     tz_offset=t2.secsTo(t1)/60L;
     tz_offset*=60000L;
 
-    vertarray=new GLBuffer(m_line_color);
+    addGLBuf(vertarray=new GLBuffer(m_line_color));
 }
 gXAxis::~gXAxis()
 {
@@ -84,7 +84,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         fitmode=3;
     }
 
-    float x,y;
+    int x,y;
     GetTextExtent(fd,x,y);
 
     if (x<=0) {
@@ -182,8 +182,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         }
     }
 
-    glLineWidth(1);
-    vertarray->draw();
+    //glLineWidth(1);
+    //vertarray->draw();
 /*    glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(Qt::black);
     glVertexPointer(2, GL_SHORT, 0, vertarray);

@@ -20,8 +20,8 @@ gXGrid::gXGrid(QColor col)
     m_show_major_lines=true;
     m_show_minor_lines=true;
 
-    majorvert=new GLBuffer(m_major_color);
-    minorvert=new GLBuffer(m_minor_color);
+    addGLBuf(majorvert=new GLBuffer(m_major_color));
+    addGLBuf(minorvert=new GLBuffer(m_minor_color));
 }
 gXGrid::~gXGrid()
 {
@@ -30,7 +30,7 @@ gXGrid::~gXGrid()
 }
 void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
-    float x,y;
+    int x,y;
 
     double miny=w.min_y;
     double maxy=w.max_y;
@@ -153,9 +153,9 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     // Draw the lines & ticks
     // Turn on blending??
 
-    glLineWidth(1);
-    majorvert->draw();
-    minorvert->draw();
+    //glLineWidth(1);
+    //majorvert->draw();
+    //minorvert->draw();
     /*
     glEnableClientState(GL_VERTEX_ARRAY);
     w.qglColor(m_minor_color);
@@ -177,7 +177,7 @@ gYAxis::gYAxis(QColor col)
     m_text_color=col;
 
     m_yaxis_scale=1;
-    vertarray=new GLBuffer(m_line_color);
+    addGLBuf(vertarray=new GLBuffer(m_line_color));
 }
 gYAxis::~gYAxis()
 {
@@ -185,7 +185,7 @@ gYAxis::~gYAxis()
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
-    float x,y;
+    int x,y;
     int labelW=0;
 
     double miny=w.min_y;
@@ -323,17 +323,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }
-
-
     }
-    vertarray->draw();
-    // Draw the lines & ticks
-    // Turn on blending??
-    /*glEnableClientState(GL_VERTEX_ARRAY);
-    glLineWidth(1);
-    w.qglColor(m_line_color);
-    glVertexPointer(2, GL_SHORT, 0, vertarray);
-    glDrawArrays(GL_LINES, 0, vertcnt>>1);
-    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing */
+    //vertarray->draw();
 }
 

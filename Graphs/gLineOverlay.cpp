@@ -11,10 +11,10 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagType flt)
 :Layer(code),m_flag_color(color),m_label(label),m_flt(flt)
 {
-    points=new GLBuffer(color,2048,GL_POINTS);
+    addGLBuf(points=new GLBuffer(color,2048,GL_POINTS));
     points->setSize(4);
-    quads=new GLBuffer(color,2048,GL_QUADS);
-    lines=new GLBuffer(color,2048,GL_LINES);
+    addGLBuf(quads=new GLBuffer(color,2048,GL_QUADS));
+    addGLBuf(lines=new GLBuffer(color,2048,GL_LINES));
     points->setAntiAlias(true);
     quads->setAntiAlias(true);
     lines->setAntiAlias(true);
@@ -39,7 +39,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
     float x1,x2;
 
-    float x,y;
+    int x,y;
 
     // Crop to inside the margins.
    // glScissor(left,topp,width,height);
@@ -144,10 +144,9 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
         glLineWidth (1.5);
     } else glLineWidth (1);
 
-    quads->draw();
-    lines->draw();
-    //glPointSize(4);
-    points->draw();
+    //quads->draw();
+    //lines->draw();
+    //points->draw();
 
     if (antialias) {
         glDisable(GL_LINE_SMOOTH);

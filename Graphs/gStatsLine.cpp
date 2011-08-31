@@ -10,8 +10,8 @@ void gStatsLine::paint(gGraph & w, int left, int top, int width, int height)
 {
     if (!m_visible) return;
     //if (m_empty) return;
-
-    float x,y;
+    height=height;
+    //int x,y;
     m_text=m_label;
 //    GetTextExtent(m_text,x,y);
     int z=(width+gYAxis::Margin)/5;

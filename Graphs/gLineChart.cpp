@@ -16,7 +16,7 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
 {
     m_line_color=col;
     m_report_empty=false;
-    lines=new GLBuffer(col,40000,GL_LINES);
+    addGLBuf(lines=new GLBuffer(col,40000,GL_LINES));
     lines->setAntiAlias(true);
 
 }
@@ -425,13 +425,13 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
         if (m_report_empty) {
             QString msg="No Waveform Available";
-            float x,y;
+            int x,y;
             GetTextExtent(msg,x,y,bigfont);
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
         lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
-        lines->draw();
+        //lines->draw();
     }
 }
 

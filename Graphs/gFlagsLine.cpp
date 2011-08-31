@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  gFlagsLine Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <cmath>
 #include <QVector>
@@ -91,8 +91,8 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
-    quads=new GLBuffer(flag_color,2048,GL_QUADS);
-    lines=new GLBuffer(flag_color,2048,GL_LINES);
+    addGLBuf(quads=new GLBuffer(flag_color,2048,GL_QUADS));
+    addGLBuf(lines=new GLBuffer(flag_color,2048,GL_LINES));
     quads->setAntiAlias(true);
     lines->setAntiAlias(true);
 }
@@ -124,7 +124,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
 
     // Draw text label
-    float x,y;
+    int x,y;
     GetTextExtent(m_label,x,y);
     w.renderText(m_label,left-x-10,top+(height/2)+(y/2));
     float x1,x2;
@@ -163,8 +163,8 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     //glEnable(GL_SCISSOR_TEST);
 
 
-    quads->draw();
-    lines->draw();
+    //quads->draw();
+    //lines->draw();
     /*glEnableClientState(GL_VERTEX_ARRAY);
 
     bool antialias=pref["UseAntiAliasing"].toBool();

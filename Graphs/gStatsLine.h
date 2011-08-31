@@ -14,10 +14,10 @@ public:
     //bool isEmpty();
 
 protected:
+    QString m_label;
     QColor m_textcolor;
     //bool m_empty;
     EventDataType m_min,m_max,m_avg,m_p90;
-    QString m_label;
     QString m_text;
     QStaticText st_label,st_min,st_max,st_avg,st_p90;
     float m_tx,m_ty;

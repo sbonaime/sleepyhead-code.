@@ -81,7 +81,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
     if (m_total==0) {
         QColor col=Qt::green;
         QString a=":-)";
-        float x,y;
+        int x,y;
         GetTextExtent(a,x,y,bigfont);
 
         w.renderText(a,start_px+xoffset-x/2, (start_py+yoffset+y/2),0,col,bigfont);
@@ -158,7 +158,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
                 //glVertex2f(tpx,tpy);
                 //glEnd();
                 QString a=m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
-                float x,y;
+                int x,y;
                 GetTextExtent(a,x,y);
                 w.renderText(a,tpx-(x/2.0),(tpy+y/2.0));
             }
@@ -190,6 +190,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             glEnd();
 
             if (!m_names[m].isEmpty()) {
+                int px,py;
                 GetTextExtent(m_names[m],px,py);
                 if (px+5<bw) {
                     w.renderText(m_names[m],(xp+bw/2)-(px/2),top+((height/2)-(py/2)),0,Qt::black);
@@ -235,25 +236,24 @@ void gTAPGraph::SetDay(Day *d)
     QMap<EventStoreType,qint64> tap;
 
     EventStoreType data=0,lastval=0;
-    qint64 time=0,lasttime=0,firsttime=0;
-    bool first=true;
+    qint64 time=0,lasttime=0;
+    //bool first;
     bool rfirst=true;
-    bool changed;
+    //bool changed;
     EventDataType gain=1,offset=0;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
         for (int q=0;q<(*s)->eventlist[m_code].size();q++) {
             EventList &el=*(*s)->eventlist[m_code][q];
-            firsttime=lasttime=el.time(0);
+            lasttime=el.time(0);
             lastval=el.raw(0);
             if (rfirst) {
                 gain=el.gain();
                 offset=el.offset();
                 rfirst=false;
             }
-            first=true;
-            changed=false;
-            EventStoreType lastlastval;
+            //first=true;
+            //changed=false;
             for (int i=1;i<el.count();i++) {
                 data=el.raw(i);
                 time=el.time(i);
@@ -264,7 +264,7 @@ void gTAPGraph::SetDay(Day *d)
                     } else {
                         tap[lastval]=v;
                     }
-                    changed=true;
+                    //changed=true;
                     lasttime=time;
                     lastval=data;
                 }
@@ -277,10 +277,6 @@ void gTAPGraph::SetDay(Day *d)
                     tap[data]=v;
                 }
             }
-            /*if (lastval!=data){
-                int v=(time-lastlasttime)/1000L;
-                tap[data]+=v;
-            } */
         }
     }
     m_values.clear();

@@ -21,7 +21,7 @@ extern QFont * defaultfont;
 extern QFont * mediumfont;
 extern QFont * bigfont;
 
-void GetTextExtent(QString text, float & width, float & height, QFont *font=defaultfont);
+void GetTextExtent(QString text, int & width, int & height, QFont *font=defaultfont);
 
 class gGraphView;
 class gGraph;
@@ -47,8 +47,8 @@ public:
 protected:
     QColor m_color;
     GLshort * buffer;
-    int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_max;
+    int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_cnt;      // cnt
     float m_size;
     int s1,s2,s3,s4;
@@ -114,7 +114,9 @@ public:
     //void Y() { return m_Y; }
 
 
+    void drawGLBuf();
 protected:
+    void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
     //QRect bounds; // bounds, relative to top of individual graph.
     Day *m_day;
     bool m_visible;
@@ -128,6 +130,7 @@ protected:
     short m_Y;
     short m_order;                     // order for positioning..
     LayerPosition m_position;
+    QVector<GLBuffer *> mgl_buffers;
 };
 
 class LayerGroup:public Layer
@@ -143,6 +146,7 @@ public:
     virtual EventDataType Maxy();
     virtual bool isEmpty();
     virtual void SetDay(Day * d);
+    void drawGLBuf();
 
 protected:
     QVector<Layer *> layers;
@@ -174,6 +178,7 @@ public:
     void qglColor(QColor col);
     void renderText(QString text, int x,int y, float angle=0.0, QColor color=Qt::black, QFont *font=defaultfont);
 
+    void drawGLBuf();
     QString title() { return m_title; }
 
     //virtual void repaint(); // Repaint individual graph..

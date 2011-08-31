@@ -36,7 +36,7 @@ void DoneGraphs()
     }
 }
 
-void GetTextExtent(QString text, float & width, float & height, QFont *font)
+void GetTextExtent(QString text, int & width, int & height, QFont *font)
 {
     QFontMetrics fm(*font);
     //QRect r=fm.tightBoundingRect(text);
@@ -146,6 +146,13 @@ Layer::Layer(ChannelID code)
 Layer::~Layer()
 {
 }
+void Layer::drawGLBuf()
+{
+    if (!m_visible) return;
+    for (int i=0;i<mgl_buffers.size();i++) {
+        mgl_buffers[i]->draw();
+    }
+}
 
 void Layer::SetDay(Day * d)
 {
@@ -192,6 +199,13 @@ bool LayerGroup::isEmpty()
     }
     return empty;
 }
+void LayerGroup::drawGLBuf()
+{
+    for (int i=0;i<layers.size();i++) {
+        layers[i]->drawGLBuf();
+    }
+}
+
 void LayerGroup::SetDay(Day * d)
 {
     for (int i=0;i<layers.size();i++) {
@@ -304,6 +318,12 @@ bool gGraph::isEmpty()
         }
     }
     return empty;
+}
+void gGraph::drawGLBuf()
+{
+    for (int i=0;i<m_layers.size();i++) {
+        m_layers[i]->drawGLBuf();
+    }
 }
 /*void gGraph::invalidate()
 { // this may not be necessary, as scrollbar & resize issues a full redraw..
@@ -447,9 +467,9 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
    // qDebug() << m_title << "Move" << event->pos() << m_graphview->pointClicked();
     int y=event->pos().y();
     int x=event->pos().x();
-    int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
+    int x2=m_graphview->pointClicked().x();//,y2=m_graphview->pointClicked().y();
     int w=m_lastbounds.width()-(right+m_marginright);
-    int h=m_lastbounds.height()-(bottom+m_marginbottom);
+    //int h=m_lastbounds.height()-(bottom+m_marginbottom);
     double xx=max_x-min_x;
     double xmult=xx/w;
     m_selecting_area=false;
@@ -522,17 +542,18 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
 }
 void gGraph::mousePressEvent(QMouseEvent * event)
 {
-    int y=event->pos().y();
+    event=event;
+    /*int y=event->pos().y();
     int x=event->pos().x();
     int w=m_lastbounds.width()-(right+m_marginright);
-    int h=m_lastbounds.height()-(bottom+m_marginbottom);
-    int x2,y2;
+    //int h=m_lastbounds.height()-(bottom+m_marginbottom);
+    //int x2,y2;
     double xx=max_x-min_x;
-    double xmult=xx/w;
+    //double xmult=xx/w;
     if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
         x-=left+m_marginleft;
         y-=top+m_margintop;
-    }
+    }*/
     //qDebug() << m_title << "Clicked" << x << y << left << right << top << bottom << m_width << m_height;
 }
 
@@ -661,7 +682,7 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
     int x=event->pos().x();
     int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
     int h=m_lastbounds.height()-(bottom+m_marginbottom);
-    int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
+    //int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
     if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
             ZoomX(1.66,x);  // Zoon out
@@ -733,6 +754,8 @@ void gGraph::DrawTextQue()
 // margin recalcs..
 void gGraph::resize(int width, int height)
 {
+    width=width;
+    height=height;
     //m_height=height;
     //m_width=width;
 }
@@ -892,14 +915,29 @@ void gGraphView::DrawTextQue()
         if (q.angle==0) {
             painter.drawText(q.x, q.y, q.text);
         } else {
-            float w,h;
+            QString c;
+            int w,h;
             GetTextExtent(q.text, w, h, q.font);
+            int x=q.x-4;
+            int y=q.y-(w)/2;
+            int tp=y;
+            qDebug() << "DrawText" << q.text << "@" <<x<< ","<< y;
+            for (int i=0;i<q.text.length();i++) {
+                c=q.text[i];
+                GetTextExtent(c, w, h, q.font);
+                if (c==" ") {
+                    y=tp;
+                    x+=w+6;
+                }
+                painter.drawText(x-w/2,y,c);
 
-            painter.translate(q.x, q.y);
-            painter.rotate(-q.angle);
-            painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
-            painter.rotate(+q.angle);
-            painter.translate(-q.x, -q.y);
+                y+=h+3;
+            }
+            //painter.translate(q.x, q.y);
+            //painter.rotate(-q.angle);
+            //painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
+            //painter.rotate(+q.angle);
+            //painter.translate(-q.x, -q.y);
         }
         q.text.clear();
         //q.text.squeeze();
@@ -1119,6 +1157,7 @@ void gGraphView::paintGL()
 
         if ((py + h + graphSpacer) >= 0) {
             w=width();
+
             m_graphs[i]->paint(px,py,width()-titleWidth,h);
             glColor4f(0,0,0,1);
             //if (i<numgraphs-1) {
@@ -1147,9 +1186,13 @@ void gGraphView::paintGL()
     }
     if (!numgraphs) {
         QColor col=Qt::black;
-        float x,y;
+        int x,y;
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+    }
+
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->drawGLBuf();
     }
     DrawTextQue();
     //glDisable(GL_TEXTURE_2D);
@@ -1351,8 +1394,8 @@ void gGraphView::mouseReleaseEvent(QMouseEvent * event)
         QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
         m_graphs[m_graph_index]->mouseReleaseEvent(&e);
     }
-    int x=event->x();
-    int y=event->y();
+    //int x=event->x();
+    //int y=event->y();
 }
 
 void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)

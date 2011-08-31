@@ -72,7 +72,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     layout->addWidget(scrollbar,0);
 
     const int default_height=150;
-    SF=new gGraph(GraphView,"Event Flags",default_height);
+    SF=new gGraph(GraphView,"EVENT FLAGS",default_height);
 
   //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
     gSegmentChart * seg=new gSegmentChart(GST_Pie);
@@ -85,25 +85,25 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     SF->AddLayer(AddCPAP(seg),LayerRight,100);
 
-    FRW=new gGraph(GraphView,"Flow Rate",default_height);
-    MP=new gGraph(GraphView,"Mask Pressure",default_height);
-    PRD=new gGraph(GraphView,"Pressure",default_height);
-    LEAK=new gGraph(GraphView,"Leak",default_height);
-    SNORE=new gGraph(GraphView,"Snore",default_height);
-    RR=new gGraph(GraphView,"Respiratory Rate",default_height);
-    TV=new gGraph(GraphView,"Tidal Volume",default_height);
-    MV=new gGraph(GraphView,"Minute Ventilation",default_height);
-    FLG=new gGraph(GraphView,"Flow Limitation",default_height);
-    PTB=new gGraph(GraphView,"Patient Trig. Breath",default_height);
-    RE=new gGraph(GraphView,"Respiratory Event",default_height);
+    FRW=new gGraph(GraphView,"FLOW RATE",default_height);
+    MP=new gGraph(GraphView,"MASK PRESSURE",default_height);
+    PRD=new gGraph(GraphView,"PRESSURE",default_height);
+    LEAK=new gGraph(GraphView,"LEAK",default_height);
+    SNORE=new gGraph(GraphView,"SNORE",default_height);
+    RR=new gGraph(GraphView,"RESPIRATORY RATE",default_height);
+    TV=new gGraph(GraphView,"TIDAL VOLUME",default_height);
+    MV=new gGraph(GraphView,"MINUTE VENTILATION",default_height);
+    FLG=new gGraph(GraphView,"FLOW LIMITATION",default_height);
+    PTB=new gGraph(GraphView,"PATIENT. TRIG BREATHING",default_height);
+    RE=new gGraph(GraphView,"RESPIRATORY EVENT",default_height);
     IE=new gGraph(GraphView,"I:E",default_height);
-    TE=new gGraph(GraphView,"Te",default_height);
-    TI=new gGraph(GraphView,"Ti",default_height);
-    INTPULSE=new gGraph(GraphView,"Pulse",default_height,1);
+    TE=new gGraph(GraphView,"TE",default_height);
+    TI=new gGraph(GraphView,"TI",default_height);
+    INTPULSE=new gGraph(GraphView,"PULSE",default_height,1);
     INTSPO2=new gGraph(GraphView,"SPO2",default_height,1);
-    PULSE=new gGraph(GraphView,"Pulse",default_height,1);
+    PULSE=new gGraph(GraphView,"PULSE",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
-    PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
+    PLETHY=new gGraph(GraphView,"PLETHY",default_height,1);
 
 
     gFlagsGroup *fg=new gFlagsGroup();
@@ -153,7 +153,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
     }
-    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_Pressure,"Pressure")),LayerBottom,0,20,1);
+    /*PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_Pressure,"Pressure")),LayerBottom,0,20,1);
     PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_EPAP,"EPAP")),LayerBottom,0,20,1);
     PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_IPAP,"IPAP")),LayerBottom,0,20,1);
     LEAK->AddLayer(AddCPAP(new gStatsLine(CPAP_Leak)),LayerBottom,0,20,1);
@@ -165,7 +165,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FLG->AddLayer(AddCPAP(new gStatsLine(CPAP_FlowLimitGraph)),LayerBottom,0,20,1);
     IE->AddLayer(AddCPAP(new gStatsLine(CPAP_IE)),LayerBottom,0,20,1);
     TE->AddLayer(AddCPAP(new gStatsLine(CPAP_Te)),LayerBottom,0,20,1);
-    TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1);
+    TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1); */
 
 
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
