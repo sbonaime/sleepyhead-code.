@@ -507,6 +507,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
 
     /*m_graphview->gl_mutex.lock();
+    ((QGLContext *)m_graphview->context())->makeCurrent();
     drawGLBuf();
     m_graphview->gl_mutex.unlock(); */
 
@@ -948,6 +949,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_idealthreads=QThread::idealThreadCount();
     if (m_idealthreads<=0) m_idealthreads=1;
 
+
+    //m_idealthreads*=2;
     masterlock=new QSemaphore(m_idealthreads);
 }
 gGraphView::~gGraphView()
@@ -964,7 +967,7 @@ gGraphView::~gGraphView()
 void gGraphView::DrawTextQue()
 {
     glPushAttrib(GL_COLOR_BUFFER_BIT);
-    glFlush();
+    //glFlush();
     //glEnable(GL_BLEND);
     QPainter painter(this);
     int w,h;
@@ -1012,12 +1015,12 @@ void gGraphView::DrawTextQue()
 
 void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font)
 {
-    //text_mutex.lock();
+    text_mutex.lock();
     if (m_textque_items>=textque_max) {
         DrawTextQue();
     }
     TextQue & q=m_textque[m_textque_items++];
-    //text_mutex.unlock();
+    text_mutex.unlock();
     q.text=text;
     q.x=x;
     q.y=y;
@@ -1230,7 +1233,7 @@ void gGraphView::paintGL()
             w=width();
 
             if (threaded) {
-                masterlock->acquire(1);
+                masterlock->acquire(1); // book an available CPU
                 m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
                 //m_graphs[i]->thread()->start(QThread::HighestPriority);
                 //m_graphs[i]->thread()->wait();
@@ -1282,7 +1285,7 @@ void gGraphView::paintGL()
     //glDisable(GL_DEPTH_TEST);
 
     swapBuffers(); // Dump to screen.
-    qDebug() << "Graph Draw" << time.elapsed() << "ms";
+    qDebug() << "Graph Draw" << time.elapsed() << "ms" << m_idealthreads << "threads";
 }
 
 // For manual scrolling
