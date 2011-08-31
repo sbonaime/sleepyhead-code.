@@ -16,7 +16,8 @@ void InitGraphs()
 {
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
-        mediumfont=new QFont("Sans Serif",11);
+        defaultfont->setPixelSize(11);
+        mediumfont=new QFont("Sans Serif",12);
         bigfont=new QFont("Serif",35);
 
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
@@ -387,7 +388,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     glDisable(GL_BLEND);
     */
     glColor4f(0,0,0,1);
-    renderText(title(),20,originY+height/2,90);
+    renderText(title(),20,originY+height/2,90,Qt::black,mediumfont);
 
     left=0,right=0,top=0,bottom=0;
 
@@ -905,6 +906,7 @@ void gGraphView::DrawTextQue()
     glFlush();
     //glEnable(GL_BLEND);
     QPainter painter(this);
+    int w,h;
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
@@ -915,9 +917,13 @@ void gGraphView::DrawTextQue()
         if (q.angle==0) {
             painter.drawText(q.x, q.y, q.text);
         } else {
-            QString c;
-            int w,h;
             GetTextExtent(q.text, w, h, q.font);
+            painter.translate(q.x, q.y);
+            painter.rotate(-q.angle);
+            painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
+            painter.rotate(+q.angle);
+            painter.translate(-q.x, -q.y);
+            /*QString c;
             int x=q.x-4;
             int y=q.y-(w)/2;
             int tp=y;
@@ -932,12 +938,7 @@ void gGraphView::DrawTextQue()
                 painter.drawText(x-w/2,y,c);
 
                 y+=h+3;
-            }
-            //painter.translate(q.x, q.y);
-            //painter.rotate(-q.angle);
-            //painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
-            //painter.rotate(+q.angle);
-            //painter.translate(-q.x, -q.y);
+            } */
         }
         q.text.clear();
         //q.text.squeeze();
