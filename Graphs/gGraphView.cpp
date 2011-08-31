@@ -157,18 +157,19 @@ void Layer::drawGLBuf()
 
 void Layer::SetDay(Day * d)
 {
-    m_day=d;
-    if (!d) return;
+    if (d && m_code!=EmptyChannel) {
+        m_day=d;
+        m_minx=d->first(m_code);
+        m_maxx=d->last(m_code);
+        m_miny=d->min(m_code);
+        m_maxy=d->max(m_code);
+    } else m_day=NULL;
 
-    m_minx=d->first(m_code);
-    m_maxx=d->last(m_code);
-    m_miny=d->min(m_code);
-    m_maxy=d->max(m_code);
 }
 
 bool Layer::isEmpty()
 {
-    if (m_day && (m_day->count(m_code)!=0))
+    if (m_day && (m_day->count(m_code)>0))
         return false;
     return true;
 }
@@ -209,10 +210,10 @@ void LayerGroup::drawGLBuf()
 
 void LayerGroup::SetDay(Day * d)
 {
+    m_day=d;
     for (int i=0;i<layers.size();i++) {
          layers[i]->SetDay(d);
     }
-    m_day=d;
 }
 
 void LayerGroup::AddLayer(Layer *l)
@@ -326,6 +327,15 @@ void gGraph::drawGLBuf()
         m_layers[i]->drawGLBuf();
     }
 }
+void gGraph::setDay(Day * day)
+{
+    m_day=day;
+    for (int i=0;i<m_layers.size();i++) {
+        m_layers[i]->SetDay(day);
+    }
+    ResetBounds();
+}
+
 /*void gGraph::invalidate()
 { // this may not be necessary, as scrollbar & resize issues a full redraw..
 
@@ -1146,6 +1156,7 @@ void gGraphView::paintGL()
     float h,w;
     //ax=px;//-m_offsetX;
 
+
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1478,6 +1489,13 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 void gGraphView::keyPressEvent(QKeyEvent * event)
 {
 
+}
+void gGraphView::setDay(Day * day)
+{
+    m_day=day;
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->setDay(day);
+    }
 }
 
 MyScrollBar::MyScrollBar(QWidget * parent)

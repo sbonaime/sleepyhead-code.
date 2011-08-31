@@ -114,7 +114,7 @@ public:
     //void Y() { return m_Y; }
 
 
-    void drawGLBuf();
+    virtual void drawGLBuf();
 protected:
     void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
     //QRect bounds; // bounds, relative to top of individual graph.
@@ -146,7 +146,7 @@ public:
     virtual EventDataType Maxy();
     virtual bool isEmpty();
     virtual void SetDay(Day * d);
-    void drawGLBuf();
+    virtual void drawGLBuf();
 
 protected:
     QVector<Layer *> layers;
@@ -209,6 +209,7 @@ public:
     void setGroup(short group) { m_group=group; }
     void DrawTextQue();
     void DrawStaticText(QStaticText & text, short x, short y);
+    void setDay(Day * day);
 protected:
     virtual void paint(int originX, int originY, int width, int height);
     //void invalidate();
@@ -240,6 +241,7 @@ protected:
     QPoint m_current;
     short m_group;
     short m_lastx23;
+    Day * m_day;
 };
 
 class gGraphView : public QGLWidget
@@ -283,9 +285,10 @@ public:
     void updateScale();         // update scale & Scrollbar
     void setEmptyText(QString s) { m_emptytext=s; }
     QMutex text_mutex;
+    void setDay(Day * day);
 protected:
 
-
+    Day * m_day;
     float totalHeight();
     float scaleHeight();
 

@@ -27,14 +27,14 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
    // if (!data) return;
    //if (!data->IsReady()) return;
 
-    int start_px=left;
-    int start_py=top;
+    //int start_px=left;
+    //int start_py=top;
 
-    double xx=w.max_x - w.min_x;
-    double days=int(xx);
+    //double xx=w.max_x - w.min_x;
+    //double days=int(xx);
     //days=data->np[0];
 
-    days=0;
+    //days=0;
 /*    for (int i=0;i<data->np[0];i++) {
        if ((data->point[0][i].x() >= w.min_x) && (data->point[0][i].x()<w.max_x)) days+=1;
     }

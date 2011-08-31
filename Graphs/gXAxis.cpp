@@ -40,7 +40,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     double px,py;
 
     int start_px=left;
-    int start_py=top;
+    //int start_py=top;
     //int width=scrx-(w.GetLeftMargin()+w.GetRightMargin());
 //    float height=scry-(w.GetTopMargin()+w.GetBottomMargin());
 

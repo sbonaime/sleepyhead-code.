@@ -115,7 +115,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
         min_ytick=100;
     }
 
-    double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
+    //double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
     //if (q>=maxverts) {
     //    qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
     //}
@@ -288,7 +288,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         min_ytick=100;
     }
 
-    double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
+    //double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
     /*if (q>=maxverts) {
         qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
     }*/
