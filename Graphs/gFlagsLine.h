@@ -44,6 +44,10 @@ public:
     virtual void paint(gGraph & w,int left, int top, int width, int height);
     virtual qint64 Minx();
     virtual qint64 Maxx();
+
+protected:
+    GLBuffer *quad1, *quad2, *lines;
+
 };
 
 #endif // GFLAGSLINE_H

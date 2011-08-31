@@ -17,6 +17,8 @@ class gShadowArea:public Layer
         virtual void paint(gGraph & w,int left, int top, int width, int height);
     protected:
         QColor m_shadow_color;
+        GLBuffer *quads;
+        GLBuffer *lines;
 };
 
 class gFooBar:public Layer

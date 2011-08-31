@@ -12,6 +12,16 @@
 
 gFlagsGroup::gFlagsGroup()
 {
+    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
+    static QColor col2=QColor(0xff,0xff,0xff,0xff);
+    static QColor col=Qt::black;
+
+    addGLBuf(quad1=new GLBuffer(col1,2048,GL_QUADS));
+    addGLBuf(quad2=new GLBuffer(col2,2048,GL_QUADS));
+    addGLBuf(lines=new GLBuffer(col,2048,GL_LINES));
+    quad1->setAntiAlias(true);
+    quad2->setAntiAlias(true);
+    lines->setAntiAlias(false);
 }
 gFlagsGroup::~gFlagsGroup()
 {
@@ -49,26 +59,30 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     float barh=float(height)/float(vis);
     float linetop=top;
 
-    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
-    static QColor col2=QColor(0xff,0xff,0xff,0xff);
-
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
-        QColor * barcol=&col2;
-        if (i & 1)
-            barcol=&col1;
+        //QColor * barcol=&col2;
+        if (i & 1) {
+            quad1->add(left,linetop,left,linetop+barh);
+            quad1->add(left+width-1,linetop+barh,left+width-1,linetop);
+        } else {
+            quad2->add(left,linetop,left,linetop+barh);
+            quad2->add(left+width-1,linetop+barh,left+width-1,linetop);
+        }
+
+         //   barcol=&col1;
 
         //int qo=0;
         //if (evil_intel_graphics_card) qo=1;
 
         // Draw the bars with filled quads
-        glBegin(GL_QUADS);
+        /*glBegin(GL_QUADS);
         w.qglColor(*barcol);
         glVertex2f(left, linetop);
         glVertex2f(left, linetop+barh);
         glVertex2f(left+width-1, linetop+barh);
         glVertex2f(left+width-1, linetop);
-        glEnd();
+        glEnd(); */
 
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,barh);
@@ -86,7 +100,6 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     glEnd ();
 
 }
-
 
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)

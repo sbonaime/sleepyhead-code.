@@ -9,6 +9,12 @@
 gShadowArea::gShadowArea(QColor shadow_color)
 :Layer(EmptyChannel),m_shadow_color(shadow_color)
 {
+    QColor col=Qt::blue;
+    addGLBuf(quads=new GLBuffer(shadow_color,20,GL_QUADS));
+    addGLBuf(lines=new GLBuffer(col,20,GL_LINES));
+    quads->forceAntiAlias(true);
+    lines->setAntiAlias(true);
+    lines->setSize(2);
 }
 gShadowArea::~gShadowArea()
 {
@@ -30,36 +36,15 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    quads->add(start_px,top,start_px,top+height);
+    quads->add(start_px+px, top+height, start_px+px, top);
+    quads->add(start_px+py, top, start_px+py, top+height);
+    quads->add(end_px, top+height, end_px, top);
 
-    glEnable(GL_BLEND);
-    glBegin(GL_QUADS);
-    w.qglColor(m_shadow_color);
-
-    glVertex2f(start_px, top);
-    glVertex2f(start_px, top+height);
-    glVertex2f(start_px+px, top+height);
-    glVertex2f(start_px+px, top);
-
-    glVertex2f(start_px+py, top);
-    glVertex2f(start_px+py, top+height);
-    glVertex2f(end_px, top+height);
-    glVertex2f(end_px, top);
-    glEnd();
-    glDisable(GL_BLEND);
-
-    glLineWidth(2);
-    w.qglColor(Qt::blue);
-    glBegin(GL_LINES);
-    glVertex2f(start_px+px, top);
-    glVertex2f(start_px+py, top);
-    glVertex2f(start_px+px, top+height+1);
-    glVertex2f(start_px+py, top+height+1);
-    glEnd();
-
-    glLineWidth(1);
-
-    //glFlush();
+    lines->add(start_px+px, top);
+    lines->add(start_px+py, top);
+    lines->add(start_px+px, top+height+1);
+    lines->add(start_px+py, top+height+1);
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)

@@ -5,7 +5,9 @@
 #include <QScrollBar>
 #include <QResizeEvent>
 #include <SleepLib/day.h>
+#include <QThread>
 #include <QMutex>
+#include <QSemaphore>
 #include <Graphs/glcommon.h>
 
 
@@ -44,6 +46,7 @@ public:
     bool full() { return m_cnt>=m_max; }
     void setSize(float f) { m_size=f; }
     void setAntiAlias(bool b) { m_antialias=b; }
+    void forceAntiAlias(bool b) { m_forceantialias=b; }
 protected:
     QColor m_color;
     GLshort * buffer;
@@ -54,6 +57,7 @@ protected:
     int s1,s2,s3,s4;
     bool m_scissor;
     bool m_antialias;
+    bool m_forceantialias;
 };
 
 struct TextQue
@@ -152,10 +156,23 @@ protected:
     QVector<Layer *> layers;
 };
 
+class gGraph;
+class gThread:public QThread
+{
+public:
+    gThread(gGraph *g);
+    void run();
+    void paint(int originX, int originY, int width, int height);
+protected:
+    gGraph * graph;
+    QRect m_lastbounds;
+};
+
 class gGraph
 {
-    friend class gGraphView;
 public:
+    friend class gGraphView;
+
     gGraph(gGraphView * graphview=NULL, QString title="",int height=100,short group=0);
     virtual ~gGraph();
 
@@ -210,8 +227,10 @@ public:
     void DrawTextQue();
     void DrawStaticText(QStaticText & text, short x, short y);
     void setDay(Day * day);
-protected:
+    gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
+    void threadDone();
+protected:
     //void invalidate();
 
     virtual void wheelEvent(QWheelEvent * event);
@@ -223,6 +242,7 @@ protected:
 
     void ZoomX(double mult,int origin_px);
 
+    gThread * m_thread;
     gGraphView * m_graphview;
     QString m_title;
     QVector<Layer *> m_layers;
@@ -242,6 +262,7 @@ protected:
     short m_group;
     short m_lastx23;
     Day * m_day;
+    GLBuffer * quad;
 };
 
 class gGraphView : public QGLWidget
@@ -285,9 +306,12 @@ public:
     void updateScale();         // update scale & Scrollbar
     void setEmptyText(QString s) { m_emptytext=s; }
     QMutex text_mutex;
+    QMutex gl_mutex;
     void setDay(Day * day);
+    void threadDone();
+    QSemaphore * masterlock;
 protected:
-
+    int m_idealthreads;
     Day * m_day;
     float totalHeight();
     float scaleHeight();
@@ -331,6 +355,7 @@ protected:
     TextQue m_textque[textque_max];
     int m_textque_items;
     int m_lastxpos,m_lastypos;
+    volatile int m_threadsrunning;
 
     QString m_emptytext;
 signals:
@@ -338,7 +363,6 @@ signals:
 
 public slots:
     void scrollbarValueChanged(int val);
-
 };
 
 #endif // GGRAPHVIEW_H
