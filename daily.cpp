@@ -75,7 +75,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SF=new gGraph(GraphView,"Event Flags",default_height);
 
   //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
-    gSegmentChart * seg=new gSegmentChart(GST_Pie);
+    /*gSegmentChart * seg=new gSegmentChart(GST_Pie);
     seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
     seg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
     seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
@@ -83,7 +83,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
     seg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
 
-    SF->AddLayer(AddCPAP(seg),LayerRight,100);
+    SF->AddLayer(AddCPAP(seg),LayerRight,100); */
 
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
     MP=new gGraph(GraphView,"Mask Pressure",default_height);
