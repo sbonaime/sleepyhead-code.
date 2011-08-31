@@ -15,7 +15,7 @@ gTimeYAxis::gTimeYAxis(QColor col)
 gTimeYAxis::~gTimeYAxis()
 {
 }
-const QString & gTimeYAxis::Format(double v)
+const QString gTimeYAxis::Format(double v)
 {
     static QString t;
     int i=v;

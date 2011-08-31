@@ -39,10 +39,13 @@ void DoneGraphs()
 
 void GetTextExtent(QString text, int & width, int & height, QFont *font)
 {
+    static QMutex mut;
+    mut.lock();
     QFontMetrics fm(*font);
     //QRect r=fm.tightBoundingRect(text);
     width=fm.width(text); //fm.width(text);
     height=fm.xHeight()+2; //fm.ascent();
+    mut.unlock();
 }
 
 GLBuffer::GLBuffer(QColor color,int max,int type)
@@ -291,19 +294,24 @@ const double zoom_hard_limit=500.0;
 gThread::gThread(gGraph *g)
 {
     graph=g;
+    mutex.lock();
 }
 void gThread::run()
 {
-    int originX=m_lastbounds.x();
-    int originY=m_lastbounds.y();
-    int width=m_lastbounds.width();
-    int height=m_lastbounds.height();
-    graph->paint(originX,originY,width,height);
-    graph->threadDone();
+    while (this->isRunning()) {
+        mutex.lock();
+        int originX=m_lastbounds.x();
+        int originY=m_lastbounds.y();
+        int width=m_lastbounds.width();
+        int height=m_lastbounds.height();
+        graph->paint(originX,originY,width,height);
+        graph->threadDone();
+    }
 }
 void gThread::paint(int originX, int originY, int width, int height)
 {
     m_lastbounds=QRect(originX,originY,width,height);
+    mutex.unlock(); // this is the signal to start
 }
 
 gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
@@ -326,12 +334,17 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_marginright=10;
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
+
     m_thread=new gThread(this);
+    if (m_graphview->useThreads()) m_thread->start();
     quad=new GLBuffer(QColor(128,128,255,128),8,GL_QUADS);
     quad->forceAntiAlias(true);
 }
 gGraph::~gGraph()
 {
+    if (m_graphview->useThreads()) {
+        m_thread->exit();
+    }
     delete m_thread;
     delete quad;
 }
@@ -433,7 +446,8 @@ void gGraph::paint(int originX, int originY, int width, int height)
     glEnd();
     glDisable(GL_BLEND);
     */
-    glColor4f(0,0,0,1);
+
+    //glColor4f(0,0,0,1);
     renderText(title(),20,originY+height/2,90,Qt::black,mediumfont);
 
     left=0,right=0,top=0,bottom=0;
@@ -494,7 +508,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     /*m_graphview->gl_mutex.lock();
     drawGLBuf();
-    m_graphview->gl_mutex.unlock();*/
+    m_graphview->gl_mutex.unlock(); */
 
 }
 
@@ -1201,7 +1215,7 @@ void gGraphView::paintGL()
         threaded=true;
     } else threaded=false;
 
-    //threaded=true;
+    threaded=true;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1218,8 +1232,8 @@ void gGraphView::paintGL()
             if (threaded) {
                 masterlock->acquire(1);
                 m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
-                m_graphs[i]->thread()->start(QThread::HighestPriority);
-                m_graphs[i]->thread()->wait();
+                //m_graphs[i]->thread()->start(QThread::HighestPriority);
+                //m_graphs[i]->thread()->wait();
             } else {
                 m_graphs[i]->paint(px,py,width()-titleWidth,h);
             }

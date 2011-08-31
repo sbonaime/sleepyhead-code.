@@ -135,7 +135,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
         qWarning() << "exceeded maxverts in gLineOverlay::Plot()";
     }
 
-    bool antialias=pref["UseAntiAliasing"].toBool();
+   /* bool antialias=pref["UseAntiAliasing"].toBool();
     if (antialias) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
@@ -151,7 +151,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     if (antialias) {
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_BLEND);
-    }
+    } */
     //glDisable(GL_SCISSOR_TEST);
 }
 

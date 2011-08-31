@@ -16,9 +16,9 @@ gFlagsGroup::gFlagsGroup()
     static QColor col2=QColor(0xff,0xff,0xff,0xff);
     static QColor col=Qt::black;
 
-    addGLBuf(quad1=new GLBuffer(col1,2048,GL_QUADS));
-    addGLBuf(quad2=new GLBuffer(col2,2048,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(col,2048,GL_LINES));
+    addGLBuf(quad1=new GLBuffer(col1,512,GL_QUADS));
+    addGLBuf(quad2=new GLBuffer(col2,512,GL_QUADS));
+    addGLBuf(lines=new GLBuffer(col,20,GL_LINE_LOOP));
     quad1->setAntiAlias(true);
     quad2->setAntiAlias(true);
     lines->setAntiAlias(false);
@@ -70,35 +70,13 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
             quad2->add(left+width-1,linetop+barh,left+width-1,linetop);
         }
 
-         //   barcol=&col1;
-
-        //int qo=0;
-        //if (evil_intel_graphics_card) qo=1;
-
-        // Draw the bars with filled quads
-        /*glBegin(GL_QUADS);
-        w.qglColor(*barcol);
-        glVertex2f(left, linetop);
-        glVertex2f(left, linetop+barh);
-        glVertex2f(left+width-1, linetop+barh);
-        glVertex2f(left+width-1, linetop);
-        glEnd(); */
-
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,barh);
         linetop+=barh;
     }
 
-    // Draw the outer rectangle outline
-    glBegin(GL_LINE_LOOP);
-    glLineWidth(1);
-    w.qglColor(Qt::black);
-    glVertex2f(left-1, top);
-    glVertex2f(left-1, top+height);
-    glVertex2f(left+width, top+height);
-    glVertex2f(left+width, top);
-    glEnd ();
-
+    lines->add(left-1, top, left-1, top+height);
+    lines->add(left+width, top+height, left+width, top);
 }
 
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
@@ -172,37 +150,4 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     if (verts_exceeded) {
         qWarning() << "maxverts exceeded in gFlagsLine::plot()";
     }
-   // glScissor(left,top,width,height);
-    //glEnable(GL_SCISSOR_TEST);
-
-
-    //quads->draw();
-    //lines->draw();
-    /*glEnableClientState(GL_VERTEX_ARRAY);
-
-    bool antialias=pref["UseAntiAliasing"].toBool();
-    if (antialias) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-        glLineWidth (1.5);
-    } else glLineWidth (1);
-
-    w.qglColor(m_flag_color);
-    if (quadcnt>0) {
-        glVertexPointer(2, GL_SHORT, 0, quadarray);
-        glDrawArrays(GL_QUADS, 0, quadcnt>>1);
-    }
-    if (vertcnt>0) {
-        glVertexPointer(2, GL_SHORT, 0, vertarray);
-        glDrawArrays(GL_LINES, 0, vertcnt>>1);
-    }
-    if (antialias) {
-        glDisable(GL_LINE_SMOOTH);
-        glDisable(GL_BLEND);
-    }
-    glDisableClientState(GL_VERTEX_ARRAY);
-*/
-    //glDisable(GL_SCISSOR_TEST);
 }

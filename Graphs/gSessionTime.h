@@ -16,7 +16,7 @@ class gTimeYAxis:public gYAxis
 public:
     gTimeYAxis(QColor col=QColor("black"));
     virtual ~gTimeYAxis();
-    virtual const QString & Format(double v);
+    virtual const QString Format(double v);
 };
 
 

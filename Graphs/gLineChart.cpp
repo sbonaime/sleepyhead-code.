@@ -16,8 +16,11 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
 {
     m_line_color=col;
     m_report_empty=false;
-    addGLBuf(lines=new GLBuffer(col,40000,GL_LINES));
+    addGLBuf(lines=new GLBuffer(col,100000,GL_LINES));
+
+    addGLBuf(outlines=new GLBuffer(QColor(0,0,0,255),20,GL_LINE_LOOP));
     lines->setAntiAlias(true);
+    outlines->setAntiAlias(false);
 
 }
 gLineChart::~gLineChart()
@@ -114,16 +117,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int minz,maxz;
 
     // Draw bounding box
-    {
-        w.qglColor(Qt::black);
-        glLineWidth (1);
-        glBegin (GL_LINE_LOOP);
-        glVertex2i (left, top);
-        glVertex2i (left, top+height);
-        glVertex2i (left+width,top+height);
-        glVertex2i (left+width, top);
-        glEnd ();
-    }
+    outlines->add(left, top, left, top+height);
+    outlines->add(left+width,top+height, left+width, top);
     width--;
     height-=2;
 

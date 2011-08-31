@@ -50,7 +50,7 @@ class gYAxis:public Layer
         void SetShowMajorTicks(bool b) { m_show_major_ticks=b; }
         bool ShowMinorTicks() { return m_show_minor_ticks; }
         bool ShowMajorTicks() { return m_show_major_ticks; }
-        virtual const QString & Format(double v) { static QString t; t.sprintf("%.1f",v); return t; }
+        virtual const QString Format(double v) { return QString().sprintf("%.1f",v); }
         static const int Margin=50; // Left margin space
 
         void SetScale(float f) { m_yaxis_scale=f; } // Scale yaxis ticker values (only what's displayed)

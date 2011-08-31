@@ -163,9 +163,11 @@ public:
     gThread(gGraph *g);
     void run();
     void paint(int originX, int originY, int width, int height);
+    QMutex mutex;
 protected:
     gGraph * graph;
     QRect m_lastbounds;
+
 };
 
 class gGraph
@@ -310,6 +312,7 @@ public:
     void setDay(Day * day);
     void threadDone();
     QSemaphore * masterlock;
+    bool useThreads() { return m_idealthreads>1; }
 protected:
     int m_idealthreads;
     Day * m_day;

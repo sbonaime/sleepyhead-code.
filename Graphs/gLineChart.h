@@ -33,6 +33,7 @@ protected:
         bool m_disable_accel;
         QColor m_line_color;
         GLBuffer * lines;
+        GLBuffer * outlines;
 };
 
 #endif // GLINECHART_H
