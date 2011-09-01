@@ -46,7 +46,9 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_WS_X11
     XInitThreads();
+#endif
     QApplication a(argc, argv);
 
     a.setApplicationName("SleepyHead");

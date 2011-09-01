@@ -425,7 +425,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
-        //lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
+        lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
         //lines->draw();
     }
 }

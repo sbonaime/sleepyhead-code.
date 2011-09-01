@@ -41,10 +41,8 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     quads->add(start_px+py, top, start_px+py, top+height);
     quads->add(end_px, top+height, end_px, top);
 
-    lines->add(start_px+px, top);
-    lines->add(start_px+py, top);
-    lines->add(start_px+px, top+height+1);
-    lines->add(start_px+py, top+height+1);
+    lines->add(start_px+px, top, start_px+py, top);
+    lines->add(start_px+px, top+height+1, start_px+py, top+height+1);
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)

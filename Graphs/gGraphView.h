@@ -8,6 +8,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
+#include <QWaitCondition>
 #include <Graphs/glcommon.h>
 
 
@@ -177,8 +178,10 @@ public:
     QMutex mutex;
 protected:
     gGraph * graph;
-    QRect m_lastbounds;
+    int m_top,m_left,m_width,m_height;
     volatile bool m_running;
+    QWaitCondition wc;
+
 };
 
 class gGraph
@@ -293,7 +296,7 @@ public:
     void setScrollBar(MyScrollBar *sb);
     MyScrollBar * scrollBar() { return m_scrollbar; }
     static const int titleWidth=30;
-    static const int graphSpacer=4;
+    static const int graphSpacer=3;
 
     float findTop(gGraph * graph);
 

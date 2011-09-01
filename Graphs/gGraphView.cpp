@@ -349,6 +349,8 @@ EventDataType LayerGroup::Maxy()
 
 
 const double zoom_hard_limit=500.0;
+
+
 gThread::gThread(gGraph *g)
 {
     graph=g;
@@ -368,20 +370,20 @@ void gThread::run()
 {
     m_running=true;
     while (m_running) {
-        mutex.lock(); // this will hang until a paint event unlocks it..
-
-        if (!m_running) break;
-        int originX=m_lastbounds.x();
-        int originY=m_lastbounds.y();
-        int width=m_lastbounds.width();
-        int height=m_lastbounds.height();
-        graph->paint(originX,originY,width,height);
-        graph->threadDone();
+        mutex.lock(); // hang until a paint event unlocks it..
+        //if (mutex.tryLock(1000)) {
+            if (!m_running) break;
+            graph->paint(m_left,m_top,m_width,m_height);
+            graph->threadDone();
+        //}
     }
 }
 void gThread::paint(int originX, int originY, int width, int height)
 {
-    m_lastbounds=QRect(originX,originY,width,height);
+    m_top=originY;
+    m_left=originX;
+    m_width=width;
+    m_height=height;
     mutex.unlock(); // this is the signal to start
 }
 
@@ -1269,10 +1271,9 @@ void gGraphView::paintGL()
     //glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
 
-    //glEnable(GL_BLEND);
-
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    /*glBegin(GL_QUADS);
+    /*glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_QUADS);
     glColor4f(1.0,1.0,1.0,1.0); // Gradient start
     glVertex2f(0, height());
     glVertex2f(0, 0);
@@ -1281,7 +1282,8 @@ void gGraphView::paintGL()
     glVertex2f(width(), 0);
     glVertex2f(width(), height());
 
-    glEnd();*/
+    glEnd();
+    glDisable(GL_BLEND); */
 
     float px=titleWidth-m_offsetX;
     float py=-m_offsetY;
@@ -1290,6 +1292,8 @@ void gGraphView::paintGL()
     //ax=px;//-m_offsetX;
 
     bool threaded;
+
+    // Tempory hack using this pref..
     if (pref["EnableGraphSnapshots"].toBool() && (m_idealthreads>1)) {
         threaded=true;
     } else threaded=false;
@@ -1312,29 +1316,20 @@ void gGraphView::paintGL()
                 masterlock->acquire(1); // book an available CPU
                 m_graphs[i]->threadStart(); // this only happens once.. It stays dormant when not in use.
                 m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
+                m_graphs[i]->thread()->setPriority(QThread::HighPriority);
             } else {
                 m_graphs[i]->paint(px,py,width()-titleWidth,h);
             }
-            //qDebug() << "Threads operational" << m_idealthreads-masterlock->available();
 
             // draw the splitter handle
-            gl_mutex.lock();
 
-            glBegin(GL_QUADS);
-            glColor4f(.5,.5,.5,1.0);
-            glVertex2f(0,py+h);
-            glVertex2f(w,py+h);
-            glColor4f(.7,.7,.7,1.0);
-            glVertex2f(w,py+h+graphSpacer/2.0);
-            glVertex2f(0,py+h+graphSpacer/2.0);
-            glColor4f(1,1,1,1.0);
-            glVertex2f(0,py+h+graphSpacer/2.0);
-            glVertex2f(w,py+h+graphSpacer/2.0);
-            glColor4f(.3,.3,.3,1.0);
-            glVertex2f(w,py+h+graphSpacer);
-            glVertex2f(0,py+h+graphSpacer);
-            glEnd();
-            gl_mutex.unlock();
+            QColor ca=QColor(128,128,128,255);
+            backlines->add(0, py+h, w, py+h, ca);
+            ca=QColor(192,192,192,255);
+            backlines->add(0, py+h+1, w, py+h+1, ca);
+            ca=QColor(90,90,90,255);
+            backlines->add(0, py+h+2, w, py+h+2, ca);
+
         }
         py=ceil(py+h+graphSpacer);
     }
@@ -1344,13 +1339,17 @@ void gGraphView::paintGL()
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
     }
+    int thr=1;
+    if (threaded) thr=m_idealthreads;
 
     if (threaded) {
        masterlock->acquire(m_idealthreads); // ask for all the CPU's back..
        masterlock->release(m_idealthreads);
     }
+    qint64 el=time.elapsed();
 
     //((QGLContext*)context())->makeCurrent();
+
 
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
@@ -1362,9 +1361,7 @@ void gGraphView::paintGL()
     //glDisable(GL_DEPTH_TEST);
 
     swapBuffers(); // Dump to screen.
-    int thr=1;
-    if (threaded) thr=m_idealthreads;
-    qDebug() << "Graph Draw" << time.elapsed() << "ms," << thr << "threads";
+    qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
 }
 
 // For manual scrolling
