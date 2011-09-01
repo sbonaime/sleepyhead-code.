@@ -298,14 +298,16 @@ gThread::gThread(gGraph *g)
 }
 void gThread::run()
 {
-    while (this->isRunning()) {
-        mutex.lock();
-        int originX=m_lastbounds.x();
-        int originY=m_lastbounds.y();
-        int width=m_lastbounds.width();
-        int height=m_lastbounds.height();
-        graph->paint(originX,originY,width,height);
-        graph->threadDone();
+    m_running=true;
+    while (m_running) {
+        if (mutex.tryLock(1000)) {
+            int originX=m_lastbounds.x();
+            int originY=m_lastbounds.y();
+            int width=m_lastbounds.width();
+            int height=m_lastbounds.height();
+            graph->paint(originX,originY,width,height);
+            graph->threadDone();
+        }
     }
 }
 void gThread::paint(int originX, int originY, int width, int height)
@@ -343,6 +345,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
 gGraph::~gGraph()
 {
     if (m_graphview->useThreads()) {
+        m_thread->die();
+        m_thread->wait();
         m_thread->exit();
     }
     delete m_thread;

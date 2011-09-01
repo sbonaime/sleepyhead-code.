@@ -163,11 +163,12 @@ public:
     gThread(gGraph *g);
     void run();
     void paint(int originX, int originY, int width, int height);
+    void die() { m_running=false; }
     QMutex mutex;
 protected:
     gGraph * graph;
     QRect m_lastbounds;
-
+    volatile bool m_running;
 };
 
 class gGraph
