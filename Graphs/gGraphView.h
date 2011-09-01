@@ -37,6 +37,10 @@ public:
     void add(GLshort s);
     void add(GLshort x, GLshort y);
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+
+    void add(GLshort x, GLshort y,QColor & col);    // add with vertex color
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & col); // add with vertex colors
+
     void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
     void draw();
     inline GLshort & operator [](int i) { return buffer[i]; }
@@ -47,17 +51,21 @@ public:
     void setSize(float f) { m_size=f; }
     void setAntiAlias(bool b) { m_antialias=b; }
     void forceAntiAlias(bool b) { m_forceantialias=b; }
+    void setColor(QColor color) { m_color=color; }
 protected:
     QColor m_color;
     GLshort * buffer;
+    GLubyte * colors;
     int m_max;
     int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_cnt;      // cnt
+    int m_colcnt;
     float m_size;
     int s1,s2,s3,s4;
     bool m_scissor;
     bool m_antialias;
     bool m_forceantialias;
+    QMutex mutex;
 };
 
 struct TextQue
@@ -237,6 +245,8 @@ public:
     void threadDone();
     bool threadRunning() { return m_thread->isRunning(); }
     void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
+    GLBuffer * lines();
+    GLBuffer * backlines();
 protected:
     //void invalidate();
 
@@ -317,6 +327,7 @@ public:
     void setDay(Day * day);
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
+    GLBuffer * lines, * backlines;
 protected:
     int m_idealthreads;
     Day * m_day;

@@ -9,8 +9,14 @@
 #include <QFontDatabase>
 #include <QStringList>
 #include <QDebug>
+
+
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#endif
 
 
 MainWindow *mainwin=NULL;
@@ -40,6 +46,7 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
 
 int main(int argc, char *argv[])
 {
+    XInitThreads();
     QApplication a(argc, argv);
 
     a.setApplicationName("SleepyHead");

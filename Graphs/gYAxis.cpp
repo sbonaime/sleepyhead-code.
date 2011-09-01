@@ -19,14 +19,9 @@ gXGrid::gXGrid(QColor col)
     m_minor_color=QColor(220,220,220,64);
     m_show_major_lines=true;
     m_show_minor_lines=true;
-
-    addGLBuf(majorvert=new GLBuffer(m_major_color));
-    addGLBuf(minorvert=new GLBuffer(m_minor_color));
 }
 gXGrid::~gXGrid()
 {
-    delete minorvert;
-    delete majorvert;
 }
 void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
@@ -95,18 +90,6 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     float ty,h;
 
-    /*qint32 vertcnt=0;
-    GLshort * vertarray=(GLshort *)vertex_array[0];
-    qint32 minorvertcnt=0;
-    GLshort * minorvertarray=(GLshort *)vertex_array[1];
-    qint32 majorvertcnt=0;
-    GLshort * majorvertarray=(GLshort *)vertex_array[2];
-
-    if ((vertarray==NULL) || (minorvertarray==NULL) || (majorvertarray==NULL)) {
-        qWarning() << "gXGrid::Paint()  VertArray==NULL";
-        return;
-    } */
-
     if (min_ytick<=0) {
         qDebug() << "min_ytick error in gXGrid::paint()";
         return;
@@ -115,17 +98,13 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
         min_ytick=100;
     }
 
-    //double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
-    //if (q>=maxverts) {
-    //    qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
-    //}
 
+    lines=w.backlines();
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         h=top+height-ty;
         if (m_show_major_lines && (i > miny)) {
-            majorvert->add(left,h);
-            majorvert->add(left+width,h);
+            lines->add(left,h,left+width,h,m_major_color);
         }
         double z=(min_ytick/4)*ymult;
         double g=h;
@@ -137,35 +116,17 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 //                break;
   //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                minorvert->add(left,g);
-                minorvert->add(left+width,g);
+                lines->add(left,g,left+width,g,m_minor_color);
             }
-            if (minorvert->full()) {
+            if (lines->full()) {
                 break;
             }
         }
-        if (majorvert->full() || minorvert->full()) {
+        if (lines->full()) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }
     }
-
-    // Draw the lines & ticks
-    // Turn on blending??
-
-    //glLineWidth(1);
-    //majorvert->draw();
-    //minorvert->draw();
-    /*
-    glEnableClientState(GL_VERTEX_ARRAY);
-    w.qglColor(m_minor_color);
-    glVertexPointer(2, GL_SHORT, 0, minorvertarray);
-    glDrawArrays(GL_LINES, 0, minorvertcnt>>1);
-    w.qglColor(m_major_color);
-    glVertexPointer(2, GL_SHORT, 0, majorvertarray);
-    glDrawArrays(GL_LINES, 0, majorvertcnt>>1);
-    glDisableClientState(GL_VERTEX_ARRAY); // deactivate vertex arrays after drawing
-    */
 }
 
 
@@ -177,11 +138,9 @@ gYAxis::gYAxis(QColor col)
     m_text_color=col;
 
     m_yaxis_scale=1;
-    addGLBuf(vertarray=new GLBuffer(m_line_color));
 }
 gYAxis::~gYAxis()
 {
-    delete vertarray;
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
@@ -268,18 +227,6 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     float ty,h;
 
-    /*qint32 vertcnt=0;
-    GLshort * vertarray=(GLshort *)vertex_array[0];
-    qint32 minorvertcnt=0;
-    GLshort * minorvertarray=(GLshort *)vertex_array[1];
-    qint32 majorvertcnt=0;
-    GLshort * majorvertarray=(GLshort *)vertex_array[2];
-
-    if ((vertarray==NULL) || (minorvertarray==NULL) || (majorvertarray==NULL)) {
-        qWarning() << "gYAxis::Plot()  VertArray==NULL";
-        return;
-    } */
-
     if (min_ytick<=0) {
         qDebug() << "min_ytick error in gYAxis::Plot()";
         return;
@@ -287,13 +234,13 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     if (min_ytick>=1000000) {
         min_ytick=100;
     }
+    lines=w.backlines();
 
     //double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
     /*if (q>=maxverts) {
         qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
     }*/
 
-    w.qglColor(m_text_color);
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         fd=Format(i*m_yaxis_scale); // Override this as a function.
@@ -304,22 +251,20 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         //DrawText(w,fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
         w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
 
-        vertarray->add(left+width-4,h);
-        vertarray->add(left+width,h);
+        lines->add(left+width-4,h,left+width,h,m_line_color);
 
         double z=(min_ytick/4)*ymult;
         double g=h;
         for (int i=0;i<3;i++) {
             g+=z;
             if (g>top+height) break;
-            vertarray->add(left+width-3,g);
-            vertarray->add(left+width,g);
-            if (vertarray->full()) {
+            lines->add(left+width-3,g,left+width,g,m_line_color);
+            if (lines->full()) {
                 qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
                 break;
             }
         }
-        if (vertarray->full()) {
+        if (lines->full()) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }

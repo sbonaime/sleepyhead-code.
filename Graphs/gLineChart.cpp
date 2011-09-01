@@ -18,14 +18,12 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
     m_report_empty=false;
     addGLBuf(lines=new GLBuffer(col,100000,GL_LINES));
 
-    addGLBuf(outlines=new GLBuffer(QColor(0,0,0,255),20,GL_LINE_LOOP));
     lines->setAntiAlias(true);
-    outlines->setAntiAlias(false);
-
 }
 gLineChart::~gLineChart()
 {
     delete lines;
+    //delete outlines;
 }
 
 
@@ -41,6 +39,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     if (width<0)
         return;
 
+   // lines=w.lines();
     EventDataType miny,maxy;
     double minx,maxx;
     miny=w.min_y, maxy=w.max_y;
@@ -114,8 +113,12 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int minz,maxz;
 
     // Draw bounding box
-    outlines->add(left, top, left, top+height);
-    outlines->add(left+width,top+height, left+width, top);
+    GLBuffer *outlines=w.lines();
+    QColor blk=Qt::black;
+    outlines->add(left, top, left, top+height, blk);
+    outlines->add(left, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, blk);
+    outlines->add(left+width, top, left,top, blk);
     width--;
     height-=2;
 
@@ -313,7 +316,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                        // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
                         ax1=m_drawlist[i].x();
                         ay1=m_drawlist[i].y();
-                        lines->add(xst+i,yst-ax1,xst+i,yst-ay1);
+                        lines->add(xst+i,yst-ax1,xst+i,yst-ay1,m_line_color);
 
                         if (lines->full()) break;
                     }
@@ -342,7 +345,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             firstpx=false;
                             continue;
                         }
-                        lines->add(lastpx,lastpy,px,py);
+                        lines->add(lastpx,lastpy,px,py,m_line_color);
 
                         if (lines->full()) {
                             done=true;
@@ -385,13 +388,13 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         firstpx=false;
                     } else {
                         if (square_plot) {
-                            lines->add(lastpx,lastpy,px,lastpy);
-                            lines->add(px,lastpy);
+                            lines->add(lastpx,lastpy,px,lastpy,m_line_color);
+                            lines->add(px,lastpy,px,py,m_line_color);
                         } else {
-                            lines->add(lastpx,lastpy);
+                            lines->add(lastpx,lastpy,px,py,m_line_color);
                         }
 
-                        lines->add(px,py);
+                        //lines->add(px,py,m_line_color);
 
                         if (lines->full()) {
                             done=true;
@@ -422,7 +425,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
     } else {
-        lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
+        //lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
         //lines->draw();
     }
 }

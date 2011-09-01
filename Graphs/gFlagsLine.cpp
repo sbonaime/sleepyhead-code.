@@ -80,30 +80,37 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
         linetop+=barh;
     }
 
-    lines->add(left-1, top, left-1, top+height);
-    lines->add(left+width, top+height, left+width, top);
+    GLBuffer *outlines=w.lines();
+    QColor blk=Qt::black;
+    outlines->add(left-1, top, left-1, top+height, blk);
+    outlines->add(left-1, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, blk);
+    outlines->add(left+width, top, left-1, top, blk);
+
+    //lines->add(left-1, top, left-1, top+height);
+    //lines->add(left+width, top+height, left+width, top);
 }
 
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
     addGLBuf(quads=new GLBuffer(flag_color,2048,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
+    //addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
     quads->setAntiAlias(true);
-    lines->setAntiAlias(true);
+    //lines->setAntiAlias(true);
     GetTextExtent(m_label,m_lx,m_ly);
     //m_static.setText(m_label);;
 }
 gFlagsLine::~gFlagsLine()
 {
-    delete lines;
+    //delete lines;
     delete quads;
 }
 void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
-
+    lines=w.lines();
     double minx;
     double maxx;
 
@@ -144,7 +151,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
             if (X > maxx) break;
             x1=(X - minx) * xmult + left;
             if (m_flt==FT_Bar) {
-                lines->add(x1,bartop,x1,bottom);
+                lines->add(x1,bartop,x1,bottom,m_flag_color);
                 if (lines->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
                 x2=(Y-minx)*xmult+left;

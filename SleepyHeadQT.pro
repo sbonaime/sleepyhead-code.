@@ -57,6 +57,7 @@ SOURCES += main.cpp\
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
+unix:!macx:LIBS        += -lX11
 
 macx {
   SOURCES          += qextserialport/qextserialenumerator_osx.cpp
