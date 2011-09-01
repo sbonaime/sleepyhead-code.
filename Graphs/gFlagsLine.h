@@ -7,6 +7,7 @@
 #ifndef GFLAGSLINE_H
 #define GFLAGSLINE_H
 
+#include <QStaticText>
 #include "gGraphView.h"
 
 class gFlagsGroup;
@@ -32,6 +33,8 @@ class gFlagsLine:public Layer
         FlagType m_flt;
         QColor m_flag_color;
         GLBuffer *quads, *lines;
+        int m_lx, m_ly;
+        //QStaticText m_static;
 
 };
 
@@ -44,10 +47,10 @@ public:
     virtual void paint(gGraph & w,int left, int top, int width, int height);
     virtual qint64 Minx();
     virtual qint64 Maxx();
-
+    virtual void SetDay(Day *);
 protected:
     GLBuffer *quad1, *quad2, *lines;
-
+    QVector<gFlagsLine *> lvisible;
 };
 
 #endif // GFLAGSLINE_H

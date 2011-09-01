@@ -32,9 +32,6 @@ gLineChart::~gLineChart()
 // Time Domain Line Chart
 void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 {
-    const int max_drawlist_size=4096;
-    QPoint m_drawlist[max_drawlist_size];
-
     if (!m_visible)
         return;
 

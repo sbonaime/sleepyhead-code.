@@ -233,6 +233,8 @@ public:
     gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
     void threadDone();
+    bool threadRunning() { return m_thread->isRunning(); }
+    void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
 protected:
     //void invalidate();
 
@@ -311,7 +313,6 @@ public:
     QMutex text_mutex;
     QMutex gl_mutex;
     void setDay(Day * day);
-    void threadDone();
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
 protected:

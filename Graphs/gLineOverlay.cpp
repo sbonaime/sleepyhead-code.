@@ -11,10 +11,10 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagType flt)
 :Layer(code),m_flag_color(color),m_label(label),m_flt(flt)
 {
-    addGLBuf(points=new GLBuffer(color,2048,GL_POINTS));
+    addGLBuf(points=new GLBuffer(color,1024,GL_POINTS));
     points->setSize(4);
     addGLBuf(quads=new GLBuffer(color,2048,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(color,2048,GL_LINES));
+    addGLBuf(lines=new GLBuffer(color,1024,GL_LINES));
     points->setAntiAlias(true);
     quads->setAntiAlias(true);
     lines->setAntiAlias(true);
@@ -40,21 +40,6 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     float x1,x2;
 
     int x,y;
-
-    // Crop to inside the margins.
-   // glScissor(left,topp,width,height);
-   // glEnable(GL_SCISSOR_TEST);
-
-    /*qint32 vertcnt=0;
-    GLshort * vertarray=vertex_array[0];
-    qint32 pointcnt=0;
-    GLshort * pointarray=vertex_array[1];
-    qint32 quadcnt=0;
-    GLshort * quadarray=vertex_array[2];
-    if (!vertarray || !quadarray || !pointarray) {
-        qWarning() << "VertArray/quadarray/pointarray==NULL";
-        return;
-    }*/
 
     float bottom=start_py+height-25, top=start_py+25;
 
@@ -95,9 +80,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 quads->add(x2,start_py+height,x1,start_py+height);
                 if (quads->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
-                //if (pref["AlwaysShowOverlayBars"].toBool()) {
-
-                if (pref["AlwaysShowOverlayBars"].toBool() || (xx<3600000.0)) {
+                if (pref["AlwaysShowOverlayBars"].toBool() || (xx<3600000)) {
                     // show the fat dots in the middle
                     points->add(x1,double(height)/double(yy)*double(-20-w.min_y)+topp);
                     if (points->full()) { verts_exceeded=true; break; }
@@ -134,24 +117,5 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     if (verts_exceeded) {
         qWarning() << "exceeded maxverts in gLineOverlay::Plot()";
     }
-
-   /* bool antialias=pref["UseAntiAliasing"].toBool();
-    if (antialias) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT,  GL_NICEST);
-        glLineWidth (1.5);
-    } else glLineWidth (1);
-
-    //quads->draw();
-    //lines->draw();
-    //points->draw();
-
-    if (antialias) {
-        glDisable(GL_LINE_SMOOTH);
-        glDisable(GL_BLEND);
-    } */
-    //glDisable(GL_SCISSOR_TEST);
 }
 

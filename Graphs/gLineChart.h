@@ -34,6 +34,9 @@ protected:
         QColor m_line_color;
         GLBuffer * lines;
         GLBuffer * outlines;
+        static const int max_drawlist_size=4096;
+        QPoint m_drawlist[max_drawlist_size];
+
 };
 
 #endif // GLINECHART_H

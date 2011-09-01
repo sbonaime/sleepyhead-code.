@@ -40,13 +40,10 @@ qint64 gFlagsGroup::Maxx()
     }
     return 0;
 }
-
-void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
+void gFlagsGroup::SetDay(Day * d)
 {
-    if (!m_visible) return;
-    //if (!m_day) return;
-
-    QVector<gFlagsLine *> lvisible;
+    LayerGroup::SetDay(d);
+    lvisible.clear();
     for (int i=0;i<layers.size();i++) {
         gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
         if (!f) continue;
@@ -55,6 +52,14 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
             lvisible.push_back(f);
         }
     }
+
+}
+
+void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
+{
+    if (!m_visible) return;
+    if (!m_day) return;
+
     int vis=lvisible.size();
     float barh=float(height)/float(vis);
     float linetop=top;
@@ -83,9 +88,11 @@ gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool alway
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
     addGLBuf(quads=new GLBuffer(flag_color,2048,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(flag_color,2048,GL_LINES));
+    addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
     quads->setAntiAlias(true);
     lines->setAntiAlias(true);
+    GetTextExtent(m_label,m_lx,m_ly);
+    //m_static.setText(m_label);;
 }
 gFlagsLine::~gFlagsLine()
 {
@@ -115,9 +122,10 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
 
     // Draw text label
-    int x,y;
-    GetTextExtent(m_label,x,y);
-    w.renderText(m_label,left-x-10,top+(height/2)+(y/2));
+    //int x,y;
+    //GetTextExtent(m_label,x,y);
+    //w.DrawStaticText(m_static,left-m_lx-10,top+(height/2)-(m_ly/2));
+    w.renderText(m_label,left-m_lx-10,top+(height/2)+(m_ly/2));
     float x1,x2;
 
     float bartop=top+2;
@@ -146,6 +154,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
                 if (quads->full()) { verts_exceeded=true; break; }
             }
         }
+        if (verts_exceeded) break;
     }
     if (verts_exceeded) {
         qWarning() << "maxverts exceeded in gFlagsLine::plot()";
