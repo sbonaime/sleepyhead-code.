@@ -374,7 +374,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
     sessionlist[s->session()]=s; // To make sure it get's saved later even if it's not wanted.
 
-    QDateTime d1,d2=QDateTime::fromMSecsSinceEpoch(s->first());
+    QDateTime d1,d2=QDateTime::fromTime_t(s->first()/1000);
 
     QDate date=d2.date();
     QTime time=d2.time();
@@ -390,7 +390,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
     } else if (combine_sessions > 0) {
         dit=day.find(date.addDays(-1)); // Check Day Before
         if (dit!=day.end()) {
-            QDateTime lt=QDateTime::fromMSecsSinceEpoch(dit.value()->last());
+            QDateTime lt=QDateTime::fromTime_t(dit.value()->last()/1000);
             closest_session=lt.secsTo(d2)/60;
             if (closest_session<combine_sessions) {
                 date=date.addDays(-1);
@@ -398,7 +398,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
         } else {
             nextday=day.find(date.addDays(1));// Check Day Afterwards
             if (nextday!=day.end()) {
-                QDateTime lt=QDateTime::fromMSecsSinceEpoch(nextday.value()->first());
+                QDateTime lt=QDateTime::fromTime_t(nextday.value()->first()/1000);
                 closest_session=d2.secsTo(lt)/60;
                 if (closest_session < combine_sessions) {
                     // add todays here. pull all tomorrows records to this date.
@@ -430,8 +430,6 @@ Day *Machine::AddSession(Session *s,Profile *p)
         dd=new Day(this);
         day[date]=dd;
         // Add this Day record to profile
-        //QDateTime d=QDateTime::fromMSecsSinceEpoch(date);
-        //qDebug() << "New day: " << d.toString("yyyy-MM-dd HH:mm:ss");
         p->AddDay(date,dd,m_type);
     } else {
         dd=*dit;

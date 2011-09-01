@@ -649,7 +649,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                         t-=float(m.value()[z]->raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
-                    QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
+                    QDateTime d=QDateTime::fromTime_t(t/1000);
                     QString s=QString("#%1: %2 (%3)").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
                     a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
@@ -814,8 +814,8 @@ void Daily::Load(QDate date)
 
         html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
         int tt=cpap->total_time()/1000.0;
-        QDateTime date=QDateTime::fromMSecsSinceEpoch(cpap->first());
-        QDateTime date2=QDateTime::fromMSecsSinceEpoch(cpap->last());
+        QDateTime date=QDateTime::fromTime_t(cpap->first()/1000);
+        QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000);
 
         int h=tt/3600.0;
         int m=(tt/60)%60;
@@ -953,8 +953,8 @@ void Daily::Load(QDate date)
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
-            fd=QDateTime::fromMSecsSinceEpoch((*s)->first());
-            ld=QDateTime::fromMSecsSinceEpoch((*s)->last());
+            fd=QDateTime::fromTime_t((*s)->first()/1000);
+            ld=QDateTime::fromTime_t((*s)->last()/1000);
             QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
             if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
             tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
@@ -1090,9 +1090,9 @@ Session * Daily::CreateJournalSession(QDate date)
     QDateTime dt;
     dt.setDate(date);
     dt.setTime(QTime(17,0)); //5pm to make sure it goes in the right day
-    sess->set_first(dt.toMSecsSinceEpoch());
+    sess->set_first(qint64(dt.toTime_t())*1000L);
     dt=dt.addSecs(3600);
-    sess->set_last(dt.toMSecsSinceEpoch());
+    sess->set_last(qint64(dt.toTime_t())*1000L);
     sess->SetChanged(true);
     m->AddSession(sess,profile);
     return sess;
@@ -1157,8 +1157,8 @@ void Daily::on_treeWidget_itemSelectionChanged()
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        double st=(d.addSecs(-120)).toMSecsSinceEpoch();
-        double et=(d.addSecs(120)).toMSecsSinceEpoch();
+        double st=qint64((d.addSecs(-120)).toTime_t())*1000L;
+        double et=qint64((d.addSecs(120)).toTime_t())*1000L;
         GraphView->SetXBounds(st,et);
     }
 }

@@ -7,7 +7,6 @@
 #ifndef GFLAGSLINE_H
 #define GFLAGSLINE_H
 
-#include <QStaticText>
 #include "gGraphView.h"
 
 class gFlagsGroup;
@@ -34,8 +33,6 @@ class gFlagsLine:public Layer
         QColor m_flag_color;
         GLBuffer *quads, *lines;
         int m_lx, m_ly;
-        //QStaticText m_static;
-
 };
 
 class gFlagsGroup:public LayerGroup

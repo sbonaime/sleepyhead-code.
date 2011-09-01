@@ -2,7 +2,8 @@
 #include <QFontMetrics>
 #include "gGraphView.h"
 #include "SleepLib/profiles.h"
-
+//#include <QtConcurrentRun>
+#include <QElapsedTimer>
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -572,6 +573,8 @@ void gGraph::paint(int originX, int originY, int width, int height)
         quad->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom);
     }
 
+    //sleep(1);
+
     //m_graphview->gl_mutex.lock();
     /*QGLFormat fmt=m_graphview->format();
     QGLContext ctx(fmt);
@@ -977,10 +980,6 @@ void gGraph::SetMaxY(EventDataType v)
 {
     max_y=v;
 }
-void gGraph::DrawStaticText(QStaticText & text, short x, short y)
-{
-    m_graphview->DrawStaticText(text,x,y);
-}
 GLBuffer * gGraph::lines()
 {
     return m_graphview->lines;
@@ -1109,13 +1108,6 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
     q.angle=angle;
     q.color=color;
     q.font=font;
-}
-void gGraphView::DrawStaticText(QStaticText & text, short x, short y)
-{
-    // don't use this for multithread
-    QPainter painter(this);
-    painter.drawStaticText(x,y,text);
-    painter.end();
 }
 
 void gGraphView::AddGraph(gGraph *g,short group)
@@ -1264,7 +1256,7 @@ void gGraphView::paintGL()
     if (width()<=0) return;
     if (height()<=0) return;
 
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     glClearColor(255,255,255,255);
@@ -1298,6 +1290,7 @@ void gGraphView::paintGL()
         threaded=true;
     } else threaded=false;
 
+   // threaded=true;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1311,9 +1304,9 @@ void gGraphView::paintGL()
         if ((py + h + graphSpacer) >= 0) {
             w=width();
 
-
             if (threaded) {
                 masterlock->acquire(1); // book an available CPU
+                //QFuture<void> future = QtConcurrent::run(m_graphs[i],&gGraph::paint,px,py,width()-titleWidth,h);
                 m_graphs[i]->threadStart(); // this only happens once.. It stays dormant when not in use.
                 m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
                 m_graphs[i]->thread()->setPriority(QThread::HighPriority);

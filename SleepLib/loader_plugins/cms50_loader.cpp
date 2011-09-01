@@ -194,15 +194,15 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
             qDebug() << "Invalid date time retreieved in CMS50::OpenSPO[R2]File";
             return false;
         }
-        starttime=date.toMSecsSinceEpoch();
+        starttime=qint64(date.toTime_t())*1000L;
     } else if (dt.isValid()) { // Else take the filenames date
         date=dt;
-        starttime=dt.toMSecsSinceEpoch();
+        starttime=qint64(dt.toTime_t())*1000L;
     } else {  // Has nothing, so add it up to current time
         qDebug() << "CMS50: Couldn't get any start date indication";
         date=QDateTime::currentDateTime();
         date=date.addSecs(-seconds);
-        starttime=date.toMSecsSinceEpoch();
+        starttime=qint64(date.toTime_t())*1000L;
     }
 
     f.seek(data_starts);

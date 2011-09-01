@@ -241,7 +241,6 @@ public:
     short group() { return m_group; }
     void setGroup(short group) { m_group=group; }
     void DrawTextQue();
-    void DrawStaticText(QStaticText & text, short x, short y);
     void setDay(Day * day);
     gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
@@ -315,7 +314,6 @@ public:
     gGraph *m_selected_graph;
 
     void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
-    void DrawStaticText(QStaticText & text, short x, short y);
     int horizTravel() { return m_horiz_travel; }
     void DrawTextQue();
 

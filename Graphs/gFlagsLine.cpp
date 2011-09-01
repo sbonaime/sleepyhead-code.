@@ -129,10 +129,8 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
 
     // Draw text label
-    //int x,y;
-    //GetTextExtent(m_label,x,y);
-    //w.DrawStaticText(m_static,left-m_lx-10,top+(height/2)-(m_ly/2));
     w.renderText(m_label,left-m_lx-10,top+(height/2)+(m_ly/2));
+
     float x1,x2;
 
     float bartop=top+2;

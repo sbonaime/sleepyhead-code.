@@ -91,7 +91,7 @@ bool EDFParser::Parse()
         qDebug() << "Invalid date time retreieved parsing EDF File " << filename;
         return false;
     }
-    startdate=startDate.toMSecsSinceEpoch();
+    startdate=qint64(startDate.toTime_t())*1000L;
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 

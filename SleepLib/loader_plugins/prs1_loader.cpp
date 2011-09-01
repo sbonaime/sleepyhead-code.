@@ -566,8 +566,6 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             pos+=2;
             t+=qint64(delta)*1000L;
             tt=t;;
-            //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-            //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) << int(delta);
         }
 
         cnt++;
@@ -787,8 +785,6 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos+16;
             return false;
         }
-        //QDateTime d=QDateTime::fromMSecsSinceEpoch(t);
-        //qDebug()<< d.toString("yyyy-MM-dd HH:mm:ss") << ": " << hex << pos+15 << " " << hex << int(code) ;
         if (code==0) {
         } else
         if (code!=0x12) {
