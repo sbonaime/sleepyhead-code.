@@ -296,12 +296,23 @@ gThread::gThread(gGraph *g)
     graph=g;
     mutex.lock();
 }
+gThread::~gThread()
+{
+    if (isRunning()) {
+        m_running=false;
+        mutex.unlock();
+        wait();
+        terminate();
+    }
+}
+
 void gThread::run()
 {
     m_running=true;
     while (m_running) {
         //mutex.lock();
         if (mutex.tryLock(500)) {
+            if (!m_running) break;
             int originX=m_lastbounds.x();
             int originY=m_lastbounds.y();
             int width=m_lastbounds.width();
@@ -346,11 +357,6 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
 }
 gGraph::~gGraph()
 {
-    if (m_thread->isRunning()) {
-        m_thread->die();
-        m_thread->wait();
-        m_thread->exit();
-    }
     delete m_thread;
     delete quad;
 }

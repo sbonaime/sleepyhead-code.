@@ -161,6 +161,8 @@ class gThread:public QThread
 {
 public:
     gThread(gGraph *g);
+    ~gThread();
+
     void run();
     void paint(int originX, int originY, int width, int height);
     void die() { m_running=false; }
