@@ -1218,7 +1218,7 @@ void gGraphView::paintGL()
     //ax=px;//-m_offsetX;
 
     bool threaded;
-    if (m_idealthreads>1) {
+    if (pref["EnableGraphSnapshots"].toBool() && (m_idealthreads>1)) {
         threaded=true;
     } else threaded=false;
 
@@ -1288,7 +1288,9 @@ void gGraphView::paintGL()
     //glDisable(GL_DEPTH_TEST);
 
     swapBuffers(); // Dump to screen.
-    qDebug() << "Graph Draw" << time.elapsed() << "ms" << m_idealthreads << "threads";
+    int thr=1;
+    if (threaded) thr=m_idealthreads;
+    qDebug() << "Graph Draw" << time.elapsed() << "ms," << thr << "threads";
 }
 
 // For manual scrolling

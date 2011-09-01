@@ -566,7 +566,7 @@
      <x>0</x>
      <y>0</y>
      <width>668</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -739,7 +739,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display Crashy Snapshots</string>
+    <string>Enable Multithreading</string>
    </property>
    <property name="toolTip">
     <string>Warning: Enabling this feature may require you to either hand edit the Preferences.xml or delete SleepyHeads data folder.
