@@ -8,7 +8,7 @@
 #include <QDebug>
 #include "gXAxis.h"
 
-const int divisors[]={86400000,2880000,14400000,7200000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
+const int divisors[]={604800000,259200000, 172800000, 86400000,2880000,14400000,7200000,3600000,2700000,1800000,1200000,900000,600000,300000,120000,60000,45000,30000,20000,15000,10000,5000,2000,1000,100,50,10};
 const int divcnt=sizeof(divisors)/sizeof(int);
 
 gXAxis::gXAxis(QColor col,bool fadeout)
@@ -60,24 +60,30 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     QString fd,tmpstr;
     int divmax,dividx;
     int fitmode;
-    if (xx>86400000L) {         // Day
-        fd="MMM 00:00";
+    /*if (xx>2*86400000L) {         // Day
         dividx=0;
         divmax=10;
+        //fitmode=-1;
+        fd="MMM dd";
+    } else */
+    if (xx>86400000L) {         // Day
+        fd="MMM 00";
+        dividx=0;
+        divmax=12;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
-        dividx=0;
-        divmax=18;
+        dividx=3;
+        divmax=21;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
         fd="00:00:00";
-        dividx=9;
-        divmax=20;
+        dividx=10;
+        divmax=21;
         fitmode=2;
     } else {                   // Microseconds
         fd="00:00:00:000";
-        dividx=19;
+        dividx=22;
         divmax=divcnt;
         fitmode=3;
     }
@@ -146,9 +152,13 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         int s=(j/1000L) % 60L;
 
         if (fitmode==0) {
-            static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-            int d=(j/86400000) % 7;
-            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
+            int d=(j/1000);
+            QDateTime dt=QDateTime::fromTime_t(d);
+            tmpstr=dt.toString("MMM dd");
+        //} else if (fitmode==0) {
+//            static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+//            int d=(j/86400000) % 7;
+//            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==1) { // minute
             tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==2) { // second

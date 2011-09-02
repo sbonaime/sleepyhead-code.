@@ -392,6 +392,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             };
             for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
                 if (sess->eventlist.contains(a[i])) {
+                    sess->count(a[i]);
                     sess->min(a[i]);
                     sess->max(a[i]);
                     sess->avg(a[i]);
@@ -405,6 +406,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             };
             for (unsigned i=0;i<sizeof(b)/sizeof(ChannelID);i++) {
                 if (sess->eventlist.contains(b[i])) {
+                    sess->count(a[i]);
                     sess->min(b[i]);
                     sess->max(b[i]);
                     sess->avg(b[i]);

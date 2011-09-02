@@ -54,9 +54,9 @@ GLBuffer::GLBuffer(QColor color,int max,int type)
     m_antialias=true;
     m_forceantialias=false;
     buffer=new GLshort [max+8];
-    if (m_type==GL_LINES) {
-        colors=new GLubyte[max*4+(8*4)];
-    } else colors=NULL;
+    //if (m_type==GL_LINES) {
+    colors=new GLubyte[max*4+(8*4)];
+    //} else colors=NULL;
     m_cnt=0;
     m_colcnt=0;
     m_size=1;
@@ -1288,7 +1288,7 @@ void gGraphView::paintGL()
         threaded=true;
     } else threaded=false;
 
-   // threaded=true;
+    threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;

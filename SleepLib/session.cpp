@@ -530,9 +530,15 @@ qint64 Session::last(ChannelID id)
 }
 bool Session::channelExists(ChannelID id)
 {
-    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
-        return false;
+    if (s_events_loaded) {
+        QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+        if (j==eventlist.end())  // eventlist not loaded.
+            return false;
+    } else {
+        QHash<ChannelID,int>::iterator q=m_cnt.find(id);
+        if (q==m_cnt.end())
+            return false;
+    }
     return true;
 }
 

@@ -14,12 +14,14 @@
 class gBarChart:public Layer
 {
     public:
-        gBarChart(ChannelID code=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
+        gBarChart(ChannelID code=EmptyChannel,QColor color=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gBarChart();
 
-        void setProfile(Profile *profile);
+        void setProfile(Profile *profile) { m_profile=profile; }
         virtual void paint(gGraph & w,int left, int top, int width, int height);
-
+        virtual void SetDay(Day * day);
+        virtual bool isEmpty() { return m_empty; }
+        void addSlice(ChannelID code, QColor color) { m_codes.push_back(code); m_colors.push_back(color); }
     protected:
         Qt::Orientation m_orientation;
 
@@ -30,10 +32,14 @@ class gBarChart:public Layer
         //virtual const wxString & FormatX(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
         virtual const QString & FormatY(double v) { static QString t; t.sprintf("%.1f",v); return t; }
 
-        gXAxis *Xaxis;
-        QVector<QColor> color;
+        //gXAxis *Xaxis;
+        QVector<QColor> m_colors;
+        QVector<ChannelID> m_codes;
+        QHash<int,QMap<ChannelID,EventDataType> > m_values;
         Profile * m_profile;
         GLBuffer *quads;
+        bool m_empty;
+        int m_fday;
 };
 
 #endif // GBARCHART_H

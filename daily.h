@@ -16,16 +16,14 @@
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
-#include <QWebPluginFactory>
+#include "Graphs/gBarChart.h"
 
 #include <SleepLib/profiles.h>
-//#include <Graphs/graphwindow.h>
 #include "mainwindow.h"
 #include "Graphs/gGraphView.h"
 
-//#include "Graphs/gSplitter.h"
 #include "Graphs/gLineChart.h"
-//#include "Graphs/gFlagsLine.h"
+
 namespace Ui {
     class Daily;
 }
@@ -70,8 +68,9 @@ private:
 
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
-           *PLETHY,*TI,*TE, *RE, *IE;
+           *PLETHY,*TI,*TE, *RE, *IE, *BC;
 
+    gBarChart *bc;
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
     //QVector<gGraph *> Graphs;
@@ -96,6 +95,7 @@ private:
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
+
 };
 
 #endif // DAILY_H

@@ -118,16 +118,6 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
     ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
 
-    daily=new Daily(ui->tabWidget,NULL,this);
-    ui->tabWidget->insertTab(1,daily,tr("Daily"));
-
-    //overview=new Overview(ui->tabWidget,daily->SharedWidget());
-    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
-    //oximetry=NULL;
-    //overview=NULL;
-    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
-    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
-
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
 }
@@ -161,6 +151,16 @@ void MainWindow::Startup()
 
     profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
+
+    daily=new Daily(ui->tabWidget,NULL,this);
+    ui->tabWidget->insertTab(1,daily,tr("Daily"));
+
+    //overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    //oximetry=NULL;
+    //overview=NULL;
+    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     if (daily) daily->ReloadGraphs();
 

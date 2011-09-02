@@ -25,7 +25,6 @@
 #include "Graphs/gFooBar.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gYAxis.h"
-#include "Graphs/gBarChart.h"
 #include "Graphs/gSegmentChart.h"
 #include "Graphs/gStatsLine.h"
 
@@ -85,6 +84,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     SF->AddLayer(AddCPAP(seg),LayerRight,100); */
 
+    BC=new gGraph(GraphView,"AHI Chart",default_height,2);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
     MP=new gGraph(GraphView,"Mask Pressure",default_height);
     PRD=new gGraph(GraphView,"Pressure",default_height);
@@ -104,6 +104,16 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
+
+    bc=new gBarChart();
+    bc->setProfile(profile);
+    bc->addSlice(CPAP_Hypopnea,QColor("blue"));
+    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
+    bc->addSlice(CPAP_ClearAirway,QColor("purple"));
+    BC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    BC->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+    BC->AddLayer(bc);
+    BC->AddLayer(new gXGrid());
 
 
     gFlagsGroup *fg=new gFlagsGroup();
@@ -756,6 +766,10 @@ void Daily::Load(QDate date)
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
+
+    bc->SetDay(NULL);
+    BC->MinX();
+    BC->MaxX();
 
     GraphView->ResetBounds();
     //GraphView->ResetBounds(1);
