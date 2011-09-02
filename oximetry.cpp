@@ -189,7 +189,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         ev_spo2->getTime().clear();
         ev_spo2->setCount(0);
 
-        lasttime=QDateTime::currentMSecsSinceEpoch();
+        lasttime=qint64(QDateTime::currentDateTime().toTime_t())*1000L;  // utc??
         starttime=lasttime;
 
         session->SetSessionID(lasttime/1000L);
@@ -622,7 +622,7 @@ void Oximetry::on_ImportButton_clicked()
     if (done) {
         if (oneoff) bytes--; // this is retarded..
 
-        QDateTime date=QDateTime::currentDateTimeUtc();
+        QDateTime date=QDateTime::currentDateTime().toUTC();
         SessionID sid=date.toTime_t();
         session->SetSessionID(sid);
         qDebug() << "Read " << bytes << "Bytes";

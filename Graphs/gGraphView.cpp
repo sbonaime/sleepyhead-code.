@@ -2,8 +2,6 @@
 #include <QFontMetrics>
 #include "gGraphView.h"
 #include "SleepLib/profiles.h"
-//#include <QtConcurrentRun>
-#include <QElapsedTimer>
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -1256,7 +1254,7 @@ void gGraphView::paintGL()
     if (width()<=0) return;
     if (height()<=0) return;
 
-    QElapsedTimer time;
+    QTime time;
     time.start();
 
     glClearColor(255,255,255,255);
