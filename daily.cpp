@@ -1144,6 +1144,7 @@ void Daily::UpdateOXIGraphs(Day *day)
 
 void Daily::RedrawGraphs()
 {
+    GraphView->updateGL();
     /*for (int i=0;i<Graphs.size();i++) {
        Graphs[i]->updateGL();
     } */

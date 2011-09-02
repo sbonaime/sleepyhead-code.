@@ -7,6 +7,7 @@
 #ifndef GBARCHART_H
 #define GBARCHART_H
 
+#include <SleepLib/profiles.h>
 #include "gGraphView.h"
 #include "gXAxis.h"
 
@@ -16,6 +17,7 @@ class gBarChart:public Layer
         gBarChart(ChannelID code=EmptyChannel,QColor col=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
         virtual ~gBarChart();
 
+        void setProfile(Profile *profile);
         virtual void paint(gGraph & w,int left, int top, int width, int height);
 
     protected:
@@ -30,6 +32,8 @@ class gBarChart:public Layer
 
         gXAxis *Xaxis;
         QVector<QColor> color;
+        Profile * m_profile;
+        GLBuffer *quads;
 };
 
 #endif // GBARCHART_H

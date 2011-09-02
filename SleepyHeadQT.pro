@@ -19,7 +19,7 @@ CONFIG += rtti
 #CONFIG += link_pkgconfig
 #PKGCONFIG += freetype2
 
-TARGET = SleepyHeadQT
+TARGET = SleepyHead
 TEMPLATE = app
 
 

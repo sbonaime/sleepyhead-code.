@@ -5,33 +5,57 @@
 */
 
 #include <math.h>
-#include <SleepLib/profiles.h>
+#include <QDateTime>
 #include "gBarChart.h"
 
-gBarChart::gBarChart(ChannelID code,QColor col,Qt::Orientation o)
+gBarChart::gBarChart(ChannelID code,QColor color,Qt::Orientation o)
 :Layer(code),m_orientation(o)
 {
-    color.clear();
-    color.push_back(col);
+    //Xaxis=new gXAxis();
+    addGLBuf(quads=new GLBuffer(color,20,GL_QUADS));
+    //addGLBuf(lines=new GLBuffer(col,20,GL_LINES));
+    quads->forceAntiAlias(true);
+    //lines->setAntiAlias(true);
+    //lines->setSize(2);
 
-    Xaxis=new gXAxis();
 }
 gBarChart::~gBarChart()
 {
-    delete Xaxis;
+    //delete Xaxis;
 }
 
 void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
+
+    qint64 minx=w.min_x, maxx=w.max_x;
+    qint64 xx=maxx - minx;
+    qint32 days=xx/86400000L;
+
+    float barw=float(width)/float(days);
+
+    qint64 t2,ts;
+    int day;
+    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
+        t2=QDateTime(d.key(),QTime(0,0,0)).toTime_t();
+        ts=t2*1000L;
+        if (ts<minx) continue;
+        if (ts>maxx) continue;  // break; // out of order if I end up using a hash instead.??
+        day=t2/86400;
+        float pos=float(day)*barw;
+
+
+
+    }
+
+
+
    // if (!data) return;
    //if (!data->IsReady()) return;
 
     //int start_px=left;
     //int start_py=top;
 
-    //double xx=w.max_x - w.min_x;
-    //double days=int(xx);
     //days=data->np[0];
 
     //days=0;

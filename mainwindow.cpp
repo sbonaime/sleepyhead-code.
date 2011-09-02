@@ -274,6 +274,7 @@ void MainWindow::on_urlBar_activated(const QString &arg1)
 void MainWindow::on_dailyButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(daily);
+    daily->RedrawGraphs();
 }
 
 void MainWindow::on_overviewButton_clicked()
@@ -378,5 +379,6 @@ void MainWindow::on_oximetryButton_clicked()
 {
     if (oximetry) {
         ui->tabWidget->setCurrentWidget(oximetry);
+        oximetry->RedrawGraphs();
     }
 }
