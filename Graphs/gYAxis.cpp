@@ -27,13 +27,13 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
     int x,y;
 
-    double miny=w.min_y;
-    double maxy=w.max_y;
+    EventDataType miny=w.min_y;
+    EventDataType maxy=w.max_y;
 
     if (miny<0) {
         miny=-MAX(fabs(miny),fabs(maxy));
     }
-    double dy=maxy-miny;
+    EventDataType dy=maxy-miny;
     if (dy<=0) {
         if ((maxy==0) && (miny==0))
             return;
@@ -42,34 +42,8 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
         dy=1;
     }
 
+    w.roundY(miny,maxy);
 
-    int m;
-    if (maxy>500) {
-        m=ceil(maxy/100.0);
-        maxy=m*100;
-        m=floor(miny/100.0);
-        miny=m*100;
-    } else if (maxy>150) {
-        m=ceil(maxy/50.0);
-        maxy=m*50;
-        m=floor(miny/50.0);
-        miny=m*50;
-    } else if (maxy>80) {
-        m=ceil(maxy/20.0);
-        maxy=m*20;
-        m=floor(miny/20.0);
-        miny=m*20;
-    } else if (maxy>30) {
-        m=ceil(maxy/10.0);
-        maxy=m*10;
-        m=floor(miny/10.0);
-        miny=m*10;
-    } else if (maxy>5) {
-        m=ceil(maxy/5.0);
-        maxy=m*5;
-        m=floor(miny/5.0);
-        miny=m*5;
-    }
     if (height<0) return;
 
     QString fd="0";

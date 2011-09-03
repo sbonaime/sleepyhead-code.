@@ -89,7 +89,8 @@ void gBarChart::SetDay(Day * day)
        }
     }
     m_maxy=ceil(m_maxy);
-    m_miny=floor(m_miny);
+    //m_miny=floor(m_miny);
+    m_miny=0;
     //m_minx-=86400000L;
 
    // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
@@ -121,34 +122,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType maxy=m_maxy;
     EventDataType miny=m_miny;
 
-    // make this a reusable function in gGraph
-    int m;
-    if (maxy>500) {
-        m=ceil(maxy/100.0);
-        maxy=m*100;
-        m=floor(miny/100.0);
-        miny=m*100;
-    } else if (maxy>150) {
-        m=ceil(maxy/50.0);
-        maxy=m*50;
-        m=floor(miny/50.0);
-        miny=m*50;
-    } else if (maxy>80) {
-        m=ceil(maxy/20.0);
-        maxy=m*20;
-        m=floor(miny/20.0);
-        miny=m*20;
-    } else if (maxy>30) {
-        m=ceil(maxy/10.0);
-        maxy=m*10;
-        m=floor(miny/10.0);
-        miny=m*10;
-    } else if (maxy>5) {
-        m=ceil(maxy/5.0);
-        maxy=m*5;
-        m=floor(miny/5.0);
-        miny=m*5;
-    }
+    w.roundY(miny,maxy);
 
     EventDataType yy=maxy-miny;
     EventDataType ymult=float(height-2)/yy;

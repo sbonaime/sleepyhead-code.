@@ -210,6 +210,7 @@ public:
 
     void qglColor(QColor col);
     void renderText(QString text, int x,int y, float angle=0.0, QColor color=Qt::black, QFont *font=defaultfont);
+    void roundY(EventDataType &miny, EventDataType &maxy);
 
     void drawGLBuf();
     QString title() { return m_title; }

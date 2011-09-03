@@ -1010,6 +1010,39 @@ void gGraph::ResetBounds()
     max_y=MaxY();
 }
 
+void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
+{
+    int m;
+    if (maxy>500) {
+        m=ceil(maxy/100.0);
+        maxy=m*100;
+        m=floor(miny/100.0);
+        miny=m*100;
+    } else if (maxy>150) {
+        m=ceil(maxy/50.0);
+        maxy=m*50;
+        m=floor(miny/50.0);
+        miny=m*50;
+    } else if (maxy>80) {
+        m=ceil(maxy/20.0);
+        maxy=m*20;
+        m=floor(miny/20.0);
+        miny=m*20;
+    } else if (maxy>30) {
+        m=ceil(maxy/10.0);
+        maxy=m*10;
+        m=floor(miny/10.0);
+        miny=m*10;
+    } else if (maxy>1) {
+        m=ceil(maxy/5.0);
+        maxy=m*5;
+        m=floor(miny/5.0);
+        miny=m*5;
+    } else {
+        maxy=ceil(maxy);
+        miny=floor(miny);
+    }
+}
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     QGLWidget(parent,shared),
