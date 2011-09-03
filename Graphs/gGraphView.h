@@ -256,6 +256,8 @@ public:
     gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
     void redraw();
+    void timedRedraw(int ms);
+
     void threadDone();
     bool threadRunning() { return m_thread->isRunning(); }
     void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
@@ -314,8 +316,8 @@ public:
 
     float scaleY() { return m_scaleY; }
 
-    void ResetBounds(); //short group=0);
-    void SetXBounds(qint64 minx, qint64 maxx, short group=0);
+    void ResetBounds(bool refresh=true); //short group=0);
+    void SetXBounds(qint64 minx, qint64 maxx, short group=0,bool refresh=true);
 
     bool hasGraphs() { return m_graphs.size()>0; }
 
@@ -323,6 +325,7 @@ public:
     QPoint globalPointClicked() { return m_global_point_clicked; }
     void setPointClicked(QPoint p) { m_point_clicked=p; }
     void setGlobalPointClicked(QPoint p) { m_global_point_clicked=p; }
+    void timedRedraw(int ms);
 
     gGraph *m_selected_graph;
 
@@ -395,6 +398,7 @@ signals:
 
 public slots:
     void scrollbarValueChanged(int val);
+    void TimedRefresh();
 };
 
 #endif // GGRAPHVIEW_H

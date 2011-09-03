@@ -2,6 +2,7 @@
 #include <QFontMetrics>
 #include "gGraphView.h"
 #include "SleepLib/profiles.h"
+#include <QTimer>
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -567,8 +568,9 @@ void gGraph::paint(int originX, int originY, int width, int height)
     }
 
     if (m_selection.width()>0 && m_selecting_area) {
-        m_quad->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top);
-        m_quad->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom);
+        QColor col(128,128,255,128);
+        quads()->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top,col);
+        quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom,col);
     }
 
 }
@@ -581,6 +583,7 @@ void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short heigh
     m_layers.push_back(l);
 }
 void gGraph::redraw() { m_graphview->updateGL(); }
+void gGraph::timedRedraw(int ms) { m_graphview->timedRedraw(ms); }
 
 void gGraph::mouseMoveEvent(QMouseEvent * event)
 {
@@ -595,6 +598,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
 
 
     bool nolayer=false;
+    bool doredraw=false;
 
     if (m_graphview->m_selected_graph==this) {
         if (event->buttons() & Qt::LeftButton) {
@@ -605,8 +609,9 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (a2>w) a2=w;
             m_selecting_area=true;
             m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
-            m_graphview->updateGL();
-            nolayer=true;
+            //m_graphview->updateGL();
+            nolayer=false;
+            doredraw=true;
         } else if (event->buttons() & Qt::RightButton) {
             m_graphview->setPointClicked(event->pos());
             x-=left+m_marginleft;
@@ -633,7 +638,8 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                     min_x=rmax_x-xx;
                 }
                 //if (a2>rmax_x) a2=rmax_x;
-                m_graphview->SetXBounds(min_x,max_x,m_group);
+                m_graphview->SetXBounds(min_x,max_x,m_group,false);
+                doredraw=true;
                 nolayer=true;
             } else {
                 qint64 qq=rmax_x-rmin_x;
@@ -652,21 +658,21 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                     max_x=rmax_x;
                     min_x=rmax_x-xx;
                 }
-                m_graphview->SetXBounds(min_x,max_x,m_group);
+                m_graphview->SetXBounds(min_x,max_x,m_group,false);
+                doredraw=true;
                 nolayer=true;
 
             }
         }
     }
 
-    if (!nolayer) { // no mouse button
-        bool doredraw=false;
+    //if (!nolayer) { // no mouse button
         for (int i=0;i<m_layers.size();i++) {
             if (m_layers[i]->mouseMoveEvent(event)) doredraw=true;
         }
         if (doredraw)
             m_graphview->updateGL();
-    }
+    //}
     //if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
 //        x-=left+m_marginleft;
 //        y-=top+m_margintop;
@@ -1211,7 +1217,7 @@ void gGraphView::scrollbarValueChanged(int val)
         updateGL(); // do this on a timer?
     }
 }
-void gGraphView::ResetBounds() //short group)
+void gGraphView::ResetBounds(bool refresh) //short group)
 {
     for (int i=0;i<m_graphs.size();i++) {
         //if (m_graphs[i]->group()==group)
@@ -1220,13 +1226,13 @@ void gGraphView::ResetBounds() //short group)
     updateScale();
 }
 
-void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group)
+void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
 {
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==group)
             m_graphs[i]->SetXBounds(minx,maxx);
     }
-    updateGL();
+    if (refresh) updateGL();
 }
 void gGraphView::updateScale()
 {
@@ -1692,6 +1698,15 @@ void gGraphView::setDay(Day * day)
         m_graphs[i]->setDay(day);
     }
 }
+void gGraphView::TimedRefresh()
+{
+    updateGL();
+}
+void gGraphView::timedRedraw(int ms)
+{
+    QTimer::singleShot(ms,this,SLOT(TimedRefresh()));
+}
+
 
 MyScrollBar::MyScrollBar(QWidget * parent)
     :QScrollBar(parent)
