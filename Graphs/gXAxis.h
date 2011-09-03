@@ -23,7 +23,7 @@ class gXAxis:public Layer
         void SetShowMajorTicks(bool b) { m_show_major_ticks=b; }
         bool ShowMinorTicks() { return m_show_minor_ticks; }
         bool ShowMajorTicks() { return m_show_major_ticks; }
-
+        void setUtcFix(bool b) { m_utcfix=b; }
     protected:
 //        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
         bool m_show_major_lines;
@@ -31,6 +31,7 @@ class gXAxis:public Layer
         bool m_show_minor_ticks;
         bool m_show_major_ticks;
 
+        bool m_utcfix;
 
         QColor m_line_color;
         QColor m_text_color;

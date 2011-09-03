@@ -22,6 +22,7 @@ gXAxis::gXAxis(QColor col,bool fadeout)
     m_show_minor_lines=false;
     m_show_minor_ticks=true;
     m_show_major_ticks=true;
+    m_utcfix=false;
     m_fadeout=fadeout;
     QDateTime d=QDateTime::currentDateTime();
     QTime t1=d.time();
@@ -66,14 +67,14 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         //fitmode=-1;
         fd="MMM dd";
     } else */
-    if (xx>86400000L) {         // Day
+    if (xx>=86400000L) {         // Day
         fd="MMM 00";
         dividx=0;
-        divmax=15;
+        divmax=7;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
-        dividx=6;
+        dividx=7;
         divmax=24;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
@@ -140,6 +141,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (py<start_px) continue;
         lines->add(py,top,py,top+4,linecol);
     }
+    int utcoff=m_utcfix ? QDateTime(QDate(1970,1,1),QTime(0,0,0)).secsTo(QDateTime(QDate(1970,1,1),QTime(0,0,0),Qt::UTC))/3600 : 0;
 
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
@@ -148,7 +150,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         qint64 j=i+tz_offset;
         int ms=j % 1000;
         int m=(j/60000L) % 60L;
-        int h=(j/3600000L) % 24L;
+        int h=((j/3600000L)-utcoff) % 24L;
         int s=(j/1000L) % 60L;
 
         if (fitmode==0) {

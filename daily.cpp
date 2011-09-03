@@ -111,7 +111,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
     bc->addSlice(CPAP_ClearAirway,QColor("purple"));
     BC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    BC->AddLayer(new gXAxis(),LayerBottom,0,gXAxis::Margin);
+    gXAxis *gx=new gXAxis();
+    gx->setUtcFix(true);
+    BC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     BC->AddLayer(bc);
     BC->AddLayer(new gXGrid());
 
@@ -1101,9 +1103,9 @@ Session * Daily::CreateJournalSession(QDate date)
         profile->AddMachine(m);
     }
     Session *sess=new Session(m,0);
-    QDateTime dt;
-    dt.setDate(date);
-    dt.setTime(QTime(17,0)); //5pm to make sure it goes in the right day
+    QDateTime dt(date,QTime(17,0));
+    //dt.setDate(date);
+    //dt.setTime(QTime(17,0)); //5pm to make sure it goes in the right day
     sess->set_first(qint64(dt.toTime_t())*1000L);
     dt=dt.addSecs(3600);
     sess->set_last(qint64(dt.toTime_t())*1000L);

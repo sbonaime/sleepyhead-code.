@@ -57,6 +57,7 @@ void gBarChart::SetDay(Day * day)
 
     for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+        //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
         dn=tt/86400;
         tt*=1000L;
         if (!m_minx || tt<m_minx) m_minx=tt;
@@ -91,7 +92,9 @@ void gBarChart::SetDay(Day * day)
     //m_minx-=86400000L;
 
    // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    //m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+
+    //m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(12,0,0)).toTime_t())*1000L;
     int i=0;
 
     //set miny & maxy here.. how?
@@ -128,9 +131,11 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     int daynum=0;
     float h,tmp;
 
-    qint64 offs=minx% 86400000L;
+
+    qint64 offs=(minx) % 86400000L;
     //zz*=86400000L;
-    float offset=offs/86400000.0;
+    float offset=(offs)/86400000.0;
+    //offset+=float(utcoff)/86400000.0;
 
     offset*=barw;
     px=left-offset;
