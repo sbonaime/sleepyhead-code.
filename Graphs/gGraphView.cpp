@@ -407,15 +407,15 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
-    quad=new GLBuffer(QColor(128,128,255,128),8,GL_QUADS);
-    quad->forceAntiAlias(true);
+    m_quad=new GLBuffer(QColor(128,128,255,128),64,GL_QUADS);
+    m_quad->forceAntiAlias(true);
 
     m_thread=new gThread(this);
 }
 gGraph::~gGraph()
 {
     delete m_thread;
-    delete quad;
+    delete m_quad;
 }
 bool gGraph::isEmpty()
 {
@@ -438,7 +438,7 @@ void gGraph::drawGLBuf()
     for (int i=0;i<m_layers.size();i++) {
         m_layers[i]->drawGLBuf();
     }
-    quad->draw();
+    m_quad->draw();
 }
 void gGraph::setDay(Day * day)
 {
@@ -567,23 +567,10 @@ void gGraph::paint(int originX, int originY, int width, int height)
     }
 
     if (m_selection.width()>0 && m_selecting_area) {
-        quad->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top);
-        quad->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom);
+        m_quad->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top);
+        m_quad->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom);
     }
 
-    //sleep(1);
-
-    //m_graphview->gl_mutex.lock();
-    /*QGLFormat fmt=m_graphview->format();
-    QGLContext ctx(fmt);
-    ctx.create(m_graphview->context());
-    ctx.doneCurrent();
-    ctx.makeCurrent(); */
-
-    //m_graphview->makeCurrent();
-    //drawGLBuf();
-    //ctx.doneCurrent();
-    //m_graphview->gl_mutex.unlock();
 }
 
 void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short height, short order, bool movable, short x, short y)
@@ -605,12 +592,9 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     //int h=m_lastbounds.height()-(bottom+m_marginbottom);
     double xx=max_x-min_x;
     double xmult=xx/w;
-    m_selecting_area=false;
 
 
-    for (int i=0;i<m_layers.size();i++) {
-        if (m_layers[i]->mouseMoveEvent(event)) return;
-    }
+    bool nolayer=false;
 
     if (m_graphview->m_selected_graph==this) {
         if (event->buttons() & Qt::LeftButton) {
@@ -622,6 +606,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             m_selecting_area=true;
             m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
             m_graphview->updateGL();
+            nolayer=true;
         } else if (event->buttons() & Qt::RightButton) {
             m_graphview->setPointClicked(event->pos());
             x-=left+m_marginleft;
@@ -649,6 +634,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 }
                 //if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(min_x,max_x,m_group);
+                nolayer=true;
             } else {
                 qint64 qq=rmax_x-rmin_x;
                 xx=max_x-min_x;
@@ -667,13 +653,20 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                     min_x=rmax_x-xx;
                 }
                 m_graphview->SetXBounds(min_x,max_x,m_group);
+                nolayer=true;
 
             }
-        } else {
-            // no mouse button
         }
     }
 
+    if (!nolayer) { // no mouse button
+        bool doredraw=false;
+        for (int i=0;i<m_layers.size();i++) {
+            if (m_layers[i]->mouseMoveEvent(event)) doredraw=true;
+        }
+        if (doredraw)
+            m_graphview->updateGL();
+    }
     //if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
 //        x-=left+m_marginleft;
 //        y-=top+m_margintop;
@@ -1000,6 +993,10 @@ GLBuffer * gGraph::backlines()
 {
     return m_graphview->backlines;
 }
+GLBuffer * gGraph::quads()
+{
+    return m_graphview->quads;
+}
 
 
 // Sets a new Min & Max X clipping, refreshing the graph and all it's layers.
@@ -1077,6 +1074,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
 
     lines=new GLBuffer(QColor(0,0,0,0),100000,GL_LINES); // big fat shared line list
     backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
+    quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
+    quads->forceAntiAlias(true);
 }
 gGraphView::~gGraphView()
 {
@@ -1086,6 +1085,8 @@ gGraphView::~gGraphView()
     delete masterlock;
     m_graphs.clear();
     delete lines;
+    delete backlines;
+    delete quads;
     if (m_scrollbar) {
         this->disconnect(SIGNAL(sliderMoved(int)),this);
     }
@@ -1393,6 +1394,7 @@ void gGraphView::paintGL()
         m_graphs[i]->drawGLBuf();
     }
     lines->draw();
+    quads->draw();
     DrawTextQue();
     if (pref["ShowDebug"].toBool()) {
         QString ss;

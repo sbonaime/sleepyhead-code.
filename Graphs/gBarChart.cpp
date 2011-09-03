@@ -5,10 +5,12 @@
 */
 
 #include <math.h>
+#include <QLabel>
 #include <QDateTime>
 #include "gYAxis.h"
 #include "gBarChart.h"
 
+extern QLabel * qstatus2;
 gBarChart::gBarChart(ChannelID code,QColor color,Qt::Orientation o)
 :Layer(code),m_orientation(o)
 {
@@ -33,6 +35,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_visible) return;
     //if (!m_day) return;
 
+    rtop=top;
     GLBuffer *lines=w.lines();
     QColor blk=Qt::black;
     lines->add(left, top, left, top+height, blk);
@@ -149,7 +152,6 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
         float val=total_val/float(total_days);
         QString z=m_label+"="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0)+" This is going in overview later";
         w.renderText(z,left,top-1);
-
         // val = AHI for selected area.
     }
 }
@@ -175,10 +177,25 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
         hl_day=zd;
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
         if (d!=m_values.end()) {
-            qDebug() << m_label+"="+QString::number(d.value()[0],'f',2);
-        }
+            QString z=m_label+"="+QString::number(d.value()[0],'f',2);
+            qstatus2->setText(z);
 
-        graph->redraw();
+            QColor col(255,255,128,200);
+
+            GLBuffer *lines=graph->lines();
+            graph->quads()->add(event->x()-20,rtop+y-12,event->x()-20,rtop+y+5,col);
+            graph->quads()->add(event->x()+75,rtop+y+5,event->x()+75,rtop+y-12,col);
+            QColor blk(0,0,0,255);
+            lines->add(event->x()-21,rtop+y-12,event->x()+76,rtop+y-12,blk);
+            lines->add(event->x()-21,rtop+y+6,event->x()+76,rtop+y+6,blk);
+            lines->add(event->x()-21,rtop+y-12,event->x()-21,rtop+y+6,blk);
+            lines->add(event->x()+76,rtop+y-12,event->x()+76,rtop+y+6,blk);
+
+            graph->renderText(z,event->x(),rtop+y);
+
+            return true;
+        }
+        //graph->redraw();
     }
     //qDebug() << l_left <<  x << hl_day << y << offset << barw;
     return false;

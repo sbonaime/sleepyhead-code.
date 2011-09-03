@@ -261,6 +261,7 @@ public:
     void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
     GLBuffer * lines();
     GLBuffer * backlines();
+    GLBuffer * quads();
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
 protected:
     //void invalidate();
@@ -293,7 +294,7 @@ protected:
     short m_group;
     short m_lastx23;
     Day * m_day;
-    GLBuffer * quad;
+    GLBuffer * m_quad;
 };
 
 class gGraphView : public QGLWidget
@@ -340,7 +341,7 @@ public:
     void setDay(Day * day);
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
-    GLBuffer * lines, * backlines;
+    GLBuffer * lines, * backlines, *quads;
 protected:
     int m_idealthreads;
     Day * m_day;

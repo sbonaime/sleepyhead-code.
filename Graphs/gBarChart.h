@@ -38,6 +38,7 @@ class gBarChart:public Layer
         qint64 l_offset; // last offset
         float offset;    // in pixels;
         int l_left,l_top,l_width,l_height;
+        int rtop;
         qint64 l_minx,l_maxx;
         int hl_day;
         gGraph * graph;
