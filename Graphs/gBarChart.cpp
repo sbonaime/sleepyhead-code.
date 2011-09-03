@@ -176,7 +176,17 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
                     if (code==EmptyChannel) continue;
                     //look up it's color key
                     QColor & col=m_colors[j];
-                    static QColor col2=QColor(220,220,220,255);
+                    int cr=col.red()*3;
+                    int cg=col.green()*3;
+                    int cb=col.blue()*3;
+                    if (cr<64) cr=64;
+                    if (cg<64) cg=64;
+                    if (cb<64) cb=64;
+                    if (cr>255) cr=255;
+                    if (cg>255) cg=255;
+                    if (cb>255) cb=255;
+                    QColor col2=QColor(cr,cg,cb,255);
+                    //col2=QColor(220,220,220,255);
 
                     tmp=g.value(); //(g.value()/float(total));
                     h=tmp*ymult; //(float(total)*ymult); // height of chunk
