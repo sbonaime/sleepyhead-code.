@@ -144,6 +144,14 @@ protected:
     short m_order;                     // order for positioning..
     LayerPosition m_position;
     QVector<GLBuffer *> mgl_buffers;
+
+    // Default layer mouse handling = Do nothing
+    virtual bool wheelEvent(QWheelEvent * event) { return false; }
+    virtual bool mouseMoveEvent(QMouseEvent * event) { return false; }
+    virtual bool mousePressEvent(QMouseEvent * event) { return false; }
+    virtual bool mouseReleaseEvent(QMouseEvent * event) { return false; }
+    virtual bool mouseDoubleClickEvent(QMouseEvent * event) { return false; }
+    virtual bool keyPressEvent(QKeyEvent * event) { return false; }
 };
 
 class LayerGroup:public Layer
@@ -163,6 +171,8 @@ public:
 
 protected:
     QVector<Layer *> layers;
+
+    //overide mouse handling to pass to sublayers..
 };
 
 class gGraph;
@@ -245,11 +255,13 @@ public:
     void setDay(Day * day);
     gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
+    void redraw();
     void threadDone();
     bool threadRunning() { return m_thread->isRunning(); }
     void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
     GLBuffer * lines();
     GLBuffer * backlines();
+    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
 protected:
     //void invalidate();
 
@@ -268,7 +280,6 @@ protected:
     QVector<Layer *> m_layers;
     float m_height,m_width;
 
-    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
     short left,right,top,bottom; // dirty magin hacks..
 
     int m_min_height;

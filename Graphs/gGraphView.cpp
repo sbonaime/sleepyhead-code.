@@ -593,6 +593,8 @@ void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short heigh
     l->setPos(x,y);
     m_layers.push_back(l);
 }
+void gGraph::redraw() { m_graphview->updateGL(); }
+
 void gGraph::mouseMoveEvent(QMouseEvent * event)
 {
    // qDebug() << m_title << "Move" << event->pos() << m_graphview->pointClicked();
@@ -604,6 +606,11 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     double xx=max_x-min_x;
     double xmult=xx/w;
     m_selecting_area=false;
+
+
+    for (int i=0;i<m_layers.size();i++) {
+        if (m_layers[i]->mouseMoveEvent(event)) return;
+    }
 
     if (m_graphview->m_selected_graph==this) {
         if (event->buttons() & Qt::LeftButton) {
@@ -662,18 +669,21 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 m_graphview->SetXBounds(min_x,max_x,m_group);
 
             }
+        } else {
+            // no mouse button
         }
     }
 
-    if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
-        x-=left+m_marginleft;
-        y-=top+m_margintop;
-        //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
-    }
+    //if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
+//        x-=left+m_marginleft;
+//        y-=top+m_margintop;
+//        //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << m_height;
+//    }
 }
 void gGraph::mousePressEvent(QMouseEvent * event)
 {
-    event=event;
+    for (int i=0;i<m_layers.size();i++)
+        if (m_layers[i]->mousePressEvent(event)) return ;
     /*int y=event->pos().y();
     int x=event->pos().x();
     int w=m_lastbounds.width()-(right+m_marginright);
@@ -691,6 +701,10 @@ void gGraph::mousePressEvent(QMouseEvent * event)
 
 void gGraph::mouseReleaseEvent(QMouseEvent * event)
 {
+    for (int i=0;i<m_layers.size();i++)
+        if (m_layers[i]->mouseReleaseEvent(event))
+            return;
+
     int y=event->pos().y();
     int x=event->pos().x();
     int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);

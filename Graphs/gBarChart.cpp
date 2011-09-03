@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <QDateTime>
+#include "gYAxis.h"
 #include "gBarChart.h"
 
 gBarChart::gBarChart(ChannelID code,QColor color,Qt::Orientation o)
@@ -14,6 +15,7 @@ gBarChart::gBarChart(ChannelID code,QColor color,Qt::Orientation o)
     addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
     quads->forceAntiAlias(true);
     m_empty=true;
+    hl_day=-1;
 }
 gBarChart::~gBarChart()
 {
@@ -51,11 +53,16 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType yy=maxy-miny;
     EventDataType ymult=float(height-2)/yy;
 
-    float barw=(float(width)/float(days));
+    barw=(float(width)/float(days));
 
     qint64 ts;
 
+    graph=&w;
     float px=left;
+    l_left=w.m_marginleft+gYAxis::Margin;
+    l_top=w.m_margintop;
+    l_width=width;
+    l_height=height;
     float py;
     EventDataType total;
 
@@ -63,13 +70,13 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     float h,tmp;
 
 
-    qint64 offs=(minx) % 86400000L;
-    //zz*=86400000L;
-    float offset=(offs)/86400000.0;
-    //offset+=float(utcoff)/86400000.0;
+    l_offset=(minx) % 86400000L;
+    offset=float(l_offset)/86400000.0;
 
     offset*=barw;
     px=left-offset;
+    l_minx=minx;
+    l_maxx=maxx+86400000L;
 
     int total_days=0;
     double total_val=0;
@@ -96,7 +103,8 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
             for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
                 short j=g.key();
                 if (!j) continue;
-                QColor & col=m_colors[j-1];
+                QColor col=m_colors[j-1];
+
                 int cr,cg,cb;
 
                 cr=col.red();
@@ -114,6 +122,10 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
                 if (cr>255) cr=255;
                 if (cg>255) cg=255;
                 if (cb>255) cb=255;
+
+                if (zd==hl_day) {
+                    col=QColor("gold");
+                }
                 QColor col2=QColor(cr,cg,cb,255);
                 //col2=QColor(220,220,220,255);
 
@@ -141,6 +153,47 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
         // val = AHI for selected area.
     }
 }
+bool gBarChart::mouseMoveEvent(QMouseEvent *event)
+{
+    int x=event->x()-l_left;
+    int y=event->y()-l_top;
+    if (!(x>=0 && y>=0 && x<l_width && y<l_height)) {
+        hl_day=-1;
+
+        graph->redraw();
+        return false;
+    }
+
+    double xx=l_maxx-l_minx;
+    double xmult=xx/double(l_width+barw);
+
+    qint64 mx=xmult*double(x-offset);
+    mx+=l_minx;
+    mx=mx+l_offset;//-86400000L;
+    int zd=mx/86400000L;
+    if (hl_day!=zd) {
+        hl_day=zd;
+        QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
+        if (d!=m_values.end()) {
+            qDebug() << m_label+"="+QString::number(d.value()[0],'f',2);
+        }
+
+        graph->redraw();
+    }
+    //qDebug() << l_left <<  x << hl_day << y << offset << barw;
+    return false;
+}
+
+bool gBarChart::mousePressEvent(QMouseEvent * event)
+{
+    return false;
+}
+
+bool gBarChart::mouseReleaseEvent(QMouseEvent * event)
+{
+    return false;
+}
+
 
 UsageChart::UsageChart(Profile *profile)
     :gBarChart()

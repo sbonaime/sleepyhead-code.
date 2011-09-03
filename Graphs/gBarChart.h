@@ -33,6 +33,18 @@ class gBarChart:public Layer
         bool m_empty;
         int m_fday;
         QString m_label;
+
+        float barw; // bar width from last draw
+        qint64 l_offset; // last offset
+        float offset;    // in pixels;
+        int l_left,l_top,l_width,l_height;
+        qint64 l_minx,l_maxx;
+        int hl_day;
+        gGraph * graph;
+        virtual bool mouseMoveEvent(QMouseEvent * event);
+        virtual bool mousePressEvent(QMouseEvent * event);
+        virtual bool mouseReleaseEvent(QMouseEvent * event);
+
 };
 
 class AHIChart:public gBarChart
