@@ -1357,8 +1357,8 @@ void gGraphView::paintGL()
         }
         py=ceil(py+h+graphSpacer);
     }
+    QColor col=Qt::black;
     if (!numgraphs) {
-        QColor col=Qt::black;
         int x,y;
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
@@ -1370,7 +1370,6 @@ void gGraphView::paintGL()
        masterlock->acquire(m_idealthreads); // ask for all the CPU's back..
        masterlock->release(m_idealthreads);
     }
-    qint64 el=time.elapsed();
 
     //((QGLContext*)context())->makeCurrent();
 
@@ -1381,11 +1380,17 @@ void gGraphView::paintGL()
     }
     lines->draw();
     DrawTextQue();
+    if (pref["ShowDebug"].toBool()) {
+        QString ss;
+        ss="Draw took "+QString::number(time.elapsed())+"ms";
+        AddTextQue(ss,width()-120,8,0,col,defaultfont);
+        DrawTextQue();
+    }
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
 
     swapBuffers(); // Dump to screen.
-    qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
+    //qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
 }
 
 // For manual scrolling
