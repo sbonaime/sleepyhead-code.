@@ -121,6 +121,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType maxy=m_maxy;
     EventDataType miny=m_miny;
 
+    // make this a reusable function in gGraph
     int m;
     if (maxy>500) {
         m=ceil(maxy/100.0);
@@ -200,8 +201,8 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
                 if (g!=d.value().end()) {
                     if (code==EmptyChannel) continue;
                     //look up it's color key
-                    QColor col=m_colors[j];
-                    QColor col2=Qt::white;
+                    QColor & col=m_colors[j];
+                    static QColor col2=QColor(220,220,220,255);
 
                     tmp=g.value(); //(g.value()/float(total));
                     h=tmp*ymult; //(float(total)*ymult); // height of chunk
@@ -222,7 +223,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     }
     if (total_days>0) {
         float val=total_val/float(total_days);
-        QString z="AHI="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0);
+        QString z="AHI="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0)+" This is going in overview later";
         w.renderText(z,left,top-1);
 
         // val = AHI for selected area.

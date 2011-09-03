@@ -108,6 +108,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     bc=new gBarChart();
     bc->setProfile(profile);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"));
+    bc->addSlice(CPAP_Apnea,QColor("dark green"));
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
     bc->addSlice(CPAP_ClearAirway,QColor("purple"));
     BC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);

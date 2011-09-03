@@ -152,14 +152,14 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         int m=(j/60000L) % 60L;
         int h=((j/3600000L)-utcoff) % 24L;
         int s=(j/1000L) % 60L;
+        static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+        int d=(j/86400000) % 7;
 
         if (fitmode==0) {
             int d=(j/1000);
             QDateTime dt=QDateTime::fromTime_t(d);
             tmpstr=dt.toString("MMM dd");
         //} else if (fitmode==0) {
-//            static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-//            int d=(j/86400000) % 7;
 //            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==1) { // minute
             tmpstr=QString("%1:%2").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
