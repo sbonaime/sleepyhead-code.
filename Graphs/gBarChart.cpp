@@ -179,21 +179,19 @@ void UsageChart::SetDay(Day * day)
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
         dn=tt/86400;
         tt*=1000L;
+        // there could possibly may be a bug by doing this.. if charts don't match up.. come back here and enable the m_minx right down the bottom of this function.
         if (!m_minx || tt<m_minx) m_minx=tt;
         if (!m_maxx || tt>m_maxx) m_maxx=tt;
 
+        Day *day=m_profile->GetDay(d.key(),MT_CPAP);
+        if (day) {
+            total=day->hours();
 
-        total=0;
-        bool fnd=false;
-
-        for (int i=0;i<d.value().size();i++) {
-            Day *day=d.value()[i];
-            total+=day->hours();
+            m_values[dn][0]=total;
+            m_values[dn][1]=total;
+            if (total<m_miny) m_miny=total;
+            if (total>m_maxy) m_maxy=total;
         }
-        m_values[dn][0]=total;
-        m_values[dn][1]=total;
-        if (total<m_miny) m_miny=total;
-        if (total>m_maxy) m_maxy=total;
     }
     m_maxy=ceil(m_maxy);
     //m_miny=floor(m_miny);
