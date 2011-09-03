@@ -11,12 +11,8 @@
 gBarChart::gBarChart(ChannelID code,QColor color,Qt::Orientation o)
 :Layer(code),m_orientation(o)
 {
-    //Xaxis=new gXAxis();
     addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
-    //addGLBuf(lines=new GLBuffer(col,20,GL_LINES));
     quads->forceAntiAlias(true);
-    //lines->setAntiAlias(true);
-    //lines->setSize(2);
     m_empty=true;
 }
 gBarChart::~gBarChart()
@@ -25,81 +21,9 @@ gBarChart::~gBarChart()
 }
 void gBarChart::SetDay(Day * day)
 {
-
-    if (!m_profile) {
-        qWarning() << "Forgot to set profile for gBarChart dummy!";
-        m_day=NULL;
-        return;
-    }
-    Layer::SetDay(day);
-    //m_empty=true;
-   // if (!day) return;
-    m_empty=false;
-    /*for (int i=0;i<m_codes.size();i++) {
-        if (day->count(m_codes[i])>0) {
-            m_empty=false;
-            break;
-        }
-    } */
-
-    m_values.clear();
-    m_miny=9999999;
-    m_maxy=-9999999;
-    m_minx=0;
-    m_maxx=0;
-
-    int dn;
-    EventDataType tmp,total;
-    ChannelID code;
-
-    m_fday=0;
-    qint64 tt;
-
-    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
-        tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
-        //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
-        dn=tt/86400;
-        tt*=1000L;
-        if (!m_minx || tt<m_minx) m_minx=tt;
-        if (!m_maxx || tt>m_maxx) m_maxx=tt;
-
-
-        total=0;
-        bool fnd=false;
-        for (int j=0;j<m_codes.size();j++) {
-            code=m_codes[j];
-            for (int i=0;i<d.value().size();i++) {
-                Day *day=d.value()[i];
-                if (day->channelExists(code)) { // too many lookups happening here.. stop the crap..
-                    tmp=day->count(code)/day->hours();
-                    if (tmp>0) {
-                        fnd=true;
-                        total+=tmp;
-                        m_values[dn][code]=tmp;
-                        break;
-                    }
-                }
-            }
-        }
-        if (fnd) {
-            if (!m_fday) m_fday=dn;
-            m_values[dn][EmptyChannel]=total;
-            if (total<m_miny) m_miny=total;
-            if (total>m_maxy) m_maxy=total;
-       }
-    }
-    m_maxy=ceil(m_maxy);
-    //m_miny=floor(m_miny);
-    m_miny=0;
-    //m_minx-=86400000L;
-
-   // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-
-    //m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(12,0,0)).toTime_t())*1000L;
-    int i=0;
-
-    //set miny & maxy here.. how?
+    m_maxx=m_minx=0;
+    m_maxy=m_miny=0;
+    m_empty=true;
 }
 
 void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
@@ -151,7 +75,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     double total_val=0;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         int zd=Q/86400000L;
-        QHash<int,QMap<ChannelID,EventDataType> >::iterator d=m_values.find(zd);
+        QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(zd);
         if (Q<minx) continue;
         if (Q>maxx+86400000) continue;  // break; // out of order if I end up using a hash instead.??
         if (d!=m_values.end()) {
@@ -161,7 +85,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
             if (x2>left+width) x2=left+width;
             if (x2<x1) continue;
             ChannelID code;
-            total=d.value()[EmptyChannel];
+            total=d.value()[0];
 
 
             if (total>0) {
@@ -169,37 +93,41 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
                 total_days++;
             }
             py=top+height;
-            for (int j=0;j<m_codes.size();j++) {
-                code=m_codes[j];
-                QMap<ChannelID,EventDataType>::iterator g=d.value().find(code);
-                if (g!=d.value().end()) {
-                    if (code==EmptyChannel) continue;
-                    //look up it's color key
-                    QColor & col=m_colors[j];
-                    int cr=col.red()*3;
-                    int cg=col.green()*3;
-                    int cb=col.blue()*3;
-                    if (cr<64) cr=64;
-                    if (cg<64) cg=64;
-                    if (cb<64) cb=64;
-                    if (cr>255) cr=255;
-                    if (cg>255) cg=255;
-                    if (cb>255) cb=255;
-                    QColor col2=QColor(cr,cg,cb,255);
-                    //col2=QColor(220,220,220,255);
+            for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
+                short j=g.key();
+                if (!j) continue;
+                QColor & col=m_colors[j-1];
+                int cr,cg,cb;
 
-                    tmp=g.value(); //(g.value()/float(total));
-                    h=tmp*ymult; //(float(total)*ymult); // height of chunk
-                    quads->add(x1,py,col);
-                    quads->add(x1,py-h,col);
-                    quads->add(x2,py-h,col2);
-                    quads->add(x2,py,col2);
-                    lines->add(x1,py,x1,py-h,blk);
-                    lines->add(x1,py-h,x2,py-h,blk);
-                    lines->add(x1,py,x2,py,blk);
-                    lines->add(x2,py,x2,py-h,blk);
-                    py-=h;
-                }
+                cr=col.red();
+                cg=col.green();
+                cb=col.blue();
+
+                if (cr<64) cr=64;
+                if (cg<64) cg=64;
+                if (cb<64) cb=64;
+
+                cr*=2;
+                cg*=2;
+                cb*=2;
+
+                if (cr>255) cr=255;
+                if (cg>255) cg=255;
+                if (cb>255) cb=255;
+                QColor col2=QColor(cr,cg,cb,255);
+                //col2=QColor(220,220,220,255);
+
+                tmp=g.value(); //(g.value()/float(total));
+                h=tmp*ymult; //(float(total)*ymult); // height of chunk
+                quads->add(x1,py,col);
+                quads->add(x1,py-h,col);
+                quads->add(x2,py-h,col2);
+                quads->add(x2,py,col2);
+                lines->add(x1,py,x1,py-h,blk);
+                lines->add(x1,py-h,x2,py-h,blk);
+                lines->add(x1,py,x2,py,blk);
+                lines->add(x2,py,x2,py-h,blk);
+                py-=h;
             }
         }
         px+=barw;
@@ -207,10 +135,144 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     }
     if (total_days>0) {
         float val=total_val/float(total_days);
-        QString z="AHI="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0)+" This is going in overview later";
+        QString z=m_label+"="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0)+" This is going in overview later";
         w.renderText(z,left,top-1);
 
         // val = AHI for selected area.
     }
+}
+
+UsageChart::UsageChart(Profile *profile)
+    :gBarChart()
+{
+    m_profile=profile;
+    m_colors.push_back(Qt::green);
+    m_label="Hours";
+}
+
+void UsageChart::SetDay(Day * day)
+{
+    if (!m_profile) {
+        qWarning() << "Forgot to set profile for gBarChart dummy!";
+        m_day=NULL;
+        return;
+    }
+    Layer::SetDay(day);
+    //m_empty=true;
+   // if (!day) return;
+    m_empty=false;
+
+    m_values.clear();
+    m_miny=9999999;
+    m_maxy=-9999999;
+    m_minx=0;
+    m_maxx=0;
+
+    int dn;
+    EventDataType tmp,total;
+    ChannelID code;
+
+    m_fday=0;
+    qint64 tt;
+
+    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
+        tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+        dn=tt/86400;
+        tt*=1000L;
+        if (!m_minx || tt<m_minx) m_minx=tt;
+        if (!m_maxx || tt>m_maxx) m_maxx=tt;
+
+
+        total=0;
+        bool fnd=false;
+
+        for (int i=0;i<d.value().size();i++) {
+            Day *day=d.value()[i];
+            total+=day->hours();
+        }
+        m_values[dn][0]=total;
+        m_values[dn][1]=total;
+        if (total<m_miny) m_miny=total;
+        if (total>m_maxy) m_maxy=total;
+    }
+    m_maxy=ceil(m_maxy);
+    //m_miny=floor(m_miny);
+    m_miny=0;
+
+   // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+}
+
+
+AHIChart::AHIChart(Profile *profile)
+    :gBarChart()
+{
+    m_label="AHI";
+    m_profile=profile;
+}
+
+void AHIChart::SetDay(Day * day)
+{
+    if (!m_profile) {
+        qWarning() << "Forgot to set profile for gBarChart dummy!";
+        m_day=NULL;
+        return;
+    }
+    Layer::SetDay(day);
+
+    m_values.clear();
+    m_miny=9999999;
+    m_maxy=-9999999;
+    m_minx=0;
+    m_maxx=0;
+
+    int dn;
+    EventDataType tmp,total;
+    ChannelID code;
+
+    m_fday=0;
+    qint64 tt;
+
+    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
+        tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+        //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
+        dn=tt/86400;
+        tt*=1000L;
+        if (!m_minx || tt<m_minx) m_minx=tt;
+        if (!m_maxx || tt>m_maxx) m_maxx=tt;
+
+
+        total=0;
+        bool fnd=false;
+        for (int j=0;j<m_codes.size();j++) {
+            code=m_codes[j];
+            for (int i=0;i<d.value().size();i++) {
+                Day *day=d.value()[i];
+                if (day->channelExists(code)) { // too many lookups happening here.. stop the crap..
+                    tmp=day->count(code)/day->hours();
+                    if (tmp>0) {
+                        fnd=true;
+                        total+=tmp;
+                        m_values[dn][j+1]=tmp;
+                        break;
+                    }
+                }
+            }
+        }
+        if (fnd) {
+            if (!m_fday) m_fday=dn;
+            m_values[dn][0]=total;
+            if (total<m_miny) m_miny=total;
+            if (total>m_maxy) m_maxy=total;
+       }
+    }
+    m_maxy=ceil(m_maxy);
+    //m_miny=floor(m_miny);
+    m_miny=0;
+
+   // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+
+    m_empty=m_values.size()==0;
 }
 

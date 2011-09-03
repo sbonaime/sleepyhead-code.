@@ -25,21 +25,27 @@ class gBarChart:public Layer
     protected:
         Qt::Orientation m_orientation;
 
-        // d.Set(i+2400000.5+.000001); // JDN vs MJD vs Rounding errors
-
-        virtual const QString & FormatX(double v) { static QString t; QDateTime d; d=d.fromTime_t(v*86400.0); t=d.toString("MMM dd"); return t; }
-        //virtual const wxString & FormatX(double v) { static wxString t; wxDateTime d; d.Set(vi*86400000.0); t=d.Format(wxT("HH:mm")); return t; };
-        //virtual const wxString & FormatX(double v) { static wxString t; t=wxString::Format(wxT("%.1f"),v); return t; };
-        virtual const QString & FormatY(double v) { static QString t; t.sprintf("%.1f",v); return t; }
-
-        //gXAxis *Xaxis;
         QVector<QColor> m_colors;
         QVector<ChannelID> m_codes;
-        QHash<int,QMap<ChannelID,EventDataType> > m_values;
+        QHash<int,QHash<short,EventDataType> > m_values;
         Profile * m_profile;
         GLBuffer *quads;
         bool m_empty;
         int m_fday;
+        QString m_label;
+};
+
+class AHIChart:public gBarChart
+{
+public:
+    AHIChart(Profile *profile);
+    virtual void SetDay(Day * day);
+};
+class UsageChart:public gBarChart
+{
+public:
+    UsageChart(Profile *profile);
+    virtual void SetDay(Day * day);
 };
 
 #endif // GBARCHART_H
