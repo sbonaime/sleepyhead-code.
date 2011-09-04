@@ -159,7 +159,7 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
 {
     int x=event->x()-l_left;
     int y=event->y()-l_top;
-    if (!(x>=0 && y>=0 && x<l_width && y<l_height)) {
+    if ((x<0 || y<0 || x>l_width || y>l_height)) {
         hl_day=-1;
         //graph->timedRedraw(2000);
         return false;
@@ -221,6 +221,8 @@ bool gBarChart::mousePressEvent(QMouseEvent * event)
 
 bool gBarChart::mouseReleaseEvent(QMouseEvent * event)
 {
+    hl_day=-1;
+    graph->timedRedraw(2000);
     return false;
 }
 
