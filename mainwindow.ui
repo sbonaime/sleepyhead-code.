@@ -566,7 +566,7 @@
      <x>0</x>
      <y>0</y>
      <width>668</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -594,7 +594,7 @@
     <addaction name="separator"/>
     <addaction name="actionUse_AntiAliasing"/>
     <addaction name="actionOverlay_Bars"/>
-    <addaction name="actionDisplay_Graph_Snapshots"/>
+    <addaction name="actionEnable_Multithreading"/>
     <addaction name="action_Link_Graphs"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
@@ -734,7 +734,7 @@
     <string>&amp;Reset Graph Layout</string>
    </property>
   </action>
-  <action name="actionDisplay_Graph_Snapshots">
+  <action name="actionEnable_Multithreading">
    <property name="checkable">
     <bool>true</bool>
    </property>

@@ -1346,11 +1346,10 @@ void gGraphView::paintGL()
     bool threaded;
 
     // Tempory hack using this pref..
-    if (pref["EnableGraphSnapshots"].toBool() && (m_idealthreads>1)) {
+    if (pref["EnableMultithreading"].toBool() && (m_idealthreads>1)) {
         threaded=true;
     } else threaded=false;
 
-    threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1392,13 +1391,13 @@ void gGraphView::paintGL()
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
     }
-    int thr=1;
-    if (threaded) thr=m_idealthreads;
+    int thr;
 
     if (threaded) {
+       thr=m_idealthreads;
        masterlock->acquire(m_idealthreads); // ask for all the CPU's back..
        masterlock->release(m_idealthreads);
-    }
+    } else thr=1;
 
     //((QGLContext*)context())->makeCurrent();
 

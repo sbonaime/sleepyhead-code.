@@ -78,9 +78,9 @@ private slots:
 
     void on_action_Preferences_triggered();
 
-    void on_actionDisplay_Graph_Snapshots_toggled(bool arg1);
-
     void on_oximetryButton_clicked();
+
+    void on_actionEnable_Multithreading_toggled(bool arg1);
 
 private:
     Ui::MainWindow *ui;

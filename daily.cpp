@@ -886,7 +886,7 @@ void Daily::Load(QDate date)
         // as it only relates to text drawing, which the Pie chart does not do
         // ^^ Scratch that.. pie now includes text..
 
-        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+//        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
 //            if (ahi+rei+fli>0) {
 //                html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
 //                G_AHI->setFixedSize(gwwidth,120);
@@ -899,7 +899,7 @@ void Daily::Load(QDate date)
 //            } else {
 //                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
 //            }
-        }
+//        }
     }
     html+="</table>";
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -945,7 +945,7 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     if (cpap) {
-        if (pref["EnableGraphSnapshots"].toBool()) {
+      //  if (pref["EnableGraphSnapshots"].toBool()) {
       /*      if (cpap->channelExists(CPAP_Pressure)) {
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
                 TAP->setFixedSize(gwwidth,30);
@@ -978,7 +978,7 @@ void Daily::Load(QDate date)
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             } */
 
-        }
+        //}
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
         QDateTime fd,ld;

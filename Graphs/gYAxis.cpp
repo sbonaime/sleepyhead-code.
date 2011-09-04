@@ -139,13 +139,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     double mny=miny;
     if (miny<0) {
         mny=-mxy;
-    } else {
     }
-    //double mny=MIN(fabs(maxy),fabs(miny));
-    //if (miny<0) mny=-mny;
-    //if (maxy<0) mxy=-mxy;
-    //mny=miny;
-    //mxy=maxy;
 
     double rxy=mxy-mny;
     double ymult=height/rxy;
@@ -163,11 +157,6 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
     lines=w.backlines();
 
-    //double q=((maxy-(miny+(min_ytick/2.0)))/min_ytick)*4;
-    /*if (q>=maxverts) {
-        qDebug() << "Would exeed maxverts. Should be another two bounds exceeded messages after this. (I can do a minor optimisation by disabling the other checks if this turns out to be consistent)" << q << maxverts;
-    }*/
-
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         if (dy<5) {
@@ -175,12 +164,10 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         } else {
             fd=QString().sprintf("%.1f",i*m_yaxis_scale);
         }
-        //fd=Format(i*m_yaxis_scale); // Override this as a function.
+
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=top+height-ty;
-        //w.renderText(start_px-12-x,scry-(h-(y/2.0)),fd);
-        //DrawText(w,fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
         w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
 
         lines->add(left+width-4,h,left+width,h,m_line_color);
@@ -201,6 +188,5 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             break;
         }
     }
-    //vertarray->draw();
 }
 

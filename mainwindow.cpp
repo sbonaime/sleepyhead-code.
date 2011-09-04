@@ -100,8 +100,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
-    if (!pref.Exists("EnableGraphSnapshots")) pref["EnableGraphSnapshots"]=false;
-    ui->actionDisplay_Graph_Snapshots->setChecked(pref["EnableGraphSnapshots"].toBool());
+    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=false;
+    ui->actionEnable_Multithreading->setChecked(pref["EnableMultithreading"].toBool());
 
 
     if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=true;
@@ -367,17 +367,15 @@ void MainWindow::on_action_Preferences_triggered()
     }
 }
 
-void MainWindow::on_actionDisplay_Graph_Snapshots_toggled(bool checked)
-{
-    //if (QMessageBox::question(this,"Warning","Turning this feature on has caused crashes on some hardware configurations due to OpenGL/Qt bugs.\nIf you have already seen Pie Charts & CandleSticks in the left panel of daily view previously, you're not affected by this bug.\nAre you sure you want to enable this?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
-        pref["EnableGraphSnapshots"]=checked;
-    //}
-}
-
 void MainWindow::on_oximetryButton_clicked()
 {
     if (oximetry) {
         ui->tabWidget->setCurrentWidget(oximetry);
         oximetry->RedrawGraphs();
     }
+}
+
+void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
+{
+    pref["EnableMultithreading"]=checked;
 }
