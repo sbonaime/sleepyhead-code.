@@ -71,7 +71,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     layout->addWidget(scrollbar,0);
 
     const int default_height=150;
-    SF=new gGraph(GraphView,"Event Flags",default_height);
 
   //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
     /*gSegmentChart * seg=new gSegmentChart(GST_Pie);
@@ -86,6 +85,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     BC=new gGraph(GraphView,"AHI Chart",default_height,2);
     UC=new gGraph(GraphView,"Usage Chart",default_height,2);
+    SF=new gGraph(GraphView,"Event Flags",default_height);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
     MP=new gGraph(GraphView,"Mask Pressure",default_height);
     PRD=new gGraph(GraphView,"Pressure",default_height);
