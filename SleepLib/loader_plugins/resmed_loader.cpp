@@ -503,6 +503,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                 do {
                     t+=tolower(data[pos++]);
                 } while ((data[pos]!=20) && (pos<recs)); // start code
+                duration+=10;
                 if (!t.isEmpty()) {
                     //code=MC_UNKNOWN;
                     if (t=="obstructive apnea") {
