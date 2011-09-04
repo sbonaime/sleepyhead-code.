@@ -283,7 +283,7 @@ void UsageChart::SetDay(Day * day)
             if (total>m_maxy) m_maxy=total;
         }
     }
-    m_maxy=ceil(m_maxy);
+    //m_maxy=ceil(m_maxy);
     //m_miny=floor(m_miny);
     m_miny=0;
 
@@ -354,7 +354,7 @@ void AHIChart::SetDay(Day * day)
             if (total>m_maxy) m_maxy=total;
        }
     }
-    m_maxy=ceil(m_maxy);
+    //m_maxy=ceil(m_maxy);
     //m_miny=floor(m_miny);
     m_miny=0;
 

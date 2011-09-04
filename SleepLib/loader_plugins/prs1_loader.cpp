@@ -1032,16 +1032,6 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             return false;
         }
     }
-    /*EventList *a;
-    for (int i=0;i<24;i++){
-        a=Code[i];
-        if (a) {
-            int v=ceil(a->max()/5);
-            a->setMax(v*5);
-            v=floor(a->min()/5);
-            a->setMin(v*5);
-        }
-    }*/
     session->updateLast(t);
     return true;
 }
@@ -1292,10 +1282,6 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             a->setMax(120);
             a->setMin(-120);
         } else if (wc[i]==CPAP_MaskPressure) {
-            /*int v=ceil(a->max()/5);
-            a->setMax(v*5);
-            v=floor(a->min()/5);
-            a->setMin(v*5); */
         }
         session->eventlist[wc[i]].push_back(a);
         session->updateLast(start+qint64(wdur[i])*1000L);

@@ -30,19 +30,12 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     EventDataType miny=w.min_y;
     EventDataType maxy=w.max_y;
 
-    if (miny<0) {
+    if (miny<0) { // even it up if it's starts negative
         miny=-MAX(fabs(miny),fabs(maxy));
-    }
-    EventDataType dy=maxy-miny;
-    if (dy<=0) {
-        if ((maxy==0) && (miny==0))
-            return;
-        //miny=miny;
-        maxy++;
-        dy=1;
     }
 
     w.roundY(miny,maxy);
+    EventDataType dy=maxy-miny;
 
     if (height<0) return;
 
@@ -121,55 +114,15 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     int x,y;
     int labelW=0;
 
-    double miny=w.min_y;
-    double maxy=w.max_y;
+    EventDataType miny=w.min_y;
+    EventDataType maxy=w.max_y;
 
-    if (miny<0) {
+    if (miny<0) { // even it up if it's starts negative
         miny=-MAX(fabs(miny),fabs(maxy));
     }
-    double dy=maxy-miny;
-    if (dy<=0) {
-        if ((maxy==0) && (miny==0))
-            return;
-        //miny=miny;
-        maxy++;
-        dy=1;
-    }
 
-
-    int m;
-    if (maxy>500) {
-        m=ceil(maxy/100.0);
-        maxy=m*100;
-        m=floor(miny/100.0);
-        miny=m*100;
-    } else if (maxy>150) {
-        m=ceil(maxy/50.0);
-        maxy=m*50;
-        m=floor(miny/50.0);
-        miny=m*50;
-    } else if (maxy>80) {
-        m=ceil(maxy/20.0);
-        maxy=m*20;
-        m=floor(miny/20.0);
-        miny=m*20;
-    } else if (maxy>30) {
-        m=ceil(maxy/10.0);
-        maxy=m*10;
-        m=floor(miny/10.0);
-        miny=m*10;
-    } else if (maxy>5) {
-        m=ceil(maxy/5.0);
-        maxy=m*5;
-        m=floor(miny/5.0);
-        miny=m*5;
-    } else {
-        //maxy=ceil(maxy);
-        //if (maxy<1) maxy=1;
-        //miny=floor(miny);
-        //if (miny<1) miny=0;
-
-    }
+    w.roundY(miny,maxy);
+    EventDataType dy=maxy-miny;
 
     //if ((w.max_x-w.min_x)==0)
     //    return;
@@ -217,7 +170,12 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
-        fd=Format(i*m_yaxis_scale); // Override this as a function.
+        if (dy<5) {
+            fd=QString().sprintf("%.2f",i*m_yaxis_scale);
+        } else {
+            fd=QString().sprintf("%.1f",i*m_yaxis_scale);
+        }
+        //fd=Format(i*m_yaxis_scale); // Override this as a function.
         GetTextExtent(fd,x,y);
         if (x>labelW) labelW=x;
         h=top+height-ty;

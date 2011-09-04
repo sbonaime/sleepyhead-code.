@@ -977,19 +977,19 @@ EventDataType gGraph::MaxY()
 
 void gGraph::SetMinX(qint64 v)
 {
-    min_x=v;
+    rmax_x=min_x=v;
 }
 void gGraph::SetMaxX(qint64 v)
 {
-    max_x=v;
+    rmin_x=max_x=v;
 }
 void gGraph::SetMinY(EventDataType v)
 {
-    min_y=v;
+    rmin_y=min_y=v;
 }
 void gGraph::SetMaxY(EventDataType v)
 {
-    max_y=v;
+    rmax_y=max_y=v;
 }
 GLBuffer * gGraph::lines()
 {
@@ -1050,14 +1050,22 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         maxy=m*10;
         m=floor(miny/10.0);
         miny=m*10;
-    } else if (maxy>1) {
+    } else if (maxy>=4) {
         m=ceil(maxy/5.0);
         maxy=m*5;
         m=floor(miny/5.0);
         miny=m*5;
     } else {
-        maxy=ceil(maxy);
-        miny=floor(miny);
+        if (maxy==miny && maxy==0) {
+            maxy=0.5;
+        } else {
+            maxy*=4.0;
+            miny*=4.0;
+            maxy=ceil(maxy);
+            miny=floor(miny);
+            maxy/=4.0;
+            miny/=4.0;
+        }
     }
 }
 

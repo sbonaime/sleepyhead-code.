@@ -242,8 +242,8 @@ public:
 
     void resize(int width, int height);      // margin recalcs..
 
-    qint64 max_x,min_x,max_y,min_y;
-    qint64 rmax_x,rmin_x,rmax_y,rmin_y;
+    qint64 max_x,min_x,rmax_x,rmin_x;
+    EventDataType max_y,min_y,rmax_y,rmin_y;
 
     bool blockZoom() { return m_blockzoom; }
     void setBlockZoom(bool b) { m_blockzoom=b; }

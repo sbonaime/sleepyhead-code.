@@ -585,13 +585,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         a->AddWaveform(edf.startdate,es.data,recs,duration);
 
         if (code==CPAP_MaskPressure) {
-            /*int v=ceil(a->max()/1);
-            a->setMax(v*1);
-            v=floor(a->min()/1);
-            a->setMin(v*1); */
         } else if (code==CPAP_FlowRate) {
-            //a->setMax(1);
-            //a->setMin(-1);
         }
         sess->setMin(code,a->min());
         sess->setMax(code,a->max());
@@ -788,11 +782,8 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=NULL;
         }
         if (a) {
-            double min=floor(a->min()), max=ceil(a->max());
-            if (min==max) max+=1;
-
-            sess->setMin(code,min);
-            sess->setMax(code,max);
+            sess->setMin(code,a->min());
+            sess->setMax(code,a->max());
             a->setDimension(es.physical_dimension);
         }
     }
