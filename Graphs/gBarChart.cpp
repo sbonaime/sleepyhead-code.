@@ -183,8 +183,13 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
             int x=event->x()-10;
             int w=90;
             int h=32;
-            int y=rtop+event->y()-42;
+            int y=event->y()-42;
+            if (x<41+w/2) x=41+w/2;
+            if (y<1) y=1;
+            if (x>39+l_width-w/2) x=39+l_width-w/2;
+            if (y>l_height-h+1) y=l_height-h+1;
 
+            y+=rtop;
             //TODO: Convert this to a ToolTip class
 
             graph->quads()->add(x,y,x,y+h,col);
@@ -201,10 +206,10 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
             QString z=dt.date().toString(Qt::SystemLocaleShortDate);
-            graph->renderText(z,event->x(),y+11);
+            graph->renderText(z,x+10,y+11);
             z=m_label+"="+QString::number(d.value()[0],'f',2);
             qstatus2->setText(z);
-            graph->renderText(z,event->x(),y+26);
+            graph->renderText(z,x+10,y+26);
 
             return true;
         }
