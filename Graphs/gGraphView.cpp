@@ -370,12 +370,14 @@ void gThread::run()
 {
     m_running=true;
     while (m_running) {
-        mutex.lock(); // hang until a paint event unlocks it..
-        //if (mutex.tryLock(1000)) {
+        graph->lockPaintMutex(); // will hang until in paintGL
+        // do nothing..
+        graph->unlockPaintMutex(); // unlock straight away
+        if (mutex.tryLock()) {
             if (!m_running) break;
             graph->paint(m_left,m_top,m_width,m_height);
             graph->threadDone();
-        //}
+        }
     }
 }
 void gThread::paint(int originX, int originY, int width, int height)
@@ -384,6 +386,7 @@ void gThread::paint(int originX, int originY, int width, int height)
     m_left=originX;
     m_width=width;
     m_height=height;
+    //wc.wakeAll();
     mutex.unlock(); // this is the signal to start
 }
 
@@ -418,6 +421,9 @@ gGraph::~gGraph()
     delete m_thread;
     delete m_quad;
 }
+void gGraph::lockPaintMutex() { m_graphview->inPaintMutex.lock(); }
+void gGraph::unlockPaintMutex() { m_graphview->inPaintMutex.unlock(); }
+
 bool gGraph::isEmpty()
 {
     bool empty=true;
@@ -1297,6 +1303,7 @@ void gGraphView::initializeGL()
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
+    inPaintMutex.lock();
 }
 
 void gGraphView::resizeGL(int w, int h)
@@ -1315,6 +1322,8 @@ void gGraphView::paintGL()
 
     if (width()<=0) return;
     if (height()<=0) return;
+
+    inPaintMutex.unlock();
 
     QTime time;
     time.start();
@@ -1346,7 +1355,7 @@ void gGraphView::paintGL()
     bool threaded;
 
     // Tempory hack using this pref..
-    if (pref["EnableMultithreading"].toBool() && (m_idealthreads>1)) {
+    if (pref["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
         threaded=true;
     } else threaded=false;
 
@@ -1368,7 +1377,7 @@ void gGraphView::paintGL()
                 //QFuture<void> future = QtConcurrent::run(m_graphs[i],&gGraph::paint,px,py,width()-titleWidth,h);
                 m_graphs[i]->threadStart(); // this only happens once.. It stays dormant when not in use.
                 m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
-                m_graphs[i]->thread()->setPriority(QThread::HighPriority);
+                //m_graphs[i]->thread()->setPriority(QThread::HighPriority);
             } else {
                 m_graphs[i]->paint(px,py,width()-titleWidth,h);
             }
@@ -1393,14 +1402,17 @@ void gGraphView::paintGL()
     }
     int thr;
 
+
     if (threaded) {
        thr=m_idealthreads;
+       // wait till all the threads are done
        masterlock->acquire(m_idealthreads); // ask for all the CPU's back..
        masterlock->release(m_idealthreads);
     } else thr=1;
 
-    //((QGLContext*)context())->makeCurrent();
+    inPaintMutex.lock();
 
+    //((QGLContext*)context())->makeCurrent();
 
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
@@ -1417,8 +1429,9 @@ void gGraphView::paintGL()
     }
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
-
     swapBuffers(); // Dump to screen.
+
+
     //qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
 }
 

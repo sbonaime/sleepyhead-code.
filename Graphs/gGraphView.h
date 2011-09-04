@@ -265,6 +265,8 @@ public:
     GLBuffer * backlines();
     GLBuffer * quads();
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+    void lockPaintMutex();
+    void unlockPaintMutex();
 protected:
     //void invalidate();
 
@@ -341,6 +343,7 @@ public:
     void setEmptyText(QString s) { m_emptytext=s; }
     QMutex text_mutex;
     QMutex gl_mutex;
+    QMutex inPaintMutex;
     void setDay(Day * day);
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
