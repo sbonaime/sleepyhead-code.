@@ -271,6 +271,11 @@ void gToolTip::paint()     //actually paints it.
         rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
         rect.setRight(m_graphview->width()-2);
     }
+    int h=rect.height();
+    if (rect.y()<0) {
+        rect.setY(0);
+        rect.setHeight(h);
+    }
 
     painter.drawRoundedRect(rect,5,5);
     painter.drawText(rect,Qt::AlignCenter,m_text);
@@ -1827,6 +1832,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
         }
     } else {
         m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+        m_tooltip->cancel();
     }
 }
 

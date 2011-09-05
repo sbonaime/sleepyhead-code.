@@ -9,7 +9,7 @@
 #include "gXAxis.h"
 
 const quint64 divisors[]={
-    2419200000LL, 1814400000L, 1209600000L, 604800000L, 259200000L,
+    15552000000LL, 7776000000LL, 5184000000LL, 2419200000L, 1814400000L, 1209600000L, 604800000L, 259200000L,
     172800000L, 86400000,2880000,14400000,7200000,3600000,2700000,
     1800000,1200000,900000,600000,300000,120000,60000,45000,30000,
     20000,15000,10000,5000,2000,1000,100,50,10
@@ -75,22 +75,22 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     if (xx>=86400000L) {         // Day
         fd="MMM 00";
         dividx=0;
-        divmax=7;
+        divmax=10;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
         fd="00:00";
-        dividx=7;
-        divmax=24;
+        dividx=10;
+        divmax=27;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
         fd="00:00:00";
-        dividx=13;
-        divmax=24;
+        dividx=16;
+        divmax=27;
         fitmode=2;
     } else {                   // Microseconds
         fd="00:00:00:000";
-        dividx=25;
-        divmax=divcnt-1;
+        dividx=28;
+        divmax=divcnt;
         fitmode=3;
     }
     //if (divmax>divcnt) divmax=divcnt;
