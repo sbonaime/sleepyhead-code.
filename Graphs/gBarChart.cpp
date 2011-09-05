@@ -179,40 +179,28 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
         hl_day=zd;
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
         if (d!=m_values.end()) {
-            QColor col(255,255,128,200);
 
-            int yy=y;
-            int x=event->x()-10;
-            int w=90;
+            //int yy=y;
+            //int x=event->x()+graph->left+gGraphView::titleWidth;
+                    ;
+            //int x=event->x()+gYAxis::Margin-gGraphView::titleWidth;
+            //if (x>l_width-45) x=l_width-45;
+            x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
+            int y=event->y()+rtop-10;
+            /*int w=90;
             int h=32;
-            int y=event->y()-42;
             if (x<41+w/2) x=41+w/2;
             if (y<1) y=1;
-            if (x>39+l_width-w/2) x=39+l_width-w/2;
-            if (y>l_height-h+1) y=l_height-h+1;
+            if (y>l_height-h+1) y=l_height-h+1; */
 
-            y+=rtop;
+
+            //y+=rtop;
             //TODO: Convert this to a ToolTip class
-
-            graph->quads()->add(x,y,x,y+h,col);
-            graph->quads()->add(x+w,y+h,x+w,y,col);
-            QColor blk(0,0,0,255);
-
-            // The outer lines stuffs up
-            GLBuffer *lines=graph->lines(); // toplines?
-            lines->add(x-1,y-1,x+w+1,y-1,blk);
-            lines->add(x-1,y+h+1,x+w+1,y+h+1,blk);
-            lines->add(x-1,y-1,x-1,y+h+1,blk);
-            lines->add(x+w+1,y-1,x+w+1,y+h+1,blk);
 
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
-            QString z=dt.date().toString(Qt::SystemLocaleShortDate);
-            graph->renderText(z,x+10,y+11);
-            z=m_label+"="+QString::number(d.value()[0],'f',2);
-            qstatus2->setText(z);
-            graph->renderText(z,x+10,y+26);
-
+            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(d.value()[0],'f',2);;
+            graph->ToolTip(z,x,y,1500);
             return true;
         }
         //graph->redraw();

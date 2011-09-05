@@ -192,6 +192,100 @@ void GLBuffer::draw()
     }
 }
 
+gToolTip::gToolTip(gGraphView * graphview)
+    :m_graphview(graphview)
+{
+
+    m_pos.setX(0);
+    m_pos.setY(0);
+    m_visible=false;
+    m_spacer=5; // pixels around text area
+    timer=new QTimer(graphview);
+    connect(timer,SIGNAL(timeout()),SLOT(timerDone()));
+}
+
+gToolTip::~gToolTip()
+{
+    disconnect(timer,SLOT(timerDone()));
+    delete timer;
+}
+
+void gToolTip::display(QString text, int x, int y, int timeout)
+{
+    m_text=text;
+    m_pos.setX(x);
+    m_pos.setY(y);
+    m_visible=true;
+    // TODO: split multiline here
+    GetTextExtent(m_text,tw,th);
+    tw+=m_spacer*2;
+    th+=m_spacer*2;
+    th*=2;
+    if (timer->isActive()) {
+        timer->stop();
+    }
+    timer->setSingleShot(true);
+    timer->start(timeout);
+}
+
+void gToolTip::cancel()
+{
+    m_visible=false;
+    timer->stop();
+}
+
+void gToolTip::paint()     //actually paints it.
+{
+    if (!m_visible) return;
+    int x=m_pos.x();// - tw / 2;
+    int y=m_pos.y();// - th;
+
+    /*GLBuffer * & lines=m_graphview->lines;
+    GLBuffer * & quads=m_graphview->quads;
+    QColor col(255,255,128,200);
+    quads->add(x,y,x,y+th,col);
+    quads->add(x+tw,y+th,x+tw,y,col);
+
+    QColor blk(0,0,0,255);
+    lines->add(x-1,y-1,x+tw+1,y-1,blk);
+    lines->add(x-1,y+th+1,x+tw+1,y+th+1,blk);
+    lines->add(x-1,y-1,x-1,y+th+1,blk);
+    lines->add(x+tw+1,y-1,x+tw+1,y+th+1,blk);
+
+    m_graphview->AddTextQue(m_text,x + m_spacer,y + m_spacer + th/2); */
+
+    QPainter painter(m_graphview);
+
+    QRect br;
+    QRect rect(x,y,0,0);
+    painter.setFont(*defaultfont);
+    rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
+    rect.setLeft(rect.x()-m_spacer);
+    rect.setTop(rect.y()-rect.height()/1.33);
+    rect.setWidth(rect.width()+m_spacer*2);
+    //rect.setHeight(rect.height());
+    QBrush brush(QColor(255,255,128,200));
+    painter.setBrush(brush);
+    int z=rect.x()+rect.width();
+    if (z>m_graphview->width()-10) {
+        rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
+        rect.setRight(m_graphview->width()-2);
+    }
+
+    painter.drawRoundedRect(rect,5,5);
+    painter.drawText(rect,Qt::AlignCenter,m_text);
+
+    painter.end();
+
+
+
+}
+void gToolTip::timerDone()
+{
+    m_visible=false;
+    m_graphview->updateGL();
+}
+
 Layer::Layer(ChannelID code)
 {
     m_code = code;
@@ -1041,6 +1135,10 @@ void gGraph::ResetBounds()
     min_y=MinY();
     max_y=MaxY();
 }
+void gGraph::ToolTip(QString text, int x, int y, int timeout)
+{
+    m_graphview->m_tooltip->display(text,x,y,timeout);
+}
 
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
@@ -1101,6 +1199,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     if (m_idealthreads<=0) m_idealthreads=1;
     masterlock=new QSemaphore(m_idealthreads);
 
+    m_tooltip=new gToolTip(this);
     for (int i=0;i<m_idealthreads;i++) {
         gThread * gt=new gThread(this);
         m_threads.push_back(gt);
@@ -1120,6 +1219,7 @@ gGraphView::~gGraphView()
     for (int i=0;i<m_graphs.size();i++) {
         delete m_graphs[i];
     }
+    delete m_tooltip;
     delete masterlock;
     m_graphs.clear();
     delete lines;
@@ -1178,7 +1278,7 @@ void gGraphView::DrawTextQue()
     m_textque_items=0;
 }
 
-void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font)
+void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor color, QFont * font)
 {
     text_mutex.lock();
     if (m_textque_items>=textque_max) {
@@ -1443,6 +1543,7 @@ void gGraphView::paintGL()
     lines->draw();
     quads->draw();
     DrawTextQue();
+    m_tooltip->paint();
     if (pref["ShowDebug"].toBool()) {
         QString ss;
         ss="PreDraw took "+QString::number(elapsed)+"ms";

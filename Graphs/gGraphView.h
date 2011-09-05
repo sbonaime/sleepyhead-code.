@@ -191,6 +191,27 @@ protected:
     volatile bool m_running;
 };
 
+class gToolTip: public QObject
+{
+    Q_OBJECT
+public:
+    gToolTip(gGraphView * graphview);
+    virtual ~gToolTip();
+    virtual void display(QString text, int x, int y, int timeout=2000);
+    virtual void paint(); //actually paints it.
+    void cancel();
+protected:
+    gGraphView * m_graphview;
+    QTimer * timer;
+    QPoint m_pos;
+    int tw,th;
+    QString m_text;
+    bool m_visible;
+    int m_spacer;
+protected slots:
+    void timerDone();
+};
+
 class gGraph
 {
 public:
@@ -251,6 +272,7 @@ public:
     void DrawTextQue();
     void setDay(Day * day);
     virtual void paint(int originX, int originY, int width, int height);
+    void ToolTip(QString text, int x, int y, int timeout=2000);
     void redraw();
     void timedRedraw(int ms);
 
@@ -258,6 +280,7 @@ public:
     GLBuffer * backlines();
     GLBuffer * quads();
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+    short left,right,top,bottom; // dirty magin hacks..
 
     QRect m_lastbounds;
 
@@ -278,7 +301,6 @@ protected:
     QVector<Layer *> m_layers;
     float m_height,m_width;
 
-    short left,right,top,bottom; // dirty magin hacks..
 
     int m_min_height;
     int m_max_height;
@@ -322,8 +344,9 @@ public:
     void timedRedraw(int ms);
 
     gGraph *m_selected_graph;
+    gToolTip * m_tooltip;
 
-    void AddTextQue(QString & text, short x, short y, float angle, QColor & color, QFont * font);
+    void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont);
     int horizTravel() { return m_horiz_travel; }
     void DrawTextQue();
 
