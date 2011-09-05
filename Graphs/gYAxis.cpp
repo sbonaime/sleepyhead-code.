@@ -98,8 +98,8 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
 
 
-gYAxis::gYAxis(QColor col)
-:Layer(EmptyChannel)
+gYAxis::gYAxis(ChannelID code,QColor col)
+:Layer(code)
 {
     m_line_color=col;
     m_text_color=col;
@@ -190,3 +190,9 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
 }
 
+bool gYAxis::mouseMoveEvent(QMouseEvent * event)
+{
+    int x=event->x();
+    int y=event->y();
+    //qDebug() << "Hover at " << x << y;
+}

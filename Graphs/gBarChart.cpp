@@ -170,7 +170,7 @@ bool gBarChart::mouseMoveEvent(QMouseEvent *event)
     double xx=l_maxx-l_minx;
     double xmult=xx/double(l_width+barw);
 
-    qint64 mx=xmult*double(x-offset);
+    qint64 mx=ceil(xmult*double(x-offset));
     mx+=l_minx;
     mx=mx+l_offset;//-86400000L;
     int zd=mx/86400000L;

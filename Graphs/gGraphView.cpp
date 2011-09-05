@@ -1215,6 +1215,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
     quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
+    setFocusPolicy(Qt::StrongFocus);
 }
 gGraphView::~gGraphView()
 {
@@ -1838,7 +1839,48 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 
 void gGraphView::keyPressEvent(QKeyEvent * event)
 {
+    gGraph *g;
+    for (int i=0;i<m_graphs.size();i++) {
+        if (m_graphs[i]->group()==0) {
+            g=m_graphs[i];
+            break;
+        }
+    }
+    if (!g) return;
 
+    if (event->key()==Qt::Key_Left) {
+        double xx=g->max_x-g->min_x;
+        double zoom=8.0;
+        if (event->modifiers() & Qt::ControlModifier) zoom/=4;
+
+        g->min_x-=xx/zoom;;
+        g->max_x=g->min_x+xx;
+        if (g->min_x<g->rmin_x) {
+            g->min_x=g->rmin_x;
+            g->max_x=g->rmin_x+xx;
+        }
+        SetXBounds(g->min_x,g->max_x);
+    } else if (event->key()==Qt::Key_Right) {
+        double xx=g->max_x-g->min_x;
+        double zoom=8.0;
+        if (event->modifiers() & Qt::ControlModifier) zoom/=4;
+        g->min_x+=xx/zoom;
+        g->max_x=g->min_x+xx;
+        if (g->max_x>g->rmax_x) {
+            g->max_x=g->rmax_x;
+            g->min_x=g->rmax_x-xx;
+        }
+        SetXBounds(g->min_x,g->max_x);
+    } else if (event->key()==Qt::Key_Up) {
+        float zoom=0.75;
+        if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
+        g->ZoomX(zoom,0); // zoom in.
+    } else if (event->key()==Qt::Key_Down) {
+        float zoom=1.33;
+        if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;
+        g->ZoomX(zoom,0);  // Zoom out
+    }
+    qDebug() << "Keypress??";
 }
 void gGraphView::setDay(Day * day)
 {

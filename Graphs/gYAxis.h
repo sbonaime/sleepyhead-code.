@@ -39,7 +39,7 @@ protected:
 class gYAxis:public Layer
 {
     public:
-        gYAxis(QColor col=QColor("black"));
+        gYAxis(ChannelID code=EmptyChannel,QColor col=QColor("black"));
         virtual ~gYAxis();
         virtual void paint(gGraph & w,int left,int top, int width, int height);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
@@ -55,6 +55,7 @@ class gYAxis:public Layer
 
         void SetScale(float f) { m_yaxis_scale=f; } // Scale yaxis ticker values (only what's displayed)
         float Scale() { return m_yaxis_scale; }
+
     protected:
         bool m_show_major_lines;
         bool m_show_minor_lines;
@@ -65,6 +66,8 @@ class gYAxis:public Layer
         QColor m_line_color;
         QColor m_text_color;
         GLBuffer * lines;
+        virtual bool mouseMoveEvent(QMouseEvent * event);
+
 };
 
 #endif // GYAXIS_H
