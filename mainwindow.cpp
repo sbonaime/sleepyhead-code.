@@ -29,9 +29,27 @@ QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
 {
+    static QMutex loglock,strlock;
     static int start=QDateTime::currentDateTime().toTime_t();
+    static QStringList slist;
+    if (!loglock.tryLock()) {
+        return;
+    }
+
+    strlock.lock();
     QString tmp=QString("%1: %2").arg(QDateTime::currentDateTime().toTime_t()-start,5,10,QChar('0')).arg(s);
-    ui->logText->appendPlainText(tmp);
+
+    slist.append(tmp); //QStringList appears not to be threadsafe
+    strlock.unlock();
+
+    strlock.lock();
+    for (int i=0;i<slist.size();i++)
+        ui->logText->appendPlainText(slist[i]);
+    slist.clear();
+    strlock.unlock();
+
+    loglock.unlock();
+
 }
 
 

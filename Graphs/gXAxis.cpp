@@ -14,7 +14,7 @@ const quint64 divisors[]={
     1800000,1200000,900000,600000,300000,120000,60000,45000,30000,
     20000,15000,10000,5000,2000,1000,100,50,10
 };
-const int divcnt=sizeof(divisors)/sizeof(int);
+const int divcnt=sizeof(divisors)/sizeof(quint64);
 
 gXAxis::gXAxis(QColor col,bool fadeout)
 :Layer(EmptyChannel)
@@ -90,9 +90,10 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     } else {                   // Microseconds
         fd="00:00:00:000";
         dividx=25;
-        divmax=divcnt;
+        divmax=divcnt-1;
         fitmode=3;
     }
+    //if (divmax>divcnt) divmax=divcnt;
 
     int x,y;
     GetTextExtent(fd,x,y);

@@ -176,22 +176,19 @@ protected:
 };
 
 class gGraph;
+
 class gThread:public QThread
 {
 public:
-    gThread(gGraph *g);
+    gThread(gGraphView *g);
     ~gThread();
 
     void run();
-    void paint(int originX, int originY, int width, int height);
     void die() { m_running=false; }
     QMutex mutex;
 protected:
-    gGraph * graph;
-    int m_top,m_left,m_width,m_height;
+    gGraphView *graphview;
     volatile bool m_running;
-    QWaitCondition wc;
-
 };
 
 class gGraph
@@ -253,20 +250,17 @@ public:
     void setGroup(short group) { m_group=group; }
     void DrawTextQue();
     void setDay(Day * day);
-    gThread * thread() { return m_thread; }
     virtual void paint(int originX, int originY, int width, int height);
     void redraw();
     void timedRedraw(int ms);
 
-    void threadDone();
-    bool threadRunning() { return m_thread->isRunning(); }
-    void threadStart() { if (!m_thread->isRunning()) m_thread->start(); }
     GLBuffer * lines();
     GLBuffer * backlines();
     GLBuffer * quads();
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
-    void lockPaintMutex();
-    void unlockPaintMutex();
+
+    QRect m_lastbounds;
+
 protected:
     //void invalidate();
 
@@ -279,7 +273,6 @@ protected:
 
     void ZoomX(double mult,int origin_px);
 
-    gThread * m_thread;
     gGraphView * m_graphview;
     QString m_title;
     QVector<Layer *> m_layers;
@@ -291,7 +284,6 @@ protected:
     int m_max_height;
     bool m_visible;
     bool m_blockzoom;
-    QRect m_lastbounds;
     QRect m_selection;
     bool m_selecting_area;
     QPoint m_current;
@@ -343,11 +335,14 @@ public:
     void setEmptyText(QString s) { m_emptytext=s; }
     QMutex text_mutex;
     QMutex gl_mutex;
-    QMutex inPaintMutex;
     void setDay(Day * day);
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
     GLBuffer * lines, * backlines, *quads;
+
+    gGraph * popGraph();
+    QVector<gThread *> m_threads;
+
 protected:
     int m_idealthreads;
     Day * m_day;
@@ -370,6 +365,10 @@ protected:
     virtual void wheelEvent(QWheelEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
 
+    void queGraph(gGraph *,int originX, int originY, int width, int height);
+    QMutex dl_mutex;
+
+    QList<gGraph *> m_drawlist;
 
     gGraphView *m_shared;       // convenient link to daily's graphs.
     QVector<gGraph *> m_graphs;

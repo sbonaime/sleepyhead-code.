@@ -73,7 +73,7 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     w.qglColor(m_line_color);
     glVertex2f(start_px, h);
     glVertex2f(start_px+width, h);
-    glEnd(); */
+    glEnd();
 
     double rmx=w.rmax_x-w.rmin_x;
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
@@ -113,14 +113,14 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     glVertex2f(start_px+px-extra,h);
     glEnd();
 
-    /*glLineWidth(3);
+    glLineWidth(3);
     glBegin(GL_LINES);
     w.qglColor(m_handle_color);
     glVertex2f(start_px+px-extra,h);
     glVertex2f(start_px+py+extra,h);
-    glEnd(); */
+    glEnd();
 
-    glLineWidth(1);
+    glLineWidth(1);  */
 
 }
 

@@ -351,9 +351,9 @@ EventDataType LayerGroup::Maxy()
 const double zoom_hard_limit=500.0;
 
 
-gThread::gThread(gGraph *g)
+gThread::gThread(gGraphView *g)
 {
-    graph=g;
+    graphview=g;
     mutex.lock();
 }
 gThread::~gThread()
@@ -369,25 +369,24 @@ gThread::~gThread()
 void gThread::run()
 {
     m_running=true;
+    gGraph * g;
     while (m_running) {
-        graph->lockPaintMutex(); // will hang until in paintGL
-        // do nothing..
-        graph->unlockPaintMutex(); // unlock straight away
-        if (mutex.tryLock()) {
-            if (!m_running) break;
-            graph->paint(m_left,m_top,m_width,m_height);
-            graph->threadDone();
-        }
+        mutex.lock();
+        //mutex.unlock();
+        if (!m_running) break;
+
+        do {
+            g=graphview->popGraph();
+            if (g) {
+                g->paint(g->m_lastbounds.x(),g->m_lastbounds.y(),g->m_lastbounds.width(),g->m_lastbounds.height());
+                int i=0;
+            } else {
+                //mutex.lock();
+                graphview->masterlock->release(1); // This thread gives up for now..
+
+            }
+        } while (g);
     }
-}
-void gThread::paint(int originX, int originY, int width, int height)
-{
-    m_top=originY;
-    m_left=originX;
-    m_width=width;
-    m_height=height;
-    //wc.wakeAll();
-    mutex.unlock(); // this is the signal to start
 }
 
 gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
@@ -413,16 +412,11 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
 
     m_quad=new GLBuffer(QColor(128,128,255,128),64,GL_QUADS);
     m_quad->forceAntiAlias(true);
-
-    m_thread=new gThread(this);
 }
 gGraph::~gGraph()
 {
-    delete m_thread;
     delete m_quad;
 }
-void gGraph::lockPaintMutex() { m_graphview->inPaintMutex.lock(); }
-void gGraph::unlockPaintMutex() { m_graphview->inPaintMutex.unlock(); }
 
 bool gGraph::isEmpty()
 {
@@ -434,10 +428,6 @@ bool gGraph::isEmpty()
         }
     }
     return empty;
-}
-void gGraph::threadDone()
-{
-    m_graphview->masterlock->release(1);
 }
 
 void gGraph::drawGLBuf()
@@ -578,7 +568,24 @@ void gGraph::paint(int originX, int originY, int width, int height)
         quads()->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top,col);
         quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom,col);
     }
-
+}
+void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
+{
+    g->m_lastbounds=QRect(left,top,width,height);
+    dl_mutex.lock();
+    m_drawlist.push_back(g);
+    dl_mutex.unlock();
+}
+gGraph * gGraphView::popGraph()
+{
+    gGraph * g;
+    dl_mutex.lock();
+    if (!m_drawlist.isEmpty()) {
+        g=m_drawlist.at(0);
+        m_drawlist.pop_front();
+    } else g=NULL;
+    dl_mutex.unlock();
+    return g;
 }
 
 void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short height, short order, bool movable, short x, short y)
@@ -739,6 +746,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 qint64 a1=MIN(j1,j2)
                 qint64 a2=MAX(j1,j2)
                 //if (a1<rmin_x) a1=rmin_x;
+                if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
                 if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(a1,a2,m_group);
             } else {
@@ -748,6 +756,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 qint64 j2=rmin_x+xmult*x2;
                 qint64 a1=MIN(j1,j2)
                 qint64 a2=MAX(j1,j2)
+                if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
                 //if (a1<rmin_x) a1=rmin_x;
                 if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(a1,a2,m_group);
@@ -1092,6 +1101,12 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     if (m_idealthreads<=0) m_idealthreads=1;
     masterlock=new QSemaphore(m_idealthreads);
 
+    for (int i=0;i<m_idealthreads;i++) {
+        gThread * gt=new gThread(this);
+        m_threads.push_back(gt);
+        gt->start();
+    }
+
     lines=new GLBuffer(QColor(0,0,0,0),100000,GL_LINES); // big fat shared line list
     backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
     quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
@@ -1099,6 +1114,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
 }
 gGraphView::~gGraphView()
 {
+    for (int i=0;i<m_threads.size();i++) {
+        delete m_threads[i];
+    }
     for (int i=0;i<m_graphs.size();i++) {
         delete m_graphs[i];
     }
@@ -1303,7 +1321,6 @@ void gGraphView::initializeGL()
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
-    inPaintMutex.lock();
 }
 
 void gGraphView::resizeGL(int w, int h)
@@ -1323,10 +1340,6 @@ void gGraphView::paintGL()
     if (width()<=0) return;
     if (height()<=0) return;
 
-    inPaintMutex.unlock();
-
-    QTime time;
-    time.start();
 
     glClearColor(255,255,255,255);
     //glClearDepth(1);
@@ -1357,8 +1370,12 @@ void gGraphView::paintGL()
     // Tempory hack using this pref..
     if (pref["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
         threaded=true;
+        /*for (int i=0;i<m_idealthreads;i++) {
+            if (!m_threads[i]->isRunning())
+                m_threads[i]->start();
+        } */
     } else threaded=false;
-
+    //threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1372,18 +1389,9 @@ void gGraphView::paintGL()
         if ((py + h + graphSpacer) >= 0) {
             w=width();
 
-            if (threaded) {
-                masterlock->acquire(1); // book an available CPU
-                //QFuture<void> future = QtConcurrent::run(m_graphs[i],&gGraph::paint,px,py,width()-titleWidth,h);
-                m_graphs[i]->threadStart(); // this only happens once.. It stays dormant when not in use.
-                m_graphs[i]->thread()->paint(px,py,width()-titleWidth,h);
-                //m_graphs[i]->thread()->setPriority(QThread::HighPriority);
-            } else {
-                m_graphs[i]->paint(px,py,width()-titleWidth,h);
-            }
+            queGraph(m_graphs[i],px,py,width()-titleWidth,h);
 
             // draw the splitter handle
-
             QColor ca=QColor(128,128,128,255);
             backlines->add(0, py+h, w, py+h, ca);
             ca=QColor(192,192,192,255);
@@ -1394,23 +1402,37 @@ void gGraphView::paintGL()
         }
         py=ceil(py+h+graphSpacer);
     }
+
+    //int thr=m_idealthreads;
+    QTime time;
+    time.start();
+    if (threaded) {
+        for (int i=0;i<m_idealthreads;i++) {
+            masterlock->acquire(1);
+            m_threads[i]->mutex.unlock();
+        }
+
+        // wait till all the threads are done
+        // ask for all the CPU's back..
+        masterlock->acquire(m_idealthreads);
+        masterlock->release(m_idealthreads);
+
+    } else { // just do it here
+        int s=m_drawlist.size();
+        for (int i=0;i<s;i++) {
+            gGraph *g=m_drawlist.at(0);
+            m_drawlist.pop_front();
+            g->paint(g->m_lastbounds.x(), g->m_lastbounds.y(), g->m_lastbounds.width(), g->m_lastbounds.height());
+        }
+    }
+    int elapsed=time.elapsed();
     QColor col=Qt::black;
     if (!numgraphs) {
         int x,y;
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
     }
-    int thr;
 
-
-    if (threaded) {
-       thr=m_idealthreads;
-       // wait till all the threads are done
-       masterlock->acquire(m_idealthreads); // ask for all the CPU's back..
-       masterlock->release(m_idealthreads);
-    } else thr=1;
-
-    inPaintMutex.lock();
 
     //((QGLContext*)context())->makeCurrent();
 
@@ -1423,7 +1445,7 @@ void gGraphView::paintGL()
     DrawTextQue();
     if (pref["ShowDebug"].toBool()) {
         QString ss;
-        ss="Draw took "+QString::number(time.elapsed())+"ms";
+        ss="PreDraw took "+QString::number(elapsed)+"ms";
         AddTextQue(ss,width()-120,8,0,col,defaultfont);
         DrawTextQue();
     }

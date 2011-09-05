@@ -23,9 +23,9 @@ MainWindow *mainwin=NULL;
 
 void MyOutputHandler(QtMsgType type, const char *msg) {
     if (!mainwin) {
-
         return;
     }
+
     switch (type) {
         case QtDebugMsg:
             mainwin->Log(msg);
@@ -42,6 +42,7 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
             // Popup a messagebox
             //abort();
     }
+    //loglock.unlock();
 }
 
 int main(int argc, char *argv[])

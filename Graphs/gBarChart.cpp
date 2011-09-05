@@ -138,10 +138,12 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
                 quads->add(x1,py-h,col);
                 quads->add(x2,py-h,col2);
                 quads->add(x2,py,col2);
-                lines->add(x1,py,x1,py-h,blk);
-                lines->add(x1,py-h,x2,py-h,blk);
-                lines->add(x1,py,x2,py,blk);
-                lines->add(x2,py,x2,py-h,blk);
+                if (barw>2) {
+                    lines->add(x1,py,x1,py-h,blk);
+                    lines->add(x1,py-h,x2,py-h,blk);
+                    lines->add(x1,py,x2,py,blk);
+                    lines->add(x2,py,x2,py-h,blk);
+                }
                 py-=h;
             }
         }

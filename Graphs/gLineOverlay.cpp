@@ -87,8 +87,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                     if (points->full()) { verts_exceeded=true; break; }
                 } else {
                     // thin lines down the bottom
-                    lines->add(x1,start_py+1,m_flag_color);
-                    lines->add(x1,start_py+1+12,m_flag_color);
+                    lines->add(x1,start_py+1,x1,start_py+1+12,m_flag_color);
                     if (lines->full()) { verts_exceeded=true; break; }
 
                 }
@@ -98,12 +97,10 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                     z=top;
 
                     points->add(x1,top);
-                    lines->add(x1,top,m_flag_color);
-                    lines->add(x1,bottom,m_flag_color);
+                    lines->add(x1,top,x1,bottom,m_flag_color);
                     if (points->full()) { verts_exceeded=true; break; }
                } else {
-                    lines->add(x1,z,m_flag_color);
-                    lines->add(x1,z-12,m_flag_color);
+                    lines->add(x1,z,x1,z-12,m_flag_color);
                }
                if (lines->full()) { verts_exceeded=true; break; }
                if (xx<(1800000)) {
