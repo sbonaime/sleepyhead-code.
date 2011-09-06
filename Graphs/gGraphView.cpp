@@ -1880,7 +1880,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;
         g->ZoomX(zoom,0);  // Zoom out
     }
-    qDebug() << "Keypress??";
+    //qDebug() << "Keypress??";
 }
 void gGraphView::setDay(Day * day)
 {

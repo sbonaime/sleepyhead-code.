@@ -9,7 +9,8 @@
 
 #include <QMainWindow>
 #include <QGLContext>
-
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include "daily.h"
 #include "overview.h"
 #include "oximetry.h"
@@ -82,6 +83,9 @@ private slots:
 
     void on_actionEnable_Multithreading_toggled(bool arg1);
 
+    void on_actionCheck_for_Updates_triggered();
+
+    void replyFinished(QNetworkReply*);
 private:
     Ui::MainWindow *ui;
     Daily * daily;
@@ -89,6 +93,7 @@ private:
     Oximetry * oximetry;
     bool first_load;
     Profile *profile;
+    QNetworkAccessManager *netmanager;
 };
 
 #endif // MAINWINDOW_H

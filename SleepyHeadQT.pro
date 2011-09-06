@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui webkit opengl xml
+QT += core gui webkit opengl network xml
 
 CONFIG += rtti
 

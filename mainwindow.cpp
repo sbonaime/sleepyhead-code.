@@ -10,6 +10,8 @@
 #include <QResource>
 #include <QProgressBar>
 #include <QWebHistory>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -137,6 +139,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
+    netmanager = new QNetworkAccessManager(this);
+    connect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -396,4 +400,33 @@ void MainWindow::on_oximetryButton_clicked()
 void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
 {
     pref["EnableMultithreading"]=checked;
+}
+
+void MainWindow::on_actionCheck_for_Updates_triggered()
+{
+    netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
+}
+void MainWindow::replyFinished(QNetworkReply * reply)
+{
+    if (reply->error()==QNetworkReply::NoError) {
+        // Wrap this crap in XML/JSON so can do other stuff.
+        if (reply->size()>20) {
+            qDebug() << "Doesn't look like a version file... :(";
+        } else {
+            // check in size
+            QByteArray data=reply->readAll();
+            QString a=data;
+            a=a.trimmed();
+            if (a>pref["VersionString"].toString()) {
+                if (QMessageBox::question(this,"New Version","A newer version of SleepyHead is available, v"+a+".\nWould you like to update?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+                    QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
+                }
+            } else {
+                QMessageBox::information(this,"SleepyHead v"+a,"Your already up to date!",QMessageBox::Ok);
+            }
+       }
+    } else {
+        qDebug() << "Network Error:" << reply->errorString();
+    }
+    reply->deleteLater();
 }

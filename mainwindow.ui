@@ -605,6 +605,7 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionDebug"/>
+    <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
@@ -744,6 +745,11 @@
    <property name="toolTip">
     <string>Warning: Enabling this feature may require you to either hand edit the Preferences.xml or delete SleepyHeads data folder.
 </string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for &amp;Updates</string>
    </property>
   </action>
  </widget>
