@@ -415,7 +415,7 @@ protected:
     TextQue m_textque[textque_max];
     int m_textque_items;
     int m_lastxpos,m_lastypos;
-    volatile int m_threadsrunning;
+    //volatile int m_threadsrunning;
 
     QString m_emptytext;
 signals:

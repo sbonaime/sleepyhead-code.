@@ -395,6 +395,9 @@ void MainWindow::on_oximetryButton_clicked()
 void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
 {
     pref["EnableMultithreading"]=checked;
+    if (checked) {
+        qDebug() << "This feature is disabled due to it currently being useless.";
+    }
 }
 
 void MainWindow::on_actionCheck_for_Updates_triggered()

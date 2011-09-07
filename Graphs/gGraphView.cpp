@@ -1205,11 +1205,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     masterlock=new QSemaphore(m_idealthreads);
 
     m_tooltip=new gToolTip(this);
-    for (int i=0;i<m_idealthreads;i++) {
+    /*for (int i=0;i<m_idealthreads;i++) {
         gThread * gt=new gThread(this);
         m_threads.push_back(gt);
-        gt->start();
-    }
+        //gt->start();
+    }*/
 
     lines=new GLBuffer(QColor(0,0,0,0),100000,GL_LINES); // big fat shared line list
     backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
@@ -1474,14 +1474,14 @@ void gGraphView::paintGL()
     bool threaded;
 
     // Tempory hack using this pref..
-    if (pref["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
+    /*if (pref["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
         threaded=true;
-        /*for (int i=0;i<m_idealthreads;i++) {
+        for (int i=0;i<m_idealthreads;i++) {
             if (!m_threads[i]->isRunning())
                 m_threads[i]->start();
-        } */
-    } else threaded=false;
-    //threaded=false;
+        }
+    } else threaded=false; */
+    threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;
@@ -1512,7 +1512,7 @@ void gGraphView::paintGL()
     //int thr=m_idealthreads;
     QTime time;
     time.start();
-    if (threaded) {
+    /*if (threaded) {
         for (int i=0;i<m_idealthreads;i++) {
             masterlock->acquire(1);
             m_threads[i]->mutex.unlock();
@@ -1523,14 +1523,14 @@ void gGraphView::paintGL()
         masterlock->acquire(m_idealthreads);
         masterlock->release(m_idealthreads);
 
-    } else { // just do it here
+    } else { // just do it here */
         int s=m_drawlist.size();
         for (int i=0;i<s;i++) {
             gGraph *g=m_drawlist.at(0);
             m_drawlist.pop_front();
             g->paint(g->m_lastbounds.x(), g->m_lastbounds.y(), g->m_lastbounds.width(), g->m_lastbounds.height());
         }
-    }
+    //}
     int elapsed=time.elapsed();
     QColor col=Qt::black;
     if (!numgraphs) {
