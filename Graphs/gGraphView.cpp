@@ -1839,7 +1839,6 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 
 void gGraphView::keyPressEvent(QKeyEvent * event)
 {
-    return;
     gGraph *g;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==0) {

@@ -53,8 +53,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     layout->layout();
 
     const int default_height=180;
-    AHI=new gGraph(GraphView,"AHI Chart",default_height,2);
-    UC=new gGraph(GraphView,"Usage Chart",default_height,2);
+    AHI=new gGraph(GraphView,"AHI Chart",default_height,0);
+    UC=new gGraph(GraphView,"Usage Chart",default_height,0);
     uc=new UsageChart(profile);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
