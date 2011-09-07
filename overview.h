@@ -7,12 +7,13 @@
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
 
-/*#include <QWidget>
+#include <QWidget>
 #include <QGLContext>
-#include <QSplitter>
-#include <QLabel>
-#include <SleepLib/profiles.h>
-#include <Graphs/graphdata_custom.h>
+#include <QHBoxLayout>
+
+#include "SleepLib/profiles.h"
+#include "Graphs/gGraphView.h"
+#include "Graphs/gBarChart.h"
 
 namespace Ui {
     class Overview;
@@ -23,43 +24,42 @@ class Overview : public QWidget
     Q_OBJECT
 
 public:
-    explicit Overview(QWidget *parent,QGLWidget *shared=NULL);
+    explicit Overview(QWidget *parent,gGraphView *shared=NULL);
     ~Overview();
 
-    void ReloadGraphs();
-    void UpdateGraphs();
+    //void ReloadGraphs();
+    //void UpdateGraphs();
 
 
 private slots:
-    void on_drStart_dateChanged(const QDate &date);
+/*    void on_drStart_dateChanged(const QDate &date);
     void on_drEnd_dateChanged(const QDate &date);
     void on_rbDateRange_toggled(bool checked);
     void on_rbLastWeek_clicked();
     void on_rbLastMonth_clicked();
     void on_rbEverything_clicked();
-    void on_rbDateRange_clicked();
+    void on_rbDateRange_clicked(); */
 
 private:
     Ui::Overview *ui;
     Profile *profile;
+    gGraphView *GraphView;
+    MyScrollBar *scrollbar;
+    QHBoxLayout *layout;
+    gGraphView * m_shared;
 
-    void AddData(HistoryData *d) { Data.push_back(d);  };
-    void AddGraph(gGraphWindow *w) { Graphs.push_back(w); };
-    void RedrawGraphs();
     void UpdateHTML();
 
-    HistoryData *ahidata,*pressure,*leak,*usage,*bedtime,*waketime,*pressure_iap,*pressure_eap;
-    HistoryData *pressure_min,*pressure_max;
-    SessionTimes *session_times;
-    gGraphWindow *AHI,*PRESSURE,*LEAK,*USAGE,*SESSTIMES;
+    //SessionTimes *session_times;
+    gGraph *AHI,*UC;
+    AHIChart *bc;
+    UsageChart *uc;
+    //,*PRESSURE,*LEAK,*SESSTIMES;
 
-    gLayer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
+    //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
 
-    QList<HistoryData *> Data;
-    QList<gGraphWindow *> Graphs;
-    Day *dummyday;
-    QSplitter *gSplitter;
-    QLabel *NoData;
+    Day * day;// dummy in this case
+
 };
-*/
+
 #endif // OVERVIEW_H

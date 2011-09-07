@@ -92,7 +92,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Daily * daily;
-    //Overview * overview;
+    Overview * overview;
     Oximetry * oximetry;
     bool first_load;
     Profile *profile;

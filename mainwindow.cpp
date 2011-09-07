@@ -149,10 +149,10 @@ MainWindow::~MainWindow()
         daily->close();
         delete daily;
     }
-    /*if (overview) {
+    if (overview) {
         overview->close();
         delete overview;
-    } */
+    }
     if (oximetry) {
         oximetry->close();
         delete oximetry;
@@ -176,8 +176,8 @@ void MainWindow::Startup()
     daily=new Daily(ui->tabWidget,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    //overview=new Overview(ui->tabWidget,daily->SharedWidget());
-    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    ui->tabWidget->insertTab(2,overview,tr("Overview"));
     //oximetry=NULL;
     //overview=NULL;
     oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());

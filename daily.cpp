@@ -83,8 +83,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     SF->AddLayer(AddCPAP(seg),LayerRight,100); */
 
-    BC=new gGraph(GraphView,"AHI Chart",default_height,2);
-    UC=new gGraph(GraphView,"Usage Chart",default_height,2);
     SF=new gGraph(GraphView,"Event Flags",default_height);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
     MP=new gGraph(GraphView,"Mask Pressure",default_height);
@@ -105,29 +103,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
-
-    uc=new UsageChart(profile);
-    UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gXAxis *gx=new gXAxis();
-    gx->setUtcFix(true);
-    UC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
-    UC->AddLayer(uc);
-    UC->AddLayer(new gXGrid());
-
-
-    bc=new AHIChart(profile);
-    //bc->setProfile(profile);
-    bc->addSlice(CPAP_Hypopnea,QColor("blue"));
-    bc->addSlice(CPAP_Apnea,QColor("dark green"));
-    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
-    bc->addSlice(CPAP_ClearAirway,QColor("purple"));
-    BC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    BC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
-    BC->AddLayer(bc);
-    BC->AddLayer(new gXGrid());
-
 
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
@@ -780,13 +755,6 @@ void Daily::Load(QDate date)
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
 
-    bc->SetDay(NULL);
-    BC->MinX();
-    BC->MaxX();
-
-    uc->SetDay(NULL);
-    UC->MinX();
-    UC->MaxX();
 
     GraphView->ResetBounds();
     //GraphView->ResetBounds(1);

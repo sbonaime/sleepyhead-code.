@@ -152,7 +152,7 @@ void gBarChart::paint(gGraph & w,int left, int top, int width, int height)
     }
     if (total_days>0) {
         float val=total_val/float(total_days);
-        QString z=m_label+"="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0)+" This will go in overview";
+        QString z=m_label+"="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0);
         w.renderText(z,left,top-1);
         // val = AHI for selected area.
     }

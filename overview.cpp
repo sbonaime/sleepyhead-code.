@@ -10,18 +10,92 @@
 #include <QDebug>
 #include "overview.h"
 #include "ui_overview.h"
-#include "Graphs/graphdata_custom.h"
 #include "Graphs/gXAxis.h"
-#include "Graphs/gBarChart.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
-#include "Graphs/gFooBar.h"
-#include "Graphs/gSessionTime.h"
 
-/*Overview::Overview(QWidget *parent,QGLWidget * shared) :
+Overview::Overview(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Overview)
 {
+    m_shared=shared;
+    ui->setupUi(this);
+
+    QString prof=pref["Profile"].toString();
+    profile=Profiles::Get(prof);
+    if (!profile) {
+        qWarning("Couldn't get profile.. Have to abort!");
+        exit(-1);
+    }
+
+    // Create dummy day & session for holding eventlists.
+    //day=new Day(mach);
+
+    layout=new QHBoxLayout(ui->graphArea);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->setContentsMargins(0,0,0,0);
+    ui->graphArea->setLayout(layout);
+    ui->graphArea->setAutoFillBackground(false);
+
+    GraphView=new gGraphView(ui->graphArea,m_shared);
+    GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    scrollbar=new MyScrollBar(ui->graphArea);
+    scrollbar->setOrientation(Qt::Vertical);
+    scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
+    scrollbar->setMaximumWidth(20);
+
+    GraphView->setScrollBar(scrollbar);
+    layout->addWidget(GraphView,1);
+    layout->addWidget(scrollbar,0);
+
+    layout->layout();
+
+    const int default_height=180;
+    AHI=new gGraph(GraphView,"AHI Chart",default_height,2);
+    UC=new gGraph(GraphView,"Usage Chart",default_height,2);
+    Layer *uc=new UsageChart(profile);
+    UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gXAxis *gx=new gXAxis();
+    gx->setUtcFix(true);
+    UC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    UC->AddLayer(uc);
+    UC->AddLayer(new gXGrid());
+
+
+    bc=new AHIChart(profile);
+    //bc->setProfile(profile);
+    bc->addSlice(CPAP_Hypopnea,QColor("blue"));
+    bc->addSlice(CPAP_Apnea,QColor("dark green"));
+    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
+    bc->addSlice(CPAP_ClearAirway,QColor("purple"));
+    AHI->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    AHI->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    AHI->AddLayer(bc);
+    AHI->AddLayer(new gXGrid());
+
+
+    bc->SetDay(NULL);
+    AHI->MinX();
+    AHI->MaxX();
+
+    uc->SetDay(NULL);
+    UC->MinX();
+    UC->MaxX();
+
+    GraphView->ResetBounds();
+
+}
+Overview::~Overview()
+{
+    //delete day;
+    delete ui;
+}
+
+    /*
     ui->setupUi(this);
     profile=Profiles::Get(pref["Profile"].toString());
     AddData(ahidata=new HistoryData(profile));
@@ -119,11 +193,6 @@
     ReloadGraphs();
 }
 
-Overview::~Overview()
-{
-    delete dummyday;
-    delete ui;
-}
 void Overview::RedrawGraphs()
 {
     for (QList<gGraphWindow *>::iterator g=Graphs.begin();g!=Graphs.end();g++) {

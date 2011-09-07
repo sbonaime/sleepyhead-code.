@@ -326,7 +326,7 @@ public:
     void setScrollBar(MyScrollBar *sb);
     MyScrollBar * scrollBar() { return m_scrollbar; }
     static const int titleWidth=30;
-    static const int graphSpacer=3;
+    static const int graphSpacer=4;
 
     float findTop(gGraph * graph);
 
