@@ -240,7 +240,6 @@ void UsageChart::SetDay(Day * day)
     Layer::SetDay(day);
     //m_empty=true;
    // if (!day) return;
-    m_empty=false;
 
     m_values.clear();
     m_miny=9999999;
@@ -255,6 +254,7 @@ void UsageChart::SetDay(Day * day)
     m_fday=0;
     qint64 tt;
 
+    int days=0;
     for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
         dn=tt/86400;
@@ -271,8 +271,10 @@ void UsageChart::SetDay(Day * day)
             m_values[dn][1]=total;
             if (total<m_miny) m_miny=total;
             if (total>m_maxy) m_maxy=total;
+            days++;
         }
     }
+    if (!days) m_empty=true; else m_empty=false;
     //m_maxy=ceil(m_maxy);
     //m_miny=floor(m_miny);
     m_miny=0;

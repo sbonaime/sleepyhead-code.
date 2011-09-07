@@ -55,7 +55,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     const int default_height=180;
     AHI=new gGraph(GraphView,"AHI Chart",default_height,2);
     UC=new gGraph(GraphView,"Usage Chart",default_height,2);
-    Layer *uc=new UsageChart(profile);
+    uc=new UsageChart(profile);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
     gx->setUtcFix(true);
@@ -77,7 +77,16 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI->AddLayer(bc);
     AHI->AddLayer(new gXGrid());
 
+    //ReloadGraphs();
 
+}
+Overview::~Overview()
+{
+    //delete day;
+    delete ui;
+}
+void Overview::ReloadGraphs()
+{
     bc->SetDay(NULL);
     AHI->MinX();
     AHI->MaxX();
@@ -87,14 +96,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     UC->MaxX();
 
     GraphView->ResetBounds();
-
 }
-Overview::~Overview()
-{
-    //delete day;
-    delete ui;
-}
-
     /*
     ui->setupUi(this);
     profile=Profiles::Get(pref["Profile"].toString());

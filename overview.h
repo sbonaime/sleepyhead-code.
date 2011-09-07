@@ -27,7 +27,7 @@ public:
     explicit Overview(QWidget *parent,gGraphView *shared=NULL);
     ~Overview();
 
-    //void ReloadGraphs();
+    void ReloadGraphs();
     //void UpdateGraphs();
 
 

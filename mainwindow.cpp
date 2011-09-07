@@ -185,11 +185,9 @@ void MainWindow::Startup()
 
     if (daily) daily->ReloadGraphs();
 
-    /*if (overview) {
+    if (overview) {
         overview->ReloadGraphs();
-        overview->UpdateGraphs();
-
-    }*/
+    }
 
     qprogress->hide();
     qstatus->setText("");
@@ -229,11 +227,9 @@ void MainWindow::on_action_Import_Data_triggered()
             profile->Save();
             if (daily) daily->ReloadGraphs();
 
-            /*if (overview) {
+            if (overview) {
                 overview->ReloadGraphs();
-                overview->UpdateGraphs();
-
-            } */
+            }
             //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText("");
