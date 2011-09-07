@@ -89,6 +89,8 @@ private slots:
     void on_action_Screenshot_triggered();
     void DelayedScreenshot();
 
+    void on_actionView_O_ximetry_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

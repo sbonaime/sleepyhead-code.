@@ -1215,7 +1215,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
     quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
-    //setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy(Qt::StrongFocus);
 }
 gGraphView::~gGraphView()
 {
@@ -1839,6 +1839,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 
 void gGraphView::keyPressEvent(QKeyEvent * event)
 {
+    return;
     gGraph *g;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==0) {

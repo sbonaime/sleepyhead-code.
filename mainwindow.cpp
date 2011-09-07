@@ -178,8 +178,7 @@ void MainWindow::Startup()
 
     overview=new Overview(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
-    //oximetry=NULL;
-    //overview=NULL;
+
     oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
@@ -296,7 +295,7 @@ void MainWindow::on_dailyButton_clicked()
 
 void MainWindow::on_overviewButton_clicked()
 {
-    //ui->tabWidget->setCurrentWidget(overview);
+    ui->tabWidget->setCurrentWidget(overview);
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)
@@ -444,4 +443,9 @@ void MainWindow::DelayedScreenshot()
     }
     a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".png";
     pixmap.save(a);
+}
+
+void MainWindow::on_actionView_O_ximetry_triggered()
+{
+    on_oximetryButton_clicked();
 }

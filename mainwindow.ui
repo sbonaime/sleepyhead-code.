@@ -588,9 +588,10 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="actionView_Welcome"/>
     <addaction name="actionView_Daily"/>
     <addaction name="actionView_Overview"/>
-    <addaction name="actionView_Welcome"/>
+    <addaction name="actionView_O_ximetry"/>
     <addaction name="separator"/>
     <addaction name="actionUse_AntiAliasing"/>
     <addaction name="actionOverlay_Bars"/>
@@ -760,6 +761,14 @@
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionView_O_ximetry">
+   <property name="text">
+    <string>View O&amp;ximetry</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
    </property>
   </action>
  </widget>
