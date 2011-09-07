@@ -598,6 +598,8 @@
     <addaction name="action_Link_Graphs"/>
     <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
+    <addaction name="action_Screenshot"/>
+    <addaction name="separator"/>
     <addaction name="action_Reset_Graph_Layout"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -750,6 +752,14 @@
   <action name="actionCheck_for_Updates">
    <property name="text">
     <string>Check for &amp;Updates</string>
+   </property>
+  </action>
+  <action name="action_Screenshot">
+   <property name="text">
+    <string>Take &amp;Screenshot</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
    </property>
   </action>
  </widget>

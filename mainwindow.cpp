@@ -430,3 +430,22 @@ void MainWindow::replyFinished(QNetworkReply * reply)
     }
     reply->deleteLater();
 }
+
+#include <QPixmap>
+#include <QDesktopWidget>
+void MainWindow::on_action_Screenshot_triggered()
+{
+
+    QTimer::singleShot(250,this,SLOT(DelayedScreenshot()));
+}
+void MainWindow::DelayedScreenshot()
+{
+    QPixmap pixmap = QPixmap::grabWindow(this->winId());
+    QString a=pref.Get("{home}")+"/Screenshots";
+    QDir dir(a);
+    if (!dir.exists()){
+        dir.mkdir(a);
+    }
+    a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".png";
+    pixmap.save(a);
+}

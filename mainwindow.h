@@ -86,6 +86,9 @@ private slots:
     void on_actionCheck_for_Updates_triggered();
 
     void replyFinished(QNetworkReply*);
+    void on_action_Screenshot_triggered();
+    void DelayedScreenshot();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;
