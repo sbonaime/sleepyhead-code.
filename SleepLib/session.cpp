@@ -608,7 +608,7 @@ EventDataType Session::avg(ChannelID id)
     m_avg[id]=val;
     return val;
 }
-EventDataType Session::cph(ChannelID id)
+EventDataType Session::cph(ChannelID id) // count per hour
 {
     QHash<ChannelID,EventDataType>::iterator i=m_cph.find(id);
     if (i!=m_cph.end())
@@ -620,7 +620,7 @@ EventDataType Session::cph(ChannelID id)
     m_cph[id]=val;
     return val;
 }
-EventDataType Session::sph(ChannelID id)
+EventDataType Session::sph(ChannelID id) // sum per hour
 {
     QHash<ChannelID,EventDataType>::iterator i=m_sph.find(id);
     if (i!=m_sph.end())
@@ -632,7 +632,7 @@ EventDataType Session::sph(ChannelID id)
     return val;
 }
 
-EventDataType Session::p90(ChannelID id)
+EventDataType Session::p90(ChannelID id) // 90th Percentile
 {
     QHash<ChannelID,EventDataType>::iterator i=m_90p.find(id);
     if (i!=m_90p.end())

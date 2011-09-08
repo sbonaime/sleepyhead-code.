@@ -186,7 +186,7 @@ EventDataType Day::wavg(ChannelID code)
     qint64 d;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.eventlist.contains(code)) {
+        if (sess.m_wavg.contains(code)) {
             d=sess.last(code)-sess.first(code);
             s0=double(d)/1000.0;
             if (s0>0) {

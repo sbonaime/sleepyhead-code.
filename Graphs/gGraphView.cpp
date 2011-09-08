@@ -1888,6 +1888,7 @@ void gGraphView::setDay(Day * day)
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->setDay(day);
     }
+    ResetBounds();
 }
 void gGraphView::TimedRefresh()
 {

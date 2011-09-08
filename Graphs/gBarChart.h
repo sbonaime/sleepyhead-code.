@@ -61,4 +61,11 @@ public:
     virtual void SetDay(Day * day);
 };
 
+class AvgChart:public gBarChart
+{
+public:
+    AvgChart(Profile *profile);
+    virtual void SetDay(Day * day);
+};
+
 #endif // GBARCHART_H

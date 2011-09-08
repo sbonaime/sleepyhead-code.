@@ -320,7 +320,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_RERA, CPAP_FlowLimit, CPAP_VSnore,
             CPAP_CSR, PRS1_VSnore2
         };
-        for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
+        /*for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
             sess->count(e[i]);
             sess->max(e[i]);
             sess->min(e[i]);
@@ -328,7 +328,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->p90(e[i]);
             sess->cph(e[i]);
             sess->sph(e[i]);
-        }
+        }*/
         sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway));
         sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway));
 
@@ -340,11 +340,11 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         };
         for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
             if (sess->eventlist.contains(a[i])) {
-                sess->min(a[i]);
+                /*sess->min(a[i]);
                 sess->max(a[i]);
                 sess->avg(a[i]);
                 sess->wavg(a[i]);
-                sess->p90(a[i]);
+                sess->p90(a[i]); */
                 sess->cph(a[i]);
             }
         }

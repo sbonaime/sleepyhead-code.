@@ -68,9 +68,7 @@ private:
 
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
-           *PLETHY,*TI,*TE, *RE, *IE, *BC, *UC;
-
-    gBarChart *bc,*uc;
+           *PLETHY,*TI,*TE, *RE, *IE;
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;

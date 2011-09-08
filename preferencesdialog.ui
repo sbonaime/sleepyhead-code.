@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="profileTab">
       <attribute name="title">
@@ -192,10 +192,10 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Used in BMI calculations</string>
+            <string>Used in BMI calculations. Americans, please us decimal inches here, unless you speak metric.</string>
            </property>
            <property name="minimum">
-            <double>40.000000000000000</double>
+            <double>0.000000000000000</double>
            </property>
            <property name="maximum">
             <double>299.990000000000009</double>

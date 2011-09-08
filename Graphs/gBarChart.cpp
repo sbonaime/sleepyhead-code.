@@ -346,8 +346,79 @@ void AHIChart::SetDay(Day * day)
             if (total>m_maxy) m_maxy=total;
        }
     }
-    //m_maxy=ceil(m_maxy);
-    //m_miny=floor(m_miny);
+    m_miny=0;
+
+   // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+
+    m_empty=m_values.size()==0;
+}
+
+
+
+
+AvgChart::AvgChart(Profile *profile)
+    :gBarChart()
+{
+    m_label="Avg";
+    m_profile=profile;
+}
+
+void AvgChart::SetDay(Day * day)
+{
+    if (!m_profile) {
+        qWarning() << "Forgot to set profile for gBarChart dummy!";
+        m_day=NULL;
+        return;
+    }
+    Layer::SetDay(day);
+
+    m_values.clear();
+    m_miny=9999999;
+    m_maxy=-9999999;
+    m_minx=0;
+    m_maxx=0;
+
+    int dn;
+    EventDataType tmp,total;
+    ChannelID code;
+
+    m_fday=0;
+    qint64 tt;
+
+    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
+        tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+        //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
+        dn=tt/86400;
+        tt*=1000L;
+        if (!m_minx || tt<m_minx) m_minx=tt;
+        if (!m_maxx || tt>m_maxx) m_maxx=tt;
+
+
+        total=0;
+        bool fnd=false;
+        for (int j=0;j<m_codes.size();j++) {
+            code=m_codes[j];
+            for (int i=0;i<d.value().size();i++) {
+                Day *day=d.value()[i];
+                if (day->channelExists(code)) { // too many lookups happening here.. stop the crap..
+                    tmp=day->wavg(code);
+                    if (tmp>0) {
+                        fnd=true;
+                        total+=tmp;
+                        m_values[dn][j+1]=tmp;
+                        break;
+                    }
+                }
+            }
+        }
+        if (fnd) {
+            if (!m_fday) m_fday=dn;
+            m_values[dn][0]=total;
+            if (total<m_miny) m_miny=total;
+            if (total>m_maxy) m_maxy=total;
+       }
+    }
     m_miny=0;
 
    // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;

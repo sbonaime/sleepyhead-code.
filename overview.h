@@ -51,9 +51,11 @@ private:
     void UpdateHTML();
 
     //SessionTimes *session_times;
-    gGraph *AHI,*UC;
+    gGraph *AHI,*UC,*PR,*LK;
     AHIChart *bc;
     UsageChart *uc;
+    AvgChart *pr;
+    AvgChart *lk;
     //,*PRESSURE,*LEAK,*SESSTIMES;
 
     //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;

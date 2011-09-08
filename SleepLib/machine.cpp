@@ -571,14 +571,90 @@ bool Machine::Save()
 
     QHash<SessionID,Session *>::iterator s;
 
+    m_savelist.clear();
     for (s=sessionlist.begin(); s!=sessionlist.end(); s++) {
         cnt++;
-        if (qprogress) qprogress->setValue(66.0+(float(cnt)/float(size)*33.0));
-        if ((*s)->IsChanged()) (*s)->Store(path);
-        (*s)->TrashEvents();
-        QApplication::processEvents();
+        if ((*s)->IsChanged()) {
+            m_savelist.push_back(*s);
+            //(*s)->UpdateSummaries();
+            //(*s)->Store(path);
+            //(*s)->TrashEvents();
+        }
     }
+    savelistCnt=0;
+    savelistSize=m_savelist.size();
+    if (!pref["EnableMultithreading"].toBool()) {
+        for (int i=0;i<savelistSize;i++) {
+            qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
+            QApplication::processEvents();
+            Session *s=m_savelist.at(i);
+            s->UpdateSummaries();
+            s->Store(path);
+            s->TrashEvents();
+            savelistCnt++;
+
+        }
+        return true;
+    }
+    int threads=QThread::idealThreadCount();
+    savelistSem=new QSemaphore(threads);
+    savelistSem->acquire(threads);
+    QVector<SaveThread*>thread;
+    for (int i=0;i<threads;i++) {
+        thread.push_back(new SaveThread(this,path));
+        QObject::connect(thread[i],SIGNAL(UpdateProgress(int)),qprogress,SLOT(setValue(int)));
+        thread[i]->start();
+    }
+    while (!savelistSem->tryAcquire(threads,250)) {
+        //qDebug() << savelistSem->available();
+        if (qprogress) {
+        //    qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
+           QApplication::processEvents();
+        }
+    }
+
+    for (int i=0;i<threads;i++) {
+        while (thread[i]->isRunning()) {
+            usleep(250);
+            QApplication::processEvents();
+        }
+        delete thread[i];
+    }
+
+    delete savelistSem;
     return true;
+}
+
+/*SaveThread::SaveThread(Machine *m,QString p)
+{
+    machine=m;
+    path=p;
+} */
+
+void SaveThread::run()
+{
+    while (Session *sess=machine->popSaveList()) {
+        int i=66.0+(float(machine->savelistCnt)/float(machine->savelistSize)*33.0);
+        emit UpdateProgress(i);
+        sess->UpdateSummaries();
+        sess->Store(path);
+        sess->TrashEvents();
+    }
+    machine->savelistSem->release(1);
+}
+
+Session *Machine::popSaveList()
+{
+
+    Session *sess=NULL;
+    savelistMutex.lock();
+    if (m_savelist.size()>0) {
+        sess=m_savelist.at(0);
+        m_savelist.pop_front();
+        savelistCnt++;
+    }
+    savelistMutex.unlock();
+    return sess;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

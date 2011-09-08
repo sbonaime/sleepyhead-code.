@@ -53,8 +53,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     layout->layout();
 
     const int default_height=180;
-    AHI=new gGraph(GraphView,"AHI Chart",default_height,0);
-    UC=new gGraph(GraphView,"Usage Chart",default_height,0);
+    AHI=new gGraph(GraphView,"AHI",default_height,0);
+    UC=new gGraph(GraphView,"Usage",default_height,0);
+    PR=new gGraph(GraphView,"Pressure",default_height,0);
+    LK=new gGraph(GraphView,"Leaks",default_height,0);
+
     uc=new UsageChart(profile);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
@@ -65,7 +68,6 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
 
     bc=new AHIChart(profile);
-    //bc->setProfile(profile);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"));
     bc->addSlice(CPAP_Apnea,QColor("dark green"));
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
@@ -77,6 +79,30 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI->AddLayer(bc);
     AHI->AddLayer(new gXGrid());
 
+
+    pr=new AvgChart(profile);
+    pr->addSlice(CPAP_Pressure,QColor("dark green"));
+    //pr->addSlice(CPAP_EPAP,QColor("dark yellow"));
+    //pr->addSlice(CPAP_IPAP,QColor("red"));
+    PR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    PR->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    PR->AddLayer(pr);
+    PR->AddLayer(new gXGrid());
+
+    lk=new AvgChart(profile);
+    lk->addSlice(CPAP_Leak,QColor("gold"));
+    //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
+    //pr->addSlice(CPAP_IPAP,QColor("red"));
+    LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    LK->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    LK->AddLayer(lk);
+    LK->AddLayer(new gXGrid());
+
+
     //ReloadGraphs();
 
 }
@@ -87,15 +113,13 @@ Overview::~Overview()
 }
 void Overview::ReloadGraphs()
 {
-    bc->SetDay(NULL);
-    AHI->MinX();
-    AHI->MaxX();
-
+    /*bc->SetDay(NULL);
     uc->SetDay(NULL);
-    UC->MinX();
-    UC->MaxX();
+    pr->SetDay(NULL);
+    lk->SetDay(NULL); */
+    GraphView->setDay(NULL);
 
-    GraphView->ResetBounds();
+   // GraphView->ResetBounds();
 }
     /*
     ui->setupUi(this);

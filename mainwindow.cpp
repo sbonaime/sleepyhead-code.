@@ -397,7 +397,7 @@ void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
 {
     pref["EnableMultithreading"]=checked;
     if (checked) {
-        qDebug() << "Multithreading feature is disabled due to it currently being useless.";
+        //qDebug() << "Multithreading feature is disabled due to it currently being useless.";
     }
 }
 

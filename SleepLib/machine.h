@@ -10,6 +10,9 @@
 #include <QString>
 #include <QVariant>
 #include <QDateTime>
+#include <QThread>
+#include <QMutex>
+#include <QSemaphore>
 
 #include <QHash>
 #include <QVector>
@@ -28,6 +31,18 @@ class Session;
 class Profile;
 class Machine;
 
+class SaveThread:public QThread
+{
+    Q_OBJECT
+public:
+    SaveThread(Machine *m,QString p) { machine=m; path=p; }
+    virtual void run();
+protected:
+    Machine *machine;
+    QString path;
+signals:
+    void UpdateProgress(int i);
+};
 
 class Machine
 {
@@ -45,6 +60,12 @@ public:
     QHash<SessionID,Session *> sessionlist;
     QHash<QString,QString> properties;
 
+    Session *popSaveList();
+    QList<Session *> m_savelist;
+    volatile int savelistCnt;
+    int savelistSize;
+    QMutex savelistMutex;
+    QSemaphore *savelistSem;
     Session * SessionExists(SessionID session);
     Day *AddSession(Session *s,Profile *p);
 
