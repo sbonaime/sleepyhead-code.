@@ -28,7 +28,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
     ui->unitCombo->setCurrentIndex(i);
 
-    int i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
+    i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     ui->timeZoneCombo->setCurrentIndex(i);
 
     if (pref.Exists("DaySplitTime")) {
