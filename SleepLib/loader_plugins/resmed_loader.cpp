@@ -503,7 +503,6 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                 do {
                     t+=tolower(data[pos++]);
                 } while ((data[pos]!=20) && (pos<recs)); // start code
-                duration+=10;
                 if (!t.isEmpty()) {
                     //code=MC_UNKNOWN;
                     if (t=="obstructive apnea") {
@@ -519,7 +518,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                             EL[1]=new EventList(code,EVL_Event);
                             sess->eventlist[code].push_back(EL[1]);
                         }
-                        EL[1]->AddEvent(tt,duration);
+                        EL[1]->AddEvent(tt,duration+10); // Only Hyponea's Need the extra duration???
                     } else if (t=="apnea") {
                         code=CPAP_Apnea;
                         if (!EL[2]) {
