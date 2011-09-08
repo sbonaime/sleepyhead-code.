@@ -1,6 +1,5 @@
 #include <QLabel>
 #include <QColorDialog>
-#include "SleepLib/profiles.h"
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -10,6 +9,27 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui(new Ui::PreferencesDialog)
 {
     ui->setupUi(this);
+
+    QString prof=pref["Profile"].toString();
+    profile=Profiles::Get(prof);
+
+    ui->firstNameEdit->setText((*profile)["FirstName"].toString());
+    ui->lastNameEdit->setText((*profile)["LastName"].toString());
+    ui->addressEdit->clear();
+    ui->addressEdit->appendPlainText((*profile)["Address"].toString());
+    ui->emailEdit->setText((*profile)["EmailAddress"].toString());
+    ui->phoneEdit->setText((*profile)["Phone"].toString());
+    bool gender=(*profile)["Gender"].toBool();
+    if (gender) ui->genderMale->setChecked(true); else ui->genderFemale->setChecked(true);
+
+    bool ok;
+    ui->heightEdit->setValue((*profile)["Height"].toDouble(&ok));
+    ui->dobEdit->setDate((*profile)["DOB"].toDate());
+    int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
+    ui->unitCombo->setCurrentIndex(i);
+
+    int i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
+    ui->timeZoneCombo->setCurrentIndex(i);
 
     if (pref.Exists("DaySplitTime")) {
         QTime t=pref["DaySplitTime"].toTime();
@@ -74,6 +94,16 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
             row++;
         }
     }
+    ui->profileTab->setTabOrder(ui->firstNameEdit,ui->lastNameEdit);
+    ui->profileTab->setTabOrder(ui->lastNameEdit,ui->addressEdit);
+    ui->profileTab->setTabOrder(ui->addressEdit,ui->genderMale);
+    ui->profileTab->setTabOrder(ui->genderMale,ui->genderFemale);
+    ui->profileTab->setTabOrder(ui->genderFemale,ui->dobEdit);
+    ui->profileTab->setTabOrder(ui->dobEdit,ui->heightEdit);
+    ui->profileTab->setTabOrder(ui->heightEdit,ui->phoneEdit);
+    ui->profileTab->setTabOrder(ui->phoneEdit,ui->timeZoneCombo);
+    ui->profileTab->setTabOrder(ui->timeZoneCombo,ui->emailEdit);
+    ui->profileTab->setTabOrder(ui->emailEdit,ui->unitCombo);
 }
 
 
@@ -100,28 +130,40 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
     }
 }
 
-void PreferencesDialog::on_timeEdit_editingFinished()
+void PreferencesDialog::Save()
 {
+    (*profile)["FirstName"]=ui->firstNameEdit->text();
+    (*profile)["LastName"]=ui->lastNameEdit->text();
+    (*profile)["Gender"]=ui->genderMale->isChecked();
+    (*profile)["Height"]=ui->heightEdit->value();
+    (*profile)["DOB"]=ui->dobEdit->date();
+    (*profile)["EmailAddress"]=ui->emailEdit->text();
+    (*profile)["Phone"]=ui->phoneEdit->text();
+    (*profile)["Address"]=ui->addressEdit->toPlainText();
+    (*profile)["UnitSystem"]=ui->unitCombo->currentText();
+    (*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
+
+    pref["CombineCloserSessions"]=ui->combineSlider->value();
+    pref["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
+
+    pref["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
     pref["DaySplitTime"]=ui->timeEdit->time();
+
+    profile->Save();
+    pref.Save();
 }
 
-void PreferencesDialog::on_memoryHogCheckbox_toggled(bool checked)
-{
-    pref["MemoryHog"]=checked;
-}
 
-void PreferencesDialog::on_combineSlider_valueChanged(int position)
+void PreferencesDialog::on_combineSlider_sliderMoved(int position)
 {
     if (position>0) {
         ui->combineLCD->display(position);
     } else ui->combineLCD->display(tr("OFF"));
-    pref["CombineCloserSessions"]=position;
 }
 
-void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
+void PreferencesDialog::on_IgnoreSlider_sliderMoved(int position)
 {
     if (position>0) {
         ui->IgnoreLCD->display(position);
     } else ui->IgnoreLCD->display(tr("OFF"));
-    pref["IgnoreShorterSessions"]=position;
 }

@@ -9,6 +9,8 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include "SleepLib/profiles.h"
+
 namespace Ui {
     class PreferencesDialog;
 }
@@ -20,17 +22,14 @@ class PreferencesDialog : public QDialog
 public:
     explicit PreferencesDialog(QWidget *parent = 0);
     ~PreferencesDialog();
-
+    void Save();
+protected:
+    Profile * profile;
 private slots:
     void on_eventTable_doubleClicked(const QModelIndex &index);
+    void on_combineSlider_sliderMoved(int position);
 
-    void on_timeEdit_editingFinished();
-
-    void on_memoryHogCheckbox_toggled(bool checked);
-
-    void on_combineSlider_valueChanged(int value);
-
-    void on_IgnoreSlider_valueChanged(int value);
+    void on_IgnoreSlider_sliderMoved(int position);
 
 private:
     Ui::PreferencesDialog *ui;

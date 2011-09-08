@@ -329,7 +329,7 @@ Profile *Create(QString name,QString realname,QString password)
     prof->Open();
     profiles[name]=prof;
     prof->Set("Username",name);
-    prof->Set("Realname",realname);
+    //prof->Set("Realname",realname);
     if (!password.isEmpty()) prof->Set("Password",SHA1(password));
     prof->Set("DataFolder","{home}/Profiles/{Username}");
 

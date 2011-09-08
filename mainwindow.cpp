@@ -381,6 +381,7 @@ void MainWindow::on_action_Preferences_triggered()
     PreferencesDialog pd(this);
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
+        pd.Save();
     }
 }
 
@@ -396,7 +397,7 @@ void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
 {
     pref["EnableMultithreading"]=checked;
     if (checked) {
-        qDebug() << "This feature is disabled due to it currently being useless.";
+        qDebug() << "Multithreading feature is disabled due to it currently being useless.";
     }
 }
 
