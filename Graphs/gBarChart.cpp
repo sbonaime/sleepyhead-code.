@@ -379,7 +379,14 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
-            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(d.value()[0],'f',2);;
+
+            EventDataType val;
+            if (m_graphtype==GT_BAR) {
+                val=d.value()[0];
+            } else {
+                val=d.value()[1];
+            }
+            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(val,'f',2);;
             graph->ToolTip(z,x,y,1500);
             return true;
         }
