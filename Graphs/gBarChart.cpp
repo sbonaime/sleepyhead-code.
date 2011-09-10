@@ -133,12 +133,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_visible) return;
 
     rtop=top;
-    //GLBuffer *lines=w.lines();
+    GLBuffer *outlines=w.lines();
     QColor blk=Qt::black;
-    lines->add(left, top, left, top+height, blk);
-    lines->add(left, top+height, left+width,top+height, blk);
-    lines->add(left+width,top+height, left+width, top, blk);
-    lines->add(left+width, top, left, top, blk);
+    outlines->add(left, top, left, top+height, blk);
+    outlines->add(left, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, blk);
+    outlines->add(left+width, top, left, top, blk);
 
     qint64 minx=w.min_x, maxx=w.max_x;
     //qint64 minx=m_minx, maxx=m_maxx;
