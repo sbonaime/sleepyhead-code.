@@ -315,12 +315,21 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         w.renderText(a,px+24,py+5);
     }
 
-    if (total_days>0) {
-        float val=total_val/float(total_days);
-        QString z=m_label+"="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0);
-        w.renderText(z,left,top-1);
-        // val = AHI for selected area.
+    QString z=m_label;
+    if (m_graphtype==GT_LINE) {
+        if (totalcounts[0]>0) {
+            float val=totalvalues[0]/float(totalcounts[0]);
+            z+="="+QString::number(val,'f',2)+" days="+QString::number(totalcounts[0],'f',0);
+        }
+       // val = AHI for selected area.
+    } else { // Bar chart works in total mode
+        if (total_days>0) {
+            float val=total_val/float(total_days);
+            z+="="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0);
+        }
+
     }
+    w.renderText(z,left,top-1);
 }
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 {
