@@ -301,6 +301,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     QString a;
     int x,y;
     for (int j=0;j<m_colors.size();j++) {
+        if (totalcounts[j]==0) continue;
         a=channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
