@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     qextserialport/qextserialport.cpp \
     preferencesdialog.cpp \
     Graphs/gGraphView.cpp \
-    Graphs/gStatsLine.cpp
+    Graphs/gStatsLine.cpp \
+    report.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -103,7 +104,8 @@ HEADERS  += \
     qextserialport/qextserialenumerator.h \
     preferencesdialog.h \
     Graphs/gGraphView.h \
-    Graphs/gStatsLine.h
+    Graphs/gStatsLine.h \
+    report.h
 
 
 FORMS    += \
@@ -111,7 +113,8 @@ FORMS    += \
     overview.ui \
     mainwindow.ui \
     oximetry.ui \
-    preferencesdialog.ui
+    preferencesdialog.ui \
+    report.ui
 
 RESOURCES += \
     Resources.qrc

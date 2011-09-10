@@ -14,6 +14,7 @@
 #include "daily.h"
 #include "overview.h"
 #include "oximetry.h"
+#include "report.h"
 
 const int major_version=0;
 const int minor_version=8;
@@ -26,6 +27,7 @@ namespace Ui {
 extern QStatusBar *qstatusbar;
 
 class Daily;
+class Report;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -96,6 +98,7 @@ private:
     Daily * daily;
     Overview * overview;
     Oximetry * oximetry;
+    Report * report;
     bool first_load;
     Profile *profile;
     QNetworkAccessManager *netmanager;

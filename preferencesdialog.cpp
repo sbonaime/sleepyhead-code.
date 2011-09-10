@@ -26,6 +26,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->heightEdit->setValue((*profile)["Height"].toDouble(&ok));
     ui->dobEdit->setDate((*profile)["DOB"].toDate());
     int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
+    if (i<0) i=0;
     ui->unitCombo->setCurrentIndex(i);
 
     i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());

@@ -30,6 +30,8 @@ public:
     void ReloadGraphs();
     //void UpdateGraphs();
 
+    gGraph *AHI,*UC,*PR,*LK;
+    SummaryChart *bc,*uc,*pr,*lk;
 
 private slots:
 /*    void on_drStart_dateChanged(const QDate &date);
@@ -51,11 +53,6 @@ private:
     void UpdateHTML();
 
     //SessionTimes *session_times;
-    gGraph *AHI,*UC,*PR,*LK;
-    SummaryChart *bc;
-    SummaryChart *uc;
-    SummaryChart *pr;
-    SummaryChart *lk;
     //,*PRESSURE,*LEAK,*SESSTIMES;
 
     //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;

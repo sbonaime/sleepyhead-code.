@@ -83,8 +83,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     pr=new SummaryChart(profile,"cmH2O",GT_LINE);
 
-    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
+    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
     pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
     pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
@@ -97,8 +97,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR->AddLayer(new gXGrid());
 
     lk=new SummaryChart(profile,"Avg Leak",GT_LINE);
-    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P);
+    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
     LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);

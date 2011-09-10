@@ -363,9 +363,11 @@ public:
     bool useThreads() { return m_idealthreads>1; }
     GLBuffer * lines, * backlines, *quads;
 
+    void TrashGraphs();
     gGraph * popGraph();
     QVector<gThread *> m_threads;
-
+    void hideSplitter() { m_showsplitter=false; }
+    void showSplitter() { m_showsplitter=true; }
 protected:
     int m_idealthreads;
     Day * m_day;
@@ -418,6 +420,7 @@ protected:
     //volatile int m_threadsrunning;
 
     QString m_emptytext;
+    bool m_showsplitter;
 signals:
 
 

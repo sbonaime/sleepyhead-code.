@@ -137,6 +137,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
     ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
 
+
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
     netmanager = new QNetworkAccessManager(this);
@@ -156,6 +157,10 @@ MainWindow::~MainWindow()
     if (oximetry) {
         oximetry->close();
         delete oximetry;
+    }
+    if (report) {
+        report->close();
+        delete report;
     }
     DoneGraphs();
     Profiles::Done();
@@ -182,11 +187,16 @@ void MainWindow::Startup()
     oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
+    report=new Report(ui->tabWidget,daily->SharedWidget(),daily,overview);
+    ui->tabWidget->insertTab(4,report,tr("Overview Report"));
+
+
     if (daily) daily->ReloadGraphs();
 
     if (overview) {
         overview->ReloadGraphs();
     }
+    //if (report) report->Reload();
 
     qprogress->hide();
     qstatus->setText("");

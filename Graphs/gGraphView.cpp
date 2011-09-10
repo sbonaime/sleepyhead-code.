@@ -675,6 +675,13 @@ void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
     m_drawlist.push_back(g);
     dl_mutex.unlock();
 }
+void gGraphView::TrashGraphs()
+{
+    for (int i=0;i<m_graphs.size();i++) {
+        //delete m_graphs[i];
+    }
+    m_graphs.clear();
+}
 gGraph * gGraphView::popGraph()
 {
     gGraph * g;
@@ -1308,7 +1315,7 @@ void gGraphView::AddGraph(gGraph *g,short group)
         g->setGroup(group);
         m_graphs.push_back(g);
 
-        updateScrollBar();
+       // updateScrollBar();
     }
 }
 float gGraphView::totalHeight()
@@ -1499,13 +1506,15 @@ void gGraphView::paintGL()
 
             queGraph(m_graphs[i],px,py,width()-titleWidth,h);
 
-            // draw the splitter handle
-            QColor ca=QColor(128,128,128,255);
-            backlines->add(0, py+h, w, py+h, ca);
-            ca=QColor(192,192,192,255);
-            backlines->add(0, py+h+1, w, py+h+1, ca);
-            ca=QColor(90,90,90,255);
-            backlines->add(0, py+h+2, w, py+h+2, ca);
+            if (m_showsplitter) {
+                // draw the splitter handle
+                QColor ca=QColor(128,128,128,255);
+                backlines->add(0, py+h, w, py+h, ca);
+                ca=QColor(192,192,192,255);
+                backlines->add(0, py+h+1, w, py+h+1, ca);
+                ca=QColor(90,90,90,255);
+                backlines->add(0, py+h+2, w, py+h+2, ca);
+            }
 
         }
         py=ceil(py+h+graphSpacer);

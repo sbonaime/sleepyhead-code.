@@ -18,7 +18,8 @@ SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
     addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
     addGLBuf(lines=new GLBuffer(color,20000,GL_LINES));
     quads->forceAntiAlias(true);
-    //lines->setSize(2);
+    lines->setSize(2);
+    lines->forceAntiAlias(false);
     m_empty=true;
     hl_day=-1;
 }
@@ -263,13 +264,14 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     quads->add(x2,py-h,col2);
                     quads->add(x2,py,col2);
                     if (barw>2) {
-                        lines->add(x1,py,x1,py-h,blk);
-                        lines->add(x1,py-h,x2,py-h,blk);
-                        lines->add(x1,py,x2,py,blk);
-                        lines->add(x2,py,x2,py-h,blk);
+                        outlines->add(x1,py,x1,py-h,blk);
+                        outlines->add(x1,py-h,x2,py-h,blk);
+                        outlines->add(x1,py,x2,py,blk);
+                        outlines->add(x2,py,x2,py-h,blk);
                     } // if (bar
                     py-=h;
                 } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
+                    col.setAlpha(128);
                     short px2=px+barw;
                     short py2=top+height-1-h;
                     if (lastdaygood) {
@@ -295,7 +297,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
 
     // Draw Ledgend
-    px=left+width-10;
+    px=left+width;
     py=top+10;
     QString a;
     int x,y;

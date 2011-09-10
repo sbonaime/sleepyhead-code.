@@ -343,7 +343,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
                 sess->avg(a[i]);
                 sess->wavg(a[i]);
                 sess->p90(a[i]); */
-                sess->cph(a[i]);
+                //sess->cph(a[i]);
             }
         }
 
