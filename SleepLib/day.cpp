@@ -304,9 +304,9 @@ EventDataType Day::cph(ChannelID code)
     for (int i=0;i<sessions.size();i++) {
         if (!sessions[i]->m_sum.contains(code)) continue;
         sum+=sessions[i]->count(code);
-        h+=sessions[i]->hours();
+        //h+=sessions[i]->hours();
     }
-    sum/=h;
+    sum/=hours();;
     return sum;
 }
 
@@ -317,8 +317,9 @@ EventDataType Day::sph(ChannelID code)
     for (int i=0;i<sessions.size();i++) {
         if (!sessions[i]->m_sum.contains(code)) continue;
         sum+=sessions[i]->sum(code)/3600.0;
-        h+=sessions[i]->hours();
+        //h+=sessions[i]->hours();
     }
+    h=hours();
     sum=(100.0/h)*sum;
     return sum;
 }
