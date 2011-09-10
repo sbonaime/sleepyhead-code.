@@ -297,11 +297,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     // Draw Ledgend
     px=left+width-10;
     py=top+10;
-    int wid=120;
     QString a;
     int x,y;
-    for (int j=0;j<m_colors.size();j++) {
-        if (totalcounts[j]==0) continue;
+    for (int j=0;j<m_codes.size();j++) {
+        if (totalvalues[j]==0) continue;
         a=channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
@@ -311,7 +310,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_MIN:  a+="Min"; break;
                 case ST_MAX:  a+="Max"; break;
                 case ST_HOURS: a+="Hours"; break;
-                default:break;
+                default:
+                    break;
         }
         GetTextExtent(a,x,y);
         px-=30+x;
