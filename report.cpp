@@ -78,10 +78,12 @@ void Report::showEvent (QShowEvent * event)
 }
 void Report::ReloadGraphs()
 {
+    for (int i=0;i<graphs.size();i++) {
+        graphs[i]->setDay(NULL);
+    }
     ui->startDate->setDate(profile->FirstDay());
     ui->endDate->setDate(profile->LastDay());
     for (int i=0;i<graphs.size();i++) {
-        graphs[i]->setDay(NULL);
         graphs[i]->ResetBounds();
     }
 

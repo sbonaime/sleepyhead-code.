@@ -1311,6 +1311,10 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
 
 void gGraphView::AddGraph(gGraph *g,short group)
 {
+    if (!g) {
+        qDebug() << "Attempted to add an empty graph!";
+        return;
+    }
     if (!m_graphs.contains(g)) {
         g->setGroup(group);
         m_graphs.push_back(g);
