@@ -113,7 +113,7 @@ void InitMapsWithoutAwesomeInitializerLists()
         CPAP_IPAP_High=CPAP_CODES.Get(CT_Graph,QObject::tr("IPAP Low"),QObject::tr("IPAP High"),"IPAPH"),
         CPAP_PressureSupport=CPAP_CODES.Get(CT_Graph,QObject::tr("Pressure Support"),QObject::tr("Pressure Support"),"PS"),
         CPAP_Snore=CPAP_CODES.Get(CT_Graph,QObject::tr("Snore"),QObject::tr("Snore"),"Snore"),
-        CPAP_Leak=CPAP_CODES.Get(CT_Graph,QObject::tr("Leak Rate"),QObject::tr("Leak Rate"),"Leak"),
+        CPAP_Leak=CPAP_CODES.Get(CT_Graph,QObject::tr("Leak Rate"),QObject::tr("Leak"),"Leak"),
         CPAP_RespiratoryRate=CPAP_CODES.Get(CT_Graph,QObject::tr("Respiratory Rate"),QObject::tr("Resp. Rate"),"RR"),
         CPAP_TidalVolume=CPAP_CODES.Get(CT_Graph,QObject::tr("Tidal Volume"),QObject::tr("Tidal Volume"),"TV"),
         CPAP_MinuteVentilation=CPAP_CODES.Get(CT_Graph,QObject::tr("Minute Ventilation"),QObject::tr("Minute Vent."),"MV"),

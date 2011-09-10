@@ -104,7 +104,6 @@ void SummaryChart::SetDay(Day * nullday)
     if (m_graphtype==GT_BAR) {
         m_miny=0;
     }
-
    // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
     m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
 
@@ -292,6 +291,29 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     }
 
     lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
+
+    // Draw Ledgend
+    px=left+width;
+    py=top+10;
+    int wid=120;
+    QString a;
+    for (int j=0;j<m_colors.size();j++) {
+        px-=wid;
+        lines->add(px,py,px+20,py,m_colors[j]);
+        lines->add(px,py+1,px+20,py+1,m_colors[j]);
+        a=channel[m_codes[j]].label();
+        a+=" ";
+        switch(m_type[j]) {
+                case ST_WAVG: a+="Avg"; break;
+                case ST_AVG:  a+="Avg"; break;
+                case ST_90P:  a+="90%"; break;
+                case ST_MIN:  a+="Min"; break;
+                case ST_MAX:  a+="Max"; break;
+                case ST_HOURS: a+="Hours"; break;
+                default:break;
+        }
+        w.renderText(a,px+24,py+5);
+    }
 
     if (total_days>0) {
         float val=total_val/float(total_days);
