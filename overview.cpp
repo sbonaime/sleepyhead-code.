@@ -68,7 +68,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     UC->AddLayer(new gXGrid());
 
 
-    bc=new SummaryChart(profile,"AHI",GT_LINE);
+    bc=new SummaryChart(profile,"AHI",GT_BAR);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
     bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
@@ -86,6 +86,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
+    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MAX);
+    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
 
     PR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gx=new gXAxis();
