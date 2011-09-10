@@ -18,6 +18,7 @@ SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
     addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
     addGLBuf(lines=new GLBuffer(color,20000,GL_LINES));
     quads->forceAntiAlias(true);
+    //lines->setSize(2);
     m_empty=true;
     hl_day=-1;
 }
@@ -272,7 +273,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     short px2=px+barw;
                     short py2=top+height-1-h;
                     if (lastdaygood) {
-                        lines->add(lastX[j],lastY[j],px2,py2,col);
+                        lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
+                        lines->add(px,py2,px2,py2,col);
                     } else {
                         lines->add(x1,py2,x2,py2,col);
                     }
@@ -293,14 +295,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
 
     // Draw Ledgend
-    px=left+width;
+    px=left+width-10;
     py=top+10;
     int wid=120;
     QString a;
+    int x,y;
     for (int j=0;j<m_colors.size();j++) {
-        px-=wid;
-        lines->add(px,py,px+20,py,m_colors[j]);
-        lines->add(px,py+1,px+20,py+1,m_colors[j]);
         a=channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
@@ -312,7 +312,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_HOURS: a+="Hours"; break;
                 default:break;
         }
+        GetTextExtent(a,x,y);
+        px-=30+x;
         w.renderText(a,px+24,py+5);
+        lines->add(px,py,px+20,py,m_colors[j]);
+        lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
 
     QString z=m_label;

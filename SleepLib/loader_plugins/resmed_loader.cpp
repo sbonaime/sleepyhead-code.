@@ -369,7 +369,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             ChannelID e[]={
                 CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_Apnea
             };
-            for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
+            /*for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
 
                 // Merge this crap together where possible
                 sess->count(e[i]);
@@ -379,11 +379,11 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 //sess->p90(e[i]);
                 sess->cph(e[i]);
                 sess->sph(e[i]);
-            }
+            }*/
             sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway)+sess->cph(CPAP_Apnea));
             sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway)+sess->sph(CPAP_Apnea));
 
-            ChannelID a[]={
+            /*ChannelID a[]={
                 CPAP_Leak, CPAP_Snore, CPAP_EPAP,
                 CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
                 CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation,
@@ -414,7 +414,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     //sess->p90(b[i]);
                     sess->cph(b[i]);
                 }
-            }
+            } */
             sess->settings[CPAP_Mode]=MODE_APAP;
         }
 
