@@ -52,10 +52,10 @@ private:
 
     //SessionTimes *session_times;
     gGraph *AHI,*UC,*PR,*LK;
-    AHIChart *bc;
-    UsageChart *uc;
-    AvgChart *pr;
-    AvgChart *lk;
+    SummaryChart *bc;
+    SummaryChart *uc;
+    SummaryChart *pr;
+    SummaryChart *lk;
     //,*PRESSURE,*LEAK,*SESSTIMES;
 
     //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;

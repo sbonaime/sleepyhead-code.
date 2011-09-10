@@ -11,25 +11,28 @@
 #include "gGraphView.h"
 #include "gXAxis.h"
 
-class gBarChart:public Layer
+enum GraphType { GT_BAR, GT_LINE };
+
+class SummaryChart:public Layer
 {
     public:
-        gBarChart(ChannelID code=EmptyChannel,QColor color=QColor("blue"),Qt::Orientation o=Qt::Horizontal);
-        virtual ~gBarChart();
+        SummaryChart(Profile *profile, QString label, GraphType type=GT_BAR);
+        virtual ~SummaryChart();
 
         void setProfile(Profile *profile) { m_profile=profile; }
         virtual void paint(gGraph & w,int left, int top, int width, int height);
-        virtual void SetDay(Day * day);
+        virtual void SetDay(Day * day=NULL);
         virtual bool isEmpty() { return m_empty; }
-        void addSlice(ChannelID code, QColor color) { m_codes.push_back(code); m_colors.push_back(color); }
+        void addSlice(ChannelID code, QColor color, SummaryType type) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); }
     protected:
         Qt::Orientation m_orientation;
 
         QVector<QColor> m_colors;
         QVector<ChannelID> m_codes;
+        QVector<SummaryType> m_type;
         QHash<int,QHash<short,EventDataType> > m_values;
         Profile * m_profile;
-        GLBuffer *quads;
+        GLBuffer *quads,*lines;
         bool m_empty;
         int m_fday;
         QString m_label;
@@ -42,12 +45,14 @@ class gBarChart:public Layer
         qint64 l_minx,l_maxx;
         int hl_day;
         gGraph * graph;
+        GraphType m_graphtype;
         virtual bool mouseMoveEvent(QMouseEvent * event);
         virtual bool mousePressEvent(QMouseEvent * event);
         virtual bool mouseReleaseEvent(QMouseEvent * event);
 
 };
 
+/*
 class AHIChart:public gBarChart
 {
 public:
@@ -66,6 +71,6 @@ class AvgChart:public gBarChart
 public:
     AvgChart(Profile *profile);
     virtual void SetDay(Day * day);
-};
+};*/
 
 #endif // GBARCHART_H

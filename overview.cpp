@@ -58,7 +58,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR=new gGraph(GraphView,"Pressure",default_height,0);
     LK=new gGraph(GraphView,"Leaks",default_height,0);
 
-    uc=new UsageChart(profile);
+    uc=new SummaryChart(profile,"Hours",GT_BAR);
+    uc->addSlice(EmptyChannel,QColor("green"),ST_HOURS);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
     gx->setUtcFix(true);
@@ -67,11 +68,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     UC->AddLayer(new gXGrid());
 
 
-    bc=new AHIChart(profile);
-    bc->addSlice(CPAP_Hypopnea,QColor("blue"));
-    bc->addSlice(CPAP_Apnea,QColor("dark green"));
-    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"));
-    bc->addSlice(CPAP_ClearAirway,QColor("purple"));
+    bc=new SummaryChart(profile,"AHI",GT_LINE);
+    bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
+    bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
+    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
+    bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH);
     AHI->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gx=new gXAxis();
     gx->setUtcFix(true);
@@ -80,10 +81,12 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI->AddLayer(new gXGrid());
 
 
-    pr=new AvgChart(profile);
-    pr->addSlice(CPAP_Pressure,QColor("dark green"));
-    //pr->addSlice(CPAP_EPAP,QColor("dark yellow"));
-    //pr->addSlice(CPAP_IPAP,QColor("red"));
+    pr=new SummaryChart(profile,"cmH2O",GT_LINE);
+
+    pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
+    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_AVG);
+    //pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
+
     PR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gx=new gXAxis();
     gx->setUtcFix(true);
@@ -91,8 +94,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR->AddLayer(pr);
     PR->AddLayer(new gXGrid());
 
-    lk=new AvgChart(profile);
-    lk->addSlice(CPAP_Leak,QColor("gold"));
+    lk=new SummaryChart(profile,"Avg Leak",GT_LINE);
+    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_WAVG);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
     LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);

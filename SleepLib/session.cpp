@@ -416,6 +416,8 @@ void Session::UpdateSummaries()
             //sum(id); // avg calculates this and cnt.
             min(id);
             max(id);
+            cph(id);
+            sph(id);
             avg(id);
             wavg(id);
             p90(id);

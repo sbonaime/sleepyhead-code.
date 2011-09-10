@@ -98,9 +98,8 @@ bool isdigit(QChar c)
 int PRS1Loader::Open(QString & path,Profile *profile)
 {
 
-    QString newpath;
-
-    QString pseries="P-Series";
+    QString newpath,pseries="P-Series";
+    qDebug() << "PRS1Loader::Open path=" << newpath;
     if (path.endsWith("/"+pseries)) {
         newpath=path;
     } else {
@@ -113,7 +112,6 @@ int PRS1Loader::Open(QString & path,Profile *profile)
         return 0;
 
 
-    //qDebug() << "PRS1Loader::Open newpath=" << newpath;
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
