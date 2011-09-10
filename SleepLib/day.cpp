@@ -115,6 +115,7 @@ EventDataType Day::settings_wavg(ChannelID code)
     double s0=0,s1=0,s2=0;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
+
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
             s0=sess.hours();
@@ -136,8 +137,7 @@ EventDataType Day::p90(ChannelID code) // The "average" p90.. this needs fixing.
     // Don't assume sessions are in order.
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        QHash<ChannelID,QVector<EventList *> >::iterator i=sess.eventlist.find(code);
-        if (i!=sess.eventlist.end()) {
+        if (sess.m_90p.contains(code)) {
             val+=sess.p90(code);
             cnt++;
         }
@@ -156,7 +156,7 @@ EventDataType Day::avg(ChannelID code)
     // Don't assume sessions are in order.
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
+        if (sess.m_avg.contains(code)) {
             val+=sess.avg(code);
             cnt++;
         }
@@ -173,7 +173,7 @@ EventDataType Day::sum(ChannelID code)
 
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.eventlist.find(code)!=sess.eventlist.end()) {
+        if (sess.m_sum.contains(code)) {
             val+=sess.sum(code);
         }
     }
@@ -266,7 +266,8 @@ EventDataType Day::min(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
+        if (!(*s)->m_min.contains(code)) continue;
+        //if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
         tmp=(*s)->min(code);
         if (first) {
             min=tmp;
@@ -284,7 +285,8 @@ EventDataType Day::max(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
+        if (!(*s)->m_max.contains(code)) continue;
+//        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
         tmp=(*s)->max(code);
         if (first) {
             max=tmp;
