@@ -19,12 +19,20 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->addressEdit->appendPlainText((*profile)["Address"].toString());
     ui->emailEdit->setText((*profile)["EmailAddress"].toString());
     ui->phoneEdit->setText((*profile)["Phone"].toString());
-    bool gender=(*profile)["Gender"].toBool();
+    bool gender;
+    if ((*profile).Exists("Gender")) {
+        gender=(*profile)["Gender"].toBool();
+    } else gender=true; // the true gender.. How sexist.. ;)
+
     if (gender) ui->genderMale->setChecked(true); else ui->genderFemale->setChecked(true);
 
     bool ok;
     ui->heightEdit->setValue((*profile)["Height"].toDouble(&ok));
-    ui->dobEdit->setDate((*profile)["DOB"].toDate());
+    if (!(*profile).Exists("DOB")) {
+        ui->dobEdit->setDate(QDate(1970,1,1));
+    } else {
+        ui->dobEdit->setDate((*profile)["DOB"].toDate());
+    }
     int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
     if (i<0) i=0;
     ui->unitCombo->setCurrentIndex(i);
