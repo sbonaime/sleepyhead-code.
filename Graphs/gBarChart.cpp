@@ -76,8 +76,8 @@ void SummaryChart::SetDay(Day * nullday)
                         case ST_MIN: tmp=day->min(code); break;
                         case ST_MAX: tmp=day->max(code); break;
                         case ST_CNT: tmp=day->count(code); break;
-                        case ST_CPH: tmp=day->count(code)/day->hours(); break;
-                        case ST_SPH: tmp=day->sum(code)/day->hours(); break;
+                        case ST_CPH: tmp=day->cph(code); break;
+                        case ST_SPH: tmp=day->sph(code); break;
                         case ST_HOURS: tmp=day->hours(); break;
                     default:    break;
                     }
@@ -311,6 +311,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_90P:  a+="90%"; break;
                 case ST_MIN:  a+="Min"; break;
                 case ST_MAX:  a+="Max"; break;
+                case ST_CPH:  a+=""; break;
+                case ST_SPH:  a+="%"; break;
                 case ST_HOURS: a+="Hours"; break;
                 default:
                     break;

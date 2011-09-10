@@ -192,11 +192,8 @@ void MainWindow::Startup()
 
 
     if (daily) daily->ReloadGraphs();
-
-    if (overview) {
-        overview->ReloadGraphs();
-    }
-    //if (report) report->Reload();
+    if (overview) overview->ReloadGraphs();
+    if (report) report->ReloadGraphs();
 
     qprogress->hide();
     qstatus->setText("");
@@ -235,10 +232,8 @@ void MainWindow::on_action_Import_Data_triggered()
         if (c) {
             profile->Save();
             if (daily) daily->ReloadGraphs();
-
-            if (overview) {
-                overview->ReloadGraphs();
-            }
+            if (overview) overview->ReloadGraphs();
+            if (report) report->ReloadGraphs();
             //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText("");

@@ -108,6 +108,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     LK->AddLayer(lk);
     LK->AddLayer(new gXGrid());
 
+    NPB=new gGraph(GraphView,"% in PB",default_height,0);
+    NPB->AddLayer(npb=new SummaryChart(profile,"% PB",GT_BAR));
+    npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
+    NPB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    NPB->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    NPB->AddLayer(new gXGrid());
 
     //ReloadGraphs();
 

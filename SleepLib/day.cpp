@@ -297,6 +297,32 @@ EventDataType Day::max(ChannelID code)
     }
     return max;
 }
+EventDataType Day::cph(ChannelID code)
+{
+    EventDataType sum=0;
+    EventDataType h=0;
+    for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->m_sum.contains(code)) continue;
+        sum+=sessions[i]->count(code);
+        h+=sessions[i]->hours();
+    }
+    sum/=h;
+    return sum;
+}
+
+EventDataType Day::sph(ChannelID code)
+{
+    EventDataType sum=0;
+    EventDataType h=0;
+    for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->m_sum.contains(code)) continue;
+        sum+=sessions[i]->sum(code)/3600.0;
+        h+=sessions[i]->hours();
+    }
+    sum=(100.0/h)*sum;
+    return sum;
+}
+
 int Day::count(ChannelID code)
 {
     int sum=0;

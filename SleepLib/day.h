@@ -30,6 +30,8 @@ public:
     int count(ChannelID code);
     EventDataType min(ChannelID code);
     EventDataType max(ChannelID code);
+    EventDataType cph(ChannelID code);
+    EventDataType sph(ChannelID code);
     EventDataType p90(ChannelID code);
     EventDataType avg(ChannelID code);
     EventDataType sum(ChannelID code);

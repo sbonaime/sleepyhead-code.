@@ -25,11 +25,9 @@ Report::Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * o
 
     //GraphView->AddGraph(overview->AHI);
     GraphView->hide();
-    ui->startDate->setDate(profile->FirstDay());
-    ui->endDate->setDate(profile->LastDay());
 
     // Create a new graph, but reuse the layers..
-    int default_height=200;
+    int default_height=150;
     UC=new gGraph(GraphView,"Usage",default_height,0);
     /*uc=new SummaryChart(profile,"Hours",GT_BAR);
     uc->addSlice(EmptyChannel,QColor("green"),ST_HOURS); */
@@ -80,9 +78,26 @@ Report::Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * o
     LK->AddLayer(m_overview->lk);
     LK->AddLayer(new gXGrid());
 
+    NPB=new gGraph(GraphView,"% in PB",default_height,0);
+    NPB->AddLayer(npb=new SummaryChart(profile,"% PB",GT_BAR));
+    npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
+    NPB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    NPB->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    NPB->AddLayer(new gXGrid());
+
+    graphs.push_back(AHI);
+    graphs.push_back(UC);
+    graphs.push_back(PR);
+    graphs.push_back(LK);
+    graphs.push_back(NPB);
+
+
     GraphView->hideSplitter();
     //ui->webView->hide();
     m_ready=false;
+    ReloadGraphs();
 //    Reload();
 }
 
@@ -94,7 +109,16 @@ void Report::showEvent (QShowEvent * event)
 {
     QTimer::singleShot(0,this,SLOT(on_refreshButton_clicked()));
 }
+void Report::ReloadGraphs()
+{
+    ui->startDate->setDate(profile->FirstDay());
+    ui->endDate->setDate(profile->LastDay());
+    for (int i=0;i<graphs.size();i++) {
+        graphs[i]->setDay(NULL);
+        graphs[i]->ResetBounds();
+    }
 
+}
 void Report::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
@@ -136,7 +160,7 @@ void Report::Reload()
     html+="<table border='1px'><tr><td valign=top><table border=0>";
 
     //html+="<i>This is a temporary scratch pad tab so I can see what's going on while designing printing code. These graphs are images, and not controllable.</i>";
-    if (!((*profile).Exists("FirstName") && (*profile).Exists("LastName"))) html+="<h1>Please edit your profile (in Preferences)</h1>"; else {
+    if (!((*profile).Exists("FirstName") && (*profile).Exists("LastName"))) html+="<h1>Please edit your profile</h1>"; else {
         html+="<tr><td>Name:</td><td>"+(*profile)["FirstName"].toString()+" "+(*profile)["LastName"].toString()+"</td></tr>";
     }
     if ((*profile).Exists("Address")&& !(*profile)["Address"].toString().isEmpty()) {
@@ -178,13 +202,9 @@ void Report::Reload()
     "<hr>";
 
 
-    QVector<gGraph *> graphs;
-    graphs.push_back(AHI);
-    graphs.push_back(UC);
-    graphs.push_back(PR);
-    graphs.push_back(LK);
 
     for (int i=0;i<graphs.size();i++) {
+        if (graphs[i]->isEmpty()) continue;
         QPixmap pixmap=Snapshot(graphs[i]);
         QByteArray byteArray;
         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
@@ -216,15 +236,16 @@ void Report::on_endDate_dateChanged(const QDate &date)
 void Report::on_printButton_clicked()
 {
     QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer);
-    //printer.setPrinterName("Print to File (PDF)");
-    //printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPrinterName("Print to File (PDF)");
+    printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setPrintRange(QPrinter::AllPages);
     printer.setOrientation(QPrinter::Portrait);
     printer.setPaperSize(QPrinter::A4);
     printer.setResolution(QPrinter::HighResolution);
     printer.setFullPage(false);
     printer.setNumCopies(1);
+    printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
+    QPrintDialog *dialog = new QPrintDialog(&printer);
     //printer.setOutputFileName("printYou.pdf");
     if ( dialog->exec() == QDialog::Accepted) {
         ui->webView->print(&printer);

@@ -30,8 +30,8 @@ public:
     void ReloadGraphs();
     //void UpdateGraphs();
 
-    gGraph *AHI,*UC,*PR,*LK;
-    SummaryChart *bc,*uc,*pr,*lk;
+    gGraph *AHI,*UC,*PR,*LK,*NPB;
+    SummaryChart *bc,*uc,*pr,*lk,*npb;
 
 private slots:
 /*    void on_drStart_dateChanged(const QDate &date);

@@ -20,7 +20,9 @@ public:
     explicit Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * overview);
     ~Report();
     void Reload();
+    void ReloadGraphs();
     QPixmap Snapshot(gGraph * graph);
+
 protected:
     virtual void showEvent (QShowEvent * event);
 private slots:
@@ -39,8 +41,10 @@ private:
     Overview * m_overview;
     gGraphView * shared;
     gGraphView * GraphView;
-    gGraph *AHI,*UC,*PR,*LK;
-    SummaryChart *bc,*uc,*pr,*lk;
+    gGraph *AHI,*UC,*PR,*LK,*NPB;
+    SummaryChart *bc,*uc,*pr,*lk,*npb;
+    QVector<gGraph *> graphs;
+
     bool m_ready;
     virtual void resizeEvent(QResizeEvent *);
 };
