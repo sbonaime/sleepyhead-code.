@@ -21,77 +21,44 @@ Report::Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * o
         QMessageBox::critical(this,"Profile Error",QString("Couldn't get profile '%1'.. Have to abort!").arg(pref["Profile"].toString()));
         exit(-1);
     }
-    GraphView=new gGraphView(this);
-
-    //GraphView->AddGraph(overview->AHI);
+    GraphView=new gGraphView(this,shared);
     GraphView->hide();
 
     // Create a new graph, but reuse the layers..
     int default_height=150;
+
+    // Reusing the layer data from overview screen,
+    // (Can't reuse the graphs objects without breaking things)
+
     UC=new gGraph(GraphView,"Usage",default_height,0);
-    /*uc=new SummaryChart(profile,"Hours",GT_BAR);
-    uc->addSlice(EmptyChannel,QColor("green"),ST_HOURS); */
-    UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gXAxis *gx=new gXAxis();
-    gx->setUtcFix(true);
-    UC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     UC->AddLayer(m_overview->uc);
-    UC->AddLayer(new gXGrid());
 
     AHI=new gGraph(GraphView,"AHI",default_height,0);
-
-  /*  bc=new SummaryChart(profile,"AHI",GT_BAR);
-    bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
-    bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
-    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
-    bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH);*/
-    AHI->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    AHI->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     AHI->AddLayer(m_overview->bc);
-    AHI->AddLayer(new gXGrid());
 
     PR=new gGraph(GraphView,"Pressure",default_height,0);
-    /*pr=new SummaryChart(profile,"cmH2O",GT_LINE);
-    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
-    pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
-    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
-    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX); */
-    PR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    PR->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     PR->AddLayer(m_overview->pr);
-    PR->AddLayer(new gXGrid());
 
     LK=new gGraph(GraphView,"Leaks",default_height,0);
-    /*lk=new SummaryChart(profile,"Avg Leak",GT_LINE);
-    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
-    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P); */
-    //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
-    //pr->addSlice(CPAP_IPAP,QColor("red"));
-    LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    LK->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     LK->AddLayer(m_overview->lk);
-    LK->AddLayer(new gXGrid());
 
     NPB=new gGraph(GraphView,"% in PB",default_height,0);
-    NPB->AddLayer(npb=new SummaryChart(profile,"% PB",GT_BAR));
-    npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
-    NPB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    NPB->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
-    NPB->AddLayer(new gXGrid());
+    NPB->AddLayer(m_overview->npb);
 
     graphs.push_back(AHI);
     graphs.push_back(UC);
     graphs.push_back(PR);
     graphs.push_back(LK);
     graphs.push_back(NPB);
+
+    gXAxis *gx;
+    for (int i=0;i<graphs.size();i++) {
+        graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+        gx=new gXAxis();
+        gx->setUtcFix(true);
+        graphs[i]->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+        graphs[i]->AddLayer(new gXGrid());
+    }
 
 
     GraphView->hideSplitter();
