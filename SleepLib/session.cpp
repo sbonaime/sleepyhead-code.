@@ -412,11 +412,12 @@ void Session::UpdateSummaries()
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
-        if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
         if ((channel[id].channeltype()==CT_Event) || (channel[id].channeltype()==CT_Graph)) {
             //sum(id); // avg calculates this and cnt.
             min(id);
             max(id);
+            if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
+
             cph(id);
             sph(id);
             avg(id);
