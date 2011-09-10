@@ -95,7 +95,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR->AddLayer(new gXGrid());
 
     lk=new SummaryChart(profile,"Avg Leak",GT_LINE);
-    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_WAVG);
+    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
+    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
     LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);

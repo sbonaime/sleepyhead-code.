@@ -1158,18 +1158,20 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         maxy=m*50;
         m=floor(miny/50.0);
         miny=m*50;
-    } else if (maxy>80) {
+    } else if (maxy>100) {
         m=ceil(maxy/20.0);
         maxy=m*20;
         m=floor(miny/20.0);
         miny=m*20;
-    } else if (maxy>30) {
+    } else if (maxy>40) {
         m=ceil(maxy/10.0);
+        m++;
         maxy=m*10;
         m=floor(miny/10.0);
+        if(m<0) m--;
         miny=m*10;
-    } else if (maxy>=4) {
-        m=ceil(maxy/5.0);
+    } else if (maxy>=5) {
+        m=ceil(maxy/5.0)+1;
         maxy=m*5;
         m=floor(miny/5.0);
         miny=m*5;

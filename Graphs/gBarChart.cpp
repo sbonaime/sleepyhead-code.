@@ -83,6 +83,8 @@ void SummaryChart::SetDay(Day * nullday)
                         fnd=true;
                         total+=tmp;
                         m_values[dn][j+1]=tmp;
+                        if (tmp<m_miny) m_miny=tmp;
+                        if (tmp>m_maxy) m_maxy=tmp;
                         break;
                    // }
 
@@ -92,12 +94,16 @@ void SummaryChart::SetDay(Day * nullday)
         if (fnd) {
             if (!m_fday) m_fday=dn;
             m_values[dn][0]=total;
-            if (total<m_miny) m_miny=total;
-            if (total>m_maxy) m_maxy=total;
+            if (m_graphtype==GT_BAR) {
+                if (total<m_miny) m_miny=total;
+                if (total>m_maxy) m_maxy=total;
+            }
             m_empty=false;
        }
     }
-    m_miny=0;
+    if (m_graphtype==GT_BAR) {
+        m_miny=0;
+    }
 
    // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
     m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
@@ -197,9 +203,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int zd=minx/86400000L;
     zd--;
     QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(zd);
-    if (d==m_values.end()) {
-        d=m_values.find(zd--);
-    }
+//    if (d==m_values.end()) {
+//        d=m_values.find(zd--);
+ //   }
     lastdaygood=true;
     for (int i=0;i<numcodes;i++) {
         totalcounts[i]=0;
@@ -216,18 +222,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         lastY[i]=top+height-1-h;
     }
 
-    if (m_graphtype==GT_LINE) {
-//        minx-=86400000L;
-        //px-=barw;
-    }
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         zd=Q/86400000L;
-        QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(zd);
+        d=m_values.find(zd);
         qint64 extra=86400000;
-        if (m_graphtype==GT_LINE) {
-         //   extra*=2;
-            //extra=0;
-        }
         if (Q<minx) continue;
         if (d!=m_values.end()) {
             int x1=px,x2=px+barw;
@@ -252,9 +250,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     col=QColor("gold");
                 }
 
-                tmp=g.value(); //(g.value()/float(total));
+                tmp=g.value();
                 totalvalues[j]+=tmp;
-                h=tmp*ymult; //(float(total)*ymult); // height of chunk
+                totalcounts[j]++;
+                h=tmp*ymult; // height in pixels
 
                 if (m_graphtype==GT_BAR) {
                     QColor col2=brighten(col);
@@ -271,7 +270,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     } // if (bar
                     py-=h;
                 } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
-                    short px2=px+barw;//lastX[j]+ceil(barw);
+                    short px2=px+barw;
                     short py2=top+height-1-h;
                     if (lastdaygood) {
                         lines->add(lastX[j],lastY[j],px2,py2,col);
