@@ -14,6 +14,8 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
+const int default_height=220;
+
 Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Overview),
@@ -48,7 +50,6 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
 
     layout->layout();
 
-    const int default_height=180;
     AHI=new gGraph(GraphView,"AHI",default_height,0);
     UC=new gGraph(GraphView,"Usage",default_height,0);
     PR=new gGraph(GraphView,"Pressure",default_height,0);

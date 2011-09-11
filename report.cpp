@@ -21,25 +21,22 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     GraphView=new gGraphView(this,shared);
     GraphView->hide();
 
-    // Create a new graph, but reuse the layers..
-    int default_height=150;
-
     // Reusing the layer data from overview screen,
     // (Can't reuse the graphs objects without breaking things)
 
-    UC=new gGraph(GraphView,"Usage",default_height,0);
+    UC=new gGraph(GraphView,"Usage",graph_height,0);
     UC->AddLayer(m_overview->uc);
 
-    AHI=new gGraph(GraphView,"AHI",default_height,0);
+    AHI=new gGraph(GraphView,"AHI",graph_height,0);
     AHI->AddLayer(m_overview->bc);
 
-    PR=new gGraph(GraphView,"Pressure",default_height,0);
+    PR=new gGraph(GraphView,"Pressure",graph_height,0);
     PR->AddLayer(m_overview->pr);
 
-    LK=new gGraph(GraphView,"Leaks",default_height,0);
+    LK=new gGraph(GraphView,"Leaks",graph_height,0);
     LK->AddLayer(m_overview->lk);
 
-    NPB=new gGraph(GraphView,"% in PB",default_height,0);
+    NPB=new gGraph(GraphView,"% in PB",graph_height,0);
     NPB->AddLayer(m_overview->npb);
 
     graphs.push_back(AHI);
@@ -85,8 +82,8 @@ void Report::ReloadGraphs()
 void Report::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    GraphView->setMinimumSize(event->size().width()-20,240);
-    GraphView->setMaximumSize(event->size().width()-20,240);
+    GraphView->setMinimumSize(1280,graph_height);
+    GraphView->setMaximumSize(1280,graph_height);
     //GenerateReport(startDate,endDate);
 }
 
@@ -102,8 +99,7 @@ QPixmap Report::Snapshot(gGraph * graph)
     GraphView->ResetBounds();
     GraphView->SetXBounds(first,last);
 
-    int w=this->width()-20;
-    QPixmap pixmap=GraphView->renderPixmap(w,240,false);
+    QPixmap pixmap=GraphView->renderPixmap(1280,graph_height,false);
 
     return pixmap;
 }
@@ -118,7 +114,7 @@ void Report::GenerateReport(QDate start, QDate end)
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<table width=100% cellpadding=0 cellspacing=0>"
+    "<div align=center><table width='1280px' cellpadding=0 cellspacing=0>"
     "<tr><td valign=top>";
     html+="<h2>CPAP Overview</h2>";
     html+="<table border='1px'><tr><td valign=top><table border=0>";
@@ -161,9 +157,12 @@ void Report::GenerateReport(QDate start, QDate end)
     }
 
     html+="</table></td></tr></table>";
-    html+="<td ><div align=center><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</div></td></tr></table>&nbsp;<br/>"
-    "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b><br/>"
-    "<hr>";
+    html+="<td ><div align=center><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</div></td></tr>"
+    "<tr><td colspan=2>"
+    "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
+    "<hr width=1270px>"
+    "</td></tr>"
+    "</table></div>&nbsp;<br/>";
 
 
 
@@ -174,7 +173,7 @@ void Report::GenerateReport(QDate start, QDate end)
         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
         buffer.open(QIODevice::WriteOnly);
         pixmap.save(&buffer, "PNG");
-        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"100%\" height=\"240px\"></div>\n"; //
+        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"1280px\" height=\""+QString::number(graph_height)+"px\"></div>\n"; //
     }
 
     html+="</body></html>";
@@ -190,6 +189,7 @@ void Report::on_printButton_clicked()
     printer.setOrientation(QPrinter::Portrait);
     //printer.setPaperSize(QPrinter::A4);
     printer.setResolution(QPrinter::HighResolution);
+    //printer.setPageSize();
     printer.setFullPage(false);
     printer.setNumCopies(1);
     printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);

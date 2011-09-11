@@ -11,6 +11,8 @@ namespace Ui {
     class Report;
 }
 
+const int graph_height=220;
+
 class Daily;
 class Overview;
 class Report : public QWidget
