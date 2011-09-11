@@ -123,7 +123,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
-    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=false;
+    bool usethreading=QThread::idealThreadCount()>1;
+
+    // This speeds up the second part of importing craploads.. later it will speed up the first part too.
+    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=usethreading;
     ui->actionEnable_Multithreading->setChecked(pref["EnableMultithreading"].toBool());
 
 
