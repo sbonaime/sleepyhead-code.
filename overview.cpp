@@ -174,6 +174,11 @@ void Overview::on_printButton_clicked()
     if (report) {
         report->setMinimumSize(ui->graphArea->width(),ui->graphArea->height());
         report->setMaximumSize(ui->graphArea->width(),ui->graphArea->height());
+        bc->deselect();
+        uc->deselect();
+        pr->deselect();
+        lk->deselect();
+        npb->deselect();
 
         GraphView->hide();
         report->show();
