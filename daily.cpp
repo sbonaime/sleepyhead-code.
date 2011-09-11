@@ -31,17 +31,11 @@
 const int min_height=150;
 const int default_height=150;
 
-Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
-    :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
+Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow *mw)
+    :QWidget(parent),mainwin(mw), ui(new Ui::Daily),profile(_profile)
 {
     ui->setupUi(this);
 
-    QString prof=pref["Profile"].toString();
-    profile=Profiles::Get(prof);
-    if (!profile) {
-        QMessageBox::critical(this,"Profile Error",QString("Couldn't get profile '%1'.. Have to abort!").arg(pref["Profile"].toString()));
-        exit(-1);
-    }
     QList<int> a;
     a.push_back(300);
     a.push_back(this->width()-300);

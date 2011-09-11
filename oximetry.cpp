@@ -13,20 +13,18 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
-Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
+Oximetry::Oximetry(QWidget *parent,Profile * _profile,gGraphView * shared) :
     QWidget(parent),
-    ui(new Ui::Oximetry)
+    ui(new Ui::Oximetry),
+    profile(_profile)
 {
     m_shared=shared;
     ui->setupUi(this);
+    Q_ASSERT(profile!=NULL);
+
     port=NULL;
     portname="";
-    QString prof=pref["Profile"].toString();
-    profile=Profiles::Get(prof);
-    if (!profile) {
-        qWarning("Couldn't get profile.. Have to abort!");
-        exit(-1);
-    }
+
     mach=profile->GetMachine(MT_OXIMETER);
     if (!mach) {
         CMS50Loader *l=dynamic_cast<CMS50Loader *>(GetLoader("CMS50"));

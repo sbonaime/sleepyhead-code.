@@ -32,7 +32,7 @@ class Oximetry : public QWidget
     Q_OBJECT
 
 public:
-    explicit Oximetry(QWidget *parent,gGraphView * shared=NULL);
+    explicit Oximetry(QWidget *parent, Profile * _profile,gGraphView * shared=NULL);
     ~Oximetry();
 
     void RedrawGraphs();

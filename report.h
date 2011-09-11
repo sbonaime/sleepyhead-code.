@@ -2,9 +2,9 @@
 #define REPORT_H
 
 #include <QWidget>
+#include <QWebView>
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
-#include "daily.h"
 #include "overview.h"
 
 namespace Ui {
@@ -12,38 +12,35 @@ namespace Ui {
 }
 
 class Daily;
+class Overview;
 class Report : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * overview);
+    explicit Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview);
     ~Report();
-    void Reload();
+    void GenerateReport(QDate start, QDate end);
     void ReloadGraphs();
     QPixmap Snapshot(gGraph * graph);
+public slots:
+    void on_printButton_clicked();
 
 protected:
-    virtual void showEvent (QShowEvent * event);
-private slots:
-    void on_refreshButton_clicked();
-
-    void on_startDate_dateChanged(const QDate &date);
-
-    void on_endDate_dateChanged(const QDate &date);
-
-    void on_printButton_clicked();
+//    virtual void showEvent (QShowEvent * event);
 
 private:
     Ui::Report  *ui;
     Profile * profile;
-    Daily * m_daily;
     Overview * m_overview;
     gGraphView * shared;
     gGraphView * GraphView;
     gGraph *AHI,*UC,*PR,*LK,*NPB;
     SummaryChart *bc,*uc,*pr,*lk,*npb;
     QVector<gGraph *> graphs;
+
+    QDate startDate;
+    QDate endDate;
 
     bool m_ready;
     virtual void resizeEvent(QResizeEvent *);

@@ -110,6 +110,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
+    profile=Profiles::Get(pref["Profile"].toString());
+    Q_ASSERT(profile!=NULL);
+
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
@@ -142,6 +145,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     netmanager = new QNetworkAccessManager(this);
     connect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+
+    connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString)));
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -158,10 +163,6 @@ MainWindow::~MainWindow()
         oximetry->close();
         delete oximetry;
     }
-    if (report) {
-        report->close();
-        delete report;
-    }
     DoneGraphs();
     Profiles::Done();
     mainwin=NULL;
@@ -175,26 +176,19 @@ void MainWindow::Startup()
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
 
-    profile=Profiles::Get(pref["Profile"].toString());
     profile->LoadMachineData();
 
-    daily=new Daily(ui->tabWidget,NULL,this);
+    daily=new Daily(ui->tabWidget,profile,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+    oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
     ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
-
-    report=new Report(ui->tabWidget,daily->SharedWidget(),daily,overview);
-    ui->tabWidget->insertTab(4,report,tr("Overview Report"));
-
 
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
-    if (report) report->ReloadGraphs();
-
     qprogress->hide();
     qstatus->setText("");
     //qstatusbar->clearMessage();
@@ -233,7 +227,6 @@ void MainWindow::on_action_Import_Data_triggered()
             profile->Save();
             if (daily) daily->ReloadGraphs();
             if (overview) overview->ReloadGraphs();
-            if (report) report->ReloadGraphs();
             //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText("");
@@ -383,7 +376,7 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 
 void MainWindow::on_action_Preferences_triggered()
 {
-    PreferencesDialog pd(this);
+    PreferencesDialog pd(this,profile);
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
         pd.Save();
@@ -457,4 +450,18 @@ void MainWindow::DelayedScreenshot()
 void MainWindow::on_actionView_O_ximetry_triggered()
 {
     on_oximetryButton_clicked();
+}
+void MainWindow::updatestatusBarMessage (const QString & text)
+{
+    ui->statusbar->showMessage(text,1000);
+}
+
+void MainWindow::on_actionPrint_Report_triggered()
+{
+    if (ui->tabWidget->currentWidget()==overview) {
+        overview->on_printButton_clicked();
+    //} else if (ui->tabWidget->currentWidget()==daily) {
+    } else {
+        QMessageBox::information(this,"Not supported","Printing from this page is not supported yet",QMessageBox::Ok);
+    }
 }

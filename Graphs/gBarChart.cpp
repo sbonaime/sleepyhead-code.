@@ -320,8 +320,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         GetTextExtent(a,x,y);
         px-=30+x;
         w.renderText(a,px+24,py+5);
-        lines->add(px,py,px+20,py,m_colors[j]);
-        lines->add(px,py+1,px+20,py+1,m_colors[j]);
+        quads->add(px,py-3,px+20,py-3,px+20,py+4,px,py+4,m_colors[j]);
+        //quads->add(m_colors[j]);
+        //lines->add(px,py,px+20,py,m_colors[j]);
+        //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
 
     QString z=m_label;

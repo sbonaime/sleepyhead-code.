@@ -4,15 +4,13 @@
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
 
-PreferencesDialog::PreferencesDialog(QWidget *parent) :
+PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     QDialog(parent),
-    ui(new Ui::PreferencesDialog)
+    ui(new Ui::PreferencesDialog),
+    profile(_profile)
 {
     ui->setupUi(this);
-
-    QString prof=pref["Profile"].toString();
-    profile=Profiles::Get(prof);
-
+    Q_ASSERT(profile!=NULL);
     ui->firstNameEdit->setText((*profile)["FirstName"].toString());
     ui->lastNameEdit->setText((*profile)["LastName"].toString());
     ui->addressEdit->clear();

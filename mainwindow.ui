@@ -582,6 +582,8 @@
     <addaction name="action_Import_Data"/>
     <addaction name="action_Preferences"/>
     <addaction name="separator"/>
+    <addaction name="actionPrint_Report"/>
+    <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -769,6 +771,11 @@
    </property>
    <property name="shortcut">
     <string>F7</string>
+   </property>
+  </action>
+  <action name="actionPrint_Report">
+   <property name="text">
+    <string>Print &amp;Report</string>
    </property>
   </action>
  </widget>

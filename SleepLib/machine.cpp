@@ -464,7 +464,9 @@ bool Machine::Purge(int secret)
 
     QDir dir(path);
 
-    if (!dir.exists() || !dir.isReadable())
+    if (!dir.exists()) // It doesn't exist anyway.
+        return true;
+    if (!dir.isReadable())
         return false;
 
 

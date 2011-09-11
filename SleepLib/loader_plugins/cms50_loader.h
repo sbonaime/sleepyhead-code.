@@ -11,7 +11,7 @@ License: GPL
 #include "SleepLib/machine_loader.h"
 
 const QString cms50_class_name="CMS50";
-const int cms50_data_version=2;
+const int cms50_data_version=3;
 
 class CMS50Loader : public MachineLoader
 {
@@ -23,8 +23,8 @@ class CMS50Loader : public MachineLoader
         virtual int Open(QString & path,Profile *profile);
         static void Register();
 
-        virtual int Version() { return cms50_data_version; };
-        virtual const QString & ClassName() { return cms50_class_name; };
+        virtual int Version() { return cms50_data_version; }
+        virtual const QString & ClassName() { return cms50_class_name; }
 
         Machine *CreateMachine(Profile *profile);
 

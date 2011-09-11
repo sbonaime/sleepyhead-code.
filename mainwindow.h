@@ -28,6 +28,7 @@ extern QStatusBar *qstatusbar;
 
 class Daily;
 class Report;
+class Overview;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -92,13 +93,14 @@ private slots:
     void DelayedScreenshot();
 
     void on_actionView_O_ximetry_triggered();
+    void updatestatusBarMessage (const QString & text);
+    void on_actionPrint_Report_triggered();
 
 private:
     Ui::MainWindow *ui;
     Daily * daily;
     Overview * overview;
     Oximetry * oximetry;
-    Report * report;
     bool first_load;
     Profile *profile;
     QNetworkAccessManager *netmanager;

@@ -10,21 +10,22 @@
 #include <QWidget>
 #include <QGLContext>
 #include <QHBoxLayout>
-
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
 #include "Graphs/gBarChart.h"
+#include "report.h"
 
 namespace Ui {
     class Overview;
 }
 
+class Report;
 class Overview : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Overview(QWidget *parent,gGraphView *shared=NULL);
+    explicit Overview(QWidget *parent,Profile *profile, gGraphView *shared=NULL);
     ~Overview();
 
     void ReloadGraphs();
@@ -32,6 +33,8 @@ public:
 
     gGraph *AHI,*UC,*PR,*LK,*NPB;
     SummaryChart *bc,*uc,*pr,*lk,*npb;
+public slots:
+    void on_printButton_clicked();
 
 private slots:
 /*    void on_drStart_dateChanged(const QDate &date);
@@ -42,6 +45,13 @@ private slots:
     void on_rbEverything_clicked();
     void on_rbDateRange_clicked(); */
 
+    void on_dateEnd_dateChanged(const QDate &date);
+
+    void on_dateStart_dateChanged(const QDate &date);
+
+    void on_toolButton_clicked();
+
+    void readyToPrint(bool);
 private:
     Ui::Overview *ui;
     Profile *profile;
@@ -49,6 +59,7 @@ private:
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
     gGraphView * m_shared;
+    Report * report;
 
     void UpdateHTML();
 

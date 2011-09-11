@@ -8,19 +8,16 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
-Report::Report(QWidget *parent, gGraphView * shared, Daily * daily, Overview * overview) :
+Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview) :
     QWidget(parent),
     ui(new Ui::Report),
-    m_daily(daily),
+    profile(_profile),
     m_overview(overview)
 {
     ui->setupUi(this);
-    QString prof=pref["Profile"].toString();
-    profile=Profiles::Get(prof);
-    if (!profile) {
-        QMessageBox::critical(this,"Profile Error",QString("Couldn't get profile '%1'.. Have to abort!").arg(pref["Profile"].toString()));
-        exit(-1);
-    }
+
+    Q_ASSERT(profile!=NULL);
+
     GraphView=new gGraphView(this,shared);
     GraphView->hide();
 
@@ -72,20 +69,17 @@ Report::~Report()
 {
     delete ui;
 }
-void Report::showEvent (QShowEvent * event)
-{
-    QTimer::singleShot(0,this,SLOT(on_refreshButton_clicked()));
-}
 void Report::ReloadGraphs()
 {
     for (int i=0;i<graphs.size();i++) {
         graphs[i]->setDay(NULL);
     }
-    ui->startDate->setDate(profile->FirstDay());
-    ui->endDate->setDate(profile->LastDay());
+    startDate=profile->FirstDay();
+    endDate=profile->LastDay();
     for (int i=0;i<graphs.size();i++) {
         graphs[i]->ResetBounds();
     }
+    m_ready=true;
 
 }
 void Report::resizeEvent(QResizeEvent *event)
@@ -93,14 +87,14 @@ void Report::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
     GraphView->setMinimumSize(event->size().width()-20,240);
     GraphView->setMaximumSize(event->size().width()-20,240);
-    Reload();
+    //GenerateReport(startDate,endDate);
 }
 
 QPixmap Report::Snapshot(gGraph * graph)
 {
-    QDateTime d1(ui->startDate->date(),QTime(0,0,0),Qt::UTC);
+    QDateTime d1(startDate,QTime(0,0,0),Qt::UTC);
     qint64 first=qint64(d1.toTime_t())*1000L;
-    QDateTime d2(ui->endDate->date(),QTime(0,0,0),Qt::UTC);
+    QDateTime d2(endDate,QTime(23,59,59),Qt::UTC);
     qint64 last=qint64(d2.toTime_t())*1000L;
 
     GraphView->TrashGraphs();
@@ -111,13 +105,14 @@ QPixmap Report::Snapshot(gGraph * graph)
     int w=this->width()-20;
     QPixmap pixmap=GraphView->renderPixmap(w,240,false); //gwwidth,gwheight,false);
 
-
     return pixmap;
 }
 
-void Report::Reload()
+void Report::GenerateReport(QDate start, QDate end)
 {
     if (!m_ready) return;
+    startDate=start;
+    endDate=end;
 
     //UC->ResetBounds();
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
@@ -167,7 +162,7 @@ void Report::Reload()
 
     html+="</table></td></tr></table>";
     html+="<td ><div align=center><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</div></td></tr></table>&nbsp;<br/>"
-    "Reporting from <b>"+ui->startDate->date().toString()+"</b> to <b>"+ui->endDate->date().toString()+"</b><br/>"
+    "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b><br/>"
     "<hr>";
 
 
@@ -184,22 +179,6 @@ void Report::Reload()
 
     html+="</body></html>";
     ui->webView->setHtml(html);
-}
-
-void Report::on_refreshButton_clicked()
-{
-    m_ready=true;
-    Reload();
-}
-
-void Report::on_startDate_dateChanged(const QDate &date)
-{
-    Reload();
-}
-
-void Report::on_endDate_dateChanged(const QDate &date)
-{
-    Reload();
 }
 
 void Report::on_printButton_clicked()

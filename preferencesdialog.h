@@ -20,11 +20,9 @@ class PreferencesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PreferencesDialog(QWidget *parent = 0);
+    explicit PreferencesDialog(QWidget *parent, Profile * _profile);
     ~PreferencesDialog();
     void Save();
-protected:
-    Profile * profile;
 private slots:
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void on_combineSlider_sliderMoved(int position);
@@ -33,6 +31,7 @@ private slots:
 
 private:
     Ui::PreferencesDialog *ui;
+    Profile * profile;
 };
 
 #endif // PREFERENCESDIALOG_H

@@ -132,6 +132,40 @@ void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color
         qDebug() << "GLBuffer overflow";
     }
 }
+void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & color) // add with vertex colors
+{
+if (m_cnt<m_max+8) {
+    mutex.lock();
+    buffer[m_cnt++]=x1;
+    buffer[m_cnt++]=y1;
+    buffer[m_cnt++]=x2;
+    buffer[m_cnt++]=y2;
+    buffer[m_cnt++]=x3;
+    buffer[m_cnt++]=y3;
+    buffer[m_cnt++]=x4;
+    buffer[m_cnt++]=y4;
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    mutex.unlock();
+} else {
+    qDebug() << "GLBuffer overflow";
+}
+}
 void GLBuffer::draw()
 {
     if (m_cnt>0) {

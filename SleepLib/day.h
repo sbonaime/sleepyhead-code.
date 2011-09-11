@@ -55,7 +55,7 @@ public:
 
 
     qint64 total_time(); // in milliseconds
-    double hours() { return double(total_time())/3600000.0; }
+    EventDataType hours() { return EventDataType(double(total_time())/3600000.0); }
 
     Session *operator [](int i) { return sessions[i]; }
 

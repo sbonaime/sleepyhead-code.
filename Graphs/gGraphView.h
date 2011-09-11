@@ -41,6 +41,7 @@ public:
 
     void add(GLshort x, GLshort y,QColor & col);    // add with vertex color
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & col); // add with vertex colors
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & col); // add with vertex colors
 
     void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
     void draw();
