@@ -462,6 +462,6 @@ void MainWindow::on_actionPrint_Report_triggered()
         overview->on_printButton_clicked();
     //} else if (ui->tabWidget->currentWidget()==daily) {
     } else {
-        QMessageBox::information(this,"Not supported","Printing from this page is not supported yet",QMessageBox::Ok);
+        QMessageBox::information(this,"Not supported Yet","Sorry, printing from this page is not supported yet",QMessageBox::Ok);
     }
 }

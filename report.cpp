@@ -174,7 +174,7 @@ void Report::GenerateReport(QDate start, QDate end)
         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
         buffer.open(QIODevice::WriteOnly);
         pixmap.save(&buffer, "PNG");
-        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"100%\"></div>\n"; //
+        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"100%\" height=\"240px\"></div>\n"; //
     }
 
     html+="</body></html>";

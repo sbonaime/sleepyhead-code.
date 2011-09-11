@@ -1259,6 +1259,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
     setFocusPolicy(Qt::StrongFocus);
+    m_showsplitter=true;
 }
 gGraphView::~gGraphView()
 {
@@ -1444,6 +1445,7 @@ void gGraphView::updateScrollBar()
     float vis=0;
     for (int i=0;i<m_graphs.size();i++) vis+=m_graphs[i]->isEmpty()  || (!m_graphs[i]->visible()) ? 0 : 1;
 
+    //vis+=1;
     if (th<h) { // less graphs than fits on screen
 
         m_scrollbar->setMaximum(0); // turn scrollbar off.
