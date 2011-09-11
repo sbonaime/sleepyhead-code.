@@ -1284,27 +1284,41 @@ void gGraphView::DrawTextQue()
     glPushAttrib(GL_COLOR_BUFFER_BIT);
     //glFlush();
     //glEnable(GL_BLEND);
-    QPainter painter(QGLContext::currentContext()->device());
     int w,h;
+    QPaintDevice *pd=QGLContext::currentContext()->device();
+
+/* #ifdef Q_WS_WIN32
+    QPixmap *pixmap=dynamic_cast<QPixmap *>(pd);
+#endif */
+
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
+
 
         if (q.angle==0) {
             qglColor(q.color);
             renderText(q.x,q.y,q.text,*q.font);
             //painter.drawText(q.x, q.y, q.text);
         } else {
-            //glRotatef(90,0,0,-1);
+            QPainter painter;
+/*#ifdef Q_WS_WIN32
+            if (pixmap) {
+                painter.begin(pd);
+            } else
+#endif */
+            painter.begin(this);
             QBrush b(q.color);
             painter.setBrush(b);
             painter.setFont(*q.font);
             GetTextExtent(q.text, w, h, q.font);
+
             painter.translate(q.x, q.y);
             painter.rotate(-q.angle);
             painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
             painter.rotate(+q.angle);
             painter.translate(-q.x, -q.y);
+            painter.end();
             /*QString c;
             int x=q.x-4;
             int y=q.y-(w)/2;
@@ -1325,7 +1339,6 @@ void gGraphView::DrawTextQue()
         q.text.clear();
         //q.text.squeeze();
     }
-    painter.end();
     glPopAttrib();
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;

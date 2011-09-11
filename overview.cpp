@@ -168,7 +168,7 @@ void Overview::on_printButton_clicked()
 {
 
     if (!report) {
-        report=new Report(this,profile,NULL,this);
+        report=new Report(this,profile,m_shared,this);
     }
 
     if (report) {

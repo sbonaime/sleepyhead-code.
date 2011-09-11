@@ -103,7 +103,7 @@ QPixmap Report::Snapshot(gGraph * graph)
     GraphView->SetXBounds(first,last);
 
     int w=this->width()-20;
-    QPixmap pixmap=GraphView->renderPixmap(w,240,false); //gwwidth,gwheight,false);
+    QPixmap pixmap=GraphView->renderPixmap(w,240,false);
 
     return pixmap;
 }

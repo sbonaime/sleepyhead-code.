@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 #ifdef Q_WS_X11
     XInitThreads();
 #endif
+    QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
     QApplication a(argc, argv);
 
     a.setApplicationName("SleepyHead");
