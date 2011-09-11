@@ -1284,18 +1284,21 @@ void gGraphView::DrawTextQue()
     glPushAttrib(GL_COLOR_BUFFER_BIT);
     //glFlush();
     //glEnable(GL_BLEND);
-    QPainter painter(this);
+    QPainter painter(QGLContext::currentContext()->device());
     int w,h;
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
 
-        QBrush b(q.color);
-        painter.setBrush(b);
-        painter.setFont(*q.font);
         if (q.angle==0) {
-            painter.drawText(q.x, q.y, q.text);
+            qglColor(q.color);
+            renderText(q.x,q.y,q.text,*q.font);
+            //painter.drawText(q.x, q.y, q.text);
         } else {
+            //glRotatef(90,0,0,-1);
+            QBrush b(q.color);
+            painter.setBrush(b);
+            painter.setFont(*q.font);
             GetTextExtent(q.text, w, h, q.font);
             painter.translate(q.x, q.y);
             painter.rotate(-q.angle);
