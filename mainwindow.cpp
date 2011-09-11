@@ -110,9 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
-    profile=Profiles::Get(pref["Profile"].toString());
-    Q_ASSERT(profile!=NULL);
-
     if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
     ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
 
@@ -175,6 +172,9 @@ void MainWindow::Startup()
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
+
+    profile=Profiles::Get(pref["Profile"].toString());
+    Q_ASSERT(profile!=NULL);
 
     profile->LoadMachineData();
 
