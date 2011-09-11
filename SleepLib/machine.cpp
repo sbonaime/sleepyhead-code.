@@ -617,7 +617,7 @@ bool Machine::Save()
 
     for (int i=0;i<threads;i++) {
         while (thread[i]->isRunning()) {
-            usleep(250);
+            SaveThread::msleep(250);
             QApplication::processEvents();
         }
         delete thread[i];

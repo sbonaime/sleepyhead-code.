@@ -36,6 +36,7 @@ class SaveThread:public QThread
     Q_OBJECT
 public:
     SaveThread(Machine *m,QString p) { machine=m; path=p; }
+    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
     virtual void run();
 protected:
     Machine *machine;

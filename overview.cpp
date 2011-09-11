@@ -126,7 +126,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
 }
 Overview::~Overview()
 {
-    if (!report) {
+    if (report) {
         report->close();
         delete report;
     }
@@ -168,7 +168,7 @@ void Overview::on_printButton_clicked()
 {
 
     if (!report) {
-        report=new Report(this,profile,m_shared,this);
+        report=new Report(this,profile,NULL,this);
     }
 
     if (report) {
