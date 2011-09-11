@@ -184,11 +184,11 @@ void Report::GenerateReport(QDate start, QDate end)
 void Report::on_printButton_clicked()
 {
     QPrinter printer;
-    printer.setPrinterName("Print to File (PDF)");
-    printer.setOutputFormat(QPrinter::PdfFormat);
+    //printer.setPrinterName("Print to File (PDF)");
+    //printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setPrintRange(QPrinter::AllPages);
     printer.setOrientation(QPrinter::Portrait);
-    printer.setPaperSize(QPrinter::A4);
+    //printer.setPaperSize(QPrinter::A4);
     printer.setResolution(QPrinter::HighResolution);
     printer.setFullPage(false);
     printer.setNumCopies(1);
