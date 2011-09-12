@@ -114,7 +114,7 @@ void Report::GenerateReport(QDate start, QDate end)
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<div align=center><table width='100%' cellpadding=0 cellspacing=0>"
+    "<div align=center><table width="+QString::number(graph_print_width)+" cellpadding=0 cellspacing=0>"
     "<tr><td valign=top>";
     html+="<h2>CPAP Overview</h2>";
     html+="<table cell_padding=0 cell_spacing=0 rules=cols border=1><tr><td valign=top width='33%'><table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>";
@@ -157,7 +157,7 @@ void Report::GenerateReport(QDate start, QDate end)
     }
 
     html+="</table></td></tr></table>";
-    html+="<td valign=center align=center width='180px'><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</td></tr>"
+    html+="<td valign=center align=center width='180px'><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"<br/>http://sleepyhead.sf.net</td></tr>"
     "<tr><td colspan=2>"
     "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
     "<hr width=1270px>"
