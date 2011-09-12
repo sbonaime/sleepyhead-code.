@@ -117,7 +117,7 @@ void Report::GenerateReport(QDate start, QDate end)
     "<div align=center><table width='100%' cellpadding=0 cellspacing=0>"
     "<tr><td valign=top>";
     html+="<h2>CPAP Overview</h2>";
-    html+="<table border='1px'><tr><td valign=top><table border=0>";
+    html+="<table cell_padding=0 cell_spacing=0 rules=cols border=1><tr><td valign=top width='33%'><table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>";
 
     //html+="<i>This is a temporary scratch pad tab so I can see what's going on while designing printing code. These graphs are images, and not controllable.</i>";
     if (!((*profile).Exists("FirstName") && (*profile).Exists("LastName"))) html+="<h1>Please edit your profile</h1>"; else {
@@ -133,7 +133,7 @@ void Report::GenerateReport(QDate start, QDate end)
     if ((*profile).Exists("EmailAddress") && !(*profile)["EmailAddress"].toString().isEmpty()) {
         html+="<tr><td>Email:</td><td>"+(*profile)["EmailAddress"].toString()+"</td></tr>";
     }
-    html+="</table></td><td valign=top><table>";
+    html+="</table></td><td valign=top width='33%'><table width=100% height=100% rules=none border=0>";
     if ((*profile).Exists("Gender")) {
         QString gender=(*profile)["Gender"].toBool() ? "Male" : "Female";
         html+="<tr><td>Gender:</td><td>"+gender+"</td></tr>";
@@ -157,7 +157,7 @@ void Report::GenerateReport(QDate start, QDate end)
     }
 
     html+="</table></td></tr></table>";
-    html+="<td valign=center align=right><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</td></tr>"
+    html+="<td valign=center align=center width='180px'><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</td></tr>"
     "<tr><td colspan=2>"
     "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
     "<hr width=1270px>"

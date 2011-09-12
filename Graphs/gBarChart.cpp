@@ -37,6 +37,7 @@ void SummaryChart::SetDay(Day * nullday)
     Layer::SetDay(day);
 
     m_values.clear();
+    m_days.clear();
     m_miny=9999999;
     m_maxy=-9999999;
     m_minx=0;
@@ -68,6 +69,7 @@ void SummaryChart::SetDay(Day * nullday)
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
                 if (type==ST_HOURS || day->channelExists(code)) { // too many lookups happening here.. stop the crap..
+                    m_days[dn]=day;
                     switch(m_type[j]) {
                         case ST_AVG: tmp=day->avg(code); break;
                         case ST_SUM: tmp=day->sum(code); break;
@@ -223,12 +225,16 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         lastY[i]=top+height-1-h;
     }
 
+    Day * day;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         zd=Q/86400000L;
         d=m_values.find(zd);
+
         qint64 extra=86400000;
         if (Q<minx) continue;
         if (d!=m_values.end()) {
+            day=m_days[zd];
+
             int x1=px,x2=px+barw;
 
             if (x1<left) x1=left;
@@ -359,47 +365,32 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
     qint64 mx=ceil(xmult*double(x-offset));
     mx+=l_minx;
     mx=mx+l_offset;//-86400000L;
-   // if (m_graphtype==GT_LINE) mx+=86400000L;
     int zd=mx/86400000L;
-    //if (hl_day!=zd)
+
+    //if (hl_day!=zd)   // This line is an optimization
+
     {
         hl_day=zd;
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
         if (d!=m_values.end()) {
 
-            //int yy=y;
-            //int x=event->x()+graph->left+gGraphView::titleWidth;
-                    ;
-            //int x=event->x()+gYAxis::Margin-gGraphView::titleWidth;
-            //if (x>l_width-45) x=l_width-45;
             x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
             int y=event->y()+rtop-10;
-            /*int w=90;
-            int h=32;
-            if (x<41+w/2) x=41+w/2;
-            if (y<1) y=1;
-            if (y>l_height-h+1) y=l_height-h+1; */
-
-
-            //y+=rtop;
-            //TODO: Convert this to a ToolTip class
-
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
 
+            // Day * day=m_days[hl_day];
             EventDataType val;
             if (m_graphtype==GT_BAR) {
                 val=d.value()[0];
             } else {
                 val=d.value()[1];
             }
-            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(val,'f',2);;
+            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(val,'f',2);//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
             graph->ToolTip(z,x,y,1500);
             return true;
         }
-        //graph->redraw();
     }
-    //qDebug() << l_left <<  x << hl_day << y << offset << barw;
     return false;
 }
 

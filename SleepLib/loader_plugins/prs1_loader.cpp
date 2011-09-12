@@ -327,8 +327,6 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->cph(e[i]);
             sess->sph(e[i]);
         }*/
-        sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway));
-        sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway));
 
         ChannelID a[]={
             CPAP_FlowRate, CPAP_MaskPressure, CPAP_Leak, CPAP_Snore, CPAP_EPAP,

@@ -32,6 +32,8 @@ class SummaryChart:public Layer
         QVector<ChannelID> m_codes;
         QVector<SummaryType> m_type;
         QHash<int,QHash<short,EventDataType> > m_values;
+        QHash<int,Day *> m_days;
+
         Profile * m_profile;
         GLBuffer *quads,*lines;
         bool m_empty;

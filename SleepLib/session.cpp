@@ -427,6 +427,11 @@ void Session::UpdateSummaries()
             first(id);
         }
     }
+    if (channelExists(CPAP_Obstructive)) {
+        setCph(CPAP_AHI,cph(CPAP_Obstructive)+cph(CPAP_Hypopnea)+cph(CPAP_ClearAirway));
+        setSph(CPAP_AHI,sph(CPAP_Obstructive)+sph(CPAP_Hypopnea)+sph(CPAP_ClearAirway));
+    }
+
 }
 
 EventDataType Session::min(ChannelID id)
