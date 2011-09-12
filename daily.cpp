@@ -63,8 +63,6 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    const int default_height=150;
-
   //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
     /*gSegmentChart * seg=new gSegmentChart(GST_Pie);
     seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
