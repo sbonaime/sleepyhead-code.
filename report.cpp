@@ -174,7 +174,7 @@ void Report::GenerateReport(QDate start, QDate end)
         buffer.open(QIODevice::WriteOnly);
         pixmap.save(&buffer, "PNG");
         //html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\""+QString::number(graph_print_width)+"px\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
-        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
+        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width="+QString::number(graph_print_width)+"px height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
     }
 
     html+="</body></html>";
