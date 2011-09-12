@@ -9,6 +9,7 @@
 #include <QPrintDialog>
 #include <QRegExp>
 #include <QFile>
+#include <QDir>
 
 Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview) :
     QWidget(parent),
@@ -62,6 +63,7 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
 
 Report::~Report()
 {
+    GraphView->TrashGraphs();
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         delete g.value();
     }
@@ -170,14 +172,42 @@ QString Report::ParseTemplate(QString input)
 
 }
 
-void Report::GenerateReport(QDate start, QDate end)
+bool Report::GenerateReport(QString templ,QDate start, QDate end)
 {
-    if (!m_ready) return;
-    startDate=start;
-    endDate=end;
+    //if (!m_ready) return;
+    //startDate=start;
+    //endDate=end;
 
-    locals["start"]=startDate;
-    locals["end"]=endDate;
+    QString filename=pref.Get("{home}/reports");
+    QDir dir(filename);
+    if (!dir.exists()) {
+        dir.mkdir(filename);
+    }
+    filename+="/"+templ+".sht";
+    QFile file;
+    file.setFileName(filename);
+
+    QByteArray input;
+    if (file.exists()) {
+        file.open(QIODevice::ReadOnly);
+        input=file.readAll();
+        file.close();
+    } else {
+        QString f2=":/docs/template_"+templ+".sht";
+        file.setFileName(f2);
+        if (!file.exists()) return false;
+        file.open(QIODevice::ReadOnly);
+        input=file.readAll();
+        file.close();
+        file.setFileName(filename);
+        file.open(QIODevice::WriteOnly);
+        file.write(input);
+        file.close();
+    }
+    QString html=input;
+
+    locals["start"]=start;
+    locals["end"]=end;
     locals["width"]=graph_print_width-10;
 
     if ((*profile).Exists("DOB") && !(*profile)["DOB"].toString().isEmpty()) {
@@ -195,20 +225,23 @@ void Report::GenerateReport(QDate start, QDate end)
             locals["DistanceMeasure"]="cm";
         else locals["DistanceMeasure"]="inches";
     }
-    QFile file(":/docs/template_overview.sht");
-    file.open(QIODevice::ReadOnly);
-    QString html=file.readAll();
+    //QFile file(":/docs/template_overview.sht");
+    //file.open(QIODevice::ReadOnly);
+    //QString html=file.readAll();
 
     QString output=ParseTemplate(html);
 
     ui->webView->setHtml(output);
+    return true;
 }
 
 void Report::Print()
 {
     QPrinter printer;
-    //printer.setPrinterName("Print to File (PDF)");
-    //printer.setOutputFormat(QPrinter::PdfFormat);
+#ifdef Q_WS_X11
+    printer.setPrinterName("Print to File (PDF)");
+    printer.setOutputFormat(QPrinter::PdfFormat);
+#endif
     printer.setPrintRange(QPrinter::AllPages);
     printer.setOrientation(QPrinter::Portrait);
     //printer.setPaperSize(QPrinter::A4);

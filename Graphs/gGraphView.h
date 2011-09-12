@@ -129,6 +129,9 @@ public:
 
 
     virtual void drawGLBuf();
+    short m_refcount;
+    void addref() { m_refcount++; }
+    bool unref() { m_refcount--; if (m_refcount<=0) return true; return false; }
 protected:
     void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
     //QRect bounds; // bounds, relative to top of individual graph.

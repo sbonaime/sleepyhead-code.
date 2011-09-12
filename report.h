@@ -23,7 +23,7 @@ class Report : public QWidget
 public:
     explicit Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview);
     ~Report();
-    void GenerateReport(QDate start, QDate end);
+    bool GenerateReport(QString templ,QDate start, QDate end);
     void ReloadGraphs();
     QString ParseTemplate(QString input);
 

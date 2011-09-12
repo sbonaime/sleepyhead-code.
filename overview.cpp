@@ -242,8 +242,12 @@ void Overview::on_printButton_clicked()
         npb->deselect();
 
         report->ReloadGraphs();
-        report->GenerateReport(ui->dateStart->date(),ui->dateEnd->date());
-        report->Print();
+        QString reportname="overview";
+        if (report->GenerateReport(reportname,ui->dateStart->date(),ui->dateEnd->date())) {
+            report->Print();
+        } else {
+            qDebug() << "Faulty Report" << reportname;
+        }
     }
 }
 

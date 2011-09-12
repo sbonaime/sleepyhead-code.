@@ -338,6 +338,7 @@ Layer::Layer(ChannelID code)
     m_width=m_height=0;
     m_X=m_Y=0;
     m_position=LayerCenter;
+    m_refcount=0;
 }
 
 Layer::~Layer()
@@ -416,6 +417,7 @@ void LayerGroup::SetDay(Day * d)
 void LayerGroup::AddLayer(Layer *l)
 {
     layers.push_back(l);
+    l->addref();
 }
 
 qint64 LayerGroup::Minx()
@@ -548,6 +550,11 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
 }
 gGraph::~gGraph()
 {
+    for (int i=0;i<m_layers.size();i++) {
+        if (m_layers[i]->unref())
+            delete m_layers[i];
+    }
+    m_layers.clear();
     delete m_quad;
 }
 
@@ -733,6 +740,7 @@ void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short heigh
     l->setLayout(position,width,height,order);
     l->setMovable(movable);
     l->setPos(x,y);
+    l->addref();
     m_layers.push_back(l);
 }
 void gGraph::redraw() { m_graphview->updateGL(); }

@@ -13,23 +13,23 @@
                 <tr>
                     <td valign=top width=50%>
                         <table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>
-                            <tr><td>Name:</td><td>{{Profile.FirstName}} {{Profile.LastName}}</td></tr>
-                            <tr><td valign=top>Address:</td><td valign=top>{{Profile.Address}}</td></tr>
-                            <tr><td>Phone:</td><td>{{Profile.Phone}}</td></tr>
-                            <tr><td>Email:</td><td>{{Profile.EmailAddress}}</td></tr>
+                            <tr><td>Name:</td><td>{{profile.FirstName}} {{profile.LastName}}</td></tr>
+                            <tr><td valign=top>Address:</td><td valign=top>{{profile.Address}}</td></tr>
+                            <tr><td>Phone:</td><td>{{profile.Phone}}</td></tr>
+                            <tr><td>Email:</td><td>{{profile.EmailAddress}}</td></tr>
                         </table></td>
                     <td valign=top width=50%>
                         <table width=100% height=100% rules=none border=0>
-                            <tr><td>Gender:</td><td>{{Profile.Gender}}</td></tr>
+                            <tr><td>Gender:</td><td>{{profile.Gender}}</td></tr>
                             <tr><td>Age:</td><td>{{local.Age}} years</td></tr>
-                            <tr><td>Height:</td><td>{{Profile.Height}}{{local.DistanceMeasure}}</td></tr>
+                            <tr><td>Height:</td><td>{{profile.Height}}{{local.DistanceMeasure}}</td></tr>
                         </table>
                     </td>
                 </tr>
             </table>
         <td valign=center align=center>
             <img src='qrc:/docs/sheep.png' width=100px height=100px'>
-            <br/>SleepyHead v{{pref.VersionString}}
+            <br/>{{pref.AppName}} v{{pref.VersionString}}
             <br/>http://sleepyhead.sf.net
         </td>
     </tr>
