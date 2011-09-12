@@ -4,9 +4,11 @@
 #include <QBuffer>
 #include <Graphs/gYAxis.h>
 #include <Graphs/gXAxis.h>
-#include <QTimer>
+//#include <QTimer>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QRegExp>
+#include <QFile>
 
 Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview) :
     QWidget(parent),
@@ -24,64 +26,57 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     GraphView->setMaximumSize(graph_print_width,graph_print_height);
     GraphView->setMinimumSize(graph_print_width,graph_print_height);
 
-
     GraphView->hide();
-
 
     // Reusing the layer data from overview screen,
     // (Can't reuse the graphs objects without breaking things)
 
-    UC=new gGraph(GraphView,"Usage",graph_print_height,0);
+    graphs["Usage"]=UC=new gGraph(GraphView,"Usage",graph_print_height,0);
     UC->AddLayer(m_overview->uc);
 
-    AHI=new gGraph(GraphView,"AHI",graph_print_height,0);
+    graphs["AHI"]=AHI=new gGraph(GraphView,"AHI",graph_print_height,0);
     AHI->AddLayer(m_overview->bc);
 
-    PR=new gGraph(GraphView,"Pressure",graph_print_height,0);
+    graphs["Pressure"]=PR=new gGraph(GraphView,"Pressure",graph_print_height,0);
     PR->AddLayer(m_overview->pr);
 
-    LK=new gGraph(GraphView,"Leaks",graph_print_height,0);
+    graphs["Leaks"]=LK=new gGraph(GraphView,"Leaks",graph_print_height,0);
     LK->AddLayer(m_overview->lk);
 
-    NPB=new gGraph(GraphView,"% in PB",graph_print_height,0);
+    graphs["%PB"]=NPB=new gGraph(GraphView,"% in PB",graph_print_height,0);
     NPB->AddLayer(m_overview->npb);
 
-    graphs.push_back(AHI);
-    graphs.push_back(UC);
-    graphs.push_back(PR);
-    graphs.push_back(LK);
-    graphs.push_back(NPB);
 
-    gXAxis *gx;
-    for (int i=0;i<graphs.size();i++) {
-        graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-        gx=new gXAxis();
+    for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
+        gGraph *gr=g.value();
+        gr->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+        gXAxis *gx=new gXAxis();
         gx->setUtcFix(true);
-        graphs[i]->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
-        graphs[i]->AddLayer(new gXGrid());
+        gr->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+        gr->AddLayer(new gXGrid());
     }
 
-
     GraphView->hideSplitter();
-    //ui->webView->hide();
     m_ready=false;
-    ReloadGraphs();
-//    Reload();
 }
 
 Report::~Report()
 {
+    for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
+        delete g.value();
+    }
     delete ui;
 }
 void Report::ReloadGraphs()
 {
-    for (int i=0;i<graphs.size();i++) {
-        graphs[i]->setDay(NULL);
+
+    for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
+        g.value()->setDay(NULL);
     }
     startDate=profile->FirstDay();
     endDate=profile->LastDay();
-    for (int i=0;i<graphs.size();i++) {
-        graphs[i]->ResetBounds();
+    for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
+        g.value()->ResetBounds();
     }
     m_ready=true;
 
@@ -104,83 +99,109 @@ QPixmap Report::Snapshot(gGraph * graph)
     return pixmap;
 }
 
+QString Report::ParseTemplate(QString input)
+{
+    QString output;
+
+    QRegExp rx("\\{\\{(.*)\\}\\}");
+    rx.setMinimal(true);
+    int lastpos=0,pos=0;
+
+    while ((pos=rx.indexIn(input,pos))!=-1) {
+        output+=input.mid(lastpos,pos-lastpos);
+        QString block=rx.cap(1);
+
+        QString code=block.section(".",0,0).toLower();
+        QString key=block.section(".",1,-1);
+        QHash<QString,QVariant> * pr=NULL;
+        if (code=="profile") {
+            pr=&profile->p_preferences;
+        } else if (code=="pref") {
+            pr=&pref.p_preferences;
+        } else if (code=="local") {
+            pr=&locals;
+        }
+
+        QString value;
+        if (pr) {
+            if (pr->contains(key)) {
+                if ((*pr)[key].type()==QVariant::String){
+                    value=(*pr)[key].toString();
+                    value.replace("\n","<br/>");
+                    output+=value;
+                } else if ((*pr)[key].type()==QVariant::Double){
+                    bool ok;
+                    value=QString::number((*pr)[key].toDouble(&ok),'f',2);
+                    if (ok) output+=value; else output+="[NaN]";
+                } else if ((*pr)[key].type()==QVariant::Int){
+                    bool ok;
+                    value=QString::number((*pr)[key].toInt(&ok));
+                    if (ok) output+=value; else output+="[NaN]";
+                } else if ((*pr)[key].type()==QVariant::Date){
+                    value=(*pr)[key].toDate().toString();
+                    output+=value;
+                } else {
+                    qDebug() << "Unknown key type" << (*pr)[key].typeName() << " in " << code << "." << key  << "in template";
+                }
+            } else {
+                qDebug() << "Key not found" << code << "." << key << "in template";
+            }
+        } else if (code=="graph") {
+            if (graphs.contains(key)) {
+                if (!graphs[key]->isEmpty()) {
+                    QPixmap pixmap=Snapshot(graphs[key]);
+                    QByteArray byteArray;
+                    QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                    buffer.open(QIODevice::WriteOnly);
+                    pixmap.save(&buffer, "PNG");
+                //html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\""+QString::number(graph_print_width)+"px\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
+                    output += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width="+QString::number(graph_print_width)+"px height=\""+QString::number(graph_print_height)+"px\"></div>\n";
+                }
+
+            } else {
+                qDebug() << "Graph not found" << key << "in template";
+            }
+        }
+        pos+=rx.matchedLength();
+        lastpos=pos;
+    }
+    output+=input.mid(lastpos); // will just return the input if no tags are used
+    return output;
+
+}
+
 void Report::GenerateReport(QDate start, QDate end)
 {
     if (!m_ready) return;
     startDate=start;
     endDate=end;
 
-    //UC->ResetBounds();
-    QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
-    "</head>"
-    "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<table width="+QString::number(graph_print_width)+" cellpadding=0 cellspacing=0>"
-    "<tr><td valign=top><h2>CPAP Overview</h2>"
-    "<table cell_padding=0 cell_spacing=0 rules=cols border=1>"
-    "<tr><td valign=top width=50%>"
-    "<table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>";
-    if (!((*profile).Exists("FirstName") && (*profile).Exists("LastName"))) html+="<h1>Please edit your profile</h1>"; else {
-        html+="<tr><td>Name:</td><td>"+(*profile)["FirstName"].toString()+" "+(*profile)["LastName"].toString()+"</td></tr>";
-    }
-    if ((*profile).Exists("Address")&& !(*profile)["Address"].toString().isEmpty()) {
-        QString address=(*profile)["Address"].toString().replace("\n","<br/>");
-        html+="<tr><td valign=top>Address:</td><td valign=top>"+address+"</td></tr>";
-    }
-    if ((*profile).Exists("Phone") && !(*profile)["Phone"].toString().isEmpty()) {
-        html+="<tr><td>Phone:</td><td>"+(*profile)["Phone"].toString()+"</td></tr>";
-    }
-    if ((*profile).Exists("EmailAddress") && !(*profile)["EmailAddress"].toString().isEmpty()) {
-        html+="<tr><td>Email:</td><td>"+(*profile)["EmailAddress"].toString()+"</td></tr>";
-    }
-    html+="</table></td>"
-    "<td valign=top width=50%><table width=100% height=100% rules=none border=0>";
-    if ((*profile).Exists("Gender")) {
-        QString gender=(*profile)["Gender"].toBool() ? "Male" : "Female";
-        html+="<tr><td>Gender:</td><td>"+gender+"</td></tr>";
-    }
+    locals["start"]=startDate;
+    locals["end"]=endDate;
+    locals["width"]=graph_print_width-10;
+
     if ((*profile).Exists("DOB") && !(*profile)["DOB"].toString().isEmpty()) {
         QDate dob=(*profile)["DOB"].toDate();
-        //html+="<tr><td>D.O.B.:</td><td>"+dob.toString()+"</td></tr>";
         QDateTime d1(dob,QTime(0,0,0));
         QDateTime d2(QDate::currentDate(),QTime(0,0,0));
         int years=d1.daysTo(d2)/365.25;
-        html+="<tr><td>Age:</td><td>"+QString::number(years)+" years</td></tr>";
-
+        locals["Age"]=years;
+    }
+    if (!(*profile).Exists("UnitSystem")) {
+        (*profile)["UnitSystem"]="Metric";
     }
     if ((*profile).Exists("Height") && !(*profile)["Height"].toString().isEmpty()) {
-        html+="<tr><td>Height:</td><td>"+(*profile)["Height"].toString();
-        if (!(*profile).Exists("UnitSystem")) {
-            (*profile)["UnitSystem"]="Metric";
-        }
-        if ((*profile)["UnitSystem"].toString()=="Metric") html+="cm"; else html+="inches";
-        html+="</td></tr>";
+        if ((*profile)["UnitSystem"].toString()=="Metric")
+            locals["DistanceMeasure"]="cm";
+        else locals["DistanceMeasure"]="inches";
     }
+    QFile file(":/docs/template_overview.sht");
+    file.open(QIODevice::ReadOnly);
+    QString html=file.readAll();
 
-    html+="</table></td></tr></table>"
-    "<td valign=center align=center><img src='qrc:/docs/sheep.png' width=100 height=100'>"
-    "<br/>SleepyHead v"+pref["VersionString"].toString()+
-    "<br/>http://sleepyhead.sf.net</td></tr>"
-    "<tr><td colspan=2>"
-    "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
-    "<hr width="+QString::number(graph_print_width-10)+"px>"
-    "</td></tr>"
-    "</table></div>&nbsp;<br/>";
+    QString output=ParseTemplate(html);
 
-
-
-    for (int i=0;i<graphs.size();i++) {
-        if (graphs[i]->isEmpty()) continue;
-        QPixmap pixmap=Snapshot(graphs[i]);
-        QByteArray byteArray;
-        QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-        buffer.open(QIODevice::WriteOnly);
-        pixmap.save(&buffer, "PNG");
-        //html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\""+QString::number(graph_print_width)+"px\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
-        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width="+QString::number(graph_print_width)+"px height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
-    }
-
-    html+="</body></html>";
-    ui->webView->setHtml(html);
+    ui->webView->setHtml(output);
 }
 
 void Report::Print()

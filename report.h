@@ -25,6 +25,8 @@ public:
     ~Report();
     void GenerateReport(QDate start, QDate end);
     void ReloadGraphs();
+    QString ParseTemplate(QString input);
+
     QPixmap Snapshot(gGraph * graph);
     void Print();
 
@@ -36,7 +38,8 @@ private:
     gGraphView * GraphView;
     gGraph *AHI,*UC,*PR,*LK,*NPB;
     SummaryChart *bc,*uc,*pr,*lk,*npb;
-    QVector<gGraph *> graphs;
+    QHash<QString,QVariant> locals;
+    QHash<QString,gGraph *> graphs;
 
     QDate startDate;
     QDate endDate;

@@ -121,4 +121,5 @@ RESOURCES += \
 
 OTHER_FILES += \
     docs/index.html \
-    docs/usage.html
+    docs/usage.html \
+    docs/template_overview.sht

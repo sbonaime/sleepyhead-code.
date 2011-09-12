@@ -17,12 +17,16 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->addressEdit->appendPlainText((*profile)["Address"].toString());
     ui->emailEdit->setText((*profile)["EmailAddress"].toString());
     ui->phoneEdit->setText((*profile)["Phone"].toString());
-    bool gender;
-    if ((*profile).Exists("Gender")) {
-        gender=(*profile)["Gender"].toBool();
-    } else gender=true; // the true gender.. How sexist.. ;)
+    QString gender;
 
-    if (gender) ui->genderMale->setChecked(true); else ui->genderFemale->setChecked(true);
+    if ((*profile).Exists("Gender")) {
+        gender=(*profile)["Gender"].toString().toLower();
+    } else gender="male";
+
+    // I know this looks sexist.. This was originally a boolean.. :)
+    if ((gender=="male") || (gender=="true")) ui->genderMale->setChecked(true);
+    else if ((gender=="female") || (gender=="false")) ui->genderFemale->setChecked(true);
+
 
     bool ok;
     ui->heightEdit->setValue((*profile)["Height"].toDouble(&ok));
@@ -148,7 +152,9 @@ void PreferencesDialog::Save()
 {
     (*profile)["FirstName"]=ui->firstNameEdit->text();
     (*profile)["LastName"]=ui->lastNameEdit->text();
-    (*profile)["Gender"]=ui->genderMale->isChecked();
+    if (ui->genderMale->isChecked())
+        (*profile)["Gender"]="male";
+    else (*profile)["Gender"]="female";
     (*profile)["Height"]=ui->heightEdit->value();
     (*profile)["DOB"]=ui->dobEdit->date();
     (*profile)["EmailAddress"]=ui->emailEdit->text();
