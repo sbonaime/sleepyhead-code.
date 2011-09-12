@@ -19,10 +19,10 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     Q_ASSERT(profile!=NULL);
 
     GraphView=new gGraphView(this,shared);
-    setMaximumSize(1280,800);
-    setMinimumSize(1280,800);
-    GraphView->setMaximumSize(1280,graph_height);
-    GraphView->setMinimumSize(1280,graph_height);
+    setMaximumSize(graph_print_width,800);
+    setMinimumSize(graph_print_width,800);
+    GraphView->setMaximumSize(graph_print_width,graph_print_height);
+    GraphView->setMinimumSize(graph_print_width,graph_print_height);
 
 
     GraphView->hide();
@@ -31,19 +31,19 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     // Reusing the layer data from overview screen,
     // (Can't reuse the graphs objects without breaking things)
 
-    UC=new gGraph(GraphView,"Usage",graph_height,0);
+    UC=new gGraph(GraphView,"Usage",graph_print_height,0);
     UC->AddLayer(m_overview->uc);
 
-    AHI=new gGraph(GraphView,"AHI",graph_height,0);
+    AHI=new gGraph(GraphView,"AHI",graph_print_height,0);
     AHI->AddLayer(m_overview->bc);
 
-    PR=new gGraph(GraphView,"Pressure",graph_height,0);
+    PR=new gGraph(GraphView,"Pressure",graph_print_height,0);
     PR->AddLayer(m_overview->pr);
 
-    LK=new gGraph(GraphView,"Leaks",graph_height,0);
+    LK=new gGraph(GraphView,"Leaks",graph_print_height,0);
     LK->AddLayer(m_overview->lk);
 
-    NPB=new gGraph(GraphView,"% in PB",graph_height,0);
+    NPB=new gGraph(GraphView,"% in PB",graph_print_height,0);
     NPB->AddLayer(m_overview->npb);
 
     graphs.push_back(AHI);
@@ -86,13 +86,6 @@ void Report::ReloadGraphs()
     m_ready=true;
 
 }
-void Report::resizeEvent(QResizeEvent *event)
-{
-   // QWidget::resizeEvent(event);
-    //GraphView->setMinimumSize(1280,graph_height);
-    //GraphView->setMaximumSize(1280,graph_height);
-    //GenerateReport(startDate,endDate);
-}
 
 QPixmap Report::Snapshot(gGraph * graph)
 {
@@ -106,7 +99,7 @@ QPixmap Report::Snapshot(gGraph * graph)
     GraphView->ResetBounds();
     GraphView->SetXBounds(first,last);
 
-    QPixmap pixmap=GraphView->renderPixmap(1280,graph_height,false);
+    QPixmap pixmap=GraphView->renderPixmap(graph_print_width,graph_print_height,false);
 
     return pixmap;
 }
@@ -121,7 +114,7 @@ void Report::GenerateReport(QDate start, QDate end)
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<div align=center><table width='1280px' cellpadding=0 cellspacing=0>"
+    "<div align=center><table width='100%' cellpadding=0 cellspacing=0>"
     "<tr><td valign=top>";
     html+="<h2>CPAP Overview</h2>";
     html+="<table border='1px'><tr><td valign=top><table border=0>";
@@ -164,7 +157,7 @@ void Report::GenerateReport(QDate start, QDate end)
     }
 
     html+="</table></td></tr></table>";
-    html+="<td ><div align=center><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</div></td></tr>"
+    html+="<td valign=center align=right><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"</td></tr>"
     "<tr><td colspan=2>"
     "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
     "<hr width=1270px>"
@@ -180,14 +173,15 @@ void Report::GenerateReport(QDate start, QDate end)
         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
         buffer.open(QIODevice::WriteOnly);
         pixmap.save(&buffer, "PNG");
-        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"1280px\" height=\""+QString::number(graph_height)+"px\"></div>\n"; //
+        //html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\""+QString::number(graph_print_width)+"px\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
+        html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
     }
 
     html+="</body></html>";
     ui->webView->setHtml(html);
 }
 
-void Report::on_printButton_clicked()
+void Report::Print()
 {
     QPrinter printer;
     //printer.setPrinterName("Print to File (PDF)");

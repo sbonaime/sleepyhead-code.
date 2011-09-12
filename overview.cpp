@@ -170,10 +170,6 @@ void Overview::on_printButton_clicked()
 
     if (!report) {
         report=new Report(this,profile,m_shared,this);
-        //report->setMinimumSize(ui->graphArea->width(),ui->graphArea->height());
-        //report->setMaximumSize(ui->graphArea->width(),ui->graphArea->height());
-        //report->setMinimumSize(1280,800);
-        //report->setMaximumSize(1280,800);
         report->hide();
     }
 
@@ -184,18 +180,10 @@ void Overview::on_printButton_clicked()
         lk->deselect();
         npb->deselect();
 
-        //GraphView->hide();
-        //report->show();
         report->ReloadGraphs();
         report->GenerateReport(ui->dateStart->date(),ui->dateEnd->date());
-        report->on_printButton_clicked();
-        //GraphView->show();
-        //report->connect(report->webview(),SIGNAL(loadFinished(bool)),this,SLOT(readyToPrint(bool)));
+        report->Print();
     }
-
-    //report->hide();
-    //ui->tabWidget->insertTab(4,report,tr("Overview Report"));
-
 }
 
 void Overview::readyToPrint(bool)

@@ -11,7 +11,8 @@ namespace Ui {
     class Report;
 }
 
-const int graph_height=220;
+const int graph_print_width=1280;
+const int graph_print_height=256;
 
 class Daily;
 class Overview;
@@ -25,11 +26,7 @@ public:
     void GenerateReport(QDate start, QDate end);
     void ReloadGraphs();
     QPixmap Snapshot(gGraph * graph);
-public slots:
-    void on_printButton_clicked();
-
-protected:
-//    virtual void showEvent (QShowEvent * event);
+    void Print();
 
 private:
     Ui::Report  *ui;
@@ -45,7 +42,6 @@ private:
     QDate endDate;
 
     bool m_ready;
-    virtual void resizeEvent(QResizeEvent *);
 };
 
 #endif // REPORT_H
