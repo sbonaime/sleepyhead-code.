@@ -101,6 +101,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             row++;
         }
     }
+    QLocale locale=QLocale::system();
+    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
+    if (!shortformat.toLower().contains("yyyy")) {
+        shortformat.replace("yy","yyyy");
+    }
+    ui->dobEdit->setDisplayFormat(shortformat);
+
     ui->profileTab->setTabOrder(ui->firstNameEdit,ui->lastNameEdit);
     ui->profileTab->setTabOrder(ui->lastNameEdit,ui->addressEdit);
     ui->profileTab->setTabOrder(ui->addressEdit,ui->genderMale);
