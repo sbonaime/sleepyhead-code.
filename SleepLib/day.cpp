@@ -204,9 +204,9 @@ EventDataType Day::wavg(ChannelID code)
 qint64 Day::total_time()
 {
     qint64 d_totaltime=0;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QVector<Session *>::iterator s=begin();s!=end();s++) {
         Session & sess=*(*s);
-        d_totaltime+=sess.last()-sess.first();
+        d_totaltime+=sess.length();
     }
     return d_totaltime;
 }

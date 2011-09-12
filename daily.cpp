@@ -806,11 +806,11 @@ void Daily::Load(QDate date)
         }
 
         html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
-        int tt=cpap->total_time()/1000.0;
-        QDateTime date=QDateTime::fromTime_t(cpap->first()/1000);
-        QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000);
+        int tt=qint64(cpap->total_time())/1000L;
+        QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
+        QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
 
-        int h=tt/3600.0;
+        int h=tt/3600;
         int m=(tt/60)%60;
         int s=tt % 60;
         html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
@@ -946,8 +946,8 @@ void Daily::Load(QDate date)
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
-            fd=QDateTime::fromTime_t((*s)->first()/1000);
-            ld=QDateTime::fromTime_t((*s)->last()/1000);
+            fd=QDateTime::fromTime_t((*s)->first()/1000L);
+            ld=QDateTime::fromTime_t((*s)->last()/1000L);
             QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
             if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
             tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());

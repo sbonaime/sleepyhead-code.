@@ -19,7 +19,14 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     Q_ASSERT(profile!=NULL);
 
     GraphView=new gGraphView(this,shared);
+    setMaximumSize(1280,800);
+    setMinimumSize(1280,800);
+    GraphView->setMaximumSize(1280,graph_height);
+    GraphView->setMinimumSize(1280,graph_height);
+
+
     GraphView->hide();
+
 
     // Reusing the layer data from overview screen,
     // (Can't reuse the graphs objects without breaking things)
@@ -81,9 +88,9 @@ void Report::ReloadGraphs()
 }
 void Report::resizeEvent(QResizeEvent *event)
 {
-    QWidget::resizeEvent(event);
-    GraphView->setMinimumSize(1280,graph_height);
-    GraphView->setMaximumSize(1280,graph_height);
+   // QWidget::resizeEvent(event);
+    //GraphView->setMinimumSize(1280,graph_height);
+    //GraphView->setMaximumSize(1280,graph_height);
     //GenerateReport(startDate,endDate);
 }
 

@@ -14,7 +14,7 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
-const int default_height=220;
+const int default_height=180;
 
 Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     QWidget(parent),
@@ -170,24 +170,26 @@ void Overview::on_printButton_clicked()
 
     if (!report) {
         report=new Report(this,profile,m_shared,this);
+        //report->setMinimumSize(ui->graphArea->width(),ui->graphArea->height());
+        //report->setMaximumSize(ui->graphArea->width(),ui->graphArea->height());
+        //report->setMinimumSize(1280,800);
+        //report->setMaximumSize(1280,800);
+        report->hide();
     }
 
     if (report) {
-        report->setMinimumSize(ui->graphArea->width(),ui->graphArea->height());
-        report->setMaximumSize(ui->graphArea->width(),ui->graphArea->height());
         bc->deselect();
         uc->deselect();
         pr->deselect();
         lk->deselect();
         npb->deselect();
 
-        GraphView->hide();
-        report->show();
+        //GraphView->hide();
+        //report->show();
         report->ReloadGraphs();
         report->GenerateReport(ui->dateStart->date(),ui->dateEnd->date());
         report->on_printButton_clicked();
-        report->hide();
-        GraphView->show();
+        //GraphView->show();
         //report->connect(report->webview(),SIGNAL(loadFinished(bool)),this,SLOT(readyToPrint(bool)));
     }
 
