@@ -538,10 +538,10 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     } else {
         qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
-    m_margintop=10;
+    m_margintop=12;
     m_marginbottom=5;
-    m_marginleft=5;
-    m_marginright=10;
+    m_marginleft=10;
+    m_marginright=15;
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 

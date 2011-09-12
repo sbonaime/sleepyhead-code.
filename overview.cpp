@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QDateTimeEdit>
 #include <QCalendarWidget>
+#include <QFileDialog>
 #include "overview.h"
 #include "ui_overview.h"
 #include "Graphs/gXAxis.h"
@@ -226,14 +227,14 @@ void Overview::on_toolButton_clicked()
     GraphView->SetXBounds(d1,d2);
 }
 
-void Overview::on_printButton_clicked()
+QString Overview::GetHTML()
 {
-
     if (!report) {
         report=new Report(this,profile,m_shared,this);
         report->hide();
     }
 
+    QString html;
     if (report) {
         bc->deselect();
         uc->deselect();
@@ -243,14 +244,30 @@ void Overview::on_printButton_clicked()
 
         report->ReloadGraphs();
         QString reportname="overview";
-        if (report->GenerateReport(reportname,ui->dateStart->date(),ui->dateEnd->date())) {
-            report->Print();
-        } else {
+        html=report->GenerateReport(reportname,ui->dateStart->date(),ui->dateEnd->date());
+        if (html.isEmpty()) {
             qDebug() << "Faulty Report" << reportname;
         }
     }
+    return html;
+}
+void Overview::on_printButton_clicked()
+{
+
+    report->Print(GetHTML());
 }
 
-void Overview::readyToPrint(bool)
+void Overview::on_htmlButton_clicked()
 {
+    QString html=GetHTML();
+    QString filename=QFileDialog::getSaveFileName(this,tr("Save HTML Report"),pref.Get("{home}"),tr("HTML Documents (*.html)"));
+    if (!filename.isEmpty()) {
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly);
+        QByteArray ba;
+        ba.append(html);
+        file.write(ba);
+        file.close();
+    }
+
 }

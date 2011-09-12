@@ -346,7 +346,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
 
     }
-    w.renderText(z,left,top-1);
+    w.renderText(z,left,top-3);
 }
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 {

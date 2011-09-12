@@ -156,13 +156,21 @@ QString Report::ParseTemplate(QString input)
                     QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                     buffer.open(QIODevice::WriteOnly);
                     pixmap.save(&buffer, "PNG");
-                //html += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\""+QString::number(graph_print_width)+"px\" height=\""+QString::number(graph_print_height)+"px\"></div>\n"; //
-                    output += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width="+QString::number(graph_print_width)+"px height=\""+QString::number(graph_print_height)+"px\"></div>\n";
+                    //output += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width="+QString::number(graph_print_width)+"px height=\""+QString::number(graph_print_height)+"px\"></div>\n";
+                    output += "<div align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"100%\" height=\""+QString::number(graph_print_height)+"\"></div>\n";
                 }
 
             } else {
                 qDebug() << "Graph not found" << key << "in template";
             }
+        } else if (code=="logo") {
+            QPixmap pixmap(":/docs/sheep.png");
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+            buffer.open(QIODevice::WriteOnly);
+            pixmap.save(&buffer, "PNG");
+            output += "<img src=\"data:image/png;base64," + byteArray.toBase64() + "\" width=\"100\" height=\"100\">";
+
         }
         pos+=rx.matchedLength();
         lastpos=pos;
@@ -172,13 +180,13 @@ QString Report::ParseTemplate(QString input)
 
 }
 
-bool Report::GenerateReport(QString templ,QDate start, QDate end)
+QString Report::GenerateReport(QString templ,QDate start, QDate end)
 {
     //if (!m_ready) return;
-    //startDate=start;
-    //endDate=end;
+    startDate=start;
+    endDate=end;
 
-    QString filename=pref.Get("{home}/reports");
+    QString filename=pref.Get("{home}/Reports");
     QDir dir(filename);
     if (!dir.exists()) {
         dir.mkdir(filename);
@@ -195,7 +203,7 @@ bool Report::GenerateReport(QString templ,QDate start, QDate end)
     } else {
         QString f2=":/docs/template_"+templ+".sht";
         file.setFileName(f2);
-        if (!file.exists()) return false;
+        if (!file.exists()) return "";
         file.open(QIODevice::ReadOnly);
         input=file.readAll();
         file.close();
@@ -228,15 +236,14 @@ bool Report::GenerateReport(QString templ,QDate start, QDate end)
     //QFile file(":/docs/template_overview.sht");
     //file.open(QIODevice::ReadOnly);
     //QString html=file.readAll();
-
-    QString output=ParseTemplate(html);
-
-    ui->webView->setHtml(output);
-    return true;
+    //ui->webView->setHtml(output);
+    return ParseTemplate(html);
 }
 
-void Report::Print()
+void Report::Print(QString html)
 {
+    if (html.isEmpty()) return;
+    ui->webView->setHtml(html);
     QPrinter printer;
 #ifdef Q_WS_X11
     printer.setPrinterName("Print to File (PDF)");

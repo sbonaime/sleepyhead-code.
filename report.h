@@ -11,8 +11,8 @@ namespace Ui {
     class Report;
 }
 
-const int graph_print_width=1280;
-const int graph_print_height=256;
+const int graph_print_width=1024;
+const int graph_print_height=150;
 
 class Daily;
 class Overview;
@@ -23,12 +23,12 @@ class Report : public QWidget
 public:
     explicit Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview);
     ~Report();
-    bool GenerateReport(QString templ,QDate start, QDate end);
+    QString GenerateReport(QString templ,QDate start, QDate end);
     void ReloadGraphs();
     QString ParseTemplate(QString input);
 
     QPixmap Snapshot(gGraph * graph);
-    void Print();
+    void Print(QString html);
 
 private:
     Ui::Report  *ui;

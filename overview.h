@@ -54,7 +54,8 @@ private slots:
 
     void on_toolButton_clicked();
 
-    void readyToPrint(bool);
+    void on_htmlButton_clicked();
+
 private:
     Ui::Overview *ui;
     Profile *profile;
@@ -66,6 +67,9 @@ private:
 
     void UpdateHTML();
     void UpdateCalendarDay(QDateEdit * calendar,QDate date);
+
+
+    QString GetHTML();
 
     //SessionTimes *session_times;
     //,*PRESSURE,*LEAK,*SESSTIMES;
