@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QGLContext>
 #include <QHBoxLayout>
+#include <QDateEdit>
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
 #include "Graphs/gBarChart.h"
@@ -45,9 +46,11 @@ private slots:
     void on_rbEverything_clicked();
     void on_rbDateRange_clicked(); */
 
+    void on_dateStart_dateChanged(const QDate &date);
     void on_dateEnd_dateChanged(const QDate &date);
 
-    void on_dateStart_dateChanged(const QDate &date);
+    void on_dateStart_currentPageChanged(int year, int month);
+    void on_dateEnd_currentPageChanged(int year, int month);
 
     void on_toolButton_clicked();
 
@@ -62,6 +65,7 @@ private:
     Report * report;
 
     void UpdateHTML();
+    void UpdateCalendarDay(QDateEdit * calendar,QDate date);
 
     //SessionTimes *session_times;
     //,*PRESSURE,*LEAK,*SESSTIMES;

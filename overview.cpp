@@ -8,6 +8,8 @@
 #include <QTextCharFormat>
 #include <QSystemLocale>
 #include <QDebug>
+#include <QDateTimeEdit>
+#include <QCalendarWidget>
 #include "overview.h"
 #include "ui_overview.h"
 #include "Graphs/gXAxis.h"
@@ -123,10 +125,20 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     ui->dateStart->setDisplayFormat(shortformat);
     ui->dateEnd->setDisplayFormat(shortformat);
 
+    QTextCharFormat format = ui->dateStart->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),this,SLOT(on_dateStart_currentPageChanged(int,int)));
+    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),this,SLOT(on_dateEnd_currentPageChanged(int,int)));
     report=NULL;
 }
 Overview::~Overview()
 {
+    disconnect(this,SLOT(on_dateStart_currentPageChanged(int,int)));
+    disconnect(this,SLOT(on_dateEnd_currentPageChanged(int,int)));
     if (report) {
         report->close();
         delete report;
@@ -141,6 +153,55 @@ void Overview::ReloadGraphs()
     GraphView->setDay(NULL);
 
 }
+void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
+{
+    QCalendarWidget *calendar=dateedit->calendarWidget();
+    QTextCharFormat bold;
+    QTextCharFormat cpapcol;
+    QTextCharFormat normal;
+    QTextCharFormat oxiday;
+    bold.setFontWeight(QFont::Bold);
+    cpapcol.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpapcol.setFontWeight(QFont::Bold);
+    oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxiday.setFontWeight(QFont::Bold);
+    bool hascpap=profile->GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=profile->GetDay(date,MT_OXIMETER)!=NULL;
+
+    if (hascpap) {
+        if (hasoxi) {
+            calendar->setDateTextFormat(date,oxiday);
+        } else {
+            calendar->setDateTextFormat(date,cpapcol);
+        }
+    } else if (profile->GetDay(date)) {
+        calendar->setDateTextFormat(date,bold);
+    } else {
+        calendar->setDateTextFormat(date,normal);
+    }
+    calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
+}
+void Overview::on_dateStart_currentPageChanged(int year, int month)
+{
+    QDate d(year,month,1);
+    int dom=d.daysInMonth();
+
+    for (int i=1;i<=dom;i++) {
+        d=QDate(year,month,i);
+        UpdateCalendarDay(ui->dateStart,d);
+    }
+}
+void Overview::on_dateEnd_currentPageChanged(int year, int month)
+{
+    QDate d(year,month,1);
+    int dom=d.daysInMonth();
+
+    for (int i=1;i<=dom;i++) {
+        d=QDate(year,month,i);
+        UpdateCalendarDay(ui->dateEnd,d);
+    }
+}
+
 
 void Overview::on_dateEnd_dateChanged(const QDate &date)
 {
