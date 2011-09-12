@@ -377,7 +377,8 @@ void MainWindow::on_actionOverlay_Bars_toggled(bool checked)
 
 void MainWindow::on_action_Reset_Graph_Layout_triggered()
 {
-    if (daily) daily->ResetGraphLayout();
+    if (daily && (ui->tabWidget->currentWidget()==daily)) daily->ResetGraphLayout();
+    if (overview && (ui->tabWidget->currentWidget()==overview)) overview->ResetGraphLayout();
 }
 
 void MainWindow::on_action_Preferences_triggered()

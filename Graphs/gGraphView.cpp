@@ -1957,6 +1957,14 @@ void gGraphView::timedRedraw(int ms)
 {
     QTimer::singleShot(ms,this,SLOT(TimedRefresh()));
 }
+void gGraphView::resetLayout()
+{
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->setHeight(default_height);
+    }
+    updateScale();
+    updateGL();
+}
 
 
 MyScrollBar::MyScrollBar(QWidget * parent)

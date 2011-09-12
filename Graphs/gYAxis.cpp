@@ -15,8 +15,8 @@ gYSpacer::gYSpacer(int spacer) :Layer(EmptyChannel)
 gXGrid::gXGrid(QColor col)
     :Layer(EmptyChannel)
 {
-    m_major_color=QColor(190,190,190,64);
-    m_minor_color=QColor(220,220,220,64);
+    m_major_color=QColor(180,180,180,128);
+    m_minor_color=QColor(220,220,220,128);
     m_show_major_lines=true;
     m_show_minor_lines=true;
 }

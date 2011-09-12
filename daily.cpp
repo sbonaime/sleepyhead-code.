@@ -29,7 +29,6 @@
 #include "Graphs/gStatsLine.h"
 
 const int min_height=150;
-const int default_height=150;
 
 Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow *mw)
     :QWidget(parent),mainwin(mw), ui(new Ui::Daily),profile(_profile)
@@ -695,6 +694,7 @@ void Daily::on_calendar_selectionChanged()
 }
 void Daily::ResetGraphLayout()
 {
+    GraphView->resetLayout();
     //splitter->setSizes(splitter_sizes);
 
 }

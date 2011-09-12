@@ -31,6 +31,7 @@ public:
 
     void ReloadGraphs();
     //void UpdateGraphs();
+    void ResetGraphLayout();
 
     gGraph *AHI,*UC,*PR,*LK,*NPB;
     SummaryChart *bc,*uc,*pr,*lk,*npb;

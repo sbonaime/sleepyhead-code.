@@ -17,8 +17,6 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
-const int default_height=180;
-
 Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Overview),
@@ -270,4 +268,8 @@ void Overview::on_htmlButton_clicked()
         file.close();
     }
 
+}
+void Overview::ResetGraphLayout()
+{
+    GraphView->resetLayout();
 }

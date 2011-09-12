@@ -16,6 +16,7 @@
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
+const int default_height=170;
 
 void InitGraphs();
 void DoneGraphs();
@@ -359,6 +360,7 @@ public:
 
     void updateScrollBar();
     void updateScale();         // update scale & Scrollbar
+    void resetLayout();
     void setEmptyText(QString s) { m_emptytext=s; }
     QMutex text_mutex;
     QMutex gl_mutex;

@@ -231,7 +231,7 @@ QString Report::GenerateReport(QString templ,QDate start, QDate end)
     if ((*profile).Exists("Height") && !(*profile)["Height"].toString().isEmpty()) {
         if ((*profile)["UnitSystem"].toString()=="Metric")
             locals["DistanceMeasure"]="cm";
-        else locals["DistanceMeasure"]="inches";
+        else locals["DistanceMeasure"]=" inches";
     }
     //QFile file(":/docs/template_overview.sht");
     //file.open(QIODevice::ReadOnly);
@@ -254,7 +254,7 @@ void Report::Print(QString html)
     //printer.setPaperSize(QPrinter::A4);
     printer.setResolution(QPrinter::HighResolution);
     //printer.setPageSize();
-    printer.setFullPage(false);
+    printer.setFullPage(false); // This has nothing to do with scaling
     printer.setNumCopies(1);
     printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
     QPrintDialog *dialog = new QPrintDialog(&printer);
