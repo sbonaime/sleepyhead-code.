@@ -114,12 +114,11 @@ void Report::GenerateReport(QDate start, QDate end)
     QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<div align=center><table width="+QString::number(graph_print_width)+" cellpadding=0 cellspacing=0>"
-    "<tr><td valign=top>";
-    html+="<h2>CPAP Overview</h2>";
-    html+="<table cell_padding=0 cell_spacing=0 rules=cols border=1><tr><td valign=top width='33%'><table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>";
-
-    //html+="<i>This is a temporary scratch pad tab so I can see what's going on while designing printing code. These graphs are images, and not controllable.</i>";
+    "<table width="+QString::number(graph_print_width)+" cellpadding=0 cellspacing=0>"
+    "<tr><td valign=top><h2>CPAP Overview</h2>"
+    "<table cell_padding=0 cell_spacing=0 rules=cols border=1>"
+    "<tr><td valign=top width=50%>"
+    "<table rules=none border=0 cell_padding=0 cell_spacing=0 width=100%>";
     if (!((*profile).Exists("FirstName") && (*profile).Exists("LastName"))) html+="<h1>Please edit your profile</h1>"; else {
         html+="<tr><td>Name:</td><td>"+(*profile)["FirstName"].toString()+" "+(*profile)["LastName"].toString()+"</td></tr>";
     }
@@ -133,7 +132,8 @@ void Report::GenerateReport(QDate start, QDate end)
     if ((*profile).Exists("EmailAddress") && !(*profile)["EmailAddress"].toString().isEmpty()) {
         html+="<tr><td>Email:</td><td>"+(*profile)["EmailAddress"].toString()+"</td></tr>";
     }
-    html+="</table></td><td valign=top width='33%'><table width=100% height=100% rules=none border=0>";
+    html+="</table></td>"
+    "<td valign=top width=50%><table width=100% height=100% rules=none border=0>";
     if ((*profile).Exists("Gender")) {
         QString gender=(*profile)["Gender"].toBool() ? "Male" : "Female";
         html+="<tr><td>Gender:</td><td>"+gender+"</td></tr>";
@@ -156,11 +156,13 @@ void Report::GenerateReport(QDate start, QDate end)
         html+="</td></tr>";
     }
 
-    html+="</table></td></tr></table>";
-    html+="<td valign=center align=center width='180px'><img src='qrc:/docs/sheep.png' width=100 height=100'><br/>SleepyHead v"+pref["VersionString"].toString()+"<br/>http://sleepyhead.sf.net</td></tr>"
+    html+="</table></td></tr></table>"
+    "<td valign=center align=center><img src='qrc:/docs/sheep.png' width=100 height=100'>"
+    "<br/>SleepyHead v"+pref["VersionString"].toString()+
+    "<br/>http://sleepyhead.sf.net</td></tr>"
     "<tr><td colspan=2>"
     "Reporting from <b>"+startDate.toString()+"</b> to <b>"+endDate.toString()+"</b>"
-    "<hr width=1270px>"
+    "<hr width="+QString::number(graph_print_width-10)+"px>"
     "</td></tr>"
     "</table></div>&nbsp;<br/>";
 
