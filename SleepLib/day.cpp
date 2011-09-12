@@ -315,8 +315,8 @@ EventDataType Day::sph(ChannelID code)
     EventDataType sum=0;
     EventDataType h=0;
     for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->m_sph.contains(code)) continue;
-        sum+=sessions[i]->sph(code)*sessions[i]->hours();
+        if (!sessions[i]->m_sum.contains(code)) continue;
+        sum+=sessions[i]->sum(code)/3600.0;//*sessions[i]->hours();
         //h+=sessions[i]->hours();
     }
     h=hours();
