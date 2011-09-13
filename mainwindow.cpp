@@ -295,11 +295,13 @@ void MainWindow::on_dailyButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(daily);
     daily->RedrawGraphs();
+    qstatus2->setText("Daily");
 }
 
 void MainWindow::on_overviewButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(overview);
+    qstatus2->setText("Overview");
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)
@@ -394,6 +396,7 @@ void MainWindow::on_oximetryButton_clicked()
 {
     if (oximetry) {
         ui->tabWidget->setCurrentWidget(oximetry);
+        qstatus2->setText("Oximetry");
         oximetry->RedrawGraphs();
     }
 }

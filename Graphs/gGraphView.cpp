@@ -3,6 +3,7 @@
 #include "gGraphView.h"
 #include "SleepLib/profiles.h"
 #include <QTimer>
+#include <QLabel>
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -10,6 +11,8 @@ QFont * mediumfont=NULL;
 QFont * bigfont=NULL;
 
 bool evil_intel_graphics_chip=false;
+
+extern QLabel * qstatus2;
 
 // Must be called from a thread inside the application.
 void InitGraphs()
@@ -770,6 +773,26 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (a2>w) a2=w;
             m_selecting_area=true;
             m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
+            double w2=m_lastbounds.width()-(right+m_marginright)-(m_marginleft+left);
+            if (m_blockzoom) {
+                xmult=(rmax_x-rmin_x)/w2;
+            } else xmult=(max_x-min_x)/w2;
+            qint64 a=double(a2-a1)*xmult;
+            int d=a/86400000L;
+            int h=a/3600000;
+            int m=(a/60000) % 60;
+            int s=(a/1000) % 60;
+            int ms(a % 1000);
+            QString str;
+            if (d>1) {
+                str.sprintf("%i days",d);
+            } else {
+
+                str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
+            }
+            if (qstatus2) {
+                qstatus2->setText(str);
+            }
             //m_graphview->updateGL();
             nolayer=false;
             doredraw=true;
@@ -886,9 +909,11 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             if (x2<0) x2=0;
             if (x>w) x=w;
             if (x2>w) x2=w;
+            double xx;
+            double xmult;
             if (!m_blockzoom) {
-                double xx=max_x-min_x;
-                double xmult=xx/double(w);
+                xx=max_x-min_x;
+                xmult=xx/double(w);
                 qint64 j1=min_x+xmult*x;
                 qint64 j2=min_x+xmult*x2;
                 qint64 a1=MIN(j1,j2)
@@ -898,8 +923,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(a1,a2,m_group);
             } else {
-                double xx=rmax_x-rmin_x;
-                double xmult=xx/double(w);
+                xx=rmax_x-rmin_x;
+                xmult=xx/double(w);
                 qint64 j1=rmin_x+xmult*x;
                 qint64 j2=rmin_x+xmult*x2;
                 qint64 a1=MIN(j1,j2)
@@ -909,6 +934,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(a1,a2,m_group);
             }
+
             return;
         } else m_graphview->updateGL();
     }
@@ -1417,6 +1443,22 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         //if (m_graphs[i]->group()==group)
             m_graphs[i]->ResetBounds();
     }
+    qint64 xx=m_graphs[0]->max_x-m_graphs[0]->min_x;
+    double d=xx/86400000L;
+    int h=xx/3600000L;
+    int m=(xx/60000) % 60;
+    int s=(xx/1000) % 60;
+    int ms(xx % 1000);
+    QString str;
+
+    if (d>1) {
+        str.sprintf("%1.0f days",ceil(xx/86400000.0));
+    } else {
+        str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
+    }
+    if (qstatus2) {
+        qstatus2->setText(str);
+    }
     updateScale();
 }
 
@@ -1426,6 +1468,23 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
         if (m_graphs[i]->group()==group)
             m_graphs[i]->SetXBounds(minx,maxx);
     }
+    qint64 xx=maxx-minx;
+    double d=xx/86400000L;
+    int h=xx/3600000L;
+    int m=(xx/60000) % 60;
+    int s=(xx/1000) % 60;
+    int ms(xx % 1000);
+    QString str;
+
+    if (d>1) {
+        str.sprintf("%1.0f days",ceil(xx/86400000.0));
+    } else {
+        str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
+    }
+    if (qstatus2) {
+        qstatus2->setText(str);
+    }
+
     if (refresh) updateGL();
 }
 void gGraphView::updateScale()
