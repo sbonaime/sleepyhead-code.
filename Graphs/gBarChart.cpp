@@ -235,9 +235,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         if (d!=m_values.end()) {
             day=m_days[zd];
 
-            float x1=px;
+            int x1=px;
             //x1-=(barw/2.0);
-            float x2=px+barw;
+            int x2=px+barw;
 
             if (x1<left) x1=left;
             if (x2>left+width) x2=left+width;
@@ -369,6 +369,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
     mx=mx+l_offset;//-86400000L;
     int zd=mx/86400000L;
 
+    Day * day;
     //if (hl_day!=zd)   // This line is an optimization
 
     {
@@ -376,19 +377,28 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
         if (d!=m_values.end()) {
 
+            day=m_days[zd];
             x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
             int y=event->y()+rtop-10;
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
 
             // Day * day=m_days[hl_day];
-            EventDataType val;
+            //EventDataType val;
+            QString val;
             if (m_graphtype==GT_BAR) {
-                val=d.value()[0];
+                if (m_type[0]==ST_HOURS) {
+                    int t=d.value()[0]*3600.0;
+                    int h=t/3600;
+                    int m=(t / 60) % 60;
+                    int s=t % 60;
+                    val.sprintf("%02i:%02i:%02i",h,m,s);
+                } else val=QString::number(d.value()[0]);
             } else {
-                val=d.value()[1];
+                val=QString::number(d.value()[1]);
             }
-            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+QString::number(val,'f',2);//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
+
+            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
             graph->ToolTip(z,x,y,1500);
             return true;
         }

@@ -164,7 +164,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
 
     for (qint64 i=aligned_start;i<maxx;i+=step) {
-        px=double(i-minx)*xmult;
+        px=(i-minx)*xmult;
         px+=left;
         lines->add(px,top,px,top+6,linecol);
         qint64 j=i+tz_offset;
