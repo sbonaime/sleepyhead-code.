@@ -67,7 +67,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     int divmax,dividx;
     int fitmode;
     if (xx>=86400000L) {         // Day
-        fd="MMM 00";
+        fd="Mjj 00";
         dividx=0;
         divmax=10;
         fitmode=0;

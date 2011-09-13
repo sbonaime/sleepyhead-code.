@@ -778,14 +778,14 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 xmult=(rmax_x-rmin_x)/w2;
             } else xmult=(max_x-min_x)/w2;
             qint64 a=double(a2-a1)*xmult;
-            int d=a/86400000L;
+            float d=double(a)/86400000.0;
             int h=a/3600000;
             int m=(a/60000) % 60;
             int s=(a/1000) % 60;
             int ms(a % 1000);
             QString str;
             if (d>1) {
-                str.sprintf("%i days",d);
+                str.sprintf("%1.0f days",d);
             } else {
 
                 str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
@@ -1452,7 +1452,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     QString str;
 
     if (d>1) {
-        str.sprintf("%1.0f days",ceil(xx/86400000.0));
+        str.sprintf("%1.0f days",ceil(double(xx)/86400000.0));
     } else {
         str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
     }
