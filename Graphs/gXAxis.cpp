@@ -66,12 +66,6 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     QString fd,tmpstr;
     int divmax,dividx;
     int fitmode;
-    /*if (xx>2*86400000L) {         // Day
-        dividx=0;
-        divmax=10;
-        //fitmode=-1;
-        fd="MMM dd";
-    } else */
     if (xx>=86400000L) {         // Day
         fd="MMM 00";
         dividx=0;

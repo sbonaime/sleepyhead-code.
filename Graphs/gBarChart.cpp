@@ -375,13 +375,13 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
     {
         hl_day=zd;
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
+        x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
+        int y=event->y()+rtop-15;
+        QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
         if (d!=m_values.end()) {
 
             day=m_days[zd];
-            x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
-            int y=event->y()+rtop-15;
 
-            QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
 
             // Day * day=m_days[hl_day];
             //EventDataType val;
@@ -401,6 +401,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
             graph->ToolTip(z,x,y,2200);
             return true;
+        } else {
+            QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\nNo Data";
+            graph->ToolTip(z,x,y,2200);
         }
     }
     return false;
