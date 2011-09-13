@@ -392,14 +392,14 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                     int h=t/3600;
                     int m=(t / 60) % 60;
                     int s=t % 60;
-                    val.sprintf("%02i:%02i:%02i",h,m,s);
-                } else val=QString::number(d.value()[0]);
+                    val.sprintf("%02i:%02i",h,m);
+                } else val=QString::number(d.value()[0],'f',2);
             } else {
-                val=QString::number(d.value()[1]);
+                val=QString::number(d.value()[1],'f',2);
             }
 
             QString z=dt.date().toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
-            graph->ToolTip(z,x,y,1500);
+            graph->ToolTip(z,x,y,2200);
             return true;
         }
     }
