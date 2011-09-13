@@ -404,11 +404,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                 val=QString::number(d.value()[1],'f',2);
             }
 
-            QString z=dt.toString(Qt::SystemLocaleShortDate)+"\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
+            QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
             graph->ToolTip(z,x,y,2200);
             return true;
         } else {
-            QString z=dt.toString(Qt::SystemLocaleShortDate)+"\nNo Data";
+            QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\nNo Data";
             graph->ToolTip(z,x,y,2200);
         }
     }

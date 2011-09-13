@@ -11,7 +11,7 @@ License: GPL
 #include "SleepLib/machine_loader.h"
 
 const QString cms50_class_name="CMS50";
-const int cms50_data_version=3;
+const int cms50_data_version=4;
 
 class CMS50Loader : public MachineLoader
 {

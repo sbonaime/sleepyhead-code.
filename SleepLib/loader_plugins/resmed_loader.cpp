@@ -366,55 +366,6 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             m->AddSession(sess,profile); // Adding earlier than I really like here..
         }
         if (!done && sess) {
-            ChannelID e[]={
-                CPAP_Obstructive, CPAP_Hypopnea, CPAP_ClearAirway, CPAP_Apnea
-            };
-            /*for (unsigned i=0;i<sizeof(e)/sizeof(ChannelID);i++) {
-
-                // Merge this crap together where possible
-                sess->count(e[i]);
-                sess->max(e[i]);
-                sess->min(e[i]);
-                sess->avg(e[i]);
-                //sess->p90(e[i]);
-                sess->cph(e[i]);
-                sess->sph(e[i]);
-            }*/
-            sess->setCph(CPAP_AHI,sess->cph(CPAP_Obstructive)+sess->cph(CPAP_Hypopnea)+sess->cph(CPAP_ClearAirway)+sess->cph(CPAP_Apnea));
-            sess->setSph(CPAP_AHI,sess->sph(CPAP_Obstructive)+sess->sph(CPAP_Hypopnea)+sess->sph(CPAP_ClearAirway)+sess->sph(CPAP_Apnea));
-
-            /*ChannelID a[]={
-                CPAP_Leak, CPAP_Snore, CPAP_EPAP,
-                CPAP_IPAP, CPAP_TidalVolume, CPAP_RespiratoryRate,
-                CPAP_PatientTriggeredBreaths,CPAP_MinuteVentilation,
-                CPAP_FlowLimitGraph, CPAP_PressureSupport,CPAP_Pressure,CPAP_RespiratoryEvent,
-                CPAP_Te,CPAP_Ti,CPAP_IE
-            };
-            for (unsigned i=0;i<sizeof(a)/sizeof(ChannelID);i++) {
-                if (sess->eventlist.contains(a[i])) {
-                    sess->count(a[i]);
-                    sess->min(a[i]);
-                    sess->max(a[i]);
-                    sess->avg(a[i]);
-                    sess->wavg(a[i]);
-                    sess->p90(a[i]);
-                    sess->cph(a[i]);
-                }
-            }
-            ChannelID b[]={
-                CPAP_FlowRate, CPAP_MaskPressure
-            };
-            for (unsigned i=0;i<sizeof(b)/sizeof(ChannelID);i++) {
-                if (sess->eventlist.contains(b[i])) {
-                    sess->count(a[i]);
-                    sess->min(b[i]);
-                    sess->max(b[i]);
-                    sess->avg(b[i]);
-                    //sess->wavg(b[i]);
-                    //sess->p90(b[i]);
-                    sess->cph(b[i]);
-                }
-            } */
             sess->settings[CPAP_Mode]=MODE_APAP;
         }
 
@@ -510,6 +461,8 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                         if (!EL[0]) {
                             EL[0]=new EventList(code,EVL_Event);
                             sess->eventlist[code].push_back(EL[0]);
+                            sess->machine()->registerChannel(code);
+
                         }
                         EL[0]->AddEvent(tt,duration);
                     } else if (t=="hypopnea") {
@@ -517,6 +470,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                         if (!EL[1]) {
                             EL[1]=new EventList(code,EVL_Event);
                             sess->eventlist[code].push_back(EL[1]);
+                            sess->machine()->registerChannel(code);
                         }
                         EL[1]->AddEvent(tt,duration+10); // Only Hyponea's Need the extra duration???
                     } else if (t=="apnea") {
@@ -524,6 +478,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                         if (!EL[2]) {
                             EL[2]=new EventList(code,EVL_Event);
                             sess->eventlist[code].push_back(EL[2]);
+                            sess->machine()->registerChannel(code);
                         }
                         EL[2]->AddEvent(tt,duration);
                     } else if (t=="central apnea") {
@@ -531,6 +486,7 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                         if (!EL[3]) {
                             EL[3]=new EventList(code,EVL_Event);
                             sess->eventlist[code].push_back(EL[3]);
+                            sess->machine()->registerChannel(code);
                         }
                         EL[3]->AddEvent(tt,duration);
                     } else {
@@ -569,10 +525,14 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             es.gain*=60;
             es.physical_dimension="L/M";
             code=CPAP_FlowRate;
+            sess->machine()->registerChannel(code);
         } else if (edf.edfsignals[s]->label.startsWith("Mask Pres")) {
             code=CPAP_MaskPressure;
+            sess->machine()->registerChannel(code);
+
         } else if (es.label.startsWith("Resp Event")) {
             code=CPAP_RespiratoryEvent;
+            sess->machine()->registerChannel(code);
         } else {
             qDebug() << "Unobserved ResMed BRP Signal " << edf.edfsignals[s]->label;
             continue;
@@ -604,7 +564,14 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     //if (gain==0) gain=1;
     EventList *el=new EventList(code,EVL_Event,es.gain,es.offset,min,max);
     sess->eventlist[code].push_back(el);
-    for (int i=0;i<recs;i++) {
+    int startpos=0;
+
+    /*if ((code==CPAP_Pressure) || (code==CPAP_IPAP) || (code==CPAP_EPAP)
+        || (code==CPAP_TherapyPressure)) {
+        startpos=0;
+        tt+=rate*startpos;
+    }*/
+    for (int i=startpos;i<recs;i++) {
         c=es.data[i];
 
         if (first) {
@@ -637,8 +604,10 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         ChannelID code;
         if (edf.edfsignals[s]->label=="Pulse") {
             code=CPAP_Pulse;
+            sess->machine()->registerChannel(code);
         } else if (edf.edfsignals[s]->label=="SpO2") {
             code=CPAP_SPO2;
+            sess->machine()->registerChannel(code);
         } else {
             qDebug() << "Unobserved ResMed SAD Signal " << edf.edfsignals[s]->label;
             continue;
@@ -781,6 +750,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=NULL;
         }
         if (a) {
+            sess->machine()->registerChannel(code);
             sess->setMin(code,a->min());
             sess->setMax(code,a->max());
             a->setDimension(es.physical_dimension);

@@ -91,6 +91,8 @@ public:
     const MachineID & id() { return m_id; }
     const QDate & FirstDay() { return firstday; }
     const QDate & LastDay() { return lastday; }
+    bool hasChannel(ChannelID id) { return m_channels.contains(id) && m_channels[id]; }
+    void registerChannel(ChannelID id,bool b=true) { m_channels[id]=b; }
 
 protected:
     QDate firstday,lastday;
@@ -102,6 +104,7 @@ protected:
     Profile *profile;
     bool changed;
     bool firstsession;
+    QHash<ChannelID,bool> m_channels;
 };
 
 class CPAP:public Machine

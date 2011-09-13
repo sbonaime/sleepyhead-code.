@@ -130,8 +130,8 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
-    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),this,SLOT(on_dateStart_currentPageChanged(int,int)));
-    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),this,SLOT(on_dateEnd_currentPageChanged(int,int)));
+    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateStart_currentPageChanged(int,int)));
+    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateEnd_currentPageChanged(int,int)));
     report=NULL;
 }
 Overview::~Overview()

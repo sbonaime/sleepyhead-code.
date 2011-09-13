@@ -104,7 +104,6 @@ bool Session::Store(QString path)
 
 const quint16 filetype_summary=0;
 const quint16 filetype_data=1;
-const quint32 magic=0xC73216AB;
 
 bool Session::StoreSummary(QString filename)
 {
@@ -441,8 +440,10 @@ EventDataType Session::min(ChannelID id)
         return i.value();
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
+    if (j==eventlist.end()) {
+        m_min[id]=0;
         return 0;
+    }
     QVector<EventList *> & evec=j.value();
 
     bool first=true;
@@ -467,8 +468,10 @@ EventDataType Session::max(ChannelID id)
         return i.value();
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
+    if (j==eventlist.end()) {
+        m_max[id]=0;
         return 0;
+    }
     QVector<EventList *> & evec=j.value();
 
     bool first=true;
@@ -558,8 +561,10 @@ int Session::count(ChannelID id)
         return i.value();
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
+    if (j==eventlist.end()) {
+        m_cnt[id]=0;
         return 0;
+    }
     QVector<EventList *> & evec=j.value();
 
     int sum=0;
@@ -577,8 +582,10 @@ double Session::sum(ChannelID id)
         return i.value();
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
+    if (j==eventlist.end()) {
+        m_sum[id]=0;
         return 0;
+    }
     QVector<EventList *> & evec=j.value();
 
     double sum=0;
@@ -598,8 +605,10 @@ EventDataType Session::avg(ChannelID id)
         return i.value();
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
-    if (j==eventlist.end())
+    if (j==eventlist.end()) {
+        m_avg[id]=0;
         return 0;
+    }
     QVector<EventList *> & evec=j.value();
 
     double val=0;
@@ -647,8 +656,10 @@ EventDataType Session::p90(ChannelID id) // 90th Percentile
     if (i!=m_90p.end())
         return i.value();
 
-    if (!eventlist.contains(id))
+    if (!eventlist.contains(id)) {
+        m_90p[id]=0;
         return 0;
+    }
 
     EventDataType val=percentile(id,0.9);
     m_90p[id]=val;

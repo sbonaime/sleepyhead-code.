@@ -492,21 +492,51 @@ bool Machine::Purge(int secret)
         } else could_not_kill++;
 
     }
+    dir.remove(path+"/channels.dat");
     if (could_not_kill>0) {
-        qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
-        return false;
+      //  qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
+    //    return false;
     }
 
     return true;
 }
+
+const quint32 channel_version=1;
+
+
 bool Machine::Load()
 {
     QString path=profile->Get("DataFolder")+"/"+hexid();
+
     QDir dir(path);
     qDebug() << "Loading " << path;
 
     if (!dir.exists() || !dir.isReadable())
         return false;
+
+    QString fn=path+"/channels.dat";
+    QFile cf(fn);
+    cf.open(QIODevice::ReadOnly);
+    QDataStream in(&cf);
+    in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 tmp;
+    in >> tmp;
+    if (magic!=tmp) {
+        qDebug() << "Machine Channel file format is wrong" << fn;
+    }
+    in >> tmp;
+    if (tmp!=channel_version) {
+        qDebug() << "Machine Channel file format is wrong" << fn;
+    }
+    qint32 tmp2;
+    in >> tmp2;
+    if (tmp2!=m_id) {
+        qDebug() << "Machine Channel file format is wrong" << fn;
+    }
+    in >> m_channels;
+    cf.close();
 
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -561,12 +591,34 @@ bool Machine::SaveSession(Session *sess)
     if (sess->IsChanged()) sess->Store(path);
     return true;
 }
+
 bool Machine::Save()
 {
     int size=0;
     int cnt=0;
 
     QString path=profile->Get("DataFolder")+"/"+hexid();
+    QDir dir(path);
+    if (!dir.exists()) {
+        dir.mkdir(path);
+    }
+
+    QString fn=path+"/channels.dat";
+    QFile cf(fn);
+    if (cf.open(QIODevice::WriteOnly)) {
+        int i=4;
+    }
+    QDataStream out(&cf);
+    out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << (quint32)magic;          // Magic Number
+    out << (quint32)channel_version;// File Version
+    out << (quint32)m_id;// Machine ID
+
+    out << m_channels;
+    cf.close();
+
 
     // Calculate size for progress bar
     size=sessionlist.size();
@@ -666,7 +718,11 @@ CPAP::CPAP(Profile *p,MachineID id):Machine(p,id)
 {
     m_type=MT_CPAP;
 
-//    FlagColours=DefaultFlagColours;
+    registerChannel(CPAP_Obstructive);
+    registerChannel(CPAP_Hypopnea);
+    registerChannel(CPAP_ClearAirway);
+    registerChannel(CPAP_Snore);
+    registerChannel(CPAP_Leak);
 }
 
 CPAP::~CPAP()
@@ -679,6 +735,9 @@ CPAP::~CPAP()
 Oximeter::Oximeter(Profile *p,MachineID id):Machine(p,id)
 {
     m_type=MT_OXIMETER;
+    registerChannel(OXI_Pulse);
+    registerChannel(OXI_SPO2);
+    registerChannel(OXI_Plethysomogram);
 }
 
 Oximeter::~Oximeter()

@@ -334,10 +334,11 @@ int Day::count(ChannelID code)
 }
 bool Day::channelExists(ChannelID id)
 {
-    for (int i=0;i<sessions.size();i++) {
+    if (machine->hasChannel(id)) return true;
+    /*for (int i=0;i<sessions.size();i++) {
         if (sessions[i]->channelExists(id))
             return true;
-    }
+    } */
     return false;
 }
 

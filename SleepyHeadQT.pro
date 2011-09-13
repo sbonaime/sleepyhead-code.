@@ -32,7 +32,6 @@ SOURCES += main.cpp\
     SleepLib/loader_plugins/prs1_loader.cpp \
     SleepLib/loader_plugins/zeo_loader.cpp \
     SleepLib/loader_plugins/resmed_loader.cpp \
-    SleepLib/loader_plugins/sleep_database.cpp \
     daily.cpp \
     oximetry.cpp \
     overview.cpp \
@@ -98,7 +97,6 @@ HEADERS  += \
     Graphs/gSegmentChart.h\
     Graphs/gSessionTime.h \
     SleepLib/loader_plugins/resmed_loader.h \
-    SleepLib/loader_plugins/sleep_database.h \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
     qextserialport/qextserialenumerator.h \

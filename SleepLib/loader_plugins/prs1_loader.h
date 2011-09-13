@@ -21,7 +21,7 @@ License: GPL
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int prs1_data_version=5;
+const int prs1_data_version=6;
 //
 //********************************************************************************************
 
