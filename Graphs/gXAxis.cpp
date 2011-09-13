@@ -189,9 +189,10 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
         }
 
-        int tx=px;
+        int tx=px-x/2.0;
         GetTextExtent(tmpstr,x,y); // this only really needs running once :(
-        if (m_utcfix) tx+=step_pixels/2.0-x/2.0;
+        if (m_utcfix)
+            tx+=step_pixels/2.0;
         w.renderText(tmpstr,tx,top+18);
         py=px;
         for (int j=1;j<num_minor_ticks;j++) {
