@@ -379,7 +379,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
             day=m_days[zd];
             x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
-            int y=event->y()+rtop-10;
+            int y=event->y()+rtop-15;
 
             QDateTime dt=QDateTime::fromTime_t(hl_day*86400);
 

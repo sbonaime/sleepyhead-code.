@@ -193,7 +193,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         GetTextExtent(tmpstr,x,y); // this only really needs running once :(
         if (m_utcfix)
             tx+=step_pixels/2.0;
-        w.renderText(tmpstr,tx,top+18);
+        if ((tx+x)<(left+width))
+            w.renderText(tmpstr,tx,top+18);
         py=px;
         for (int j=1;j<num_minor_ticks;j++) {
             py+=step_pixels;
