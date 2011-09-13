@@ -235,7 +235,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         if (d!=m_values.end()) {
             day=m_days[zd];
 
-            int x1=px,x2=px+barw;
+            float x1=px;
+            //x1-=(barw/2.0);
+            float x2=px+barw;
 
             if (x1<left) x1=left;
             if (x2>left+width) x2=left+width;

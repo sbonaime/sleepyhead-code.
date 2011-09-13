@@ -139,15 +139,29 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     QColor linecol=Qt::black;
     GLBuffer *lines=w.backlines();
 
-    double xmult=double(width)/double(xx);
-    double step_pixels=double(step/10.0)*xmult;
-    py=left+double(aligned_start-minx)*xmult;
-    for (int i=0;i<10;i++) {
+
+    int utcoff=m_utcfix ? QDateTime(QDate(1970,1,1),QTime(0,0,0)).secsTo(QDateTime(QDate(1970,1,1),QTime(0,0,0),Qt::UTC))/3600 : 0;
+
+    int num_minor_ticks;
+
+    if (step>=86400000) {
+        qint64 i=step/86400000L; // number of days
+        if (i>14) i/=2;
+        if (i<0) i=1;
+        num_minor_ticks=i;
+    } else num_minor_ticks=10;
+
+    float xmult=double(width)/double(xx);
+    float step_pixels=double(step/float(num_minor_ticks))*xmult;
+
+    py=left+float(aligned_start-minx)*xmult;
+
+
+    for (int i=0;i<num_minor_ticks;i++) {
         py-=step_pixels;
         if (py<start_px) continue;
         lines->add(py,top,py,top+4,linecol);
     }
-    int utcoff=m_utcfix ? QDateTime(QDate(1970,1,1),QTime(0,0,0)).secsTo(QDateTime(QDate(1970,1,1),QTime(0,0,0),Qt::UTC))/3600 : 0;
 
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=double(i-minx)*xmult;
@@ -175,9 +189,12 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             tmpstr=QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,3,10,QChar('0'));
         }
 
-        w.renderText(tmpstr,px-(x/2),top+18);
+        int tx=px;
+        GetTextExtent(tmpstr,x,y); // this only really needs running once :(
+        if (m_utcfix) tx+=step_pixels/2.0-x/2.0;
+        w.renderText(tmpstr,tx,top+18);
         py=px;
-        for (int j=1;j<10;j++) {
+        for (int j=1;j<num_minor_ticks;j++) {
             py+=step_pixels;
             if (py>=left+width) break;
             lines->add(py,top,py,top+4,linecol);

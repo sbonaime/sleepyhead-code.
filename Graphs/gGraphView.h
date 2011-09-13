@@ -16,7 +16,7 @@
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
-const int default_height=170;
+const int default_height=160;
 
 void InitGraphs();
 void DoneGraphs();
