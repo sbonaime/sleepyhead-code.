@@ -32,8 +32,10 @@ gXAxis::gXAxis(QColor col,bool fadeout)
     QDateTime d=QDateTime::currentDateTime();
     QTime t1=d.time();
     QTime t2=d.toUTC().time();
-    tz_offset=t2.secsTo(t1)/60L;
-    tz_offset*=60000L;
+
+    tz_offset=t2.secsTo(t1);
+    tz_hours=tz_offset/3600.0;
+    tz_offset*=1000L;
 
 }
 gXAxis::~gXAxis()
@@ -134,8 +136,9 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     GLBuffer *lines=w.backlines();
 
 
-    int utcoff=m_utcfix ? QDateTime(QDate(1970,1,1),QTime(0,0,0)).secsTo(QDateTime(QDate(1970,1,1),QTime(0,0,0),Qt::UTC))/3600 : 0;
+    int utcoff=m_utcfix ? -tz_hours : 0;
 
+    //utcoff=0;
     int num_minor_ticks;
 
     if (step>=86400000) {
@@ -161,7 +164,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         px=(i-minx)*xmult;
         px+=left;
         lines->add(px,top,px,top+6,linecol);
-        qint64 j=i+tz_offset;
+        qint64 j=i;
+        if (!m_utcfix) j+=tz_offset;
         int ms=j % 1000;
         int m=(j/60000L) % 60L;
         int h=((j/3600000L)-utcoff) % 24L;

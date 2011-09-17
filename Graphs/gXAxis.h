@@ -40,5 +40,6 @@ class gXAxis:public Layer
         QColor m_minor_color;
         bool m_fadeout;
         qint64 tz_offset;
+        float tz_hours;
 };
 #endif // GXAXIS_H
