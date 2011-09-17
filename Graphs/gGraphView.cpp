@@ -19,14 +19,14 @@ void InitGraphs()
 {
     if (!_graph_init) {
         defaultfont=new QFont("Sans Serif",10);
-        defaultfont->setPixelSize(11);
-        mediumfont=new QFont("Sans Serif",12);
+       // defaultfont->setPixelSize(11);
+        mediumfont=new QFont("Serif",11);
         bigfont=new QFont("Serif",35);
 
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::Serif ,QFont::OpenGLCompatible);
-
+        mediumfont->setBold(true);
         _graph_init=true;
     }
 }
@@ -550,6 +550,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
 
     m_quad=new GLBuffer(QColor(128,128,255,128),64,GL_QUADS);
     m_quad->forceAntiAlias(true);
+    f_miny=f_maxy=0;
+    m_forceMinY=m_forceMaxY=false;
 }
 gGraph::~gGraph()
 {
@@ -1133,6 +1135,7 @@ EventDataType gGraph::MinY()
 {
     bool first=true;
     EventDataType val=0,tmp;
+    if (m_forceMinY) return rmin_y=f_miny;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Miny();
@@ -1150,6 +1153,7 @@ EventDataType gGraph::MaxY()
 {
     bool first=true;
     EventDataType val=0,tmp;
+    if (m_forceMaxY) return rmax_y=f_maxy;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxy();
@@ -1262,6 +1266,8 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
             miny/=4.0;
         }
     }
+    if (m_forceMinY && miny<f_miny) miny=f_miny;
+    if (m_forceMaxY && maxy>f_maxy) maxy=f_maxy;
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :

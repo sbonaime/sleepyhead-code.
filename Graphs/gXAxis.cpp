@@ -136,7 +136,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     GLBuffer *lines=w.backlines();
 
 
-    int utcoff=m_utcfix ? -tz_hours : 0;
+    int utcoff=m_utcfix ? tz_hours : 0;
 
     //utcoff=0;
     int num_minor_ticks;

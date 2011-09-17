@@ -244,6 +244,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             done=false;
             first=true;
 
+            if (!accel) {
+                lines->setSize(1.5);
+            } else lines->setSize(1);
             bool firstpx=true;
             if (el.type()==EVL_Waveform) {  // Waveform Plot
                 if (idx>sam) idx-=sam;

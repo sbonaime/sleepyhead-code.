@@ -23,7 +23,7 @@ void init()
     if (schema_initialized) return;
     schema_initialized=true;
 
-    EmptyChannel=Channel(0,DATA,DAY,"Empty","Empty Channel","Empty","");
+    EmptyChannel=Channel(0,DATA,DAY,"Empty","Empty Channel","","");
 
     ChanTypes["data"]=DATA;
     //Types["waveform"]=WAVEFORM;

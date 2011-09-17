@@ -80,10 +80,12 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
 
 
     pr=new SummaryChart(profile,"cmH2O",GT_LINE);
-
+    PR->forceMinY(4.0);
+    //PR->forceMaxY(12.0);
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
+    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P);
     pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
     pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
 

@@ -262,12 +262,15 @@ public:
     virtual void SetMaxX(qint64 v);
     virtual void SetMinY(EventDataType v);
     virtual void SetMaxY(EventDataType v);
+    virtual void forceMinY(EventDataType v) { f_miny=v; m_forceMinY=true; }
+    virtual void forceMaxY(EventDataType v) { f_maxy=v; m_forceMaxY=true; }
 
     void resize(int width, int height);      // margin recalcs..
 
     qint64 max_x,min_x,rmax_x,rmin_x;
-    EventDataType max_y,min_y,rmax_y,rmin_y;
-
+    EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy;
+    void unforceMinY() { m_forceMinY=false; }
+    void unforceMaxY() { m_forceMaxY=false; }
     bool blockZoom() { return m_blockzoom; }
     void setBlockZoom(bool b) { m_blockzoom=b; }
     int flipY(int y); // flip GL coordinates
@@ -318,6 +321,7 @@ protected:
     short m_lastx23;
     Day * m_day;
     GLBuffer * m_quad;
+    bool m_forceMinY,m_forceMaxY;
 };
 
 class gGraphView : public QGLWidget
