@@ -8,12 +8,13 @@
 #include <QDebug>
 #include "gYAxis.h"
 
-gYSpacer::gYSpacer(int spacer) :Layer(EmptyChannel)
+gYSpacer::gYSpacer(int spacer)
+    :Layer("")
 {
-};
+}
 
 gXGrid::gXGrid(QColor col)
-    :Layer(EmptyChannel)
+    :Layer("")
 {
     m_major_color=QColor(180,180,180,128);
     m_minor_color=QColor(220,220,220,128);

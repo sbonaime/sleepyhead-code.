@@ -69,11 +69,13 @@ public:
     qint16 Read16();
 
     QVector<EDFSignal *> edfsignals;
+    QHash<QString,EDFSignal *> lookup;
 
     long GetNumSignals() { return num_signals; }
     long GetNumDataRecords() { return num_data_records; }
     qint64 GetDuration() { return dur_data_record; }
     QString GetPatient() { return patientident; }
+
     bool Parse();
     char *buffer;
     EDFHeader header;

@@ -1,0 +1,47 @@
+<!DOCTYPE Graphs>
+<Schema language="en" version="1.0">
+ <Graph name="Event Flags" group="Daily" master="true">
+  <layer type="flaglines">
+   <line name="CSR" func="data" type="span">
+   <line name="ClearAirway" func="data" type="bar">
+   <line name="Obstructive" func="data" type="bar">
+   <line name="Apnea" func="data" type="bar">
+   <line name="Hypopnea" func="data" type="bar">
+   <line name="FlowLimit" func="data" type="bar">
+   <line name="RERA" func="data" type="bar">
+   <line name="VSnore" func="data" type="bar">
+   <line name="VSnore2" func="data" type="bar">
+  </layer>
+ </Graph>
+ <Graph name="Flow Rate" group="Daily">
+  <layer type="overlay" data="CSR" visual="span"/>
+  <layer type="linechart" data="FlowRate"/>
+  <layer type="overlay" data="Obstructive" visual="bar"/>
+  <layer type="overlay" data="Hypopnea" visual="bar"/>
+  <layer type="overlay" data="Apnea" visual="bar"/>
+  <layer type="overlay" data="ClearAirway" visual="bar"/>
+  <layer type="overlay" data="FlowLimit" visual="bar"/>
+  <layer type="overlay" data="RERA" visual="bar"/>
+  <layer type="overlay" data="VSnore" visual="bar"/>
+  <layer type="overlay" data="PressurePulse" visual="dot"/>
+ </Graph>
+ <Graph name="AHI" group="Overview">
+  <layer type="barchart">
+   <slice name="Hypopnea" func="cph">
+   <slice name="Apnea" func="cph">
+   <slice name="Obstructive" func="cph">
+   <slice name="ClearAirway" func="cph">
+  </layer>
+ </Graph>
+<Graph name="Pressure" visual="linechart">
+ <layer name="Pressure" func="wavg" color="dark green">
+ <layer name="Pressure" func="min" color="dark red">
+ <layer name="Pressure" func="max" color="dark blue">
+ <layer name="IPAP" func="wavg" color="red">
+ <layer name="EPAP" func="wavg" color="blue">
+</Graph>
+
+
+
+</Graphs>
+</Schema>

@@ -125,11 +125,10 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0B,QColor("blue"),"0B",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown10,QColor("orange"),"10",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_Unknown0E,QColor("dark red"),"0E",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
-    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Unknown0E,QColor("dark green"),"U0E")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
@@ -160,24 +159,25 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,true)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,true)));
+
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,true)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
 
-    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PatientTriggeredBreaths,Qt::gray,true)));
+    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,true)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryRate,Qt::darkMagenta,true)));
-    MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVentilation,Qt::darkCyan,true)));
+    RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,true)));
+    MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,true)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,true)));
-    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FlowLimitGraph,Qt::darkBlue,true)));
+    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG,Qt::darkBlue,true)));
     //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::magenta,true)));
     IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,true)));
     TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,true)));
     TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkBlue,true)));
-    INTPULSE->AddLayer(AddCPAP(new gLineChart(CPAP_Pulse,Qt::red,true)));
-    INTSPO2->AddLayer(AddCPAP(new gLineChart(CPAP_SPO2,Qt::blue,true)));
+    INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,true)));
+    INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,true)));
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,true)));
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
-    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethysomogram,Qt::darkBlue,false)));
+    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
@@ -607,7 +607,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             if ((code!=CPAP_Obstructive)
                 && (code!=CPAP_Hypopnea)
                 && (code!=CPAP_Apnea)
-                && (code!=PRS1_Unknown0B)
+                && (code!=PRS1_0B)
                 && (code!=CPAP_ClearAirway)
                 && (code!=CPAP_CSR)
                 && (code!=CPAP_RERA)
@@ -618,9 +618,9 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             if (mcroot.find(code)==mcroot.end()) {
                 int cnt=day->count(code);
                 total_events+=cnt;
-                QString st=channel[m.key()].details();
+                QString st=schema::channel[m.key()].description();
                 if (st.isEmpty())  {
-                    st="Fixme "+QString::number((int)code);
+                    st="Fixme "+code;
                 }
                 st+=" ("+QString::number(cnt)+" event"+((cnt>1)?"s":"")+")";
                 QStringList l(st);
@@ -772,13 +772,13 @@ void Daily::Load(QDate date)
     QString a;
     if (cpap) {
         mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
-        pr=(PRTypes)cpap->settings_max(PRS1_PressureReliefType);
+        pr=(PRTypes)cpap->settings_max(PRS1_FlexMode);
         if (pr==PR_NONE)
            epr=tr(" No Pressure Relief");
         else {
-            epr=channel[PRS1_PressureReliefSetting].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_PressureReliefSetting));
+            //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
         }
-        modestr=channel[CPAP_Mode].optionString(mode);
+        modestr=schema::channel[CPAP_Mode].m_options[mode];
 
         float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
@@ -870,24 +870,24 @@ void Daily::Load(QDate date)
 
         html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
         ChannelID chans[]={
-            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PressureSupport,CPAP_PatientTriggeredBreaths,
-            CPAP_MinuteVentilation,CPAP_RespiratoryRate,CPAP_RespiratoryEvent,CPAP_FlowLimitGraph,
+            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
+            CPAP_MinuteVent,CPAP_RespRate,CPAP_RespEvent,CPAP_FLG,
             CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te,CPAP_TidalVolume,
-            CPAP_Pulse,CPAP_SPO2,OXI_Pulse,OXI_SPO2
+            OXI_Pulse,OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
         for (int i=0;i<numchans;i++) {
             ChannelID code=chans[i];
-            if (cpap && cpap->channelExists(code)) {
-                html+="<tr><td align=left>"+channel[code].label();
+            if (cpap && cpap->channelHasData(code)) {
+                html+="<tr><td align=left>"+schema::channel[code].label();
                 html+="</td><td>"+a.sprintf("%.2f",cpap->min(code));
                 html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code));
                 html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code));
                 html+="</td><td>"+a.sprintf("%.2f",cpap->max(code));
                 html+="</td><tr>";
             }
-            if (oxi && oxi->channelExists(code)) {
-                html+="<tr><td align=left>"+channel[code].label();
+            if (oxi && oxi->channelHasData(code)) {
+                html+="<tr><td align=left>"+schema::channel[code].label();
                 html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
@@ -946,7 +946,7 @@ void Daily::Load(QDate date)
         for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
             fd=QDateTime::fromTime_t((*s)->first()/1000L);
             ld=QDateTime::fromTime_t((*s)->last()/1000L);
-            QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
+            QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
             if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
             tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
             html+=tmp;
@@ -960,16 +960,16 @@ void Daily::Load(QDate date)
 
     ui->webView->setHtml(html);
 
-    ui->JournalNotes->clear();
+    /*ui->JournalNotes->clear();
     Session *journal=GetJournalSession(date);
     if (journal) {
         ui->JournalNotes->setHtml(journal->settings[JOURNAL_Notes].toString());
-    }
+    }*/
 
 }
 void Daily::Unload(QDate date)
 {
-    Session *journal=GetJournalSession(date);
+    /*Session *journal=GetJournalSession(date);
     if (!ui->JournalNotes->toPlainText().isEmpty()) {
         QString jhtml=ui->JournalNotes->toHtml();
         if (journal) {
@@ -988,7 +988,7 @@ void Daily::Unload(QDate date)
     if (journal) {
         Machine *jm=profile->GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
-    }
+    } */
     UpdateCalendarDay(date);
 }
 

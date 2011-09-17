@@ -36,6 +36,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_day)
         return;
 
+    if (!m_day->channelExists(m_code)) return;
+
     if (width<0)
         return;
 

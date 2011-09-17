@@ -15,6 +15,7 @@ License: GPL
 #include <QProgressBar>
 #include <QDebug>
 #include <cmath>
+#include "SleepLib/schema.h"
 #include "prs1_loader.h"
 #include "SleepLib/session.h"
 
@@ -43,7 +44,6 @@ PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
     properties["Brand"]="Philips Respironics";
     properties["Model"]="System One";
 
-    //SleepFlags= { CPAP_RERA, PRS1_VSnore2, CPAP_FlowLimit, CPAP_Hypopnea, CPAP_Obstructive, CPAP_ClearAirway, CPAP_CSR };
 }
 PRS1::~PRS1()
 {
@@ -313,20 +313,22 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             continue;
         }
 
+
         if (sess->count(CPAP_IPAP)>0) {
             //sess->summaryCPAP_Mode]!=MODE_ASV)
             sess->settings[CPAP_Mode]=MODE_BIPAP;
 
-            if (sess->settings[PRS1_PressureReliefType].toInt()!=PR_NONE) {
-                sess->settings[PRS1_PressureReliefType]=PR_BIFLEX;
+            if (sess->settings[PRS1_FlexMode].toInt()!=PR_NONE) {
+                sess->settings[PRS1_FlexMode]=PR_BIFLEX;
             }
+
 
             sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
             sess->setWavg(CPAP_Pressure,(sess->wavg(CPAP_EPAP)+sess->wavg(CPAP_IPAP))/2.0);
             sess->setMin(CPAP_Pressure,sess->min(CPAP_EPAP));
             sess->setMax(CPAP_Pressure,sess->max(CPAP_IPAP));
-            sess->set90p(CPAP_Pressure,sess->p90(CPAP_IPAP));
-            sess->p90(CPAP_EPAP);
+            sess->set90p(CPAP_Pressure,(sess->p90(CPAP_IPAP)+sess->p90(CPAP_EPAP))/2.0);
+            //sess->p90(CPAP_EPAP);
             //sess->p90(CPAP_IPAP);
         } else {
             sess->avg(CPAP_Pressure);
@@ -336,20 +338,20 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             sess->max(CPAP_Pressure);
             sess->cph(CPAP_Pressure);
 
-            if (!sess->settings.contains(PRS1_PressureMin)) {
+            if (!sess->settings.contains(CPAP_PressureMin)) {
                 sess->settings[CPAP_BrokenSummary]=true;
                 //sess->set_last(sess->first());
                 if (sess->min(CPAP_Pressure)==sess->max(CPAP_Pressure)) {
-                    sess->settings[CPAP_Mode]=MODE_CPAP; // no ramp
+                    sess->settings["PRS1Mode"]=MODE_CPAP; // no ramp
                 } else {
-                    sess->settings[CPAP_Mode]=MODE_UNKNOWN;
+                    sess->settings["PRS1Mode"]=MODE_UNKNOWN;
                 }
-                sess->settings[PRS1_PressureReliefType]=PR_UNKNOWN;
+                //sess->Set("FlexMode",PR_UNKNOWN);
             }
 
         }
         if (sess->settings[CPAP_Mode]==MODE_CPAP) {
-            sess->settings[PRS1_PressureMax]=sess->settings[PRS1_PressureMin];
+            sess->settings[CPAP_PressureMax]=sess->settings[CPAP_PressureMin];
         }
 
         //Printf(sess->start().Format()+wxT(" avgsummary=%.3f avgmine=%.3f\n"),sess->summary[CPAP_PressureAverage].GetDouble(),sess->weighted_avg_event_field(CPAP_Pressure,0));
@@ -433,16 +435,16 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     session->set_first(date);
 
     double max;
-    session->settings[PRS1_PressureMin]=(EventDataType)buffer[0x03]/10.0;
-    session->settings[PRS1_PressureMax]=max=(EventDataType)buffer[0x04]/10.0;
+    session->settings[CPAP_PressureMin]=(EventDataType)buffer[0x03]/10.0;
+    session->settings[CPAP_PressureMax]=max=(EventDataType)buffer[0x04]/10.0;
     int offset=0;
     if (buffer[0x05]!=0) { // This is a time value for ASV stuff
         // non zero adds extra fields..
         offset=4;
     }
 
-    session->settings[PRS1_RampTime]=(int)buffer[offset+0x06]; // Minutes. Convert to seconds/hours here?
-    session->settings[PRS1_RampPressure]=(EventDataType)buffer[offset+0x07]/10.0;
+    session->settings[CPAP_RampTime]=(int)buffer[offset+0x06]; // Minutes. Convert to seconds/hours here?
+    session->settings[CPAP_RampPressure]=(EventDataType)buffer[offset+0x07]/10.0;
 
     if (max>0) { // Ignoring bipap until I see some more data.
         session->settings[CPAP_Mode]=(int)MODE_APAP;
@@ -451,21 +453,21 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
     // This is incorrect..
     if (buffer[offset+0x08] & 0x80) { // Flex Setting
         if (buffer[offset+0x08] & 0x08) {
-            if (max>0) session->settings[PRS1_PressureReliefType]=(int)PR_AFLEX;
-            else session->settings[PRS1_PressureReliefType]=(int)PR_CFLEXPLUS;
-        } else session->settings[PRS1_PressureReliefType]=(int)PR_CFLEX;
-    } else session->settings[PRS1_PressureReliefType]=(int)PR_NONE;
+            if (max>0) session->settings[PRS1_FlexMode]=(int)PR_AFLEX;
+            else session->settings[PRS1_FlexMode]=(int)PR_CFLEXPLUS;
+        } else session->settings[PRS1_FlexMode]=(int)PR_CFLEX;
+    } else session->settings[PRS1_FlexMode]=(int)PR_NONE;
 
-    session->settings[PRS1_PressureReliefSetting]=(int)buffer[offset+0x08] & 3;
-    session->settings[PRS1_HumidifierSetting]=(int)buffer[offset+0x09]&0x0f;
-    session->settings[PRS1_HumidifierStatus]=(buffer[offset+0x09]&0x80)==0x80;
-    session->settings[PRS1_SystemLockStatus]=(buffer[offset+0x0a]&0x80)==0x80;
-    session->settings[PRS1_SystemOneResistanceStatus]=(buffer[offset+0x0a]&0x40)==0x40;
-    session->settings[PRS1_SystemOneResistanceSetting]=(int)buffer[offset+0x0a]&7;
-    session->settings[PRS1_HoseDiameter]=(int)((buffer[offset+0x0a]&0x08)?15:22);
-    session->settings[PRS1_AutoOff]=(buffer[offset+0x0c]&0x10)==0x10;
-    session->settings[PRS1_MaskAlert]=(buffer[offset+0x0c]&0x08)==0x08;
-    session->settings[PRS1_ShowAHI]=(buffer[offset+0x0c]&0x04)==0x04;
+    session->settings["FlexSet"]=(int)buffer[offset+0x08] & 3;
+    session->settings["HumidSet"]=(int)buffer[offset+0x09]&0x0f;
+    session->settings["HumidStat"]=(buffer[offset+0x09]&0x80)==0x80;
+    session->settings["SysLock"]=(buffer[offset+0x0a]&0x80)==0x80;
+    session->settings["SysOneResistStat"]=(buffer[offset+0x0a]&0x40)==0x40;
+    session->settings["SysOneResistSet"]=(int)buffer[offset+0x0a]&7;
+    session->settings["HoseDiam"]=((buffer[offset+0x0a]&0x08)?"15mm":"22mm");
+    session->settings["AutoOff"]=(buffer[offset+0x0c]&0x10)==0x10;
+    session->settings["MaskAlert"]=(buffer[offset+0x0c]&0x08)==0x08;
+    session->settings["ShowAHI"]=(buffer[offset+0x0c]&0x04)==0x04;
 
     unsigned duration=buffer[offset+0x14] | (buffer[0x15] << 8);
     //session->settings[CPAP_Duration]=(int)duration;
@@ -476,13 +478,13 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
         return false;
 
     session->set_last(date+qint64(duration)*1000L);
-    session->settings[PRS1_PressureMinAchieved]=buffer[offset+0x16]/10.0;
-    session->settings[PRS1_PressureMaxAchieved]=buffer[offset+0x17]/10.0;
-    session->settings[PRS1_PressureAvg]=buffer[offset+0x18]/10.0;
-    session->settings[PRS1_Pressure90]=buffer[offset+0x19]/10.0;
+    //session->settings[PRS1_PressureMinAchieved]=buffer[offset+0x16]/10.0;
+    //session->settings[PRS1_PressureMaxAchieved]=buffer[offset+0x17]/10.0;
+    //session->settings[PRS1_PressureAvg]=buffer[offset+0x18]/10.0;
+    //session->settings[PRS1_Pressure90]=buffer[offset+0x19]/10.0;
 
     if (max==0) {
-        session->settings[PRS1_PressureAvg]=session->settings[PRS1_PressureMin];
+      //  session->settings[PRS1_PressureAvg]=session->settings[PRS1_PressureMin];
     }
 
     // Not using these because sometimes this summary is broken.
@@ -500,13 +502,14 @@ bool PRS1Loader::OpenSummary(Session *session,QString filename)
 // v2 event parser.
 bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
-    ChannelID Codes[]={
+    /*ChannelID Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
         PRS1_Unknown08, PRS1_Unknown09, CPAP_Hypopnea, PRS1_Unknown0B, CPAP_FlowLimit, CPAP_VSnore, PRS1_Unknown0E, CPAP_CSR, PRS1_Unknown10,
         CPAP_Leak, PRS1_Unknown12
     };
-    int ncodes=sizeof(Codes)/sizeof(ChannelID);
+    int ncodes=sizeof(Codes)/sizeof(ChannelID); */
 
+    //QHash<ChannelID,EventList *> Code;
     EventList * Code[0x20]={NULL};
 
     EventDataType data[10];
@@ -520,7 +523,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
     short delta;
     while (pos<size) {
         unsigned char code=buffer[pos++];
-        if (code>=ncodes) {
+        if (code>0x12) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos+16;
             return false;
         }
@@ -534,42 +537,31 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
 
         cnt++;
         switch (code) {
+
         case 0x00: // Unknown 00
             if (!Code[0]) {
-                Code[0]=new EventList(PRS1_Unknown00,EVL_Event);
-                session->eventlist[PRS1_Unknown00].push_back(Code[0]);
-                session->machine()->registerChannel(PRS1_Unknown00);
+                if (!(Code[0]=session->AddEventList(PRS1_00,EVL_Event))) return false;
             }
             Code[0]->AddEvent(t,buffer[pos++]);
             break;
         case 0x01: // Unknown
             if (!Code[1]) {
-                Code[1]=new EventList(PRS1_Unknown01,EVL_Event);
-                session->eventlist[PRS1_Unknown01].push_back(Code[1]);
-                session->machine()->registerChannel(PRS1_Unknown01);
+                if (!(Code[1]=session->AddEventList(PRS1_01,EVL_Event))) return false;
             }
             Code[1]->AddEvent(t,0);
             break;
         case 0x02: // Pressure
             if (!Code[2]) {
-                Code[2]=new EventList(CPAP_Pressure,EVL_Event,0.1);
-                session->eventlist[CPAP_Pressure].push_back(Code[2]);
-                session->machine()->registerChannel(CPAP_Pressure);
+                Code[2]=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
+                if (!Code[2]) return false;
             }
             Code[2]->AddEvent(t,buffer[pos++]);
             break;
         case 0x03: // BIPAP Pressure
             if (!Code[3]) {
-                Code[3]=new EventList(CPAP_EPAP,EVL_Event,0.1);
-                session->eventlist[CPAP_EPAP].push_back(Code[3]);
-                Code[4]=new EventList(CPAP_IPAP,EVL_Event,0.1);
-                session->eventlist[CPAP_IPAP].push_back(Code[4]);
-                Code[5]=new EventList(CPAP_PressureSupport,EVL_Event,0.1);
-                session->eventlist[CPAP_PressureSupport].push_back(Code[5]);
-                session->machine()->registerChannel(CPAP_EPAP);
-                session->machine()->registerChannel(CPAP_IPAP);
-                session->machine()->registerChannel(CPAP_PressureSupport);
-
+                if (!(Code[3]=session->AddEventList(CPAP_EPAP,EVL_Event,0.1))) return false;
+                if (!(Code[4]=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
+                if (!(Code[5]=session->AddEventList(CPAP_PS,EVL_Event,0.1))) return false;
             }
             Code[3]->AddEvent(t,data[0]=buffer[pos++]);
             Code[4]->AddEvent(t,data[1]=buffer[pos++]);
@@ -577,9 +569,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             break;
         case 0x04: // Pressure Pulse
             if (!Code[6]) {
-                Code[6]=new EventList(CPAP_PressurePulse,EVL_Event);
-                session->eventlist[CPAP_PressurePulse].push_back(Code[6]);
-                session->machine()->registerChannel(CPAP_PressurePulse);
+                if (!(Code[6]=session->AddEventList(CPAP_PressurePulse,EVL_Event))) return false;
             }
             Code[6]->AddEvent(t,buffer[pos++]);
             //qDebug() << hex << data[0];
@@ -588,9 +578,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
             if (!Code[7]) {
-                Code[7]=new EventList(CPAP_RERA,EVL_Event);
-                session->eventlist[CPAP_RERA].push_back(Code[7]);
-                session->machine()->registerChannel(CPAP_RERA);
+                if (!(Code[7]=session->AddEventList(CPAP_RERA,EVL_Event))) return false;
             }
             Code[7]->AddEvent(tt,data[0]);
             break;
@@ -599,9 +587,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
             if (!Code[8]) {
-                Code[8]=new EventList(CPAP_Obstructive,EVL_Event);
-                session->eventlist[CPAP_Obstructive].push_back(Code[8]);
-                session->machine()->registerChannel(CPAP_Obstructive);
+                if (!(Code[8]=session->AddEventList(CPAP_Obstructive,EVL_Event))) return false;
             }
             Code[8]->AddEvent(tt,data[0]);
             break;
@@ -609,9 +595,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
             if (!Code[9]) {
-                Code[9]=new EventList(CPAP_ClearAirway,EVL_Event);
-                session->eventlist[CPAP_ClearAirway].push_back(Code[9]);
-                session->machine()->registerChannel(CPAP_ClearAirway);
+                if (!(Code[9]=session->AddEventList(CPAP_ClearAirway,EVL_Event))) return false;
             }
             Code[9]->AddEvent(tt,data[0]);
             break;
@@ -619,9 +603,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
             if (!Code[10]) {
-                Code[10]=new EventList(CPAP_Hypopnea,EVL_Event);
-                session->eventlist[CPAP_Hypopnea].push_back(Code[10]);
-                session->machine()->registerChannel(CPAP_Hypopnea);
+                if (!(Code[10]=session->AddEventList(CPAP_Hypopnea,EVL_Event))) return false;
             }
             Code[10]->AddEvent(tt,data[0]);
             break;
@@ -629,9 +611,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
             if (!Code[11]) {
-                Code[11]=new EventList(CPAP_FlowLimit,EVL_Event);
-                session->eventlist[CPAP_FlowLimit].push_back(Code[11]);
-                session->machine()->registerChannel(CPAP_FlowLimit);
+                if (!(Code[11]=session->AddEventList(CPAP_FlowLimit,EVL_Event))) return false;
             }
             Code[11]->AddEvent(tt,data[0]);
             break;
@@ -640,18 +620,14 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
             if (!Code[12]) {
-                Code[12]=new EventList(PRS1_Unknown0B,EVL_Event);
-                session->eventlist[PRS1_Unknown0B].push_back(Code[12]);
-                session->machine()->registerChannel(PRS1_Unknown0B);
+                if (!(Code[12]=session->AddEventList(PRS1_0B,EVL_Event))) return false;
             }
             // FIXME
             Code[12]->AddEvent(t,data[0]);
             break;
         case 0x0d: // Vibratory Snore
             if (!Code[13]) {
-                Code[13]=new EventList(CPAP_VSnore,EVL_Event);
-                session->eventlist[CPAP_VSnore].push_back(Code[13]);
-                session->machine()->registerChannel(CPAP_VSnore);
+                if (!(Code[13]=session->AddEventList(CPAP_VSnore,EVL_Event))) return false;
             }
             Code[13]->AddEvent(t,0);
             break;
@@ -659,20 +635,14 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
             if (!Code[14]) {
-                Code[14]=new EventList(CPAP_Leak,EVL_Event);
-                session->eventlist[CPAP_Leak].push_back(Code[14]);
-                Code[15]=new EventList(CPAP_Snore,EVL_Event);
-                session->eventlist[CPAP_Snore].push_back(Code[15]);
-                session->machine()->registerChannel(CPAP_Leak);
-                session->machine()->registerChannel(CPAP_Snore);
+                if (!(Code[14]=session->AddEventList(CPAP_Leak,EVL_Event))) return false;
+                if (!(Code[15]=session->AddEventList(CPAP_Snore,EVL_Event))) return false;
             }
             Code[14]->AddEvent(t,data[0]);
             Code[15]->AddEvent(t,data[1]);
             if (data[1]>0) {
                 if (!Code[16]) {
-                    Code[16]=new EventList(PRS1_VSnore2,EVL_Event);
-                    session->eventlist[PRS1_VSnore2].push_back(Code[16]);
-                    session->machine()->registerChannel(PRS1_VSnore2);
+                    if (!(Code[16]=session->AddEventList(CPAP_VSnore2,EVL_Event))) return false;
                 }
                 Code[16]->AddEvent(t,data[1]);
             }
@@ -685,9 +655,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[2]=buffer[pos++];
 
             if (!Code[17]) {
-                Code[17]=new EventList(PRS1_Unknown0E,EVL_Event);
-                session->eventlist[PRS1_Unknown0E].push_back(Code[17]);
-                session->machine()->registerChannel(PRS1_Unknown0E);
+                if (!(Code[17]=session->AddEventList(PRS1_0E,EVL_Event))) return false;
             }
             Code[17]->AddEvent(t,data[0]);
             //qDebug() << hex << data[0] << data[1] << data[2];
@@ -700,9 +668,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[1]=buffer[pos++];
             data[2]=buffer[pos++];
             if (!Code[20]) {
-                Code[20]=new EventList(PRS1_Unknown10,EVL_Event);
-                session->eventlist[PRS1_Unknown10].push_back(Code[20]);
-                session->machine()->registerChannel(PRS1_Unknown10);
+                if (!(Code[20]=session->AddEventList(PRS1_10,EVL_Event))) return false;
             }
             Code[20]->AddEvent(t,data[0]);
             break;
@@ -712,9 +678,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[1]=buffer[pos++];
             tt=t-qint64(data[1])*1000L;
             if (!Code[23]) {
-                Code[23]=new EventList(CPAP_CSR,EVL_Event);
-                session->eventlist[CPAP_CSR].push_back(Code[23]);
-                session->machine()->registerChannel(CPAP_CSR);
+                if (!(Code[23]=session->AddEventList(CPAP_CSR,EVL_Event))) return false;
             }
             Code[23]->AddEvent(tt,data[0]);
             break;
@@ -724,9 +688,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[2]=buffer[pos+1]<<8 | buffer[pos];
             pos+=2;
             if (!Code[24]) {
-                Code[24]=new EventList(PRS1_Unknown12,EVL_Event);
-                session->eventlist[PRS1_Unknown12].push_back(Code[24]);
-                session->machine()->registerChannel(PRS1_Unknown12);
+                if (!(Code[24]=session->AddEventList(PRS1_12,EVL_Event))) return false;
             }
             Code[24]->AddEvent(t,data[0]);
             break;
@@ -743,14 +705,14 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
 
 bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp)
 {
-    ChannelID Codes[]={
-        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
-        CPAP_ClearAirway, CPAP_Hypopnea, PRS1_Unknown08,  CPAP_FlowLimit, PRS1_Unknown0A, CPAP_CSR,
-        PRS1_Unknown0C, CPAP_VSnore, PRS1_Unknown0E, PRS1_Unknown0F, PRS1_Unknown10,
-        CPAP_Leak, PRS1_Unknown12
+    QString Codes[]={
+        PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
+        CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
+        PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F, PRS1_10,
+        CPAP_Leak, PRS1_12
     };
 
-    int ncodes=sizeof(Codes)/sizeof(ChannelID);
+    int ncodes=sizeof(Codes)/sizeof(QString);
 
     EventList * Code[0x20]={NULL};
     //for (int i=0;i<0x20;i++) Code[i]=NULL;
@@ -780,7 +742,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             pos+=2;
             t+=qint64(delta)*1000L;
         }
-        ChannelID cpapcode=Codes[(int)code];
+        QString cpapcode=Codes[(int)code];
         //EventDataType PS;
         tt=t;
         cnt++;
@@ -802,9 +764,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x01: // Unknown
             if (!Code[1]) {
-                Code[1]=new EventList(cpapcode,EVL_Event,0.1);
-                session->eventlist[cpapcode].push_back(Code[1]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[1]=session->AddEventList(cpapcode,EVL_Event,0.1))) return false;
             }
             Code[1]->AddEvent(t,0);
             break;
@@ -812,18 +772,14 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
         case 0x02: // Pressure
             data[0]=buffer[pos++];
             if (!Code[2]) {
-                Code[2]=new EventList(cpapcode,EVL_Event,0.1);
-                session->eventlist[cpapcode].push_back(Code[2]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[2]=session->AddEventList(cpapcode,EVL_Event,0.1))) return false;
             }
             Code[2]->AddEvent(t,data[0]);
             break;
         case 0x04: // Pressure Pulse
             data[0]=buffer[pos++];
             if (!Code[3]) {
-                Code[3]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[3]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[3]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[3]->AddEvent(t,data[0]);
             break;
@@ -832,9 +788,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[4]) {
-                Code[4]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[4]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[4]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[4]->AddEvent(tt,data[0]);
             break;
@@ -843,9 +797,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[5]) {
-                Code[5]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[5]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[5]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[5]->AddEvent(tt,data[0]);
             break;
@@ -853,9 +805,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[6]) {
-                Code[6]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[6]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[6]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[6]->AddEvent(tt,data[0]);
             break;
@@ -863,9 +813,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[10]) {
-                Code[10]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[10]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[10]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[10]->AddEvent(tt,data[0]);
             break;
@@ -873,9 +821,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[11]) {
-                Code[11]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[11]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[11]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[11]->AddEvent(tt,data[0]);
 
@@ -885,9 +831,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[7]) {
-                Code[7]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[7]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[7]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[7]->AddEvent(tt,data[0]);
             break;
@@ -896,9 +840,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[8]) {
-                Code[8]=new EventList(cpapcode,EVL_Event);
-                session->eventlist[cpapcode].push_back(Code[8]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[8]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[8]->AddEvent(tt,data[0]);
             break;
@@ -913,59 +855,25 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             //tt-=delta;
             tt-=qint64(data[1])*1000L;
             if (!Code[9]) {
-                Code[9]=new EventList(cpapcode,EVL_Event,2.0);
-                session->eventlist[cpapcode].push_back(Code[9]);
-                session->machine()->registerChannel(cpapcode);
+                if (!(Code[9]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[9]->AddEvent(tt,data[0]);
             //session->AddEvent(new Event(tt,cpapcode, data[0], data, 2));
             break;
         case 0x0d: // All the other ASV graph stuff.
             if (!Code[12]) {
-                Code[12]=new EventList(CPAP_IPAP,EVL_Event,0.1);
-                session->eventlist[CPAP_IPAP].push_back(Code[12]);
-                session->machine()->registerChannel(CPAP_IPAP);
+                if (!(Code[12]=session->AddEventList("IPAP",EVL_Event))) return false;
+                if (!(Code[13]=session->AddEventList("IPAPLo",EVL_Event))) return false;
+                if (!(Code[14]=session->AddEventList("IPAPHi",EVL_Event))) return false;
+                if (!(Code[15]=session->AddEventList("Leak",EVL_Event))) return false;
+                if (!(Code[16]=session->AddEventList("RespRate",EVL_Event))) return false;
+                if (!(Code[17]=session->AddEventList("PTB",EVL_Event))) return false;
 
-                Code[13]=new EventList(CPAP_IPAP_Low,EVL_Event,0.1);
-                session->eventlist[CPAP_IPAP_Low].push_back(Code[13]);
-                session->machine()->registerChannel(CPAP_IPAP_Low);
-
-                Code[14]=new EventList(CPAP_IPAP_High,EVL_Event,0.1);
-                session->eventlist[CPAP_IPAP_High].push_back(Code[14]);
-                session->machine()->registerChannel(CPAP_IPAP_High);
-
-                Code[15]=new EventList(CPAP_Leak,EVL_Event);
-                session->eventlist[CPAP_Leak].push_back(Code[15]);
-                session->machine()->registerChannel(CPAP_Leak);
-
-                Code[16]=new EventList(CPAP_RespiratoryRate,EVL_Event);
-                session->eventlist[CPAP_RespiratoryRate].push_back(Code[16]);
-                session->machine()->registerChannel(CPAP_RespiratoryRate);
-
-                Code[17]=new EventList(CPAP_PatientTriggeredBreaths,EVL_Event);
-                session->eventlist[CPAP_PatientTriggeredBreaths].push_back(Code[17]);
-                session->machine()->registerChannel(CPAP_PatientTriggeredBreaths);
-
-                Code[18]=new EventList(CPAP_MinuteVentilation,EVL_Event);
-                session->eventlist[CPAP_MinuteVentilation].push_back(Code[18]);
-                session->machine()->registerChannel(CPAP_MinuteVentilation);
-
-                Code[19]=new EventList(CPAP_TidalVolume,EVL_Event,10.0);
-                session->eventlist[CPAP_TidalVolume].push_back(Code[19]);
-                session->machine()->registerChannel(CPAP_TidalVolume);
-
-                Code[20]=new EventList(CPAP_Snore,EVL_Event);
-                session->eventlist[CPAP_Snore].push_back(Code[20]);
-                session->machine()->registerChannel(CPAP_Snore);
-
-                Code[22]=new EventList(CPAP_EPAP,EVL_Event,0.1);
-                session->eventlist[CPAP_EPAP].push_back(Code[22]);
-                session->machine()->registerChannel(CPAP_EPAP);
-
-                Code[23]=new EventList(CPAP_PressureSupport,EVL_Event,0.1);
-                session->eventlist[CPAP_PressureSupport].push_back(Code[23]);
-                session->machine()->registerChannel(CPAP_PressureSupport);
-
+                if (!(Code[18]=session->AddEventList("MinuteVent",EVL_Event))) return false;
+                if (!(Code[19]=session->AddEventList("TidalVolume",EVL_Event))) return false;
+                if (!(Code[20]=session->AddEventList("Snore",EVL_Event))) return false;
+                if (!(Code[22]=session->AddEventList("EPAP",EVL_Event))) return false;
+                if (!(Code[23]=session->AddEventList("PS",EVL_Event))) return false;
             }
             Code[12]->AddEvent(t,data[0]=buffer[pos++]); // IAP
             Code[13]->AddEvent(t,buffer[pos++]); // IAP Low
@@ -978,9 +886,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             Code[20]->AddEvent(t,data[2]=buffer[pos++]); // Snore
             if (data[2]>0) {
                 if (!Code[21]) {
-                    Code[21]=new EventList(CPAP_VSnore,EVL_Event);
-                    session->eventlist[CPAP_VSnore].push_back(Code[21]);
-                    session->machine()->registerChannel(CPAP_VSnore);
+                    if (!(Code[21]=session->AddEventList("VSnore",EVL_Event))) return false;
                 }
                 Code[21]->AddEvent(t,0); //data[2]); // VSnore
             }
@@ -1181,7 +1087,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     //EventList *FlowData=EventList(CPAP_FlowRate, EVL_Waveform,1,0,-128,128);
     //EventList *MaskData=EventList(CPAP_MaskPressure, EVL_Waveform,1,0,-128,128);
 
-    ChannelID wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
+    QString FlowRate="FlowRate";
+    QString MaskPressure="MaskPressure";
+    QString wc[2]={FlowRate,MaskPressure};
     do {
         timestamp=m_buffer[pos+0xb] | m_buffer[pos+0xc] << 8 | m_buffer[pos+0xd] << 16 | m_buffer[pos+0x0e] << 24;
         register unsigned char sum8=0;
@@ -1226,24 +1134,24 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                     double rate=(double(wdur[i])*1000.0)/double(wlength[i]);
                     double gain;
                     if (i==1) gain=0.1; else gain=1;
-                    EventList *a=new EventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
-                    session->machine()->registerChannel(wc[i]);
+                    EventList *a=session->AddEventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
+                    //EventList *a=new EventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
+                    //session->machine()->registerChannel(wc[i]);
                     if (whl[i].sample_format)
                         a->AddWaveform(qint64(start)*1000L,(unsigned char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
                     else {
                         a->AddWaveform(qint64(start)*1000L,(char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
                     }
-                    if (wc[i]==CPAP_FlowRate) {
+                    if (wc[i]==FlowRate) {
                         a->setMax(120);
                         a->setMin(-120);
-                    } else if (wc[i]==CPAP_MaskPressure) {
+                    } else if (wc[i]==MaskPressure) {
                     /*    int v=ceil(a->max()/5);
                         a->setMax(v*5);
                         v=floor(a->min()/5);
                         a->setMin(v*5); */
                     }
 
-                    session->eventlist[wc[i]].push_back(a);
                     session->updateLast(start+(qint64(wdur[i])*1000L));
                     wlength[i]=0;
                     wdur[i]=0;
@@ -1281,20 +1189,18 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         double rate=(double(wdur[i])*1000.0)/double(wlength[i]);
         double gain;
         if (i==1) gain=0.1; else gain=1;
-        EventList *a=new EventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
-        session->machine()->registerChannel(wc[i]);
+        EventList *a=session->AddEventList(wc[i],EVL_Waveform,gain,0,0,0,rate);
 
         if (whl[i].sample_format)
             a->AddWaveform(qint64(start)*1000L,(unsigned char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
         else {
             a->AddWaveform(qint64(start)*1000L,(char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
         }
-        if (wc[i]==CPAP_FlowRate) {
+        if (wc[i]==FlowRate) {
             a->setMax(120);
             a->setMin(-120);
-        } else if (wc[i]==CPAP_MaskPressure) {
+        } else if (wc[i]==MaskPressure) {
         }
-        session->eventlist[wc[i]].push_back(a);
         session->updateLast(start+qint64(wdur[i])*1000L);
     }
     return true;

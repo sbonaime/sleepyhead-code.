@@ -300,7 +300,7 @@ EventDataType Day::max(ChannelID code)
 EventDataType Day::cph(ChannelID code)
 {
     EventDataType sum=0;
-    EventDataType h=0;
+    //EventDataType h=0;
     for (int i=0;i<sessions.size();i++) {
         if (!sessions[i]->m_cph.contains(code)) continue;
         sum+=sessions[i]->cph(code)*sessions[i]->hours();
@@ -334,12 +334,18 @@ int Day::count(ChannelID code)
 }
 bool Day::channelExists(ChannelID id)
 {
-    if (machine->hasChannel(id)) return true;
-    /*for (int i=0;i<sessions.size();i++) {
-        if (sessions[i]->channelExists(id))
-            return true;
-    } */
-    return false;
+    return machine->hasChannel(id);
+}
+bool Day::channelHasData(ChannelID id)
+{
+    bool r=false;
+    for (int i=0;i<sessions.size();i++) {
+        if (sessions[i]->channelExists(id)) {
+            r=true;
+            break;
+        }
+    }
+    return r;
 }
 
 void Day::OpenEvents()

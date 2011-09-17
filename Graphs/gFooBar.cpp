@@ -7,7 +7,7 @@
 #include "gFooBar.h"
 
 gShadowArea::gShadowArea(QColor shadow_color)
-:Layer(EmptyChannel),m_shadow_color(shadow_color)
+:Layer(""),m_shadow_color(shadow_color)
 {
     QColor col=Qt::blue;
     addGLBuf(quads=new GLBuffer(shadow_color,20,GL_QUADS));
@@ -46,7 +46,7 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)
-:Layer(EmptyChannel),m_offset(offset),m_handle_color(handle_color),m_line_color(line_color)
+:Layer(""),m_offset(offset),m_handle_color(handle_color),m_line_color(line_color)
 {
 }
 gFooBar::~gFooBar()
@@ -66,7 +66,7 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     int start_px=left;
     //int end_px=left+width;
 
-    float h=top;
+    //float h=top;
 
   /*  glLineWidth(1);
     glBegin(GL_LINES);

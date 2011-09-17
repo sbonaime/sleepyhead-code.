@@ -84,11 +84,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->eventTable->setColumnWidth(1,55);
     int row=0;
     QTableWidgetItem *item;
-    QHash<ChannelID, Channel>::iterator ci;
-    for (ci=channel.begin();ci!=channel.end();ci++) {
-        if ((ci.value().channeltype()==CT_Event) || (ci.value().channeltype()==CT_Graph)) {
+    QHash<QString, schema::Channel *>::iterator ci;
+    for (ci=schema::channel.names.begin();ci!=schema::channel.names.end();ci++) {
+        if (ci.value()->type()==schema::DATA) {
             ui->eventTable->insertRow(row);
-            item=new QTableWidgetItem(ci.value().details());
+            item=new QTableWidgetItem(ci.value()->description());
             ui->eventTable->setItem(row,2,item);
             QCheckBox *c=new QCheckBox(ui->eventTable);
             c->setChecked(true);

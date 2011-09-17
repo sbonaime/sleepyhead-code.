@@ -9,7 +9,7 @@
 
 
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
-:Layer(EmptyChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
+:Layer(""),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
    // m_gradient_color=QColor(200,200,200);
     m_empty=true;

@@ -57,7 +57,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     LK=new gGraph(GraphView,"Leaks",default_height,0);
 
     uc=new SummaryChart(profile,"Hours",GT_BAR);
-    uc->addSlice(EmptyChannel,QColor("green"),ST_HOURS);
+    uc->addSlice("",QColor("green"),ST_HOURS);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
     gx->setUtcFix(true);

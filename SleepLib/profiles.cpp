@@ -358,8 +358,7 @@ Profile *Get()
  */
 void Scan()
 {
-    InitMapsWithoutAwesomeInitializerLists();
-
+    //InitMapsWithoutAwesomeInitializerLists();
     p_pref=new Preferences("Preferences");
     p_layout=new Preferences("Layout");
 

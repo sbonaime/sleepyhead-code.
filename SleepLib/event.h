@@ -1,16 +1,15 @@
-/********************************************************************
+/*
  SleepLib Event Class Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef EVENT_H
 #define EVENT_H
 
 #include <QDateTime>
-#include "SleepLib/session.h"
+//#include "SleepLib/session.h"
 #include "machine_common.h"
-
 
 enum EventListType { EVL_Waveform, EVL_Event };
 
@@ -18,7 +17,7 @@ class EventList
 {
     friend class Session;
 public:
-    EventList(ChannelID code,EventListType et,EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, double rate=0.0);
+    EventList(EventListType et,EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, double rate=0.0);
     ~EventList();
 
     void AddEvent(qint64 time, EventStoreType data);
@@ -44,7 +43,7 @@ public:
     void setMin(EventDataType v) { m_min=v; }
     void setMax(EventDataType v) { m_max=v; }
     void setRate(EventDataType v) { m_rate=v; }
-    void setCode(ChannelID id) { m_code=id; }
+    //void setCode(ChannelID id) { m_code=id; }
 
     inline const EventDataType & min() { return m_min; }
     inline const EventDataType & max() { return m_max; }
@@ -52,7 +51,7 @@ public:
     inline const EventDataType & offset() { return m_offset; }
     inline const EventDataType & rate() { return m_rate; }
     inline const EventListType & type() { return m_type; }
-    inline const ChannelID & code() { return m_code; }
+    //inline const ChannelID & code() { return m_code; }
     inline const bool & update_minmax() { return m_update_minmax; }
 
     QString dimension() { return m_dimension; }
@@ -63,7 +62,7 @@ public:
 protected:
     QVector<quint32> m_time; // 32bitalize this.. add offsets to m_first
     QVector<EventStoreType> m_data;
-    ChannelID m_code;
+    //ChannelID m_code;
     EventListType m_type;
     int m_count;
 

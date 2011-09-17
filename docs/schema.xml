@@ -1,0 +1,68 @@
+<!DOCTYPE Schema>
+<!-- Schema List Notes: -->
+<Schema language="en" version="1.0">
+ <enum name="class"/>
+  <item id="0" value="event"/>
+  <item id="1" value="waveform"/>
+  <item id="2" value="setting"/>
+  <default id="0">
+ </enum>
+ <enum name="function">
+  <item id="0" value="data"/>
+  <item id="1" value="avg"/>
+  <item id="2" value="wavg"/>
+  <item id="3" value="min"/>
+  <item id="4" value="max"/>
+  <item id="5" value="sum"/>
+  <item id="6" value="cnt"/>
+  <item id="7" value="p90"/>
+  <item id="8" value="cph"/>
+  <item id="9" value="sph"/>
+  <item id="10" value="hours"/>
+  <item id="11" value="set"/>
+  <default id="0">
+ </enum>
+ <enum name="scope">
+  <item id="0" value="preference">
+  <item id="1" value="machine">
+  <item id="2" value="day">
+  <item id="3" value="session">
+  <default id="3">
+ </enum>
+ <enum name="datatype">
+  <item id="0" value=""/>
+  <item id="1" value=""/>
+  <item id="2" value=""/>
+  <item id="3" value=""/>
+  <item id="4" value=""/>
+  <item id="5" value=""/>
+  <item id="6" value=""/>
+  <item id="7" value=""/>
+  <item id="8" value=""/>
+  <item id="9" value=""/>
+  <item id="10" value=""/>
+  <item id="11" value=""/>
+  <default id="0">
+ </enum>
+ <object name="color">
+  <property name="func" type="function"/>
+  <property name="color" type="qcolor"/>
+ </object>
+ <object name="option">
+  <property name="id" type="integer"/>
+  <property name="type" type="datatype"/>
+  <property name="value" type="variant"/>
+ </object>
+ <object name="channel">
+  <property name="id" type="number"/>
+  <property name="class" type="class"/>
+  <property name="scope" type="scope"/>
+  <property name="name" type="string"/>
+  <property name="details" type="string"/>
+  <property name="label" type="string"/>
+  <property name="unit" type="string"/>
+  <property name="type" type="datatype"/>
+  <array name="colors" type="color" index="func"/>
+  <array name="options" type="option" index="id"/>
+ </object>
+</Schema>

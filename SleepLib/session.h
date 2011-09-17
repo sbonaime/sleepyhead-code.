@@ -13,8 +13,9 @@
 #include <QVector>
 
 #include "SleepLib/machine.h"
+#include "SleepLib/schema.h"
 #include "SleepLib/event.h"
-class EventList;
+//class EventList;
 class Machine;
 const quint32 magic=0xC73216AB;
 
@@ -117,7 +118,7 @@ public:
 
     EventDataType percentile(ChannelID id,EventDataType percentile);
 
-    bool channelExists(ChannelID id);
+    bool channelExists(QString name) { return (schema::channel.names.contains(name));}
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
@@ -130,6 +131,7 @@ public:
     qint64 last(ChannelID code);
 
     void UpdateSummaries();
+    EventList * AddEventList(QString chan, EventListType et, EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, EventDataType rate=0.0);
     Machine * machine() { return s_machine; }
 protected:
     SessionID s_session;

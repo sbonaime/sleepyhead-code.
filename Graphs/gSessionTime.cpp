@@ -9,7 +9,7 @@
 #include "gSessionTime.h"
 
 gTimeYAxis::gTimeYAxis(QColor col)
-   :gYAxis(EmptyChannel,col)
+   :gYAxis("",col)
 {
 }
 gTimeYAxis::~gTimeYAxis()

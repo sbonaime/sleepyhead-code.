@@ -8,11 +8,11 @@
 #include <QLabel>
 #include <QDateTime>
 #include "gYAxis.h"
-#include "gBarChart.h"
+#include "gSummaryChart.h"
 
 extern QLabel * qstatus2;
 SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
-:Layer(EmptyChannel),m_profile(p),m_label(label),m_graphtype(type)
+:Layer(""),m_profile(p),m_label(label),m_graphtype(type)
 {
     QColor color=Qt::black;
     addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
@@ -311,7 +311,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int x,y;
     for (int j=0;j<m_codes.size();j++) {
         if (totalvalues[j]==0) continue;
-        a=channel[m_codes[j]].label();
+        a=schema::channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
                 case ST_WAVG: a+="Avg"; break;

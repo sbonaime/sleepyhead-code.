@@ -10,7 +10,7 @@
 #include <QStringList>
 #include <QDebug>
 
-
+#include "SleepLib/schema.h"
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 
@@ -45,6 +45,11 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
     //loglock.unlock();
 }
 
+void initialize()
+{
+    schema::init();
+}
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
@@ -52,8 +57,8 @@ int main(int argc, char *argv[])
 #endif
     QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
     QApplication a(argc, argv);
-
     a.setApplicationName("SleepyHead");
+    initialize();
 
     /*int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     QStringList ffam=QFontDatabase::applicationFontFamilies(id);

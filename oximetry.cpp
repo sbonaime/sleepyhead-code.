@@ -9,7 +9,7 @@
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
 #include "Graphs/gXAxis.h"
-#include "Graphs/gBarChart.h"
+#include "Graphs/gSummaryChart.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
@@ -66,7 +66,7 @@ Oximetry::Oximetry(QWidget *parent,Profile * _profile,gGraphView * shared) :
     SPO2=new gGraph(GraphView,tr("SPO2"),120);
     foobar=new gShadowArea();
     CONTROL->AddLayer(foobar);
-    Layer *cl=new gLineChart(OXI_Plethysomogram);
+    Layer *cl=new gLineChart(OXI_Plethy);
     CONTROL->AddLayer(cl);
     cl->SetDay(day);
     CONTROL->setBlockZoom(true);
@@ -79,16 +79,13 @@ Oximetry::Oximetry(QWidget *parent,Profile * _profile,gGraphView * shared) :
     }
 
     // Create the Event Lists to store / import data
-    ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
-    session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+    ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
 
-    ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
-    session->eventlist[OXI_Pulse].push_back(ev_pulse);
+    ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
 
-    ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
-    session->eventlist[OXI_SPO2].push_back(ev_spo2);
+    ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
 
-    plethy=new gLineChart(OXI_Plethysomogram,Qt::black,false,true);
+    plethy=new gLineChart(OXI_Plethy,Qt::black,false,true);
     plethy->SetDay(day);
 
     CONTROL->AddLayer(plethy); //new gLineChart(OXI_Plethysomogram));
@@ -290,7 +287,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
 
             sess->eventlist[OXI_SPO2].push_back(ev_spo2);
             sess->eventlist[OXI_Pulse].push_back(ev_pulse);
-            sess->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+            sess->eventlist[OXI_Plethy].push_back(ev_plethy);
             //Session *sess=session;
             sess->SetSessionID(starttime/1000L);
 
@@ -310,36 +307,31 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->wavg(OXI_SPO2);
             sess->p90(OXI_SPO2);
 
-            sess->avg(OXI_Plethysomogram);
-            sess->wavg(OXI_Plethysomogram);
-            sess->p90(OXI_Plethysomogram);
-            sess->setMin(OXI_Plethysomogram,ev_plethy->min());
-            sess->setMax(OXI_Plethysomogram,ev_plethy->max());
+            sess->avg(OXI_Plethy);
+            sess->wavg(OXI_Plethy);
+            sess->p90(OXI_Plethy);
+            sess->setMin(OXI_Plethy,ev_plethy->min());
+            sess->setMax(OXI_Plethy,ev_plethy->max());
 
-            sess->setFirst(OXI_Plethysomogram,ev_plethy->first());
-            sess->setLast(OXI_Plethysomogram,ev_plethy->last());
+            sess->setFirst(OXI_Plethy,ev_plethy->first());
+            sess->setLast(OXI_Plethy,ev_plethy->last());
 
             sess->updateFirst(sess->first(OXI_Pulse));
             sess->updateLast(sess->last(OXI_Pulse));
             sess->updateFirst(sess->first(OXI_SPO2));
             sess->updateLast(sess->last(OXI_SPO2));
-            sess->updateFirst(sess->first(OXI_Plethysomogram));
-            sess->updateLast(sess->last(OXI_Plethysomogram));
+            sess->updateFirst(sess->first(OXI_Plethy));
+            sess->updateLast(sess->last(OXI_Plethy));
 
             sess->SetChanged(true);
             mach->AddSession(sess,profile);
             mach->Save();
 
-            ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
-            session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+            ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
+            ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
+            ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
 
-            ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
-            session->eventlist[OXI_Pulse].push_back(ev_pulse);
-
-            ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
-            session->eventlist[OXI_SPO2].push_back(ev_spo2);
-
-            session->setCount(OXI_Plethysomogram,0);
+            session->setCount(OXI_Plethy,0);
             session->setCount(OXI_Pulse,0);
             session->setCount(OXI_SPO2,0);
 
@@ -367,7 +359,7 @@ void Oximetry::UpdatePlethy(qint8 d)
     if (d>ev_plethy->max()) ev_plethy->setMax(d);
     int i=ev_plethy->count()+1;
     ev_plethy->setCount(i);
-    session->setCount(OXI_Plethysomogram,i); // update the cache
+    session->setCount(OXI_Plethy,i); // update the cache
     //ev_plethy->AddEvent(lasttime,d);
     lasttime+=20;  // 50 samples per second
     PLETHY->SetMinY(ev_plethy->min());
@@ -679,8 +671,7 @@ void Oximetry::on_ImportButton_clicked()
                 int drop=max-min;
                 if (drop>6) {
                     if (!oxf1) {
-                        oxf1=new EventList(OXI_PulseChange,EVL_Event);
-                        session->eventlist[OXI_PulseChange].push_back(oxf1);
+                        oxf1=session->AddEventList(OXI_PulseChange,EVL_Event);
                     }
                     oxf1->AddEvent(tt,drop);
                 }
@@ -696,14 +687,11 @@ void Oximetry::on_ImportButton_clicked()
                 int drop=max-min;
                 if (drop>4) {
                     if (!oxf1) {
-                        oxf2=new EventList(OXI_SPO2Drop,EVL_Event);
-                        session->eventlist[OXI_SPO2Drop].push_back(oxf2);
+                        oxf2=session->AddEventList(OXI_SPO2Drop,EVL_Event);
                     }
                     oxf2->AddEvent(tt,drop);
                 }
             }
-
-
 
             ++rb_pos;
             rb_pos=rb_pos % rb_size;
@@ -743,14 +731,11 @@ void Oximetry::on_ImportButton_clicked()
         day->AddSession(session);
 
         // As did these
-        ev_plethy=new EventList(OXI_Plethysomogram,EVL_Waveform,1,0,0,0,1000.0/50.0);
-        session->eventlist[OXI_Plethysomogram].push_back(ev_plethy);
+        ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
 
-        ev_pulse=new EventList(OXI_Pulse,EVL_Event,1);
-        session->eventlist[OXI_Pulse].push_back(ev_pulse);
+        ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
 
-        ev_spo2=new EventList(OXI_SPO2,EVL_Event,1);
-        session->eventlist[OXI_SPO2].push_back(ev_spo2);
+        ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
     }
     delete port;
     port=NULL;

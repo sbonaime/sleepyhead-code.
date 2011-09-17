@@ -13,7 +13,7 @@
 #include <QDateEdit>
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
-#include "Graphs/gBarChart.h"
+#include "Graphs/gSummaryChart.h"
 #include "report.h"
 
 namespace Ui {

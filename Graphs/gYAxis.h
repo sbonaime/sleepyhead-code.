@@ -39,7 +39,7 @@ protected:
 class gYAxis:public Layer
 {
     public:
-        gYAxis(ChannelID code=EmptyChannel,QColor col=QColor("black"));
+        gYAxis(ChannelID code="",QColor col=QColor("black"));
         virtual ~gYAxis();
         virtual void paint(gGraph & w,int left,int top, int width, int height);
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; }

@@ -46,14 +46,15 @@ SOURCES += main.cpp\
     Graphs/gYAxis.cpp \
     Graphs/gFlagsLine.cpp \
     Graphs/glcommon.cpp \
-    Graphs/gBarChart.cpp \
     Graphs/gSegmentChart.cpp \
     Graphs/gSessionTime.cpp \
     qextserialport/qextserialport.cpp \
     preferencesdialog.cpp \
     Graphs/gGraphView.cpp \
     Graphs/gStatsLine.cpp \
-    report.cpp
+    report.cpp \
+    Graphs/gSummaryChart.cpp \
+    SleepLib/schema.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -93,7 +94,6 @@ HEADERS  += \
     Graphs/gYAxis.h \
     Graphs/gFlagsLine.h \
     Graphs/glcommon.h \
-    Graphs/gBarChart.h \
     Graphs/gSegmentChart.h\
     Graphs/gSessionTime.h \
     SleepLib/loader_plugins/resmed_loader.h \
@@ -103,7 +103,9 @@ HEADERS  += \
     preferencesdialog.h \
     Graphs/gGraphView.h \
     Graphs/gStatsLine.h \
-    report.h
+    report.h \
+    Graphs/gSummaryChart.h \
+    SleepLib/schema.h
 
 
 FORMS    += \
@@ -120,4 +122,7 @@ RESOURCES += \
 OTHER_FILES += \
     docs/index.html \
     docs/usage.html \
-    docs/template_overview.sht
+    docs/template_overview.sht \
+    docs/schema.xml \
+    docs/graphs.xml \
+    docs/channels.xml

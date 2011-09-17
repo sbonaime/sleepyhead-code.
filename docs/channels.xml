@@ -1,0 +1,195 @@
+<!DOCTYPE Channels>
+<!-- Copy this to SleepApp folder on app start once completed.
+Metric units please.. A conversion system will deal with the other measurement systems
+English only.. A different translation table will be used..
+It's only details & label that will be translated. name is used internally.
+One id code per item
+-->
+<channels language="en" version="1.0">
+ <group name="CPAP">
+  <!-- Channel List -->
+  <channel id="0x1000" class="data" name="CSR" details="Cheyne Stokes Respiration" label="CSR" color="light green"/>
+  <channel id="0x1001" class="data" name="ClearAirway" details="Clear Airway Apnea" label="CA" color="purple"/>
+  <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="O" color="#40c0ff"/>
+  <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" color="blue"/>
+  <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="A" color="dark green"/>
+  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" color="dark grey"/>
+  <channel id="0x1006" class="data" name="RERA" details="Respiratory Effort Related Arousal" label="RERA" color="gold"/>
+  <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="" color="red"/>
+  <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore 2" label="VS2" unit="" color="orange"/>
+  <channel id="0x1009" class="data" name="PressurePulse" details="Pressure Pulse" label="PP" color="dark red"/>
+
+  <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="PMin" color="black"/>
+  <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="PMax" color="black"/>
+  <channel id="0x1022" class="data" name="RampTime" details="Ramp Time" label="Ramp Time" color="black"/>
+  <channel id="0x1023" class="data" name="RampPressure" details="Ramp Starting Pressure" label="Ramp Pr." color="black"/>
+
+  <channel id="0x1100" class="data" name="Flow" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
+  <channel id="0x1101" class="data" name="MaskPres" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
+  <channel id="0x1102" class="data" name="MaskPresHi" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"  link="0x1101"/>
+  <channel id="0x1103" class="data" name="TidalVolume" details="Tidal Volume" label="Tidal Volume" unit="" color="magenta"/>
+  <channel id="0x1104" class="data" name="Snore" details="Snore" label="Snore" unit="" color="grey"/>
+  <channel id="0x1105" class="data" name="MinuteVent" details="Minute Ventilation" label="Minute Vent." unit="" color="dark cyan"/>
+  <channel id="0x1106" class="data" name="RespRate" details="Respiratory Rate" label="Resp. Rate" unit="Breaths/Min" color="dark magenta"/>
+  <channel id="0x1107" class="data" name="PTB" details="Patient Triggered Breaths" label="Pat. Trig. Breaths" unit="%" color="dark grey"/>
+  <channel id="0x1108" class="data" name="Leak" details="Leak Rate" label="Leaks" unit="L/min" color="dark green"/>
+  <channel id="0x1109" class="data" name="I:E" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
+  <channel id="0x110a" class="data" name="Te" details="Te" label="Te" unit="" color="dark green"/>
+  <channel id="0x110b" class="data" name="Ti" details="Ti" label="Ti" unit="" color="dark blue"/>
+  <channel id="0x110c" class="data" name="Pressure" details="Pressure" label="P" unit="cmH20" color="dark green"/>
+  <channel id="0x110d" class="data" name="IPAP" details="Inspiratory Pressure" label="IPAP" unit="cmH20" color="orange"/>
+  <channel id="0x110e" class="data" name="EPAP" details="Expiratory Pressure" label="EPAP" unit="cmH20" color="light blue"/>
+  <channel id="0x110f" class="data" name="PS" details="Pressure Support" label="PS" unit="cmH20" color="dark blue"/>
+  <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP Lo" unit="cmH20" color="grey"/>
+  <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP Hi" unit="cmH20" color="grey"/>
+  <channel id="0x1112" class="data" name="RespEvent" details="Respiratory Events" label="Resp Events" unit="" color="black"/>
+  <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="" color="dark grey"/>
+  <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
+  <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="" color="black"/>
+  <channel id="0x1152" class="data" name="PRS1_08" details="Unknown 08" label="U08" unit="" color="black"/>
+  <channel id="0x1153" class="data" name="PRS1_09" details="Unknown 09" label="U09" unit="" color="black"/>
+  <channel id="0x1154" class="data" name="PRS1_0A" details="Unknown 0A" label="U0A" unit="" color="black"/>
+  <channel id="0x1155" class="data" name="PRS1_0B" details="Unknown 0B" label="U0B" unit="" color="light blue"/>
+  <channel id="0x1156" class="data" name="PRS1_0C" details="Unknown 0C" label="U0C" unit="" color="black"/>
+  <channel id="0x1157" class="data" name="PRS1_0E" details="Unknown 0E" label="U0E" unit="" color="dark green"/>
+  <channel id="0x1158" class="data" name="PRS1_10" details="Unknown 10" label="U10" unit="" color="black"/>
+  <channel id="0x1159" class="data" name="PRS1_12" details="PRS1 Unknown 12" label="U12" unit="" color="black"/>
+  <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
+  <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="U02" unit="" color="black"/>
+
+  <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
+   <option id="0" value="CPAP"/>
+   <option id="1" value="Auto"/>
+   <option id="2" value="Bi-Level"/>
+   <option id="3" value="ASV"/>
+  </channel>
+ </group>
+ <group name="OXI">
+  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse" color="red"/>
+  <channel id="0x1801" class="data" name="SPO2" details="SPO2" label="SPO2" color="blue"/>
+  <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
+  <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="red"/>
+  <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="blue"/>
+ </group>
+ <group name="SLEEP">
+  <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" color="dark grey"/>
+  <channel id="0x2001" class="data" name="ZEOBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
+ </group>
+ <group name="GENERAL">
+  <channel id="0x0800" class="data" name="BPSys" details="Blood Pressure Systolic" label="BPS" unit="mmHg" color="red"/>
+  <channel id="0x0801" class="data" name="BPDia" details="Blood Pressure Diastolic" label="BPD" unit="mmHg" color="blue"/>
+  <channel id="0x0802" class="data" name="Glucose" details="Blood Glucose" label="BGL" unit="mmol/L" color="black"/>
+  <channel id="0x0803" class="data" scope="!day" name="Weight" details="Weight" label="Weight" unit="Kg" color="black"/>
+  <channel id="0x0804" class="data" scope="!day" name="Height" details="Height" label="Height" unit="cm" color="blue"/>
+  <channel id="0x0805" class="data" name="Bookmark" details="Session Bookmark" label="Bookmark" unit="duration" color="orange"/>
+  <channel id="0xd000" class="data" scope="!day" unique="true" name="Journal" details="Journal Notes" label="Journal" type="richtext"/>
+ </group>
+ <group name="PRS1">
+  <!-- PRS1 Settings -->
+  <channel id="0xe101" class="setting" scope="!session" name="HumidStat" details="Humidifier Status" label="Hum. Status" type="bool">
+    <option id="0" value="Off"/>
+    <option id="1" value="On"/>
+  </channel>
+  <channel id="0xe102" class="setting" scope="!session" name="HumidSet" details="Humidifier Setting" label="Hum. Setting" type="integer">
+    <Option id="0" value="Off"/>
+    <Option id="1" value="x1"/>
+    <Option id="2" value="x2"/>
+    <Option id="3" value="x3"/>
+    <Option id="4" value="x4"/>
+    <Option id="5" value="x5"/>
+  </channel>
+  <channel id="0xe103" class="setting" scope="!session" name="SysOneResistStat" details="System One Resistance Status" label="S1 Resist. Status" type="bool">
+    <Option id="0" value="Off"/>
+    <Option id="1" value="On"/>
+  </channel>
+  <channel id="0xe104" class="setting" scope="!session" name="SysOneResistSet" details="System One Resistance Setting" label="S1 Resist. Setting" type="integer">
+    <Option id="0" value="Off"/>
+    <Option id="1" value="x1"/>
+    <Option id="2" value="x2"/>
+    <Option id="3" value="x3"/>
+    <Option id="4" value="x4"/>
+    <Option id="5" value="x5"/>
+  </channel>
+  <channel id="0xe105" class="setting" scope="!session" name="FlexMode" details="Pressure Relief Mode" label="Flex Mode" type="integer">
+    <Option id="0" value="None"/>
+    <Option id="1" value="C-Flex"/>
+    <Option id="2" value="C-Flex+"/>
+    <Option id="3" value="A-Flex"/>
+  </channel>
+  <channel id="0xe106" class="setting" scope="!session" name="FlexSet" details="Pressure Relief Setting" label="Flex Set." type="integer">
+   <Option id="0" value="0"/>
+   <Option id="1" value="1"/>
+   <Option id="2" value="2"/>
+   <Option id="3" value="3"/>
+  </channel>
+  <channel id="0xe107" class="setting" scope="!session" name="HoseDiam" details="Hose Diameter" label="Hose Diameter" type="bool">
+   <Option id="0" value="22mm"/>
+   <Option id="1" value="15mm"/>
+  </channel>
+  <channel id="0xe108" class="setting" scope="!session" name="SysLock" details="System Lock Status" label="Sys Lock" type="bool">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="On"/>
+  </channel>
+  <channel id="0xe109" class="setting" scope="!session" name="AutoOn" details="Auto On" label="Auto On" type="bool">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="On"/>
+  </channel>
+  <channel id="0xe10a" class="setting" scope="!session" name="AutoOff" details="Auto Off" label="Auto Off" type="bool">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="On"/>
+  </channel>
+  <channel id="0xe10b" class="setting" scope="!session" name="MaskAlert" details="Mask Alert" label="Mask Alert" type="bool">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="On"/>
+  </channel>
+  <channel id="0xe10c" class="setting" scope="!session" name="ShowAHI" details="Show AHI" label="Show AHI" type="bool">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="On"/>
+  </channel>
+
+  <channel id="0xe10d" class="setting" scope="!session" name="PRS1Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
+   <Option id="0" value="CPAP"/>
+   <Option id="1" value="Auto"/>
+   <Option id="2" value="BIPAP"/>
+   <Option id="3" value="AutoSV"/>
+  </channel>
+ </group>
+ <group name="RMS9">
+  <!-- RESMED Settings -->
+  <channel id="0xe200" class="setting" scope="!session" name="RMS9Mode" details="PAP Mode" label="PAP Mode" type="integer" link="0x1200">
+   <Option id="0" value="CPAP"/>
+   <Option id="1" value="Auto"/>
+   <Option id="2" value="VPAP"/>
+   <Option id="3" value="ASV"/>
+  </channel>
+  <channel id="0xe201" class="setting" scope="!session" name="EPR" details="EPR Mode" label="EPR Mode" type="integer">
+   <Option id="0" value="Off"/>
+   <Option id="1" value="EPR"/>
+   <Option id="2" value="EPR?"/>
+   <Option id="3" value="EPR?"/>
+  </channel>
+  <channel id="0xe202" class="setting" scope="!session" name="EPRSet" details="EPR Setting" label="EPR Setting" type="integer">
+   <Option id="0" value="0"/>
+   <Option id="1" value="1"/>
+   <Option id="2" value="2"/>
+   <Option id="3" value="3"/>
+  </channel>
+ </group>
+ <group name="MACHINE">
+  <!-- General Per Machine Settings -->
+  <channel id="0xf000" class="setting" scope="!machine" name="Type" details="Type" label="Type" type="integer">
+   <option id="0" value="Unknown"/>
+   <option id="1" value="CPAP"/>
+   <option id="2" value="Oximeter"/>
+   <option id="3" value="Sleep"/>
+   <option id="4" value="Journal"/>
+   <option id="5" value="EEG"/>
+  </channel>
+  <channel id="0xf001" class="setting" scope="!machine" name="Brand" details="Brand" label="Brand" type="string"/>
+  <channel id="0xf002" class="setting" scope="!machine" name="Model" details="Model" label="Model" type="string"/>
+  <channel id="0xf003" class="setting" scope="!machine" name="ModelNumber" details="Model Number" label="Model Number" type="string"/>
+  <channel id="0xf004" class="setting" scope="!machine" name="SubModel" details="Sub-Model" label="Sub Model" type="string"/>
+  <channel id="0xf005" class="setting" scope="!machine" name="Serial" details="Serial" label="Serial" type="string"/>
+  <channel id="0xf006" class="setting" scope="!machine" name="Notes" details="Machine Notes" label="Notes" type="richtext"/>
+ </group>
+</channels>

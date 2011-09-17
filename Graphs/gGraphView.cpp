@@ -357,7 +357,7 @@ void Layer::drawGLBuf()
 
 void Layer::SetDay(Day * d)
 {
-    if (d && m_code!=EmptyChannel) {
+    if (d && !m_code.isEmpty()) {
         m_day=d;
         m_minx=d->first(m_code);
         m_maxx=d->last(m_code);
@@ -382,7 +382,7 @@ void Layer::setLayout(LayerPosition position, short width, short height, short o
 }
 
 LayerGroup::LayerGroup() :
-    Layer(EmptyChannel)
+    Layer("")
 {
 }
 LayerGroup::~LayerGroup()

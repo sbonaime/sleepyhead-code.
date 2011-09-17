@@ -20,6 +20,7 @@
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
 #include "preferencesdialog.h"
+#include "SleepLib/schema.h"
 
 
 #include "Graphs/glcommon.h"
@@ -34,9 +35,10 @@ void MainWindow::Log(QString s)
     static QMutex loglock,strlock;
     static int start=QDateTime::currentDateTime().toTime_t();
     static QStringList slist;
-    if (!loglock.tryLock()) {
-        return;
-    }
+    //if (!loglock.tryLock()) {
+        //return;
+    //}
+    loglock.lock();
 
     strlock.lock();
     QString tmp=QString("%1: %2").arg(QDateTime::currentDateTime().toTime_t()-start,5,10,QChar('0')).arg(s);
@@ -150,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
     connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString)));
+
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -197,6 +200,12 @@ void MainWindow::Startup()
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
     qstatus->setText("");
+    schema::Channel & item=schema::channel["SysOneResistSet"];
+    if (!item.isNull()) {
+        for (QHash<int,QString>::iterator i=item.m_options.begin();i!=item.m_options.end();i++) {
+            qDebug() << i.key() << i.value();
+        }
+    }
     //qstatusbar->clearMessage();
 
 }

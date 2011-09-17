@@ -254,7 +254,7 @@ bool Session::StoreEvents(QString filename)
     QHash<ChannelID,QVector<EventList *> >::iterator i;
 
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
-        out << (qint16)i.key(); // ChannelID
+        out << i.key(); // ChannelID
         out << (qint16)i.value().size();
         for (int j=0;j<i.value().size();j++) {
             EventList &e=*i.value()[j];
@@ -350,8 +350,7 @@ bool Session::LoadEvents(QString filename)
     QVector<qint16> sizevec;
     QString dim;
     for (int i=0;i<mcsize;i++) {
-        in >> t16;
-        code=(ChannelID)t16;
+        in >> code;
         mcorder.push_back(code);
         in >> size2;
         sizevec.push_back(size2);
@@ -367,10 +366,10 @@ bool Session::LoadEvents(QString filename)
             in >> mn;
             in >> mx;
             in >> dim;
-            EventList *elist=new EventList(code,elt,gain,offset,mn,mx,rate);
+            EventList *elist=AddEventList(code,elt,gain,offset,mn,mx,rate);
             elist->setDimension(dim);
 
-            eventlist[code].push_back(elist);
+            //eventlist[code].push_back(elist);
             elist->m_count=evcount;
             elist->m_first=ts1;
             elist->m_last=ts2;
@@ -411,7 +410,7 @@ void Session::UpdateSummaries()
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
-        if ((channel[id].channeltype()==CT_Event) || (channel[id].channeltype()==CT_Graph)) {
+        if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
             min(id);
             max(id);
@@ -540,7 +539,7 @@ qint64 Session::last(ChannelID id)
     m_lastchan[id]=max;
     return max;
 }
-bool Session::channelExists(ChannelID id)
+/*bool Session::channelExists(ChannelID id)
 {
     if (s_events_loaded) {
         QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
@@ -552,7 +551,7 @@ bool Session::channelExists(ChannelID id)
             return false;
     }
     return true;
-}
+}*/
 
 int Session::count(ChannelID id)
 {
@@ -763,3 +762,15 @@ EventDataType Session::wavg(ChannelID id)
     return v;
 }
 
+EventList * Session::AddEventList(QString chan, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate)
+{
+    schema::Channel * channel=&schema::channel[chan];
+    if (!channel) {
+        qWarning() << "Channel" << chan << "does not exist!";
+        //return NULL;
+    }
+    EventList * el=new EventList(et,gain,offset,min,max,rate);
+    eventlist[chan].push_back(el);
+    s_machine->registerChannel(chan);
+    return el;
+}

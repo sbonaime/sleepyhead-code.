@@ -16,7 +16,7 @@
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
-#include "Graphs/gBarChart.h"
+#include "Graphs/gSummaryChart.h"
 
 #include <SleepLib/profiles.h>
 #include "mainwindow.h"

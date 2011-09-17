@@ -17,7 +17,7 @@ const quint64 divisors[]={
 const int divcnt=sizeof(divisors)/sizeof(quint64);
 
 gXAxis::gXAxis(QColor col,bool fadeout)
-:Layer(EmptyChannel)
+:Layer("")
 {
     m_line_color=col;
     m_text_color=col;

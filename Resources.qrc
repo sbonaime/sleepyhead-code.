@@ -16,5 +16,7 @@
         <file>icons/oximeter.png</file>
         <file>docs/0.0.gif</file>
         <file>docs/template_overview.sht</file>
+        <file>docs/schema.xml</file>
+        <file>docs/channels.xml</file>
     </qresource>
 </RCC>

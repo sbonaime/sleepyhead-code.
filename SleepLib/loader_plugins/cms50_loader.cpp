@@ -224,10 +224,9 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
 
     Session *sess=new Session(mach,sessid);
     sess->updateFirst(starttime);
-    EventList *oxip=new EventList(OXI_Pulse,EVL_Event);
-    EventList *oxis=new EventList(OXI_SPO2,EVL_Event);
-    sess->eventlist[OXI_Pulse].push_back(oxip);
-    sess->eventlist[OXI_SPO2].push_back(oxis);
+    EventList *oxip=sess->AddEventList(OXI_Pulse,EVL_Event);
+    EventList *oxis=sess->AddEventList(OXI_SPO2,EVL_Event);
+
     oxip->AddEvent(starttime,last_pulse);
     oxis->AddEvent(starttime,last_spo2);
 
