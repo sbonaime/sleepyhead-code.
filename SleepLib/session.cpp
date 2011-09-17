@@ -539,7 +539,7 @@ qint64 Session::last(ChannelID id)
     m_lastchan[id]=max;
     return max;
 }
-/*bool Session::channelExists(ChannelID id)
+bool Session::channelExists(ChannelID id)
 {
     if (s_events_loaded) {
         QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
@@ -551,7 +551,7 @@ qint64 Session::last(ChannelID id)
             return false;
     }
     return true;
-}*/
+}
 
 int Session::count(ChannelID id)
 {

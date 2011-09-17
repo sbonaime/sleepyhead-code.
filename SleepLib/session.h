@@ -118,7 +118,7 @@ public:
 
     EventDataType percentile(ChannelID id,EventDataType percentile);
 
-    bool channelExists(QString name) { return (schema::channel.names.contains(name));}
+    bool channelExists(QString name);// { return (schema::channel.names.contains(name));}
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
