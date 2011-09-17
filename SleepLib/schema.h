@@ -71,9 +71,8 @@ public:
             return EmptyChannel;
     }
     Channel & operator[](QString name) {
-        QString tmp=name.toLower();
-        if (names.contains(tmp))
-            return *names[tmp];
+        if (names.contains(name))
+            return *names[name];
         else
             return EmptyChannel;
     }

@@ -200,12 +200,12 @@ void MainWindow::Startup()
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
     qstatus->setText("");
-    schema::Channel & item=schema::channel["SysOneResistSet"];
+    /*schema::Channel & item=schema::channel["SysOneResistSet"];
     if (!item.isNull()) {
         for (QHash<int,QString>::iterator i=item.m_options.begin();i!=item.m_options.end();i++) {
             qDebug() << i.key() << i.value();
         }
-    }
+    }*/
     //qstatusbar->clearMessage();
 
 }

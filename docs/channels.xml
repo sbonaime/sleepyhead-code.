@@ -24,9 +24,9 @@ One id code per item
   <channel id="0x1022" class="data" name="RampTime" details="Ramp Time" label="Ramp Time" color="black"/>
   <channel id="0x1023" class="data" name="RampPressure" details="Ramp Starting Pressure" label="Ramp Pr." color="black"/>
 
-  <channel id="0x1100" class="data" name="Flow" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
-  <channel id="0x1101" class="data" name="MaskPres" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
-  <channel id="0x1102" class="data" name="MaskPresHi" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"  link="0x1101"/>
+  <channel id="0x1100" class="data" name="FlowRate" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
+  <channel id="0x1101" class="data" name="MaskPressure" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
+  <channel id="0x1102" class="data" name="MaskPressureHi" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue" link="0x1101"/>
   <channel id="0x1103" class="data" name="TidalVolume" details="Tidal Volume" label="Tidal Volume" unit="" color="magenta"/>
   <channel id="0x1104" class="data" name="Snore" details="Snore" label="Snore" unit="" color="grey"/>
   <channel id="0x1105" class="data" name="MinuteVent" details="Minute Ventilation" label="Minute Vent." unit="" color="dark cyan"/>

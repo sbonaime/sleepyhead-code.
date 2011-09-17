@@ -105,8 +105,22 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
             continue;
         }
-        ci=(*m_day)[svi]->eventlist.find(m_code);
-        if (ci==(*m_day)[svi]->eventlist.end()) continue;
+        schema::Channel ch=schema::channel[m_code];
+        bool fndbetter=false;
+        for (QList<schema::Channel *>::iterator l=ch.m_links.begin();l!=ch.m_links.end();l++) {
+            schema::Channel *c=*l;
+            ci=(*m_day)[svi]->eventlist.find(c->name());
+            if (ci!=(*m_day)[svi]->eventlist.end()) {
+                fndbetter=true;
+                break;
+            }
+
+        }
+        if (!fndbetter) {
+            ci=(*m_day)[svi]->eventlist.find(m_code);
+            if (ci==(*m_day)[svi]->eventlist.end()) continue;
+        }
+
 
         QVector<EventList *> & evec=ci.value();
         num_points=0;

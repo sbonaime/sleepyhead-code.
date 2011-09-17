@@ -165,7 +165,7 @@ bool ChannelList::Load(QString filename)
                 continue;
             }
             scope=Scopes[scopestr];
-            name=e.attribute("name","").toLower();
+            name=e.attribute("name","");
             details=e.attribute("details","");
             label=e.attribute("label","");
 
@@ -213,8 +213,9 @@ bool ChannelList::Load(QString filename)
             groups[group][name]=chan;
             if (linkid>0) {
                 if (channels.contains(linkid)) {
-                    Channel *it=channels[id];
-                    chan->m_links.push_back(it);
+                    Channel *it=channels[linkid];
+                    it->m_links.push_back(chan);
+                    int i=0;
                 } else {
                     qWarning() << "Linked channel must be defined first in" << filename <<"line" << line;
                 }

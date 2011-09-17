@@ -575,13 +575,10 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             es.gain*=60;
             es.physical_dimension="L/M";
             code=CPAP_FlowRate;
-            sess->machine()->registerChannel(code);
         } else if (edf.edfsignals[s]->label.startsWith("Mask Pres")) {
-            code=CPAP_MaskPressure;
-            sess->machine()->registerChannel(code);
+            code=CPAP_MaskPressureHi;
         } else if (es.label.startsWith("Resp Event")) {
             code=CPAP_RespEvent;
-            sess->machine()->registerChannel(code);
         } else {
             qDebug() << "Unobserved ResMed BRP Signal " << edf.edfsignals[s]->label;
             continue;
@@ -593,7 +590,6 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         a->AddWaveform(edf.startdate,es.data,recs,duration);
         sess->setMin(code,a->min());
         sess->setMax(code,a->max());
-        //sess->eventlist[code].push_back(a);
         //delete edf.edfsignals[s]->data;
         //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
     }
