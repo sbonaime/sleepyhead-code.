@@ -109,6 +109,7 @@ const QString OXI_SPO2Drop="SPO2Drop";
 const QString OXI_Plethy="Plethy";
 
 const QString CPAP_AHI="AHI";
+const QString Journal_Notes="Journal";
 
 
 #endif // MACHINE_COMMON_H

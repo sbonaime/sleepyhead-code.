@@ -603,27 +603,27 @@ void Daily::Load(QDate date)
 
     ui->webView->setHtml(html);
 
-    /*ui->JournalNotes->clear();
+    ui->JournalNotes->clear();
     Session *journal=GetJournalSession(date);
     if (journal) {
-        ui->JournalNotes->setHtml(journal->settings[JOURNAL_Notes].toString());
-    }*/
+        ui->JournalNotes->setHtml(journal->settings[Journal_Notes].toString());
+    }
 
 }
 void Daily::Unload(QDate date)
 {
-    /*Session *journal=GetJournalSession(date);
+    Session *journal=GetJournalSession(date);
     if (!ui->JournalNotes->toPlainText().isEmpty()) {
         QString jhtml=ui->JournalNotes->toHtml();
         if (journal) {
-            if (journal->settings[JOURNAL_Notes]!=jhtml) {
-                journal->settings[JOURNAL_Notes]=jhtml;
+            if (journal->settings[Journal_Notes]!=jhtml) {
+                journal->settings[Journal_Notes]=jhtml;
                 journal->SetChanged(true);
             }
 
         } else {
             journal=CreateJournalSession(date);
-            journal->settings[JOURNAL_Notes]=jhtml;
+            journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
 
@@ -631,7 +631,7 @@ void Daily::Unload(QDate date)
     if (journal) {
         Machine *jm=profile->GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
-    } */
+    }
     UpdateCalendarDay(date);
 }
 
