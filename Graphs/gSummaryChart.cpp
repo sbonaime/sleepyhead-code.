@@ -245,10 +245,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             ChannelID code;
 
             total=d.value()[0];
-            if (total>0) {
+            //if (total>0) {
+            if (day) {
                 total_val+=total;
                 total_days++;
             }
+            //}
             py=top+height;
             for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
                 short j=g.key();
@@ -259,9 +261,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     col=QColor("gold");
                 }
 
-                tmp=g.value()-miny;
+                tmp=g.value();
                 totalvalues[j]+=tmp;
                 totalcounts[j]++;
+                tmp-=miny;
                 h=tmp*ymult; // height in pixels
 
                 if (m_graphtype==GT_BAR) {
@@ -305,10 +308,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
 
     // Draw Ledgend
-    px=left+width;
+    px=left+width-3;
     py=top+10;
     QString a;
     int x,y;
+
     for (int j=0;j<m_codes.size();j++) {
         if (totalvalues[j]==0) continue;
         a=schema::channel[m_codes[j]].label();
@@ -325,30 +329,38 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 default:
                     break;
         }
+        QString val;
+        float f=totalvalues[j]/float(totalcounts[j]);
+        if (m_type[j]==ST_HOURS) {
+            int h=f;
+            int m=int(f*60) % 60;
+            val.sprintf("%02i:%02i",h,m);
+        } else {
+            val=QString::number(f,'f',2);
+        }
+        a+="="+val;
         GetTextExtent(a,x,y);
-        px-=30+x;
-        w.renderText(a,px+24,py+5);
-        quads->add(px,py-3,px+20,py-3,px+20,py+4,px,py+4,m_colors[j]);
+        px-=20+x;
+        w.renderText(a,px+20,py+5);
+        quads->add(px+5,py-3,px+18,py-3,px+18,py+4,px+5,py+4,m_colors[j]);
         //quads->add(m_colors[j]);
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
-
-    QString z=m_label;
-    if (m_graphtype==GT_LINE) {
-        if (totalcounts[0]>0) {
-            float val=totalvalues[0]/float(totalcounts[0]);
-            z+="="+QString::number(val,'f',2)+" days="+QString::number(totalcounts[0],'f',0);
-        }
-       // val = AHI for selected area.
-    } else { // Bar chart works in total mode
-        if (total_days>0) {
+    a="";
+    if (m_graphtype==GT_BAR) {
+        if (m_type.size()>1) {
             float val=total_val/float(total_days);
-            z+="="+QString::number(val,'f',2)+" days="+QString::number(total_days,'f',0);
+            a+=m_label+"="+QString::number(val,'f',2)+" ";
+            //
         }
-
     }
-    w.renderText(z,left,top-3);
+    a+="Days="+QString::number(totalcounts[0],'f',0);
+    GetTextExtent(a,x,y);
+    px-=30+x;
+    //w.renderText(a,px+24,py+5);
+
+    w.renderText(a,left,top-3);
 }
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 {

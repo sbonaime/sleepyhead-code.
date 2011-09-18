@@ -1677,7 +1677,7 @@ void gGraphView::paintGL()
     if (pref["ShowDebug"].toBool()) {
         QString ss;
         ss="PreDraw took "+QString::number(elapsed)+"ms";
-        AddTextQue(ss,width()-120,8,0,col,defaultfont);
+        AddTextQue(ss,width()-140,10,0,col,defaultfont);
         DrawTextQue();
     }
     //glDisable(GL_TEXTURE_2D);
