@@ -33,8 +33,8 @@ public:
     //void UpdateGraphs();
     void ResetGraphLayout();
 
-    gGraph *AHI,*UC,*PR,*LK,*NPB;
-    SummaryChart *bc,*uc,*pr,*lk,*npb;
+    gGraph *AHI,*UC,*PR,*LK,*NPB,*SET;
+    SummaryChart *bc,*uc,*pr,*lk,*npb,*set;
 public slots:
     void on_printButton_clicked();
 

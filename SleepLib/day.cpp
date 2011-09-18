@@ -332,9 +332,20 @@ int Day::count(ChannelID code)
     }
     return sum;
 }
+bool Day::settingExists(ChannelID id)
+{
+    for (int j=0;j<sessions.size();j++) {
+        QHash<ChannelID,QVariant>::iterator i=sessions[j]->settings.find(id);
+        if (i!=sessions[j]->settings.end()) {
+            return true;
+        }
+    }
+    return false;
+}
 bool Day::channelExists(ChannelID id)
 {
-    return machine->hasChannel(id);
+    if (machine->hasChannel(id)) return true;
+    return false;
 }
 bool Day::channelHasData(ChannelID id)
 {

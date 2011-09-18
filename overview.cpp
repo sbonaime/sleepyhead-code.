@@ -54,6 +54,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     AHI=new gGraph(GraphView,"AHI",default_height,0);
     UC=new gGraph(GraphView,"Usage",default_height,0);
     PR=new gGraph(GraphView,"Pressure",default_height,0);
+    SET=new gGraph(GraphView,"Settings",default_height,0);
     LK=new gGraph(GraphView,"Leaks",default_height,0);
 
     uc=new SummaryChart(profile,"Hours",GT_BAR);
@@ -78,6 +79,18 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     AHI->AddLayer(bc);
     AHI->AddLayer(new gXGrid());
 
+    set=new SummaryChart(profile,"",GT_LINE);
+    //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
+    set->addSlice("HumidSet",QColor("blue"),ST_SETAVG);
+    set->addSlice("FlexSet",QColor("red"),ST_SETAVG);
+    //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
+    SET->forceMaxY(6);
+    SET->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    SET->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    SET->AddLayer(set);
+    SET->AddLayer(new gXGrid());
 
     pr=new SummaryChart(profile,"cmH2O",GT_LINE);
     PR->forceMinY(4.0);
@@ -132,6 +145,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+
     connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateStart_currentPageChanged(int,int)));
     connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateEnd_currentPageChanged(int,int)));
     report=NULL;

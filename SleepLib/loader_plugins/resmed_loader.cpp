@@ -400,9 +400,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
                 EDFSignal *sig;
                 if (mode==0) {
-                    sess->settings["PAPMode"]=MODE_CPAP;
-                    //m->registerChannel(CPAP_EPAP,false);
-                    //m->registerChannel("IPAP",false);
+                    sess->settings[CPAP_Mode]=MODE_CPAP;
                     sig=stredf.lookup["Set Pressure"];
                     EventDataType pressure=sig->data[dn]*sig->gain;
                     sess->settings[CPAP_Pressure]=pressure;

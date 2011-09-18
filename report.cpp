@@ -47,6 +47,9 @@ Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overvie
     graphs["%PB"]=NPB=new gGraph(GraphView,"% in PB",graph_print_height,0);
     NPB->AddLayer(m_overview->npb);
 
+    graphs["Settings"]=SET=new gGraph(GraphView,"Settings",graph_print_height,0);
+    SET->AddLayer(m_overview->set);
+
 
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         gGraph *gr=g.value();

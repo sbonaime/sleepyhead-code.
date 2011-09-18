@@ -69,6 +69,8 @@ public:
     QVector<Session *> & getSessions() { return sessions; }
     bool channelExists(ChannelID id);
     bool channelHasData(ChannelID id);
+    bool settingExists(ChannelID id);
+
 protected:
     QVector<Session *> sessions;
     qint64 d_first,d_last;

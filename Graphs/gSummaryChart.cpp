@@ -68,7 +68,7 @@ void SummaryChart::SetDay(Day * nullday)
             type=m_type[j];
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
-                if (type==ST_HOURS || day->channelExists(code)) { // too many lookups happening here.. stop the crap..
+                if (type==ST_HOURS || day->channelExists(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
                     m_days[dn]=day;
                     switch(m_type[j]) {
                         case ST_AVG: tmp=day->avg(code); break;
@@ -81,6 +81,11 @@ void SummaryChart::SetDay(Day * nullday)
                         case ST_CPH: tmp=day->cph(code); break;
                         case ST_SPH: tmp=day->sph(code); break;
                         case ST_HOURS: tmp=day->hours(); break;
+                        case ST_SETMIN: tmp=day->settings_min(code); break;
+                        case ST_SETMAX: tmp=day->settings_max(code); break;
+                        case ST_SETAVG: tmp=day->settings_avg(code); break;
+                        case ST_SETWAVG: tmp=day->settings_wavg(code); break;
+                        case ST_SETSUM: tmp=day->settings_sum(code); break;
                     default:    break;
                     }
                     //if (tmp>0) {
@@ -426,6 +431,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                 } else
                     val=QString::number(d.value()[0],'f',2);
                 z+="\r\n"+m_label+"="+val;
+                //z+="\r\nMode="+QString::number(day->settings_min("FlexSet"),'f',0);
 
             } else {
                 QString a;
@@ -442,7 +448,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                             default:
                                 break;
                     }
-                    if (day && day->channelExists(m_codes[i])) {
+                    if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                         schema::Channel & chan=schema::channel[m_codes[i]];
                         val=QString::number(d.value()[i+1],'f',2);
                         z+="\r\n"+chan.label()+" "+a+"="+val;
