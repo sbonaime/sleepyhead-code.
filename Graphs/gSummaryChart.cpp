@@ -290,6 +290,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     col.setAlpha(128);
                     short px2=px+barw;
                     short py2=top+height-1-h;
+                    py2+=j;
                     if (lastdaygood) {
                         lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
                         lines->add(px,py2,px2,py2,col);
