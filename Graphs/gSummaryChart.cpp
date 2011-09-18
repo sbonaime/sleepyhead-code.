@@ -388,6 +388,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
             day=m_days[zd];
 
+            QString z=dt.toString(Qt::SystemLocaleShortDate);
 
             // Day * day=m_days[hl_day];
             //EventDataType val;
@@ -399,12 +400,34 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                     int m=(t / 60) % 60;
                     int s=t % 60;
                     val.sprintf("%02i:%02i",h,m);
-                } else val=QString::number(d.value()[0],'f',2);
+                } else
+                    val=QString::number(d.value()[0],'f',2);
+                z+="\r\n"+m_label+"="+val;
+
             } else {
-                val=QString::number(d.value()[1],'f',2);
+                QString a;
+                for (int i=0;i<m_type.size();i++) {
+                    switch(m_type[i]) {
+                            case ST_WAVG: a="W-avg"; break;
+                            case ST_AVG:  a="Avg"; break;
+                            case ST_90P:  a="90%"; break;
+                            case ST_MIN:  a="Min"; break;
+                            case ST_MAX:  a="Max"; break;
+                            case ST_CPH:  a=""; break;
+                            case ST_SPH:  a="%"; break;
+                            case ST_HOURS: a="Hours"; break;
+                            default:
+                                break;
+                    }
+                    if (day && day->channelExists(m_codes[i])) {
+                        schema::Channel & chan=schema::channel[m_codes[i]];
+                        val=QString::number(d.value()[i+1],'f',2);
+                        z+="\r\n"+chan.label()+" "+a+"="+val;
+                    }
+                }
+
             }
 
-            QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\n"+m_label+"="+val;//+"\nAHI="+QString::number(day->cph(CPAP_AHI));
             graph->ToolTip(z,x,y,2200);
             return true;
         } else {

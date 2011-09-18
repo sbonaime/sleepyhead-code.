@@ -168,7 +168,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (!m_utcfix) j+=tz_offset;
         int ms=j % 1000;
         int m=(j/60000L) % 60L;
-        int h=((j/3600000L)-utcoff) % 24L;
+        int h=(j/3600000L) % 24L;
         int s=(j/1000L) % 60L;
         static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
         int d=(j/86400000) % 7;
