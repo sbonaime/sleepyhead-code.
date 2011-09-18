@@ -175,8 +175,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 
         if (fitmode==0) {
             int d=(j/1000);
-            QDateTime dt=QDateTime::fromTime_t(d);
-            tmpstr=dt.toString("MMM dd");
+            QDateTime dt=QDateTime::fromTime_t(d).toUTC();
+            tmpstr=dt.toString("MMM dd hh");
         //} else if (fitmode==0) {
 //            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
         } else if (fitmode==1) { // minute
