@@ -517,7 +517,6 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                     t+=tolower(data[pos++]);
                 } while ((data[pos]!=20) && (pos<recs)); // start code
                 if (!t.isEmpty()) {
-                    //code=MC_UNKNOWN;
                     if (t=="obstructive apnea") {
                         if (!EL[0]) {
                             if (!(EL[0]=sess->AddEventList(CPAP_Obstructive,EVL_Event))) return false;
@@ -584,7 +583,6 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
             continue;
         }
         double rate=double(duration)/double(recs);
-        //es.gain=1;
         EventList *a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
         a->setDimension(es.physical_dimension);
         a->AddWaveform(edf.startdate,es.data,recs,duration);
@@ -602,7 +600,6 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     double tt=edf.startdate;
     //sess->UpdateFirst(tt);
     EventDataType c,last;
-    //if (gain==0) gain=1;
 
     EventList *el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,min,max);
     int startpos=0;
@@ -644,10 +641,8 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         ChannelID code;
         if (edf.edfsignals[s]->label=="Pulse") {
             code=OXI_Pulse;
-            //sess->machine()->registerChannel(code);
         } else if (edf.edfsignals[s]->label=="SpO2") {
             code=OXI_SPO2;
-            //sess->machine()->registerChannel(code);
         } else {
             qDebug() << "Unobserved ResMed SAD Signal " << edf.edfsignals[s]->label;
             continue;
@@ -694,43 +689,23 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
         if (es.label=="Snore Index") {
             code=CPAP_Snore;
-
-            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
-            //sess->eventlist[code].push_back(a);
-            //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            //a->setMax(1);
-            //a->setMin(0);
         } else if (es.label=="Therapy Pres") {
             code=CPAP_Pressure; //TherapyPressure;
-            //sess->settings[CPAP_Mode]=MODE_APAP;
-            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
-            //sess->eventlist[code].push_back(a);
-            //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Insp Pressure") {
             code=CPAP_IPAP; //TherapyPressure;
             sess->settings[CPAP_Mode]=MODE_BIPAP;
-            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
-            //sess->eventlist[code].push_back(a);
-            //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="MV") {
             code=CPAP_MinuteVent;
-            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
-            //sess->eventlist[code].push_back(a);
-            //a->AddWaveform(edf.startdate,es.data,recs,duration);
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="RR") {
             code=CPAP_RespRate;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
-            //ToTimeDelta(sess,edf,es, code,recs,duration);
         } else if (es.label=="Vt") {
             code=CPAP_TidalVolume;
-            //EventList *a=new EventList(code,EVL_Waveform,es.gain,es.offset,es.physical_minimum,es.physical_maximum,rate);
-            //sess->eventlist[code].push_back(a);
-            //a->AddWaveform(edf.startdate,es.data,recs,duration);
             es.physical_maximum=es.physical_minimum=0;
             es.gain*=1000.0;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
@@ -738,20 +713,12 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_dimension="L/M";
-            //es.gain=1;//10.0;
-            //es.offset=-0.5;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            //a->setMax(1);
-            //a->setMin(0);
         } else if (es.label=="FFL Index") {
             code=CPAP_FLG;
-            //es.gain=1;//10.0;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            //a->setMax(1);
-            //a->setMin(0);
         } else if (es.label.startsWith("Mask Pres")) {
             code=CPAP_MaskPressure;
-            //es.gain=1;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Exp Press")) {
             code=CPAP_EPAP;//ExpiratoryPressure;
@@ -787,7 +754,6 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=NULL;
         }
         if (a) {
-            //sess->machine()->registerChannel(code);
             sess->setMin(code,a->min());
             sess->setMax(code,a->max());
             a->setDimension(es.physical_dimension);

@@ -32,27 +32,24 @@ QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
 {
-    static QMutex loglock,strlock;
-    static int start=QDateTime::currentDateTime().toTime_t();
-    static QStringList slist;
-    //if (!loglock.tryLock()) {
-        //return;
-    //}
-    loglock.lock();
+//    if (!loglock.tryLock()) {
+//        return;
+//    }
 
     strlock.lock();
-    QString tmp=QString("%1: %2").arg(QDateTime::currentDateTime().toTime_t()-start,5,10,QChar('0')).arg(s);
+    QString tmp=QString("%1: %2").arg(logtime.elapsed(),5,10,QChar('0')).arg(s);
 
-    slist.append(tmp); //QStringList appears not to be threadsafe
+    logbuffer.append(tmp); //QStringList appears not to be threadsafe
     strlock.unlock();
 
     strlock.lock();
-    for (int i=0;i<slist.size();i++)
-        ui->logText->appendPlainText(slist[i]);
-    slist.clear();
+    // only do this in the main thread?
+    for (int i=0;i<logbuffer.size();i++)
+        ui->logText->appendPlainText(logbuffer[i]);
+    logbuffer.clear();
     strlock.unlock();
 
-    loglock.unlock();
+    //loglock.unlock();
 
 }
 
@@ -61,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    logtime.start();
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number));
     ui->tabWidget->setCurrentIndex(0);

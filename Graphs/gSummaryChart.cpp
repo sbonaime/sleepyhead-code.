@@ -347,14 +347,25 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
-    a="";
     if (m_graphtype==GT_BAR) {
+        if (m_type.size()>1) {
+            float val=total_val/float(total_days);
+            a=m_label+"="+QString::number(val,'f',2)+" ";
+            GetTextExtent(a,x,y);
+            px-=20+x;
+            w.renderText(a,px+24,py+5);
+            //
+        }
+    }
+
+    a="";
+    /*if (m_graphtype==GT_BAR) {
         if (m_type.size()>1) {
             float val=total_val/float(total_days);
             a+=m_label+"="+QString::number(val,'f',2)+" ";
             //
         }
-    }
+    }*/
     a+="Days="+QString::number(totalcounts[0],'f',0);
     GetTextExtent(a,x,y);
     px-=30+x;

@@ -236,7 +236,7 @@ gToolTip::gToolTip(gGraphView * graphview)
     m_pos.setX(0);
     m_pos.setY(0);
     m_visible=false;
-    m_spacer=5; // pixels around text area
+    m_spacer=2; // pixels around text area
     timer=new QTimer(graphview);
     connect(timer,SIGNAL(timeout()),SLOT(timerDone()));
 }
@@ -257,7 +257,7 @@ void gToolTip::display(QString text, int x, int y, int timeout)
     GetTextExtent(m_text,tw,th);
     tw+=m_spacer*2;
     th+=m_spacer*2;
-    th*=2;
+    //th*=2;
     if (timer->isActive()) {
         timer->stop();
     }
@@ -298,7 +298,7 @@ void gToolTip::paint()     //actually paints it.
     painter.setFont(*defaultfont);
     rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
     rect.setLeft(rect.x()-m_spacer);
-    rect.setTop(rect.y()-rect.height()/1.33);
+    rect.setTop(rect.y()-rect.height()/2);
     rect.setWidth(rect.width()+m_spacer*2);
     //rect.setHeight(rect.height());
     QBrush brush(QColor(255,255,128,200));

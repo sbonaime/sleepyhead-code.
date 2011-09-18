@@ -104,6 +104,11 @@ private:
     bool first_load;
     Profile *profile;
     QNetworkAccessManager *netmanager;
+
+    QMutex loglock,strlock;
+    QStringList logbuffer;
+    QTime logtime;
+
 };
 
 #endif // MAINWINDOW_H
