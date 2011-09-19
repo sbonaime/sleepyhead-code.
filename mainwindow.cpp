@@ -32,11 +32,11 @@ QStatusBar *qstatusbar;
 
 void MainWindow::Log(QString s)
 {
-//    if (!loglock.tryLock()) {
-//        return;
-//    }
 
-    strlock.lock();
+    if (!strlock.tryLock())
+        return;
+
+//  strlock.lock();
     QString tmp=QString("%1: %2").arg(logtime.elapsed(),5,10,QChar('0')).arg(s);
 
     logbuffer.append(tmp); //QStringList appears not to be threadsafe
