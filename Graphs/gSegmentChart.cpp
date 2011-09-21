@@ -105,6 +105,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
         data=m_values[m];
         QColor & col=m_colors[m % m_colors.size()];
 
+        if (data==0) continue;
 /////////////////////////////////////////////////////////////////////////////////////
 // Pie Chart
 /////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +124,8 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
             poly->add(px,py,col);
 
-            if (m_total>data) { // Draw the center point first
+            if (m_total!=data) {
+                // Draw the center point first
                 lines->add(start_px+xoffset, start_py+height-yoffset,m_outline_color);
             }
             for (q=sum;q<sum+j;q+=step) {
