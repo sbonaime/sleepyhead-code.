@@ -199,13 +199,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     bool lastdaygood=false;
     QVector<int> totalcounts;
     QVector<EventDataType> totalvalues;
-    QVector<EventDataType> lastvalues;
+    //QVector<EventDataType> lastvalues;
     QVector<float> lastX;
     QVector<short> lastY;
     int numcodes=m_codes.size();
     totalcounts.resize(numcodes);
     totalvalues.resize(numcodes);
-    lastvalues.resize(numcodes);
+    //lastvalues.resize(numcodes);
     lastX.resize(numcodes);
     lastY.resize(numcodes);
     int zd=minx/86400000L;
@@ -217,8 +217,14 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     lastdaygood=true;
     for (int i=0;i<numcodes;i++) {
         totalcounts[i]=0;
-        totalvalues[i]=0;
-        lastvalues[i]=0;
+        if (m_type[i]==ST_MIN) {
+            totalvalues[i]=maxy;
+        } else if (m_type[i]==ST_MAX) {
+            totalvalues[i]=miny;
+        } else {
+            totalvalues[i]=0;
+        }
+       // lastvalues[i]=0;
         lastX[i]=px;
         if (d!=m_values.end()) {
             tmp=d.value()[i+1];
@@ -267,8 +273,16 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 }
 
                 tmp=g.value();
-                totalvalues[j]+=tmp;
-                totalcounts[j]++;
+                //if (!tmp) continue;
+                if (m_type[j]==ST_MAX) {
+                    if (tmp>totalvalues[j]) totalvalues[j]=tmp;
+                } else if (m_type[j]==ST_MIN) {
+                    if (tmp<totalvalues[j]) totalvalues[j]=tmp;
+                } else {
+                    totalvalues[j]+=tmp;
+                }
+                if (tmp)
+                    totalcounts[j]++;
                 tmp-=miny;
                 h=tmp*ymult; // height in pixels
 
@@ -320,7 +334,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int x,y;
 
     for (int j=0;j<m_codes.size();j++) {
-        if (totalvalues[j]==0) continue;
+        if (totalcounts[j]==0) continue;
         a=schema::channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
@@ -336,7 +350,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     break;
         }
         QString val;
-        float f=totalvalues[j]/float(totalcounts[j]);
+        float f=0;
+        if ((m_type[j]==ST_MIN) || (m_type[j]==ST_MAX)) {
+            f=totalvalues[j];
+        } else {
+            f=totalvalues[j]/float(totalcounts[j]);
+        }
         if (m_type[j]==ST_HOURS) {
             int h=f;
             int m=int(f*60) % 60;
@@ -349,7 +368,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         px-=20+x;
         w.renderText(a,px+20,py+5);
         quads->add(px+5,py-3,px+18,py-3,px+18,py+4,px+5,py+4,m_colors[j]);
-        //quads->add(m_colors[j]);
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
