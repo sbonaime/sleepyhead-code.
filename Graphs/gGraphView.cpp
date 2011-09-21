@@ -13,6 +13,7 @@ QFont * bigfont=NULL;
 bool evil_intel_graphics_chip=false;
 
 extern QLabel * qstatus2;
+const int mouse_movement_threshold=6;
 
 // Must be called from a thread inside the application.
 void InitGraphs()
@@ -902,7 +903,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         m_selecting_area=false;
         m_selection.setWidth(0);
 
-        if (m_graphview->horizTravel()>4) {
+        if (m_graphview->horizTravel()>mouse_movement_threshold) {
             x-=left+m_marginleft;
             y-=top+m_margintop;
             x2-=left+m_marginleft;
@@ -941,7 +942,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         } else m_graphview->updateGL();
     }
 
-    if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
+    if ((m_graphview->horizTravel()<mouse_movement_threshold) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (!m_blockzoom) {
             double zoom;
             if (event->button() & Qt::RightButton) {
@@ -1018,7 +1019,7 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
     int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
     int h=m_lastbounds.height()-(bottom+m_marginbottom);
     //int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
-    if ((m_graphview->horizTravel()<4) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
+    if ((m_graphview->horizTravel()<mouse_movement_threshold) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
         if (event->button() & Qt::RightButton) {
             ZoomX(1.66,x);  // Zoon out
             return;
