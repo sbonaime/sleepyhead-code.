@@ -54,6 +54,10 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     GraphView=new gGraphView(ui->graphMainArea,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
+    snapGV=new gGraphView(ui->graphMainArea,shared);
+    snapGV->setMinimumSize(172,172);
+    snapGV->hideSplitter();
+    snapGV->hide();
     scrollbar=new MyScrollBar(ui->graphMainArea);
     scrollbar->setOrientation(Qt::Vertical);
     scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
@@ -62,17 +66,6 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     GraphView->setScrollBar(scrollbar);
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
-
-  //  GAHI=new gGraph(GraphView,"Event Breakdown",default_height);
-    /*gSegmentChart * seg=new gSegmentChart(GST_Pie);
-    seg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
-    seg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
-    seg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
-    seg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
-    seg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
-    seg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
-
-    SF->AddLayer(AddCPAP(seg),LayerRight,100); */
 
     SF=new gGraph(GraphView,"Event Flags",default_height);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
@@ -94,6 +87,21 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
+
+    // Event Pie Chart (for snapshot purposes)
+    // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
+    GAHI=new gGraph(snapGV,"Breakdown",172);
+    gSegmentChart * evseg=new gSegmentChart(GST_Pie);
+    evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
+    evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
+    evseg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
+    evseg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
+    evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
+    evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
+
+    GAHI->AddLayer(AddCPAP(evseg));
+    GAHI->setMargins(0,0,0,0);
+    //SF->AddLayer(AddCPAP(evseg),LayerRight,100);
 
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
@@ -389,9 +397,11 @@ void Daily::Load(QDate date)
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
+    snapGV->setDay(cpap);
 
 
     GraphView->ResetBounds();
+    //snapGV->ResetBounds();
     //GraphView->ResetBounds(1);
 
     //GraphView->setEmptyText(tr("No Data")); //tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
@@ -405,6 +415,7 @@ void Daily::Load(QDate date)
         scrollbar->show();
     }
     GraphView->updateGL();
+    snapGV->updateGL();
 
     //RedrawGraphs();
 
@@ -490,18 +501,18 @@ void Daily::Load(QDate date)
         // ^^ Scratch that.. pie now includes text..
 
 //        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
-//            if (ahi+rei+fli>0) {
-//                html+="</tr>\n<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-//                G_AHI->setFixedSize(gwwidth,120);
-//                QPixmap pixmap=G_AHI->renderPixmap(gwwidth,120,false); //gwwidth,gwheight,false);
-//                QByteArray byteArray;
-//                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-//                buffer.open(QIODevice::WriteOnly);
-//                pixmap.save(&buffer, "PNG");
-//                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-//            } else {
-//                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
-//            }
+            if (ahi+rei+fli>0) {
+                html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
+                //G_AHI->setFixedSize(gwwidth,120);
+                QPixmap pixmap=snapGV->renderPixmap(172,172,false); //gwwidth,gwheight,false);
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                buffer.open(QIODevice::WriteOnly);
+                pixmap.save(&buffer, "PNG");
+                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+            } else {
+                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+            }
 //        }
     }
     html+="</table>";
@@ -762,7 +773,7 @@ void Daily::UpdateCPAPGraphs(Day *day)
     for (QList<Layer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
         (*g)->SetDay(day);
     }
-};
+}
 
 void Daily::UpdateOXIGraphs(Day *day)
 {

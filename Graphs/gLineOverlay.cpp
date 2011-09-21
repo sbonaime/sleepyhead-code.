@@ -22,8 +22,8 @@ gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagT
 gLineOverlayBar::~gLineOverlayBar()
 {
     //delete lines;
-    delete quads;
-    delete points;
+    //delete quads;
+    //delete points;
 }
 
 void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int height)

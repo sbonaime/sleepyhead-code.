@@ -69,7 +69,7 @@ GLBuffer::GLBuffer(QColor color,int max,int type)
 GLBuffer::~GLBuffer()
 {
     if (colors) delete [] colors;
-    delete [] buffer;
+    if (buffer) delete [] buffer;
 }
 void GLBuffer::add(GLshort s)
 {
@@ -178,16 +178,21 @@ void GLBuffer::draw()
         if (antialias) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            if (m_type==GL_LINES) {
+            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
                 glEnable(GL_LINE_SMOOTH);
                 glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
                 size+=0.5;
+            } else if (m_type==GL_POLYGON) {
+                glEnable(GL_POLYGON_SMOOTH);
+                glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
             }
         }
-        if (m_type==GL_LINES) {
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
             glLineWidth(size);
         } else if (m_type==GL_POINTS) {
             glPointSize(size);
+        } else if (m_type==GL_POLYGON) {
+            glPolygonMode(GL_BACK,GL_FILL);
         }
         if (m_scissor) {
             glScissor(s1,s2,s3,s4);
@@ -221,9 +226,14 @@ void GLBuffer::draw()
             glDisable(GL_SCISSOR_TEST);
             m_scissor=false;
         }
+        if (m_type==GL_POLYGON) {
+            glPolygonMode(GL_BACK,GL_FILL);
+        }
         if (antialias) {
-            if (m_type==GL_LINES) {
+            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
                 glDisable(GL_LINE_SMOOTH);
+            } else if (m_type==GL_POLYGON) {
+                glDisable(GL_POLYGON_SMOOTH);
             }
             glDisable(GL_BLEND);
         }
@@ -347,6 +357,9 @@ Layer::Layer(ChannelID code)
 
 Layer::~Layer()
 {
+    for (int i=0;i<mgl_buffers.size();i++) {
+        delete mgl_buffers[i];
+    }
 }
 void Layer::drawGLBuf()
 {
@@ -1675,7 +1688,7 @@ void gGraphView::paintGL()
     quads->draw();
     DrawTextQue();
     m_tooltip->paint();
-    if (pref["ShowDebug"].toBool()) {
+    if (m_showsplitter && pref["ShowDebug"].toBool()) {
         QString ss;
         ss="PreDraw took "+QString::number(elapsed)+"ms";
         AddTextQue(ss,width()-140,10,0,col,defaultfont);

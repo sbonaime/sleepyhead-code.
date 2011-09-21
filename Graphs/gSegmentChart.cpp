@@ -9,10 +9,16 @@
 
 
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
-:Layer(""),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
+:Layer("EmptyChannel"),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
    // m_gradient_color=QColor(200,200,200);
     m_empty=true;
+    addGLBuf(poly=new GLBuffer(gradient_color,2000,GL_POLYGON));
+    addGLBuf(lines=new GLBuffer(outline_color,2000,GL_LINE_LOOP));
+    lines->setSize(1);
+    poly->forceAntiAlias(false);
+    lines->forceAntiAlias(true);
+    lines->setAntiAlias(true);
 }
 gSegmentChart::~gSegmentChart()
 {
@@ -56,7 +62,6 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
-    //if (!m_total) return;
     int start_px=left;
     int start_py=top;
 
@@ -67,7 +72,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 
     float j=0.0;
     float sum=0.0;
-    float step=1.0/45.0;
+    float step=1.0/180.0;
     float px,py;
     float q;
 
@@ -88,24 +93,17 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
         return;
     }
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(1.5);
     int data;
     unsigned size=m_values.size();
     float line_step=float(width)/float(size-1);
     bool line_first=true;
     int line_last;
 
-
-    if (m_graph_type==GST_Line) {
-        w.qglColor(m_outline_color);
-        glBegin(GL_LINES);
-    }
-
+    GLBuffer *quads=w.quads();
+    GLBuffer *lines2=w.lines();
     for (unsigned m=0;m<size;m++) {
         data=m_values[m];
+        QColor & col=m_colors[m % m_colors.size()];
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Pie Chart
@@ -114,49 +112,33 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             j=float(data)/float(m_total); // ratio of this pie slice
 
             // Draw Filling
-            glBegin(GL_POLYGON);
-            glPolygonMode(GL_BACK,GL_FILL);
-            w.qglColor(m_gradient_color);
-            glVertex2f(start_px+xoffset, start_py+height-yoffset);
-            w.qglColor(m_colors[m % m_colors.size()]);
+            poly->add(start_px+xoffset, start_py+height-yoffset,m_gradient_color);
             for (q=sum;q<sum+j;q+=step) {
                 px=start_px+xoffset+sin(q*2*M_PI)*radius;
                 py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
-                glVertex2f(px,py);
+                poly->add(px,py,col);
             }
             q=sum+j;
             px=start_px+xoffset+sin(q*2*M_PI)*radius;
             py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
-            glVertex2f(px,py);
-            glEnd();
+            poly->add(px,py,col);
 
-            // Draw Outline
-            //m_outline_color=Qt::red;
-            w.qglColor(m_outline_color);
             if (m_total>data) { // Draw the center point first
-                //glPolygonMode(GL_BACK,GL_LINE);
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(start_px+xoffset, start_py+height-yoffset);
-            } else { // Only one entry, so just draw the circle
-                glBegin(GL_LINE_LOOP);
+                lines->add(start_px+xoffset, start_py+height-yoffset,m_outline_color);
             }
             for (q=sum;q<sum+j;q+=step) {
                 px=start_px+xoffset+sin(q*2*M_PI)*radius;
                 py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
-                glVertex2f(px,py);
+                lines->add(px,py,m_outline_color);
             }
             double tpx=start_px+xoffset+sin((sum+(j/2.0))*2*M_PI)*(radius/1.7);
             double tpy=start_py+height-(yoffset+cos((sum+(j/2.0))*2*M_PI)*(radius/1.7));
             q=sum+j;
             px=start_px+xoffset+sin(q*2*M_PI)*radius;
             py=start_py+height-(yoffset+cos(q*2*M_PI)*radius);
-            glVertex2f(px,py);
-            glEnd();
+            lines->add(px,py,m_outline_color);
 
             if (j>.09) {
-                //glBegin(GL_POINTS);
-                //glVertex2f(tpx,tpy);
-                //glEnd();
                 QString a=m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 int x,y;
                 GetTextExtent(a,x,y);
@@ -171,23 +153,11 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
         } else if (m_graph_type==GST_CandleStick) {
             float bw=xmult*float(data);
 
-            glBegin(GL_QUADS);
-            w.qglColor(m_gradient_color);
-            glVertex2f(xp,start_py);
-            glVertex2f(xp+bw,start_py);
-            w.qglColor(m_colors[m % m_colors.size()]);
-            glVertex2f(xp+bw,start_py+height);
-            glVertex2f(xp,start_py+height);
-            glEnd();
+            quads->add(xp,start_py,xp+bw,start_py,m_gradient_color);
+            quads->add(xp+bw,start_py+height,xp,start_py+height,col);
 
-            w.qglColor(m_outline_color);
-
-            glBegin(GL_LINE_LOOP);
-            glVertex2f(xp,start_py);
-            glVertex2f(xp+bw,start_py);
-            glVertex2f(xp+bw,start_py+height);
-            glVertex2f(xp,start_py+height);
-            glEnd();
+            lines->add(xp,start_py,xp+bw,start_py,m_outline_color);
+            lines->add(xp+bw,start_py+height,xp,start_py+height,m_outline_color);
 
             if (!m_names[m].isEmpty()) {
                 int px,py;
@@ -203,19 +173,12 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             if (line_first) {
                 line_first=false;
             } else {
-                glVertex2f(xp,line_last);
+                lines->add(xp,line_last,xp+line_step,h,col);
                 xp+=line_step;
-                glVertex2f(xp,h);
             }
             line_last=h;
         }
     }
-    if (m_graph_type==GST_Line) {
-        glEnd();
-    }
-    glPolygonMode(GL_BACK,GL_FILL);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
 }
 
 

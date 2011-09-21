@@ -283,6 +283,10 @@ public:
     void ToolTip(QString text, int x, int y, int timeout=2000);
     void redraw();
     void timedRedraw(int ms);
+    void setMargins(short left,short right,short top,short bottom) {
+        m_marginleft=left; m_marginright=right;
+        m_margintop=top; m_marginbottom=bottom;
+    }
 
     GLBuffer * lines();
     GLBuffer * backlines();

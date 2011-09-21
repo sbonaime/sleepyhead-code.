@@ -91,10 +91,9 @@ private:
     //QVBoxLayout *splitter;
     QMenu *show_graph_menu;
 
-    gGraphView *GraphView;
+    gGraphView *GraphView,*snapGV;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
-
 };
 
 #endif // DAILY_H

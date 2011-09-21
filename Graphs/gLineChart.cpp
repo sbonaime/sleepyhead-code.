@@ -22,7 +22,7 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
 }
 gLineChart::~gLineChart()
 {
-    delete lines;
+    //delete lines;
     //delete outlines;
 }
 

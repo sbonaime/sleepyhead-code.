@@ -331,20 +331,20 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             //sess->p90(CPAP_EPAP);
             //sess->p90(CPAP_IPAP);
         } else {
-            sess->avg(CPAP_Pressure);
-            sess->wavg(CPAP_Pressure);
-            sess->p90(CPAP_Pressure);
-            sess->min(CPAP_Pressure);
-            sess->max(CPAP_Pressure);
-            sess->cph(CPAP_Pressure);
+            //sess->avg(CPAP_Pressure);
+            //sess->wavg(CPAP_Pressure);
+            //sess->p90(CPAP_Pressure);
+            //sess->min(CPAP_Pressure);
+            //sess->max(CPAP_Pressure);
+            //sess->cph(CPAP_Pressure);
 
             if (!sess->settings.contains(CPAP_PressureMin)) {
                 sess->settings[CPAP_BrokenSummary]=true;
                 //sess->set_last(sess->first());
                 if (sess->min(CPAP_Pressure)==sess->max(CPAP_Pressure)) {
-                    sess->settings["PRS1Mode"]=MODE_CPAP; // no ramp
+                    sess->settings[CPAP_Mode]=MODE_CPAP; // no ramp
                 } else {
-                    sess->settings["PRS1Mode"]=MODE_UNKNOWN;
+                    sess->settings[CPAP_Mode]=MODE_UNKNOWN;
                 }
                 //sess->Set("FlexMode",PR_UNKNOWN);
             }
@@ -368,6 +368,9 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     //qDebug() << "OpenMachine Done";
     return true;
 }
+//bool PRS1Loader::OpenMachine()
+//{
+//}
 
 bool PRS1Loader::OpenSummary(Session *session,QString filename)
 {

@@ -104,7 +104,7 @@ gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool alway
 gFlagsLine::~gFlagsLine()
 {
     //delete lines;
-    delete quads;
+    //delete quads;
 }
 void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 {
