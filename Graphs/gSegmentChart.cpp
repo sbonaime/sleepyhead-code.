@@ -72,7 +72,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 
     float j=0.0;
     float sum=0.0;
-    float step=1.0/180.0;
+    float step=1.0/360.0;
     float px,py;
     float q;
 

@@ -102,7 +102,7 @@ Oximetry::Oximetry(QWidget *parent,Profile * _profile,gGraphView * shared) :
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 
-    GraphView->setEmptyText("");
+    GraphView->setEmptyText("No Oximetry Data");
     GraphView->updateGL();
 
     on_RefreshPortsButton_clicked();
