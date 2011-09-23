@@ -32,6 +32,7 @@ private slots:
 private:
     Ui::PreferencesDialog *ui;
     Profile * profile;
+    QHash<int,QColor> m_new_colors;
 };
 
 #endif // PREFERENCESDIALOG_H

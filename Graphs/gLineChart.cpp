@@ -124,6 +124,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
     QHash<ChannelID,QVector<EventList *> >::iterator ci;
 
+    m_line_color=schema::channel[m_code].defaultColor();
     for (int svi=0;svi<m_day->size();svi++) {
         if (!(*m_day)[svi]) {
             qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";

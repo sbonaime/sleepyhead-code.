@@ -39,6 +39,8 @@ public:
     const QString & name() { return m_name; }
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
+    QColor & defaultColor() { return m_defaultcolor; }
+    void setDefaultColor(QColor color) { m_defaultcolor=color; }
     QHash<int,QString> m_options;
     QHash<Function,QColor> m_colors;
     QList<Channel *> m_links;              // better versions of this data type

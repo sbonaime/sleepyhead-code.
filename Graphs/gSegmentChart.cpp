@@ -103,7 +103,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
     GLBuffer *lines2=w.lines();
     for (unsigned m=0;m<size;m++) {
         data=m_values[m];
-        QColor & col=m_colors[m % m_colors.size()];
+        QColor & col=schema::channel[m_codes[m % m_colors.size()]].defaultColor();
 
         if (data==0) continue;
 /////////////////////////////////////////////////////////////////////////////////////

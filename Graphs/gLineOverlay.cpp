@@ -50,6 +50,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     bool verts_exceeded=false;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
 
+    m_flag_color=schema::channel[m_code].defaultColor();
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;

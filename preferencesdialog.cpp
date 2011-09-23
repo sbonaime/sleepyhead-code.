@@ -69,12 +69,15 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
+    ui->eventTable->setColumnHidden(3,true);
     int row=0;
     QTableWidgetItem *item;
     QHash<QString, schema::Channel *>::iterator ci;
     for (ci=schema::channel.names.begin();ci!=schema::channel.names.end();ci++) {
         if (ci.value()->type()==schema::DATA) {
             ui->eventTable->insertRow(row);
+            int id=ci.value()->id();
+            ui->eventTable->setItem(row,3,new QTableWidgetItem(QString::number(id)));
             item=new QTableWidgetItem(ci.value()->description());
             ui->eventTable->setItem(row,2,item);
             QCheckBox *c=new QCheckBox(ui->eventTable);
@@ -83,7 +86,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             pb->setText("foo");
             ui->eventTable->setCellWidget(row,0,c);
             ui->eventTable->setCellWidget(row,1,pb);
-            QColor a(rand() % 255, rand() % 255, rand() % 255, 255);
+
+
+            QColor a=ci.value()->defaultColor();//(rand() % 255, rand() % 255, rand() % 255, 255);
             QPalette p(a,a,a,a,a,a,a);
 
             pb->setPalette(p);
@@ -121,6 +126,8 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
 {
     int row=index.row();
     int col=index.column();
+    bool ok;
+    int id=ui->eventTable->item(row,3)->text().toInt(&ok);
     if (col==1) {
         QWidget *w=ui->eventTable->cellWidget(row,col);
         QColorDialog a;
@@ -130,7 +137,8 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
             QColor c=a.currentColor();
             QPalette p(c,c,c,c,c,c,c);
             w->setPalette(p);
-            qDebug() << "Color accepted" << col;
+            m_new_colors[id]=c;
+            //qDebug() << "Color accepted" << col << id;
         }
     }
 }
@@ -163,6 +171,14 @@ void PreferencesDialog::Save()
     pref["IntentionalLeak"]=ui->intentionalLeakEdit->value();
     pref["EnableMultithreading"]=ui->useMultithreading->isChecked();
 
+    for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
+        schema::Channel &chan=schema::channel[i.key()];
+        if (!chan.isNull()) {
+            qDebug() << "TODO: Change" << chan.name() << "color to" << i.value();
+            chan.setDefaultColor(i.value());
+        }
+    }
+    qDebug() << "TODO: Save channels.xml to update channel data";
 
     profile->Save();
     pref.Save();
