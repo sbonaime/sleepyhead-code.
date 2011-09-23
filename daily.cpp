@@ -500,7 +500,7 @@ void Daily::Load(QDate date)
         // as it only relates to text drawing, which the Pie chart does not do
         // ^^ Scratch that.. pie now includes text..
 
-//        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
             if (ahi+rei+fli>0) {
                 html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
                 //G_AHI->setFixedSize(gwwidth,120);
@@ -513,7 +513,7 @@ void Daily::Load(QDate date)
             } else {
                 html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
             }
-//        }
+        }
     }
     html+="</table>";
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
