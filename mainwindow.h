@@ -70,21 +70,13 @@ private slots:
 
     void Startup();
 
-    void on_action_Link_Graphs_triggered(bool checked);
-
-    void on_actionUse_AntiAliasing_triggered(bool checked);
-
     void on_actionDebug_toggled(bool arg1);
-
-    void on_actionOverlay_Bars_toggled(bool arg1);
 
     void on_action_Reset_Graph_Layout_triggered();
 
     void on_action_Preferences_triggered();
 
     void on_oximetryButton_clicked();
-
-    void on_actionEnable_Multithreading_toggled(bool arg1);
 
     void on_actionCheck_for_Updates_triggered();
 

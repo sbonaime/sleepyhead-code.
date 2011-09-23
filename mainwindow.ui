@@ -595,11 +595,6 @@
     <addaction name="actionView_Overview"/>
     <addaction name="actionView_O_ximetry"/>
     <addaction name="separator"/>
-    <addaction name="actionUse_AntiAliasing"/>
-    <addaction name="actionOverlay_Bars"/>
-    <addaction name="actionEnable_Multithreading"/>
-    <addaction name="action_Link_Graphs"/>
-    <addaction name="separator"/>
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Screenshot"/>
     <addaction name="separator"/>

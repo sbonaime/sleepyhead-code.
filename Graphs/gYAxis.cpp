@@ -7,6 +7,7 @@
 #include <math.h>
 #include <QDebug>
 #include "gYAxis.h"
+#include "SleepLib/profiles.h"
 
 gYSpacer::gYSpacer(int spacer)
     :Layer("")
@@ -36,6 +37,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     }
 
     w.roundY(miny,maxy);
+
     EventDataType dy=maxy-miny;
 
     if (height<0) return;
@@ -123,6 +125,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
 
     w.roundY(miny,maxy);
+
     EventDataType dy=maxy-miny;
 
     //if ((w.max_x-w.min_x)==0)

@@ -113,9 +113,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
-    if (!pref.Exists("LinkGraphMovement")) pref["LinkGraphMovement"]=true;
-    ui->action_Link_Graphs->setChecked(pref["LinkGraphMovement"].toBool());
-
     if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=true;
     ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
 
@@ -123,26 +120,23 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
-    bool usethreading=QThread::idealThreadCount()>1;
-
     // This speeds up the second part of importing craploads.. later it will speed up the first part too.
-    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=usethreading;
-    ui->actionEnable_Multithreading->setChecked(pref["EnableMultithreading"].toBool());
-
-
-    if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=true;
-
-    if (!pref.Exists("fruitsalad")) pref["fruitsalad"]=true;
-
+    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=QThread::idealThreadCount()>1;
+    if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=false;
+    if (!pref.Exists("EnableGraphSnapshots")) pref["EnableGraphSnapshots"]=false;
+    if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=0;
     if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
-    ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
+    if (!pref.Exists("IntentionalLeak")) pref["IntentionalLeak"]=(double)0.0;
+    if (!pref.Exists("IgnoreShorterSessions")) pref["IgnoreShorterSessions"]=0;
+    if (!pref.Exists("CombineCloserSessions")) pref["CombineCloserSessions"]=0;
+    if (!pref.Exists("DaySplitTime")) pref["DaySplitTime"]=QTime(12,0,0,0);
+    //DateTime(QDate::currentDate(),QTime(12,0,0,0),Qt::UTC).time();
+
+
+    //ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
 
 
     first_load=true;
-
-    if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=true;
-    ui->actionOverlay_Bars->setChecked(pref["AlwaysShowOverlayBars"].toBool());
-
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
@@ -354,19 +348,6 @@ void MainWindow::on_action_About_triggered()
     msgbox.exec();
 }
 
-void MainWindow::on_action_Link_Graphs_triggered(bool checked)
-{
-    pref["LinkGraphMovement"]=checked;
-}
-
-void MainWindow::on_actionUse_AntiAliasing_triggered(bool checked)
-{
-    pref["UseAntiAliasing"]=checked;
-    if (daily)
-        daily->RedrawGraphs();
-
-}
-
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
     pref["ShowDebug"]=checked;
@@ -375,13 +356,6 @@ void MainWindow::on_actionDebug_toggled(bool checked)
     } else {
         ui->logText->hide();
     }
-}
-
-void MainWindow::on_actionOverlay_Bars_toggled(bool checked)
-{
-    pref["AlwaysShowOverlayBars"]=checked;
-    if (daily)
-        daily->RedrawGraphs();
 }
 
 void MainWindow::on_action_Reset_Graph_Layout_triggered()
@@ -396,6 +370,14 @@ void MainWindow::on_action_Preferences_triggered()
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
         pd.Save();
+        if (daily) {
+            daily->ReloadGraphs();
+            daily->RedrawGraphs();
+        }
+        if (overview) {
+            overview->ReloadGraphs();
+            overview->RedrawGraphs();
+        }
     }
 }
 
@@ -405,14 +387,6 @@ void MainWindow::on_oximetryButton_clicked()
         ui->tabWidget->setCurrentWidget(oximetry);
         qstatus2->setText("Oximetry");
         oximetry->RedrawGraphs();
-    }
-}
-
-void MainWindow::on_actionEnable_Multithreading_toggled(bool checked)
-{
-    pref["EnableMultithreading"]=checked;
-    if (checked) {
-        //qDebug() << "Multithreading feature is disabled due to it currently being useless.";
     }
 }
 

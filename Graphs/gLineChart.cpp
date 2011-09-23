@@ -26,6 +26,29 @@ gLineChart::~gLineChart()
     //delete outlines;
 }
 
+void gLineChart::SetDay(Day *d)
+{
+    Layer::SetDay(d);
+
+    if (m_code==CPAP_Leak) {
+        subtract_offset=pref["IntentionalLeak"].toDouble();
+    } else subtract_offset=0;
+
+
+}
+EventDataType gLineChart::Miny()
+{
+    int m=Layer::Miny();
+    if (subtract_offset>0) {
+        m-=subtract_offset;
+        if (m<0) m=0;
+    }
+    return m;
+}
+EventDataType gLineChart::Maxy()
+{
+    return Layer::Maxy()-subtract_offset;
+}
 
 // Time Domain Line Chart
 void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
@@ -52,6 +75,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         maxx=w.max_x, minx=w.min_x;
     }
 
+    // hmmm.. subtract_offset..
 
     if (miny<0) {
         miny=-MAX(fabs(miny),fabs(maxy));
@@ -363,6 +387,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         time=start+tim[i];
                     }
                     data=dat[i]*gain; //
+                    data-=subtract_offset;
                     //data=el.data(i); // raw access is faster
 
                     px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X

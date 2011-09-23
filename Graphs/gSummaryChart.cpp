@@ -50,7 +50,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_fday=0;
     qint64 tt;
     m_empty=true;
-
+    int suboffset;
     SummaryType type;
     for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
@@ -65,6 +65,7 @@ void SummaryChart::SetDay(Day * nullday)
         bool fnd=false;
         for (int j=0;j<m_codes.size();j++) {
             code=m_codes[j];
+            if (code==CPAP_Leak) suboffset=pref["IntentionalLeak"].toDouble(); else suboffset=0;
             type=m_type[j];
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
@@ -87,6 +88,10 @@ void SummaryChart::SetDay(Day * nullday)
                         case ST_SETWAVG: tmp=day->settings_wavg(code); break;
                         case ST_SETSUM: tmp=day->settings_sum(code); break;
                     default:    break;
+                    }
+                    if (suboffset>0) {
+                        tmp-=suboffset;
+                        if (tmp<0) tmp=0;
                     }
                     //if (tmp>0) {
                         fnd=true;

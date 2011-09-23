@@ -530,14 +530,17 @@ void Daily::Load(QDate date)
             OXI_Pulse,OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
+        int suboffset;
         for (int i=0;i<numchans;i++) {
+
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
+                if (code==CPAP_Leak) suboffset=pref["IntentionalLeak"].toDouble(); else suboffset=0;
                 html+="<tr><td align=left>"+schema::channel[code].label();
-                html+="</td><td>"+a.sprintf("%.2f",cpap->min(code));
-                html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code));
-                html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code));
-                html+="</td><td>"+a.sprintf("%.2f",cpap->max(code));
+                html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
+                html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
+                html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
+                html+="</td><td>"+a.sprintf("%.2f",cpap->max(code)-suboffset);
                 html+="</td><tr>";
             }
             if (oxi && oxi->channelHasData(code)) {
@@ -790,9 +793,6 @@ void Daily::UpdateOXIGraphs(Day *day)
 void Daily::RedrawGraphs()
 {
     GraphView->updateGL();
-    /*for (int i=0;i<Graphs.size();i++) {
-       Graphs[i]->updateGL();
-    } */
 }
 
 void Daily::on_treeWidget_itemSelectionChanged()

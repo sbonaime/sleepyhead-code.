@@ -22,6 +22,7 @@ License: GPL
 
 extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;
+QHash<ChannelID, QVector<QString> > resmed_codes;
 
 EDFParser::EDFParser(QString name)
 {
@@ -778,7 +779,44 @@ void ResInitModelMap()
     RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
     RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
     RMS9ModelMap[33129]="ResMed S8 AutoSet II";
-};
+
+    resmed_codes[CPAP_FlowRate].push_back("Flow");
+    resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
+    resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pressure"); // vpap
+    resmed_codes[CPAP_RespEvent].push_back("Resp Event");
+
+    resmed_codes[CPAP_MaskPressure].push_back("Mask Pres");
+    resmed_codes[CPAP_MaskPressure].push_back("Mask Pressure"); // vpap
+
+    resmed_codes[CPAP_Pressure].push_back("Therapy Pres"); // not on vpap
+    resmed_codes[CPAP_IPAP].push_back("Insp Pressure"); // on vpap
+
+    resmed_codes[CPAP_EPAP].push_back("Exp Press");
+    resmed_codes[CPAP_EPAP].push_back("Exp Pressure"); // vpap
+    resmed_codes[CPAP_Leak].push_back("Leak");
+    resmed_codes[CPAP_RespRate].push_back("RR");
+    resmed_codes[CPAP_TidalVolume].push_back("Vt");
+    resmed_codes[CPAP_MinuteVent].push_back("MV");
+    resmed_codes[CPAP_IE].push_back("I:E"); // vpap
+    resmed_codes[CPAP_Snore].push_back("Snore Index");
+    resmed_codes[CPAP_FLG].push_back("FFL Index");
+
+    resmed_codes[CPAP_RespEvent].push_back("RE");
+    resmed_codes[CPAP_Ti].push_back("Ti");
+    resmed_codes[CPAP_Te].push_back("Te");
+
+    // Sad (oximetry)
+    resmed_codes[OXI_Pulse].push_back("Pulse");
+    resmed_codes[OXI_SPO2].push_back("SpO2");
+
+    // Event annotations
+    resmed_codes[CPAP_Obstructive].push_back("Obstructive apnea");
+    resmed_codes[CPAP_Hypopnea].push_back("Hypopnea");
+    resmed_codes[CPAP_Apnea].push_back("Apnea");
+    resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
+
+    // STR.edf
+}
 
 
 bool resmed_initialized=false;

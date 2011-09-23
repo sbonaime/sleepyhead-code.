@@ -13,9 +13,9 @@ gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor 
 {
    // m_gradient_color=QColor(200,200,200);
     m_empty=true;
-    addGLBuf(poly=new GLBuffer(gradient_color,2000,GL_POLYGON));
-    addGLBuf(lines=new GLBuffer(outline_color,2000,GL_LINE_LOOP));
-    lines->setSize(1);
+    addGLBuf(poly=new GLBuffer(gradient_color,4000,GL_POLYGON));
+    addGLBuf(lines=new GLBuffer(outline_color,4000,GL_LINE_LOOP));
+    lines->setSize(1.5);
     poly->forceAntiAlias(false);
     lines->forceAntiAlias(true);
     lines->setAntiAlias(true);
@@ -72,7 +72,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 
     float j=0.0;
     float sum=0.0;
-    float step=1.0/360.0;
+    float step=1.0/720.0;
     float px,py;
     float q;
 

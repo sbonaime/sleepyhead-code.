@@ -27,6 +27,10 @@ class gLineChart:public Layer
         bool GetReportEmpty() { return m_report_empty; }
         void setDisableAccel(bool b) { m_disable_accel=b; }
         bool disableAccel() { return m_disable_accel; }
+        virtual void SetDay(Day *d);
+        virtual EventDataType Miny();
+        virtual EventDataType Maxy();
+
 protected:
         bool m_report_empty;
         bool m_square_plot;
@@ -36,7 +40,7 @@ protected:
         GLBuffer * outlines;
         static const int max_drawlist_size=4096;
         QPoint m_drawlist[max_drawlist_size];
-
+        int subtract_offset;
 };
 
 #endif // GLINECHART_H

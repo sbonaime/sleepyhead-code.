@@ -42,43 +42,30 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     ui->timeZoneCombo->setCurrentIndex(i);
 
-    if (pref.Exists("DaySplitTime")) {
-        QTime t=pref["DaySplitTime"].toTime();
-        ui->timeEdit->setTime(t);
-    }
+    QTime t=pref["DaySplitTime"].toTime();
+    ui->timeEdit->setTime(t);
     int val;
 
-    if (pref.Exists("CombineCloserSessions")) {
-        val=pref["CombineCloserSessions"].toInt();
-        ui->combineSlider->setValue(val);
-    } else {
-        ui->combineSlider->setValue(val=0);
-        pref["CombineCloserSessions"]=val;
-    }
+    val=pref["CombineCloserSessions"].toInt();
+    ui->combineSlider->setValue(val);
     if (val>0) {
         ui->combineLCD->display(val);
     } else ui->combineLCD->display(tr("OFF"));
 
 
-    if (pref.Exists("IgnoreShorterSessions")) {
-        val=pref["IgnoreShorterSessions"].toInt();
-        ui->IgnoreSlider->setValue(val);
-    } else {
-        ui->IgnoreSlider->setValue(val=0);
-        pref["IgnoreShorterSessions"]=val;
-    }
+    val=pref["IgnoreShorterSessions"].toInt();
+    ui->IgnoreSlider->setValue(val);
+
     if (val>0) {
         ui->IgnoreLCD->display(val);
     } else ui->IgnoreLCD->display(tr("OFF"));
 
-
-    bool b;
-    if (pref.Exists("MemoryHog")) {
-        b=pref["MemoryHog"].toBool();
-    } else {
-        pref["MemoryHog"]=b=false;
-    }
-    ui->memoryHogCheckbox->setChecked(b);
+    ui->overlayFlagsCombo->setCurrentIndex(pref["AlwaysShowOverlayBars"].toInt());
+    ui->useAntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
+    ui->memoryHogCheckbox->setChecked(pref["MemoryHog"].toBool());
+    ui->useGraphSnapshots->setChecked(pref["EnableGraphSnapshots"].toBool());
+    ui->intentionalLeakEdit->setValue(pref["IntentionalLeak"].toDouble());
+    ui->useMultithreading->setChecked(pref["EnableMultithreading"].toBool());
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
@@ -169,19 +156,26 @@ void PreferencesDialog::Save()
     pref["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
     pref["DaySplitTime"]=ui->timeEdit->time();
 
+    pref["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
+    pref["UseAntiAliasing"]=ui->useAntiAliasing->isChecked();
+    pref["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+    pref["EnableGraphSnapshots"]=ui->useGraphSnapshots->isChecked();
+    pref["IntentionalLeak"]=ui->intentionalLeakEdit->value();
+    pref["EnableMultithreading"]=ui->useMultithreading->isChecked();
+
+
     profile->Save();
     pref.Save();
 }
 
-
-void PreferencesDialog::on_combineSlider_sliderMoved(int position)
+void PreferencesDialog::on_combineSlider_valueChanged(int position)
 {
     if (position>0) {
         ui->combineLCD->display(position);
     } else ui->combineLCD->display(tr("OFF"));
 }
 
-void PreferencesDialog::on_IgnoreSlider_sliderMoved(int position)
+void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
 {
     if (position>0) {
         ui->IgnoreLCD->display(position);

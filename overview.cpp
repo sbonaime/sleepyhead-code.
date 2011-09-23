@@ -168,6 +168,12 @@ void Overview::ReloadGraphs()
     GraphView->setDay(NULL);
 
 }
+
+void Overview::RedrawGraphs()
+{
+    GraphView->updateGL();
+}
+
 void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
 {
     QCalendarWidget *calendar=dateedit->calendarWidget();

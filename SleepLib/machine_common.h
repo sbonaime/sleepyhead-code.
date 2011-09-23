@@ -54,6 +54,8 @@ enum MCDataType
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
 const QString CPAP_IPAP="IPAP";
+const QString CPAP_IPAPLo="IPAPLo";
+const QString CPAP_IPAPHi="IPAPHi";
 const QString CPAP_EPAP="EPAP";
 const QString CPAP_Pressure="Pressure";
 const QString CPAP_PS="PS";

@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="profileTab">
       <attribute name="title">
@@ -352,7 +352,7 @@
 It will be faster changing to days you've already been to if you leave it on. </string>
            </property>
            <property name="text">
-            <string>Retain event data in memory</string>
+            <string>Cache event data in memory</string>
            </property>
           </widget>
          </item>
@@ -511,6 +511,134 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>&amp;CPAP/Visual</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_17">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Intentional Leak</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="intentionalLeakEdit">
+           <property name="toolTip">
+            <string>Intentional Leak value for your Mask type in Litres/Minute.
+(ResMed machines only report unintentional leaks and don't need this)
+</string>
+           </property>
+           <property name="suffix">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="useGraphSnapshots">
+         <property name="toolTip">
+          <string>The Pie Chart in the Daily Views left panel. 
+This takes extra space, and has been known to cause problems on certain computer configurations, hence it's turned off by default.</string>
+         </property>
+         <property name="text">
+          <string>Graph Snapshots</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_18">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Overlay Flags</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="overlayFlagsCombo">
+           <property name="toolTip">
+            <string>The visual method of displaying waveform overlay flags.</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>Standard Bars</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Top &amp; Bottom Markers</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="useAntiAliasing">
+         <property name="toolTip">
+          <string>Reduces the jagged edges on lines a little.</string>
+         </property>
+         <property name="text">
+          <string>Use Anti-Aliasing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>264</width>
+           <height>108</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="1">
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>185</width>
+           <height>108</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="useMultithreading">
+         <property name="toolTip">
+          <string>You may need to disable this if your experiencing crashes.
+It has no effect on single cpu machines.</string>
+         </property>
+         <property name="text">
+          <string>Use Multi-Threading</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

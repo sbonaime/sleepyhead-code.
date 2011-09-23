@@ -865,18 +865,18 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             break;
         case 0x0d: // All the other ASV graph stuff.
             if (!Code[12]) {
-                if (!(Code[12]=session->AddEventList("IPAP",EVL_Event))) return false;
-                if (!(Code[13]=session->AddEventList("IPAPLo",EVL_Event))) return false;
-                if (!(Code[14]=session->AddEventList("IPAPHi",EVL_Event))) return false;
-                if (!(Code[15]=session->AddEventList("Leak",EVL_Event))) return false;
-                if (!(Code[16]=session->AddEventList("RespRate",EVL_Event))) return false;
-                if (!(Code[17]=session->AddEventList("PTB",EVL_Event))) return false;
+                if (!(Code[12]=session->AddEventList(CPAP_IPAP,EVL_Event))) return false;
+                if (!(Code[13]=session->AddEventList(CPAP_IPAPLo,EVL_Event))) return false;
+                if (!(Code[14]=session->AddEventList(CPAP_IPAPHi,EVL_Event))) return false;
+                if (!(Code[15]=session->AddEventList(CPAP_Leak,EVL_Event))) return false;
+                if (!(Code[16]=session->AddEventList(CPAP_RespRate,EVL_Event))) return false;
+                if (!(Code[17]=session->AddEventList(CPAP_PTB,EVL_Event))) return false;
 
-                if (!(Code[18]=session->AddEventList("MinuteVent",EVL_Event))) return false;
-                if (!(Code[19]=session->AddEventList("TidalVolume",EVL_Event))) return false;
-                if (!(Code[20]=session->AddEventList("Snore",EVL_Event))) return false;
-                if (!(Code[22]=session->AddEventList("EPAP",EVL_Event))) return false;
-                if (!(Code[23]=session->AddEventList("PS",EVL_Event))) return false;
+                if (!(Code[18]=session->AddEventList(CPAP_MinuteVent,EVL_Event))) return false;
+                if (!(Code[19]=session->AddEventList(CPAP_TidalVolume,EVL_Event))) return false;
+                if (!(Code[20]=session->AddEventList(CPAP_Snore,EVL_Event))) return false;
+                if (!(Code[22]=session->AddEventList(CPAP_EPAP,EVL_Event))) return false;
+                if (!(Code[23]=session->AddEventList(CPAP_PS,EVL_Event))) return false;
             }
             Code[12]->AddEvent(t,data[0]=buffer[pos++]); // IAP
             Code[13]->AddEvent(t,buffer[pos++]); // IAP Low

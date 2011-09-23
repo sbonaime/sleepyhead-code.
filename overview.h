@@ -30,8 +30,9 @@ public:
     ~Overview();
 
     void ReloadGraphs();
-    //void UpdateGraphs();
     void ResetGraphLayout();
+    void RedrawGraphs();
+
 
     gGraph *AHI,*UC,*PR,*LK,*NPB,*SET;
     SummaryChart *bc,*uc,*pr,*lk,*npb,*set;
