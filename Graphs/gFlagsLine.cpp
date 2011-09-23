@@ -155,8 +155,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
             } else if (m_flt==FT_Span) {
                 x2=(Y-minx)*xmult+left;
                 //w1=x2-x1;
-                quads->add(x1,bartop,x1,bottom);
-                quads->add(x2,bottom,x2,bartop);
+                quads->add(x1,bartop,x1,bottom,x2,bottom,x2,bartop,m_flag_color);
                 if (quads->full()) { verts_exceeded=true; break; }
             }
         }

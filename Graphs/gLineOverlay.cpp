@@ -78,8 +78,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 if (x2<left) x2=left;
                 if (x1>width+left) x1=width+left;
                 //double w1=x2-x1;
-                quads->add(x1,start_py,x2,start_py);
-                quads->add(x2,start_py+height,x1,start_py+height);
+                quads->add(x1,start_py,x2,start_py,x2,start_py+height,x1,start_py+height,m_flag_color);
                 if (quads->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
                 if ((pref["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
