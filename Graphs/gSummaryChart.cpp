@@ -281,15 +281,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 //if (!tmp) continue;
                 if (m_type[j]==ST_MAX) {
                     if (tmp>totalvalues[j]) totalvalues[j]=tmp;
-                    totalcounts[j]=1;
                 } else if (m_type[j]==ST_MIN) {
                     if (tmp<totalvalues[j]) totalvalues[j]=tmp;
-                    totalcounts[j]=1;
                 } else {
                     totalvalues[j]+=tmp;
-                    totalcounts[j]++;
                 }
-                //if (tmp)
+                if (tmp)
+                    totalcounts[j]++;
                 tmp-=miny;
                 h=tmp*ymult; // height in pixels
 
@@ -397,7 +395,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             //
         }
     }*/
-    a+="Days="+QString::number(total_days,'f',0);
+    a+="Days="+QString::number(totalcounts[0],'f',0);
     GetTextExtent(a,x,y);
     px-=30+x;
     //w.renderText(a,px+24,py+5);

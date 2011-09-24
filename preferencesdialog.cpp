@@ -87,6 +87,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             ui->eventTable->setCellWidget(row,0,c);
             ui->eventTable->setCellWidget(row,1,pb);
 
+
             QColor a=ci.value()->defaultColor();//(rand() % 255, rand() % 255, rand() % 255, 255);
             QPalette p(a,a,a,a,a,a,a);
 
@@ -96,7 +97,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             row++;
         }
     }
-    ui->eventTable->sortByColumn(2,Qt::AscendingOrder);
     QLocale locale=QLocale::system();
     QString shortformat=locale.dateFormat(QLocale::ShortFormat);
     if (!shortformat.toLower().contains("yyyy")) {

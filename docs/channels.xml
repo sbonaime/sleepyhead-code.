@@ -13,7 +13,7 @@ One id code per item
   <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="O" color="#40c0ff"/>
   <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" color="blue"/>
   <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="A" color="dark green"/>
-  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" color="#202020"/>
+  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" color="dark grey"/>
   <channel id="0x1006" class="data" name="RERA" details="Respiratory Effort Related Arousal" label="RERA" color="gold"/>
   <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="" color="red"/>
   <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore 2" label="VS2" unit="" color="orange"/>
@@ -53,7 +53,7 @@ One id code per item
   <channel id="0x1156" class="data" name="PRS1_0C" details="Unknown 0C" label="U0C" unit="" color="black"/>
   <channel id="0x1157" class="data" name="PRS1_0E" details="Unknown 0E" label="U0E" unit="" color="dark green"/>
   <channel id="0x1158" class="data" name="PRS1_10" details="Unknown 10" label="U10" unit="" color="black"/>
-  <channel id="0x1159" class="data" name="PRS1_12" details="Unknown 12" label="U12" unit="" color="black"/>
+  <channel id="0x1159" class="data" name="PRS1_12" details="PRS1 Unknown 12" label="U12" unit="" color="black"/>
   <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
   <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="U02" unit="" color="black"/>
 
@@ -76,7 +76,6 @@ One id code per item
   <channel id="0x2001" class="data" name="ZEOBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
  </group>
  <group name="GENERAL">
-  <!-- Channel List -->
   <channel id="0x0800" class="data" name="BPSys" details="Blood Pressure Systolic" label="BPS" unit="mmHg" color="red"/>
   <channel id="0x0801" class="data" name="BPDia" details="Blood Pressure Diastolic" label="BPD" unit="mmHg" color="blue"/>
   <channel id="0x0802" class="data" name="Glucose" details="Blood Glucose" label="BGL" unit="mmol/L" color="black"/>
