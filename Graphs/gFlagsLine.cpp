@@ -12,15 +12,11 @@
 
 gFlagsGroup::gFlagsGroup()
 {
-    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
-    static QColor col2=QColor(0xff,0xff,0xff,0xff);
     static QColor col=Qt::black;
 
-    addGLBuf(quad1=new GLBuffer(col1,512,GL_QUADS));
-    addGLBuf(quad2=new GLBuffer(col2,512,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(col,20,GL_LINE_LOOP));
-    quad1->setAntiAlias(true);
-    quad2->setAntiAlias(true);
+    addGLBuf(quads=new GLShortBuffer(512,GL_QUADS));
+    addGLBuf(lines=new GLShortBuffer(20,GL_LINE_LOOP));
+    quads->setAntiAlias(true);
     lines->setAntiAlias(false);
 }
 gFlagsGroup::~gFlagsGroup()
@@ -64,23 +60,20 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     float barh=float(height)/float(vis);
     float linetop=top;
 
+    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
+    static QColor col2=QColor(0xff,0xff,0xff,0xff);
+    QColor * barcol;
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
-        //QColor * barcol=&col2;
-        if (i & 1) {
-            quad1->add(left,linetop,left,linetop+barh);
-            quad1->add(left+width-1,linetop+barh,left+width-1,linetop);
-        } else {
-            quad2->add(left,linetop,left,linetop+barh);
-            quad2->add(left+width-1,linetop+barh,left+width-1,linetop);
-        }
+        if (i & 1) barcol=&col1; else barcol=&col2;
+        quads->add(left,linetop,left,linetop+barh,left+width-1,linetop+barh,left+width-1,linetop,*barcol);
 
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,barh);
         linetop+=barh;
     }
 
-    GLBuffer *outlines=w.lines();
+    GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
     outlines->add(left-1, top, left-1, top+height, blk);
     outlines->add(left-1, top+height, left+width,top+height, blk);
@@ -94,7 +87,7 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
-    addGLBuf(quads=new GLBuffer(flag_color,2048,GL_QUADS));
+    addGLBuf(quads=new GLShortBuffer(2048,GL_QUADS));
     //addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
     quads->setAntiAlias(true);
     //lines->setAntiAlias(true);

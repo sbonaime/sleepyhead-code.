@@ -15,8 +15,8 @@ SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
 :Layer(""),m_profile(p),m_label(label),m_graphtype(type)
 {
     QColor color=Qt::black;
-    addGLBuf(quads=new GLBuffer(color,20000,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(color,20000,GL_LINES));
+    addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
+    addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
     lines->setSize(2);
     lines->forceAntiAlias(false);
@@ -152,7 +152,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_visible) return;
 
     rtop=top;
-    GLBuffer *outlines=w.lines();
+    GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
     outlines->add(left, top, left, top+height, blk);
     outlines->add(left, top+height, left+width,top+height, blk);
@@ -294,10 +294,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 if (m_graphtype==GT_BAR) {
                     QColor col2=brighten(col);
 
-                    quads->add(x1,py,col);
-                    quads->add(x1,py-h,col);
-                    quads->add(x2,py-h,col2);
-                    quads->add(x2,py,col2);
+                    quads->add(x1,py,x1,py-h,col);
+                    quads->add(x2,py-h,x2,py,col2);
                     if (barw>2) {
                         outlines->add(x1,py,x1,py-h,blk);
                         outlines->add(x1,py-h,x2,py-h,blk);

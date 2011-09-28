@@ -36,8 +36,8 @@ protected:
         bool m_square_plot;
         bool m_disable_accel;
         QColor m_line_color;
-        GLBuffer * lines;
-        GLBuffer * outlines;
+        GLShortBuffer * lines;
+        GLShortBuffer * outlines;
         static const int max_drawlist_size=4096;
         QPoint m_drawlist[max_drawlist_size];
         int subtract_offset;

@@ -24,7 +24,7 @@ class gLineOverlayBar:public Layer
         QString m_label;
         FlagType m_flt;
 
-        GLBuffer *points,*quads, *lines;
+        GLShortBuffer *points,*quads, *lines;
 };
 
 #endif // GLINEOVERLAY_H

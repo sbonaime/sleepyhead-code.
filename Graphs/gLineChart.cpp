@@ -16,7 +16,7 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
 {
     m_line_color=col;
     m_report_empty=false;
-    addGLBuf(lines=new GLBuffer(col,100000,GL_LINES));
+    addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
 
     lines->setAntiAlias(true);
 }
@@ -107,7 +107,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int minz,maxz;
 
     // Draw bounding box
-    GLBuffer *outlines=w.lines();
+    GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
     outlines->add(left, top, left, top+height, blk);
     outlines->add(left, top+height, left+width,top+height, blk);

@@ -12,13 +12,14 @@
 class gShadowArea:public Layer
 {
     public:
-        gShadowArea(QColor shadow_color=QColor(40,40,40,40));
+        gShadowArea(QColor shadow_color=QColor(40,40,40,40),QColor line_color=QColor("blue"));
         virtual ~gShadowArea();
         virtual void paint(gGraph & w,int left, int top, int width, int height);
     protected:
         QColor m_shadow_color;
-        GLBuffer *quads;
-        GLBuffer *lines;
+        QColor m_line_color;
+        GLShortBuffer *quads;
+        GLShortBuffer *lines;
 };
 
 class gFooBar:public Layer

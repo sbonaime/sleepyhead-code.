@@ -33,7 +33,7 @@ protected:
     bool m_show_minor_lines;
     QColor m_major_color;
     QColor m_minor_color;
-    GLBuffer * lines;
+    GLShortBuffer * lines;
 };
 
 class gYAxis:public Layer
@@ -65,7 +65,7 @@ class gYAxis:public Layer
 
         QColor m_line_color;
         QColor m_text_color;
-        GLBuffer * lines;
+        GLShortBuffer * lines;
         virtual bool mouseMoveEvent(QMouseEvent * event);
 
 };

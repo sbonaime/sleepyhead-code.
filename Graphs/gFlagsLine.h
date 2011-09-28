@@ -31,7 +31,7 @@ class gFlagsLine:public Layer
         int total_lines,line_num;
         FlagType m_flt;
         QColor m_flag_color;
-        GLBuffer *quads, *lines;
+        GLShortBuffer *quads, *lines;
         int m_lx, m_ly;
 };
 
@@ -46,7 +46,7 @@ public:
     virtual qint64 Maxx();
     virtual void SetDay(Day *);
 protected:
-    GLBuffer *quad1, *quad2, *lines;
+    GLShortBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;
 };
 

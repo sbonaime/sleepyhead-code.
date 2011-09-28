@@ -11,11 +11,10 @@
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
 :Layer("EmptyChannel"),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)
 {
-   // m_gradient_color=QColor(200,200,200);
     m_empty=true;
-    addGLBuf(poly=new GLBuffer(gradient_color,4000,GL_POLYGON));
-    addGLBuf(lines=new GLBuffer(outline_color,4000,GL_LINE_LOOP));
-    lines->setSize(1.5);
+    addGLBuf(poly=new GLFloatBuffer(4000,GL_POLYGON));
+    addGLBuf(lines=new GLFloatBuffer(4000,GL_LINE_LOOP));
+    lines->setSize(1);
     poly->forceAntiAlias(false);
     lines->forceAntiAlias(true);
     lines->setAntiAlias(true);
@@ -99,8 +98,8 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
     bool line_first=true;
     int line_last;
 
-    GLBuffer *quads=w.quads();
-    GLBuffer *lines2=w.lines();
+    GLShortBuffer *quads=w.quads();
+    GLShortBuffer *lines2=w.lines();
     for (unsigned m=0;m<size;m++) {
         data=m_values[m];
         QColor & col=schema::channel[m_codes[m % m_colors.size()]].defaultColor();
@@ -158,8 +157,8 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             quads->add(xp,start_py,xp+bw,start_py,m_gradient_color);
             quads->add(xp+bw,start_py+height,xp,start_py+height,col);
 
-            lines->add(xp,start_py,xp+bw,start_py,m_outline_color);
-            lines->add(xp+bw,start_py+height,xp,start_py+height,m_outline_color);
+            lines2->add(xp,start_py,xp+bw,start_py,m_outline_color);
+            lines2->add(xp+bw,start_py+height,xp,start_py+height,m_outline_color);
 
             if (!m_names[m].isEmpty()) {
                 int px,py;

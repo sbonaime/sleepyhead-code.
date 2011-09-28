@@ -6,12 +6,11 @@
 #include <cmath>
 #include "gFooBar.h"
 
-gShadowArea::gShadowArea(QColor shadow_color)
-:Layer(""),m_shadow_color(shadow_color)
+gShadowArea::gShadowArea(QColor shadow_color,QColor line_color)
+:Layer(""),m_shadow_color(shadow_color),m_line_color(line_color)
 {
-    QColor col=Qt::blue;
-    addGLBuf(quads=new GLBuffer(shadow_color,20,GL_QUADS));
-    addGLBuf(lines=new GLBuffer(col,20,GL_LINES));
+    addGLBuf(quads=new GLShortBuffer(20,GL_QUADS));
+    addGLBuf(lines=new GLShortBuffer(20,GL_LINES));
     quads->forceAntiAlias(true);
     lines->setAntiAlias(true);
     lines->setSize(2);
@@ -36,13 +35,11 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
-    quads->add(start_px,top,start_px,top+height);
-    quads->add(start_px+px, top+height, start_px+px, top);
-    quads->add(start_px+py, top, start_px+py, top+height);
-    quads->add(end_px, top+height, end_px, top);
+    quads->add(start_px,top,start_px,top+height,start_px+px, top+height, start_px+px, top,m_shadow_color);
+    quads->add(start_px+py, top, start_px+py, top+height,end_px, top+height, end_px, top,m_shadow_color);
 
-    lines->add(start_px+px, top, start_px+py, top);
-    lines->add(start_px+px, top+height+1, start_px+py, top+height+1);
+    lines->add(start_px+px, top, start_px+py, top,m_line_color);
+    lines->add(start_px+px, top+height+1, start_px+py, top+height+1,m_line_color);
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)

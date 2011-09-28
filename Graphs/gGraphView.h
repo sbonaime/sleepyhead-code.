@@ -31,22 +31,14 @@ class gGraphView;
 class gGraph;
 
 const int textque_max=512;
+
 class GLBuffer
 {
 public:
-    GLBuffer(QColor color,int max=2048,int type=GL_LINES);
-    ~GLBuffer();
-    void add(GLshort s);
-    void add(GLshort x, GLshort y);
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
-
-    void add(GLshort x, GLshort y,QColor & col);    // add with vertex color
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & col); // add with vertex colors
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & col); // add with vertex colors
-
+    GLBuffer(int max=2048,int type=GL_LINES);
+    virtual ~GLBuffer();
     void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
-    void draw();
-    inline GLshort & operator [](int i) { return buffer[i]; }
+    virtual void draw(){}
     void reset() { m_cnt=0; }
     int max() { return m_max; }
     int cnt() { return m_cnt; }
@@ -54,11 +46,7 @@ public:
     void setSize(float f) { m_size=f; }
     void setAntiAlias(bool b) { m_antialias=b; }
     void forceAntiAlias(bool b) { m_forceantialias=b; }
-    void setColor(QColor color) { m_color=color; }
 protected:
-    QColor m_color;
-    GLshort * buffer;
-    GLubyte * colors;
     int m_max;
     int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_cnt;      // cnt
@@ -69,6 +57,45 @@ protected:
     bool m_antialias;
     bool m_forceantialias;
     QMutex mutex;
+};
+
+class GLShortBuffer:public GLBuffer
+{
+public:
+    GLShortBuffer(int max=2048,int type=GL_LINES);
+    virtual ~GLShortBuffer();
+    //void add(GLshort s);
+    //void add(GLshort x, GLshort y);
+    //void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+
+    void add(GLshort x, GLshort y,QColor & col);    // add with vertex color
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & col); // add with vertex colors
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & col); // add with vertex colors
+
+    virtual void draw();
+
+    //inline GLshort & operator [](int i) { return buffer[i]; }
+protected:
+    GLshort * buffer;
+    GLubyte * colors;
+};
+
+class GLFloatBuffer:public GLBuffer
+{
+public:
+    GLFloatBuffer(int max=2048,int type=GL_LINES);
+    virtual ~GLFloatBuffer();
+
+    void add(GLfloat x, GLfloat y,QColor & col);    // add with vertex color
+    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,QColor & col); // add with vertex colors
+    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col); // add with vertex colors
+    void quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col,QColor & col2); // add with vertex colors
+    void quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col,QColor & col2); // add with vertex colors
+
+    virtual void draw();
+protected:
+    GLfloat * buffer;
+    GLubyte * colors;
 };
 
 struct TextQue
@@ -288,9 +315,9 @@ public:
         m_margintop=top; m_marginbottom=bottom;
     }
 
-    GLBuffer * lines();
-    GLBuffer * backlines();
-    GLBuffer * quads();
+    GLShortBuffer * lines();
+    GLShortBuffer * backlines();
+    GLShortBuffer * quads();
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
     short left,right,top,bottom; // dirty magin hacks..
 
@@ -375,7 +402,7 @@ public:
     void setDay(Day * day);
     QSemaphore * masterlock;
     bool useThreads() { return m_idealthreads>1; }
-    GLBuffer * lines, * backlines, *quads;
+    GLShortBuffer * lines, * backlines, *quads;
 
     void TrashGraphs();
     gGraph * popGraph();

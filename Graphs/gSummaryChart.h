@@ -35,7 +35,7 @@ class SummaryChart:public Layer
         QHash<int,Day *> m_days;
 
         Profile * m_profile;
-        GLBuffer *quads,*lines;
+        GLShortBuffer *quads,*lines;
         bool m_empty;
         int m_fday;
         QString m_label;

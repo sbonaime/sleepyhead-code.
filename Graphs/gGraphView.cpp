@@ -52,55 +52,34 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
     mut.unlock();
 }
 
-GLBuffer::GLBuffer(QColor color,int max,int type)
-    :m_color(color), m_max(max), m_type(type)
+GLBuffer::GLBuffer(int max,int type)
+    :m_max(max), m_type(type)
 {
     m_scissor=false;
     m_antialias=true;
     m_forceantialias=false;
-    buffer=new GLshort [max+8];
-    //if (m_type==GL_LINES) {
-    colors=new GLubyte[max*4+(8*4)];
-    //} else colors=NULL;
     m_cnt=0;
     m_colcnt=0;
     m_size=1;
 }
 GLBuffer::~GLBuffer()
 {
+}
+///////
+
+GLShortBuffer::GLShortBuffer(int max,int type)
+    :GLBuffer(max,type)
+{
+    buffer=new GLshort [max+8];
+    colors=new GLubyte[max*4+(8*4)];
+}
+GLShortBuffer::~GLShortBuffer()
+{
     if (colors) delete [] colors;
     if (buffer) delete [] buffer;
 }
-void GLBuffer::add(GLshort s)
-{
-    if (m_cnt<m_max) {
-        buffer[m_cnt++]=s;
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLBuffer::add(GLshort x, GLshort y)
-{
-    if (m_cnt<m_max+2) {
-        buffer[m_cnt++]=x;
-        buffer[m_cnt++]=y;
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
-{
-    if (m_cnt<m_max+4) {
-        buffer[m_cnt++]=x1;
-        buffer[m_cnt++]=y1;
-        buffer[m_cnt++]=x2;
-        buffer[m_cnt++]=y2;
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
 
-void GLBuffer::add(GLshort x, GLshort y,QColor & color)
+void GLShortBuffer::add(GLshort x, GLshort y,QColor & color)
 {
     if (m_cnt<m_max+2) {
         mutex.lock();
@@ -115,7 +94,7 @@ void GLBuffer::add(GLshort x, GLshort y,QColor & color)
         qDebug() << "GLBuffer overflow";
     }
 }
-void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color)
+void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color)
 {
     if (m_cnt<m_max+4) {
         mutex.lock();
@@ -136,7 +115,7 @@ void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color
         qDebug() << "GLBuffer overflow";
     }
 }
-void GLBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & color) // add with vertex colors
+void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & color) // add with vertex colors
 {
 if (m_cnt<m_max+8) {
     mutex.lock();
@@ -170,7 +149,7 @@ if (m_cnt<m_max+8) {
     qDebug() << "GLBuffer overflow";
 }
 }
-void GLBuffer::draw()
+void GLShortBuffer::draw()
 {
     if (m_cnt>0) {
         bool antialias=m_forceantialias || (pref["UseAntiAliasing"].toBool() && m_antialias);
@@ -201,21 +180,12 @@ void GLBuffer::draw()
 
         glVertexPointer(2, GL_SHORT, 0, buffer);
 
-        if (m_colcnt<=0) {
-            glColor4ub(m_color.red(),m_color.green(),m_color.blue(),m_color.alpha());
-        } else {
-            glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-        }
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
 
         glEnableClientState(GL_VERTEX_ARRAY);
-        if (m_colcnt>0) {
-            glEnableClientState(GL_COLOR_ARRAY);
-        }
+        glEnableClientState(GL_COLOR_ARRAY);
         glDrawArrays(m_type, 0, m_cnt >> 1);
-
-        if (m_colcnt>0) {
-            glDisableClientState(GL_COLOR_ARRAY);
-        }
+        glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
 
 
@@ -239,6 +209,225 @@ void GLBuffer::draw()
         }
     }
 }
+
+/////////////////////////////////////////////////////////////////////
+// GLFloatBuffer
+
+GLFloatBuffer::GLFloatBuffer(int max,int type)
+    :GLBuffer(max,type)
+{
+    buffer=new GLfloat [max+8];
+    colors=new GLubyte[max*4+(8*4)];
+}
+GLFloatBuffer::~GLFloatBuffer()
+{
+    if (colors) delete [] colors;
+    if (buffer) delete [] buffer;
+}
+
+void GLFloatBuffer::add(GLfloat x, GLfloat y,QColor & color)
+{
+    if (m_cnt<m_max+2) {
+        mutex.lock();
+        buffer[m_cnt++]=x;
+        buffer[m_cnt++]=y;
+        colors[m_colcnt++]=color.red();
+        colors[m_colcnt++]=color.green();
+        colors[m_colcnt++]=color.blue();
+        colors[m_colcnt++]=color.alpha();
+        mutex.unlock();
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,QColor & color)
+{
+    if (m_cnt<m_max+4) {
+        qDebug() << "GLFloatBuffer overflow";
+        return;
+    }
+    mutex.lock();
+    buffer[m_cnt++]=x1;
+    buffer[m_cnt++]=y1;
+    buffer[m_cnt++]=x2;
+    buffer[m_cnt++]=y2;
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+
+    mutex.unlock();
+}
+void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color) // add with vertex colors
+{
+    if (m_cnt>=m_max+8) {
+        qDebug() << "GLFloatBuffer overflow";
+        return;
+    }
+    mutex.lock();
+    buffer[m_cnt++]=x1;
+    buffer[m_cnt++]=y1;
+    buffer[m_cnt++]=x2;
+    buffer[m_cnt++]=y2;
+    buffer[m_cnt++]=x3;
+    buffer[m_cnt++]=y3;
+    buffer[m_cnt++]=x4;
+    buffer[m_cnt++]=y4;
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    mutex.unlock();
+}
+void GLFloatBuffer::quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color, QColor & color2) // add with vertex colors
+{
+    if (m_cnt>=m_max+8) {
+        qDebug() << "GLFloatBuffer overflow";
+        return;
+    }
+    mutex.lock();
+    buffer[m_cnt++]=x1;
+    buffer[m_cnt++]=y1;
+    buffer[m_cnt++]=x2;
+    buffer[m_cnt++]=y2;
+    buffer[m_cnt++]=x3;
+    buffer[m_cnt++]=y3;
+    buffer[m_cnt++]=x4;
+    buffer[m_cnt++]=y4;
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+
+    colors[m_colcnt++]=color2.red();
+    colors[m_colcnt++]=color2.green();
+    colors[m_colcnt++]=color2.blue();
+    colors[m_colcnt++]=color2.alpha();
+    colors[m_colcnt++]=color2.red();
+    colors[m_colcnt++]=color2.green();
+    colors[m_colcnt++]=color2.blue();
+    colors[m_colcnt++]=color2.alpha();
+    mutex.unlock();
+}
+void GLFloatBuffer::quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color, QColor & color2)
+{
+    if (m_cnt>=m_max+8) {
+        qDebug() << "GLFloatBuffer overflow";
+        return;
+    }
+    mutex.lock();
+    buffer[m_cnt++]=x1;
+    buffer[m_cnt++]=y1;
+    buffer[m_cnt++]=x3;
+    buffer[m_cnt++]=y3;
+    buffer[m_cnt++]=x2;
+    buffer[m_cnt++]=y2;
+    buffer[m_cnt++]=x4;
+    buffer[m_cnt++]=y4;
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+    colors[m_colcnt++]=color.red();
+    colors[m_colcnt++]=color.green();
+    colors[m_colcnt++]=color.blue();
+    colors[m_colcnt++]=color.alpha();
+
+    colors[m_colcnt++]=color2.red();
+    colors[m_colcnt++]=color2.green();
+    colors[m_colcnt++]=color2.blue();
+    colors[m_colcnt++]=color2.alpha();
+    colors[m_colcnt++]=color2.red();
+    colors[m_colcnt++]=color2.green();
+    colors[m_colcnt++]=color2.blue();
+    colors[m_colcnt++]=color2.alpha();
+    mutex.unlock();
+}
+
+void GLFloatBuffer::draw()
+{
+    if (m_cnt<=0) return;
+
+    bool antialias=m_forceantialias || (pref["UseAntiAliasing"].toBool() && m_antialias);
+    float size=m_size;
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            glEnable(GL_LINE_SMOOTH);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+            size+=0.5;
+        } else if (m_type==GL_POLYGON) {
+            glEnable(GL_POLYGON_SMOOTH);
+            glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+        }
+    }
+    if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+        glLineWidth(size);
+    } else if (m_type==GL_POINTS) {
+        glPointSize(size);
+    } else if (m_type==GL_POLYGON) {
+        glPolygonMode(GL_BACK,GL_FILL);
+    }
+    if (m_scissor) {
+        glScissor(s1,s2,s3,s4);
+        glEnable(GL_SCISSOR_TEST);
+    }
+
+    glVertexPointer(2, GL_FLOAT, 0, buffer);
+
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+
+    //glColor4ub(200,128,95,200);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    glDrawArrays(m_type, 0, m_cnt >> 1);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    //qDebug() << "I Drawed" << m_cnt << "vertices";
+    m_cnt=0;
+    m_colcnt=0;
+    if (m_scissor) {
+        glDisable(GL_SCISSOR_TEST);
+        m_scissor=false;
+    }
+    if (m_type==GL_POLYGON) {
+        glPolygonMode(GL_BACK,GL_FILL);
+    }
+    if (antialias) {
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            glDisable(GL_LINE_SMOOTH);
+        } else if (m_type==GL_POLYGON) {
+            glDisable(GL_POLYGON_SMOOTH);
+        }
+        glDisable(GL_BLEND);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// gToolTip implementation
 
 gToolTip::gToolTip(gGraphView * graphview)
     :m_graphview(graphview)
@@ -562,7 +751,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
-    m_quad=new GLBuffer(QColor(128,128,255,128),64,GL_QUADS);
+    m_quad=new GLShortBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
     m_forceMinY=m_forceMaxY=false;
@@ -1198,15 +1387,15 @@ void gGraph::SetMaxY(EventDataType v)
 {
     rmax_y=max_y=v;
 }
-GLBuffer * gGraph::lines()
+GLShortBuffer * gGraph::lines()
 {
     return m_graphview->lines;
 }
-GLBuffer * gGraph::backlines()
+GLShortBuffer * gGraph::backlines()
 {
     return m_graphview->backlines;
 }
-GLBuffer * gGraph::quads()
+GLShortBuffer * gGraph::quads()
 {
     return m_graphview->quads;
 }
@@ -1308,9 +1497,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
         //gt->start();
     }*/
 
-    lines=new GLBuffer(QColor(0,0,0,0),100000,GL_LINES); // big fat shared line list
-    backlines=new GLBuffer(QColor(0,0,0,0),10000,GL_LINES); // big fat shared line list
-    quads=new GLBuffer(QColor(0,0,0,0),1024,GL_QUADS); // big fat shared line list
+    lines=new GLShortBuffer(100000,GL_LINES); // big fat shared line list
+    backlines=new GLShortBuffer(10000,GL_LINES); // big fat shared line list
+    quads=new GLShortBuffer(1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter=true;

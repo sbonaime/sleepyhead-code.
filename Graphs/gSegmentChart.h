@@ -32,7 +32,7 @@ protected:
     QColor m_gradient_color;
     QColor m_outline_color;
     bool m_empty;
-    GLBuffer *poly,*lines;
+    GLFloatBuffer *poly,*lines;
 };
 
 class gTAPGraph:public gSegmentChart
