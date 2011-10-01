@@ -100,7 +100,7 @@ void NewProfile::on_nextButton_clicked()
             prof["CPAPPrescribedMaxPressure"]=ui->minPressureEdit->value();
             prof["CPAPNotes"]=ui->cpapNotes->toPlainText();
             prof["DoctorName"]=ui->doctorNameEdit->text();
-            prof["DcotorPractice"]=ui->doctorPracticeEdit->text();
+            prof["DoctorPractice"]=ui->doctorPracticeEdit->text();
             prof["DoctorAddress"]=ui->doctorAddressEdit->toPlainText();
             prof["DoctorPhone"]=ui->doctorPhoneEdit->text();
             prof["DoctorEmail"]=ui->doctorEmailEdit->text();
