@@ -78,7 +78,7 @@ extern QHash<QString,Profile *> profiles;
 void Scan(); // Initialize and load Profile
 void Done(); // Save all Profile objects and clear list
 
-Profile *Create(QString name,QString realname,QString password);
+Profile *Create(QString name);
 Profile *Get(QString name);
 Profile *Get();
 

@@ -17,7 +17,7 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
     m_line_color=col;
     m_report_empty=false;
     addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
-
+    lines->setColor(col);
     lines->setAntiAlias(true);
 }
 gLineChart::~gLineChart()
@@ -328,7 +328,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                        // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
                         ax1=m_drawlist[i].x();
                         ay1=m_drawlist[i].y();
-                        lines->add(xst+i,yst-ax1,xst+i,yst-ay1,m_line_color);
+                        lines->add(xst+i,yst-ax1,xst+i,yst-ay1);
 
                         if (lines->full()) break;
                     }
@@ -357,7 +357,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             firstpx=false;
                             continue;
                         }
-                        lines->add(lastpx,lastpy,px,py,m_line_color);
+                        lines->add(lastpx,lastpy,px,py);
 
                         if (lines->full()) {
                             done=true;
@@ -401,10 +401,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         firstpx=false;
                     } else {
                         if (square_plot) {
-                            lines->add(lastpx,lastpy,px,lastpy,m_line_color);
-                            lines->add(px,lastpy,px,py,m_line_color);
+                            lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
                         } else {
-                            lines->add(lastpx,lastpy,px,py,m_line_color);
+                            lines->add(lastpx,lastpy,px,py);
                         }
 
                         //lines->add(px,py,m_line_color);

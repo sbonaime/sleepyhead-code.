@@ -54,7 +54,9 @@ SOURCES += main.cpp\
     Graphs/gStatsLine.cpp \
     report.cpp \
     Graphs/gSummaryChart.cpp \
-    SleepLib/schema.cpp
+    SleepLib/schema.cpp \
+    profileselect.cpp \
+    newprofile.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -105,7 +107,9 @@ HEADERS  += \
     Graphs/gStatsLine.h \
     report.h \
     Graphs/gSummaryChart.h \
-    SleepLib/schema.h
+    SleepLib/schema.h \
+    profileselect.h \
+    newprofile.h
 
 
 FORMS    += \
@@ -114,7 +118,9 @@ FORMS    += \
     mainwindow.ui \
     oximetry.ui \
     preferencesdialog.ui \
-    report.ui
+    report.ui \
+    profileselect.ui \
+    newprofile.ui
 
 RESOURCES += \
     Resources.qrc

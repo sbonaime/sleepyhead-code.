@@ -319,7 +319,7 @@ Profile *Get(QString name)
 
     return NULL;
 }
-Profile *Create(QString name,QString realname,QString password)
+Profile *Create(QString name)
 {
     QString path=pref.Get("{home}/Profiles/")+name;
     QDir dir(path);
@@ -330,7 +330,7 @@ Profile *Create(QString name,QString realname,QString password)
     profiles[name]=prof;
     prof->Set("Username",name);
     //prof->Set("Realname",realname);
-    if (!password.isEmpty()) prof->Set("Password",SHA1(password));
+    //if (!password.isEmpty()) prof->Set("Password",SHA1(password));
     prof->Set("DataFolder","{home}/Profiles/{Username}");
 
     Machine *m=new Machine(prof,0);
@@ -369,9 +369,9 @@ void Scan()
     QDir dir(path);
 
     if (!dir.exists(path)) {
-        dir.mkpath(path);
+        //dir.mkpath(path);
         // Just silently create a new user record and get on with it.
-        Create(getUserName(),getUserName(),"");
+        //Create(getUserName(),getUserName(),"");
         return;
     }
     if (!dir.isReadable()) {
@@ -384,11 +384,11 @@ void Scan()
 
     QFileInfoList list=dir.entryInfoList();
 
-    QString username=getUserName();
-    if (list.size()==0) { // No profiles.. Create one.
-        Create(username,username,"");
-        return;
-    }
+    //QString username=getUserName();
+    //if (list.size()==0) { // No profiles.. Create one.
+        //Create(username,username,"");
+        //return;
+    //}
 
     // Iterate through subdirectories and load profiles..
     for (int i=0;i<list.size();i++) {

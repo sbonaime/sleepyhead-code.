@@ -67,6 +67,48 @@ GLBuffer::~GLBuffer()
 }
 ///////
 
+void GLShortBuffer::add(GLshort x, GLshort y)
+{
+    if (m_cnt<m_max+2) {
+        mutex.lock();
+        buffer[m_cnt++]=x;
+        buffer[m_cnt++]=y;
+        mutex.unlock();
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
+{
+    if (m_cnt<m_max+4) {
+        mutex.lock();
+        buffer[m_cnt++]=x1;
+        buffer[m_cnt++]=y1;
+        buffer[m_cnt++]=x2;
+        buffer[m_cnt++]=y2;
+        mutex.unlock();
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4)
+{
+    if (m_cnt<m_max+8) {
+        mutex.lock();
+        buffer[m_cnt++]=x1;
+        buffer[m_cnt++]=y1;
+        buffer[m_cnt++]=x2;
+        buffer[m_cnt++]=y2;
+        buffer[m_cnt++]=x3;
+        buffer[m_cnt++]=y3;
+        buffer[m_cnt++]=x4;
+        buffer[m_cnt++]=y4;
+        mutex.unlock();
+    } else {
+        qDebug() << "GLBuffer overflow";
+    }
+}
+
 GLShortBuffer::GLShortBuffer(int max,int type)
     :GLBuffer(max,type)
 {
@@ -180,14 +222,19 @@ void GLShortBuffer::draw()
 
         glVertexPointer(2, GL_SHORT, 0, buffer);
 
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-
+        if (m_colcnt>0) {
+            glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+            glEnableClientState(GL_COLOR_ARRAY);
+        } else {
+            glColor4ub(m_color.red(),m_color.green(),m_color.blue(),m_color.alpha());
+        }
         glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
         glDrawArrays(m_type, 0, m_cnt >> 1);
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
-
+        if (m_colcnt>0) {
+            glDisableClientState(GL_COLOR_ARRAY);
+        }
 
         //qDebug() << "I Drawed" << m_cnt << "vertices";
         m_cnt=0;

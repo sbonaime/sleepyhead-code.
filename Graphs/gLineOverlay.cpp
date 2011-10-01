@@ -13,10 +13,12 @@ gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagT
 {
     addGLBuf(points=new GLShortBuffer(1024,GL_POINTS));
     points->setSize(4);
+    points->setColor(m_flag_color);
     addGLBuf(quads=new GLShortBuffer(2048,GL_QUADS));
     //addGLBuf(lines=new GLBuffer(color,1024,GL_LINES));
     points->setAntiAlias(true);
     quads->setAntiAlias(true);
+    quads->setColor(m_flag_color);
     //lines->setAntiAlias(true);
 }
 gLineOverlayBar::~gLineOverlayBar()
@@ -78,12 +80,12 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 if (x2<left) x2=left;
                 if (x1>width+left) x1=width+left;
                 //double w1=x2-x1;
-                quads->add(x1,start_py,x2,start_py,x2,start_py+height,x1,start_py+height,m_flag_color);
+                quads->add(x1,start_py,x2,start_py,x2,start_py+height,x1,start_py+height);
                 if (quads->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
                 if ((pref["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
                     // show the fat dots in the middle
-                    points->add(x1,double(height)/double(yy)*double(-20-w.min_y)+topp,m_flag_color);
+                    points->add(x1,double(height)/double(yy)*double(-20-w.min_y)+topp);
                     if (points->full()) { verts_exceeded=true; break; }
                 } else {
                     // thin lines down the bottom
@@ -96,7 +98,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 if ((pref["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
                     z=top;
 
-                    points->add(x1,top,m_flag_color);
+                    points->add(x1,top);
                     lines->add(x1,top,x1,bottom,m_flag_color);
                     if (points->full()) { verts_exceeded=true; break; }
                } else {

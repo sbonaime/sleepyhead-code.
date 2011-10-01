@@ -15,10 +15,6 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "SleepLib/loader_plugins/prs1_loader.h"
-#include "SleepLib/loader_plugins/cms50_loader.h"
-#include "SleepLib/loader_plugins/zeo_loader.h"
-#include "SleepLib/loader_plugins/resmed_loader.h"
 #include "preferencesdialog.h"
 #include "SleepLib/schema.h"
 
@@ -60,13 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     logtime.start();
     ui->setupUi(this);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number));
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(pref["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
 
-    PRS1Loader::Register();
-    CMS50Loader::Register();
-    ZEOLoader::Register();
-    ResmedLoader::Register();
 
 /*    QGLFormat fmt;
     fmt.setDepth(false);
@@ -99,19 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qstatus,0);
     ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
-    Profiles::Scan();
-
-    pref["AppName"]="SleepyHead";
-    QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
-    if (pref.Exists("VersionString")) {
-        QString V=pref["VersionString"].toString();
-        if (V!=Version) {
-            QMessageBox::warning(this,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the SleepApp folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
-        }
-    }
-    pref["VersionString"]=Version;
-
-    if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 
     if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=true;
     ui->actionDebug->setChecked(pref["ShowDebug"].toBool());

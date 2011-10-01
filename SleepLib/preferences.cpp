@@ -157,7 +157,7 @@ bool Preferences::Open(QString filename)
 
     QDomDocument doc(p_name);
     QFile file(p_filename);
-    qDebug() << "Opening " << p_filename;
+    qDebug() << "Scanning " << p_filename;
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open" << p_filename;
         return false;

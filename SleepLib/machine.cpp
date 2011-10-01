@@ -40,7 +40,7 @@ Machine::Machine(Profile *p,MachineID id)
         m_id=temp;
 
     } else m_id=id;
-    qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
+    //qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
     m_type=MT_UNKNOWN;
     firstsession=true;
 }

@@ -46,11 +46,13 @@ public:
     void setSize(float f) { m_size=f; }
     void setAntiAlias(bool b) { m_antialias=b; }
     void forceAntiAlias(bool b) { m_forceantialias=b; }
+    void setColor(QColor col) { m_color=col; }
 protected:
     int m_max;
     int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_cnt;      // cnt
     int m_colcnt;
+    QColor m_color;
     float m_size;
     int s1,s2,s3,s4;
     bool m_scissor;
@@ -64,10 +66,14 @@ class GLShortBuffer:public GLBuffer
 public:
     GLShortBuffer(int max=2048,int type=GL_LINES);
     virtual ~GLShortBuffer();
-    //void add(GLshort s);
-    //void add(GLshort x, GLshort y);
-    //void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
 
+    // use one or the other.. can't use both
+    // color free version is faster
+    void add(GLshort x, GLshort y);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
+
+    // color per vertex version
     void add(GLshort x, GLshort y,QColor & col);    // add with vertex color
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & col); // add with vertex colors
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & col); // add with vertex colors
