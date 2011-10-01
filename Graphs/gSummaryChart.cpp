@@ -393,7 +393,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             //
         }
     }*/
-    a+="Days="+QString::number(totalcounts[0],'f',0);
+    a+="Days="+QString::number(total_days,'f',0);
     GetTextExtent(a,x,y);
     px-=30+x;
     //w.renderText(a,px+24,py+5);
@@ -479,11 +479,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
             }
 
-            graph->ToolTip(z,x,y,2200);
+            graph->ToolTip(z,x,y-10,2200);
             return true;
         } else {
             QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\nNo Data";
-            graph->ToolTip(z,x,y,2200);
+            graph->ToolTip(z,x,y-10,2200);
         }
     }
     return false;
