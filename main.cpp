@@ -114,5 +114,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     mainwin=&w;
     w.show();
+
     return a.exec();
 }

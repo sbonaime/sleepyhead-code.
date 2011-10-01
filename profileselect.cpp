@@ -24,6 +24,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
 
     int i=0;
+    int sel=-1;
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         //str.append(p.key());
         Profile &profile=**p;
@@ -31,6 +32,9 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
        // if (!profile["FirstName"].toString().isEmpty())
        //     name+=" ("+profile["FirstName"].toString()+" "+profile["LastName"].toString()+")";
         QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
+        if (pref.Exists("Profile") && (name==pref["Profile"].toString())) {
+            sel=i;
+        }
         item->setData(p.key());
         item->setEditable(false);
         item->setFont(QFont("Sans Serif",18,QFont::Bold,false));
@@ -40,6 +44,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     ui->listView->setModel(model);
     ui->listView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
+    if (sel>=0) ui->listView->setCurrentIndex(model->item(sel)->index());
     m_tries=0;
 }
 
