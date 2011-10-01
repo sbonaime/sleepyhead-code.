@@ -581,6 +581,7 @@
     </property>
     <addaction name="action_Import_Data"/>
     <addaction name="action_Preferences"/>
+    <addaction name="action_Edit_Profile"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_Report"/>
     <addaction name="separator"/>
@@ -771,6 +772,11 @@
   <action name="actionPrint_Report">
    <property name="text">
     <string>Print &amp;Report</string>
+   </property>
+  </action>
+  <action name="action_Edit_Profile">
+   <property name="text">
+    <string>&amp;Edit Profile</string>
    </property>
   </action>
  </widget>

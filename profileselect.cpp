@@ -66,7 +66,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     QString name=index.data().toString();
     Profile *profile=Profiles::profiles[name];
     if (!profile) return;
-    if ((*profile)["Password"].toString().isEmpty()) {
+    if (!profile->Exists("Password")) {
         m_selectedProfile=name;
         pref["Profile"]=name;
     } else {

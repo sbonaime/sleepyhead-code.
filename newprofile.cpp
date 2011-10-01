@@ -87,7 +87,7 @@ void NewProfile::on_nextButton_clicked()
                 QByteArray ba=ui->passwordEdit1->text().toUtf8();
                 prof["Password"]=QString(QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex());
             }
-            prof["Password"]="";
+            //prof["Password"]="";
             if (ui->genderCombo->currentIndex()==1) {
                 prof["Gender"]="Male";
             } else if (ui->genderCombo->currentIndex()==2) {

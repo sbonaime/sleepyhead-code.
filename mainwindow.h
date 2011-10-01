@@ -88,6 +88,8 @@ private slots:
     void updatestatusBarMessage (const QString & text);
     void on_actionPrint_Report_triggered();
 
+    void on_action_Edit_Profile_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

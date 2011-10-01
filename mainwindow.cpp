@@ -435,3 +435,8 @@ void MainWindow::on_actionPrint_Report_triggered()
         QMessageBox::information(this,"Not supported Yet","Sorry, printing from this page is not supported yet",QMessageBox::Ok);
     }
 }
+
+void MainWindow::on_action_Edit_Profile_triggered()
+{
+
+}
