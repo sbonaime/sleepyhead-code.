@@ -389,7 +389,7 @@ void MainWindow::replyFinished(QNetworkReply * reply)
                     QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
                 }
             } else {
-                QMessageBox::information(this,"SleepyHead v"+a,"Your already up to date!",QMessageBox::Ok);
+                QMessageBox::information(this,"SleepyHead v"+pref["VersionString"].toString(),"You're already up to date!\nLatest version on sourceforge is v"+a,QMessageBox::Ok);
             }
        }
     } else {
