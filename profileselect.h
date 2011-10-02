@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QMenu>
 
 namespace Ui {
     class ProfileSelect;
@@ -25,10 +26,17 @@ private slots:
     void on_listView_activated(const QModelIndex &index);
     void earlyExit();
 
+    void openProfile();
+    void editProfile();
+    void deleteProfile();
+
+    void on_listView_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::ProfileSelect *ui;
     QString m_selectedProfile;
     int m_tries;
+    QMenu *popupMenu;
 };
 
 #endif // PROFILESELECT_H

@@ -64,6 +64,11 @@ public:
     bool Exists(QString name) {
         return (p_preferences.find(name)!=p_preferences.end());
     };
+    void Erase(QString name) {
+        QHash<QString,QVariant>::iterator i=p_preferences.find(name);
+        if (i!=p_preferences.end())
+            p_preferences.erase(i);
+    }
 
     virtual void ExtraLoad(QDomElement & root) { root=root; }
     virtual QDomElement ExtraSave(QDomDocument & doc) { doc=doc; QDomElement e; return e; }

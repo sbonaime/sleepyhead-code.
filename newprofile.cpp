@@ -24,6 +24,7 @@ NewProfile::NewProfile(QWidget *parent) :
 
     ui->stackedWidget->setCurrentIndex(0);
     on_cpapModeCombo_activated(0);
+    m_passwordHashed=false;
 }
 
 NewProfile::~NewProfile()
@@ -84,8 +85,12 @@ void NewProfile::on_nextButton_clicked()
             prof["Phone"]=ui->phoneEdit->text();
             prof["Address"]=ui->addressEdit->toPlainText();
             if (ui->passwordGroupBox->isChecked()) {
-                QByteArray ba=ui->passwordEdit1->text().toUtf8();
-                prof["Password"]=QString(QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex());
+                if (!m_passwordHashed) {
+                    QByteArray ba=ui->passwordEdit1->text().toUtf8();
+                    prof["Password"]=QString(QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex());
+                }
+            } else {
+                prof.Erase("Password");
             }
             //prof["Password"]="";
             if (ui->genderCombo->currentIndex()==1) {
@@ -159,4 +164,57 @@ void NewProfile::skipWelcomeScreen()
     ui->stackedWidget->setCurrentIndex(m_firstPage=1);
     ui->backButton->setEnabled(false);
     ui->nextButton->setEnabled(true);
+}
+void NewProfile::edit(const QString name)
+{
+    skipWelcomeScreen();
+    Profile *profile=Profiles::Get(name);
+    if (!profile) {
+        Profiles::Create(name);
+    }
+    ui->userNameEdit->setText(name);
+    ui->userNameEdit->setReadOnly(true);
+    ui->firstNameEdit->setText((*profile)["FirstName"].toString());
+    ui->lastNameEdit->setText((*profile)["LastName"].toString());
+    if (profile->Exists("Password")) {
+        // leave the password box blank..
+        ui->passwordEdit1->setText("");
+        ui->passwordEdit2->setText("");
+        ui->passwordGroupBox->setChecked(true);
+        m_passwordHashed=true;
+    }
+    ui->dobEdit->setDate((*profile)["DOB"].toDate());
+    if (profile->Get("Gender").toLower()=="male") {
+        ui->genderCombo->setCurrentIndex(1);
+    } else if (profile->Get("Gender").toLower()=="female") {
+        ui->genderCombo->setCurrentIndex(2);
+    } else ui->genderCombo->setCurrentIndex(0);
+    ui->heightEdit->setValue((*profile)["Height"].toDouble());
+    ui->addressEdit->setText(profile->Get("Address"));
+    ui->emailEdit->setText(profile->Get("EmailAddress"));
+    ui->phoneEdit->setText(profile->Get("Phone"));
+    ui->dateDiagnosedEdit->setDate((*profile)["DateDiagnosed"].toDate());
+    ui->cpapNotes->clear();
+    ui->cpapNotes->appendPlainText(profile->Get("CPAPNotes"));
+    ui->minPressureEdit->setValue((*profile)["CPAPPrescribedMinPressure"].toDouble());
+    ui->maxPressureEdit->setValue((*profile)["CPAPPrescribedMaxPressure"].toDouble());
+    ui->untreatedAHIEdit->setValue((*profile)["UntreatedAHI"].toDouble());
+    ui->cpapModeCombo->setCurrentIndex((*profile)["CPAPPrescribedMode"].toInt());
+
+    ui->doctorNameEdit->setText(profile->Get("DoctorName"));
+    ui->doctorPracticeEdit->setText(profile->Get("DoctorPractice"));
+    ui->doctorPhoneEdit->setText(profile->Get("DoctorPhone"));
+    ui->doctorEmailEdit->setText(profile->Get("DoctorEmail"));
+    ui->doctorAddressEdit->setText(profile->Get("DoctorAddress"));
+    ui->doctorPatientIDEdit->setText(profile->Get("DoctorPatientID"));
+}
+
+void NewProfile::on_passwordEdit1_editingFinished()
+{
+    m_passwordHashed=false;
+}
+
+void NewProfile::on_passwordEdit2_editingFinished()
+{
+    m_passwordHashed=false;
 }

@@ -16,6 +16,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "preferencesdialog.h"
+#include "newprofile.h"
 #include "SleepLib/schema.h"
 
 
@@ -438,5 +439,8 @@ void MainWindow::on_actionPrint_Report_triggered()
 
 void MainWindow::on_action_Edit_Profile_triggered()
 {
+    NewProfile newprof(this);
+    newprof.edit(pref["Profile"].toString());
+    newprof.exec();
 
 }
