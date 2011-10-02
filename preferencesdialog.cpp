@@ -11,36 +11,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 {
     ui->setupUi(this);
     Q_ASSERT(profile!=NULL);
-    ui->firstNameEdit->setText((*profile)["FirstName"].toString());
-    ui->lastNameEdit->setText((*profile)["LastName"].toString());
-    ui->addressEdit->clear();
-    ui->addressEdit->appendPlainText((*profile)["Address"].toString());
-    ui->emailEdit->setText((*profile)["EmailAddress"].toString());
-    ui->phoneEdit->setText((*profile)["Phone"].toString());
-    QString gender;
-
-    if ((*profile).Exists("Gender")) {
-        gender=(*profile)["Gender"].toString().toLower();
-    } else gender="male";
-
-    // I know this looks sexist.. This was originally a boolean.. :)
-    if ((gender=="male") || (gender=="true")) ui->genderMale->setChecked(true);
-    else if ((gender=="female") || (gender=="false")) ui->genderFemale->setChecked(true);
-
-
-    bool ok;
-    ui->heightEdit->setValue((*profile)["Height"].toDouble(&ok));
-    if (!(*profile).Exists("DOB")) {
-        ui->dobEdit->setDate(QDate(1970,1,1));
-    } else {
-        ui->dobEdit->setDate((*profile)["DOB"].toDate());
-    }
+    ui->tabWidget->setCurrentIndex(0);
     int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
     if (i<0) i=0;
     ui->unitCombo->setCurrentIndex(i);
 
-    i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
-    ui->timeZoneCombo->setCurrentIndex(i);
+    //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
+    //ui->timeZoneCombo->setCurrentIndex(i);
 
     QTime t=pref["DaySplitTime"].toTime();
     ui->timeEdit->setTime(t);
@@ -97,23 +74,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             row++;
         }
     }
-    QLocale locale=QLocale::system();
+/*    QLocale locale=QLocale::system();
     QString shortformat=locale.dateFormat(QLocale::ShortFormat);
     if (!shortformat.toLower().contains("yyyy")) {
         shortformat.replace("yy","yyyy");
-    }
-    ui->dobEdit->setDisplayFormat(shortformat);
+    }*/
 
-    ui->profileTab->setTabOrder(ui->firstNameEdit,ui->lastNameEdit);
-    ui->profileTab->setTabOrder(ui->lastNameEdit,ui->addressEdit);
-    ui->profileTab->setTabOrder(ui->addressEdit,ui->genderMale);
-    ui->profileTab->setTabOrder(ui->genderMale,ui->genderFemale);
-    ui->profileTab->setTabOrder(ui->genderFemale,ui->dobEdit);
-    ui->profileTab->setTabOrder(ui->dobEdit,ui->heightEdit);
-    ui->profileTab->setTabOrder(ui->heightEdit,ui->phoneEdit);
-    ui->profileTab->setTabOrder(ui->phoneEdit,ui->timeZoneCombo);
-    ui->profileTab->setTabOrder(ui->timeZoneCombo,ui->emailEdit);
-    ui->profileTab->setTabOrder(ui->emailEdit,ui->unitCombo);
 }
 
 
@@ -145,18 +111,8 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
 
 void PreferencesDialog::Save()
 {
-    (*profile)["FirstName"]=ui->firstNameEdit->text();
-    (*profile)["LastName"]=ui->lastNameEdit->text();
-    if (ui->genderMale->isChecked())
-        (*profile)["Gender"]="male";
-    else (*profile)["Gender"]="female";
-    (*profile)["Height"]=ui->heightEdit->value();
-    (*profile)["DOB"]=ui->dobEdit->date();
-    (*profile)["EmailAddress"]=ui->emailEdit->text();
-    (*profile)["Phone"]=ui->phoneEdit->text();
-    (*profile)["Address"]=ui->addressEdit->toPlainText();
     (*profile)["UnitSystem"]=ui->unitCombo->currentText();
-    (*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
+    //(*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
 
     pref["CombineCloserSessions"]=ui->combineSlider->value();
     pref["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
