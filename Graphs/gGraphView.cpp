@@ -1516,8 +1516,10 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
             miny/=4.0;
         }
     }
-    if (m_forceMinY && miny<f_miny) miny=f_miny;
-    if (m_forceMaxY && maxy>f_maxy) maxy=f_maxy;
+    //if (m_forceMinY && miny<f_miny) miny=f_miny;
+    //if (m_forceMaxY && maxy>f_maxy) maxy=f_maxy;
+    if (m_forceMinY) miny=f_miny;
+    if (m_forceMaxY) maxy=f_maxy;
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :

@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QCryptographicHash>
 #include <QMessageBox>
+#include <QTimer>
 #include "ui_profileselect.h"
 #include "SleepLib/profiles.h"
 #include "newprofile.h"
@@ -25,10 +26,11 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
     int i=0;
     int sel=-1;
+    QString name;
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         //str.append(p.key());
         Profile &profile=**p;
-        QString name=p.key();
+        name=p.key();
        // if (!profile["FirstName"].toString().isEmpty())
        //     name+=" ("+profile["FirstName"].toString()+" "+profile["LastName"].toString()+")";
         QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
@@ -46,13 +48,24 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     ui->listView->setSelectionMode(QAbstractItemView::SingleSelection);
     if (sel>=0) ui->listView->setCurrentIndex(model->item(sel)->index());
     m_tries=0;
+
+    pref["SkipLogin"]=false;
+    if ((i==1) && pref["SkipLogin"].toBool()) {
+        if (!Profiles::profiles.contains(name))
+            pref["Profile"]=name;
+        QTimer::singleShot(0,this,SLOT(earlyExit()));
+        hide();
+    }
 }
 
 ProfileSelect::~ProfileSelect()
 {
     delete ui;
 }
-
+void ProfileSelect::earlyExit()
+{
+    accept();
+}
 void ProfileSelect::on_selectButton_clicked()
 {
     on_listView_activated(ui->listView->currentIndex());

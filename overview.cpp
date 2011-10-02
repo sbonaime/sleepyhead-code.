@@ -84,7 +84,8 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     set->addSlice("HumidSet",QColor("blue"),ST_SETAVG);
     set->addSlice("FlexSet",QColor("red"),ST_SETAVG);
     //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
-    SET->forceMaxY(6);
+    SET->forceMinY(0);
+    SET->forceMaxY(5);
     SET->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gx=new gXAxis();
     gx->setUtcFix(true);

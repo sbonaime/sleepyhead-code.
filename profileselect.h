@@ -23,6 +23,7 @@ private slots:
     void on_newProfileButton_clicked();
 
     void on_listView_activated(const QModelIndex &index);
+    void earlyExit();
 
 private:
     Ui::ProfileSelect *ui;
