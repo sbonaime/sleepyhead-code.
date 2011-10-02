@@ -102,7 +102,7 @@ void ProfileSelect::editProfile()
                     QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
                 } else {
                     QMessageBox::warning(this,"Error","You entered the password wrong too many times.",QMessageBox::Ok);
-                    return;
+                    reject();
                 }
             }
         } while (tries<3);
@@ -190,32 +190,37 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     if (!profile->Exists("Password")) {
         m_selectedProfile=name;
         pref["Profile"]=name;
+        accept();
+        return;
     } else {
-        QDialog dialog(this,Qt::Dialog);
-        QLineEdit *e=new QLineEdit(&dialog);
-        e->setEchoMode(QLineEdit::Password);
-        dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
-        dialog.setWindowTitle("Enter Password");
-        QVBoxLayout *lay=new QVBoxLayout();
-        dialog.setLayout(lay);
-        lay->addWidget(e);
-        dialog.exec();
-        QByteArray ba=e->text().toUtf8();
-        if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
-            m_selectedProfile=name;
-            pref["Profile"]=name;
-        } else {
-            m_tries++;
-            if (m_tries>2) {
-                QMessageBox::warning(this,"Error","You entered an Incorrect Password too many times. Exiting!",QMessageBox::Ok);
-                this->reject();
-            } else {
-                QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+        int tries=0;
+        do {
+            QDialog dialog(this,Qt::Dialog);
+            QLineEdit *e=new QLineEdit(&dialog);
+            e->setEchoMode(QLineEdit::Password);
+            dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
+            dialog.setWindowTitle("Enter Password");
+            QVBoxLayout *lay=new QVBoxLayout();
+            dialog.setLayout(lay);
+            lay->addWidget(e);
+            dialog.exec();
+            QByteArray ba=e->text().toUtf8();
+            if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
+                m_selectedProfile=name;
+                pref["Profile"]=name;
+                accept();
+                return;
             }
-            return;
-        }
+            tries++;
+            if (tries<3) {
+                QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+            } else {
+                QMessageBox::warning(this,"Error","You entered an Incorrect Password too many times. Exiting!",QMessageBox::Ok);
+            }
+        } while (tries<3);
     }
-    accept();
+    reject();
+    return;
 }
 
 void ProfileSelect::on_listView_customContextMenuRequested(const QPoint &pos)
