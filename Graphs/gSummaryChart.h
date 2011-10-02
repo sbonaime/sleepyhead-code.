@@ -25,6 +25,8 @@ class SummaryChart:public Layer
         virtual bool isEmpty() { return m_empty; }
         void addSlice(ChannelID code, QColor color, SummaryType type) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); }
         void deselect() { hl_day=-1; }
+        void setMachineType(MachineType type) { m_machinetype=type; }
+        MachineType machineType() { return m_machinetype; }
     protected:
         Qt::Orientation m_orientation;
 
@@ -49,6 +51,7 @@ class SummaryChart:public Layer
         int hl_day;
         gGraph * graph;
         GraphType m_graphtype;
+        MachineType m_machinetype;
         virtual bool mouseMoveEvent(QMouseEvent * event);
         virtual bool mousePressEvent(QMouseEvent * event);
         virtual bool mouseReleaseEvent(QMouseEvent * event);

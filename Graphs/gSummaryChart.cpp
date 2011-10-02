@@ -22,6 +22,7 @@ SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
     lines->forceAntiAlias(false);
     m_empty=true;
     hl_day=-1;
+    m_machinetype=MT_CPAP;
 }
 SummaryChart::~SummaryChart()
 {
@@ -69,6 +70,7 @@ void SummaryChart::SetDay(Day * nullday)
             type=m_type[j];
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
+                if (day->machine_type()!=m_machinetype) continue;
                 if (type==ST_HOURS || day->channelExists(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
                     m_days[dn]=day;
                     switch(m_type[j]) {
