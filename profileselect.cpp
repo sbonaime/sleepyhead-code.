@@ -75,11 +75,44 @@ void ProfileSelect::earlyExit()
 void ProfileSelect::editProfile()
 {
     QString name=ui->listView->currentIndex().data().toString();
+    Profile *profile=Profiles::Get(name);
+    if (!profile) return;
+    bool reallyEdit=false;
+    if (profile->Exists("Password")) {
+        QDialog dialog(this,Qt::Dialog);
+        QLineEdit *e=new QLineEdit(&dialog);
+        e->setEchoMode(QLineEdit::Password);
+        dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
+        dialog.setWindowTitle("Enter Password for "+name);
+        dialog.setMinimumWidth(300);
+        QVBoxLayout *lay=new QVBoxLayout();
+        dialog.setLayout(lay);
+        lay->addWidget(e);
+        int tries=0;
+        do {
+            e->setText("");
+            if (dialog.exec()!=QDialog::Accepted) break;
+            QByteArray ba=e->text().toUtf8();
+            tries++;
+            if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
+                reallyEdit=true;
+                break;
+            } else {
+                if (tries<3) {
+                    QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+                } else {
+                    QMessageBox::warning(this,"Error","You entered the password wrong too many times.",QMessageBox::Ok);
+                    return;
+                }
+            }
+        } while (tries<3);
+    } else reallyEdit=true;
 
-    NewProfile newprof(this);
-    newprof.edit(name);
-    newprof.exec();
-
+    if (reallyEdit) {
+        NewProfile newprof(this);
+        newprof.edit(name);
+        newprof.exec();
+    }
     //qDebug() << "edit" << name;
 }
 void ProfileSelect::deleteProfile()
