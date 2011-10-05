@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     PREF["VersionString"]=Version;
     p_profile=Profiles::Get(PREF["Profile"].toString());
 
-    //if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
+    //if (!PREF.Exists("Profile")) PREF["Profile"]=getUserName();
 
     /*int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     QStringList ffam=QFontDatabase::applicationFontFamilies(id);

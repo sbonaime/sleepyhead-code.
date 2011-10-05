@@ -112,7 +112,7 @@ void NewProfile::on_nextButton_clicked()
             prof["DoctorPatientID"]=ui->doctorPatientIDEdit->text();
 
 
-            pref["Profile"]=ui->userNameEdit->text();
+            PREF["Profile"]=ui->userNameEdit->text();
 
 
             this->accept();

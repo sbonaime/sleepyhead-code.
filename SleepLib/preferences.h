@@ -91,8 +91,8 @@ protected:
 };
 
 
-extern Preferences pref;
-extern Preferences laypref;
+extern Preferences PREF;
+extern Preferences LAYOUT;
 
 #endif // PREFERENCES_H
 
