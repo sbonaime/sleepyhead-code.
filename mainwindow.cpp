@@ -370,7 +370,10 @@ void MainWindow::on_oximetryButton_clicked()
 {
     bool first=false;
     if (!oximetry) {
-        if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+        if (!pref.Exists("HaveCMS50") || !pref["HaveCMS50"].toBool()) {
+            if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.\nNote: This section is not fully completed yet.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+            pref["HaveCMS50"]=true;
+        }
         oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
         first=true;
