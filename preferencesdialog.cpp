@@ -241,26 +241,6 @@ void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
     } else ui->IgnoreLCD->display(tr("OFF"));
 }
 
-void PreferencesDialog::on_applicationFontSize_valueChanged(int arg1)
-{
-    ui->applicationFont->currentFont().setPointSize(arg1);
-}
-
-void PreferencesDialog::on_graphFontSize_valueChanged(int arg1)
-{
-    ui->graphFont->currentFont().setPointSize(arg1);
-}
-
-void PreferencesDialog::on_titleFontSize_valueChanged(int arg1)
-{
-    ui->titleFont->currentFont().setPointSize(arg1);
-}
-
-void PreferencesDialog::on_bigFontSize_valueChanged(int arg1)
-{
-    ui->bigFont->currentFont().setPointSize(arg1);
-}
-
 void PreferencesDialog::on_useGraphSnapshots_toggled(bool checked)
 {
     if (checked
