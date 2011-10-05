@@ -36,6 +36,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 {
     ui->setupUi(this);
 
+    // Remove Incomplete Extras Tab
+    ui->tabWidget->removeTab(3);
+
     QList<int> a;
     a.push_back(300);
     a.push_back(this->width()-300);
