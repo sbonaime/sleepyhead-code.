@@ -47,9 +47,9 @@ void InitGraphs()
         //mediumfont=new QFont("Serif",11);
         //bigfont=new QFont("Serif",35);
 
-        defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
-        mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
-        bigfont->setStyleHint(QFont::Serif ,QFont::OpenGLCompatible);
+        defaultfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
+        mediumfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
+        bigfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
         //mediumfont->setBold(true);
         _graph_init=true;
     }

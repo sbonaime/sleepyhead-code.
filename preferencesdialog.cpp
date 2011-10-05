@@ -1,5 +1,6 @@
 #include <QLabel>
 #include <QColorDialog>
+#include <QMessageBox>
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -255,4 +256,11 @@ void PreferencesDialog::on_titleFontSize_valueChanged(int arg1)
 void PreferencesDialog::on_bigFontSize_valueChanged(int arg1)
 {
     ui->bigFont->currentFont().setPointSize(arg1);
+}
+
+void PreferencesDialog::on_useGraphSnapshots_toggled(bool checked)
+{
+    if (checked && QMessageBox::question(this,"Warning","The Graph Snapshots feature (used by the Pie Chart in Daily stats panel) has been known to not work on some older computers.\n\nIf you experience a crash because of it, you will have to remove your SleepApp folder and recreate your profile.\n\n(I'm fairly sure this Qt bug is fixed now, but this has not been tested enough. If you have previously seen the pie chart, it's perfectly ok.)\n\nAre you sure you want to enable it?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+        ui->useGraphSnapshots->setChecked(false);
+    }
 }

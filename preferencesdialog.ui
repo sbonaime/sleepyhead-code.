@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="visualTab">
       <attribute name="title">
@@ -464,6 +464,13 @@ p, li { white-space: pre-wrap; }
         <number>0</number>
        </property>
        <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>This page is yet another work in progress. Please ignore.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QLabel" name="label_8">
@@ -485,13 +492,6 @@ p, li { white-space: pre-wrap; }
           <widget class="QLineEdit" name="graphTreeFilter"/>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>This page is yet another work in progress. Please ignore.</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QTreeWidget" name="graphTree">
