@@ -51,8 +51,8 @@ private slots:
     void on_dateStart_dateChanged(const QDate &date);
     void on_dateEnd_dateChanged(const QDate &date);
 
-    void on_dateStart_currentPageChanged(int year, int month);
-    void on_dateEnd_currentPageChanged(int year, int month);
+    void dateStart_currentPageChanged(int year, int month);
+    void dateEnd_currentPageChanged(int year, int month);
 
     void on_toolButton_clicked();
 

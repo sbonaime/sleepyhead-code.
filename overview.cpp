@@ -145,14 +145,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
 
-    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateStart_currentPageChanged(int,int)));
-    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(on_dateEnd_currentPageChanged(int,int)));
+    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateStart_currentPageChanged(int,int)));
+    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateEnd_currentPageChanged(int,int)));
     report=NULL;
 }
 Overview::~Overview()
 {
-    disconnect(this,SLOT(on_dateStart_currentPageChanged(int,int)));
-    disconnect(this,SLOT(on_dateEnd_currentPageChanged(int,int)));
+    disconnect(this,SLOT(dateStart_currentPageChanged(int,int)));
+    disconnect(this,SLOT(dateEnd_currentPageChanged(int,int)));
     if (report) {
         report->close();
         delete report;
@@ -201,7 +201,7 @@ void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
     }
     calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
 }
-void Overview::on_dateStart_currentPageChanged(int year, int month)
+void Overview::dateStart_currentPageChanged(int year, int month)
 {
     QDate d(year,month,1);
     int dom=d.daysInMonth();
@@ -211,7 +211,7 @@ void Overview::on_dateStart_currentPageChanged(int year, int month)
         UpdateCalendarDay(ui->dateStart,d);
     }
 }
-void Overview::on_dateEnd_currentPageChanged(int year, int month)
+void Overview::dateEnd_currentPageChanged(int year, int month)
 {
     QDate d(year,month,1);
     int dom=d.daysInMonth();
