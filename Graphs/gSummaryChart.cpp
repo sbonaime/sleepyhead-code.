@@ -163,9 +163,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     EventDataType maxy=m_maxy;
     EventDataType miny=m_miny;
-    if (m_codes[0]=="HumidSet") {
+    /*if (m_codes[0]=="HumidSet") {
         int i=1;
-    }
+    }*/
 
     w.roundY(miny,maxy);
 

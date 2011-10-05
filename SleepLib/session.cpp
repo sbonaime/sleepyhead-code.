@@ -729,6 +729,7 @@ EventDataType Session::wavg(ChannelID id)
     EventDataType gain=evec[0]->gain();
 
     for (int i=0;i<evec.size();i++) {
+        if (!evec[i]->count()) continue;
         lastval=evec[i]->raw(0);
         lasttime=evec[i]->time(0);
         for (int j=1;j<evec[i]->count();j++) {
