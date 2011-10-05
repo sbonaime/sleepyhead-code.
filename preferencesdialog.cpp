@@ -42,21 +42,25 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->IgnoreSlider->setValue(val);
 
     ui->applicationFont->setCurrentFont(QApplication::font());
+    ui->applicationFont->setFont(QApplication::font());
     ui->applicationFontSize->setValue(QApplication::font().pointSize());
     ui->applicationFontBold->setChecked(QApplication::font().weight()==QFont::Bold);
     ui->applicationFontItalic->setChecked(QApplication::font().italic());
 
     ui->graphFont->setCurrentFont(*defaultfont);
+    ui->graphFont->setFont(*defaultfont);
     ui->graphFontSize->setValue(defaultfont->pointSize());
     ui->graphFontBold->setChecked(defaultfont->weight()==QFont::Bold);
     ui->graphFontItalic->setChecked(defaultfont->italic());
 
     ui->titleFont->setCurrentFont(*mediumfont);
+    ui->titleFont->setFont(*mediumfont);
     ui->titleFontSize->setValue(mediumfont->pointSize());
     ui->titleFontBold->setChecked(mediumfont->weight()==QFont::Bold);
     ui->titleFontItalic->setChecked(mediumfont->italic());
 
     ui->bigFont->setCurrentFont(*bigfont);
+    ui->bigFont->setFont(*bigfont);
     ui->bigFontSize->setValue(bigfont->pointSize());
     ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());

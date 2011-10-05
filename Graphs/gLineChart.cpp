@@ -42,7 +42,7 @@ EventDataType gLineChart::Miny()
     int m=Layer::Miny();
     if (subtract_offset>0) {
         m-=subtract_offset;
-        if (m<0) m=0;
+       // if (m<0) m=0;
     }
     return m;
 }
