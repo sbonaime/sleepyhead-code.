@@ -175,11 +175,11 @@ void MainWindow::Startup()
     daily=new Daily(ui->tabWidget,profile,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    //overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
-    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
+    ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    //oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
-    //ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
+    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
