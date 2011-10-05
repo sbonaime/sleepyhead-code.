@@ -16,10 +16,9 @@ enum GraphType { GT_BAR, GT_LINE };
 class SummaryChart:public Layer
 {
     public:
-        SummaryChart(Profile *profile, QString label, GraphType type=GT_BAR);
+        SummaryChart(QString label, GraphType type=GT_BAR);
         virtual ~SummaryChart();
 
-        void setProfile(Profile *profile) { m_profile=profile; }
         virtual void paint(gGraph & w,int left, int top, int width, int height);
         virtual void SetDay(Day * day=NULL);
         virtual bool isEmpty() { return m_empty; }
@@ -36,7 +35,6 @@ class SummaryChart:public Layer
         QHash<int,QHash<short,EventDataType> > m_values;
         QHash<int,Day *> m_days;
 
-        Profile * m_profile;
         GLShortBuffer *quads,*lines;
         bool m_empty;
         int m_fday;

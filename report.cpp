@@ -11,15 +11,12 @@
 #include <QFile>
 #include <QDir>
 
-Report::Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview) :
+Report::Report(QWidget *parent, gGraphView * shared, Overview * overview) :
     QWidget(parent),
     ui(new Ui::Report),
-    profile(_profile),
     m_overview(overview)
 {
     ui->setupUi(this);
-
-    Q_ASSERT(profile!=NULL);
 
     GraphView=new gGraphView(this,shared);
     setMaximumSize(graph_print_width,800);
@@ -78,8 +75,8 @@ void Report::ReloadGraphs()
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         g.value()->setDay(NULL);
     }
-    startDate=profile->FirstDay();
-    endDate=profile->LastDay();
+    startDate=PROFILE.FirstDay();
+    endDate=PROFILE.LastDay();
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         g.value()->ResetBounds();
     }
@@ -120,9 +117,9 @@ QString Report::ParseTemplate(QString input)
         QString key=block.section(".",1,-1);
         QHash<QString,QVariant> * pr=NULL;
         if (code=="profile") {
-            pr=&profile->p_preferences;
+            pr=&PROFILE.p_preferences;
         } else if (code=="pref") {
-            pr=&pref.p_preferences;
+            pr=&PREF.p_preferences;
         } else if (code=="local") {
             pr=&locals;
         }
@@ -189,7 +186,7 @@ QString Report::GenerateReport(QString templ,QDate start, QDate end)
     startDate=start;
     endDate=end;
 
-    QString filename=pref.Get("{home}/Reports");
+    QString filename=PREF.Get("{home}/Reports");
     QDir dir(filename);
     if (!dir.exists()) {
         dir.mkdir(filename);
@@ -221,18 +218,18 @@ QString Report::GenerateReport(QString templ,QDate start, QDate end)
     locals["end"]=end;
     locals["width"]=graph_print_width-10;
 
-    if ((*profile).Exists("DOB") && !(*profile)["DOB"].toString().isEmpty()) {
-        QDate dob=(*profile)["DOB"].toDate();
+    if (PROFILE.Exists("DOB") && !PROFILE["DOB"].toString().isEmpty()) {
+        QDate dob=PROFILE["DOB"].toDate();
         QDateTime d1(dob,QTime(0,0,0));
         QDateTime d2(QDate::currentDate(),QTime(0,0,0));
         int years=d1.daysTo(d2)/365.25;
         locals["Age"]=years;
     }
-    if (!(*profile).Exists("UnitSystem")) {
-        (*profile)["UnitSystem"]="Metric";
+    if (!PROFILE.Exists("UnitSystem")) {
+        PROFILE["UnitSystem"]="Metric";
     }
-    if ((*profile).Exists("Height") && !(*profile)["Height"].toString().isEmpty()) {
-        if ((*profile)["UnitSystem"].toString()=="Metric")
+    if (PROFILE.Exists("Height") && !PROFILE["Height"].toString().isEmpty()) {
+        if (PROFILE["UnitSystem"].toString()=="Metric")
             locals["DistanceMeasure"]="cm";
         else locals["DistanceMeasure"]=" inches";
     }

@@ -26,7 +26,7 @@ class Overview : public QWidget
     Q_OBJECT
 
 public:
-    explicit Overview(QWidget *parent,Profile *profile, gGraphView *shared=NULL);
+    explicit Overview(QWidget *parent, gGraphView *shared=NULL);
     ~Overview();
 
     void ReloadGraphs();
@@ -60,7 +60,6 @@ private slots:
 
 private:
     Ui::Overview *ui;
-    Profile *profile;
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;

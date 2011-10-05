@@ -194,7 +194,7 @@ if (m_cnt<m_max+8) {
 void GLShortBuffer::draw()
 {
     if (m_cnt>0) {
-        bool antialias=m_forceantialias || (pref["UseAntiAliasing"].toBool() && m_antialias);
+        bool antialias=m_forceantialias || (PROFILE["UseAntiAliasing"].toBool() && m_antialias);
         float size=m_size;
         if (antialias) {
             glEnable(GL_BLEND);
@@ -415,7 +415,7 @@ void GLFloatBuffer::draw()
 {
     if (m_cnt<=0) return;
 
-    bool antialias=m_forceantialias || (pref["UseAntiAliasing"].toBool() && m_antialias);
+    bool antialias=m_forceantialias || (PROFILE["UseAntiAliasing"].toBool() && m_antialias);
     float size=m_size;
     if (antialias) {
         glEnable(GL_BLEND);
@@ -1848,7 +1848,7 @@ void gGraphView::paintGL()
     bool threaded;
 
     // Tempory hack using this pref..
-    /*if (pref["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
+    /*if ((*profile)["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
         threaded=true;
         for (int i=0;i<m_idealthreads;i++) {
             if (!m_threads[i]->isRunning())
@@ -1926,7 +1926,7 @@ void gGraphView::paintGL()
     quads->draw();
     DrawTextQue();
     m_tooltip->paint();
-    if (m_showsplitter && pref["ShowDebug"].toBool()) {
+    if (m_showsplitter && PROFILE["ShowDebug"].toBool()) {
         QString ss;
         ss="PreDraw took "+QString::number(elapsed)+"ms";
         AddTextQue(ss,width()-140,10,0,col,defaultfont);

@@ -28,6 +28,8 @@ QLabel *qstatus;
 QLabel *qstatus2;
 QStatusBar *qstatusbar;
 
+extern Profile * profile;
+
 void MainWindow::Log(QString s)
 {
 
@@ -56,9 +58,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    Q_ASSERT(p_profile!=NULL);
+
     logtime.start();
     ui->setupUi(this);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(pref["Profile"].toString()));
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(PREF["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
     //move(0,0);
     overview=NULL;
@@ -94,30 +99,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
 
-    if (!pref.Exists("ShowDebug")) pref["ShowDebug"]=true;
-    ui->actionDebug->setChecked(pref["ShowDebug"].toBool());
+    if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=true;
+    ui->actionDebug->setChecked(PROFILE["ShowDebug"].toBool());
 
-    if (!pref["ShowDebug"].toBool()) {
+    if (!PROFILE["ShowDebug"].toBool()) {
         ui->logText->hide();
     }
 
     // This speeds up the second part of importing craploads.. later it will speed up the first part too.
-    if (!pref.Exists("EnableMultithreading")) pref["EnableMultithreading"]=QThread::idealThreadCount()>1;
-    if (!pref.Exists("MemoryHog")) pref["MemoryHog"]=false;
-    if (!pref.Exists("EnableGraphSnapshots")) pref["EnableGraphSnapshots"]=false;
-    if (!pref.Exists("AlwaysShowOverlayBars")) pref["AlwaysShowOverlayBars"]=0;
-    if (!pref.Exists("UseAntiAliasing")) pref["UseAntiAliasing"]=false;
-    if (!pref.Exists("IntentionalLeak")) pref["IntentionalLeak"]=(double)0.0;
-    if (!pref.Exists("IgnoreShorterSessions")) pref["IgnoreShorterSessions"]=0;
-    if (!pref.Exists("CombineCloserSessions")) pref["CombineCloserSessions"]=0;
-    if (!pref.Exists("DaySplitTime")) pref["DaySplitTime"]=QTime(12,0,0,0);
+    if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
+    if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
+    if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
+    if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
+    if (!PROFILE.Exists("UseAntiAliasing")) PROFILE["UseAntiAliasing"]=false;
+    if (!PROFILE.Exists("IntentionalLeak")) PROFILE["IntentionalLeak"]=(double)0.0;
+    if (!PROFILE.Exists("IgnoreShorterSessions")) PROFILE["IgnoreShorterSessions"]=0;
+    if (!PROFILE.Exists("CombineCloserSessions")) PROFILE["CombineCloserSessions"]=0;
+    if (!PROFILE.Exists("DaySplitTime")) PROFILE["DaySplitTime"]=QTime(12,0,0,0);
     //DateTime(QDate::currentDate(),QTime(12,0,0,0),Qt::UTC).time();
 
 
-    //ui->actionUse_AntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
+    //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
 
 
     first_load=true;
+
+    // Using the dirty registry here. :(
     QSettings settings("Jedimark", "SleepyHead");
     this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
@@ -157,20 +164,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::Startup()
 {
-    qDebug() << pref["AppName"].toString().toAscii()+" v"+pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << PREF["AppName"].toString().toAscii()+" v"+PREF["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
 
-    profile=Profiles::Get(pref["Profile"].toString());
-    Q_ASSERT(profile!=NULL);
+    // profile is a global variable set in main after login
 
-    profile->LoadMachineData();
+    PROFILE.LoadMachineData();
 
-    daily=new Daily(ui->tabWidget,profile,NULL,this);
+    daily=new Daily(ui->tabWidget,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
+    overview=new Overview(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
     if (daily) daily->ReloadGraphs();
@@ -201,7 +207,7 @@ void MainWindow::on_action_Import_Data_triggered()
         qprogress->setValue(0);
         qprogress->show();
         qstatus->setText(tr("Importing Data"));
-        int c=profile->Import(dir);
+        int c=PROFILE.Import(dir);
         if (!c) {
             QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dir,QMessageBox::Ok);
         }
@@ -216,7 +222,7 @@ void MainWindow::on_action_Import_Data_triggered()
         }*/
         qDebug() << "Finished Importing data" << c;
         if (c) {
-            profile->Save();
+            PROFILE.Save();
             if (daily) daily->ReloadGraphs();
             if (overview) overview->ReloadGraphs();
             //qDebug() << "overview->ReloadGraphs();";
@@ -335,7 +341,7 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
-    pref["ShowDebug"]=checked;
+    PROFILE["ShowDebug"]=checked;
     if (checked) {
         ui->logText->show();
     } else {
@@ -351,7 +357,7 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 
 void MainWindow::on_action_Preferences_triggered()
 {
-    PreferencesDialog pd(this,profile);
+    PreferencesDialog pd(this,p_profile);
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
         pd.Save();
@@ -370,11 +376,11 @@ void MainWindow::on_oximetryButton_clicked()
 {
     bool first=false;
     if (!oximetry) {
-        if (!pref.Exists("HaveCMS50") || !pref["HaveCMS50"].toBool()) {
+        if (!PROFILE.Exists("HaveCMS50") || !PROFILE["HaveCMS50"].toBool()) {
             if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.\nNote: This section is not fully completed yet.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
-            pref["HaveCMS50"]=true;
+            PROFILE["HaveCMS50"]=true;
         }
-        oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
+        oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
         first=true;
     }
@@ -399,12 +405,12 @@ void MainWindow::replyFinished(QNetworkReply * reply)
             QByteArray data=reply->readAll();
             QString a=data;
             a=a.trimmed();
-            if (a>pref["VersionString"].toString()) {
+            if (a>PREF["VersionString"].toString()) {
                 if (QMessageBox::question(this,"New Version","A newer version of SleepyHead is available, v"+a+".\nWould you like to update?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
                     QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
                 }
             } else {
-                QMessageBox::information(this,"SleepyHead v"+pref["VersionString"].toString(),"You're already up to date!\nLatest version on sourceforge is v"+a,QMessageBox::Ok);
+                QMessageBox::information(this,"SleepyHead v"+PREF["VersionString"].toString(),"You're already up to date!\nLatest version on sourceforge is v"+a,QMessageBox::Ok);
             }
        }
     } else {
@@ -423,7 +429,7 @@ void MainWindow::on_action_Screenshot_triggered()
 void MainWindow::DelayedScreenshot()
 {
     QPixmap pixmap = QPixmap::grabWindow(this->winId());
-    QString a=pref.Get("{home}")+"/Screenshots";
+    QString a=PREF.Get("{home}")+"/Screenshots";
     QDir dir(a);
     if (!dir.exists()){
         dir.mkdir(a);
@@ -454,7 +460,7 @@ void MainWindow::on_actionPrint_Report_triggered()
 void MainWindow::on_action_Edit_Profile_triggered()
 {
     NewProfile newprof(this);
-    newprof.edit(pref["Profile"].toString());
+    newprof.edit(PREF["Profile"].toString());
     newprof.exec();
 
 }

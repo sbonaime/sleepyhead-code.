@@ -13,23 +13,21 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
-Oximetry::Oximetry(QWidget *parent,Profile * _profile,gGraphView * shared) :
+Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
-    ui(new Ui::Oximetry),
-    profile(_profile)
+    ui(new Ui::Oximetry)
 {
     m_shared=shared;
     ui->setupUi(this);
-    Q_ASSERT(profile!=NULL);
 
     port=NULL;
     portname="";
 
-    mach=profile->GetMachine(MT_OXIMETER);
+    mach=p_profile->GetMachine(MT_OXIMETER);
     if (!mach) {
         CMS50Loader *l=dynamic_cast<CMS50Loader *>(GetLoader("CMS50"));
         if (l) {
-            mach=l->CreateMachine(profile);
+            mach=l->CreateMachine(p_profile);
         }
         qDebug() << "Create Oximeter device";
     }
@@ -324,7 +322,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->updateLast(sess->last(OXI_Plethy));
 
             sess->SetChanged(true);
-            mach->AddSession(sess,profile);
+            mach->AddSession(sess,p_profile);
             mach->Save();
 
             ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
@@ -719,7 +717,7 @@ void Oximetry::on_ImportButton_clicked()
         session->wavg(OXI_SPO2);
 
         session->SetChanged(true);
-        mach->AddSession(session,profile);
+        mach->AddSession(session,p_profile);
         mach->Save();
         // Output Pulse & SPO2 here..
         delete [] buffer;

@@ -18,6 +18,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 
+#include "SleepLib/profiles.h"
 #include "SleepLib/session.h"
 #include "Graphs/graphdata_custom.h"
 #include "Graphs/gLineOverlay.h"
@@ -30,8 +31,8 @@
 
 const int min_height=150;
 
-Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow *mw)
-    :QWidget(parent),mainwin(mw), ui(new Ui::Daily),profile(_profile)
+Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
+    :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
 {
     ui->setupUi(this);
 
@@ -216,7 +217,7 @@ Daily::~Daily()
 
 void Daily::ReloadGraphs()
 {
-    QDate d=profile->LastDay();
+    QDate d=PROFILE.LastDay();
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
@@ -317,8 +318,8 @@ void Daily::UpdateCalendarDay(QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap=profile->GetDay(date,MT_CPAP)!=NULL;
-    bool hasoxi=profile->GetDay(date,MT_OXIMETER)!=NULL;
+    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
 
     if (hascpap) {
         if (hasoxi) {
@@ -326,7 +327,7 @@ void Daily::UpdateCalendarDay(QDate date)
         } else {
             ui->calendar->setDateTextFormat(date,cpapcol);
         }
-    } else if (profile->GetDay(date)) {
+    } else if (PROFILE.GetDay(date)) {
         ui->calendar->setDateTextFormat(date,bold);
     } else {
         ui->calendar->setDateTextFormat(date,normal);
@@ -375,11 +376,11 @@ void Daily::Load(QDate date)
 {
     static Day * lastcpapday=NULL;
     previous_date=date;
-    Day *cpap=profile->GetDay(date,MT_CPAP);
-    Day *oxi=profile->GetDay(date,MT_OXIMETER);
+    Day *cpap=PROFILE.GetDay(date,MT_CPAP);
+    Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
-    if (!pref["MemoryHog"].toBool()) {
+    if (!PROFILE["MemoryHog"].toBool()) {
         if (lastcpapday && (lastcpapday!=cpap)) {
             for (QVector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
                 (*s)->TrashEvents();
@@ -453,7 +454,7 @@ void Daily::Load(QDate date)
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
             submodel=" <br>"+cpap->machine->properties["SubModel"];
         html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
-        if (pref.Exists("ShowSerialNumbers") && pref["ShowSerialNumbers"].toBool()) {
+        if (PROFILE.Exists("ShowSerialNumbers") && PROFILE["ShowSerialNumbers"].toBool()) {
             html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
         }
 
@@ -500,7 +501,7 @@ void Daily::Load(QDate date)
         // as it only relates to text drawing, which the Pie chart does not do
         // ^^ Scratch that.. pie now includes text..
 
-        if (pref["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+        if (PROFILE["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
             if (ahi+rei+fli>0) {
                 html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
                 //G_AHI->setFixedSize(gwwidth,120);
@@ -535,7 +536,7 @@ void Daily::Load(QDate date)
 
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
-                if (code==CPAP_Leak) suboffset=pref["IntentionalLeak"].toDouble(); else suboffset=0;
+                if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
                 html+="<tr><td align=left>"+schema::channel[code].label();
                 html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
                 html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
@@ -562,7 +563,7 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     if (cpap) {
-      //  if (pref["EnableGraphSnapshots"].toBool()) {
+      //  if ((*profile)["EnableGraphSnapshots"].toBool()) {
       /*      if (cpap->channelExists(CPAP_Pressure)) {
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
                 TAP->setFixedSize(gwwidth,30);
@@ -643,7 +644,7 @@ void Daily::Unload(QDate date)
 
     }
     if (journal) {
-        Machine *jm=profile->GetMachine(MT_JOURNAL);
+        Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
     }
     UpdateCalendarDay(date);
@@ -726,13 +727,13 @@ void Daily::on_JournalNotesColour_clicked()
 }
 Session * Daily::CreateJournalSession(QDate date)
 {
-    Machine *m=profile->GetMachine(MT_JOURNAL);
+    Machine *m=PROFILE.GetMachine(MT_JOURNAL);
     if (!m) {
-        m=new Machine(profile,0);
+        m=new Machine(p_profile,0);
         m->SetClass("Journal");
         m->properties["Brand"]="Virtual";
         m->SetType(MT_JOURNAL);
-        profile->AddMachine(m);
+        PROFILE.AddMachine(m);
     }
     Session *sess=new Session(m,0);
     QDateTime dt(date,QTime(17,0));
@@ -742,12 +743,12 @@ Session * Daily::CreateJournalSession(QDate date)
     dt=dt.addSecs(3600);
     sess->set_last(qint64(dt.toTime_t())*1000L);
     sess->SetChanged(true);
-    m->AddSession(sess,profile);
+    m->AddSession(sess,p_profile);
     return sess;
 }
 Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 {
-    Day *journal=profile->GetDay(date,MT_JOURNAL);
+    Day *journal=PROFILE.GetDay(date,MT_JOURNAL);
     if (!journal)
         return NULL; //CreateJournalSession(date);
     QVector<Session *>::iterator s;

@@ -29,12 +29,12 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     QString name;
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         //str.append(p.key());
-        Profile &profile=**p;
+        //Profile &profile=**p;
         name=p.key();
-       // if (!profile["FirstName"].toString().isEmpty())
-       //     name+=" ("+profile["FirstName"].toString()+" "+profile["LastName"].toString()+")";
+       // if (!PROFILE["FirstName"].toString().isEmpty())
+       //     name+=" ("+PROFILE["FirstName"].toString()+" "+PROFILE["LastName"].toString()+")";
         QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
-        if (pref.Exists("Profile") && (name==pref["Profile"].toString())) {
+        if (PREF.Exists("Profile") && (name==PREF["Profile"].toString())) {
             sel=i;
         }
         item->setData(p.key());
@@ -49,10 +49,10 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     if (sel>=0) ui->listView->setCurrentIndex(model->item(sel)->index());
     m_tries=0;
 
-    pref["SkipLogin"]=false;
-    if ((i==1) && pref["SkipLogin"].toBool()) {
+    PREF["SkipLogin"]=false;
+    if ((i==1) && PREF["SkipLogin"].toBool()) {
         if (!Profiles::profiles.contains(name))
-            pref["Profile"]=name;
+            PREF["Profile"]=name;
         QTimer::singleShot(0,this,SLOT(earlyExit()));
         hide();
     }
@@ -189,7 +189,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     if (!profile) return;
     if (!profile->Exists("Password")) {
         m_selectedProfile=name;
-        pref["Profile"]=name;
+        PREF["Profile"]=name;
         accept();
         return;
     } else {
@@ -207,7 +207,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             QByteArray ba=e->text().toUtf8();
             if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
                 m_selectedProfile=name;
-                pref["Profile"]=name;
+                PREF["Profile"]=name;
                 accept();
                 return;
             }

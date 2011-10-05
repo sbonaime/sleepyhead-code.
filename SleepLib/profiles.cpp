@@ -20,12 +20,13 @@ License: GPL
 
 Preferences *p_pref;
 Preferences *p_layout;
+Profile * p_profile;
 
 Profile::Profile()
 :Preferences(),is_first_day(true)
 {
     p_name="Profile";
-    p_path=pref.Get("{home}/Profiles");
+    p_path=PREF.Get("{home}/Profiles");
     machlist.clear();
     //m_first=m_last=
 }
@@ -60,7 +61,7 @@ void Profile::DataFormatError(Machine *m)
     if (QMessageBox::warning(NULL,"Machine Database Changes",msg,QMessageBox::Yes | QMessageBox::Cancel,QMessageBox::Yes)==QMessageBox::Yes) {
 
         if (!m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
-            QMessageBox::critical(NULL,"Purge Failed","Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n"+pref["DataFolder"].toString(),QMessageBox::Ok);
+            QMessageBox::critical(NULL,"Purge Failed","Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n"+PREF["DataFolder"].toString(),QMessageBox::Ok);
             exit(-1);
         }
     } else {
@@ -301,8 +302,9 @@ QHash<QString,Profile *> profiles;
 
 void Done()
 {
-    pref.Save();
-    laypref.Save();
+    PREF.Save();
+    LAYOUT.Save();
+    // Only save the open profile..
     for (QHash<QString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
         i.value()->Save();
         delete i.value();
@@ -321,7 +323,7 @@ Profile *Get(QString name)
 }
 Profile *Create(QString name)
 {
-    QString path=pref.Get("{home}/Profiles/")+name;
+    QString path=PREF.Get("{home}/Profiles/")+name;
     QDir dir(path);
     if (!dir.exists(path)) dir.mkpath(path);
     //path+="/"+name;
@@ -362,10 +364,10 @@ void Scan()
     p_pref=new Preferences("Preferences");
     p_layout=new Preferences("Layout");
 
-    pref.Open();
-    laypref.Open();
+    PREF.Open();
+    LAYOUT.Open();
 
-    QString path=pref.Get("{home}/Profiles");
+    QString path=PREF.Get("{home}/Profiles");
     QDir dir(path);
 
     if (!dir.exists(path)) {

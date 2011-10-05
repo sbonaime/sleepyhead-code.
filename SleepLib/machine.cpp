@@ -75,17 +75,17 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
 
     QTime split_time(12,0,0);
-    if (pref.Exists("DaySplitTime")) {
-        split_time=pref["DaySplitTime"].toTime();
+    if (PROFILE.Exists("DaySplitTime")) {
+        split_time=PROFILE["DaySplitTime"].toTime();
     }
     int combine_sessions;
-    if (pref.Exists("CombineCloserSessions")) {
-        combine_sessions=pref["CombineCloserSessions"].toInt(); // In Minutes
+    if (PROFILE.Exists("CombineCloserSessions")) {
+        combine_sessions=PROFILE["CombineCloserSessions"].toInt(); // In Minutes
     } else combine_sessions=0;
 
     int ignore_sessions;
-    if (pref.Exists("IgnoreShorterSessions")) {
-        ignore_sessions=pref["IgnoreShorterSessions"].toInt(); // In Minutes
+    if (PROFILE.Exists("IgnoreShorterSessions")) {
+        ignore_sessions=PROFILE["IgnoreShorterSessions"].toInt(); // In Minutes
     } else ignore_sessions=0;
 
     int session_length=s->last()-s->first();
@@ -357,7 +357,7 @@ bool Machine::Save()
     }
     savelistCnt=0;
     savelistSize=m_savelist.size();
-    if (!pref["EnableMultithreading"].toBool()) {
+    if (!PROFILE["EnableMultithreading"].toBool()) {
         for (int i=0;i<savelistSize;i++) {
             qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
             QApplication::processEvents();

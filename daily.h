@@ -35,7 +35,7 @@ class Daily : public QWidget
     Q_OBJECT
 
 public:
-    explicit Daily(QWidget *parent, Profile * _profile, gGraphView *shared,MainWindow *mw);
+    explicit Daily(QWidget *parent, gGraphView *shared,MainWindow *mw);
     ~Daily();
     void ReloadGraphs();
     void ResetGraphLayout();
@@ -85,7 +85,6 @@ private:
 
     MainWindow * mainwin;
     Ui::Daily *ui;
-    Profile *profile;
     QDate previous_date;
     //QScrollArea *scrollArea;
     //QVBoxLayout *splitter;

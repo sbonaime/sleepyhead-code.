@@ -63,13 +63,12 @@ extern MachineLoader * GetLoader(QString name);
 
 extern Preferences *p_pref;
 extern Preferences *p_layout;
+extern Profile * p_profile;
 
 // these are bad and must change
-#define pref (*p_pref)
-#define laypref (*p_layout)
-
-
-extern Profile *profile;
+#define PREF (*p_pref)
+#define LAYOUT (*p_layout)
+#define PROFILE (*p_profile)
 
 namespace Profiles
 {

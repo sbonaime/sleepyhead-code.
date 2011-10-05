@@ -65,7 +65,7 @@ void gSessionTime::paint(gGraph & w,int left, int top, int width, int height)
     QColor col2("light grey");
     QString str;
     bool draw_xticks_instead=false;
-    bool antialias=pref["UseAntiAliasing"].toBool();
+    bool antialias=(*profile)["UseAntiAliasing"].toBool();
 
     QDateTime d;
     QTime t;

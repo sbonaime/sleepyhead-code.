@@ -11,21 +11,19 @@
 #include <QDateTimeEdit>
 #include <QCalendarWidget>
 #include <QFileDialog>
+#include "SleepLib/profiles.h"
 #include "overview.h"
 #include "ui_overview.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
-Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
+Overview::Overview(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Overview),
-    profile(_profile),
     m_shared(shared)
 {
     ui->setupUi(this);
-    Q_ASSERT(profile!=NULL);
-
 
     // Create dummy day & session for holding eventlists.
     //day=new Day(mach);
@@ -57,7 +55,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     SET=new gGraph(GraphView,"Settings",default_height,0);
     LK=new gGraph(GraphView,"Leaks",default_height,0);
 
-    uc=new SummaryChart(profile,"Hours",GT_BAR);
+    uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
     UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *gx=new gXAxis();
@@ -67,7 +65,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     UC->AddLayer(new gXGrid());
 
 
-    bc=new SummaryChart(profile,"AHI",GT_BAR);
+    bc=new SummaryChart("AHI",GT_BAR);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
     bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
@@ -79,7 +77,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     AHI->AddLayer(bc);
     AHI->AddLayer(new gXGrid());
 
-    set=new SummaryChart(profile,"",GT_LINE);
+    set=new SummaryChart("",GT_LINE);
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
     set->addSlice("HumidSet",QColor("blue"),ST_SETAVG);
     set->addSlice("FlexSet",QColor("red"),ST_SETAVG);
@@ -93,7 +91,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     SET->AddLayer(set);
     SET->AddLayer(new gXGrid());
 
-    pr=new SummaryChart(profile,"cmH2O",GT_LINE);
+    pr=new SummaryChart("cmH2O",GT_LINE);
     PR->forceMinY(4.0);
     //PR->forceMaxY(12.0);
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
@@ -110,7 +108,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     PR->AddLayer(pr);
     PR->AddLayer(new gXGrid());
 
-    lk=new SummaryChart(profile,"Avg Leak",GT_LINE);
+    lk=new SummaryChart("Avg Leak",GT_LINE);
     lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P);
     lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
@@ -123,7 +121,7 @@ Overview::Overview(QWidget *parent,Profile * _profile,gGraphView * shared) :
     LK->AddLayer(new gXGrid());
 
     NPB=new gGraph(GraphView,"% in PB",default_height,0);
-    NPB->AddLayer(npb=new SummaryChart(profile,"% PB",GT_BAR));
+    NPB->AddLayer(npb=new SummaryChart("% PB",GT_BAR));
     npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
     NPB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gx=new gXAxis();
@@ -164,8 +162,8 @@ Overview::~Overview()
 }
 void Overview::ReloadGraphs()
 {
-    ui->dateStart->setDate(profile->FirstDay());
-    ui->dateEnd->setDate(profile->LastDay());
+    ui->dateStart->setDate(p_profile->FirstDay());
+    ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
 
 }
@@ -187,8 +185,8 @@ void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap=profile->GetDay(date,MT_CPAP)!=NULL;
-    bool hasoxi=profile->GetDay(date,MT_OXIMETER)!=NULL;
+    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
 
     if (hascpap) {
         if (hasoxi) {
@@ -196,7 +194,7 @@ void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
         } else {
             calendar->setDateTextFormat(date,cpapcol);
         }
-    } else if (profile->GetDay(date)) {
+    } else if (p_profile->GetDay(date)) {
         calendar->setDateTextFormat(date,bold);
     } else {
         calendar->setDateTextFormat(date,normal);
@@ -251,7 +249,7 @@ void Overview::on_toolButton_clicked()
 QString Overview::GetHTML()
 {
     if (!report) {
-        report=new Report(this,profile,m_shared,this);
+        report=new Report(this,m_shared,this);
         report->hide();
     }
 
@@ -281,7 +279,7 @@ void Overview::on_printButton_clicked()
 void Overview::on_htmlButton_clicked()
 {
     QString html=GetHTML();
-    QString filename=QFileDialog::getSaveFileName(this,tr("Save HTML Report"),pref.Get("{home}"),tr("HTML Documents (*.html)"));
+    QString filename=QFileDialog::getSaveFileName(this,tr("Save HTML Report"),PREF.Get("{home}"),tr("HTML Documents (*.html)"));
     if (!filename.isEmpty()) {
         QFile file(filename);
         file.open(QIODevice::WriteOnly);

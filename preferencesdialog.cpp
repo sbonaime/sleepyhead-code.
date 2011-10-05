@@ -19,30 +19,30 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     //ui->timeZoneCombo->setCurrentIndex(i);
 
-    QTime t=pref["DaySplitTime"].toTime();
+    QTime t=(*profile)["DaySplitTime"].toTime();
     ui->timeEdit->setTime(t);
     int val;
 
-    val=pref["CombineCloserSessions"].toInt();
+    val=(*profile)["CombineCloserSessions"].toInt();
     ui->combineSlider->setValue(val);
     if (val>0) {
         ui->combineLCD->display(val);
     } else ui->combineLCD->display(tr("OFF"));
 
 
-    val=pref["IgnoreShorterSessions"].toInt();
+    val=(*profile)["IgnoreShorterSessions"].toInt();
     ui->IgnoreSlider->setValue(val);
 
     if (val>0) {
         ui->IgnoreLCD->display(val);
     } else ui->IgnoreLCD->display(tr("OFF"));
 
-    ui->overlayFlagsCombo->setCurrentIndex(pref["AlwaysShowOverlayBars"].toInt());
-    ui->useAntiAliasing->setChecked(pref["UseAntiAliasing"].toBool());
-    ui->memoryHogCheckbox->setChecked(pref["MemoryHog"].toBool());
-    ui->useGraphSnapshots->setChecked(pref["EnableGraphSnapshots"].toBool());
-    ui->intentionalLeakEdit->setValue(pref["IntentionalLeak"].toDouble());
-    ui->useMultithreading->setChecked(pref["EnableMultithreading"].toBool());
+    ui->overlayFlagsCombo->setCurrentIndex((*profile)["AlwaysShowOverlayBars"].toInt());
+    ui->useAntiAliasing->setChecked((*profile)["UseAntiAliasing"].toBool());
+    ui->memoryHogCheckbox->setChecked((*profile)["MemoryHog"].toBool());
+    ui->useGraphSnapshots->setChecked((*profile)["EnableGraphSnapshots"].toBool());
+    ui->intentionalLeakEdit->setValue((*profile)["IntentionalLeak"].toDouble());
+    ui->useMultithreading->setChecked((*profile)["EnableMultithreading"].toBool());
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
@@ -131,18 +131,18 @@ void PreferencesDialog::Save()
     (*profile)["UnitSystem"]=ui->unitCombo->currentText();
     //(*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
 
-    pref["CombineCloserSessions"]=ui->combineSlider->value();
-    pref["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
+    (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
+    (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
 
-    pref["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
-    pref["DaySplitTime"]=ui->timeEdit->time();
+    (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+    (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
-    pref["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
-    pref["UseAntiAliasing"]=ui->useAntiAliasing->isChecked();
-    pref["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
-    pref["EnableGraphSnapshots"]=ui->useGraphSnapshots->isChecked();
-    pref["IntentionalLeak"]=ui->intentionalLeakEdit->value();
-    pref["EnableMultithreading"]=ui->useMultithreading->isChecked();
+    (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
+    (*profile)["UseAntiAliasing"]=ui->useAntiAliasing->isChecked();
+    (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+    (*profile)["EnableGraphSnapshots"]=ui->useGraphSnapshots->isChecked();
+    (*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
+    (*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
 
     for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
         schema::Channel &chan=schema::channel[i.key()];
@@ -154,7 +154,7 @@ void PreferencesDialog::Save()
     qDebug() << "TODO: Save channels.xml to update channel data";
 
     profile->Save();
-    pref.Save();
+    PREF.Save();
 }
 
 void PreferencesDialog::on_combineSlider_valueChanged(int position)

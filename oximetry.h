@@ -32,7 +32,7 @@ class Oximetry : public QWidget
     Q_OBJECT
 
 public:
-    explicit Oximetry(QWidget *parent, Profile * _profile,gGraphView * shared=NULL);
+    explicit Oximetry(QWidget *parent, gGraphView * shared=NULL);
     ~Oximetry();
 
     void RedrawGraphs();
@@ -53,7 +53,6 @@ private:
     void UpdatePlethy(qint8 plethy);
 
     Ui::Oximetry *ui;
-    Profile *profile;
 
     gGraphView *GraphView;
     MyScrollBar *scrollbar;

@@ -83,7 +83,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 quads->add(x1,start_py,x2,start_py,x2,start_py+height,x1,start_py+height);
                 if (quads->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
-                if ((pref["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
+                if ((PROFILE["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
                     // show the fat dots in the middle
                     points->add(x1,double(height)/double(yy)*double(-20-w.min_y)+topp);
                     if (points->full()) { verts_exceeded=true; break; }
@@ -95,7 +95,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 }
             } else if (m_flt==FT_Bar) {
                 int z=start_py+height;
-                if ((pref["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
+                if ((PROFILE["AlwaysShowOverlayBars"].toInt()==0) || (xx<3600000)) {
                     z=top;
 
                     points->add(x1,top);

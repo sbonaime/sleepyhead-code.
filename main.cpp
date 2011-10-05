@@ -22,11 +22,9 @@
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
 
-
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
-
 
 MainWindow *mainwin=NULL;
 
@@ -74,7 +72,7 @@ int main(int argc, char *argv[])
     ZEOLoader::Register();
     ResmedLoader::Register();
     Profiles::Scan();
-    pref["AppName"]="SleepyHead";
+    PREF["AppName"]="SleepyHead";
 
 
     QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
@@ -86,8 +84,8 @@ int main(int argc, char *argv[])
 
         // Show New User wizard..
     } else {
-        if (pref.Exists("VersionString")) {
-            QString V=pref["VersionString"].toString();
+        if (PREF.Exists("VersionString")) {
+            QString V=PREF["VersionString"].toString();
             if (V!=Version) {
                 QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the SleepApp folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
             }
@@ -97,7 +95,8 @@ int main(int argc, char *argv[])
             exit(1);
         }
     }
-    pref["VersionString"]=Version;
+    PREF["VersionString"]=Version;
+    p_profile=Profiles::Get(PREF["Profile"].toString());
 
     //if (!pref.Exists("Profile")) pref["Profile"]=getUserName();
 

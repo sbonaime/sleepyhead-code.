@@ -30,8 +30,9 @@ void gLineChart::SetDay(Day *d)
 {
     Layer::SetDay(d);
 
+
     if (m_code==CPAP_Leak) {
-        subtract_offset=pref["IntentionalLeak"].toDouble();
+        subtract_offset=PROFILE["IntentionalLeak"].toDouble();
     } else subtract_offset=0;
 
 

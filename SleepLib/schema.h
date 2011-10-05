@@ -167,7 +167,7 @@ public:
     Graph(QString name,quint32 flags=GraphFlags::XTicker | GraphFlags::YTicker | GraphFlags::XGrid);
     Layer *addLayer(Layer *layer) { m_layers.push_back(layer); return layer; }
     int height() { if (m_visible) return m_height; else return 0;}
-    int setHeight(int h) { m_height=h; }
+    void setHeight(int h) { m_height=h; }
     bool visible() { return m_visible; }
     void setVisible(bool b) { m_visible=b; }
 protected:

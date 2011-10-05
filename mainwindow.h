@@ -20,6 +20,8 @@ const int major_version=0;
 const int minor_version=8;
 const int revision_number=6;
 
+extern Profile * profile;
+
 namespace Ui {
     class MainWindow;
 }
@@ -96,7 +98,7 @@ private:
     Overview * overview;
     Oximetry * oximetry;
     bool first_load;
-    Profile *profile;
+    //Profile *profile;
     QNetworkAccessManager *netmanager;
 
     QMutex loglock,strlock;

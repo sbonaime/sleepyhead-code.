@@ -21,7 +21,7 @@ class Report : public QWidget
     Q_OBJECT
 
 public:
-    explicit Report(QWidget *parent, Profile * _profile, gGraphView * shared, Overview * overview);
+    explicit Report(QWidget *parent, gGraphView * shared, Overview * overview);
     ~Report();
     QString GenerateReport(QString templ,QDate start, QDate end);
     void ReloadGraphs();
@@ -32,7 +32,6 @@ public:
 
 private:
     Ui::Report  *ui;
-    Profile * profile;
     Overview * m_overview;
     gGraphView * shared;
     gGraphView * GraphView;

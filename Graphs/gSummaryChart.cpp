@@ -11,8 +11,8 @@
 #include "gSummaryChart.h"
 
 extern QLabel * qstatus2;
-SummaryChart::SummaryChart(Profile *p,QString label,GraphType type)
-:Layer(""),m_profile(p),m_label(label),m_graphtype(type)
+SummaryChart::SummaryChart(QString label,GraphType type)
+:Layer(""),m_label(label),m_graphtype(type)
 {
     QColor color=Qt::black;
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
@@ -29,11 +29,6 @@ SummaryChart::~SummaryChart()
 }
 void SummaryChart::SetDay(Day * nullday)
 {
-    if (!m_profile) {
-        qWarning() << "Forgot to set profile for gBarChart dummy!";
-        m_day=NULL;
-        return;
-    }
     Day * day=nullday;
     Layer::SetDay(day);
 
@@ -53,7 +48,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_empty=true;
     int suboffset;
     SummaryType type;
-    for (QMap<QDate,QVector<Day *> >::iterator d=m_profile->daylist.begin();d!=m_profile->daylist.end();d++) {
+    for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
         //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
         dn=tt/86400;
@@ -66,7 +61,7 @@ void SummaryChart::SetDay(Day * nullday)
         bool fnd=false;
         for (int j=0;j<m_codes.size();j++) {
             code=m_codes[j];
-            if (code==CPAP_Leak) suboffset=pref["IntentionalLeak"].toDouble(); else suboffset=0;
+            if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
             type=m_type[j];
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
@@ -120,8 +115,8 @@ void SummaryChart::SetDay(Day * nullday)
     if (m_graphtype==GT_BAR) {
         m_miny=0;
     }
-   // m_minx=qint64(QDateTime(m_profile->FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    m_maxx=qint64(QDateTime(m_profile->LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+   // m_minx=qint64(QDateTime(PROFILE.FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(PROFILE.LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
 
 }
 
