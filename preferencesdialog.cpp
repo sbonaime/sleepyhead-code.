@@ -80,6 +80,23 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
         shortformat.replace("yy","yyyy");
     }*/
 
+    QTreeWidget *tree=ui->graphTree;
+    tree->clear();
+    tree->setColumnCount(1); // 1 visible common.. (1 hidden)
+
+    QTreeWidgetItem *daily=new QTreeWidgetItem((QTreeWidget *)0,QStringList("Daily Graphs"));
+    QTreeWidgetItem *overview=new QTreeWidgetItem((QTreeWidget *)0,QStringList("Overview Graphs"));
+    tree->insertTopLevelItem(0,daily);
+    tree->insertTopLevelItem(0,overview);
+    QTreeWidgetItem *it=new QTreeWidgetItem(daily,QStringList("Event Flags"));//,QTreeWidgetItem::UserType);
+    it->setFlags(Qt::ItemIsUserCheckable|Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    it->setCheckState(0,Qt::Checked);
+    daily->addChild(it);
+    //QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
+    //=new QTreeWidgetItem(root,l);
+    //ui->graphTree->setModel(
+    tree->sortByColumn(0,Qt::AscendingOrder);
+
 }
 
 

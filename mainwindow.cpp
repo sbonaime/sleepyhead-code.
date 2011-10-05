@@ -13,6 +13,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QTimer>
+#include <QSettings>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "preferencesdialog.h"
@@ -59,7 +60,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(pref["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
-
+    //move(0,0);
+    overview=NULL;
+    daily=NULL;
+    oximetry=NULL;
 
 /*    QGLFormat fmt;
     fmt.setDepth(false);
@@ -117,6 +121,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     first_load=true;
+    QSettings settings("Jedimark", "SleepyHead");
+    this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
@@ -129,6 +135,11 @@ MainWindow::MainWindow(QWidget *parent) :
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
+    if (!isMaximized()) {
+        QSettings settings("Jedimark", "SleepyHead");
+        settings.setValue("MainWindow/geometry", saveGeometry());
+    }
+    //QWidget::closeEvent(event);
     if (daily) {
         daily->close();
         delete daily;
@@ -149,6 +160,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::Startup()
 {
+
+
     qDebug() << pref["AppName"].toString().toAscii()+" v"+pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
@@ -162,11 +175,11 @@ void MainWindow::Startup()
     daily=new Daily(ui->tabWidget,profile,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
-    ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    //overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
+    //ui->tabWidget->insertTab(2,overview,tr("Overview"));
 
-    oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
-    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    //oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
+    //ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();

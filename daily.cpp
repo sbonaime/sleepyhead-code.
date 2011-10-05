@@ -38,7 +38,7 @@ Daily::Daily(QWidget *parent,Profile * _profile,gGraphView * shared, MainWindow 
     QList<int> a;
     a.push_back(300);
     a.push_back(this->width()-300);
-    ui->splitter_2->setStretchFactor(0,0);
+    ui->splitter_2->setStretchFactor(1,1);
     ui->splitter_2->setSizes(a);
     ui->splitter_2->setStretchFactor(1,1);
 

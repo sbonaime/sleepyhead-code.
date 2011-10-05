@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>477</width>
-    <height>264</height>
+    <width>527</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,9 +29,9 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="visualTab">
       <attribute name="title">
        <string>&amp;CPAP/Visual</string>
       </attribute>
@@ -177,7 +177,7 @@ It has no effect on single cpu machines.</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="sessionTab">
       <attribute name="title">
        <string>&amp;Sessions</string>
       </attribute>
@@ -396,7 +396,7 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="colourTab">
       <attribute name="title">
        <string>&amp;Events</string>
       </attribute>
@@ -404,7 +404,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>This doesn't work yet.. The colours shown are random.</string>
+          <string>This doesn't work yet..</string>
          </property>
         </widget>
        </item>
@@ -446,6 +446,54 @@ p, li { white-space: pre-wrap; }
          <column>
           <property name="text">
            <string>ID</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="graphTab">
+      <attribute name="title">
+       <string>Graphs</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Filter</string>
+           </property>
+           <property name="margin">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="graphTreeFilter"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="graphTree">
+         <property name="headerHidden">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
           </property>
          </column>
         </widget>

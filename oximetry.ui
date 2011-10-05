@@ -105,7 +105,7 @@
       <item>
        <widget class="QPushButton" name="ImportButton">
         <property name="text">
-         <string>&amp;Import from Device</string>
+         <string>&amp;Import</string>
         </property>
        </widget>
       </item>

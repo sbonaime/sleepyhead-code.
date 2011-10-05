@@ -249,4 +249,4 @@ bool ChannelList::Save(QString filename)
 
 }
 
-typedef schema::Channel * ChannelID;
+//typedef schema::Channel * ChannelID;

@@ -5,6 +5,16 @@
 #include <QHash>
 #include <QVariant>
 #include <QString>
+#include "machine_common.h"
+
+namespace GraphFlags {
+const quint32 Shadow=1;
+const quint32 Foobar=2;
+const quint32 XTicker=4;
+const quint32 YTicker=8;
+const quint32 XGrid=16;
+const quint32 YGrid=32;
+}
 
 namespace schema {
 
@@ -84,8 +94,97 @@ public:
     QHash<QString,QHash<QString,Channel *> > groups;
     QString m_doctype;
 };
-
 extern ChannelList channel;
+
+enum LayerType {
+    UnspecifiedLayer, Waveform, Flag, Overlay, Group
+};
+
+class Layer
+{
+public:
+    Layer(ChannelID code, QColor colour, QString label=QString());
+    virtual ~Layer();
+    Layer *addLayer(Layer *layer);// { m_layers.push_back(layer); return layer; }
+    void setMin(EventDataType min) { m_min=min; m_hasmin=true; }
+    void setMax(EventDataType max) { m_max=max; m_hasmax=true; }
+    EventDataType min() { return m_min; }
+    EventDataType max() { return m_max; }
+    bool visible() { return m_visible; }
+    void setVisible(bool b) { m_visible=b; }
+protected:
+    LayerType m_type;
+    ChannelID m_code;
+    QColor m_colour;
+    QString m_label;
+    EventDataType m_min;
+    EventDataType m_max;
+    bool m_hasmin;
+    bool m_hasmax;
+    bool m_visible;
+    QVector<Layer *> m_layers;
+};
+
+class WaveformLayer: public Layer
+{
+public:
+    WaveformLayer(ChannelID code, QColor colour, float min=0, float max=0);
+    virtual ~WaveformLayer();
+};
+
+enum FlagVisual { Bar, Span, Dot };
+class OverlayLayer: public Layer
+{
+public:
+    OverlayLayer(ChannelID code, QColor colour, FlagVisual visual=Bar);
+    virtual ~OverlayLayer();
+protected:
+    FlagVisual m_visual;
+};
+class GroupLayer: public Layer // Effectively an empty Layer container
+{
+public:
+    GroupLayer();
+    virtual ~GroupLayer();
+};
+class FlagGroupLayer: public GroupLayer
+{
+public:
+    FlagGroupLayer();
+    virtual ~FlagGroupLayer();
+};
+class FlagLayer: public Layer
+{
+public:
+    FlagLayer(ChannelID code, QColor colour, FlagVisual visual=Bar);
+    virtual ~FlagLayer();
+protected:
+    FlagVisual m_visual;
+};
+class Graph
+{
+public:
+    Graph(QString name,quint32 flags=GraphFlags::XTicker | GraphFlags::YTicker | GraphFlags::XGrid);
+    Layer *addLayer(Layer *layer) { m_layers.push_back(layer); return layer; }
+    int height() { if (m_visible) return m_height; else return 0;}
+    int setHeight(int h) { m_height=h; }
+    bool visible() { return m_visible; }
+    void setVisible(bool b) { m_visible=b; }
+protected:
+    QString m_name;
+    int m_height;
+    QVector<Layer *> m_layers;
+    bool m_visible;
+};
+class GraphGroup
+{
+public:
+    GraphGroup(QString name);
+    GraphGroup();
+    Graph *addGraph(Graph *graph) { m_graphs.push_back(graph); return graph; }
+protected:
+    QVector<Graph *>m_graphs;
+};
 
 void init();
 

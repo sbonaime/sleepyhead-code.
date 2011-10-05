@@ -1,21 +1,22 @@
 <!DOCTYPE Graphs>
 <Schema language="en" version="1.0">
  <Graph name="Event Flags" group="Daily" master="true">
-  <layer type="flaglines">
-   <line name="CSR" func="data" type="span">
-   <line name="ClearAirway" func="data" type="bar">
-   <line name="Obstructive" func="data" type="bar">
-   <line name="Apnea" func="data" type="bar">
-   <line name="Hypopnea" func="data" type="bar">
-   <line name="FlowLimit" func="data" type="bar">
-   <line name="RERA" func="data" type="bar">
-   <line name="VSnore" func="data" type="bar">
-   <line name="VSnore2" func="data" type="bar">
-  </layer>
+  <property name="visible" type="bool" value="true"/>
+  <group type="flags">
+   <layer name="CSR" func="data" type="span">
+   <layer name="ClearAirway" func="data" type="bar">
+   <layer name="Obstructive" func="data" type="bar">
+   <layer name="Apnea" func="data" type="bar">
+   <layer name="Hypopnea" func="data" type="bar">
+   <layer name="FlowLimit" func="data" type="bar">
+   <layer name="RERA" func="data" type="bar">
+   <layer name="VSnore" func="data" type="bar">
+   <layer name="VSnore2" func="data" type="bar">
+  </group>
  </Graph>
  <Graph name="Flow Rate" group="Daily">
   <layer type="overlay" data="CSR" visual="span"/>
-  <layer type="linechart" data="FlowRate"/>
+  <layer type="waveform" data="FlowRate"/>
   <layer type="overlay" data="Obstructive" visual="bar"/>
   <layer type="overlay" data="Hypopnea" visual="bar"/>
   <layer type="overlay" data="Apnea" visual="bar"/>
