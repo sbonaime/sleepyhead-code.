@@ -487,6 +487,13 @@ p, li { white-space: pre-wrap; }
         </layout>
        </item>
        <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>This page is yet another work in progress. Please ignore.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QTreeWidget" name="graphTree">
          <property name="headerHidden">
           <bool>true</bool>

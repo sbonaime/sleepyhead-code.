@@ -77,9 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //new QGLContext(fmt);
     //shared_context->create(shared_context);
 
-    daily=NULL;
-    //overview=NULL;
-    //oximetry=NULL;
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
@@ -160,8 +157,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::Startup()
 {
-
-
     qDebug() << pref["AppName"].toString().toAscii()+" v"+pref["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
@@ -177,9 +172,6 @@ void MainWindow::Startup()
 
     overview=new Overview(ui->tabWidget,profile,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
-
-    oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
-    ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
 
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
@@ -376,11 +368,17 @@ void MainWindow::on_action_Preferences_triggered()
 
 void MainWindow::on_oximetryButton_clicked()
 {
-    if (oximetry) {
-        ui->tabWidget->setCurrentWidget(oximetry);
-        qstatus2->setText("Oximetry");
-        oximetry->RedrawGraphs();
+    bool first=false;
+    if (!oximetry) {
+        if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+        oximetry=new Oximetry(ui->tabWidget,profile,daily->SharedWidget());
+        ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+        first=true;
     }
+    ui->tabWidget->setCurrentWidget(oximetry);
+    if (!first) oximetry->RedrawGraphs();
+    qstatus2->setText("Oximetry");
+
 }
 
 void MainWindow::on_actionCheck_for_Updates_triggered()
