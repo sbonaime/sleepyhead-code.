@@ -196,17 +196,19 @@ void PreferencesDialog::Save()
     QApplication::setFont(font);
 
     *defaultfont=ui->graphFont->currentFont();
+    defaultfont->setPointSize(ui->graphFontSize->value());
     defaultfont->setWeight(ui->graphFontBold->isChecked()?QFont::Bold : QFont::Normal);
     defaultfont->setItalic(ui->graphFontItalic->isChecked());
 
     *mediumfont=ui->titleFont->currentFont();
+    mediumfont->setPointSize(ui->titleFontSize->value());
     mediumfont->setWeight(ui->titleFontBold->isChecked()?QFont::Bold : QFont::Normal);
     mediumfont->setItalic(ui->titleFontItalic->isChecked());
 
     *bigfont=ui->bigFont->currentFont();
+    bigfont->setPointSize(ui->bigFontSize->value());
     bigfont->setWeight(ui->bigFontBold->isChecked()?QFont::Bold : QFont::Normal);
     bigfont->setItalic(ui->bigFontItalic->isChecked());
-
 
     for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
         schema::Channel &chan=schema::channel[i.key()];

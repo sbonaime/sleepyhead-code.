@@ -518,7 +518,7 @@ p, li { white-space: pre-wrap; }
           <string>Application Fonts</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_10">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -531,10 +531,10 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QFontComboBox" name="applicationFont"/>
           </item>
-          <item row="0" column="2">
+          <item row="1" column="2">
            <widget class="QSpinBox" name="applicationFontSize">
             <property name="minimum">
              <number>6</number>
@@ -547,7 +547,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="label_11">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -560,10 +560,10 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QFontComboBox" name="graphFont"/>
           </item>
-          <item row="1" column="2">
+          <item row="2" column="2">
            <widget class="QSpinBox" name="graphFontSize">
             <property name="minimum">
              <number>6</number>
@@ -576,7 +576,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_12">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -589,10 +589,10 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <widget class="QFontComboBox" name="titleFont"/>
           </item>
-          <item row="2" column="2">
+          <item row="3" column="2">
            <widget class="QSpinBox" name="titleFontSize">
             <property name="minimum">
              <number>6</number>
@@ -605,17 +605,17 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_13">
             <property name="text">
              <string>Big  Text</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QFontComboBox" name="bigFont"/>
           </item>
-          <item row="3" column="2">
+          <item row="4" column="2">
            <widget class="QSpinBox" name="bigFontSize">
             <property name="minimum">
              <number>6</number>
@@ -628,63 +628,114 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
+          <item row="1" column="4">
            <widget class="QCheckBox" name="applicationFontItalic">
-            <property name="text">
-             <string>Italic</string>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QCheckBox" name="applicationFontBold">
             <property name="text">
-             <string>Bold</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QCheckBox" name="graphFontBold">
-            <property name="text">
-             <string>Bold</string>
+           <widget class="QCheckBox" name="applicationFontBold">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QCheckBox" name="graphFontItalic">
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
             <property name="text">
-             <string>Italic</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="2" column="3">
-           <widget class="QCheckBox" name="titleFontBold">
+           <widget class="QCheckBox" name="graphFontBold">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Bold</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="2" column="4">
-           <widget class="QCheckBox" name="titleFontItalic">
+           <widget class="QCheckBox" name="graphFontItalic">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Italic</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="3" column="3">
-           <widget class="QCheckBox" name="bigFontBold">
+           <widget class="QCheckBox" name="titleFontBold">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Bold</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="3" column="4">
-           <widget class="QCheckBox" name="bigFontItalic">
+           <widget class="QCheckBox" name="titleFontItalic">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Italic</string>
+             <string/>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="4" column="3">
+           <widget class="QCheckBox" name="bigFontBold">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="4">
+           <widget class="QCheckBox" name="bigFontItalic">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -696,6 +747,61 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_14">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Size</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_15">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Bold</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_16">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Italic</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_19">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Font</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -139,10 +139,10 @@ MainWindow::MainWindow(QWidget *parent) :
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-    if (!isMaximized()) {
+    //if (!isMaximized()) {
         QSettings settings("Jedimark", "SleepyHead");
         settings.setValue("MainWindow/geometry", saveGeometry());
-    }
+    //}
     //QWidget::closeEvent(event);
     if (daily) {
         daily->close();
