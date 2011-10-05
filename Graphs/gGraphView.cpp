@@ -19,15 +19,38 @@ const int mouse_movement_threshold=6;
 void InitGraphs()
 {
     if (!_graph_init) {
-        defaultfont=new QFont("Sans Serif",10);
+
+        if (!PREF.Exists("FontGraph")) {
+            PREF["FontGraph"]="Sans Serif";
+            PREF["FontGraphSize"]=10;
+            PREF["FontGraphBold"]=false;
+            PREF["FontGraphItalic"]=false;
+        }
+        if (!PREF.Exists("FontTitle")) {
+            PREF["FontTitle"]="Serif";
+            PREF["FontTitleSize"]=11;
+            PREF["FontTitleBold"]=true;
+            PREF["FontTitleItalic"]=false;
+        }
+        if (!PREF.Exists("FontBig")) {
+            PREF["FontBig"]="Serif";
+            PREF["FontBigSize"]=35;
+            PREF["FontBigBold"]=false;
+            PREF["FontBigItalic"]=false;
+        }
+
+        defaultfont=new QFont(PREF["FontGraph"].toString(),PREF["FontGraphSize"].toInt(),PREF["FontGraphBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontGraphItalic"].toBool());
+        mediumfont=new QFont(PREF["FontTitle"].toString(),PREF["FontTitleSize"].toInt(),PREF["FontTitleBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontTitleItalic"].toBool());
+        bigfont=new QFont(PREF["FontBig"].toString(),PREF["FontBigSize"].toInt(),PREF["FontBigBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontBigItalic"].toBool());
+
        // defaultfont->setPixelSize(11);
-        mediumfont=new QFont("Serif",11);
-        bigfont=new QFont("Serif",35);
+        //mediumfont=new QFont("Serif",11);
+        //bigfont=new QFont("Serif",35);
 
         defaultfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         mediumfont->setStyleHint(QFont::SansSerif,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::Serif ,QFont::OpenGLCompatible);
-        mediumfont->setBold(true);
+        //mediumfont->setBold(true);
         _graph_init=true;
     }
 }

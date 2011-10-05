@@ -100,13 +100,22 @@ int main(int argc, char *argv[])
 
     //if (!PREF.Exists("Profile")) PREF["Profile"]=getUserName();
 
-    /*int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
-    QStringList ffam=QFontDatabase::applicationFontFamilies(id);
+    //int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
+   /* QFontDatabase fdb;
+    QStringList ffam=fdb.families();
     for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
         qDebug() << "Loaded Font: " << (*i);
-    }*/
+    } */
 
-    a.setFont(QFont("Sans Serif",10));
+    if (!PREF.Exists("FontApplication")) {
+        PREF["FontApplication"]="Sans Serif";
+        PREF["FontApplicationSize"]=10;
+        PREF["FontApplicationBold"]=false;
+        PREF["FontApplicationItalic"]=false;
+    }
+
+
+    QApplication::setFont(QFont(PREF["FontApplication"].toString(),PREF["FontApplicationSize"].toInt(),PREF["FontApplicationBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontApplicationItalic"].toBool()));
 
     qInstallMsgHandler(MyOutputHandler);
 

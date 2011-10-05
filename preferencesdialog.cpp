@@ -4,6 +4,10 @@
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
 
+extern QFont * defaultfont;
+extern QFont * mediumfont;
+extern QFont * bigfont;
+
 PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     QDialog(parent),
     ui(new Ui::PreferencesDialog),
@@ -32,6 +36,27 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     val=(*profile)["IgnoreShorterSessions"].toInt();
     ui->IgnoreSlider->setValue(val);
+
+    ui->applicationFont->setCurrentFont(QApplication::font());
+    ui->applicationFontSize->setValue(QApplication::font().pointSize());
+    ui->applicationFontBold->setChecked(QApplication::font().weight()==QFont::Bold);
+    ui->applicationFontItalic->setChecked(QApplication::font().italic());
+
+    ui->graphFont->setCurrentFont(*defaultfont);
+    ui->graphFontSize->setValue(defaultfont->pointSize());
+    ui->graphFontBold->setChecked(defaultfont->weight()==QFont::Bold);
+    ui->graphFontItalic->setChecked(defaultfont->italic());
+
+    ui->titleFont->setCurrentFont(*mediumfont);
+    ui->titleFontSize->setValue(mediumfont->pointSize());
+    ui->titleFontBold->setChecked(mediumfont->weight()==QFont::Bold);
+    ui->titleFontItalic->setChecked(mediumfont->italic());
+
+    ui->bigFont->setCurrentFont(*bigfont);
+    ui->bigFontSize->setValue(bigfont->pointSize());
+    ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
+    ui->bigFontItalic->setChecked(bigfont->italic());
+
 
     if (val>0) {
         ui->IgnoreLCD->display(val);
@@ -144,6 +169,45 @@ void PreferencesDialog::Save()
     (*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
     (*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
 
+    PREF["FontApplication"]=ui->applicationFont->currentText();
+    PREF["FontApplicationSize"]=ui->applicationFontSize->value();
+    PREF["FontApplicationBold"]=ui->applicationFontBold->isChecked();
+    PREF["FontApplicationItalic"]=ui->applicationFontItalic->isChecked();
+
+    PREF["FontGraph"]=ui->graphFont->currentText();
+    PREF["FontGraphSize"]=ui->graphFontSize->value();
+    PREF["FontGraphBold"]=ui->graphFontBold->isChecked();
+    PREF["FontGraphItalic"]=ui->graphFontItalic->isChecked();
+
+    PREF["FontTitle"]=ui->titleFont->currentText();
+    PREF["FontTitleSize"]=ui->titleFontSize->value();
+    PREF["FontTitleBold"]=ui->titleFontBold->isChecked();
+    PREF["FontTitleItalic"]=ui->titleFontItalic->isChecked();
+
+    PREF["FontBig"]=ui->bigFont->currentText();
+    PREF["FontBigSize"]=ui->bigFontSize->value();
+    PREF["FontBigBold"]=ui->bigFontBold->isChecked();
+    PREF["FontBigItalic"]=ui->bigFontItalic->isChecked();
+
+    QFont font=ui->applicationFont->currentFont();
+    font.setPointSize(ui->applicationFontSize->value());
+    font.setWeight(ui->applicationFontBold->isChecked()?QFont::Bold : QFont::Normal);
+    font.setItalic(ui->applicationFontItalic->isChecked());
+    QApplication::setFont(font);
+
+    *defaultfont=ui->graphFont->currentFont();
+    defaultfont->setWeight(ui->graphFontBold->isChecked()?QFont::Bold : QFont::Normal);
+    defaultfont->setItalic(ui->graphFontItalic->isChecked());
+
+    *mediumfont=ui->titleFont->currentFont();
+    mediumfont->setWeight(ui->titleFontBold->isChecked()?QFont::Bold : QFont::Normal);
+    mediumfont->setItalic(ui->titleFontItalic->isChecked());
+
+    *bigfont=ui->bigFont->currentFont();
+    bigfont->setWeight(ui->bigFontBold->isChecked()?QFont::Bold : QFont::Normal);
+    bigfont->setItalic(ui->bigFontItalic->isChecked());
+
+
     for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
         schema::Channel &chan=schema::channel[i.key()];
         if (!chan.isNull()) {
@@ -169,4 +233,24 @@ void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
     if (position>0) {
         ui->IgnoreLCD->display(position);
     } else ui->IgnoreLCD->display(tr("OFF"));
+}
+
+void PreferencesDialog::on_applicationFontSize_valueChanged(int arg1)
+{
+    ui->applicationFont->currentFont().setPointSize(arg1);
+}
+
+void PreferencesDialog::on_graphFontSize_valueChanged(int arg1)
+{
+    ui->graphFont->currentFont().setPointSize(arg1);
+}
+
+void PreferencesDialog::on_titleFontSize_valueChanged(int arg1)
+{
+    ui->titleFont->currentFont().setPointSize(arg1);
+}
+
+void PreferencesDialog::on_bigFontSize_valueChanged(int arg1)
+{
+    ui->bigFont->currentFont().setPointSize(arg1);
 }

@@ -89,14 +89,8 @@
          <height>0</height>
         </size>
        </property>
-       <property name="font">
-        <font>
-         <family>Sans Serif</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -119,12 +113,6 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <family>Sans Serif</family>
-             <pointsize>9</pointsize>
-            </font>
            </property>
            <property name="cursor">
             <cursorShape>IBeamCursor</cursorShape>
@@ -151,12 +139,6 @@
          </property>
          <item>
           <widget class="QTreeWidget" name="treeWidget">
-           <property name="font">
-            <font>
-             <family>Sans Serif</family>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -254,11 +236,6 @@
                </item>
                <item>
                 <widget class="QToolButton" name="JournalNotesItalic">
-                 <property name="font">
-                  <font>
-                   <italic>true</italic>
-                  </font>
-                 </property>
                  <property name="text">
                   <string> i </string>
                  </property>
@@ -269,11 +246,6 @@
                </item>
                <item>
                 <widget class="QToolButton" name="JournalNotesUnderline">
-                 <property name="font">
-                  <font>
-                   <underline>true</underline>
-                  </font>
-                 </property>
                  <property name="text">
                   <string>u</string>
                  </property>
@@ -281,12 +253,6 @@
                </item>
                <item>
                 <widget class="QToolButton" name="JournalNotesBold">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
                  <property name="text">
                   <string>B</string>
                  </property>

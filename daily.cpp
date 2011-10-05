@@ -203,6 +203,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
     ui->tabWidget->setCurrentWidget(ui->details);
+
+    ui->webView->settings()->setFontSize(QWebSettings::DefaultFontSize,QApplication::font().pointSize());
  }
 
 Daily::~Daily()

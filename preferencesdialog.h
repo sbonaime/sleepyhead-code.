@@ -29,6 +29,14 @@ private slots:
 
     void on_IgnoreSlider_valueChanged(int value);
 
+    void on_applicationFontSize_valueChanged(int arg1);
+
+    void on_graphFontSize_valueChanged(int arg1);
+
+    void on_titleFontSize_valueChanged(int arg1);
+
+    void on_bigFontSize_valueChanged(int arg1);
+
 private:
     Ui::PreferencesDialog *ui;
     Profile * profile;
