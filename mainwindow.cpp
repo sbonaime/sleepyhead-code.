@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
 
-    if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=true;
+    if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=false;
     ui->actionDebug->setChecked(PROFILE["ShowDebug"].toBool());
 
     if (!PROFILE["ShowDebug"].toBool()) {
