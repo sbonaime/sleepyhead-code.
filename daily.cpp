@@ -191,6 +191,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
+    SPO2->forceMinY(60);
+    PULSE->forceMinY(40);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
         graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -607,6 +609,14 @@ void Daily::Load(QDate date)
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
+            fd=QDateTime::fromTime_t((*s)->first()/1000L);
+            ld=QDateTime::fromTime_t((*s)->last()/1000L);
+            QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
+            if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
+            tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+            html+=tmp;
+        }
+        for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
             fd=QDateTime::fromTime_t((*s)->first()/1000L);
             ld=QDateTime::fromTime_t((*s)->last()/1000L);
             QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");

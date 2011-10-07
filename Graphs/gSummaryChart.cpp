@@ -105,12 +105,13 @@ void SummaryChart::SetDay(Day * nullday)
         if (fnd) {
             if (!m_fday) m_fday=dn;
             m_values[dn][0]=total;
+            m_hours[dn]=day->hours();
             if (m_graphtype==GT_BAR) {
                 if (total<m_miny) m_miny=total;
                 if (total>m_maxy) m_maxy=total;
             }
             m_empty=false;
-       }
+       } else m_hours[dn]=0;
     }
     if (m_graphtype==GT_BAR) {
         m_miny=0;
@@ -202,8 +203,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     double total_val=0;
     qint64 lastQ=0;
     bool lastdaygood=false;
-    QVector<int> totalcounts;
-    QVector<EventDataType> totalvalues;
+    QVector<double> totalcounts;
+    QVector<double> totalvalues;
     //QVector<EventDataType> lastvalues;
     QVector<float> lastX;
     QVector<short> lastY;
@@ -242,6 +243,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     }
 
     Day * day;
+    EventDataType hours;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         zd=Q/86400000L;
         d=m_values.find(zd);
@@ -250,6 +252,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         if (Q<minx) continue;
         if (d!=m_values.end()) {
             day=m_days[zd];
+            hours=m_hours[zd];
 
             int x1=px;
             //x1-=(barw/2.0);
@@ -284,10 +287,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 } else if (m_type[j]==ST_MIN) {
                     if (tmp<totalvalues[j]) totalvalues[j]=tmp;
                 } else {
-                    totalvalues[j]+=tmp;
+                    totalvalues[j]+=tmp*hours;
                 }
-                if (tmp)
-                    totalcounts[j]++;
+                //if (tmp) {
+                    totalcounts[j]+=hours;
+                //}
                 tmp-=miny;
                 h=tmp*ymult; // height in pixels
 
@@ -357,7 +361,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         if ((m_type[j]==ST_MIN) || (m_type[j]==ST_MAX)) {
             f=totalvalues[j];
         } else {
-            f=totalvalues[j]/float(totalcounts[j]);
+            f=totalvalues[j]/totalcounts[j];
         }
         if (m_type[j]==ST_HOURS) {
             int h=f;

@@ -10,9 +10,9 @@ One id code per item
   <!-- Channel List -->
   <channel id="0x1000" class="data" name="CSR" details="Cheyne Stokes Respiration" label="CSR" color="light green"/>
   <channel id="0x1001" class="data" name="ClearAirway" details="Clear Airway Apnea" label="CA" color="purple"/>
-  <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="O" color="#40c0ff"/>
+  <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="OA" color="#40c0ff"/>
   <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" color="blue"/>
-  <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="A" color="dark green"/>
+  <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="UA" color="dark green"/>
   <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" color="dark grey"/>
   <channel id="0x1006" class="data" name="RERA" details="Respiratory Effort Related Arousal" label="RERA" color="gold"/>
   <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="" color="red"/>

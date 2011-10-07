@@ -79,8 +79,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     set=new SummaryChart("",GT_LINE);
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
-    set->addSlice("HumidSet",QColor("blue"),ST_SETAVG);
-    set->addSlice("FlexSet",QColor("red"),ST_SETAVG);
+    set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG);
+    set->addSlice("FlexSet",QColor("red"),ST_SETWAVG);
     //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
     SET->forceMinY(0);
     SET->forceMaxY(5);

@@ -92,6 +92,8 @@ private slots:
 
     void on_action_Edit_Profile_triggered();
 
+    void on_action_Link_Graph_Groups_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

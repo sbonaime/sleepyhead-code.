@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
     if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
     if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
+    if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=true;
     if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
     if (!PROFILE.Exists("UseAntiAliasing")) PROFILE["UseAntiAliasing"]=false;
     if (!PROFILE.Exists("IntentionalLeak")) PROFILE["IntentionalLeak"]=(double)0.0;
@@ -120,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
-
+    ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());
 
     first_load=true;
 
@@ -463,4 +464,10 @@ void MainWindow::on_action_Edit_Profile_triggered()
     newprof.edit(PREF["Profile"].toString());
     newprof.exec();
 
+}
+
+void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
+{
+    PROFILE["LinkGroups"]=arg1;
+    if (daily) daily->ReloadGraphs();
 }

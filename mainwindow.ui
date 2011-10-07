@@ -593,6 +593,7 @@
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Screenshot"/>
     <addaction name="separator"/>
+    <addaction name="action_Link_Graph_Groups"/>
     <addaction name="action_Reset_Graph_Layout"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -674,14 +675,6 @@
     <string>&amp;About SleepyHead</string>
    </property>
   </action>
-  <action name="action_Link_Graphs">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Link Graphs</string>
-   </property>
-  </action>
   <action name="action_Fullscreen">
    <property name="checkable">
     <bool>true</bool>
@@ -693,14 +686,6 @@
     <string>F11</string>
    </property>
   </action>
-  <action name="action_Noon_Date_Split">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Noon Date Split</string>
-   </property>
-  </action>
   <action name="actionDebug">
    <property name="checkable">
     <bool>true</bool>
@@ -709,37 +694,9 @@
     <string>Debug</string>
    </property>
   </action>
-  <action name="actionOverlay_Bars">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Overlay Bars</string>
-   </property>
-  </action>
-  <action name="action_Memory_Hog">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Memory Hog</string>
-   </property>
-  </action>
   <action name="action_Reset_Graph_Layout">
    <property name="text">
     <string>&amp;Reset Graph Layout</string>
-   </property>
-  </action>
-  <action name="actionEnable_Multithreading">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Enable Multithreading</string>
-   </property>
-   <property name="toolTip">
-    <string>Warning: Enabling this feature may require you to either hand edit the Preferences.xml or delete SleepyHeads data folder.
-</string>
    </property>
   </action>
   <action name="actionCheck_for_Updates">
@@ -771,6 +728,14 @@
   <action name="action_Edit_Profile">
    <property name="text">
     <string>&amp;Edit Profile</string>
+   </property>
+  </action>
+  <action name="action_Link_Graph_Groups">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Link Graph Groups</string>
    </property>
   </action>
  </widget>

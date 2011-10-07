@@ -1370,36 +1370,25 @@ void gGraph::resize(int width, int height)
 
 qint64 gGraph::MinX()
 {
-    bool first=true;
     qint64 val=0,tmp;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Minx();
-        if (!tmp) continue;
-        if (first) {
-            val=tmp;
-            first=false;
-        } else {
-            if (tmp < val) val = tmp;
-        }
+        //if (!tmp) continue;
+        if (!val || tmp < val) val = tmp;
     }
     if (val) rmin_x=val;
     return val;
 }
 qint64 gGraph::MaxX()
 {
-    bool first=true;
+    //bool first=true;
     qint64 val=0,tmp;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxx();
-        if (!tmp) continue;
-        if (first) {
-            val=tmp;
-            first=false;
-        } else {
-            if (tmp > val) val = tmp;
-        }
+        //if (!tmp) continue;
+        if (!val || tmp > val) val = tmp;
     }
     if (val) rmax_x=val;
     return val;
@@ -1412,7 +1401,8 @@ EventDataType gGraph::MinY()
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Miny();
-        if (tmp==0 && tmp==(*l)->Maxy()) continue;
+        if (tmp==0 && tmp==(*l)->Maxy())
+            continue;
         if (first) {
             val=tmp;
             first=false;
@@ -1443,11 +1433,11 @@ EventDataType gGraph::MaxY()
 
 void gGraph::SetMinX(qint64 v)
 {
-    rmax_x=min_x=v;
+    rmin_x=min_x=v;
 }
 void gGraph::SetMaxX(qint64 v)
 {
-    rmin_x=max_x=v;
+    rmax_x=max_x=v;
 }
 void gGraph::SetMinY(EventDataType v)
 {
@@ -1721,8 +1711,19 @@ void gGraphView::scrollbarValueChanged(int val)
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        //if (m_graphs[i]->group()==group)
-            m_graphs[i]->ResetBounds();
+        m_graphs[i]->ResetBounds();
+    }
+
+    if (PROFILE["LinkGroups"].toBool()) {
+        qint64 m1=0,m2=0;
+        for (int i=0;i<m_graphs.size();i++) {
+            if (!m1 || m_graphs[i]->min_x<m1) m1=m_graphs[i]->min_x;
+            if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
+        }
+        for (int i=0;i<m_graphs.size();i++) {
+            m_graphs[i]->SetMinX(m1);
+            m_graphs[i]->SetMaxX(m2);
+        }
     }
     qint64 xx=m_graphs[0]->max_x-m_graphs[0]->min_x;
     double d=xx/86400000L;
@@ -1731,7 +1732,6 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     int s=(xx/1000) % 60;
     int ms(xx % 1000);
     QString str;
-
     if (d>1) {
         str.sprintf("%1.0f days",ceil(double(xx)/86400000.0));
     } else {
@@ -1746,8 +1746,9 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->group()==group)
+        if (PROFILE["LinkGroups"].toBool()|| (m_graphs[i]->group()==group)) {
             m_graphs[i]->SetXBounds(minx,maxx);
+        }
     }
     qint64 xx=maxx-minx;
     double d=xx/86400000L;
