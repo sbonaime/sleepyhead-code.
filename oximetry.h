@@ -66,7 +66,7 @@ private:
     QextSerialPort *port;
     QString portname;
     PORTMODE portmode;
-    qint64 lasttime,starttime;
+    double lasttime,starttime;
     int lastpulse, lastspo2;
 
     Machine * mach;

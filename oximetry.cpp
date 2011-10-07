@@ -182,7 +182,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         ev_spo2->getTime().clear();
         ev_spo2->setCount(0);
 
-        lasttime=qint64(QDateTime::currentDateTime().toTime_t())*1000L;  // utc??
+        lasttime=QDateTime::currentDateTime().toTime_t()*1000L;  // utc??
         starttime=lasttime;
 
         session->SetSessionID(lasttime/1000L);
