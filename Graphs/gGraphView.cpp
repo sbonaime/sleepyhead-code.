@@ -1374,7 +1374,7 @@ qint64 gGraph::MinX()
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Minx();
-        //if (!tmp) continue;
+        if (!tmp) continue;
         if (!val || tmp < val) val = tmp;
     }
     if (val) rmin_x=val;
@@ -1713,6 +1713,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     qint64 m1=0,m2=0;
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->ResetBounds();
+        if (!m_graphs[i]->min_x) continue;
         if (!m1 || m_graphs[i]->min_x<m1) m1=m_graphs[i]->min_x;
         if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
     }

@@ -472,5 +472,5 @@ void MainWindow::on_action_Edit_Profile_triggered()
 void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
 {
     PROFILE["LinkGroups"]=arg1;
-    if (daily) daily->ReloadGraphs();
+    if (daily) daily->RedrawGraphs();
 }
