@@ -106,11 +106,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
+    // TODO: Move all this to profile creation.
+
     // This speeds up the second part of importing craploads.. later it will speed up the first part too.
     if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
+
     if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
     if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
-    if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=true;
+    if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=false;
     if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
     if (!PROFILE.Exists("UseAntiAliasing")) PROFILE["UseAntiAliasing"]=false;
     if (!PROFILE.Exists("IntentionalLeak")) PROFILE["IntentionalLeak"]=(double)0.0;

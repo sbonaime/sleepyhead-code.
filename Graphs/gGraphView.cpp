@@ -1710,22 +1710,20 @@ void gGraphView::scrollbarValueChanged(int val)
 }
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
+    qint64 m1=0,m2=0;
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->ResetBounds();
+        if (!m1 || m_graphs[i]->min_x<m1) m1=m_graphs[i]->min_x;
+        if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
     }
 
     if (PROFILE["LinkGroups"].toBool()) {
-        qint64 m1=0,m2=0;
-        for (int i=0;i<m_graphs.size();i++) {
-            if (!m1 || m_graphs[i]->min_x<m1) m1=m_graphs[i]->min_x;
-            if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
-        }
         for (int i=0;i<m_graphs.size();i++) {
             m_graphs[i]->SetMinX(m1);
             m_graphs[i]->SetMaxX(m2);
         }
     }
-    qint64 xx=m_graphs[0]->max_x-m_graphs[0]->min_x;
+    qint64 xx=m_graphs[0]->max_x - m_graphs[0]->min_x;
     double d=xx/86400000L;
     int h=xx/3600000L;
     int m=(xx/60000) % 60;
