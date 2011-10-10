@@ -77,6 +77,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->intentionalLeakEdit->setValue((*profile)["IntentionalLeak"].toDouble());
     ui->useMultithreading->setChecked((*profile)["EnableMultithreading"].toBool());
 
+    ui->oximetryGroupBox->setChecked((*profile)["EnableOximetry"].toBool());
+    ui->oximetrySync->setChecked((*profile)["SyncOximetry"].toBool());
+    ui->oximetryType->setCurrentIndex(ui->oximetryType->findText((*profile)["OximeterType"].toString(),Qt::MatchExactly));
+
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
     ui->eventTable->setColumnHidden(3,true);
@@ -176,6 +180,9 @@ void PreferencesDialog::Save()
     (*profile)["EnableGraphSnapshots"]=ui->useGraphSnapshots->isChecked();
     (*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
     (*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
+    (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
+    (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
+    (*profile)["OximeterType"]=ui->oximetryType->currentText();
 
     PREF["FontApplication"]=ui->applicationFont->currentText();
     PREF["FontApplicationSize"]=ui->applicationFontSize->value();

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>527</width>
-    <height>291</height>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -813,6 +813,9 @@ p, li { white-space: pre-wrap; }
        <string>Oximetry</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="margin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="label_21">
          <property name="text">
@@ -821,7 +824,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="oximetryGroupBox">
          <property name="title">
           <string>Use Oximetry</string>
          </property>
@@ -829,7 +832,7 @@ p, li { white-space: pre-wrap; }
           <bool>true</bool>
          </property>
          <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_20">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -842,10 +845,10 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <widget class="QComboBox" name="comboBox">
+             <widget class="QComboBox" name="oximetryType">
               <item>
                <property name="text">
                 <string>Contec CMS50</string>
@@ -859,7 +862,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox">
+             <widget class="QCheckBox" name="oximetrySync">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -873,15 +876,29 @@ p, li { white-space: pre-wrap; }
             </item>
            </layout>
           </item>
-          <item row="1" column="1">
+          <item row="3" column="1">
+           <widget class="QLabel" name="oximetryMessage">
+            <property name="text">
+             <string>Please Note: It is impossible to sync oximetry data with CPAP data without a valid timestamp.
+
+CMS50 data imported from SpO2Review (from .spoR files) or the serial import method does NOT have the correct timestamp needed to do this.
+
+Live view mode (using a serial cable) is the only way to acheive an accurate sync on CMS50 oximeters.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
            <spacer name="verticalSpacer_3">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>434</width>
-              <height>101</height>
+              <width>452</width>
+              <height>36</height>
              </size>
             </property>
            </spacer>
