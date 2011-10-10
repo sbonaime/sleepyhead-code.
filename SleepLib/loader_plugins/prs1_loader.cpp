@@ -185,7 +185,7 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
     }
     bool ok;
     QString pt=prop["ProductType"];
-    int i=pt.toInt(&ok,0);
+    int i=pt.toInt(&ok,16);
     if (ok) {
         if (ModelMap.find(i)!=ModelMap.end()) {
             m->properties["SubModel"]=ModelMap[i];
@@ -1211,9 +1211,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
 
 void InitModelMap()
 {
-    ModelMap[34]="RemStar Pro with C-Flex+";
-    ModelMap[35]="RemStar Auto with A-Flex";
-    ModelMap[37]="RemStar BiPAP Auto with Bi-Flex";
+    ModelMap[0x34]="RemStar Pro with C-Flex+";
+    ModelMap[0x35]="RemStar Auto with A-Flex";
+    ModelMap[0x37]="RemStar BiPAP Auto with Bi-Flex";
     ModelMap[0x41]="BiPAP autoSV Advanced";
 };
 
