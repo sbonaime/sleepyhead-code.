@@ -113,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
     if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
+    if (!PROFILE.Exists("EnableOximetry")) PROFILE["EnableOximetry"]=false;
     if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=false;
     if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
     if (!PROFILE.Exists("UseAntiAliasing")) PROFILE["UseAntiAliasing"]=false;
@@ -182,7 +183,10 @@ void MainWindow::Startup()
 
     overview=new Overview(ui->tabWidget,daily->SharedWidget());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
-
+    if (PROFILE["EnableOximetry"].toBool()) {
+        oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+        ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+    }
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
@@ -380,9 +384,9 @@ void MainWindow::on_oximetryButton_clicked()
 {
     bool first=false;
     if (!oximetry) {
-        if (!PROFILE.Exists("HaveCMS50") || !PROFILE["HaveCMS50"].toBool()) {
+        if (!PROFILE.Exists("EnableOximetry") || !PROFILE["EnableOximetry"].toBool()) {
             if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.\nNote: This section is not fully completed yet.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
-            PROFILE["HaveCMS50"]=true;
+            PROFILE["EnableOximetry"]=true;
         }
         oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
