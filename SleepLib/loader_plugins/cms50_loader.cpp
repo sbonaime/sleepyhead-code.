@@ -29,6 +29,8 @@ using namespace std;
 
 extern QProgressBar *qprogress;
 
+// Possibly need to replan this to include oximetry
+
 CMS50Loader::CMS50Loader()
 {
 }

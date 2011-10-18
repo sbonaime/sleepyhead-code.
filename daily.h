@@ -72,22 +72,20 @@ private:
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
-    //QVector<gGraph *> Graphs;
+
     QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 
     QList<int> splitter_sizes;
     Layer * AddCPAP(Layer *d) { CPAPData.push_back(d); return d; }
     Layer * AddOXI(Layer *d) { OXIData.push_back(d); return d; }
-    //void AddGraph(gGraph *w);
+
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
 
     MainWindow * mainwin;
     Ui::Daily *ui;
     QDate previous_date;
-    //QScrollArea *scrollArea;
-    //QVBoxLayout *splitter;
     QMenu *show_graph_menu;
 
     gGraphView *GraphView,*snapGV;

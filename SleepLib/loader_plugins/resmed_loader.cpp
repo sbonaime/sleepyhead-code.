@@ -395,9 +395,13 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             int dn=dif/86400000L;
             if (dn<days) {
                 int mode;
-                mode=(*stredf.lookup["Mode"]).data[dn];
-                sess->settings["EPR"]=(*stredf.lookup["EPR"]).data[dn];
-                sess->settings["EPRSet"]=(*stredf.lookup["EPR Level"]).data[dn];
+                if (stredf.lookup.contains("Mode"))
+                    mode=(*stredf.lookup["Mode"]).data[dn];
+                else mode=0;
+                if (stredf.lookup.contains("EPR"))
+                    sess->settings["EPR"]=(*stredf.lookup["EPR"]).data[dn];
+                if (stredf.lookup.contains("EPRSet"))
+                    sess->settings["EPRSet"]=(*stredf.lookup["EPR Level"]).data[dn];
 
                 EDFSignal *sig;
                 if (mode==0) {
