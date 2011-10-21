@@ -39,6 +39,8 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
         }
         item->setData(p.key());
         item->setEditable(false);
+
+        // Profile fonts arern't loaded yet.. Using generic font.
         item->setFont(QFont("Sans Serif",18,QFont::Bold,false));
         model->appendRow(item);
         i++;

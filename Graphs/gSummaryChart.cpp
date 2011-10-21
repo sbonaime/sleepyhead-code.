@@ -14,7 +14,7 @@ extern QLabel * qstatus2;
 SummaryChart::SummaryChart(QString label,GraphType type)
 :Layer(""),m_label(label),m_graphtype(type)
 {
-    QColor color=Qt::black;
+    //QColor color=Qt::black;
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
     addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
@@ -175,7 +175,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     barw=(float(width)/float(days));
 
-    qint64 ts;
+    //qint64 ts;
 
     graph=&w;
     float px=left;
@@ -201,7 +201,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     //QHash<short, EventDataType> lastvalues;
     int total_days=0;
     double total_val=0;
-    qint64 lastQ=0;
+    //qint64 lastQ=0;
     bool lastdaygood=false;
     QVector<double> totalcounts;
     QVector<double> totalvalues;
@@ -329,7 +329,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         } else lastdaygood=false;
         px+=barw;
         daynum++;
-        lastQ=Q;
+        //lastQ=Q;
     }
 
     lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
@@ -434,8 +434,8 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
         QDateTime dt1=QDateTime::fromTime_t(hl_day*86400).toLocalTime();
         QDateTime dt2=QDateTime::fromTime_t(hl_day*86400).toUTC();
 
-        QTime t1=dt1.time();
-        QTime t2=dt2.time();
+        //QTime t1=dt1.time();
+        //QTime t2=dt2.time();
 
         QDate dt=dt2.date();
         if (d!=m_values.end()) {
@@ -452,7 +452,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                     int t=d.value()[0]*3600.0;
                     int h=t/3600;
                     int m=(t / 60) % 60;
-                    int s=t % 60;
+                    //int s=t % 60;
                     val.sprintf("%02i:%02i",h,m);
                 } else
                     val=QString::number(d.value()[0],'f',2);
@@ -495,11 +495,13 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
 bool SummaryChart::mousePressEvent(QMouseEvent * event)
 {
+    Q_UNUSED(event)
     return false;
 }
 
 bool SummaryChart::mouseReleaseEvent(QMouseEvent * event)
 {
+    Q_UNUSED(event)
     hl_day=-1;
     graph->timedRedraw(2000);
     return false;

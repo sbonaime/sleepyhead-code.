@@ -41,29 +41,34 @@ public:
     //const QString Get(const char * name) {
 //        return Get(name);
   //  };
-    const QString Get(int code) {
+    /*const QString Get(int code) {
         return Get(p_codes[code]);
-    };
+    }*/
 
     // operator[] will not expand {} macros
 
     QVariant & operator[](QString name) {
         return p_preferences[name];
-    };
-    QVariant & operator[](int code) {
+    }
+    /*QVariant & operator[](int code) {
         return p_preferences[p_codes[code]];
-    };
+    }*/
 
     void Set(QString name,QVariant value) {
         p_preferences[name]=value;
-    };
-    void Set(int code,QVariant value) {
+    }
+    /*void Set(int code,QVariant value) {
         Set(p_codes[code],value);
-    };
+    }*/
 
     bool Exists(QString name) {
-        return (p_preferences.find(name)!=p_preferences.end());
-    };
+        return (p_preferences.contains(name));
+    }
+    bool ExistsAndTrue(QString name) {
+        QHash<QString,QVariant>::iterator i=p_preferences.find(name);
+        if (i==p_preferences.end()) return false;
+        return i.value().toBool();
+    }
     void Erase(QString name) {
         QHash<QString,QVariant>::iterator i=p_preferences.find(name);
         if (i!=p_preferences.end())
@@ -79,11 +84,11 @@ public:
     void SetComment(const QString & str) {
         p_comment=str;
     };
-    int  GetCode(QString name); // For registering/looking up new preference code.
+    //int  GetCode(QString name); // For registering/looking up new preference code.
 
     QHash<QString,QVariant> p_preferences;
 protected:
-    QHash<int,QString> p_codes;
+    //QHash<int,QString> p_codes;
     QString p_comment;
     QString p_name;
     QString p_filename;

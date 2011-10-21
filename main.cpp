@@ -77,6 +77,28 @@ int main(int argc, char *argv[])
 
     QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
 
+    QDateTime lastchecked, today=QDateTime::currentDateTime();
+    if (!PREF.Exists("Updates_AutoCheck")) {
+        PREF["Updates_AutoCheck"]=true;
+        PREF["Updates_CheckFrequency"]=3;
+    }
+    bool check_updates=false;
+    if (PREF["Updates_AutoCheck"].toBool()) {
+        int update_frequency=PREF["Updates_CheckFrequency"].toInt();
+        int days=1000;
+        // p_pref ->Get
+        lastchecked=PREF["Updates_LastChecked"].toDateTime();
+        if (PREF.Exists("Updates_LastChecked")) {
+            days=lastchecked.secsTo(today);
+            days/=86400;
+        };
+        if (days>update_frequency) {
+            //QMessageBox::information(NULL,"Check for updates","Placeholder. Would automatically check for updates here.",QMessageBox::Ok);
+            check_updates=true;
+            //PREF["Updates_LastChecked"]=today;
+        }
+    }
+
     if (!Profiles::profiles.size()) {
         NewProfile newprof(0);
         if (newprof.exec()==NewProfile::Rejected)
@@ -96,6 +118,7 @@ int main(int argc, char *argv[])
         }
     }
     PREF["VersionString"]=Version;
+
     p_profile=Profiles::Get(PREF["Profile"].toString());
 
     //if (!PREF.Exists("Profile")) PREF["Profile"]=getUserName();
@@ -107,20 +130,25 @@ int main(int argc, char *argv[])
         qDebug() << "Loaded Font: " << (*i);
     } */
 
-    if (!PREF.Exists("FontApplication")) {
-        PREF["FontApplication"]="Sans Serif";
-        PREF["FontApplicationSize"]=10;
-        PREF["FontApplicationBold"]=false;
-        PREF["FontApplicationItalic"]=false;
+    if (!PREF.Exists("Fonts_Application_Name")) {
+        PREF["Fonts_Application_Name"]="Sans Serif";
+        PREF["Fonts_Application_Size"]=10;
+        PREF["Fonts_Application_Bold"]=false;
+        PREF["Fonts_Application_Italic"]=false;
     }
 
 
-    QApplication::setFont(QFont(PREF["FontApplication"].toString(),PREF["FontApplicationSize"].toInt(),PREF["FontApplicationBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontApplicationItalic"].toBool()));
+    QApplication::setFont(QFont(PREF["Fonts_Application_Name"].toString(),
+                                PREF["Fonts_Application_Size"].toInt(),
+                                PREF["Fonts_Application_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                                PREF["Fonts_Application_Italic"].toBool()));
 
     qInstallMsgHandler(MyOutputHandler);
 
     MainWindow w;
     mainwin=&w;
+
+    if (check_updates) mainwin->CheckForUpdates();
     w.show();
 
     return a.exec();

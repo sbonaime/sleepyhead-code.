@@ -272,10 +272,10 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
     QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
     QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
-    QDate dd1=dt1.date();
-    QDate dd2=dt2.date();
+    //QDate dd1=dt1.date();
+    //QDate dd2=dt2.date();
     for (int s=0;s<stredf.GetNumSignals();s++) {
-        EDFSignal & es=*stredf.edfsignals[s];
+        //EDFSignal & es=*stredf.edfsignals[s];
         long recs=stredf.edfsignals[s]->nr*stredf.GetNumDataRecords();
 
         qDebug() << "STREDF:" << stredf.edfsignals[s]->label << recs;
@@ -398,6 +398,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 if (stredf.lookup.contains("Mode"))
                     mode=(*stredf.lookup["Mode"]).data[dn];
                 else mode=0;
+
+                // AutoSV machines don't have both fields
                 if (stredf.lookup.contains("EPR"))
                     sess->settings["EPR"]=(*stredf.lookup["EPR"]).data[dn];
                 if (stredf.lookup.contains("EPRSet"))

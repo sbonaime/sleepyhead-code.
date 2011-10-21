@@ -12,11 +12,13 @@
 gYSpacer::gYSpacer(int spacer)
     :Layer("")
 {
+    Q_UNUSED(spacer)
 }
 
 gXGrid::gXGrid(QColor col)
     :Layer("")
 {
+    Q_UNUSED(col)
     m_major_color=QColor(180,180,180,128);
     m_minor_color=QColor(220,220,220,128);
     m_show_major_lines=true;
@@ -38,7 +40,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     w.roundY(miny,maxy);
 
-    EventDataType dy=maxy-miny;
+    //EventDataType dy=maxy-miny;
 
     if (height<0) return;
 
@@ -196,7 +198,9 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
 bool gYAxis::mouseMoveEvent(QMouseEvent * event)
 {
-    int x=event->x();
-    int y=event->y();
+    Q_UNUSED(event)
+    //int x=event->x();
+    //int y=event->y();
     //qDebug() << "Hover at " << x << y;
+    return false;
 }

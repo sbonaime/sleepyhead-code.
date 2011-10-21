@@ -43,6 +43,7 @@ gXAxis::~gXAxis()
 }
 void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
+    Q_UNUSED(height)
     double px,py;
 
     int start_px=left;
@@ -136,7 +137,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     GLShortBuffer *lines=w.backlines();
 
 
-    int utcoff=m_utcfix ? tz_hours : 0;
+    //int utcoff=m_utcfix ? tz_hours : 0;
 
     //utcoff=0;
     int num_minor_ticks;
@@ -171,7 +172,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         int h=(j/3600000L) % 24L;
         int s=(j/1000L) % 60L;
         static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-        int d=(j/86400000) % 7;
+        //int d=(j/86400000) % 7;
 
         if (fitmode==0) {
             int d=(j/1000);

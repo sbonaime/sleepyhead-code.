@@ -20,37 +20,45 @@ void InitGraphs()
 {
     if (!_graph_init) {
 
-        if (!PREF.Exists("FontGraph")) {
-            PREF["FontGraph"]="Sans Serif";
-            PREF["FontGraphSize"]=10;
-            PREF["FontGraphBold"]=false;
-            PREF["FontGraphItalic"]=false;
+        if (!PREF.Exists("Fonts_Graph_Name")) {
+            PREF["Fonts_Graph_Name"]="Sans Serif";
+            PREF["Fonts_Graph_Size"]=10;
+            PREF["Fonts_Graph_Bold"]=false;
+            PREF["Fonts_Graph_Italic"]=false;
         }
-        if (!PREF.Exists("FontTitle")) {
-            PREF["FontTitle"]="Serif";
-            PREF["FontTitleSize"]=11;
-            PREF["FontTitleBold"]=true;
-            PREF["FontTitleItalic"]=false;
+        if (!PREF.Exists("Fonts_Title_Name")) {
+            PREF["Fonts_Title_Name"]="Serif";
+            PREF["Fonts_Title_Size"]=11;
+            PREF["Fonts_Title_Bold"]=true;
+            PREF["Fonts_Title_Italic"]=false;
         }
-        if (!PREF.Exists("FontBig")) {
-            PREF["FontBig"]="Serif";
-            PREF["FontBigSize"]=35;
-            PREF["FontBigBold"]=false;
-            PREF["FontBigItalic"]=false;
+        if (!PREF.Exists("Fonts_Big_Name")) {
+            PREF["Fonts_Big_Name"]="Serif";
+            PREF["Fonts_Big_Size"]=35;
+            PREF["Fonts_Big_Bold"]=false;
+            PREF["Fonts_Big_Italic"]=false;
         }
 
-        defaultfont=new QFont(PREF["FontGraph"].toString(),PREF["FontGraphSize"].toInt(),PREF["FontGraphBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontGraphItalic"].toBool());
-        mediumfont=new QFont(PREF["FontTitle"].toString(),PREF["FontTitleSize"].toInt(),PREF["FontTitleBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontTitleItalic"].toBool());
-        bigfont=new QFont(PREF["FontBig"].toString(),PREF["FontBigSize"].toInt(),PREF["FontBigBold"].toBool() ? QFont::Bold : QFont::Normal,PREF["FontBigItalic"].toBool());
-
-       // defaultfont->setPixelSize(11);
-        //mediumfont=new QFont("Serif",11);
-        //bigfont=new QFont("Serif",35);
+        defaultfont=new QFont(PREF["Fonts_Graph_Name"].toString(),
+                              PREF["Fonts_Graph_Size"].toInt(),
+                              PREF["Fonts_Graph_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                              PREF["Fonts_Graph_Italic"].toBool()
+                        );
+        mediumfont=new QFont(PREF["Fonts_Title_Name"].toString(),
+                             PREF["Fonts_Title_Size"].toInt(),
+                             PREF["Fonts_Title_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                             PREF["Fonts_Title_Italic"].toBool()
+                        );
+        bigfont=new QFont(PREF["Fonts_Big_Name"].toString(),
+                          PREF["Fonts_Big_Size"].toInt(),
+                          PREF["Fonts_Big_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                          PREF["Fonts_Big_Italic"].toBool()
+                     );
 
         defaultfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
         mediumfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
-        //mediumfont->setBold(true);
+
         _graph_init=true;
     }
 }
@@ -790,7 +798,7 @@ void gThread::run()
             g=graphview->popGraph();
             if (g) {
                 g->paint(g->m_lastbounds.x(),g->m_lastbounds.y(),g->m_lastbounds.width(),g->m_lastbounds.height());
-                int i=0;
+                //int i=0;
             } else {
                 //mutex.lock();
                 graphview->masterlock->release(1); // This thread gives up for now..
@@ -1027,7 +1035,7 @@ void gGraph::timedRedraw(int ms) { m_graphview->timedRedraw(ms); }
 void gGraph::mouseMoveEvent(QMouseEvent * event)
 {
    // qDebug() << m_title << "Move" << event->pos() << m_graphview->pointClicked();
-    int y=event->pos().y();
+    //int y=event->pos().y();
     int x=event->pos().x();
     int x2=m_graphview->pointClicked().x();//,y2=m_graphview->pointClicked().y();
     int w=m_lastbounds.width()-(right+m_marginright);
@@ -1036,7 +1044,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     double xmult=xx/w;
 
 
-    bool nolayer=false;
+    //bool nolayer=false;
     bool doredraw=false;
 
     if (m_graphview->m_selected_graph==this) {
@@ -1069,7 +1077,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 qstatus2->setText(str);
             }
             //m_graphview->updateGL();
-            nolayer=false;
+            //nolayer=false;
             doredraw=true;
         } else if (event->buttons() & Qt::RightButton) {
             m_graphview->setPointClicked(event->pos());
@@ -1099,7 +1107,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 //if (a2>rmax_x) a2=rmax_x;
                 m_graphview->SetXBounds(min_x,max_x,m_group,false);
                 doredraw=true;
-                nolayer=true;
+                //nolayer=true;
             } else {
                 qint64 qq=rmax_x-rmin_x;
                 xx=max_x-min_x;
@@ -1119,7 +1127,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
                 }
                 m_graphview->SetXBounds(min_x,max_x,m_group,false);
                 doredraw=true;
-                nolayer=true;
+                //nolayer=true;
 
             }
         }
@@ -1710,6 +1718,7 @@ void gGraphView::scrollbarValueChanged(int val)
 }
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
+    Q_UNUSED(refresh)
     qint64 m1=0,m2=0;
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->ResetBounds();
@@ -1868,7 +1877,7 @@ void gGraphView::paintGL()
     float h,w;
     //ax=px;//-m_offsetX;
 
-    bool threaded;
+    //bool threaded;
 
     // Tempory hack using this pref..
     /*if ((*profile)["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
@@ -1878,7 +1887,7 @@ void gGraphView::paintGL()
                 m_threads[i]->start();
         }
     } else threaded=false; */
-    threaded=false;
+    //threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
         numgraphs++;

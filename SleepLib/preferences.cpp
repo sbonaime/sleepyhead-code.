@@ -96,7 +96,7 @@ Preferences::~Preferences()
     //Save(); // Don't..Save calls a virtual function.
 }
 
-int Preferences::GetCode(QString s)
+/*int Preferences::GetCode(QString s)
 {
     int prefcode=0;
     for (QHash<int,QString>::iterator i=p_codes.begin(); i!=p_codes.end(); i++) {
@@ -105,7 +105,7 @@ int Preferences::GetCode(QString s)
     }
     p_codes[prefcode]=s;
     return prefcode;
-}
+}*/
 
 const QString Preferences::Get(QString name)
 {

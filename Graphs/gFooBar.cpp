@@ -51,6 +51,10 @@ gFooBar::~gFooBar()
 }
 void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
 {
+    Q_UNUSED(top);
+    Q_UNUSED(left);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
     if (!m_visible) return;
 
     double xx=w.max_x-w.min_x;
@@ -58,9 +62,7 @@ void gFooBar::paint(gGraph & w,int left, int top, int width, int height)
     if (xx==0)
         return;
 
-    height=height;
-
-    int start_px=left;
+    //int start_px=left;
     //int end_px=left+width;
 
     //float h=top;

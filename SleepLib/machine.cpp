@@ -313,7 +313,7 @@ bool Machine::SaveSession(Session *sess)
 
 bool Machine::Save()
 {
-    int size=0;
+    //int size;
     int cnt=0;
 
     QString path=profile->Get("DataFolder")+"/"+hexid();
@@ -341,7 +341,7 @@ bool Machine::Save()
 
 
     // Calculate size for progress bar
-    size=sessionlist.size();
+    //size=sessionlist.size();
 
     QHash<SessionID,Session *>::iterator s;
 

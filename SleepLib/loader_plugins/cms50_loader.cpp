@@ -154,6 +154,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
     some_code=tmp[0] | (tmp[1] << 8); // 512 or 256 observed
+    Q_UNUSED(some_code);
 
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
@@ -173,6 +174,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
     br=f.read((char *)tmp,2);
     if (br!=2) return false;
     some_more_code=tmp[0] | (tmp[1] << 8);  // == 0
+    Q_UNUSED(some_more_code);
 
     br=f.read((char *)tmp,34); // Read widechar date record
     if (br!=34) return false;

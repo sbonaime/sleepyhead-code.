@@ -16,7 +16,6 @@
 #include <QSettings>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "preferencesdialog.h"
 #include "newprofile.h"
 #include "SleepLib/schema.h"
 
@@ -69,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     overview=NULL;
     daily=NULL;
     oximetry=NULL;
+    prefdialog=NULL;
 
 /*    QGLFormat fmt;
     fmt.setDepth(false);
@@ -366,6 +366,7 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 void MainWindow::on_action_Preferences_triggered()
 {
     PreferencesDialog pd(this,p_profile);
+    prefdialog=&pd;
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
         pd.Save();
@@ -378,6 +379,7 @@ void MainWindow::on_action_Preferences_triggered()
             overview->RedrawGraphs();
         }
     }
+    prefdialog=NULL;
 }
 
 void MainWindow::on_oximetryButton_clicked()
@@ -398,8 +400,21 @@ void MainWindow::on_oximetryButton_clicked()
 
 }
 
+void MainWindow::CheckForUpdates()
+{
+    on_actionCheck_for_Updates_triggered();
+}
+
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
+    if (PREF.Exists("Updates_LastChecked")) {
+        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<3600) {
+            // Instead of doing this, just use the cached crud
+            if (prefdialog) prefdialog->RefreshLastChecked();
+            ui->statusbar->showMessage("No New Updates - You already checked in the last hour...",4000);
+            return;
+        }
+    }
     netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
 }
 void MainWindow::replyFinished(QNetworkReply * reply)
@@ -413,12 +428,14 @@ void MainWindow::replyFinished(QNetworkReply * reply)
             QByteArray data=reply->readAll();
             QString a=data;
             a=a.trimmed();
+            PREF["Updates_LastChecked"]=QDateTime::currentDateTime();
+            if (prefdialog) prefdialog->RefreshLastChecked();
             if (a>PREF["VersionString"].toString()) {
                 if (QMessageBox::question(this,"New Version","A newer version of SleepyHead is available, v"+a+".\nWould you like to update?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
                     QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
                 }
             } else {
-                QMessageBox::information(this,"SleepyHead v"+PREF["VersionString"].toString(),"You're already up to date!\nLatest version on sourceforge is v"+a,QMessageBox::Ok);
+                ui->statusbar->showMessage("Checked for Updates and SleepyHead is already up to date (v"+a+")",4000);
             }
        }
     } else {

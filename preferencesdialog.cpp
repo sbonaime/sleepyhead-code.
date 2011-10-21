@@ -1,6 +1,7 @@
 #include <QLabel>
 #include <QColorDialog>
 #include <QMessageBox>
+#include <QStatusBar>
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -65,6 +66,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
+    if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
+    ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
+
+    if (!PREF.Exists("Updates_CheckFrequency")) PREF["Updates_CheckFrequency"]=3;
+    ui->updateCheckEvery->setValue(PREF["Updates_CheckFrequency"].toInt());
+    if (PREF.Exists("Updates_LastChecked")) {
+        RefreshLastChecked();
+    } else ui->updateLastChecked->setText("Never");
 
     if (val>0) {
         ui->IgnoreLCD->display(val);
@@ -184,25 +193,28 @@ void PreferencesDialog::Save()
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
 
-    PREF["FontApplication"]=ui->applicationFont->currentText();
-    PREF["FontApplicationSize"]=ui->applicationFontSize->value();
-    PREF["FontApplicationBold"]=ui->applicationFontBold->isChecked();
-    PREF["FontApplicationItalic"]=ui->applicationFontItalic->isChecked();
+    PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
+    PREF["Updates_CheckFrequency"]=ui->updateCheckEvery->value();
 
-    PREF["FontGraph"]=ui->graphFont->currentText();
-    PREF["FontGraphSize"]=ui->graphFontSize->value();
-    PREF["FontGraphBold"]=ui->graphFontBold->isChecked();
-    PREF["FontGraphItalic"]=ui->graphFontItalic->isChecked();
+    PREF["Fonts_Application_Name"]=ui->applicationFont->currentText();
+    PREF["Fonts_Application_Size"]=ui->applicationFontSize->value();
+    PREF["Fonts_Application_Bold"]=ui->applicationFontBold->isChecked();
+    PREF["Fonts_Application_Italic"]=ui->applicationFontItalic->isChecked();
 
-    PREF["FontTitle"]=ui->titleFont->currentText();
-    PREF["FontTitleSize"]=ui->titleFontSize->value();
-    PREF["FontTitleBold"]=ui->titleFontBold->isChecked();
-    PREF["FontTitleItalic"]=ui->titleFontItalic->isChecked();
+    PREF["Fonts_Graph_Name"]=ui->graphFont->currentText();
+    PREF["Fonts_Graph_Size"]=ui->graphFontSize->value();
+    PREF["Fonts_Graph_Bold"]=ui->graphFontBold->isChecked();
+    PREF["Fonts_Graph_Italic"]=ui->graphFontItalic->isChecked();
 
-    PREF["FontBig"]=ui->bigFont->currentText();
-    PREF["FontBigSize"]=ui->bigFontSize->value();
-    PREF["FontBigBold"]=ui->bigFontBold->isChecked();
-    PREF["FontBigItalic"]=ui->bigFontItalic->isChecked();
+    PREF["Fonts_Title_Name"]=ui->titleFont->currentText();
+    PREF["Fonts_Title_Size"]=ui->titleFontSize->value();
+    PREF["Fonts_Title_Bold"]=ui->titleFontBold->isChecked();
+    PREF["Fonts_Title_Italic"]=ui->titleFontItalic->isChecked();
+
+    PREF["Fonts_Big_Name"]=ui->bigFont->currentText();
+    PREF["Fonts_Big_Size"]=ui->bigFontSize->value();
+    PREF["Fonts_Big_Bold"]=ui->bigFontBold->isChecked();
+    PREF["Fonts_Big_Italic"]=ui->bigFontItalic->isChecked();
 
     QFont font=ui->applicationFont->currentFont();
     font.setPointSize(ui->applicationFontSize->value());
@@ -259,4 +271,18 @@ void PreferencesDialog::on_useGraphSnapshots_toggled(bool checked)
         && QMessageBox::question(this,"Warning","The Graph Snapshots feature (used by the Pie Chart in Daily stats panel) has been known to not work on some older computers.\n\nIf you experience a crash because of it, you will have to remove your SleepApp folder and recreate your profile.\n\n(I'm fairly sure this Qt bug is fixed now, but this has not been tested enough. If you have previously seen the pie chart, it's perfectly ok.)\n\nAre you sure you want to enable it?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
         ui->useGraphSnapshots->setChecked(false);
     }
+}
+
+#include "mainwindow.h"
+extern MainWindow * mainwin;
+void PreferencesDialog::RefreshLastChecked()
+{
+    ui->updateLastChecked->setText(PREF["Updates_LastChecked"].toDateTime().toString(Qt::SystemLocaleLongDate));
+}
+
+void PreferencesDialog::on_checkForUpdatesButton_clicked()
+{
+    mainwin->statusBar()->showMessage("Checking for Updates");
+    ui->updateLastChecked->setText("Checking for Updates");
+    mainwin->CheckForUpdates();
 }

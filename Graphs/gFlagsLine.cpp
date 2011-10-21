@@ -12,7 +12,7 @@
 
 gFlagsGroup::gFlagsGroup()
 {
-    static QColor col=Qt::black;
+    //static QColor col=Qt::black;
 
     addGLBuf(quads=new GLShortBuffer(512,GL_QUADS));
     addGLBuf(lines=new GLShortBuffer(20,GL_LINE_LOOP));

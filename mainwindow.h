@@ -15,6 +15,7 @@
 #include "overview.h"
 #include "oximetry.h"
 #include "report.h"
+#include "preferencesdialog.h"
 
 const int major_version=0;
 const int minor_version=8;
@@ -40,6 +41,7 @@ public:
     ~MainWindow();
     void Log(QString s);
     QMenu * CreateMenu(QString title);
+    void CheckForUpdates();
 
 private slots:
     void on_action_Import_Data_triggered();
@@ -102,7 +104,7 @@ private:
     bool first_load;
     //Profile *profile;
     QNetworkAccessManager *netmanager;
-
+    PreferencesDialog *prefdialog;
     QMutex loglock,strlock;
     QStringList logbuffer;
     QTime logtime;

@@ -42,6 +42,12 @@ gSessionTime::~gSessionTime()
 
 void gSessionTime::paint(gGraph & w,int left, int top, int width, int height)
 {
+    Q_UNUSED(w);
+    Q_UNUSED(left);
+    Q_UNUSED(top);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+
     if (!m_visible) return;
     /*if (!data) return;
     if (!data->IsReady()) return;

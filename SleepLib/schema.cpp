@@ -119,7 +119,7 @@ bool ChannelList::Load(QString filename)
     DataType datatype;
     Channel *chan;
     QColor color;
-    bool multi;
+    //bool multi;
     ScopeType scope;
     int line;
     for (int i=0;i<grp.size();i++) {
@@ -158,8 +158,8 @@ bool ChannelList::Load(QString filename)
             scopestr=e.attribute("scope","session");
             if (scopestr.at(0)==QChar('!')) {
                 scopestr=scopestr.mid(1);
-                multi=true;
-            } multi=false;
+                //multi=true;
+            } //multi=false;
             if (!Scopes.contains(scopestr)) {
                 qWarning() << "Dodgy Scope "<< scopestr << "in" << filename << "line" << line;
                 continue;
@@ -215,7 +215,7 @@ bool ChannelList::Load(QString filename)
                 if (channels.contains(linkid)) {
                     Channel *it=channels[linkid];
                     it->m_links.push_back(chan);
-                    int i=0;
+                    //int i=0;
                 } else {
                     qWarning() << "Linked channel must be defined first in" << filename <<"line" << line;
                 }
@@ -244,6 +244,7 @@ bool ChannelList::Load(QString filename)
 }
 bool ChannelList::Save(QString filename)
 {
+    Q_UNUSED(filename)
     return false;
 }
 
