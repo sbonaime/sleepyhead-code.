@@ -11,6 +11,8 @@
 #include <QGLContext>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QSystemTrayIcon>
+
 #include "daily.h"
 #include "overview.h"
 #include "oximetry.h"
@@ -42,7 +44,7 @@ public:
     void Log(QString s);
     QMenu * CreateMenu(QString title);
     void CheckForUpdates();
-
+    void Notify(QString s);
 private slots:
     void on_action_Import_Data_triggered();
 
@@ -108,7 +110,8 @@ private:
     QMutex loglock,strlock;
     QStringList logbuffer;
     QTime logtime;
-
+    QSystemTrayIcon *systray;
+    QMenu *systraymenu;
 };
 
 #endif // MAINWINDOW_H

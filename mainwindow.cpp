@@ -140,10 +140,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString)));
 
+    if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
+        systray=new QSystemTrayIcon(QIcon(":/docs/sheep.png"),this);
+        systray->show();
+        systraymenu=new QMenu(this);
+        systray->setContextMenu(systraymenu);
+        QAction *a=systraymenu->addAction("SleepyHead v"+PREF["VersionString"].toString());
+        a->setEnabled(false);
+        systraymenu->addSeparator();
+        systraymenu->addAction("About",this,SLOT(on_action_About_triggered()));
+        systraymenu->addAction("Check for Updates",this,SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addSeparator();
+        systraymenu->addAction("Exit",this,SLOT(close()));
+    } else {
+        systray=NULL;
+        systraymenu=NULL;
+    }
+
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
+    if (systray) delete systray;
+    if (systraymenu) delete systraymenu;
+
     //if (!isMaximized()) {
         QSettings settings("Jedimark", "SleepyHead");
         settings.setValue("MainWindow/geometry", saveGeometry());
@@ -166,9 +186,18 @@ MainWindow::~MainWindow()
     mainwin=NULL;
     delete ui;
 }
+void MainWindow::Notify(QString s)
+{
+    if (systray) {
+        systray->showMessage("SleepyHead v"+PREF["VersionString"].toString(),s,QSystemTrayIcon::Information,5000);
+    } else {
+        ui->statusbar->showMessage(s,5000);
+    }
+}
 
 void MainWindow::Startup()
 {
+    //Notify("Hi!");
     qDebug() << PREF["AppName"].toString().toAscii()+" v"+PREF["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
@@ -402,6 +431,7 @@ void MainWindow::on_oximetryButton_clicked()
 
 void MainWindow::CheckForUpdates()
 {
+    mainwin->Notify("Checking for Updates");
     on_actionCheck_for_Updates_triggered();
 }
 
@@ -411,7 +441,7 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
         if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<3600) {
             // Instead of doing this, just use the cached crud
             if (prefdialog) prefdialog->RefreshLastChecked();
-            ui->statusbar->showMessage("No New Updates - You already checked in the last hour...",4000);
+            mainwin->Notify("No New Updates - You already checked in the last hour...");
             return;
         }
     }
@@ -435,7 +465,7 @@ void MainWindow::replyFinished(QNetworkReply * reply)
                     QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
                 }
             } else {
-                ui->statusbar->showMessage("Checked for Updates and SleepyHead is already up to date (v"+a+")",4000);
+                mainwin->Notify("Checked for Updates: SleepyHead is already up to date!");
             }
        }
     } else {
