@@ -13,7 +13,13 @@ class gYSpacer:public Layer
 {
     public:
         gYSpacer(int spacer=20);
-        virtual void paint(gGraph & w,int left,int top, int width, int height) {w=w; left=left; top=top; width=width; height=height; }
+        virtual void paint(gGraph & w,int left,int top, int width, int height) {
+            Q_UNUSED(w)
+            Q_UNUSED(left)
+            Q_UNUSED(top)
+            Q_UNUSED(width)
+            Q_UNUSED(height)
+        }
 
 };
 

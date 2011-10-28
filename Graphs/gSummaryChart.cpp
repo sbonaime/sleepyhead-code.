@@ -56,7 +56,6 @@ void SummaryChart::SetDay(Day * nullday)
         if (!m_minx || tt<m_minx) m_minx=tt;
         if (!m_maxx || tt>m_maxx) m_maxx=tt;
 
-
         total=0;
         bool fnd=false;
         for (int j=0;j<m_codes.size();j++) {
@@ -428,10 +427,12 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
     {
         hl_day=zd;
+        graph->Trigger(2000);
+
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
         x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
         int y=event->y()+rtop-15;
-        QDateTime dt1=QDateTime::fromTime_t(hl_day*86400).toLocalTime();
+        //QDateTime dt1=QDateTime::fromTime_t(hl_day*86400).toLocalTime();
         QDateTime dt2=QDateTime::fromTime_t(hl_day*86400).toUTC();
 
         //QTime t1=dt1.time();
@@ -488,8 +489,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
         } else {
             QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\nNo Data";
             graph->ToolTip(z,x,y-10,2200);
+            return true;
         }
     }
+
+
     return false;
 }
 
@@ -505,7 +509,9 @@ bool SummaryChart::mousePressEvent(QMouseEvent * event)
 
 bool SummaryChart::keyPressEvent(QKeyEvent * event)
 {
+    Q_UNUSED(event)
     //qDebug() << "Summarychart Keypress";
+    return false;
 }
 
 #include "mainwindow.h"
@@ -513,11 +519,13 @@ extern MainWindow *mainwin;
 bool SummaryChart::mouseReleaseEvent(QMouseEvent * event)
 {
     if (event->modifiers() & Qt::ShiftModifier) {
-        QDateTime d=QDateTime::fromTime_t(hl_day*86400).toUTC();
-        mainwin->getDaily()->LoadDate(d.date());
-        mainwin->JumpDaily();
-        //qDebug() << "Jump to daily view?" << d;
-        return true;
+        if (hl_day>0) {
+            QDateTime d=QDateTime::fromTime_t(hl_day*86400).toUTC();
+            mainwin->getDaily()->LoadDate(d.date());
+            mainwin->JumpDaily();
+           //qDebug() << "Jump to daily view?" << d;
+            return true;
+        }
     }
     Q_UNUSED(event)
     hl_day=-1;

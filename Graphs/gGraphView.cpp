@@ -833,7 +833,12 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
     m_forceMinY=m_forceMaxY=false;
+    timer=new QTimer(graphview);
+    connect(timer,SIGNAL(timeout()),SLOT(Timeout()));
 }
+//gGraph::gGraph()
+//{
+//}
 gGraph::~gGraph()
 {
     for (int i=0;i<m_layers.size();i++) {
@@ -842,8 +847,29 @@ gGraph::~gGraph()
     }
     m_layers.clear();
     delete m_quad;
+
+    timer->stop();
+    disconnect(timer,0,0,0);
+    delete timer;
+}
+void gGraph::Trigger(int ms)
+{
+    if (timer->isActive()) timer->stop();
+    timer->setSingleShot(true);
+    timer->start(ms);
+}
+void gGraph::Timeout()
+{
+    deselect();
+    m_graphview->timedRedraw(0);
 }
 
+void gGraph::deselect()
+{
+    for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
+        (*l)->deselect();
+    }
+}
 bool gGraph::isEmpty()
 {
     bool empty=true;
@@ -1030,7 +1056,10 @@ void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short heigh
     m_layers.push_back(l);
 }
 void gGraph::redraw() { m_graphview->updateGL(); }
-void gGraph::timedRedraw(int ms) { m_graphview->timedRedraw(ms); }
+void gGraph::timedRedraw(int ms)
+{
+    m_graphview->timedRedraw(ms);
+}
 
 void gGraph::mouseMoveEvent(QMouseEvent * event)
 {
@@ -1577,6 +1606,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     quads->forceAntiAlias(true);
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter=true;
+    timer=new QTimer(this);
+    connect(timer,SIGNAL(timeout()),SLOT(TimedRefresh()));
+
 }
 gGraphView::~gGraphView()
 {
@@ -1595,6 +1627,9 @@ gGraphView::~gGraphView()
     if (m_scrollbar) {
         this->disconnect(SIGNAL(sliderMoved(int)),this);
     }
+    disconnect(timer,0,0,0);
+    timer->stop();
+    delete timer;
 }
 void gGraphView::DrawTextQue()
 {
@@ -2309,7 +2344,11 @@ void gGraphView::TimedRefresh()
 }
 void gGraphView::timedRedraw(int ms)
 {
-    QTimer::singleShot(ms,this,SLOT(TimedRefresh()));
+    if (timer->isActive())
+        timer->stop();
+    timer->setSingleShot(true);
+    timer->start(ms);
+    //QTimer::singleShot(ms,this,SLOT(TimedRefresh()));
 }
 void gGraphView::resetLayout()
 {

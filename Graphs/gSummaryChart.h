@@ -23,7 +23,9 @@ class SummaryChart:public Layer
         virtual void SetDay(Day * day=NULL);
         virtual bool isEmpty() { return m_empty; }
         void addSlice(ChannelID code, QColor color, SummaryType type) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); }
-        void deselect() { hl_day=-1; }
+        virtual void deselect() {
+            hl_day=-1;
+        }
         void setMachineType(MachineType type) { m_machinetype=type; }
         MachineType machineType() { return m_machinetype; }
     protected:
@@ -56,28 +58,7 @@ class SummaryChart:public Layer
         virtual bool mouseMoveEvent(QMouseEvent * event);
         virtual bool mousePressEvent(QMouseEvent * event);
         virtual bool mouseReleaseEvent(QMouseEvent * event);
-
 };
 
-/*
-class AHIChart:public gBarChart
-{
-public:
-    AHIChart(Profile *profile);
-    virtual void SetDay(Day * day);
-};
-class UsageChart:public gBarChart
-{
-public:
-    UsageChart(Profile *profile);
-    virtual void SetDay(Day * day);
-};
-
-class AvgChart:public gBarChart
-{
-public:
-    AvgChart(Profile *profile);
-    virtual void SetDay(Day * day);
-};*/
 
 #endif // GBARCHART_H

@@ -134,6 +134,8 @@ public:
     const ChannelID & code() { return m_code; }
     virtual bool isEmpty();
 
+    virtual void deselect() { }
+
     virtual qint64 Minx() { if (m_day) return m_day->first(); return m_minx; }
     virtual qint64 Maxx() { if (m_day) return m_day->last(); return m_maxx; }
     virtual EventDataType Miny() { return m_miny; }
@@ -250,13 +252,17 @@ protected slots:
     void timerDone();
 };
 
-class gGraph
+class gGraph:public QObject
 {
+    Q_OBJECT
 public:
     friend class gGraphView;
 
+    //gGraph();
     gGraph(gGraphView * graphview=NULL, QString title="",int height=100,short group=0);
     virtual ~gGraph();
+    void deselect();
+    void Trigger(int ms);
 
     void setVisible(bool b) { m_visible=b; }
     bool visible() { return m_visible; }
@@ -328,6 +334,7 @@ public:
     short left,right,top,bottom; // dirty magin hacks..
 
     QRect m_lastbounds;
+    QTimer * timer;
 
 protected:
     //void invalidate();
@@ -359,6 +366,10 @@ protected:
     Day * m_day;
     GLBuffer * m_quad;
     bool m_forceMinY,m_forceMaxY;
+signals:
+
+protected slots:
+    void Timeout();
 };
 
 class gGraphView : public QGLWidget
@@ -391,6 +402,7 @@ public:
 
     gGraph *m_selected_graph;
     gToolTip * m_tooltip;
+    QTimer * timer;
 
     void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont);
     int horizTravel() { return m_horiz_travel; }
