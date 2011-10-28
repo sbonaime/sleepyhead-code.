@@ -495,7 +495,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
 bool SummaryChart::mousePressEvent(QMouseEvent * event)
 {
-    if (event->modifiers() && Qt::ShiftModifier) {
+    if (event->modifiers() & Qt::ShiftModifier) {
         //qDebug() << "Jump to daily view?";
         return true;
     }
@@ -512,7 +512,7 @@ bool SummaryChart::keyPressEvent(QKeyEvent * event)
 extern MainWindow *mainwin;
 bool SummaryChart::mouseReleaseEvent(QMouseEvent * event)
 {
-    if (event->modifiers() && Qt::ShiftModifier) {
+    if (event->modifiers() & Qt::ShiftModifier) {
         QDateTime d=QDateTime::fromTime_t(hl_day*86400).toUTC();
         mainwin->getDaily()->LoadDate(d.date());
         mainwin->JumpDaily();
