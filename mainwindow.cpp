@@ -326,6 +326,10 @@ void MainWindow::on_dailyButton_clicked()
     daily->RedrawGraphs();
     qstatus2->setText("Daily");
 }
+void MainWindow::JumpDaily()
+{
+    on_dailyButton_clicked();
+}
 
 void MainWindow::on_overviewButton_clicked()
 {

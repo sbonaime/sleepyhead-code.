@@ -45,6 +45,10 @@ public:
     QMenu * CreateMenu(QString title);
     void CheckForUpdates();
     void Notify(QString s);
+    Daily *getDaily() { return daily; }
+    Overview *getOverview() { return overview; }
+    Oximetry *getOximetry() { return oximetry; }
+    void JumpDaily();
 private slots:
     void on_action_Import_Data_triggered();
 

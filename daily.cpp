@@ -343,6 +343,12 @@ void Daily::UpdateCalendarDay(QDate date)
     ui->calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
 
 }
+void Daily::LoadDate(QDate date)
+{
+    ui->calendar->setSelectedDate(date);
+    on_calendar_selectionChanged();
+}
+
 void Daily::on_calendar_selectionChanged()
 {
     if (previous_date.isValid())

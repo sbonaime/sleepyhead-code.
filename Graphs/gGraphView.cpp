@@ -1314,6 +1314,10 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
 {
+    bool ok=false;
+    for (QVector<Layer *>::iterator i=m_layers.begin();i!=m_layers.end();i++) {
+        (*i)->keyPressEvent(event);
+    }
     qDebug() << m_title << "Key Pressed.. implement me" << event->key();
 }
 
@@ -2255,6 +2259,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         }
     }
     if (!g) return;
+    g->keyPressEvent(event);
 
     if (event->key()==Qt::Key_Left) {
         double xx=g->max_x-g->min_x;

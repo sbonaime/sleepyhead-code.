@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     XInitThreads();
 #endif
     QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
+
     QApplication a(argc, argv);
     a.setApplicationName("SleepyHead");
     initialize();

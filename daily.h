@@ -41,6 +41,7 @@ public:
     void ResetGraphLayout();
     gGraphView *SharedWidget() { return GraphView; }
     void RedrawGraphs();
+    void LoadDate(QDate date);
 
 private slots:
 

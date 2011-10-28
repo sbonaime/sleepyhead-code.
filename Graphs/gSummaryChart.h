@@ -51,6 +51,8 @@ class SummaryChart:public Layer
         gGraph * graph;
         GraphType m_graphtype;
         MachineType m_machinetype;
+
+        virtual bool keyPressEvent(QKeyEvent * event);
         virtual bool mouseMoveEvent(QMouseEvent * event);
         virtual bool mousePressEvent(QMouseEvent * event);
         virtual bool mouseReleaseEvent(QMouseEvent * event);
