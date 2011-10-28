@@ -102,6 +102,8 @@ private slots:
 
     void on_action_Link_Graph_Groups_toggled(bool arg1);
 
+    void on_action_CycleTabs_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

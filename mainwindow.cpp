@@ -529,3 +529,13 @@ void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
     PROFILE["LinkGroups"]=arg1;
     if (daily) daily->RedrawGraphs();
 }
+
+void MainWindow::on_action_CycleTabs_triggered()
+{
+    int i;
+    qDebug() << "Switching Tabs";
+    i=ui->tabWidget->currentIndex()+1;
+    if (i >= ui->tabWidget->count())
+        i=0;
+    ui->tabWidget->setCurrentIndex(i);
+}

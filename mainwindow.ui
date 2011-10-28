@@ -657,9 +657,12 @@
     <string>F4</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_CycleTabs">
    <property name="text">
     <string>-</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Tab</string>
    </property>
   </action>
   <action name="actionUse_AntiAliasing">
