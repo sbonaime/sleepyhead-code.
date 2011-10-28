@@ -519,6 +519,9 @@ extern MainWindow *mainwin;
 bool SummaryChart::mouseReleaseEvent(QMouseEvent * event)
 {
     if (event->modifiers() & Qt::ShiftModifier) {
+        if (hl_day<0) {
+            mouseMoveEvent(event);
+        }
         if (hl_day>0) {
             QDateTime d=QDateTime::fromTime_t(hl_day*86400).toUTC();
             mainwin->getDaily()->LoadDate(d.date());
