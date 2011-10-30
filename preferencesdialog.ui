@@ -196,8 +196,18 @@ It has no effect on single cpu machines.</string>
          </property>
         </widget>
        </item>
+       <item row="7" column="2">
+        <widget class="QCheckBox" name="skipEmptyDays">
+         <property name="toolTip">
+          <string>Skip empty days with Prev &amp; Next buttons above daily view calendar</string>
+         </property>
+         <property name="text">
+          <string>Skip Empty Days</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="3">
-        <spacer name="horizontalSpacer_6">
+        <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -208,16 +218,6 @@ It has no effect on single cpu machines.</string>
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="7" column="2">
-        <widget class="QCheckBox" name="skipEmptyDays">
-         <property name="toolTip">
-          <string>Skip empty days with Prev &amp; Next buttons above daily view calendar</string>
-         </property>
-         <property name="text">
-          <string>Skip Empty Days</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -861,6 +861,19 @@ p, li { white-space: pre-wrap; }
              <string>Application</string>
             </property>
            </widget>
+          </item>
+          <item row="3" column="5">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>

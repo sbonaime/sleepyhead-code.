@@ -262,7 +262,6 @@ void MainWindow::on_action_Import_Data_triggered()
             PROFILE.Save();
             if (daily) daily->ReloadGraphs();
             if (overview) overview->ReloadGraphs();
-            //qDebug() << "overview->ReloadGraphs();";
         }
         qstatus->setText("");
         qprogress->hide();
@@ -404,7 +403,7 @@ void MainWindow::on_action_Preferences_triggered()
         qDebug() << "Preferences Accepted";
         pd.Save();
         if (daily) {
-            daily->ReloadGraphs();
+            //daily->ReloadGraphs();
             daily->RedrawGraphs();
         }
         if (overview) {
