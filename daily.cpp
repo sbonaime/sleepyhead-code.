@@ -856,12 +856,33 @@ void Daily::on_JournalNotesUnderline_clicked()
 
 void Daily::on_prevDayButton_clicked()
 {
-    LoadDate(previous_date.addDays(-1));
+    QDate d=previous_date;
+    bool found=false;
+    for (int i=0;i<90;i++) {
+        d=d.addDays(-1);
+        if (PROFILE.GetDay(d)) {
+            LoadDate(d);
+            found=true;
+            break;
+        }
+    }
+    if (!found) LoadDate(previous_date.addDays(-1));
 }
 
 void Daily::on_nextDayButton_clicked()
 {
-    LoadDate(previous_date.addDays(1));
+    QDate d=previous_date;
+    bool found=false;
+    for (int i=0;i<90;i++) {
+        d=d.addDays(1);
+        if (PROFILE.GetDay(d)) {
+            LoadDate(d);
+            found=true;
+            break;
+        }
+    }
+    if (!found) LoadDate(previous_date.addDays(1));
+    //LoadDate(previous_date.addDays(1));
 }
 
 void Daily::on_calButton_toggled(bool checked)
