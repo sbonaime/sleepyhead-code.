@@ -66,8 +66,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
-    if (!PREF.Exists("SkipEmptyDays")) PREF["SkipEmptyDays"]=true;
-    ui->skipEmptyDays->setChecked(PREF["SkipEmptyDays"].toBool());
+    if (!(*profile).Exists("SkipEmptyDays")) (*profile)["SkipEmptyDays"]=true;
+    ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
@@ -196,7 +196,7 @@ void PreferencesDialog::Save()
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
 
-    PREF["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
+    (*profile)["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
     PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
     PREF["Updates_CheckFrequency"]=ui->updateCheckEvery->value();
 

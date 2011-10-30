@@ -856,7 +856,7 @@ void Daily::on_JournalNotesUnderline_clicked()
 
 void Daily::on_prevDayButton_clicked()
 {
-    if (!PREF.ExistsAndTrue("SkipEmptyDays")) {
+    if (!PROFILE.ExistsAndTrue("SkipEmptyDays")) {
         LoadDate(previous_date.addDays(-1));
     } else {
         QDate d=previous_date;
@@ -872,7 +872,7 @@ void Daily::on_prevDayButton_clicked()
 
 void Daily::on_nextDayButton_clicked()
 {
-    if (!PREF.ExistsAndTrue("SkipEmptyDays")) {
+    if (!PROFILE.ExistsAndTrue("SkipEmptyDays")) {
         LoadDate(previous_date.addDays(1));
     } else {
         QDate d=previous_date;
