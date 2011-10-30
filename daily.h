@@ -42,7 +42,6 @@ public:
     gGraphView *SharedWidget() { return GraphView; }
     void RedrawGraphs();
     void LoadDate(QDate date);
-
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);
@@ -57,6 +56,12 @@ private slots:
 
     void on_JournalNotesUnderline_clicked();
     void ShowHideGraphs();
+    void on_prevDayButton_clicked();
+
+    void on_nextDayButton_clicked();
+
+    void on_calButton_toggled(bool checked);
+
 protected:
 
 private:

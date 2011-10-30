@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>840</width>
-    <height>622</height>
+    <width>331</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,33 +20,64 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="margin">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QSplitter" name="splitter_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QSplitter" name="splitter">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
+      <widget class="QWidget" name="">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QToolButton" name="prevDayButton">
+          <property name="text">
+           <string>&lt; Prev</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="calButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::UpArrow</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="nextDayButton">
+          <property name="text">
+           <string>Next &gt;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QCalendarWidget" name="calendar">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -99,7 +130,7 @@
         <attribute name="title">
          <string>Details</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -109,7 +140,7 @@
          <item>
           <widget class="QWebView" name="webView">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -130,10 +161,7 @@
         <attribute name="title">
          <string>Events</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <property name="spacing">
-          <number>0</number>
-         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <property name="margin">
           <number>0</number>
          </property>
@@ -167,7 +195,7 @@
         <attribute name="title">
          <string>Notes</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_10">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -175,100 +203,99 @@
           <number>0</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
            <property name="spacing">
-            <number>2</number>
+            <number>0</number>
            </property>
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <property name="spacing">
-              <number>0</number>
+            <widget class="QLabel" name="label_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Journal</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="JournalNotesFontsize">
+             <property name="maximumSize">
+              <size>
+               <width>85</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="maxVisibleItems">
+              <number>3</number>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
              </property>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Journal</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="JournalNotesFontsize">
-                 <property name="maximumSize">
-                  <size>
-                   <width>85</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="maxVisibleItems">
-                  <number>3</number>
-                 </property>
-                 <property name="sizeAdjustPolicy">
-                  <enum>QComboBox::AdjustToContents</enum>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>Small</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Medium</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Big</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="JournalNotesColour">
-                 <property name="text">
-                  <string>Color</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="JournalNotesItalic">
-                 <property name="text">
-                  <string> i </string>
-                 </property>
-                 <property name="shortcut">
-                  <string>Ctrl+I</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="JournalNotesUnderline">
-                 <property name="text">
-                  <string>u</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="JournalNotesBold">
-                 <property name="text">
-                  <string>B</string>
-                 </property>
-                 <property name="shortcut">
-                  <string>Ctrl+B</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <property name="text">
+               <string>Small</string>
+              </property>
              </item>
              <item>
-              <widget class="QTextEdit" name="JournalNotes"/>
+              <property name="text">
+               <string>Medium</string>
+              </property>
              </item>
-            </layout>
+             <item>
+              <property name="text">
+               <string>Big</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="JournalNotesColour">
+             <property name="text">
+              <string>Color</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="JournalNotesItalic">
+             <property name="text">
+              <string> i </string>
+             </property>
+             <property name="shortcut">
+              <string>Ctrl+I</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="JournalNotesUnderline">
+             <property name="text">
+              <string>u</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="JournalNotesBold">
+             <property name="text">
+              <string>B</string>
+             </property>
+             <property name="shortcut">
+              <string>Ctrl+B</string>
+             </property>
+            </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="JournalNotes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -276,172 +303,176 @@
         <attribute name="title">
          <string>Extras</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_13">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
+          <widget class="QLabel" name="label_6">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
+           </property>
+           <property name="text">
+            <string>This tab is fake.. What to put here?</string>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
            <item>
-            <widget class="QLabel" name="label_6">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="text">
-              <string>This tab is fake.. What to put here?</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="spacing">
-              <number>2</number>
-             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Energy Level</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="EnergySlider">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="tickPosition">
-                  <enum>QSlider::TicksAbove</enum>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QLabel" name="label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Energy Level</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Mood</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="MoodSlider">
-                 <property name="value">
-                  <number>99</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="tickPosition">
-                  <enum>QSlider::TicksAbove</enum>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QSlider" name="EnergySlider">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <property name="spacing">
-              <number>2</number>
-             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout_6">
-                 <property name="sizeConstraint">
-                  <enum>QLayout::SetMinimumSize</enum>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_3">
-                   <property name="text">
-                    <string>Weight</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="WeightBox">
-                   <property name="suffix">
-                    <string/>
-                   </property>
-                   <property name="maximum">
-                    <double>999.990000000000009</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Mood</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout_7">
-                 <property name="sizeConstraint">
-                  <enum>QLayout::SetMinimumSize</enum>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>Glucose</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="GlucoseBox"/>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <widget class="QSlider" name="MoodSlider">
+               <property name="value">
+                <number>99</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+              </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <widget class="QTableWidget" name="tableWidget">
-             <property name="editTriggers">
-              <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <property name="rowCount">
-              <number>1</number>
-             </property>
-             <row/>
-             <column>
-              <property name="text">
-               <string>Medication</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Time</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Dose</string>
-              </property>
-             </column>
-            </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMinimumSize</enum>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Weight</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="WeightBox">
+                 <property name="suffix">
+                  <string/>
+                 </property>
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMinimumSize</enum>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Glucose</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="GlucoseBox"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>68</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

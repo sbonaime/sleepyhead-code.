@@ -355,6 +355,7 @@ void Daily::on_calendar_selectionChanged()
         Unload(previous_date);
 
     Load(ui->calendar->selectedDate());
+    ui->calButton->setText(ui->calendar->selectedDate().toString("ddd, dd MMM yyyy"));
 }
 void Daily::ResetGraphLayout()
 {
@@ -848,4 +849,22 @@ void Daily::on_JournalNotesUnderline_clicked()
 
     cursor.mergeCharFormat(format);
    //ui->JournalNotes->mergeCurrentCharFormat(format);
+}
+
+void Daily::on_prevDayButton_clicked()
+{
+    LoadDate(previous_date.addDays(-1));
+}
+
+void Daily::on_nextDayButton_clicked()
+{
+    LoadDate(previous_date.addDays(1));
+}
+
+void Daily::on_calButton_toggled(bool checked)
+{
+    ui->calendar->setVisible(checked);
+    if (!checked)
+        ui->calButton->setArrowType(Qt::DownArrow);
+    else ui->calButton->setArrowType(Qt::UpArrow);
 }
