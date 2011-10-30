@@ -349,12 +349,13 @@ bool Day::channelExists(ChannelID id)
 }
 bool Day::channelHasData(ChannelID id)
 {
+    bool r=false;
     for (int i=0;i<sessions.size();i++) {
-        if (!sessions[i]->channelExists(id)) {
-            return false;
+        if (sessions[i]->channelExists(id)) {
+            r=true;
         }
     }
-    return true;
+    return r;
 }
 
 void Day::OpenEvents()

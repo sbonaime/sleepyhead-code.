@@ -358,6 +358,7 @@ void Daily::on_calendar_selectionChanged()
 
     Load(ui->calendar->selectedDate());
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
+    ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 }
 void Daily::ResetGraphLayout()
 {
@@ -865,8 +866,9 @@ void Daily::on_nextDayButton_clicked()
 
 void Daily::on_calButton_toggled(bool checked)
 {
-    ui->calendar->setVisible(checked);
-    if (!checked) ui->calButton->setArrowType(Qt::DownArrow);
+    bool b=!ui->calendar->isVisible();
+    ui->calendar->setVisible(b);
+    if (!b) ui->calButton->setArrowType(Qt::DownArrow);
     else ui->calButton->setArrowType(Qt::UpArrow);
 }
 
