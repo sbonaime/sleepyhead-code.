@@ -61,7 +61,13 @@
            <string>Go to the previous day</string>
           </property>
           <property name="text">
-           <string>&lt; Prev</string>
+           <string>Prev</string>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::LeftArrow</enum>
           </property>
          </widget>
         </item>
@@ -101,7 +107,7 @@
            <bool>true</bool>
           </property>
           <property name="arrowType">
-           <enum>Qt::UpArrow</enum>
+           <enum>Qt::NoArrow</enum>
           </property>
          </widget>
         </item>
@@ -121,7 +127,13 @@
            <string>Go to the next day</string>
           </property>
           <property name="text">
-           <string>Next &gt;</string>
+           <string>Next</string>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::RightArrow</enum>
           </property>
          </widget>
         </item>
