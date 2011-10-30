@@ -131,4 +131,8 @@ OTHER_FILES += \
     docs/template_overview.sht \
     docs/schema.xml \
     docs/graphs.xml \
-    docs/channels.xml
+    docs/channels.xml \
+    docs/release_notes.html
+
+
+

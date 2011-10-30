@@ -21,5 +21,6 @@
         <file>icons/last.png</file>
         <file>icons/toggle-off-us.svg</file>
         <file>icons/toggle-on-us.svg</file>
+        <file>docs/release_notes.html</file>
     </qresource>
 </RCC>

@@ -10,6 +10,9 @@
 #include <QFontDatabase>
 #include <QStringList>
 #include <QDebug>
+#include <QPushButton>
+#include <QWebFrame>
+
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -55,6 +58,20 @@ void MyOutputHandler(QtMsgType type, const char *msg) {
 void initialize()
 {
     schema::init();
+}
+void release_notes()
+{
+    QDialog relnotes;
+    QVBoxLayout layout(&relnotes);
+    QWebView web(&relnotes);
+    web.load(QUrl("qrc:/docs/release_notes.html"));
+    //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
+    relnotes.setLayout(&layout);
+    layout.insertWidget(0,&web,1);
+    QPushButton okbtn("&Ok, get on with it..",&relnotes);
+    relnotes.connect(&okbtn,SIGNAL(clicked()),SLOT(accept()));
+    layout.insertWidget(1,&okbtn,1);
+    relnotes.exec();
 }
 
 int main(int argc, char *argv[])
@@ -104,13 +121,16 @@ int main(int argc, char *argv[])
         NewProfile newprof(0);
         if (newprof.exec()==NewProfile::Rejected)
             return 0;
+        release_notes();
 
         // Show New User wizard..
     } else {
         if (PREF.Exists("VersionString")) {
             QString V=PREF["VersionString"].toString();
             if (V!=Version) {
-                QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the SleepApp folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
+
+                release_notes();
+                //QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the SleepApp folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
                 check_updates=false;
             }
         }
