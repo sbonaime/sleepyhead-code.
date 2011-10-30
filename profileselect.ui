@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Select Profile</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/docs/sheep.png</normaloff>:/docs/sheep.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QListView" name="listView">
@@ -61,7 +65,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>quitButton</sender>
