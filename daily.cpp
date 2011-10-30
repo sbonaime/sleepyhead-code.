@@ -888,7 +888,8 @@ void Daily::on_nextDayButton_clicked()
 
 void Daily::on_calButton_toggled(bool checked)
 {
-    bool b=!ui->calendar->isVisible();
+    //bool b=!ui->calendar->isVisible();
+    bool b=checked;
     ui->calendar->setVisible(b);
     if (!b) ui->calButton->setArrowType(Qt::DownArrow);
     else ui->calButton->setArrowType(Qt::UpArrow);
