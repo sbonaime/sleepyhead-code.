@@ -357,7 +357,7 @@ void Daily::on_calendar_selectionChanged()
         Unload(previous_date);
 
     Load(ui->calendar->selectedDate());
-    ui->calButton->setText(ui->calendar->selectedDate().toString("ddd, dd MMM yyyy"));
+    ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
 }
 void Daily::ResetGraphLayout()
 {
