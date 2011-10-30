@@ -4,6 +4,12 @@
 #include "SleepLib/profiles.h"
 #include <QTimer>
 #include <QLabel>
+
+#ifdef Q_WS_MAC
+#define USE_RENDERTEXT
+#endif
+
+
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -1696,7 +1702,6 @@ void gGraphView::DrawTextQue()
 {
     glPushAttrib(GL_COLOR_BUFFER_BIT);
     int w,h;
-//#define USE_RENDERTEXT
     QPainter painter;
 #ifndef USE_RENDERTEXT
     painter.begin(this);
