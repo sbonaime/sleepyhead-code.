@@ -47,6 +47,9 @@ Report::Report(QWidget *parent, gGraphView * shared, Overview * overview) :
     graphs["Settings"]=SET=new gGraph(GraphView,"Settings",graph_print_height,0);
     SET->AddLayer(m_overview->set);
 
+    graphs["Sessions"]=SES=new gGraph(GraphView,"Sessions",graph_print_height,0);
+    SES->AddLayer(m_overview->ses);
+
 
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         gGraph *gr=g.value();
@@ -196,7 +199,7 @@ QString Report::GenerateReport(QString templ,QDate start, QDate end)
     file.setFileName(filename);
 
     QByteArray input;
-    if (file.exists()) {
+    if (0) { //file.exists()) {
         file.open(QIODevice::ReadOnly);
         input=file.readAll();
         file.close();

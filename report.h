@@ -35,8 +35,8 @@ private:
     Overview * m_overview;
     gGraphView * shared;
     gGraphView * GraphView;
-    gGraph *AHI,*UC,*PR,*LK,*NPB,*SET;
-    SummaryChart *bc,*uc,*pr,*lk,*npb,*set;
+    gGraph *AHI,*UC,*PR,*LK,*NPB,*SET,*SES;
+    SummaryChart *bc,*uc,*pr,*lk,*npb,*set,*ses;
     QHash<QString,QVariant> locals;
     QHash<QString,gGraph *> graphs;
 

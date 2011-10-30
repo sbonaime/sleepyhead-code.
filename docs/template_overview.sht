@@ -46,6 +46,7 @@
 {{graph.Leaks}}
 {{graph.Pressure}}
 {{graph.Settings}}
+{{graph.Sessions}}
 {{graph.%PB}}
 </body>
 </html>
