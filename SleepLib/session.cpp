@@ -549,6 +549,7 @@ bool Session::channelExists(ChannelID id)
         QHash<ChannelID,int>::iterator q=m_cnt.find(id);
         if (q==m_cnt.end())
             return false;
+        if (q.value()==0) return false;
     }
     return true;
 }

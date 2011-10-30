@@ -54,6 +54,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR=new gGraph(GraphView,"Pressure",default_height,0);
     SET=new gGraph(GraphView,"Settings",default_height,0);
     LK=new gGraph(GraphView,"Leaks",default_height,0);
+    SES=new gGraph(GraphView,"Sessions",default_height,0);
 
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
@@ -63,6 +64,16 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     UC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     UC->AddLayer(uc);
     UC->AddLayer(new gXGrid());
+
+    ses=new SummaryChart("Sessions",GT_LINE);
+    ses->addSlice("",QColor("blue"),ST_SESSIONS);
+    SES->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gx=new gXAxis();
+    gx->setUtcFix(true);
+    SES->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
+    SES->AddLayer(ses);
+    SES->AddLayer(new gXGrid());
+
 
 
     bc=new SummaryChart("AHI",GT_BAR);
@@ -260,6 +271,7 @@ QString Overview::GetHTML()
         pr->deselect();
         lk->deselect();
         npb->deselect();
+        ses->deselect();
 
         report->ReloadGraphs();
         QString reportname="overview";

@@ -34,8 +34,8 @@ public:
     void RedrawGraphs();
 
 
-    gGraph *AHI,*UC,*PR,*LK,*NPB,*SET;
-    SummaryChart *bc,*uc,*pr,*lk,*npb,*set;
+    gGraph *AHI,*UC,*PR,*LK,*NPB,*SET,*SES;
+    SummaryChart *bc,*uc,*pr,*lk,*npb,*set,*ses;
 public slots:
     void on_printButton_clicked();
 

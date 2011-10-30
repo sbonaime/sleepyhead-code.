@@ -65,7 +65,7 @@ void SummaryChart::SetDay(Day * nullday)
             for (int i=0;i<d.value().size();i++) {
                 day=d.value()[i];
                 if (day->machine_type()!=m_machinetype) continue;
-                if (type==ST_HOURS || day->channelExists(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
+                if (type==ST_HOURS || type==ST_SESSIONS || day->channelHasData(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
                     m_days[dn]=day;
                     switch(m_type[j]) {
                         case ST_AVG: tmp=day->avg(code); break;
@@ -78,6 +78,7 @@ void SummaryChart::SetDay(Day * nullday)
                         case ST_CPH: tmp=day->cph(code); break;
                         case ST_SPH: tmp=day->sph(code); break;
                         case ST_HOURS: tmp=day->hours(); break;
+                        case ST_SESSIONS: tmp=day->size(); break;
                         case ST_SETMIN: tmp=day->settings_min(code); break;
                         case ST_SETMAX: tmp=day->settings_max(code); break;
                         case ST_SETAVG: tmp=day->settings_avg(code); break;
@@ -352,6 +353,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_CPH:  a+=""; break;
                 case ST_SPH:  a+="%"; break;
                 case ST_HOURS: a+="Hours"; break;
+                case ST_SESSIONS: a+="Sessions"; break;
+
                 default:
                     break;
         }
@@ -403,6 +406,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     w.renderText(a,left,top-3);
 }
+
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 {
     int x=event->x()-l_left;
@@ -472,13 +476,19 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                             case ST_CPH:  a=""; break;
                             case ST_SPH:  a="%"; break;
                             case ST_HOURS: a="Hours"; break;
+                            case ST_SESSIONS: a="Sessions"; break;
                             default:
                                 break;
                     }
-                    if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
-                        schema::Channel & chan=schema::channel[m_codes[i]];
-                        val=QString::number(d.value()[i+1],'f',2);
-                        z+="\r\n"+chan.label()+" "+a+"="+val;
+                    if (m_type[i]==ST_SESSIONS) {
+                        val=QString::number(d.value()[i+1],'f',0);
+                        z+="\r\n"+a+"="+val;
+                    } else {
+                        if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
+                            schema::Channel & chan=schema::channel[m_codes[i]];
+                            val=QString::number(d.value()[i+1],'f',2);
+                            z+="\r\n"+chan.label()+" "+a+"="+val;
+                        }
                     }
                 }
 
