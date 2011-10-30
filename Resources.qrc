@@ -19,5 +19,7 @@
         <file>docs/schema.xml</file>
         <file>docs/channels.xml</file>
         <file>icons/last.png</file>
+        <file>icons/toggle-off-us.svg</file>
+        <file>icons/toggle-on-us.svg</file>
     </qresource>
 </RCC>

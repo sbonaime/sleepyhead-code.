@@ -73,10 +73,14 @@
            <string>Go to the previous day</string>
           </property>
           <property name="text">
-           <string>&lt; Prev</string>
+           <string>Prev</string>
+          </property>
+          <property name="icon">
+           <iconset resource="Resources.qrc">
+            <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
           </property>
           <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextBesideIcon</enum>
+           <enum>Qt::ToolButtonIconOnly</enum>
           </property>
           <property name="autoRaise">
            <bool>false</bool>
@@ -150,11 +154,14 @@
            <string>Go to the most recent day with data records</string>
           </property>
           <property name="text">
-           <string>T</string>
+           <string>&gt;|</string>
           </property>
           <property name="icon">
            <iconset resource="Resources.qrc">
             <normaloff>:/icons/last.png</normaloff>:/icons/last.png</iconset>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextOnly</enum>
           </property>
           <property name="autoRaise">
            <bool>true</bool>
@@ -182,10 +189,14 @@
            <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>Next &gt;</string>
+           <string>Next</string>
+          </property>
+          <property name="icon">
+           <iconset resource="Resources.qrc">
+            <normaloff>:/icons/forward.png</normaloff>:/icons/forward.png</iconset>
           </property>
           <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextBesideIcon</enum>
+           <enum>Qt::ToolButtonIconOnly</enum>
           </property>
           <property name="autoRaise">
            <bool>false</bool>
