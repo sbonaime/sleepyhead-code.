@@ -870,3 +870,11 @@ void Daily::on_calButton_toggled(bool checked)
         ui->calButton->setArrowType(Qt::DownArrow);
     else ui->calButton->setArrowType(Qt::UpArrow);
 }
+
+
+void Daily::on_todayButton_clicked()
+{
+    QDate d=QDate::currentDate();
+    if (d > PROFILE.LastDay()) d=PROFILE.LastDay();
+    LoadDate(d);
+}
