@@ -18,5 +18,6 @@
         <file>docs/template_overview.sht</file>
         <file>docs/schema.xml</file>
         <file>docs/channels.xml</file>
+        <file>icons/last.png</file>
     </qresource>
 </RCC>

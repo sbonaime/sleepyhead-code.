@@ -152,6 +152,10 @@
           <property name="text">
            <string>T</string>
           </property>
+          <property name="icon">
+           <iconset resource="Resources.qrc">
+            <normaloff>:/icons/last.png</normaloff>:/icons/last.png</iconset>
+          </property>
           <property name="autoRaise">
            <bool>true</bool>
           </property>
@@ -612,6 +616,8 @@
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
