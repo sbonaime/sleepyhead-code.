@@ -74,13 +74,17 @@ void DoneGraphs()
 
 void GetTextExtent(QString text, int & width, int & height, QFont *font)
 {
+#ifdef ENABLE_THREADED_DRAWING
     static QMutex mut;
     mut.lock();
+#endif
     QFontMetrics fm(*font);
     //QRect r=fm.tightBoundingRect(text);
     width=fm.width(text); //fm.width(text);
     height=fm.xHeight()+2; //fm.ascent();
+#ifdef ENABLE_THREADED_DRAWING
     mut.unlock();
+#endif
 }
 
 GLBuffer::GLBuffer(int max,int type)
@@ -101,10 +105,14 @@ GLBuffer::~GLBuffer()
 void GLShortBuffer::add(GLshort x, GLshort y)
 {
     if (m_cnt<m_max+2) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x;
         buffer[m_cnt++]=y;
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -112,12 +120,16 @@ void GLShortBuffer::add(GLshort x, GLshort y)
 void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
 {
     if (m_cnt<m_max+4) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x1;
         buffer[m_cnt++]=y1;
         buffer[m_cnt++]=x2;
         buffer[m_cnt++]=y2;
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -125,7 +137,9 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
 void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4)
 {
     if (m_cnt<m_max+8) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x1;
         buffer[m_cnt++]=y1;
         buffer[m_cnt++]=x2;
@@ -134,7 +148,9 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x
         buffer[m_cnt++]=y3;
         buffer[m_cnt++]=x4;
         buffer[m_cnt++]=y4;
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -155,14 +171,18 @@ GLShortBuffer::~GLShortBuffer()
 void GLShortBuffer::add(GLshort x, GLshort y,QColor & color)
 {
     if (m_cnt<m_max+2) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x;
         buffer[m_cnt++]=y;
         colors[m_colcnt++]=color.red();
         colors[m_colcnt++]=color.green();
         colors[m_colcnt++]=color.blue();
         colors[m_colcnt++]=color.alpha();
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -170,7 +190,9 @@ void GLShortBuffer::add(GLshort x, GLshort y,QColor & color)
 void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color)
 {
     if (m_cnt<m_max+4) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x1;
         buffer[m_cnt++]=y1;
         buffer[m_cnt++]=x2;
@@ -183,7 +205,9 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & 
         colors[m_colcnt++]=color.green();
         colors[m_colcnt++]=color.blue();
         colors[m_colcnt++]=color.alpha();
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -191,7 +215,9 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & 
 void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & color) // add with vertex colors
 {
 if (m_cnt<m_max+8) {
+#ifdef ENABLE_THREADED_DRAWING
     mutex.lock();
+#endif
     buffer[m_cnt++]=x1;
     buffer[m_cnt++]=y1;
     buffer[m_cnt++]=x2;
@@ -217,7 +243,9 @@ if (m_cnt<m_max+8) {
     colors[m_colcnt++]=color.green();
     colors[m_colcnt++]=color.blue();
     colors[m_colcnt++]=color.alpha();
+#ifdef ENABLE_THREADED_DRAWING
     mutex.unlock();
+#endif
 } else {
     qDebug() << "GLBuffer overflow";
 }
@@ -225,7 +253,7 @@ if (m_cnt<m_max+8) {
 void GLShortBuffer::draw()
 {
     if (m_cnt>0) {
-        bool antialias=m_forceantialias || (PROFILE["UseAntiAliasing"].toBool() && m_antialias);
+        bool antialias=m_forceantialias || (PROFILE.ExistsAndTrue("UseAntiAliasing") && m_antialias);
         float size=m_size;
         if (antialias) {
             glEnable(GL_BLEND);
@@ -306,14 +334,18 @@ GLFloatBuffer::~GLFloatBuffer()
 void GLFloatBuffer::add(GLfloat x, GLfloat y,QColor & color)
 {
     if (m_cnt<m_max+2) {
+#ifdef ENABLE_THREADED_DRAWING
         mutex.lock();
+#endif
         buffer[m_cnt++]=x;
         buffer[m_cnt++]=y;
         colors[m_colcnt++]=color.red();
         colors[m_colcnt++]=color.green();
         colors[m_colcnt++]=color.blue();
         colors[m_colcnt++]=color.alpha();
+#ifdef ENABLE_THREADED_DRAWING
         mutex.unlock();
+#endif
     } else {
         qDebug() << "GLBuffer overflow";
     }
@@ -324,7 +356,9 @@ void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,QColor & 
         qDebug() << "GLFloatBuffer overflow";
         return;
     }
+#ifdef ENABLE_THREADED_DRAWING
     mutex.lock();
+#endif
     buffer[m_cnt++]=x1;
     buffer[m_cnt++]=y1;
     buffer[m_cnt++]=x2;
@@ -338,7 +372,9 @@ void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,QColor & 
     colors[m_colcnt++]=color.blue();
     colors[m_colcnt++]=color.alpha();
 
+#ifdef ENABLE_THREADED_DRAWING
     mutex.unlock();
+#endif
 }
 void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color) // add with vertex colors
 {
@@ -346,7 +382,9 @@ void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x
         qDebug() << "GLFloatBuffer overflow";
         return;
     }
+#ifdef ENABLE_THREADED_DRAWING
     mutex.lock();
+#endif
     buffer[m_cnt++]=x1;
     buffer[m_cnt++]=y1;
     buffer[m_cnt++]=x2;
@@ -371,7 +409,9 @@ void GLFloatBuffer::add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x
     colors[m_colcnt++]=color.green();
     colors[m_colcnt++]=color.blue();
     colors[m_colcnt++]=color.alpha();
+#ifdef ENABLE_THREADED_DRAWING
     mutex.unlock();
+#endif
 }
 void GLFloatBuffer::quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color, QColor & color2) // add with vertex colors
 {
@@ -379,7 +419,9 @@ void GLFloatBuffer::quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfl
         qDebug() << "GLFloatBuffer overflow";
         return;
     }
+#ifdef ENABLE_THREADED_DRAWING
     mutex.lock();
+#endif
     buffer[m_cnt++]=x1;
     buffer[m_cnt++]=y1;
     buffer[m_cnt++]=x2;
@@ -405,7 +447,9 @@ void GLFloatBuffer::quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfl
     colors[m_colcnt++]=color2.green();
     colors[m_colcnt++]=color2.blue();
     colors[m_colcnt++]=color2.alpha();
+#ifdef ENABLE_THREADED_DRAWING
     mutex.unlock();
+#endif
 }
 void GLFloatBuffer::quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & color, QColor & color2)
 {
@@ -413,7 +457,9 @@ void GLFloatBuffer::quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfl
         qDebug() << "GLFloatBuffer overflow";
         return;
     }
+#ifdef ENABLE_THREADED_DRAWING
     mutex.lock();
+#endif
     buffer[m_cnt++]=x1;
     buffer[m_cnt++]=y1;
     buffer[m_cnt++]=x3;
@@ -439,7 +485,9 @@ void GLFloatBuffer::quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfl
     colors[m_colcnt++]=color2.green();
     colors[m_colcnt++]=color2.blue();
     colors[m_colcnt++]=color2.alpha();
+#ifdef ENABLE_THREADED_DRAWING
     mutex.unlock();
+#endif
 }
 
 void GLFloatBuffer::draw()
@@ -769,6 +817,7 @@ EventDataType LayerGroup::Maxy()
 
 const double zoom_hard_limit=500.0;
 
+#ifdef ENABLE_THREADED_DRAWING
 
 gThread::gThread(gGraphView *g)
 {
@@ -808,6 +857,7 @@ void gThread::run()
     }
 }
 
+#endif
 gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_graphview(graphview),
     m_title(title),
@@ -1024,9 +1074,13 @@ void gGraph::paint(int originX, int originY, int width, int height)
 void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
 {
     g->m_lastbounds=QRect(left,top,width,height);
+#ifdef ENABLED_THREADED_DRAWING
     dl_mutex.lock();
+#endif
     m_drawlist.push_back(g);
+#ifdef ENABLED_THREADED_DRAWING
     dl_mutex.unlock();
+#endif
 }
 void gGraphView::TrashGraphs()
 {
@@ -1038,12 +1092,16 @@ void gGraphView::TrashGraphs()
 gGraph * gGraphView::popGraph()
 {
     gGraph * g;
+#ifdef ENABLED_THREADED_DRAWING
     dl_mutex.lock();
+#endif
     if (!m_drawlist.isEmpty()) {
         g=m_drawlist.at(0);
         m_drawlist.pop_front();
     } else g=NULL;
+#ifdef ENABLED_THREADED_DRAWING
     dl_mutex.unlock();
+#endif
     return g;
 }
 
@@ -1589,10 +1647,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     this->setMouseTracking(true);
     m_emptytext=QObject::tr("No Data");
     InitGraphs();
+#ifdef ENABLE_THREADED_DRAWING
     m_idealthreads=QThread::idealThreadCount();
     if (m_idealthreads<=0) m_idealthreads=1;
     masterlock=new QSemaphore(m_idealthreads);
-
+#endif
     m_tooltip=new gToolTip(this);
     /*for (int i=0;i<m_idealthreads;i++) {
         gThread * gt=new gThread(this);
@@ -1612,14 +1671,16 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
 }
 gGraphView::~gGraphView()
 {
+#ifdef ENABLE_THREADED_DRAWING
     for (int i=0;i<m_threads.size();i++) {
         delete m_threads[i];
     }
+    delete masterlock;
+#endif
     for (int i=0;i<m_graphs.size();i++) {
         delete m_graphs[i];
     }
     delete m_tooltip;
-    delete masterlock;
     m_graphs.clear();
     delete lines;
     delete backlines;
@@ -1634,47 +1695,58 @@ gGraphView::~gGraphView()
 void gGraphView::DrawTextQue()
 {
     glPushAttrib(GL_COLOR_BUFFER_BIT);
-    //glFlush();
-    //glEnable(GL_BLEND);
     int w,h;
-
-/* #ifdef Q_WS_WIN32
-    QPaintDevice *pd=QGLContext::currentContext()->device();
-    QPixmap *pixmap=dynamic_cast<QPixmap *>(pd);
-#endif */
+//#define USE_RENDERTEXT
     QPainter painter;
-
+#ifndef USE_RENDERTEXT
+    painter.begin(this);
+#endif
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
-
+#ifndef USE_RENDERTEXT
+        QBrush b(q.color);
+        painter.setBrush(b);
+        painter.setFont(*q.font);
+#endif
 
         if (q.angle==0) {
             qglColor(q.color);
+
+            // *********************************************************
+            // Holy crap this is slow
+            // The following line is responsible for 77% of drawing time
+            // *********************************************************
+#ifdef USE_RENDERTEXT
             renderText(q.x,q.y,q.text,*q.font);
-            //painter.drawText(q.x, q.y, q.text);
+#else
+            painter.drawText(q.x, q.y, q.text);
+#endif
         } else {
-/*#ifdef Q_WS_WIN32
-            if (pixmap) {
-                painter.begin(pd);
-            } else
-#endif */
+#ifdef USE_RENDERTEXT
             painter.begin(this);
             QBrush b(q.color);
             painter.setBrush(b);
             painter.setFont(*q.font);
-            GetTextExtent(q.text, w, h, q.font);
+#endif
+            w=painter.fontMetrics().width(q.text);
+            h=painter.fontMetrics().xHeight()+2;
 
             painter.translate(q.x, q.y);
             painter.rotate(-q.angle);
             painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
             painter.rotate(+q.angle);
             painter.translate(-q.x, -q.y);
+#ifdef USE_RENDERTEXT
             painter.end();
+#endif
         }
         q.text.clear();
         //q.text.squeeze();
     }
+#ifndef USE_RENDERTEXT
+    painter.end();
+#endif
     glPopAttrib();
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
@@ -1682,12 +1754,16 @@ void gGraphView::DrawTextQue()
 
 void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor color, QFont * font)
 {
+#ifdef ENABLED_THREADED_DRAWING
     text_mutex.lock();
+#endif
     if (m_textque_items>=textque_max) {
         DrawTextQue();
     }
     TextQue & q=m_textque[m_textque_items++];
+#ifdef ENABLED_THREADED_DRAWING
     text_mutex.unlock();
+#endif
     q.text=text;
     q.x=x;
     q.y=y;
@@ -1919,6 +1995,7 @@ void gGraphView::paintGL()
     //bool threaded;
 
     // Tempory hack using this pref..
+//#ifdef ENABLED_THREADED_DRAWING
     /*if ((*profile)["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
         threaded=true;
         for (int i=0;i<m_idealthreads;i++) {
@@ -1926,6 +2003,7 @@ void gGraphView::paintGL()
                 m_threads[i]->start();
         }
     } else threaded=false; */
+    //#endif
     //threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
@@ -1959,7 +2037,7 @@ void gGraphView::paintGL()
     //int thr=m_idealthreads;
     QTime time;
     time.start();
-    /*if (threaded) {
+#ifdef ENABLED_THREADED_DRAWING
         for (int i=0;i<m_idealthreads;i++) {
             masterlock->acquire(1);
             m_threads[i]->mutex.unlock();
@@ -1970,14 +2048,17 @@ void gGraphView::paintGL()
         masterlock->acquire(m_idealthreads);
         masterlock->release(m_idealthreads);
 
-    } else { // just do it here */
+    } else { // just do it here
+#endif
         int s=m_drawlist.size();
         for (int i=0;i<s;i++) {
             gGraph *g=m_drawlist.at(0);
             m_drawlist.pop_front();
             g->paint(g->m_lastbounds.x(), g->m_lastbounds.y(), g->m_lastbounds.width(), g->m_lastbounds.height());
         }
-    //}
+#ifdef ENABLED_THREADED_DRAWING
+    }
+#endif
     int elapsed=time.elapsed();
     QColor col=Qt::black;
     if (!numgraphs) {

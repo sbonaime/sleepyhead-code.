@@ -860,7 +860,6 @@ void Daily::on_prevDayButton_clicked()
         LoadDate(previous_date.addDays(-1));
     } else {
         QDate d=previous_date;
-        bool found=false;
         for (int i=0;i<90;i++) {
             d=d.addDays(-1);
             if (PROFILE.GetDay(d)) {

@@ -171,7 +171,8 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             fd=QString().sprintf("%.1f",i*m_yaxis_scale);
         }
 
-        GetTextExtent(fd,x,y);
+        GetTextExtent(fd,x,y); // performance bottleneck..
+
         if (x>labelW) labelW=x;
         h=top+height-ty;
         w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);

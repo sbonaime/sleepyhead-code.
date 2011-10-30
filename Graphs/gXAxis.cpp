@@ -189,7 +189,10 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         }
 
         int tx=px-x/2.0;
-        GetTextExtent(tmpstr,x,y); // this only really needs running once :(
+
+        // Massive bottle neck..
+        //GetTextExtent(tmpstr,x,y); // this only really needs running once :(
+
         if (m_utcfix)
             tx+=step_pixels/2.0;
         if ((tx+x)<(left+width))
