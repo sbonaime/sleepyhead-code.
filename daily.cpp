@@ -211,7 +211,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->tabWidget->setCurrentWidget(ui->details);
 
     ui->webView->settings()->setFontSize(QWebSettings::DefaultFontSize,QApplication::font().pointSize());
- }
+    // TODO: Add preference to hide do this for Widget Haters..
+    //ui->calNavWidget->hide();
+}
 
 Daily::~Daily()
 {
