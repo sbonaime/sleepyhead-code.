@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
             QString V=PREF["VersionString"].toString();
             if (V!=Version) {
                 QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the SleepApp folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
+                check_updates=false;
             }
         }
         ProfileSelect profsel(0);
