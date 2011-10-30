@@ -97,7 +97,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
-    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P);
+    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P);
     pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
     pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
 
