@@ -378,10 +378,8 @@ class gGraphView : public QGLWidget
 public:
     explicit gGraphView(QWidget *parent = 0,gGraphView * shared=0);
     virtual ~gGraphView();
-    void AddGraph(gGraph *g,short group=0);
+    void addGraph(gGraph *g,short group=0);
 
-    void setScrollBar(MyScrollBar *sb);
-    MyScrollBar * scrollBar() { return m_scrollbar; }
     static const int titleWidth=30;
     static const int graphSpacer=4;
 
@@ -392,8 +390,9 @@ public:
     void ResetBounds(bool refresh=true); //short group=0);
     void SetXBounds(qint64 minx, qint64 maxx, short group=0,bool refresh=true);
 
-    bool hasGraphs() { return m_graphs.size()>0; }
+    //bool hasGraphs() { return m_graphs.size()>0; }
 
+    void deselect();
     QPoint pointClicked() { return m_point_clicked; }
     QPoint globalPointClicked() { return m_global_point_clicked; }
     void setPointClicked(QPoint p) { m_point_clicked=p; }
@@ -405,16 +404,20 @@ public:
     QTimer * timer;
 
     void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont);
-    int horizTravel() { return m_horiz_travel; }
     void DrawTextQue();
 
     int size() { return m_graphs.size(); }
     gGraph * operator[](int i) { return m_graphs[i]; }
 
+    MyScrollBar * scrollBar() { return m_scrollbar; }
+    void setScrollBar(MyScrollBar *sb);
     void updateScrollBar();
     void updateScale();         // update scale & Scrollbar
     void resetLayout();
+
+    int horizTravel() { return m_horiz_travel; }
     void setEmptyText(QString s) { m_emptytext=s; }
+
 #ifdef ENABLE_THREADED_DRAWING
     QMutex text_mutex;
     QMutex gl_mutex;
@@ -427,10 +430,10 @@ public:
     void setDay(Day * day);
     GLShortBuffer * lines, * backlines, *quads;
 
-    void TrashGraphs();
-    gGraph * popGraph();
+    gGraph * popGraph(); // exposed for multithreaded drawing
     void hideSplitter() { m_showsplitter=false; }
     void showSplitter() { m_showsplitter=true; }
+    void trashGraphs();
 protected:
     Day * m_day;
     float totalHeight();
@@ -440,7 +443,6 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int width, int height);
     virtual void resizeEvent(QResizeEvent *);
-
 
     void setOffsetY(int offsetY);
     void setOffsetX(int offsetX);
@@ -452,12 +454,12 @@ protected:
     virtual void wheelEvent(QWheelEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
 
-    void queGraph(gGraph *,int originX, int originY, int width, int height);
-
+    void queGraph(gGraph *,int originX, int originY, int width, int height); // que graphs for drawing (used internally by paintGL)
     QList<gGraph *> m_drawlist;
 
     gGraphView *m_shared;       // convenient link to daily's graphs.
     QVector<gGraph *> m_graphs;
+
     int m_offsetY,m_offsetX;          // Scroll Offsets
     float m_scaleY;
 
@@ -478,7 +480,6 @@ protected:
     TextQue m_textque[textque_max];
     int m_textque_items;
     int m_lastxpos,m_lastypos;
-    //volatile int m_threadsrunning;
 
     QString m_emptytext;
     bool m_showsplitter;
@@ -487,7 +488,7 @@ signals:
 
 public slots:
     void scrollbarValueChanged(int val);
-    void TimedRefresh();
+    void refreshTimeout();
 };
 
 #endif // GGRAPHVIEW_H

@@ -32,10 +32,13 @@ public:
     void ReloadGraphs();
     void ResetGraphLayout();
     void RedrawGraphs();
+    gGraph * createGraph(QString name);
 
 
     gGraph *AHI,*UC,*PR,*LK,*NPB,*SET,*SES;
     SummaryChart *bc,*uc,*pr,*lk,*npb,*set,*ses;
+    QVector<SummaryChart *> OverviewCharts;
+
 public slots:
     void on_printButton_clicked();
 

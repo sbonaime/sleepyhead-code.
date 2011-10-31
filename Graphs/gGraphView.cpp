@@ -874,7 +874,9 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_layers.clear();
 
     if (graphview) {
-        graphview->AddGraph(this,group);
+        graphview->addGraph(this,group);
+        timer=new QTimer(graphview);
+        connect(timer,SIGNAL(timeout()),SLOT(Timeout()));
     } else {
         qWarning() << "gGraph created without a gGraphView container.. Naughty programmer!! Bad!!!";
     }
@@ -889,12 +891,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
     m_forceMinY=m_forceMaxY=false;
-    timer=new QTimer(graphview);
-    connect(timer,SIGNAL(timeout()),SLOT(Timeout()));
 }
-//gGraph::gGraph()
-//{
-//}
 gGraph::~gGraph()
 {
     for (int i=0;i<m_layers.size();i++) {
@@ -1088,7 +1085,7 @@ void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
     dl_mutex.unlock();
 #endif
 }
-void gGraphView::TrashGraphs()
+void gGraphView::trashGraphs()
 {
     for (int i=0;i<m_graphs.size();i++) {
         //delete m_graphs[i];
@@ -1672,7 +1669,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter=true;
     timer=new QTimer(this);
-    connect(timer,SIGNAL(timeout()),SLOT(TimedRefresh()));
+    connect(timer,SIGNAL(timeout()),SLOT(refreshTimeout()));
 
 }
 gGraphView::~gGraphView()
@@ -1777,7 +1774,7 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
     q.font=font;
 }
 
-void gGraphView::AddGraph(gGraph *g,short group)
+void gGraphView::addGraph(gGraph *g,short group)
 {
     if (!g) {
         qDebug() << "Attempted to add an empty graph!";
@@ -2428,7 +2425,7 @@ void gGraphView::setDay(Day * day)
     }
     ResetBounds();
 }
-void gGraphView::TimedRefresh()
+void gGraphView::refreshTimeout()
 {
     updateGL();
 }
@@ -2438,7 +2435,6 @@ void gGraphView::timedRedraw(int ms)
         timer->stop();
     timer->setSingleShot(true);
     timer->start(ms);
-    //QTimer::singleShot(ms,this,SLOT(TimedRefresh()));
 }
 void gGraphView::resetLayout()
 {
@@ -2447,6 +2443,12 @@ void gGraphView::resetLayout()
     }
     updateScale();
     updateGL();
+}
+void gGraphView::deselect()
+{
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->deselect();
+    }
 }
 
 

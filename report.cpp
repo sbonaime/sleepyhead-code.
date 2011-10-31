@@ -66,7 +66,7 @@ Report::Report(QWidget *parent, gGraphView * shared, Overview * overview) :
 
 Report::~Report()
 {
-    GraphView->TrashGraphs();
+    GraphView->trashGraphs();
     for (QHash<QString,gGraph *>::iterator g=graphs.begin();g!=graphs.end();g++) {
         delete g.value();
     }
@@ -94,8 +94,8 @@ QPixmap Report::Snapshot(gGraph * graph)
     QDateTime d2(endDate,QTime(23,59,59),Qt::UTC);
     qint64 last=qint64(d2.toTime_t())*1000L;
 
-    GraphView->TrashGraphs();
-    GraphView->AddGraph(graph);
+    GraphView->trashGraphs();
+    GraphView->addGraph(graph);
     GraphView->ResetBounds();
     GraphView->SetXBounds(first,last);
 

@@ -25,68 +25,76 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 {
     ui->setupUi(this);
 
-    // Create dummy day & session for holding eventlists.
-    //day=new Day(mach);
+    // Set Date controls locale to 4 digit years
+    QLocale locale=QLocale::system();
+    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
+    if (!shortformat.toLower().contains("yyyy")) {
+        shortformat.replace("yy","yyyy");
+    }
+    ui->dateStart->setDisplayFormat(shortformat);
+    ui->dateEnd->setDisplayFormat(shortformat);
 
+    // Stop both calendar drop downs highlighting weekends in red
+    QTextCharFormat format = ui->dateStart->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+
+    // Connect the signals to update which days have CPAP data when the month is changed
+    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateStart_currentPageChanged(int,int)));
+    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateEnd_currentPageChanged(int,int)));
+
+    // Create the horizontal layout to hold the GraphView object and it's scrollbar
     layout=new QHBoxLayout(ui->graphArea);
-    layout->setSpacing(0);
+    layout->setSpacing(0); // remove the ugly margins/spacing
     layout->setMargin(0);
     layout->setContentsMargins(0,0,0,0);
     ui->graphArea->setLayout(layout);
     ui->graphArea->setAutoFillBackground(false);
 
+    // Create the GraphView Object
     GraphView=new gGraphView(ui->graphArea,m_shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
+    // Create the custom scrollbar and attach to GraphView
     scrollbar=new MyScrollBar(ui->graphArea);
     scrollbar->setOrientation(Qt::Vertical);
     scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
     scrollbar->setMaximumWidth(20);
-
     GraphView->setScrollBar(scrollbar);
+
+    // Add the graphView and scrollbar to the layout.
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
-
     layout->layout();
 
-    AHI=new gGraph(GraphView,"AHI",default_height,0);
-    UC=new gGraph(GraphView,"Usage",default_height,0);
-    PR=new gGraph(GraphView,"Pressure",default_height,0);
-    SET=new gGraph(GraphView,"Settings",default_height,0);
-    LK=new gGraph(GraphView,"Leaks",default_height,0);
-    SES=new gGraph(GraphView,"Sessions",default_height,0);
+    // TODO: Automate graph creation process
+
+    // The following code (to the closing marker) is crap --->
+    AHI=createGraph("AHI");
+    UC=createGraph("Usage");
+    PR=createGraph("Pressure");
+    SET=createGraph("Settings");
+    LK=createGraph("Leaks");
+    SES=createGraph("Sessions");
+    NPB=createGraph("% in PB");
 
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
-    UC->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gXAxis *gx=new gXAxis();
-    gx->setUtcFix(true);
-    UC->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     UC->AddLayer(uc);
-    UC->AddLayer(new gXGrid());
 
     ses=new SummaryChart("Sessions",GT_LINE);
     ses->addSlice("",QColor("blue"),ST_SESSIONS);
-    SES->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    SES->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     SES->AddLayer(ses);
-    SES->AddLayer(new gXGrid());
-
-
 
     bc=new SummaryChart("AHI",GT_BAR);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
     bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
     bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH);
-    AHI->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    AHI->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     AHI->AddLayer(bc);
-    AHI->AddLayer(new gXGrid());
 
     set=new SummaryChart("",GT_LINE);
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
@@ -95,12 +103,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
     SET->forceMinY(0);
     SET->forceMaxY(5);
-    SET->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    SET->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     SET->AddLayer(set);
-    SET->AddLayer(new gXGrid());
 
     pr=new SummaryChart("cmH2O",GT_LINE);
     PR->forceMinY(4.0);
@@ -111,53 +114,19 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P);
     pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
     pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
-
-    PR->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    PR->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     PR->AddLayer(pr);
-    PR->AddLayer(new gXGrid());
 
     lk=new SummaryChart("Avg Leak",GT_LINE);
     lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P);
     lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
-    LK->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    LK->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
     LK->AddLayer(lk);
-    LK->AddLayer(new gXGrid());
 
-    NPB=new gGraph(GraphView,"% in PB",default_height,0);
     NPB->AddLayer(npb=new SummaryChart("% PB",GT_BAR));
     npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
-    NPB->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    gx=new gXAxis();
-    gx->setUtcFix(true);
-    NPB->AddLayer(gx,LayerBottom,0,gXAxis::Margin);
-    NPB->AddLayer(new gXGrid());
+    // <--- The code to the previous marker is crap
 
-
-    QLocale locale=QLocale::system();
-    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
-    if (!shortformat.toLower().contains("yyyy")) {
-        shortformat.replace("yy","yyyy");
-    }
-    ui->dateStart->setDisplayFormat(shortformat);
-    ui->dateEnd->setDisplayFormat(shortformat);
-
-    QTextCharFormat format = ui->dateStart->calendarWidget()->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
-    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
-    ui->dateStart->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
-    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
-    ui->dateEnd->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
-
-    connect(ui->dateStart->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateStart_currentPageChanged(int,int)));
-    connect(ui->dateEnd->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(dateEnd_currentPageChanged(int,int)));
     report=NULL;
 }
 Overview::~Overview()
@@ -168,9 +137,19 @@ Overview::~Overview()
         report->close();
         delete report;
     }
-    //delete day;
     delete ui;
 }
+gGraph * Overview::createGraph(QString name)
+{
+    gGraph *g=new gGraph(GraphView,name,default_height,0);
+    g->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+    gXAxis *x=new gXAxis();
+    x->setUtcFix(true);
+    g->AddLayer(x,LayerBottom,0,gXAxis::Margin);
+    g->AddLayer(new gXGrid());
+    return g;
+}
+
 void Overview::ReloadGraphs()
 {
     ui->dateStart->setDate(p_profile->FirstDay());
@@ -196,8 +175,9 @@ void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
-    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
+    bool hascpap=p_profile->GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=p_profile->GetDay(date,MT_OXIMETER)!=NULL;
+    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=NULL;
 
     if (hascpap) {
         if (hasoxi) {
@@ -266,12 +246,7 @@ QString Overview::GetHTML()
 
     QString html;
     if (report) {
-        bc->deselect();
-        uc->deselect();
-        pr->deselect();
-        lk->deselect();
-        npb->deselect();
-        ses->deselect();
+        GraphView->deselect();
 
         report->ReloadGraphs();
         QString reportname="overview";
@@ -284,7 +259,6 @@ QString Overview::GetHTML()
 }
 void Overview::on_printButton_clicked()
 {
-
     report->Print(GetHTML());
 }
 
