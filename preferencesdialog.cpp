@@ -280,7 +280,7 @@ void PreferencesDialog::Save()
              // In Mac OS the full path of aplication binary is:
              //    <base-path>/myApp.app/Contents/MacOS/myApp
              QStringList args;
-             args << (this->applicationDirPath() + "/../../../SleepyHead.app");
+             args << (QApplication::instance()->applicationDirPath() + "/../../../SleepyHead.app");
              proc.startDetached("open", args);
          #else
 //#ifdef Q_OS_WIN
