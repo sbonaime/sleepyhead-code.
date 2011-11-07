@@ -2,6 +2,7 @@
 #include <QColorDialog>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QProcess>
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -273,7 +274,22 @@ void PreferencesDialog::Save()
     PREF.Save();
 
     if (needs_restart) {
-        QMessageBox::warning(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.",QMessageBox::Ok);
+        if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+            QProcess proc;
+         #ifdef Q_OS_MAC
+             // In Mac OS the full path of aplication binary is:
+             //    <base-path>/myApp.app/Contents/MacOS/myApp
+             QStringList args;
+             args << (this->applicationDirPath() + "/../../../SleepyHead.app");
+             proc.startDetached("open", args);
+         #else
+//#ifdef Q_OS_WIN
+            QString a=QApplication::instance()->applicationFilePath();
+            proc.startDetached(a);
+            QApplication::instance()->exit();
+//#endif
+         #endif
+        }
     }
 }
 
