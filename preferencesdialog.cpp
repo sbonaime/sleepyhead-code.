@@ -283,7 +283,7 @@ void PreferencesDialog::Save()
             args << (QApplication::instance()->applicationDirPath() + "/../../../SleepyHead.app");
             proc.startDetached("open", args);
     #else
-           proc.startDetached(QApplication::instance()->applicationFilePath(),args);
+            proc.startDetached(QApplication::instance()->applicationFilePath(),args);
     #endif
            QApplication::instance()->exit();
         }

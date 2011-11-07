@@ -176,7 +176,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,square)));
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
-    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,square)));
+    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
