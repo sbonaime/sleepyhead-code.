@@ -167,20 +167,21 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     TE->AddLayer(AddCPAP(new gStatsLine(CPAP_Te)),LayerBottom,0,20,1);
     TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1); */
 
+
     bool square=PROFILE["SquareWavePlots"].toBool();
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
 
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
-    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,square)));
+    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
-    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG,Qt::darkBlue,square)));
+    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG,Qt::darkBlue,true)));
     //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::magenta,true)));
     IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,square)));
     TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,square)));
