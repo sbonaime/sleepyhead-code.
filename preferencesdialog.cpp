@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QProcess>
+#include <QDesktopServices>
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
@@ -277,17 +278,27 @@ void PreferencesDialog::Save()
         if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             QProcess proc;
             QStringList args;
+            QApplication::instance()->exit();
+            QString apppath;
     #ifdef Q_OS_MAC
             // In Mac OS the full path of aplication binary is:
             //    <base-path>/myApp.app/Contents/MacOS/myApp
-            args << (QApplication::instance()->applicationDirPath() + "/../../../SleepyHead.app");
+            apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
             //qDebug() << "Would restart on mac if this was correct" << args;
             //qDebug() << "repeating applicationDirPath for clarity: " << QApplication::instance()->applicationDirPath();
-            proc.start("open", args);
     #else
-            proc.startDetached(QApplication::instance()->applicationFilePath(),args);
+            apppath=QApplication::instance()->applicationFilePath();
+            //if (QDesktopServices::openUrl(apppath)) {
+            //if (proc.startDetached(QApplication::instance()->applicationFilePath(),args)) {
+            //    QApplication::instance()->exit();
+            //}
     #endif
-            QApplication::instance()->exit();
+            if (QDesktopServices::openUrl(apppath)) {
+            //if (proc.startDetached("open", args)) {
+                QApplication::instance()->exit();
+            } else {
+                QMessageBox::warning(this,"Couldn't relaunch","Could not relaunch correctly on this platform, sorry, you will have to do this manually.",QMessageBox::Ok);
+            }
         }
     }
 }
