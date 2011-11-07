@@ -69,6 +69,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     if (!(*profile).Exists("SkipEmptyDays")) (*profile)["SkipEmptyDays"]=true;
     ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
 
+    if (!(*profile).Exists("SquareWavePlots")) (*profile)["SquareWavePlots"]=true;
+    ui->squareWavePlots->setChecked((*profile)["SquareWavePlots"].toBool());
+
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
 
@@ -177,13 +180,24 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
 
 void PreferencesDialog::Save()
 {
+    bool needs_restart=false;
+
     (*profile)["UnitSystem"]=ui->unitCombo->currentText();
     //(*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
 
+    if (((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) ||
+        ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value())) {
+        needs_restart=true;
+    }
     (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
     (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
 
     (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+
+    if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) {
+        needs_restart=true;
+    }
+
     (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
     (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
@@ -195,6 +209,11 @@ void PreferencesDialog::Save()
     (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
+
+    if (ui->squareWavePlots->isChecked() != (*profile)["SquareWavePlots"].toBool()) {
+        needs_restart=true;
+    }
+    (*profile)["SquareWavePlots"]=ui->squareWavePlots->isChecked();
 
     (*profile)["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
     PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
@@ -252,6 +271,10 @@ void PreferencesDialog::Save()
 
     profile->Save();
     PREF.Save();
+
+    if (needs_restart) {
+        QMessageBox::warning(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.",QMessageBox::Ok);
+    }
 }
 
 void PreferencesDialog::on_combineSlider_valueChanged(int position)

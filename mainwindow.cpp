@@ -113,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
     if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
+    if (!PROFILE.Exists("SquareWavePlots")) PROFILE["SquareWavePlots"]=true;
     if (!PROFILE.Exists("EnableOximetry")) PROFILE["EnableOximetry"]=false;
     if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=false;
     if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;

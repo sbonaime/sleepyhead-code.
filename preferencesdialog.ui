@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="visualTab">
       <attribute name="title">
@@ -133,7 +133,7 @@
          </item>
         </widget>
        </item>
-       <item row="8" column="0" colspan="3">
+       <item row="9" column="0" colspan="3">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -203,6 +203,13 @@ It has no effect on single cpu machines.</string>
          </property>
          <property name="text">
           <string>Skip Empty Days</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QCheckBox" name="squareWavePlots">
+         <property name="text">
+          <string>Square Wave Plots</string>
          </property>
         </widget>
        </item>
@@ -949,7 +956,7 @@ p, li { white-space: pre-wrap; }
      </widget>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>&amp;General</string>
+       <string>&amp;Updates</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <property name="spacing">

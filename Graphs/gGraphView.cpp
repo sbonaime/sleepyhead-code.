@@ -1404,7 +1404,6 @@ void gGraph::mouseDoubleClickEvent(QMouseEvent * event)
 }
 void gGraph::keyPressEvent(QKeyEvent * event)
 {
-    bool ok=false;
     for (QVector<Layer *>::iterator i=m_layers.begin();i!=m_layers.end();i++) {
         (*i)->keyPressEvent(event);
     }

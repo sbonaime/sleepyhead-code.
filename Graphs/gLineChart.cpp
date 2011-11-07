@@ -396,8 +396,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     //py=yst+((data - ymin) * nmult);   // Same for Y scale with precomputed gain
                     py=yst-((data - miny) * ymult);   // Same for Y scale with precomputed gain
 
-                    if (px<left) px=left;
-                    if (px>left+width) px=left+width;
+                    //if (px<left) px=left;
+                    //if (px>left+width) px=left+width;
                     if (firstpx) {
                         firstpx=false;
                     } else {
