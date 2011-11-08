@@ -283,22 +283,23 @@ void PreferencesDialog::Save()
     #ifdef Q_OS_MAC
             // In Mac OS the full path of aplication binary is:
             //    <base-path>/myApp.app/Contents/MacOS/myApp
-            apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
+            //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
+            apppath=QApplication::instance()->applicationDirPath().section("/Contents/MacOS/",0,0);
+            qDebug() << "Hi Jimbo! :)";
+            qDebug() << "applicationFilePath:" << QApplication::instance()->applicationFilePath();
+            qDebug() << "applicationDirPath:" << QApplication::instance()->applicationDirPath();
+            qDebug() << "Chopped String:" << apppath;
+            qDebug() << "That last one should end in SleepyHead.app";
+
             //qDebug() << "Would restart on mac if this was correct" << args;
             //qDebug() << "repeating applicationDirPath for clarity: " << QApplication::instance()->applicationDirPath();
     #else
             apppath=QApplication::instance()->applicationFilePath();
-            //if (QDesktopServices::openUrl(apppath)) {
-            //if (proc.startDetached(QApplication::instance()->applicationFilePath(),args)) {
-            //    QApplication::instance()->exit();
-            //}
-    #endif
             if (QDesktopServices::openUrl(apppath)) {
-            //if (proc.startDetached("open", args)) {
+            //if (proc.startDetached(QApplication::instance()->applicationFilePath(),args)) {
                 QApplication::instance()->exit();
-            } else {
-                QMessageBox::warning(this,"Couldn't relaunch","Could not relaunch correctly on this platform, sorry, you will have to do this manually.",QMessageBox::Ok);
             }
+    #endif
         }
     }
 }
