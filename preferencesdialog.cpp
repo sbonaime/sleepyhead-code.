@@ -283,7 +283,7 @@ void PreferencesDialog::Save()
             // In Mac OS the full path of aplication binary is:
             //    <base-path>/myApp.app/Contents/MacOS/myApp
             //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
-            apppath=QApplication::instance()->applicationDirPath().section("/Contents/MacOS/",0,0);
+            apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
             qDebug() << "Hi Jimbo! :)";
             qDebug() << "applicationFilePath:" << QApplication::instance()->applicationFilePath();
             qDebug() << "applicationDirPath:" << QApplication::instance()->applicationDirPath();
