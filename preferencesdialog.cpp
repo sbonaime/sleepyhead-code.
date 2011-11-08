@@ -284,11 +284,14 @@ void PreferencesDialog::Save()
             //    <base-path>/myApp.app/Contents/MacOS/myApp
             //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
             apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-            qDebug() << "Hi Jimbo! :)";
+            if (proc.startDetached("open",QStringList() << apppath)) {
+                QApplication::instance()->exit();
+            }
+            /*qDebug() << "Hi Jimbo! :)";
             qDebug() << "applicationFilePath:" << QApplication::instance()->applicationFilePath();
             qDebug() << "applicationDirPath:" << QApplication::instance()->applicationDirPath();
             qDebug() << "Chopped String:" << apppath;
-            qDebug() << "That last one should end in SleepyHead.app";
+            qDebug() << "That last one should end in SleepyHead.app"; */
 
             //qDebug() << "Would restart on mac if this was correct" << args;
             //qDebug() << "repeating applicationDirPath for clarity: " << QApplication::instance()->applicationDirPath();
