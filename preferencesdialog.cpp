@@ -283,12 +283,12 @@ void PreferencesDialog::Save()
             //if (QDesktopServices::openUrl(apppath)) {
             //    success=true;
             //} else
-            if (QProcess::startDetached("/usr/bin/open",QStringList() << apppath)) {
-                success=true;
-            }
-            if (!success) {
+            QStringList args;
+            args << "-n" << apppath;
+            if (QProcess::startDetached("/usr/bin/open",args)) {
+                QApplication::instance()->exit();
+            } else
                 QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
-            } else QApplication::instance()->exit();
 
     #else
             apppath=QApplication::instance()->applicationFilePath();
