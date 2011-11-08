@@ -259,6 +259,7 @@ void PreferencesDialog::Save()
     bigfont->setWeight(ui->bigFontBold->isChecked()?QFont::Bold : QFont::Normal);
     bigfont->setItalic(ui->bigFontItalic->isChecked());
 
+    // Process color changes
     for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
         schema::Channel &chan=schema::channel[i.key()];
         if (!chan.isNull()) {
@@ -266,7 +267,8 @@ void PreferencesDialog::Save()
             chan.setDefaultColor(i.value());
         }
     }
-    qDebug() << "TODO: Save channels.xml to update channel data";
+
+    //qDebug() << "TODO: Save channels.xml to update channel data";
 
     profile->Save();
     PREF.Save();
@@ -277,29 +279,29 @@ void PreferencesDialog::Save()
     #ifdef Q_OS_MAC
             // In Mac OS the full path of aplication binary is:
             //    <base-path>/myApp.app/Contents/MacOS/myApp
-            //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
+
+            // prune the extra bits to just get the app bundle path
             apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-            bool success=false;
-            //if (QDesktopServices::openUrl(apppath)) {
-            //    success=true;
-            //} else
+
             QStringList args;
-            args << "-n" << apppath;
+            args << "-n" << apppath; // -n option is important, as it opens a new process
+
             if (QProcess::startDetached("/usr/bin/open",args)) {
                 QApplication::instance()->exit();
-            } else
-                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
+            } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
 
     #else
             apppath=QApplication::instance()->applicationFilePath();
 
-            if (QDesktopServices::openUrl(apppath)) {
+            // If this doesn't work on windoze, try uncommenting this method
+            // Technically should be the same thing..
+
+            //if (QDesktopServices::openUrl(apppath)) {
+            //    QApplication::instance()->exit();
+            //} else
+            if (QProcess::startDetached(apppath)) {
                 QApplication::instance()->exit();
-            } else if (QProcess::startDetached(apppath)) {
-                QApplication::instance()->exit();
-            } else {
-                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
-            }
+            } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
     #endif
         }
     }
