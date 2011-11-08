@@ -22,6 +22,15 @@ CONFIG += rtti
 TARGET = SleepyHead
 TEMPLATE = app
 
+# GIT_VERSION = $$system(git describe --tags --long --abbrev=6 --dirty="*")
+
+
+#exists(.git):DEFINES += GIT_BRANCH=\\\"$$system(git rev-parse --symbolic-full-name --abbrev-ref HEAD)\\\"
+exists(.git):DEFINES += GIT_BRANCH=\\\"$$system(git rev-parse --abbrev-ref HEAD)\\\"
+else:DEFINES += GIT_BRANCH=\\\"NOT BUILT FROM GIT SOURCE\\\"
+
+exists(.git):DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
+else:DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
 
 SOURCES += main.cpp\
     SleepLib/machine.cpp \
