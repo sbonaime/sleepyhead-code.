@@ -279,13 +279,17 @@ void PreferencesDialog::Save()
             //    <base-path>/myApp.app/Contents/MacOS/myApp
             //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
             apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-            if (QDesktopServices::openUrl(apppath)) {
-                QApplication::instance()->exit();
-            } else if (QProcess::startDetached("open",QStringList() << apppath)) {
-                QApplication::instance()->exit();
-            } else {
-                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
+            bool success=false;
+            //if (QDesktopServices::openUrl(apppath)) {
+            //    success=true;
+            //} else
+            if (QProcess::startDetached("/usr/bin/open",QStringList() << apppath)) {
+                success=true;
             }
+            if (!success) {
+                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
+            } else QApplication::instance()->exit();
+
     #else
             apppath=QApplication::instance()->applicationFilePath();
 
