@@ -276,33 +276,23 @@ void PreferencesDialog::Save()
 
     if (needs_restart) {
         if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-            QProcess proc;
-            QStringList args;
             QString apppath;
     #ifdef Q_OS_MAC
             // In Mac OS the full path of aplication binary is:
             //    <base-path>/myApp.app/Contents/MacOS/myApp
             //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
             apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-            if (proc.startDetached("open",QStringList() << apppath)) {
+            if (QProcess::startDetached("open",QStringList() << apppath)) {
                 QApplication::instance()->exit();
             } else {
                 if (QDesktopServices::openUrl(apppath)) {
                     QApplication::instance()->exit();
                 } else QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
             }
-            /*qDebug() << "Hi Jimbo! :)";
-            qDebug() << "applicationFilePath:" << QApplication::instance()->applicationFilePath();
-            qDebug() << "applicationDirPath:" << QApplication::instance()->applicationDirPath();
-            qDebug() << "Chopped String:" << apppath;
-            qDebug() << "That last one should end in SleepyHead.app"; */
-
-            //qDebug() << "Would restart on mac if this was correct" << args;
-            //qDebug() << "repeating applicationDirPath for clarity: " << QApplication::instance()->applicationDirPath();
     #else
             apppath=QApplication::instance()->applicationFilePath();
             if (QDesktopServices::openUrl(apppath)) {
-            //if (proc.startDetached(QApplication::instance()->applicationFilePath(),args)) {
+            //if (QProcess::startDetached(QApplication::instance()->applicationFilePath(),args)) {
                 QApplication::instance()->exit();
             }
     #endif
