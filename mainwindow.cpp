@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     logtime.start();
     ui->setupUi(this);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(PREF["Profile"].toString()));
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1.%2.%3 BREAKY (%4)").arg(major_version).arg(minor_version).arg(revision_number).arg(PREF["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
     //move(0,0);
     overview=NULL;
