@@ -278,7 +278,6 @@ void PreferencesDialog::Save()
         if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             QProcess proc;
             QStringList args;
-            QApplication::instance()->exit();
             QString apppath;
     #ifdef Q_OS_MAC
             // In Mac OS the full path of aplication binary is:
