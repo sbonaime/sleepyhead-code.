@@ -187,18 +187,15 @@ void PreferencesDialog::Save()
     (*profile)["UnitSystem"]=ui->unitCombo->currentText();
     //(*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
 
-    if (((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) ||
-        ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value())) {
-        needs_restart=true;
-    }
+    if ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) needs_restart=true;
+    if ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value()) needs_restart=true;
+
     (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
     (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
 
     (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
 
-    if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) {
-        needs_restart=true;
-    }
+    if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) needs_restart=true;
 
     (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
@@ -282,18 +279,22 @@ void PreferencesDialog::Save()
             //    <base-path>/myApp.app/Contents/MacOS/myApp
             //apppath=QApplication::instance()->applicationDirPath()+"/../../../SleepyHead.app";
             apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-            if (QProcess::startDetached("open",QStringList() << apppath)) {
+            if (QDesktopServices::openUrl(apppath)) {
+                QApplication::instance()->exit();
+            } else if (QProcess::startDetached("open",QStringList() << apppath)) {
                 QApplication::instance()->exit();
             } else {
-                if (QDesktopServices::openUrl(apppath)) {
-                    QApplication::instance()->exit();
-                } else QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
+                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
             }
     #else
             apppath=QApplication::instance()->applicationFilePath();
+
             if (QDesktopServices::openUrl(apppath)) {
-            //if (QProcess::startDetached(QApplication::instance()->applicationFilePath(),args)) {
                 QApplication::instance()->exit();
+            } else if (QProcess::startDetached(apppath)) {
+                QApplication::instance()->exit();
+            } else {
+                QMessageBox::warning(this,"Gah!","If you can read this, two seperate application restart commands didn't work. Mark want's to know the following string:"+apppath,QMessageBox::Ok);
             }
     #endif
         }
