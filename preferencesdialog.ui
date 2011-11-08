@@ -353,6 +353,9 @@ It will be faster changing to days you've already been to if you leave it on. </
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
           </widget>
          </item>
         </layout>
@@ -414,6 +417,9 @@ p, li { white-space: pre-wrap; }
           <widget class="QLCDNumber" name="IgnoreLCD">
            <property name="frameShape">
             <enum>QFrame::Box</enum>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
            </property>
           </widget>
          </item>

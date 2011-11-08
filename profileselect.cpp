@@ -18,21 +18,14 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     ui(new Ui::ProfileSelect)
 {
     ui->setupUi(this);
-    //ui->listView->setViewMode(QListView::IconMode);
     QStringList str;
     QStandardItemModel *model=new QStandardItemModel (0,0);
-    //QList<QStandardItem *> items;
-
 
     int i=0;
     int sel=-1;
     QString name;
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
-        //str.append(p.key());
-        //Profile &profile=**p;
         name=p.key();
-       // if (!PROFILE["FirstName"].toString().isEmpty())
-       //     name+=" ("+PROFILE["FirstName"].toString()+" "+PROFILE["LastName"].toString()+")";
         QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
         if (PREF.Exists("Profile") && (name==PREF["Profile"].toString())) {
             sel=i;

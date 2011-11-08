@@ -14,12 +14,13 @@
 #include <QNetworkReply>
 #include <QTimer>
 #include <QSettings>
+#include <QPixmap>
+#include <QDesktopWidget>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "newprofile.h"
 #include "SleepLib/schema.h"
-
-
 #include "Graphs/glcommon.h"
 
 QProgressBar *qprogress;
@@ -57,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     Q_ASSERT(p_profile!=NULL);
 
     logtime.start();
@@ -66,23 +66,11 @@ MainWindow::MainWindow(QWidget *parent) :
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
-    //move(0,0);
+
     overview=NULL;
     daily=NULL;
     oximetry=NULL;
     prefdialog=NULL;
-
-/*    QGLFormat fmt;
-    fmt.setDepth(false);
-    fmt.setDirectRendering(true);
-    fmt.setAlpha(true);
-    fmt.setDoubleBuffer(true);
-    fmt.setRgba(true);
-    fmt.setDefaultFormat(fmt);
-    QGLContext smeg(fmt); */
-
-    //new QGLContext(fmt);
-    //shared_context->create(shared_context);
 
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
@@ -124,8 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("IgnoreShorterSessions")) PROFILE["IgnoreShorterSessions"]=0;
     if (!PROFILE.Exists("CombineCloserSessions")) PROFILE["CombineCloserSessions"]=0;
     if (!PROFILE.Exists("DaySplitTime")) PROFILE["DaySplitTime"]=QTime(12,0,0,0);
-    //DateTime(QDate::currentDate(),QTime(12,0,0,0),Qt::UTC).time();
-
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
     ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());
@@ -171,7 +157,6 @@ MainWindow::~MainWindow()
         QSettings settings("Jedimark", "SleepyHead");
         settings.setValue("MainWindow/geometry", saveGeometry());
     //}
-    //QWidget::closeEvent(event);
     if (daily) {
         daily->close();
         delete daily;
@@ -200,14 +185,12 @@ void MainWindow::Notify(QString s)
 
 void MainWindow::Startup()
 {
-    //Notify("Hi!");
     qDebug() << PREF["AppName"].toString().toAscii()+" v"+PREF["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
 
     // profile is a global variable set in main after login
-
     PROFILE.LoadMachineData();
 
     daily=new Daily(ui->tabWidget,NULL,this);
@@ -223,14 +206,6 @@ void MainWindow::Startup()
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
     qstatus->setText("");
-    /*schema::Channel & item=schema::channel["SysOneResistSet"];
-    if (!item.isNull()) {
-        for (QHash<int,QString>::iterator i=item.m_options.begin();i!=item.m_options.end();i++) {
-            qDebug() << i.key() << i.value();
-        }
-    }*/
-    //qstatusbar->clearMessage();
-
 }
 
 void MainWindow::on_action_Import_Data_triggered()
@@ -289,7 +264,6 @@ void MainWindow::on_action_Fullscreen_triggered()
         this->showFullScreen();
     else
         this->showNormal();
-
 }
 
 void MainWindow::on_homeButton_clicked()
@@ -297,7 +271,6 @@ void MainWindow::on_homeButton_clicked()
     QString file="qrc:/docs/index.html";
     QUrl url(file);
     ui->webView->setUrl(url);
-    //ui->webView->load(url);
 }
 
 void MainWindow::on_backButton_clicked()
@@ -313,7 +286,6 @@ void MainWindow::on_forwardButton_clicked()
 void MainWindow::on_webView_urlChanged(const QUrl &arg1)
 {
     ui->urlBar->setEditText(arg1.toString());
-
 }
 
 void MainWindow::on_urlBar_activated(const QString &arg1)
@@ -351,7 +323,6 @@ void MainWindow::on_webView_loadFinished(bool arg1)
     }
     ui->backButton->setEnabled(ui->webView->history()->canGoBack());
     ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
-
 }
 
 void MainWindow::on_webView_loadStarted()
@@ -433,7 +404,6 @@ void MainWindow::on_oximetryButton_clicked()
     ui->tabWidget->setCurrentWidget(oximetry);
     if (!first) oximetry->RedrawGraphs();
     qstatus2->setText("Oximetry");
-
 }
 
 void MainWindow::CheckForUpdates()
@@ -481,8 +451,6 @@ void MainWindow::replyFinished(QNetworkReply * reply)
     reply->deleteLater();
 }
 
-#include <QPixmap>
-#include <QDesktopWidget>
 void MainWindow::on_action_Screenshot_triggered()
 {
 
