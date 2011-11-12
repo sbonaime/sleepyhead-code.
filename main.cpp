@@ -13,13 +13,11 @@
 #include <QPushButton>
 #include <QWebFrame>
 
-
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
 #include "SleepLib/profiles.h"
 #include "profileselect.h"
 #include "newprofile.h"
-
 #include "SleepLib/loader_plugins/prs1_loader.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"

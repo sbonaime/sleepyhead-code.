@@ -52,7 +52,9 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     bool verts_exceeded=false;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
 
+    m_count=0;
     m_flag_color=schema::channel[m_code].defaultColor();
+
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;
@@ -74,6 +76,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
             //x1=w.x2p(X);
             x1=double(width)/double(xx)*double(X-w.min_x)+left;
+            m_count++;
             if (m_flt==FT_Span) {
                 //x2=w.x2p(Y);
                 x2=double(width)/double(xx)*double(Y-w.min_x)+left;
@@ -119,3 +122,29 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     }
 }
 
+gLineOverlaySummary::gLineOverlaySummary(QString text, int x, int y)
+:Layer(""),m_text(text),m_x(x),m_y(y)
+{
+}
+
+gLineOverlaySummary::~gLineOverlaySummary()
+{
+}
+
+void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int height)
+{
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+    float cnt=0;
+    for (int i=0;i<m_overlays.size();i++) {
+        cnt+=m_overlays[i]->count();
+    }
+    double time=w.max_x-w.min_x;
+    time/=3600000;
+
+    //if (time<1) time=1;
+
+    double val=cnt/time;
+    QString a=m_text+"="+QString::number(val,'f',2);
+    w.renderText(a,left+m_x,top+m_y);
+}

@@ -128,24 +128,26 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
+    gLineOverlaySummary *los=new gLineOverlaySummary("AHI",5,-3);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H")));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H"))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A")));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A"))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA")));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA")));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA"))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA"))));
+    FRW->AddLayer(AddCPAP(los));
 
 
     gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
