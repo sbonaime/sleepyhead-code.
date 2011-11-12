@@ -123,7 +123,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 }
 
 gLineOverlaySummary::gLineOverlaySummary(QString text, int x, int y)
-:Layer(""),m_text(text),m_x(x),m_y(y)
+:Layer(CPAP_Obstructive),m_text(text),m_x(x),m_y(y) // The Layer code is a dummy here.
 {
 }
 
@@ -133,18 +133,42 @@ gLineOverlaySummary::~gLineOverlaySummary()
 
 void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int height)
 {
+    if (!m_visible) return;
+    if (!m_day) return;
+
+
     Q_UNUSED(width);
     Q_UNUSED(height);
     float cnt=0;
     for (int i=0;i<m_overlays.size();i++) {
         cnt+=m_overlays[i]->count();
     }
-    double time=w.max_x-w.min_x;
+
+    double val,first,last;
+    double time=0;
+
+    // Calculate the session time.
+    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        first=(*s)->first();
+        last=(*s)->last();
+        if (last < w.min_x) continue;
+        if (first > w.max_x) continue;
+
+        if (first < w.min_x)
+            first=w.min_x;
+        if (last > w.max_x)
+            last=w.max_x;
+
+        time+=last-first;
+    }
+
+    val=0;
+
     time/=3600000;
 
     //if (time<1) time=1;
 
-    double val=cnt/time;
+    if (time>0) val=cnt/time;
     QString a=m_text+"="+QString::number(val,'f',2);
     w.renderText(a,left+m_x,top+m_y);
 }
