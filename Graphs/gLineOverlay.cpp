@@ -164,11 +164,19 @@ void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int hei
 
     val=0;
 
-    time/=3600000;
+    time/=1000;
+    int h=time/3600;
+    int m=int(time/60) % 60;
+    int s=int(time) % 60;
+
+
+    time/=3600;
 
     //if (time<1) time=1;
 
     if (time>0) val=cnt/time;
-    QString a=m_text+"="+QString::number(val,'f',2);
+
+
+    QString a=m_text+"="+QString::number(val,'f',2)+"  Duration="+QString().sprintf("%02i:%02i:%02i",h,m,s);
     w.renderText(a,left+m_x,top+m_y);
 }
