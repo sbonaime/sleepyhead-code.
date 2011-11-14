@@ -2,6 +2,7 @@
 #include <QLocale>
 #include <QMessageBox>
 #include "SleepLib/profiles.h"
+#include "SleepLib/day.h"
 #include "exportcsv.h"
 #include "ui_exportcsv.h"
 
@@ -96,7 +97,127 @@ void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
 
 void ExportCSV::on_exportButton_clicked()
 {
-    QMessageBox::information(this,"Stub Feature","Not implemented yet:\n"+ui->filenameEdit->text(),QMessageBox::Ok);
+    QFile file(ui->filenameEdit->text());
+    file.open(QFile::WriteOnly);
+    QString header;
+    const QString sep=",";
+    const QString newline="\n";
 
+    QStringList countlist,avglist,p90list;
+    countlist.append(CPAP_Hypopnea);
+    countlist.append(CPAP_Obstructive);
+    countlist.append(CPAP_Apnea);
+    countlist.append(CPAP_ClearAirway);
+    countlist.append(CPAP_VSnore);
+    countlist.append(CPAP_VSnore2);
+    countlist.append(CPAP_RERA);
+    countlist.append(CPAP_FlowLimit);
+    countlist.append(CPAP_PressurePulse);
+
+    avglist.append(CPAP_Pressure);
+    avglist.append(CPAP_IPAP);
+    avglist.append(CPAP_EPAP);
+
+    p90list.append(CPAP_Pressure);
+    p90list.append(CPAP_IPAP);
+    p90list.append(CPAP_EPAP);
+
+    if (ui->rb1_details->isChecked()) {
+        header="DateTime"+sep+"Session"+sep+"Event"+sep+"Data/Duration";
+    } else {
+        if (ui->rb1_Summary->isChecked()) {
+            header="Date"+sep+"Session Count"+sep+"Start"+sep+"End"+sep+"Total Time"+sep+"AHI";
+        } else if (ui->rb1_Sessions->isChecked()) {
+            header="Date"+sep+"Session"+sep+"Start"+sep+"End"+sep+"Total Time"+sep+"AHI";
+        }
+        for (int i=0;i<countlist.size();i++)
+            header+=sep+countlist[i]+" Count";
+        for (int i=0;i<avglist.size();i++)
+            header+=sep+avglist[i]+" Avg";
+        for (int i=0;i<p90list.size();i++)
+            header+=sep+p90list[i]+" 90%";
+    }
+    header+=newline;
+    file.write(header.toAscii());
+    QDate date=ui->startDate->date();
+    do {
+        Day *day=PROFILE.GetDay(date,MT_CPAP);
+        if (day) {
+            QString data;
+            if (ui->rb1_Summary->isChecked()) {
+                QDateTime start=QDateTime::fromTime_t(day->first()/1000L);
+                QDateTime end=QDateTime::fromTime_t(day->last()/1000L);
+                data=date.toString(Qt::ISODate);
+                data+=sep+QString::number(day->size(),10);
+                data+=sep+start.toString(Qt::ISODate);
+                data+=sep+end.toString(Qt::ISODate);
+                data+=sep+QString::number(day->total_time()/1000L,'f',3);
+                float ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
+                ahi/=day->hours();
+                data+=sep+QString::number(ahi,'f',3);
+                for (int i=0;i<countlist.size();i++)
+                    data+=sep+QString::number(day->count(countlist.at(i)));
+                for (int i=0;i<avglist.size();i++)
+                    data+=sep+QString::number(day->wavg(countlist.at(i)));
+                for (int i=0;i<p90list.size();i++)
+                    data+=sep+QString::number(day->p90(countlist.at(i)));
+                data+=newline;
+                file.write(data.toAscii());
+
+            } else if (ui->rb1_Sessions->isChecked()) {
+                for (int i=0;i<day->size();i++) {
+                    Session *sess=(*day)[i];
+                    QDateTime start=QDateTime::fromTime_t(sess->first()/1000L);
+                    QDateTime end=QDateTime::fromTime_t(sess->last()/1000L);
+
+                    data=date.toString(Qt::ISODate);
+                    data+=sep+QString::number(sess->session(),10);
+                    data+=sep+start.toString(Qt::ISODate);
+                    data+=sep+end.toString(Qt::ISODate);
+                    data+=sep+QString::number(sess->length()/1000.0,'f',3);
+                    float ahi=sess->count(CPAP_Obstructive)+sess->count(CPAP_Hypopnea)+sess->count(CPAP_Apnea)+sess->count(CPAP_ClearAirway);
+                    ahi/=sess->hours();
+                    data+=sep+QString::number(ahi,'f',3);
+                    for (int i=0;i<countlist.size();i++)
+                        data+=sep+QString::number(sess->count(countlist.at(i)));
+                    for (int i=0;i<avglist.size();i++)
+                        data+=sep+QString::number(day->wavg(countlist.at(i)));
+                    for (int i=0;i<p90list.size();i++)
+                        data+=sep+QString::number(day->p90(countlist.at(i)));
+                }
+                data+=newline;
+                file.write(data.toAscii());
+            } else if (ui->rb1_details->isChecked()) {
+                QStringList all=countlist;
+                all.append(avglist);
+                for (int i=0;i<day->size();i++) {
+                    Session *sess=(*day)[i];
+                    sess->OpenEvents();
+                    QHash<ChannelID,QVector<EventList *> >::iterator fnd;
+                    for (int j=0;j<all.size();j++) {
+                        QString key=all.at(j);
+                        fnd=sess->eventlist.find(key);
+                        if (fnd!=sess->eventlist.end()) {
+                            //header="DateTime"+sep+"Session"+sep+"Event"+sep+"Data/Duration";
+                            for (int e=0;e<fnd.value().size();e++) {
+                                EventList *ev=fnd.value()[e];
+                                for (int q=0;q<ev->count();q++) {
+                                    data=QDateTime::fromTime_t(ev->time(q)/1000L).toString(Qt::ISODate);
+                                    data+=sep+QString::number(sess->session());
+                                    data+=sep+key;
+                                    data+=sep+QString::number(ev->data(q),'f',2);
+                                    data+=newline;
+                                    file.write(data.toAscii());
+                                }
+                            }
+                        }
+                    }
+                    sess->TrashEvents();
+                }
+            }
+        }
+        date=date.addDays(1);
+    } while (date<=ui->endDate->date());
+    file.close();
     ExportCSV::accept();
 }
