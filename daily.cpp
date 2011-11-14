@@ -129,7 +129,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
-    gLineOverlaySummary *los=new gLineOverlaySummary("AHI",5,-3);
+    gLineOverlaySummary *los=new gLineOverlaySummary("Selection AHI",5,-3);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
