@@ -76,7 +76,7 @@ private:
 
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
-           *PLETHY,*TI,*TE, *RE, *IE;
+           *PLETHY,*TI,*TE, *RE, *IE, *TgMV;
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;

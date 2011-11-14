@@ -86,6 +86,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     IE=new gGraph(GraphView,"I:E",default_height);
     TE=new gGraph(GraphView,"Te",default_height);
     TI=new gGraph(GraphView,"Ti",default_height);
+    TgMV=new gGraph(GraphView,"TgMV",default_height);
     INTPULSE=new gGraph(GraphView,"Pulse",default_height,1);
     INTSPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
@@ -150,7 +151,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
+    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -188,6 +189,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,square)));
     TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,square)));
     TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkBlue,square)));
+    TgMV->AddLayer(AddCPAP(new gLineChart(CPAP_TgMV,Qt::darkCyan,square)));
     INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
@@ -546,8 +548,8 @@ void Daily::Load(QDate date)
         ChannelID chans[]={
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
             CPAP_MinuteVent,CPAP_RespRate,CPAP_RespEvent,CPAP_FLG,
-            CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te,CPAP_TidalVolume,
-            OXI_Pulse,OXI_SPO2
+            CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
+            CPAP_TidalVolume, OXI_Pulse,OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
         int suboffset;

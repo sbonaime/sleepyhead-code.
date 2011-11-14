@@ -726,20 +726,25 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_MaskPressure;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Exp Press")) {
-            code=CPAP_EPAP;//ExpiratoryPressure;
+            code=CPAP_EPAP;//ExpiratoryPressure
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("I:E")) {
-            code=CPAP_IE;//I:E;
+            code=CPAP_IE;//I:E ratio?
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Ti")) {
-            code=CPAP_Ti;//Ti;
+            code=CPAP_Ti;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Te")) {
-            code=CPAP_Te;//Te;
+            code=CPAP_Te;
+            a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
+            a->AddWaveform(edf.startdate,es.data,recs,duration);
+            //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+        } else if (es.label.startsWith("TgMV")) {
+            code=CPAP_TgMV;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);

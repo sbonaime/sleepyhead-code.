@@ -91,6 +91,7 @@ const QString CPAP_FLG="FLG";
 const QString CPAP_IE="IE";
 const QString CPAP_Te="Te";
 const QString CPAP_Ti="Ti";
+const QString CPAP_TgMV="TgMV";
 const QString RMS9_E01="RMS9_E01";
 const QString RMS9_E02="RMS9_E02";
 const QString PRS1_00="PRS1_00";
