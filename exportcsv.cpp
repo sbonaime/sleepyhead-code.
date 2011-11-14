@@ -158,9 +158,9 @@ void ExportCSV::on_exportButton_clicked()
                 for (int i=0;i<countlist.size();i++)
                     data+=sep+QString::number(day->count(countlist.at(i)));
                 for (int i=0;i<avglist.size();i++)
-                    data+=sep+QString::number(day->wavg(countlist.at(i)));
+                    data+=sep+QString::number(day->wavg(avglist.at(i)));
                 for (int i=0;i<p90list.size();i++)
-                    data+=sep+QString::number(day->p90(countlist.at(i)));
+                    data+=sep+QString::number(day->p90(p90list.at(i)));
                 data+=newline;
                 file.write(data.toAscii());
 
@@ -181,9 +181,9 @@ void ExportCSV::on_exportButton_clicked()
                     for (int i=0;i<countlist.size();i++)
                         data+=sep+QString::number(sess->count(countlist.at(i)));
                     for (int i=0;i<avglist.size();i++)
-                        data+=sep+QString::number(day->wavg(countlist.at(i)));
+                        data+=sep+QString::number(day->wavg(avglist.at(i)));
                     for (int i=0;i<p90list.size();i++)
-                        data+=sep+QString::number(day->p90(countlist.at(i)));
+                        data+=sep+QString::number(day->p90(p90list.at(i)));
                 }
                 data+=newline;
                 file.write(data.toAscii());
