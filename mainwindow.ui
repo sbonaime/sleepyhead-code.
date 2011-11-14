@@ -578,6 +578,7 @@
     <addaction name="action_Edit_Profile"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_Report"/>
+    <addaction name="actionExp_ort"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
@@ -739,6 +740,11 @@
    </property>
    <property name="text">
     <string>&amp;Link Graph Groups</string>
+   </property>
+  </action>
+  <action name="actionExp_ort">
+   <property name="text">
+    <string>Exp&amp;ort</string>
    </property>
   </action>
  </widget>

@@ -1,0 +1,2 @@
+You can reorder graphs by clicking and dragging on the title bar.
+SleepyHead project started out in March 2011, initially written in Python script.

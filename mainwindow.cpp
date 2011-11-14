@@ -20,6 +20,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "newprofile.h"
+#include "exportcsv.h"
 #include "SleepLib/schema.h"
 #include "Graphs/glcommon.h"
 
@@ -509,4 +510,11 @@ void MainWindow::on_action_CycleTabs_triggered()
     if (i >= ui->tabWidget->count())
         i=0;
     ui->tabWidget->setCurrentIndex(i);
+}
+
+void MainWindow::on_actionExp_ort_triggered()
+{
+    ExportCSV ex(this);
+    if (ex.exec()==ExportCSV::Accepted) {
+    }
 }

@@ -104,6 +104,8 @@ private slots:
 
     void on_action_CycleTabs_triggered();
 
+    void on_actionExp_ort_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

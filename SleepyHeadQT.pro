@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     Graphs/gSummaryChart.cpp \
     SleepLib/schema.cpp \
     profileselect.cpp \
-    newprofile.cpp
+    newprofile.cpp \
+    exportcsv.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -118,7 +119,8 @@ HEADERS  += \
     Graphs/gSummaryChart.h \
     SleepLib/schema.h \
     profileselect.h \
-    newprofile.h
+    newprofile.h \
+    exportcsv.h
 
 
 FORMS    += \
@@ -129,7 +131,8 @@ FORMS    += \
     preferencesdialog.ui \
     report.ui \
     profileselect.ui \
-    newprofile.ui
+    newprofile.ui \
+    exportcsv.ui
 
 RESOURCES += \
     Resources.qrc
@@ -141,7 +144,12 @@ OTHER_FILES += \
     docs/schema.xml \
     docs/graphs.xml \
     docs/channels.xml \
-    docs/release_notes.html
+    docs/release_notes.html \
+    docs/startup_tips.txt
+
+
+
+
 
 
 
