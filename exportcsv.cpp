@@ -37,6 +37,7 @@ ExportCSV::~ExportCSV()
 void ExportCSV::on_filenameBrowseButton_clicked()
 {
     QString timestamp="SleepyHead_";
+    timestamp+=PROFILE.Get("Username")+"_";
 
     if (ui->rb1_details->isChecked()) timestamp+="Details_";
     if (ui->rb1_Sessions->isChecked()) timestamp+="Sessions_";
