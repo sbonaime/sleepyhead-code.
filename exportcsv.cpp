@@ -171,6 +171,8 @@ void ExportCSV::on_exportButton_clicked()
 
     do {
         ui->progressBar->setValue(ui->progressBar->value()+1);
+        QApplication::processEvents();
+
         Day *day=PROFILE.GetDay(date,MT_CPAP);
         if (day) {
             QString data;
