@@ -53,7 +53,7 @@
      <item>
       <widget class="QRadioButton" name="rb1_Summary">
        <property name="text">
-        <string>Summary</string>
+        <string>Daily</string>
        </property>
        <property name="checked">
         <bool>true</bool>
