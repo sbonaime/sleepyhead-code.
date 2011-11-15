@@ -167,7 +167,11 @@ void ExportCSV::on_exportButton_clicked()
                 data+=sep+QString::number(day->size(),10);
                 data+=sep+start.toString(Qt::ISODate);
                 data+=sep+end.toString(Qt::ISODate);
-                data+=sep+QString::number(day->total_time()/1000L,'f',3);
+                int time=day->total_time()/1000L;
+                int h=time/3600;
+                int m=int(time/60) % 60;
+                int s=int(time) % 60;
+                data+=sep+QString().sprintf("%02i:%02i:%02i",h,m,s);
                 float ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
                 ahi/=day->hours();
                 data+=sep+QString::number(ahi,'f',3);
@@ -190,7 +194,12 @@ void ExportCSV::on_exportButton_clicked()
                     data+=sep+QString::number(sess->session(),10);
                     data+=sep+start.toString(Qt::ISODate);
                     data+=sep+end.toString(Qt::ISODate);
-                    data+=sep+QString::number(sess->length()/1000.0,'f',3);
+                    int time=sess->length()/1000L;
+                    int h=time/3600;
+                    int m=int(time/60) % 60;
+                    int s=int(time) % 60;
+                    data+=sep+QString().sprintf("%02i:%02i:%02i",h,m,s);
+
                     float ahi=sess->count(CPAP_Obstructive)+sess->count(CPAP_Hypopnea)+sess->count(CPAP_Apnea)+sess->count(CPAP_ClearAirway);
                     ahi/=sess->hours();
                     data+=sep+QString::number(ahi,'f',3);
