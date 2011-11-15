@@ -1,6 +1,7 @@
 #ifndef EXPORTCSV_H
 #define EXPORTCSV_H
 
+#include <QDateEdit>
 #include <QDialog>
 
 namespace Ui {
@@ -22,7 +23,13 @@ private slots:
 
     void on_exportButton_clicked();
 
+    void startDate_currentPageChanged(int year, int month);
+    void endDate_currentPageChanged(int year, int month);
+
+
 private:
+    void UpdateCalendarDay(QDateEdit * dateedit,QDate date);
+
     Ui::ExportCSV *ui;
 };
 

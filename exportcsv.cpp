@@ -1,6 +1,7 @@
 #include <QFileDialog>
 #include <QLocale>
 #include <QMessageBox>
+#include <QCalendarWidget>
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
 #include "exportcsv.h"
@@ -22,6 +23,17 @@ ExportCSV::ExportCSV(QWidget *parent) :
     }
     ui->startDate->setDisplayFormat(shortformat);
     ui->endDate->setDisplayFormat(shortformat);
+    // Stop both calendar drop downs highlighting weekends in red
+    QTextCharFormat format = ui->startDate->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->startDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->startDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+
+    // Connect the signals to update which days have CPAP data when the month is changed
+    connect(ui->startDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(startDate_currentPageChanged(int,int)));
+    connect(ui->endDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(endDate_currentPageChanged(int,int)));
 
     on_quickRangeCombo_activated("Most Recent Day");
     ui->rb1_details->clearFocus();
@@ -61,6 +73,8 @@ void ExportCSV::on_filenameBrowseButton_clicked()
 
 void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
 {
+    QDate first=PROFILE.FirstDay();
+    QDate last=PROFILE.LastDay();
     if (arg1=="Custom") {
         ui->startDate->setEnabled(true);
         ui->endDate->setEnabled(true);
@@ -71,27 +85,28 @@ void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
         ui->endDate->setEnabled(false);
         ui->startLabel->setEnabled(false);
         ui->endLabel->setEnabled(false);
+
         if (arg1=="Everything") {
-            ui->startDate->setDate(PROFILE.FirstDay());
-            ui->endDate->setDate(PROFILE.LastDay());
+            ui->startDate->setDate(first);
+            ui->endDate->setDate(last);
         } else if (arg1=="Most Recent Day") {
-            ui->startDate->setDate(PROFILE.LastDay());
-            ui->endDate->setDate(PROFILE.LastDay());
+            ui->startDate->setDate(last);
+            ui->endDate->setDate(last);
         } else if (arg1=="Last Week") {
-            ui->startDate->setDate(QDate::currentDate().addDays(-7));
-            ui->endDate->setDate(QDate::currentDate());
+            ui->startDate->setDate(last.addDays(-7));
+            ui->endDate->setDate(last);
         } else if (arg1=="Last Fortnight") {
-            ui->startDate->setDate(QDate::currentDate().addDays(-14));
-            ui->endDate->setDate(QDate::currentDate());
+            ui->startDate->setDate(last.addDays(-14));
+            ui->endDate->setDate(last);
         } else if (arg1=="Last Month") {
-            ui->startDate->setDate(QDate::currentDate().addMonths(-1));
-            ui->endDate->setDate(QDate::currentDate());
+            ui->startDate->setDate(last.addMonths(-1));
+            ui->endDate->setDate(last);
         } else if (arg1=="Last 6 Months") {
-            ui->startDate->setDate(QDate::currentDate().addMonths(-6));
-            ui->endDate->setDate(QDate::currentDate());
+            ui->startDate->setDate(last.addMonths(-6));
+            ui->endDate->setDate(last);
         } else if (arg1=="Last Year") {
-            ui->startDate->setDate(QDate::currentDate().addYears(-1));
-            ui->endDate->setDate(QDate::currentDate());
+            ui->startDate->setDate(last.addYears(-1));
+            ui->endDate->setDate(last);
         }
     }
 }
@@ -221,4 +236,55 @@ void ExportCSV::on_exportButton_clicked()
     } while (date<=ui->endDate->date());
     file.close();
     ExportCSV::accept();
+}
+
+
+void ExportCSV::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
+{
+    QCalendarWidget *calendar=dateedit->calendarWidget();
+    QTextCharFormat bold;
+    QTextCharFormat cpapcol;
+    QTextCharFormat normal;
+    QTextCharFormat oxiday;
+    bold.setFontWeight(QFont::Bold);
+    cpapcol.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpapcol.setFontWeight(QFont::Bold);
+    oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxiday.setFontWeight(QFont::Bold);
+    bool hascpap=p_profile->GetDay(date,MT_CPAP)!=NULL;
+    bool hasoxi=p_profile->GetDay(date,MT_OXIMETER)!=NULL;
+    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=NULL;
+
+    if (hascpap) {
+        if (hasoxi) {
+            calendar->setDateTextFormat(date,oxiday);
+        } else {
+            calendar->setDateTextFormat(date,cpapcol);
+        }
+    } else if (p_profile->GetDay(date)) {
+        calendar->setDateTextFormat(date,bold);
+    } else {
+        calendar->setDateTextFormat(date,normal);
+    }
+    calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
+}
+void ExportCSV::startDate_currentPageChanged(int year, int month)
+{
+    QDate d(year,month,1);
+    int dom=d.daysInMonth();
+
+    for (int i=1;i<=dom;i++) {
+        d=QDate(year,month,i);
+        UpdateCalendarDay(ui->startDate,d);
+    }
+}
+void ExportCSV::endDate_currentPageChanged(int year, int month)
+{
+    QDate d(year,month,1);
+    int dom=d.daysInMonth();
+
+    for (int i=1;i<=dom;i++) {
+        d=QDate(year,month,i);
+        UpdateCalendarDay(ui->endDate,d);
+    }
 }
