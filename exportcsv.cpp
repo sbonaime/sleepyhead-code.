@@ -5,6 +5,7 @@
 #include <QTextCharFormat>
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
+#include "common_gui.h"
 #include "exportcsv.h"
 #include "ui_exportcsv.h"
 #include "mainwindow.h"
@@ -35,8 +36,10 @@ ExportCSV::ExportCSV(QWidget *parent) :
     ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
 
-    ui->startDate->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
-    ui->endDate->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+
+    ui->startDate->calendarWidget()->setFirstDayOfWeek(dow);
+    ui->endDate->calendarWidget()->setFirstDayOfWeek(dow);
 
     // Connect the signals to update which days have CPAP data when the month is changed
     connect(ui->startDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(startDate_currentPageChanged(int,int)));

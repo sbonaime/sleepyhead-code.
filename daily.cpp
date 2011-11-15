@@ -18,6 +18,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 
+#include "common_gui.h"
 #include "SleepLib/profiles.h"
 #include "SleepLib/session.h"
 #include "Graphs/graphdata_custom.h"
@@ -210,7 +211,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
     ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
-    ui->calendar->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+
+    //Qt::DayOfWeek dow=QLocale::system().firstDayOfWeek();
+    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+
+    ui->calendar->setFirstDayOfWeek(dow);
 
     ui->tabWidget->setCurrentWidget(ui->details);
 

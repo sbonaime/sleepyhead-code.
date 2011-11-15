@@ -66,7 +66,8 @@ SOURCES += main.cpp\
     SleepLib/schema.cpp \
     profileselect.cpp \
     newprofile.cpp \
-    exportcsv.cpp
+    exportcsv.cpp \
+    common_gui.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -120,7 +121,8 @@ HEADERS  += \
     SleepLib/schema.h \
     profileselect.h \
     newprofile.h \
-    exportcsv.h
+    exportcsv.h \
+    common_gui.h
 
 
 FORMS    += \
@@ -146,6 +148,8 @@ OTHER_FILES += \
     docs/channels.xml \
     docs/release_notes.html \
     docs/startup_tips.txt
+
+
 
 
 

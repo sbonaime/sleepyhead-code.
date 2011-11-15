@@ -14,6 +14,7 @@
 #include "SleepLib/profiles.h"
 #include "overview.h"
 #include "ui_overview.h"
+#include "common_gui.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
@@ -33,8 +34,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     }
     ui->dateStart->setDisplayFormat(shortformat);
     ui->dateEnd->setDisplayFormat(shortformat);
-    ui->dateStart->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
-    ui->dateEnd->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+
+    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+
+    ui->dateStart->calendarWidget()->setFirstDayOfWeek(dow);
+    ui->dateEnd->calendarWidget()->setFirstDayOfWeek(dow);
 
 
     // Stop both calendar drop downs highlighting weekends in red
