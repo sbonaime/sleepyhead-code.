@@ -31,6 +31,9 @@ ExportCSV::ExportCSV(QWidget *parent) :
     ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->endDate->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
 
+    ui->startDate->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+    ui->endDate->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+
     // Connect the signals to update which days have CPAP data when the month is changed
     connect(ui->startDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(startDate_currentPageChanged(int,int)));
     connect(ui->endDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(endDate_currentPageChanged(int,int)));

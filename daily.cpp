@@ -210,6 +210,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
     ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
+    ui->calendar->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
 
     ui->tabWidget->setCurrentWidget(ui->details);
 

@@ -33,6 +33,9 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     }
     ui->dateStart->setDisplayFormat(shortformat);
     ui->dateEnd->setDisplayFormat(shortformat);
+    ui->dateStart->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+    ui->dateEnd->calendarWidget()->setFirstDayOfWeek(QLocale::system().firstDayOfWeek());
+
 
     // Stop both calendar drop downs highlighting weekends in red
     QTextCharFormat format = ui->dateStart->calendarWidget()->weekdayTextFormat(Qt::Saturday);
