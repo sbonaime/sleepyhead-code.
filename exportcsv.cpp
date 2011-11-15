@@ -2,6 +2,7 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QCalendarWidget>
+#include <QTextCharFormat>
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
 #include "exportcsv.h"
@@ -194,15 +195,15 @@ void ExportCSV::on_exportButton_clicked()
                     float ahi=sess->count(CPAP_Obstructive)+sess->count(CPAP_Hypopnea)+sess->count(CPAP_Apnea)+sess->count(CPAP_ClearAirway);
                     ahi/=sess->hours();
                     data+=sep+QString::number(ahi,'f',3);
-                    for (int i=0;i<countlist.size();i++)
-                        data+=sep+QString::number(sess->count(countlist.at(i)));
-                    for (int i=0;i<avglist.size();i++)
-                        data+=sep+QString::number(day->wavg(avglist.at(i)));
-                    for (int i=0;i<p90list.size();i++)
-                        data+=sep+QString::number(day->p90(p90list.at(i)));
+                    for (int j=0;j<countlist.size();j++)
+                        data+=sep+QString::number(sess->count(countlist.at(j)));
+                    for (int j=0;j<avglist.size();j++)
+                        data+=sep+QString::number(day->wavg(avglist.at(j)));
+                    for (int j=0;j<p90list.size();j++)
+                        data+=sep+QString::number(day->p90(p90list.at(j)));
+                    data+=newline;
+                    file.write(data.toAscii());
                 }
-                data+=newline;
-                file.write(data.toAscii());
             } else if (ui->rb1_details->isChecked()) {
                 QStringList all=countlist;
                 all.append(avglist);
