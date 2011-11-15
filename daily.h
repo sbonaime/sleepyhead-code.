@@ -42,6 +42,7 @@ public:
     gGraphView *SharedWidget() { return GraphView; }
     void RedrawGraphs();
     void LoadDate(QDate date);
+    QDate getDate() { return previous_date; }
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);

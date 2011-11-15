@@ -7,6 +7,9 @@
 #include "SleepLib/day.h"
 #include "exportcsv.h"
 #include "ui_exportcsv.h"
+#include "mainwindow.h"
+
+extern MainWindow *mainwin;
 
 ExportCSV::ExportCSV(QWidget *parent) :
     QDialog(parent),
@@ -160,7 +163,14 @@ void ExportCSV::on_exportButton_clicked()
     header+=newline;
     file.write(header.toAscii());
     QDate date=ui->startDate->date();
+    Daily *daily=mainwin->getDaily();
+    QDate daily_date=daily->getDate();
+
+    ui->progressBar->setValue(0);
+    ui->progressBar->setMaximum(PROFILE.daylist.count());
+
     do {
+        ui->progressBar->setValue(ui->progressBar->value()+1);
         Day *day=PROFILE.GetDay(date,MT_CPAP);
         if (day) {
             QString data;
@@ -241,7 +251,8 @@ void ExportCSV::on_exportButton_clicked()
                             }
                         }
                     }
-                    sess->TrashEvents();
+                    if (daily_date!=date)
+                        sess->TrashEvents();
                 }
             }
         }
