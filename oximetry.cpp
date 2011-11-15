@@ -296,6 +296,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->avg(OXI_Pulse);
             sess->wavg(OXI_Pulse);
             sess->p90(OXI_Pulse);
+            sess->count(OXI_Pulse);
 
             sess->setMin(OXI_SPO2,ev_spo2->min());
             sess->setMax(OXI_SPO2,ev_spo2->max());
@@ -304,10 +305,14 @@ void Oximetry::on_RunButton_toggled(bool checked)
             sess->avg(OXI_SPO2);
             sess->wavg(OXI_SPO2);
             sess->p90(OXI_SPO2);
+            sess->count(OXI_SPO2);
+
 
             sess->avg(OXI_Plethy);
             sess->wavg(OXI_Plethy);
             sess->p90(OXI_Plethy);
+            sess->count(OXI_Plethy);
+
             sess->setMin(OXI_Plethy,ev_plethy->min());
             sess->setMax(OXI_Plethy,ev_plethy->max());
 
@@ -702,12 +707,15 @@ void Oximetry::on_ImportButton_clicked()
         ev_spo2->AddEvent(tt,spo2);
         session->set_last(tt);
 
+        session->m_cnt.clear();
+
         session->setMin(OXI_Pulse,ev_pulse->min());
         session->setMax(OXI_Pulse,ev_pulse->max());
         session->avg(OXI_Pulse);
         session->p90(OXI_Pulse);
         session->cph(OXI_Pulse);
         session->wavg(OXI_Pulse);
+        session->count(OXI_Pulse);
 
         session->setMin(OXI_SPO2,ev_pulse->min());
         session->setMax(OXI_SPO2,ev_pulse->max());
@@ -715,6 +723,7 @@ void Oximetry::on_ImportButton_clicked()
         session->p90(OXI_SPO2);
         session->cph(OXI_SPO2);
         session->wavg(OXI_SPO2);
+        session->count(OXI_SPO2);
 
         session->SetChanged(true);
         mach->AddSession(session,p_profile);

@@ -2007,7 +2007,11 @@ void gGraphView::paintGL()
     //#endif
     //threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) continue;
+        if (m_graphs[i]->title()=="Pulse") {
+            int i=4;
+        }
+        if (m_graphs[i]->isEmpty()) continue;
+        if (!m_graphs[i]->visible()) continue;
         numgraphs++;
         h=m_graphs[i]->height() * m_scaleY;
 
