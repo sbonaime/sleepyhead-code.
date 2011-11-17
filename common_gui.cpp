@@ -9,9 +9,9 @@ Qt::DayOfWeek firstDayOfWeekFromLocale()
 }
 
 #else
-#if defined(Q_OS_MAC)
+/*#if defined(Q_OS_MAC)
 #include <Cocoa/Cocoa.h>
-#endif
+#endif */
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -42,12 +42,12 @@ Qt::DayOfWeek firstDayOfWeekFromLocale()
     }
 #elif defined(__GLIBC__)
     firstDay = (Qt::DayOfWeek)(unsigned char)((*nl_langinfo(_NL_TIME_FIRST_WEEKDAY) + 5) % 7 + 1);
-#elif defined(Q_OS_MAC)
+/*#elif defined(Q_OS_MAC)
     // Unsure if this will work.. Most Mac users use 4.8 anyway, so won't see this code..
     NSCalendar *cal = [NSCalendar currentCalendar];
     int day = ([cal firstWeekday] + 5) % 7 + 1;
 
-    firstDay = (Qt::DayOfWeek)(unsigned char)day;
+    firstDay = (Qt::DayOfWeek)(unsigned char)day; */
 #endif
     return firstDay;
 }
