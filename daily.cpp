@@ -843,8 +843,10 @@ void Daily::on_treeWidget_itemSelectionChanged()
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        double st=qint64((d.addSecs(-120)).toTime_t())*1000L;
-        double et=qint64((d.addSecs(120)).toTime_t())*1000L;
+        int winsize=PROFILE["EventWindowSize"].toInt()*60;
+
+        double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
+        double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
         GraphView->SetXBounds(st,et);
     }
 }

@@ -74,6 +74,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     if (!(*profile).Exists("SquareWavePlots")) (*profile)["SquareWavePlots"]=true;
     ui->squareWavePlots->setChecked((*profile)["SquareWavePlots"].toBool());
 
+    if (!(*profile).Exists("EventWindowSize")) (*profile)["EventWindowSize"]=4;
+    ui->eventWindowSlider->setValue((*profile)["EventWindowSize"].toInt());
+    ui->eventWindowLCD->display((*profile)["EventWindowSize"].toInt());
+
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
 
@@ -208,6 +212,8 @@ void PreferencesDialog::Save()
     (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
+
+    (*profile)["EventWindowSize"]=ui->eventWindowSlider->value();
 
     if (ui->squareWavePlots->isChecked() != (*profile)["SquareWavePlots"].toBool()) {
         needs_restart=true;
