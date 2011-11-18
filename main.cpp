@@ -96,7 +96,8 @@ int main(int argc, char *argv[])
     ResmedLoader::Register();
     Profiles::Scan();
     PREF["AppName"]="SleepyHead";
-    bool skip_login=(!PREF.ExistsAndTrue("SkipLoginScreen")) || force_login_screen;
+    bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));
+    if (force_login_screen) skip_login=false;
 
     QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
 
@@ -139,11 +140,15 @@ int main(int argc, char *argv[])
                 check_updates=false;
             }
         }
+        ProfileSelect profsel(0);
         if (skip_login) {
+            profsel.QuickLogin();
+            if (profsel.result()==ProfileSelect::Rejected) {
+                exit(1);
+            }
             p_profile=Profiles::Get(PREF["Profile"].toString());
         } else p_profile=NULL;
-        if (p_profile) {
-            ProfileSelect profsel(0);
+        if (!p_profile) {
             if (profsel.exec()==ProfileSelect::Rejected) {
                 exit(1);
             }

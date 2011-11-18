@@ -18,6 +18,7 @@ public:
     ~ProfileSelect();
 
     QString selectedProfile();
+    void QuickLogin();
 private slots:
     void on_selectButton_clicked();
 

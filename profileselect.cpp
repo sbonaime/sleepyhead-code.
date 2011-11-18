@@ -159,6 +159,10 @@ void ProfileSelect::deleteProfile()
         }
     }
 }
+void ProfileSelect::QuickLogin()
+{
+    on_listView_activated(ui->listView->currentIndex());
+}
 
 void ProfileSelect::on_selectButton_clicked()
 {
