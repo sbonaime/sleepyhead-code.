@@ -81,6 +81,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
 
+    if (!PREF.Exists("SkipLoginScreen")) PREF["SkipLoginScreen"]=false;
+    ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
+
     if (!PREF.Exists("Updates_CheckFrequency")) PREF["Updates_CheckFrequency"]=3;
     ui->updateCheckEvery->setValue(PREF["Updates_CheckFrequency"].toInt());
     if (PREF.Exists("Updates_LastChecked")) {
@@ -212,6 +215,8 @@ void PreferencesDialog::Save()
     (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
+
+    PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
 
     (*profile)["EventWindowSize"]=ui->eventWindowSlider->value();
 

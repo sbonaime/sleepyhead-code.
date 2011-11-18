@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>599</width>
     <height>330</height>
    </rect>
   </property>
@@ -179,40 +179,6 @@ This takes extra space, and has been known to cause problems on certain computer
          </property>
         </widget>
        </item>
-       <item row="9" column="2">
-        <widget class="QCheckBox" name="useMultithreading">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>You may need to disable this if your experiencing crashes.
-It has no effect on single cpu machines.</string>
-         </property>
-         <property name="text">
-          <string>Use Multi-Threading</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="2">
-        <widget class="QCheckBox" name="skipEmptyDays">
-         <property name="toolTip">
-          <string>Skip empty days with Prev &amp; Next buttons above daily view calendar</string>
-         </property>
-         <property name="text">
-          <string>Skip Empty Days</string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="2">
-        <widget class="QCheckBox" name="squareWavePlots">
-         <property name="text">
-          <string>Square Wave Plots</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
@@ -264,6 +230,23 @@ It has no effect on single cpu machines.</string>
           </widget>
          </item>
         </layout>
+       </item>
+       <item row="9" column="2">
+        <widget class="QCheckBox" name="squareWavePlots">
+         <property name="text">
+          <string>Square Wave Plots</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QCheckBox" name="skipEmptyDays">
+         <property name="toolTip">
+          <string>Skip empty days with Prev &amp; Next buttons above daily view calendar</string>
+         </property>
+         <property name="text">
+          <string>Skip Empty Days</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -648,19 +631,6 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_11">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Graph Text</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="1">
            <widget class="QFontComboBox" name="graphFont"/>
           </item>
@@ -674,19 +644,6 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="value">
              <number>11</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Graph Titles</string>
             </property>
            </widget>
           </item>
@@ -706,28 +663,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>Big  Text</string>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="1">
            <widget class="QFontComboBox" name="bigFont"/>
-          </item>
-          <item row="4" column="2">
-           <widget class="QSpinBox" name="bigFontSize">
-            <property name="minimum">
-             <number>6</number>
-            </property>
-            <property name="maximum">
-             <number>72</number>
-            </property>
-            <property name="value">
-             <number>18</number>
-            </property>
-           </widget>
           </item>
           <item row="1" column="4">
            <widget class="QCheckBox" name="applicationFontItalic">
@@ -917,6 +854,52 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Graph Text</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Graph Titles</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Big  Text</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QSpinBox" name="bigFontSize">
+            <property name="minimum">
+             <number>6</number>
+            </property>
+            <property name="maximum">
+             <number>72</number>
+            </property>
+            <property name="value">
+             <number>18</number>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1015,26 +998,11 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="updatesTab">
       <attribute name="title">
-       <string>&amp;Updates</string>
+       <string>&amp;General</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>4</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
        <item>
         <widget class="QGroupBox" name="automaticallyCheckUpdates">
          <property name="sizePolicy">
@@ -1198,6 +1166,39 @@ p, li { white-space: pre-wrap; }
          <property name="autoRaise">
           <bool>true</bool>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>General Preferences</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QCheckBox" name="useMultithreading">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>You may need to disable this if your experiencing crashes.
+It has no effect on single cpu machines.</string>
+            </property>
+            <property name="text">
+             <string>Use Multi-Threading</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="skipLoginScreen">
+            <property name="text">
+             <string>Skip Login Screen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
