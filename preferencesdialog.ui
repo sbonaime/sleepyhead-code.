@@ -1276,16 +1276,16 @@ It has no effect on single cpu machines.</string>
   </connection>
   <connection>
    <sender>eventWindowSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>eventWindowLCD</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>286</x>
+     <x>300</x>
      <y>56</y>
     </hint>
     <hint type="destinationlabel">
-     <x>465</x>
+     <x>564</x>
      <y>56</y>
     </hint>
    </hints>
