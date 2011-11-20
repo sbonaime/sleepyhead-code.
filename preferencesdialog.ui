@@ -234,6 +234,9 @@ This takes extra space, and has been known to cause problems on certain computer
            <property name="numDigits">
             <number>2</number>
            </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
           </widget>
          </item>
         </layout>
