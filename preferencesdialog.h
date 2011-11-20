@@ -9,6 +9,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QStringListModel>
 #include "SleepLib/profiles.h"
 
 namespace Ui {
@@ -34,10 +35,17 @@ private slots:
 
     void on_checkForUpdatesButton_clicked();
 
+    void on_addImportLocation_clicked();
+
+    void on_removeImportLocation_clicked();
+
 private:
     Ui::PreferencesDialog *ui;
     Profile * profile;
     QHash<int,QColor> m_new_colors;
+    QStringList importLocations;
+    QStringListModel *importModel;
+
 };
 
 #endif // PREFERENCESDIALOG_H

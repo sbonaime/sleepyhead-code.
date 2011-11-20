@@ -18,10 +18,13 @@
 #include "SleepLib/profiles.h"
 #include "profileselect.h"
 #include "newprofile.h"
+
+// Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
+#include "SleepLib/loader_plugins/intellipap_loader.h"
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -94,6 +97,7 @@ int main(int argc, char *argv[])
     CMS50Loader::Register();
     ZEOLoader::Register();
     ResmedLoader::Register();
+    IntellipapLoader::Register();
     Profiles::Scan();
     PREF["AppName"]="SleepyHead";
     bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));

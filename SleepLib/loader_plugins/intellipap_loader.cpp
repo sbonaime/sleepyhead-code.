@@ -4,6 +4,10 @@ SleepLib (DeVilbiss) Intellipap Loader Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+
+Notes: Intellipap requires the SmartLink attachment to access this data.
+It does not seem to record multiple days, graph data is overwritten each time..
+
 */
 
 #include "intellipap_loader.h"
@@ -22,14 +26,20 @@ Intellipap::~Intellipap()
 
 IntellipapLoader::IntellipapLoader()
 {
+    m_buffer=NULL;
 }
 
 IntellipapLoader::~IntellipapLoader()
 {
+    for (QHash<QString,Machine *>::iterator i=MachList.begin(); i!=MachList.end(); i++) {
+        delete i.value();
+    }
 }
 
 int IntellipapLoader::Open(QString & path,Profile *profile)
 {
+    // Check for DV5MFirm.bin
+
     return 0;
 }
 

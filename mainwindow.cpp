@@ -212,40 +212,86 @@ void MainWindow::Startup()
 
 void MainWindow::on_action_Import_Data_triggered()
 {
-    //QStringList dirNames;
+    QStringList importLocations;
+    {
+        QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
+        QFile file(filename);
+        file.open(QFile::ReadOnly);
+        QTextStream textStream(&file);
+        while (1) {
+            QString line = textStream.readLine();
+             if (line.isNull())
+                 break;
+             else if (line.isEmpty())
+                 continue;
+             else {
+                 importLocations.append(line);
+             }
+        };
+        file.close();
+    }
 
-    //QFileDialog qfd(this);
-    //qfd.setFileMode(QFileDialog::Directory);
-    //qfd.setOption(QFileDialog::ShowDirsOnly,true);
-    QString dir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
+    bool addnew=false;
+    QString newdir;
 
-    if (!dir.isEmpty()) {
-    //if (qfd.exec()) {
-        qprogress->setValue(0);
-        qprogress->show();
-        qstatus->setText(tr("Importing Data"));
-        int c=PROFILE.Import(dir);
-        if (!c) {
-            QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dir,QMessageBox::Ok);
+    bool asknew=false;
+    if (importLocations.size()==0) {
+        asknew=true;
+    } else {
+        int res=QMessageBox::question(this,"Import from where?","Do you just want to Import from the usual (remembered) locations?\n","The Usual","New Location","Cancel",0,2);
+        if (res==1) {
+            asknew=true;
         }
-        /*dirNames=qfd.selectedFiles();
-        int c=0,d;
-        for (int i=0;i<dirNames.size();i++) {
-            d=profile->Import(dirNames[i]);
-            if (!d) {
-                QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dirNames[i],QMessageBox::Ok);
+        if (res==2) return;
+    }
+
+    if (asknew) {
+        newdir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
+        if (newdir.isEmpty()) {
+            // inform the user or just abort?
+            return;
+        }
+        if (!importLocations.contains(newdir)) {
+            importLocations.append(newdir);
+            addnew=true;
+        }
+    }
+
+    int successful=false;
+    for (int i=0;i<importLocations.size();i++) {
+        QString dir=importLocations[i];
+        if (!dir.isEmpty()) {
+            qprogress->setValue(0);
+            qprogress->show();
+            qstatus->setText(tr("Importing Data"));
+            int c=PROFILE.Import(dir);
+            if (!c) {
+                QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dir,QMessageBox::Ok);
+                if (newdir==dir) addnew=false; // Don't bother asking to add it.
             }
-            c+=d;
-        }*/
-        qDebug() << "Finished Importing data" << c;
-        if (c) {
-            PROFILE.Save();
-            if (daily) daily->ReloadGraphs();
-            if (overview) overview->ReloadGraphs();
+            qDebug() << "Finished Importing data" << c;
+            if (c) {
+                successful=true;
+            }
+            qstatus->setText("");
+            qprogress->hide();
         }
-        qstatus->setText("");
-        qprogress->hide();
-
+    }
+    if (successful) {
+        PROFILE.Save();
+        if (daily) daily->ReloadGraphs();
+        if (overview) overview->ReloadGraphs();
+        if (addnew && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
+            QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
+            QFile file(filename);
+            file.open(QFile::WriteOnly);
+            QTextStream ts(&file);
+            for (int i=0;i<importLocations.size();i++) {
+                ts << importLocations[i] << endl;
+               //file.write(importLocations[i].toUtf8());
+            }
+            file.close();
+        }
     }
 }
 QMenu * MainWindow::CreateMenu(QString title)
