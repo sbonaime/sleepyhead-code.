@@ -231,17 +231,16 @@ long event_cnt=0;
 
 int ResmedLoader::Open(QString & path,Profile *profile)
 {
-
     QString newpath;
 
     QString dirtag="DATALOG";
-    if (path.endsWith("/"+dirtag)) {
+    if (path.endsWith(QDir::separator()+dirtag)) {
         return 0; // id10t user..
         //newpath=path;
     } else {
-        newpath=path+"/"+dirtag;
+        newpath=path+QDir::separator()+dirtag;
     }
-    QString idfile=path+"/Identification.tgt";
+    QString idfile=path+QDir::separator()+"Identification.tgt";
     QFile f(idfile);
     QHash<QString,QString> idmap;
     if (f.open(QIODevice::ReadOnly)) {
@@ -259,7 +258,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             }
         }
     }
-    QString strfile=path+"/STR.edf";
+    QString strfile=path+QDir::separator()+"STR.edf";
     EDFParser stredf(strfile);
 
     if (!stredf.Parse()) {

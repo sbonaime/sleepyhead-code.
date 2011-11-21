@@ -227,7 +227,7 @@ void MainWindow::on_action_Import_Data_triggered()
              else {
                  importLocations.append(line);
              }
-        };
+        }
         file.close();
     }
 

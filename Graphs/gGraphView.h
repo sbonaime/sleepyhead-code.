@@ -186,12 +186,12 @@ protected:
     QVector<GLBuffer *> mgl_buffers;
 
     // Default layer mouse handling = Do nothing
-    virtual bool wheelEvent(QWheelEvent * event) { event=event; return false; }
-    virtual bool mouseMoveEvent(QMouseEvent * event) { event=event; return false; }
-    virtual bool mousePressEvent(QMouseEvent * event) { event=event; return false; }
-    virtual bool mouseReleaseEvent(QMouseEvent * event) { event=event; return false; }
-    virtual bool mouseDoubleClickEvent(QMouseEvent * event) { event=event; return false; }
-    virtual bool keyPressEvent(QKeyEvent * event) { event=event; return false; }
+    virtual bool wheelEvent(QWheelEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseMoveEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mousePressEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseReleaseEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseDoubleClickEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool keyPressEvent(QKeyEvent * event) { Q_UNUSED(event); return false; }
 };
 
 class LayerGroup:public Layer

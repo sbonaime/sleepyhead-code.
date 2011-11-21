@@ -99,10 +99,10 @@ int PRS1Loader::Open(QString & path,Profile *profile)
 
     QString newpath,pseries="P-Series";
     qDebug() << "PRS1Loader::Open path=" << newpath;
-    if (path.endsWith("/"+pseries)) {
+    if (path.endsWith(QDir::separator()+pseries)) {
         newpath=path;
     } else {
-        newpath=path+"/"+pseries;
+        newpath=path+QDir::separator()+pseries;
     }
 
     QDir dir(newpath);
@@ -110,11 +110,9 @@ int PRS1Loader::Open(QString & path,Profile *profile)
     if ((!dir.exists() || !dir.isReadable()))
         return 0;
 
-
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
-
 
     QList<QString> SerialNumbers;
     QList<QString>::iterator sn;
@@ -150,7 +148,7 @@ int PRS1Loader::Open(QString & path,Profile *profile)
         QString s=*sn;
         m=CreateMachine(s,profile);
         try {
-            if (m) OpenMachine(m,newpath+"/"+(*sn),profile);
+            if (m) OpenMachine(m,newpath+QDir::separator()+(*sn),profile);
         } catch(OneTypePerDay e) {
             profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(s));
