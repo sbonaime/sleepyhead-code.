@@ -22,7 +22,7 @@ Day::~Day()
 MachineType Day::machine_type()
 {
     return machine->GetType();
-};
+}
 
 void Day::AddSession(Session *s)
 {

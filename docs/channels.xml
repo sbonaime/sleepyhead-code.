@@ -45,6 +45,7 @@ One id code per item
   <channel id="0x1112" class="data" name="RespEvent" details="Respiratory Events" label="Resp Events" unit="" color="black"/>
   <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Trgt Min Vent." unit="" color="dark cyan"/>
+  <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="" color="black"/>

@@ -103,8 +103,8 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
 
     if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
-    if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=false;
-    if (!PROFILE.Exists("SquareWavePlots")) PROFILE["SquareWavePlots"]=true;
+    if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=true;
+    if (!PROFILE.Exists("SquareWavePlots")) PROFILE["SquareWavePlots"]=false;
     if (!PROFILE.Exists("EnableOximetry")) PROFILE["EnableOximetry"]=false;
     if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=false;
     if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
@@ -567,4 +567,16 @@ void MainWindow::on_actionExp_ort_triggered()
     ExportCSV ex(this);
     if (ex.exec()==ExportCSV::Accepted) {
     }
+}
+
+void MainWindow::on_actionOnline_Users_Guide_triggered()
+{
+    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide"));
+    ui->tabWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_action_Frequently_Asked_Questions_triggered()
+{
+    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
+    ui->tabWidget->setCurrentIndex(0);
 }

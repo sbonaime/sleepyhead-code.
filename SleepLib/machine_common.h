@@ -87,6 +87,7 @@ const QString CPAP_RespRate="RespRate";
 const QString CPAP_TidalVolume="TidalVolume";
 const QString CPAP_PTB="PTB";
 const QString CPAP_Leak="Leak";
+const QString CPAP_MaxLeak="MaxLeak";
 const QString CPAP_FLG="FLG";
 const QString CPAP_IE="IE";
 const QString CPAP_Te="Te";

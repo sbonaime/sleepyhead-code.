@@ -601,6 +601,9 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionOnline_Users_Guide"/>
+    <addaction name="action_Frequently_Asked_Questions"/>
+    <addaction name="separator"/>
     <addaction name="actionDebug"/>
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
@@ -745,6 +748,16 @@
   <action name="actionExp_ort">
    <property name="text">
     <string>Exp&amp;ort</string>
+   </property>
+  </action>
+  <action name="actionOnline_Users_Guide">
+   <property name="text">
+    <string>Online Users &amp;Guide</string>
+   </property>
+  </action>
+  <action name="action_Frequently_Asked_Questions">
+   <property name="text">
+    <string>&amp;Frequently Asked Questions</string>
    </property>
   </action>
  </widget>

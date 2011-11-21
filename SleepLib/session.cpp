@@ -414,6 +414,7 @@ void Session::UpdateSummaries()
             //sum(id); // avg calculates this and cnt.
             min(id);
             max(id);
+            count(id);
             if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
 
             cph(id);

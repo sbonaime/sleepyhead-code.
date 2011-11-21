@@ -106,6 +106,10 @@ private slots:
 
     void on_actionExp_ort_triggered();
 
+    void on_actionOnline_Users_Guide_triggered();
+
+    void on_action_Frequently_Asked_Questions_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

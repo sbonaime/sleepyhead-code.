@@ -178,6 +178,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
 
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
+    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
