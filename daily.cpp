@@ -74,6 +74,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     SF=new gGraph(GraphView,"Event Flags",default_height);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
+    AHI=new gGraph(GraphView,"AHI",default_height);
     MP=new gGraph(GraphView,"Mask Pressure",default_height);
     PRD=new gGraph(GraphView,"Pressure",default_height);
     LEAK=new gGraph(GraphView,"Leak",default_height);
@@ -152,7 +153,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -177,6 +178,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
 
+    AHI->AddLayer(AddCPAP(new AHIChart(Qt::darkYellow)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));

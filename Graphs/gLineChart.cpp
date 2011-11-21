@@ -443,3 +443,135 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     }
 }
 
+
+AHIChart::AHIChart(const QColor col)
+:Layer("ZZZ"),m_color(col)
+{
+    m_miny=m_maxy=0;
+    addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
+    lines->setColor(col);
+    lines->setAntiAlias(true);
+    lines->setSize(1.5);
+}
+
+AHIChart::~AHIChart()
+{
+}
+
+void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
+{
+    if (!m_visible)
+        return;
+
+    if (!m_day)
+        return;
+
+    // Draw bounding box
+    GLShortBuffer *outlines=w.lines();
+    QColor blk=Qt::black;
+    outlines->add(left, top, left, top+height, blk);
+    outlines->add(left, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, blk);
+    outlines->add(left+width, top, left,top, blk);
+    width--;
+    height-=2;
+
+    EventDataType miny,maxy;
+    double minx,maxx;
+    miny=w.min_y, maxy=w.max_y;
+
+    maxx=w.max_x, minx=w.min_x;
+
+    // hmmm.. subtract_offset..
+
+    w.roundY(miny,maxy);
+
+    double xx=maxx-minx;
+    double xmult=double(width)/xx;
+
+    EventDataType yy=maxy-miny;
+    EventDataType ymult=EventDataType(height-3)/yy;   // time to pixel conversion multiplier
+
+    bool first=false;
+    double px,py;
+    double lastpx,lastpy;
+    double top1=top+height;
+    for (int i=0;i<m_time.size();i++) {
+        qint64 ti=m_time[i];
+        EventDataType v=m_data[i];
+        if ((ti>=minx) && (ti<maxx)) {
+            px=left+(double(ti-minx)*xmult);
+            py=top1-(double(v-miny)*ymult);
+            if (!first) {
+                first=true;
+            } else {
+                lines->add(px,py,lastpx,lastpy,m_color);
+            }
+        }
+        lastpx=px;
+        lastpy=py;
+    }
+}
+
+void AHIChart::SetDay(Day *d)
+{
+    m_day=d;
+    m_data.clear();
+    m_time.clear();
+    m_maxy=0;
+    m_miny=0;
+
+    if (!d) return;
+    m_miny=9999;
+    QVector<Session *>::iterator s;
+    qint64 first=d->first();
+    qint64 last=d->last();
+    qint64 f;
+
+    qint64 winsize=30000; // 30 second windows
+    for (qint64 ti=first;ti<last;ti+=winsize) {
+        f=ti-3600000L;
+        //if (f<first) f=first;
+        EventList *el[4];
+        EventDataType ahi=0;
+        int cnt=0;
+
+        for (s=d->begin();s!=d->end();s++) {
+            Session *sess=*s;
+            if ((ti<sess->first()) || (f>sess->last())) continue;
+
+            if (sess->eventlist.contains(CPAP_Obstructive))
+                el[0]=sess->eventlist[CPAP_Obstructive][0];
+            else el[0]=NULL;
+            if (sess->eventlist.contains(CPAP_Apnea))
+                el[1]=sess->eventlist[CPAP_Apnea][0];
+            else el[1]=NULL;
+            if (sess->eventlist.contains(CPAP_Hypopnea))
+                el[2]=sess->eventlist[CPAP_Hypopnea][0];
+            else el[2]=NULL;
+            if (sess->eventlist.contains(CPAP_ClearAirway))
+                el[3]=sess->eventlist[CPAP_ClearAirway][0];
+            else el[3]=NULL;
+
+            qint64 t;
+            for (int i=0;i<4;i++) {
+                if (!el[i]) continue;
+                for (int j=0;j<el[i]->count();j++) {
+                    t=el[i]->time(j);
+                    if ((t>=f) && (t<=ti)) {
+                        cnt++;
+                    }
+                }
+            }
+        }
+        double g=double(ti-f)/3600000.0;
+        if (g>0) ahi=cnt/g;
+
+        if (ahi<m_miny) m_miny=ahi;
+        if (ahi>m_maxy) m_maxy=ahi;
+        m_time.append(ti);
+        m_data.append(ahi);
+    }
+    m_minx=first;
+    m_maxx=last;
+}

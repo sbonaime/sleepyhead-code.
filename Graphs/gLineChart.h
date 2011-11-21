@@ -13,6 +13,25 @@
 #include "gGraphView.h"
 //#include "graphlayer.h"
 
+class AHIChart:public Layer
+{
+public:
+    AHIChart(const QColor col=QColor("black"));
+    ~AHIChart();
+    virtual void paint(gGraph & w,int left, int top, int width, int height);
+    virtual void SetDay(Day *d);
+    virtual EventDataType Miny() { return m_miny; }
+    virtual EventDataType Maxy() { return m_maxy; }
+    virtual bool isEmpty() { return m_data.size()==0; }
+
+protected:
+    QVector<EventDataType> m_data;
+    QVector<quint64> m_time;
+    EventDataType m_miny,m_maxy;
+    QColor m_color;
+    GLShortBuffer * lines;
+};
+
 class gLineChart:public Layer
 {
     public:
