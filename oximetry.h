@@ -42,7 +42,8 @@ public:
     Session *createSession();
     Session * getSession() { return session; }
 
-    void compactEventList(EventList *e);
+    void compactToWaveform(EventList *el);
+    void compactToEvent(EventList *el);
     void compactAll();
 
     void setPortName(QString portname);

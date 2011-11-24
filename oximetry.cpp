@@ -217,12 +217,46 @@ void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
     session->set_last(lasttime);
     plethy->setLast(time);
 }
-void SerialOximeter::compactEventList(EventList *el)
+void SerialOximeter::compactToWaveform(EventList *el)
 {
     double rate=double(el->duration())/double(el->count());
     el->setType(EVL_Waveform);
     el->setRate(rate);
     el->getTime().clear();
+}
+void SerialOximeter::compactToEvent(EventList *el)
+{
+    EventList nel(EVL_Waveform);
+    EventDataType t,lastt=el->data(0);
+    qint64 ti=el->time(0);
+    for (qint32 i=0;i<el->count();i++) {
+        t=el->data(i);
+        if (t!=lastt) {
+            nel.AddEvent(ti,lastt);
+            ti=el->time(i);
+        }
+
+        lastt=t;
+    }
+    nel.AddEvent(el->last(),t);
+
+    el->getData().clear();
+    el->getTime().clear();
+    el->setCount(nel.count());
+
+    el->getData()=nel.getData();
+    el->getTime()=nel.getTime();
+
+
+/*    for (int i=0;i<nel.count();i++) {
+        el->getData().push_back(nel.data(i));
+        el->getTime().push_back(nel.g)
+    }*/
+
+    /*double rate=double(el->duration())/double(el->count());
+    el->setType(EVL_Waveform);
+    el->setRate(rate);
+    el->getTime().clear();*/
 }
 
 void SerialOximeter::compactAll()
@@ -231,7 +265,11 @@ void SerialOximeter::compactAll()
 
     for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
         for (int j=0;j<i.value().size();j++) {
-            compactEventList(i.value()[j]);
+            if (i.key()==OXI_Plethy) {
+                compactToWaveform(i.value()[j]);
+            } else {
+                compactToEvent(i.value()[j]);
+            }
         }
     }
  }
@@ -334,7 +372,7 @@ void CMS50Serial::on_import_process()
                 if (pulse->min()<plmin) plmin=pulse->min();
                 if (pulse->max()>plmax) plmax=pulse->max();
                 plcnt+=pulse->count();
-                compactEventList(pulse); // converts to waveform..
+                compactToEvent(pulse); // converts to waveform..
 
                 pulse=new EventList(EVL_Event);
                 session->eventlist[OXI_Pulse].push_back(pulse);
@@ -348,7 +386,7 @@ void CMS50Serial::on_import_process()
                 if (spo2->min()<o2min) o2min=spo2->min();
                 if (spo2->max()>o2max) o2max=spo2->max();
                 o2cnt+=spo2->count();
-                compactEventList(spo2); // convert to waveform
+                compactToEvent(spo2); // convert to waveform
                 spo2=new EventList(EVL_Event);
                 session->eventlist[OXI_SPO2].push_back(spo2);
             }
