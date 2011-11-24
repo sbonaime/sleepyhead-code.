@@ -441,8 +441,8 @@ void CMS50Serial::onReadyRead()
                 i+=2;
             }
         }
-        emit(dataChanged());
     }
+    emit(dataChanged());
 }
 
 bool CMS50Serial::startImport()
@@ -680,8 +680,8 @@ void Oximetry::onDataChanged()
     qint64 first=last-30000L;
     day->setLast(last);
 
-    plethy->setMinX(first);
-    plethy->setMaxX(last);
+    //plethy->setMinX(first);
+    //plethy->setMaxX(last);
     pulse->setMinX(first);
     pulse->setMaxX(last);
     spo2->setMinX(first);
