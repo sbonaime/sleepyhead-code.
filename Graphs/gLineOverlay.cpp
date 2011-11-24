@@ -62,7 +62,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
         EventList & el=*cei.value()[0];
 
-        for (int i=0;i<el.count();i++) {
+        for (quint32 i=0;i<el.count();i++) {
             X=el.time(i);
             if (m_flt==FT_Span) {
                 Y=X-(qint64(el.raw(i))*1000.0L); // duration

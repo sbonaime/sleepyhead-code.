@@ -1407,7 +1407,7 @@ void gGraph::keyPressEvent(QKeyEvent * event)
     for (QVector<Layer *>::iterator i=m_layers.begin();i!=m_layers.end();i++) {
         (*i)->keyPressEvent(event);
     }
-    qDebug() << m_title << "Key Pressed.. implement me" << event->key();
+    //qDebug() << m_title << "Key Pressed.. implement me" << event->key();
 }
 
 void gGraph::ZoomX(double mult,int origin_px)

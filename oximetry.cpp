@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QProgressBar>
 #include <QMessageBox>
+#include <QLabel>
 
 #include "oximetry.h"
 #include "ui_oximetry.h"
@@ -13,6 +14,458 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
 
+extern QLabel * qstatus2;
+
+int lastpulse;
+SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portname, BaudRateType baud, FlowType flow, ParityType parity, DataBitsType databits, StopBitsType stopbits) :
+    QObject(parent),
+    session(NULL),pulse(NULL),spo2(NULL),plethy(NULL),m_port(NULL),
+    m_opened(false),
+    m_oxiname(oxiname),
+    m_portname(portname),
+    m_baud(baud),
+    m_flow(flow),
+    m_parity(parity),
+    m_databits(databits),
+    m_stopbits(stopbits)
+{
+    machine=PROFILE.GetMachine(MT_OXIMETER);
+    if (!machine) {
+        // Create generic Serial Oximeter object..
+        CMS50Loader *l=dynamic_cast<CMS50Loader *>(GetLoader("CMS50"));
+        if (l) {
+            machine=l->CreateMachine(p_profile);
+        }
+        qDebug() << "Create Oximeter device";
+    }
+}
+
+SerialOximeter::~SerialOximeter()
+{
+    if (m_opened) {
+        if (m_port) m_port->close();
+    }
+    // free up??
+}
+
+bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
+{
+    if (m_portname.isEmpty()) {
+        qDebug() << "Tried to open with empty portname";
+        return false;
+    }
+
+    qDebug() << "Opening serial port" << m_portname << "in mode" << mode;
+
+    if (m_opened) { // Open already?
+        // Just close it
+        if (m_port) m_port->close();
+    }
+
+    m_mode=mode;
+
+    m_port=new QextSerialPort(m_portname,m_mode);
+    m_port->setBaudRate(m_baud);
+    m_port->setFlowControl(m_flow);
+    m_port->setParity(m_parity);
+    m_port->setDataBits(m_databits);
+    m_port->setStopBits(m_stopbits);
+
+    if (m_port->open(QIODevice::ReadWrite) == true) {
+       // if (m_mode==QextSerialPort::EventDriven)
+            connect(m_port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+        //connect(port, SIGNAL(dsrChanged(bool)), this, SLOT(onDsrChanged(bool)));
+        if (!(m_port->lineStatus() & LS_DSR))
+            qDebug() << "check device is turned on";
+        qDebug() << "listening for data on" << m_port->portName();
+        return m_opened=true;
+    } else {
+        qDebug() << "device failed to open:" << m_port->errorString();
+        return m_opened=false;
+    }
+}
+
+void SerialOximeter::Close()
+{
+    qDebug() << "Closing serial port" << m_portname;
+    if (!m_opened) return;
+
+    if (m_port) m_port->close();
+    if (m_mode==QextSerialPort::EventDriven)
+        disconnect(m_port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    m_opened=false;
+}
+
+void SerialOximeter::setPortName(QString portname)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial PortName settings while port is open!";
+        return;
+    }
+    m_portname=portname;
+}
+
+void SerialOximeter::setBaudRate(BaudRateType baud)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial BaudRate settings while port is open!";
+        return;
+    }
+    m_baud=baud;
+}
+
+void SerialOximeter::setFlowControl(FlowType flow)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial FlowControl settings while port is open!";
+        return;
+    }
+    m_flow=flow;
+}
+
+void SerialOximeter::setParity(ParityType parity)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial Parity settings while port is open!";
+        return;
+    }
+    m_parity=parity;
+}
+
+void SerialOximeter::setDataBits(DataBitsType databits)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial DataBit settings while port is open!";
+        return;
+    }
+    m_databits=databits;
+}
+
+void SerialOximeter::setStopBits(StopBitsType stopbits)
+{
+    if (m_opened) {
+        qDebug() << "Can't change serial StopBit settings while port is open!";
+        return;
+    }
+    m_stopbits=stopbits;
+}
+
+void SerialOximeter::onReadyRead()
+{
+    int i=5;
+    qDebug() << "Foo"  << i;
+}
+
+void SerialOximeter::addPulse(qint64 time, EventDataType pr)
+{
+    pulse->AddEvent(time,pr);
+    session->setCount(OXI_Pulse,pulse->count()); // update the cache
+    session->setMin(OXI_Pulse,pulse->min());
+    session->setMax(OXI_Pulse,pulse->max());
+    session->setLast(OXI_Pulse,time);
+    pulse->setLast(time);
+    session->set_last(lasttime);
+    emit(updatePulse(pr));
+}
+
+void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
+{
+    spo2->AddEvent(time,o2);
+    session->setCount(OXI_SPO2,spo2->count()); // update the cache
+    session->setMin(OXI_SPO2,spo2->min());
+    session->setMax(OXI_SPO2,spo2->max());
+    session->setLast(OXI_SPO2,time);
+    session->set_last(lasttime);
+    spo2->setLast(time);
+    emit(updateSpO2(o2));
+}
+
+void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
+{
+    plethy->AddEvent(time,pleth);
+    session->setCount(OXI_Plethy,plethy->count()); // update the cache
+    session->setMin(OXI_Plethy,plethy->min());
+    session->setMax(OXI_Plethy,plethy->max());
+    session->setLast(OXI_Plethy,time);
+    session->set_last(lasttime);
+    plethy->setLast(time);
+}
+
+/*void SerialOximeter::addEvents(EventDataType pr,EventDataType o2, EventDataType pleth)
+{
+    lasttime=qint64(QDateTime::currentDateTime().toTime_t())*1000L;
+    addPulse(lasttime,pr);
+    addSpO2(lasttime,o2);
+    addPlethy(lasttime,pleth);
+    session->set_last(lasttime);
+    //emit(dataChanged());
+}*/
+
+Session *SerialOximeter::createSession()
+{
+    if (session) {
+         delete session;
+    }
+    int sid=QDateTime::currentDateTime().toTime_t();
+    lasttime=qint64(sid)*1000L;
+
+    session=new Session(machine,sid);
+    session->SetChanged(true);
+
+    session->set_first(lasttime);
+    pulse=new EventList(EVL_Event);
+    spo2=new EventList(EVL_Event);
+    plethy=new EventList(EVL_Event);
+    session->eventlist[OXI_Pulse].push_back(pulse);
+    session->eventlist[OXI_SPO2].push_back(spo2);
+    session->eventlist[OXI_Plethy].push_back(plethy);
+
+    session->setFirst(OXI_Pulse,lasttime);
+    session->setFirst(OXI_SPO2,lasttime);
+    session->setFirst(OXI_Plethy,lasttime);
+
+    pulse->setFirst(lasttime);
+    spo2->setFirst(lasttime);
+    plethy->setFirst(lasttime);
+
+    emit(sessionCreated(session));
+    return session;
+}
+
+bool SerialOximeter::startLive()
+{
+    import_mode=false;
+    if (Open(QextSerialPort::EventDriven)) {
+        createSession();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void SerialOximeter::stopLive()
+{
+    Close();
+    emit(liveStopped(session));
+}
+
+CMS50Serial::CMS50Serial(QObject * parent, QString portname="") :
+ SerialOximeter(parent,"CMS50", portname, BAUD19200, FLOW_OFF, PAR_ODD, DATA_8, STOP_1)
+{
+    import_mode=false;
+}
+
+CMS50Serial::~CMS50Serial()
+{
+}
+
+void CMS50Serial::on_import_process()
+{
+    qDebug() << "CMS50 import complete. Processing" << data.size() << "bytes";
+    unsigned char a,pl,o2,lastpl=0,lasto2=0;
+    int i=0;
+    int size=data.size();
+    EventList * pulse=(session->eventlist[OXI_Pulse][0]);
+    EventList * spo2=(session->eventlist[OXI_SPO2][0]);
+    lasttime=f2time[0].toTime_t();
+    session->SetSessionID(lasttime);
+    lasttime*=1000;
+
+    session->set_first(lasttime);
+    pulse->setFirst(lasttime);
+    spo2->setFirst(lasttime);
+
+    EventDataType plmin=999,plmax=0;
+    EventDataType o2min=100,o2max=0;
+    int plcnt=0,o2cnt=0;
+    while (i<(size-3)) {
+        a=data.at(i++);
+        pl=data.at(i++) ^ 0x80;
+        o2=data.at(i++);
+        if (pl==0) {
+            if (lastpl!=pl) {
+                pulse->setLast(lasttime);
+                if (pulse->min()<plmin) plmin=pulse->min();
+                if (pulse->max()>plmax) plmax=pulse->max();
+                plcnt+=pulse->count();
+                pulse=new EventList(EVL_Event);
+                session->eventlist[OXI_Pulse].push_back(pulse);
+            }
+        } else pulse->AddEvent(lasttime,pl);
+        if (o2==0) {
+            if (lasto2!=o2) {
+                spo2->setLast(lasttime);
+                if (spo2->min()<o2min) o2min=spo2->min();
+                if (spo2->max()>o2max) o2max=spo2->max();
+                o2cnt+=spo2->count();
+                spo2=new EventList(EVL_Event);
+                session->eventlist[OXI_SPO2].push_back(spo2);
+            }
+        } else spo2->AddEvent(lasttime,o2);
+
+
+        lasttime+=1000;
+        emit(updateProgress(float(i)/float(size)));
+
+        lastpl=pl;
+        lasto2=o2;
+    }
+    pulse->setLast(lasttime);
+    spo2->setLast(lasttime);
+    session->set_last(lasttime);
+    session->setMin(OXI_Pulse,plmin);
+    session->setMax(OXI_Pulse,plmax);
+    session->setMin(OXI_SPO2,o2min);
+    session->setMax(OXI_SPO2,o2max);
+    session->setCount(OXI_Pulse,plcnt);
+    session->setCount(OXI_SPO2,o2cnt);
+    session->UpdateSummaries();
+    emit(importComplete(session));
+    disconnect(this,SIGNAL(importProcess()),this,SLOT(on_import_process()));
+}
+void CMS50Serial::onReadyRead()
+{
+    QByteArray bytes;
+    int a = m_port->bytesAvailable();
+    bytes.resize(a);
+    m_port->read(bytes.data(), bytes.size());
+
+    int i=0;
+
+    // Was going out of sync previously.. To fix this unfortunately requires 4.7
+
+#if QT_VERSION >= QT_VERSION_CHECK(4,7,0)
+    qint64 current=QDateTime::currentMSecsSinceEpoch(); //double(QDateTime::currentDateTime().toTime_t())*1000L;
+    //qint64 since=current-lasttime;
+    //if (since>25)
+    lasttime=current;
+#endif
+    // else (don't bother - we can work some magic at the end of recording.)
+
+    int size=bytes.size();
+    // Process all incoming serial data packets
+    unsigned char c;
+    while (i<bytes.size()) {
+        if (import_mode) {
+            if (waitf6) { //ack sequence from f6 command.
+                if ((unsigned char)bytes.at(i++)==0xf2) {
+                    c=bytes.at(i);
+                    if (c & 0x80) {
+                        int h=(c & 0x1f);
+                        int m=(bytes.at(i+1) % 60);
+                        if (!((h==0) && (m==0))) { // CMS50E's have a realtime clock (apparently)
+                            QDateTime d(PROFILE.LastDay(),QTime(h,m,0));
+                            f2time.push_back(d);
+                            qDebug() << "Session start (according to CMS50)" << d << h << m;
+                        } else {
+                            // otherwise pick the first session of the last days data..
+                            Day *day=PROFILE.GetDay(PROFILE.LastDay().addDays(-1),MT_CPAP);
+                            QDateTime d;
+
+                            if (day) {
+                                int ti=day->first()/1000L;
+
+                                d=QDateTime::fromTime_t(ti);
+                                qDebug() << "Guessing session starting from CPAP data" << d;
+                            } else {
+                                qDebug() << "Can't guess start time, defaulting to 6pm yesterday" << d;
+                                d=QDateTime::currentDateTime();
+                                d.setTime(QTime(18,0,0));
+                                d.addDays(-1);
+                            }
+                            f2time.push_back(d);
+                        }
+                        i+=2;
+                        cntf6++;
+                    } else continue;
+                } else {
+                    if (cntf6>0) {
+                        qDebug() << "Got Acknowledge Sequence" << cntf6;
+                        i--;
+                        if ((i+3)<size) {
+                            c=bytes.at(i);
+
+                            datasize=(((unsigned char)bytes.at(i) & 0x3f) << 14) | (((unsigned char)bytes.at(i+1)&0x7f) << 7) | ((unsigned char)bytes.at(i+2) & 0x7f);
+                            received_bytes=0;
+                            qDebug() << "Data Size=" << datasize << "??";
+                            i+=3;
+                        }
+                        int z;
+                        for (z=i;z<size;z++) {
+                            c=bytes.at(z);
+                            if (z&0x80) break;
+                        }
+                        data.clear();
+                        for (int z=i;z<size;z++) {
+                            data.push_back(bytes.at(z));
+                            received_bytes++;
+                        }
+                        //i=z;
+                        //size-=i;
+                        waitf6=false;
+                        return;
+                        //continue;
+                    }
+                }
+            } else {
+                qDebug() << "Recieving Block" << size << "(" << received_bytes << "of" << datasize <<")";
+                for (int z=i;z<size;z++) {
+                    data.push_back(bytes.at(z));
+                    received_bytes++;
+                }
+                emit(updateProgress(float(received_bytes)/float(datasize)));
+                if ((received_bytes>=datasize) || (((received_bytes/datasize)>0.7) && (size<250))) {
+                    qDebug() << "End";
+                    static unsigned char b1[3]={0xf6,0xf6,0xf6};
+                    if (m_port->write((char *)b1,2)==-1) {
+                        qDebug() << "Couldn't write closing bytes to CMS50";
+                    }
+                    Close();
+                    emit(importProcess());
+                }
+                break;
+                //read data blocks..
+            }
+            /*if (size<200) && (received_bytes>=datasize) {
+
+            } */
+        } else {
+            if (bytes[i]&0x80) { // 0x80 == sync bit
+                EventDataType d=bytes[i+1] & 0x7f;
+                addPlethy(lasttime,d);
+                lasttime+=20;
+                i+=3;
+            } else {
+                addPulse(lasttime,bytes[i]);
+                addSpO2(lasttime,bytes[i+1]);
+                i+=2;
+            }
+        }
+        emit(dataChanged());
+    }
+}
+
+bool CMS50Serial::startImport()
+{
+    import_mode=true;
+    waitf6=true;
+    cntf6=0;
+    //QMessageBox::information(0,"!!!Important Notice!!!","This Oximetry import method does NOT allow syncing of Oximetry and CPAP data.\nIf you really wish to record your oximetry data and have sync, you have to use the Live View mode (click Start) with the Oximeter connected to a computer via USB cable all night..\nEven then it will be out a bit because of your CPAP machines realtime clock drifts.",QMessageBox::Ok);
+    if (!Open(QextSerialPort::EventDriven)) return false;
+    connect(this,SIGNAL(importProcess()),this,SLOT(on_import_process()));
+
+    createSession();
+
+    static unsigned char b1[2]={0xf5,0xf5};
+
+    if (m_port->write((char *)b1,2)==-1) {
+        qDebug() << "Couldn't write data request bytes to CMS50";
+    }
+
+    return true;
+}
+
+
 Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
     ui(new Ui::Oximetry)
@@ -23,19 +476,9 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     port=NULL;
     portname="";
 
-    mach=p_profile->GetMachine(MT_OXIMETER);
-    if (!mach) {
-        CMS50Loader *l=dynamic_cast<CMS50Loader *>(GetLoader("CMS50"));
-        if (l) {
-            mach=l->CreateMachine(p_profile);
-        }
-        qDebug() << "Create Oximeter device";
-    }
+    oximeter=new CMS50Serial(this);
 
-    // Create dummy day & session for holding eventlists.
-    day=new Day(mach);
-    session=new Session(mach,0);
-    day->AddSession(session);
+    day=new Day(oximeter->getMachine());
 
     layout=new QHBoxLayout(ui->graphArea);
     layout->setSpacing(0);
@@ -76,13 +519,6 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
         g->AddLayer(new gXGrid());
     }
 
-    // Create the Event Lists to store / import data
-    ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
-
-    ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
-
-    ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
-
     plethy=new gLineChart(OXI_Plethy,Qt::black,false,true);
     plethy->SetDay(day);
 
@@ -104,7 +540,9 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     GraphView->updateGL();
 
     on_RefreshPortsButton_clicked();
+    ui->RunButton->setChecked(false);
 
+    ui->saveButton->setEnabled(false);
 }
 
 Oximetry::~Oximetry()
@@ -158,304 +596,131 @@ void Oximetry::on_RefreshPortsButton_clicked()
         ui->ImportButton->setEnabled(false);
         portname="";
     }
+    oximeter->setPortName(portname);
 }
 void Oximetry::RedrawGraphs()
 {
     GraphView->updateGL();
 }
-
-void Oximetry::on_RunButton_toggled(bool checked)
-{
-    if (checked) {
-        lasttime=0;
-        lastpulse=0;
-        lastspo2=0;
-
-        // Wipe any current data
-        ev_plethy->getData().clear();
-        ev_plethy->getTime().clear();
-        ev_plethy->setCount(0);
-        ev_pulse->getData().clear();
-        ev_pulse->getTime().clear();
-        ev_pulse->setCount(0);
-        ev_spo2->getData().clear();
-        ev_spo2->getTime().clear();
-        ev_spo2->setCount(0);
-
-        lasttime=QDateTime::currentDateTime().toTime_t()*1000L;  // utc??
-        starttime=lasttime;
-
-        session->SetSessionID(lasttime/1000L);
-
-        day->setFirst(lasttime);
-        day->setLast(lasttime+30000);
-        session->set_first(lasttime);
-        session->set_last(lasttime+30000);
-
-        ev_plethy->setFirst(lasttime);
-        ev_plethy->setLast(lasttime+3600000);
-        PLETHY->SetMinX(lasttime);
-        PLETHY->SetMaxX(lasttime+30000);
-        CONTROL->SetMinX(lasttime);
-        CONTROL->SetMaxX(lasttime+30000);
-
-        ev_pulse->setFirst(lasttime);
-        ev_pulse->setLast(lasttime+3600000);
-        PULSE->SetMinX(lasttime);
-        PULSE->SetMaxX(lasttime+30000);
-
-        ev_spo2->setFirst(lasttime);
-        ev_spo2->setLast(lasttime+3600000);
-        SPO2->SetMinX(lasttime);
-        SPO2->SetMaxX(lasttime+30000);
-
-        ui->RunButton->setText("&Stop");
-        ui->SerialPortsCombo->setEnabled(false);
-        // Disconnect??
-        port=new QextSerialPort(portname,QextSerialPort::EventDriven);
-        port->setBaudRate(BAUD19200);
-        port->setFlowControl(FLOW_OFF);
-        port->setParity(PAR_ODD);
-        port->setDataBits(DATA_8);
-        port->setStopBits(STOP_1);
-        if (port->open(QIODevice::ReadWrite) == true) {
-            connect(port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-            connect(port, SIGNAL(dsrChanged(bool)), this, SLOT(onDsrChanged(bool)));
-            if (!(port->lineStatus() & LS_DSR))
-                qDebug() << "check device is turned on";
-            qDebug() << "listening for data on" << port->portName();
-        } else {
-            qDebug() << "device failed to open:" << port->errorString();
-        }
-        portmode=PM_LIVE;
-        //foobar->setVisible(false);
-        CONTROL->setVisible(false);
-    } else {
-        //foobar->setVisible(true);
-        ui->RunButton->setText("&Start");
-        ui->SerialPortsCombo->setEnabled(true);
-        delete port;
-        port=NULL;
-
-        ev_pulse->AddEvent(lasttime,lastpulse);
-        ev_spo2->AddEvent(lasttime,lastspo2);
-        ev_spo2->setLast(lasttime);
-        ev_pulse->setLast(lasttime);
-        ev_plethy->setLast(lasttime);
-        day->setLast(lasttime);
-        session->set_last(lasttime);
-
-
-        SPO2->SetMinX(ev_spo2->first());
-        SPO2->SetMaxX(lasttime);
-        PULSE->SetMinX(ev_pulse->first());
-        PULSE->SetMaxX(lasttime);
-        PLETHY->SetMinX(ev_plethy->first());
-        PLETHY->SetMaxX(lasttime);
-        SPO2->MinX();
-        SPO2->MaxX();
-        PULSE->MinX();
-        PULSE->MaxX();
-        PLETHY->MinX();
-        PLETHY->MaxX();
-        //GraphView->ResetBounds();
-        //CONTROL->SetMinX(PLETHY->MinX());
-        //CONTROL->SetMaxX(PLETHY->MaxX());
-        //CONTROL->SetMinY(ev_plethy->min());
-        //CONTROL->SetMaxY(ev_plethy->max());
-        CONTROL->MinX();
-        CONTROL->MaxX();
-
-        //CONTROL->ResetBounds();
-
-       // qint64 d=session->length();
-       // if (d<=30000)
-        //    return;
-        if (ev_pulse->count()>1 && (ev_spo2->count()>1))
-        if (QMessageBox::question(this,"Keep This Recording?","Would you like to keep this oximeter recording?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
-            qDebug() << "Saving oximeter session data";
-
-            session->eventlist.clear();
-
-            Session *sess=new Session(mach,starttime/1000L);
-
-            /*ev_spo2->setCode(CPAP_SPO2);
-            ev_pulse->setCode(CPAP_Pulse);
-            ev_plethy->setCode(CPAP_Plethy); */
-
-            sess->eventlist[OXI_SPO2].push_back(ev_spo2);
-            sess->eventlist[OXI_Pulse].push_back(ev_pulse);
-            sess->eventlist[OXI_Plethy].push_back(ev_plethy);
-            //Session *sess=session;
-            sess->SetSessionID(starttime/1000L);
-
-            sess->setMin(OXI_Pulse,ev_pulse->min());
-            sess->setMax(OXI_Pulse,ev_pulse->max());
-            sess->setFirst(OXI_Pulse,ev_pulse->first());
-            sess->setLast(OXI_Pulse,ev_pulse->last());
-            sess->avg(OXI_Pulse);
-            sess->wavg(OXI_Pulse);
-            sess->p90(OXI_Pulse);
-            sess->count(OXI_Pulse);
-
-            sess->setMin(OXI_SPO2,ev_spo2->min());
-            sess->setMax(OXI_SPO2,ev_spo2->max());
-            sess->setFirst(OXI_SPO2,ev_spo2->first());
-            sess->setLast(OXI_SPO2,ev_spo2->last());
-            sess->avg(OXI_SPO2);
-            sess->wavg(OXI_SPO2);
-            sess->p90(OXI_SPO2);
-            sess->count(OXI_SPO2);
-
-
-            sess->avg(OXI_Plethy);
-            sess->wavg(OXI_Plethy);
-            sess->p90(OXI_Plethy);
-            sess->count(OXI_Plethy);
-
-            sess->setMin(OXI_Plethy,ev_plethy->min());
-            sess->setMax(OXI_Plethy,ev_plethy->max());
-
-            sess->setFirst(OXI_Plethy,ev_plethy->first());
-            sess->setLast(OXI_Plethy,ev_plethy->last());
-
-            sess->updateFirst(sess->first(OXI_Pulse));
-            sess->updateLast(sess->last(OXI_Pulse));
-            sess->updateFirst(sess->first(OXI_SPO2));
-            sess->updateLast(sess->last(OXI_SPO2));
-            sess->updateFirst(sess->first(OXI_Plethy));
-            sess->updateLast(sess->last(OXI_Plethy));
-
-            sess->SetChanged(true);
-            mach->AddSession(sess,p_profile);
-            mach->Save();
-
-            ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
-            ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
-            ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
-
-            session->setCount(OXI_Plethy,0);
-            session->setCount(OXI_Pulse,0);
-            session->setCount(OXI_SPO2,0);
-
-            //m_shared->ResetBounds();
-            //m_shared->updateScale();
-            //m_shared->updateGL();
-
-        }
-
-        CONTROL->setVisible(true);
-        GraphView->updateScale();
-        //CONTROL->ResetBounds();
-        GraphView->updateGL();
-    }
-}
-
 void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 {
     portname=arg1;
-}
-void Oximetry::UpdatePlethy(qint8 d)
-{
-    ev_plethy->getData().push_back(d);
-    if (d<ev_plethy->min()) ev_plethy->setMin(d);
-    if (d>ev_plethy->max()) ev_plethy->setMax(d);
-    int i=ev_plethy->count()+1;
-    ev_plethy->setCount(i);
-    session->setCount(OXI_Plethy,i); // update the cache
-    //ev_plethy->AddEvent(lasttime,d);
-    lasttime+=20;  // 50 samples per second
-    PLETHY->SetMinY(ev_plethy->min());
-    PLETHY->SetMaxY(ev_plethy->max());
-    CONTROL->SetMinY(ev_plethy->min());
-    CONTROL->SetMaxY(ev_plethy->max());
-    PULSE->SetMinY(ev_pulse->min());
-    PULSE->SetMaxY(ev_pulse->max());
-    SPO2->SetMinY(ev_spo2->min());
-    SPO2->SetMaxY(ev_spo2->max());
-    //PLETHY->MaxY();
-    PLETHY->SetMaxX(lasttime);
-    PLETHY->SetMinX(lasttime-30000);
-    PULSE->SetMaxX(lasttime);
-    PULSE->SetMinX(lasttime-30000);
-    SPO2->SetMaxX(lasttime);
-    SPO2->SetMinX(lasttime-30000);
-    CONTROL->SetMaxX(lasttime);
-    CONTROL->SetMinX(lasttime-30000);
-    session->set_last(lasttime);
-    day->setLast(lasttime);
-    PLETHY->MinX();
-    PLETHY->MaxX();
-    CONTROL->MinX();
-    CONTROL->MaxX();
-}
-bool Oximetry::UpdatePulse(qint8 pul)
-{
-    bool ret=false;
-
-    // Don't block zeros.. If the data is used, it's needed
-    // Can make the graph can skip them.
-    if (lastpulse!=pul)
-    {
-        ev_pulse->AddEvent(lasttime,pul);
-        session->setCount(OXI_Pulse,ev_pulse->count()); // update the cache
-
-        ret=true;
-        //qDebug() << "Pulse=" << int(bytes[0]);
-    }
-    lastpulse=pul;
-    return ret;
-}
-bool Oximetry::UpdateSPO2(qint8 sp)
-{
-    bool ret=false;
-
-    if (lastspo2!=sp)
-    {
-        ev_spo2->AddEvent(lasttime,sp);
-        session->setCount(OXI_SPO2,ev_spo2->count()); // update the cache
-        ret=true;
-        //qDebug() << "SpO2=" << int(bytes[1]);
-    }
-
-    lastspo2=sp;
-    return ret;
+    oximeter->setPortName(arg1);
 }
 
-void Oximetry::onReadyRead()
+void Oximetry::on_RunButton_toggled(bool checked)
 {
-    QByteArray bytes;
-    int a = port->bytesAvailable();
-    bytes.resize(a);
-    port->read(bytes.data(), bytes.size());
+    if (!checked) {
+            oximeter->stopLive();
+            ui->RunButton->setText("&Start");
+            ui->SerialPortsCombo->setEnabled(true);
+            disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
+            disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
+            disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(onSpO2Changed(float)));
+            ui->saveButton->setEnabled(true);
 
-    int i=0;
-    while (i<bytes.size()) {
-        if (bytes[i]&0x80) {
-            EventDataType d=bytes[i+1] & 0x7f;
-            UpdatePlethy(d);
-            //qDebug() << d;
-            i+=3;
-        } else {
-            UpdatePulse(bytes[i]);
-            UpdateSPO2(bytes[i+1]);
-            i+=2;
+            //CONTROL->setVisible(true);
+    } else {
+        if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
+            int res=QMessageBox::question(this,"Save Session?","Creating a new oximetry session will destroy the old one.\nWould you like to save it first?","Save","Destroy It","Cancel",0,2);
+            if (res==0) {
+                ui->RunButton->setChecked(false);
+                on_saveButton_clicked();
+                return;
+            } else if (res==2) {
+                ui->RunButton->setChecked(false);
+                return;
+            }
+        } // else it's already saved.
+
+        if (!oximeter->startLive()) {
+            QMessageBox::warning(this,"Error","Something is wrong with the device connection.",QMessageBox::Ok);
+            return;
         }
-    }
+        ui->saveButton->setEnabled(false);
+        day->getSessions().clear();
+        day->AddSession(oximeter->getSession());
 
-    if ((ev_plethy->count()<=2) || (ev_pulse->count()<=2) || (ev_spo2->count()<=2)) {
-        GraphView->updateScale();
+        firstPulseUpdate=true;
+        firstSPO2Update=true;
+        secondPulseUpdate=true;
+        secondSPO2Update=true;
+
+        qint64 f=oximeter->getSession()->first();
+        day->setFirst(f);
+        plethy->setMinX(f);
+        pulse->setMinX(f);
+        spo2->setMinX(f);
+        PLETHY->SetMinX(f);
+        CONTROL->SetMinX(f);
+        PULSE->SetMinX(f);
+        SPO2->SetMinX(f);
+
+        PLETHY->forceMinY(0);
+        PLETHY->forceMaxY(128);
+        PULSE->forceMinY(30);
+        PULSE->forceMaxY(180);
+        SPO2->forceMinY(50);
+        SPO2->forceMaxY(100);
+
+        connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
+        connect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
+        connect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(onSpO2Changed(float)));
+        CONTROL->setVisible(false);
+        // connect.
+        ui->RunButton->setText("&Stop");
+        ui->SerialPortsCombo->setEnabled(false);
     }
-    GraphView->updateGL();
 
 }
-void Oximetry::onDsrChanged(bool status) // Doesn't work for CMS50's
+void Oximetry::onDataChanged()
 {
-    if (status)
-        qDebug() << "device was turned on";
-    else
-        qDebug() << "device was turned off";
+
+    qint64 last=oximeter->lastTime();
+    qint64 first=last-30000L;
+    day->setLast(last);
+
+    plethy->setMinX(first);
+    plethy->setMaxX(last);
+    pulse->setMinX(first);
+    pulse->setMaxX(last);
+    spo2->setMinX(first);
+    spo2->setMaxX(last);
+
+    plethy->setMinY(0);
+    plethy->setMaxY(128);
+    pulse->setMinY(0);
+    pulse->setMaxY(120);
+    spo2->setMinY(0);
+    spo2->setMaxY(100);
+
+    PLETHY->MinY();
+    PLETHY->MaxY();
+    PULSE->MinY();
+    PULSE->MaxY();
+    SPO2->MinY();
+    SPO2->MaxY();
+
+    PLETHY->SetMaxX(last);
+    PULSE->SetMaxX(last);
+    CONTROL->SetMaxX(last);
+    SPO2->SetMaxX(last);
+
+    for (int i=0;i<GraphView->size();i++) {
+        (*GraphView)[i]->SetXBounds(first,last);
+    }
+
+    {
+        int len=(last-first)/1000L;
+        int h=len/3600;
+        int m=(len /60) % 60;
+        int s=(len % 60);
+        if (qstatus2) qstatus2->setText(QString().sprintf("Rec %02i:%02i:%02i",h,m,s));
+    }
+
+    GraphView->updateGL();
 }
+
 
 extern QProgressBar *qprogress;
 extern QLabel *qstatus;
@@ -473,284 +738,151 @@ void DumpBytes(int blocks, unsigned char * b,int len)
 // Move this code to CMS50 Importer??
 void Oximetry::on_ImportButton_clicked()
 {
-    ui->ImportButton->setDisabled(true);
-    QMessageBox msgbox(QMessageBox::Information,"Importing","Please Wait",QMessageBox::NoButton,this);
-    msgbox.show();
-    QApplication::processEvents();
-    const int rb_size=0x200;
-    static unsigned char b1[2]={0xf5,0xf5};
-    static unsigned char b2[3]={0xf6,0xf6,0xf6};
-    static unsigned char rb[rb_size];
+    connect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(on_import_complete(Session*)));
+    connect(oximeter,SIGNAL(importAborted()),this,SLOT(on_import_aborted()));
+    connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(on_updateProgress(float)));
+    //connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
 
-    unsigned char * buffer=NULL;
+    if (!oximeter->startImport()) {
+        qDebug() << "Error starting oximetry serial import process";
+        return;
+    }
+    day->getSessions().clear();
+    day->AddSession(oximeter->getSession());
+
+    if (qprogress) {
+        qprogress->setValue(0);
+        qprogress->setMaximum(100);
+        qprogress->show();
+    }
+    ui->ImportButton->setDisabled(true);
     ui->SerialPortsCombo->setEnabled(false);
     ui->RunButton->setText("&Start");
     ui->RunButton->setChecked(false);
+}
 
-    if (port) {
-        port->close();
-        delete port;
-    }
-    // Disconnect??
-    //qDebug() << "Initiating Polling Mode";
-    port=new QextSerialPort(portname,QextSerialPort::Polling);
-    port->setBaudRate(BAUD19200);
-    port->setFlowControl(FLOW_OFF);
-    port->setParity(PAR_ODD);
-    port->setDataBits(DATA_8);
-    port->setStopBits(STOP_1);
-    port->setTimeout(500);
-    if (port->open(QIODevice::ReadWrite) == true) {
-       // if (!(port->lineStatus() & LS_DSR))
-         //   qDebug() << "warning: device is not turned on"; // CMS50 doesn't do this..
+void Oximetry::import_finished()
+{
+    disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(on_import_complete(Session*)));
+    disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(on_import_aborted()));
+    disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(on_updateProgress(float)));
+    //disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
 
-    } else {
-        delete port;
-        port=NULL;
-        ui->SerialPortsCombo->setEnabled(true);
-
-        return;
-    }
-    bool done=false;
-    int res;
-    int blocks=0;
-    unsigned int bytes=0;
-    QString aa;
-    port->flush();
-    bool oneoff=false;
-
-    //qprogress->reset();
-    qstatus->setText("Importing");
-    qprogress->setValue(0);
-    qprogress->show();
-    int fails=0;
-    while (!done) {
-        if (port->write((char *)b1,2)==-1) {
-            qDebug() << "Couldn't write 2 lousy bytes to CMS50";
-        }
-        blocks=0;
-        int startpos=0;
-        unsigned int length=0;
-        int dr;
-        int ec;
-        do {
-            bool fnd=false;
-            dr=0;
-            ec=0;
-            do {
-                res=port->read((char *)rb,rb_size);
-                DumpBytes(blocks,rb,res);
-                if (blocks>0) break;
-                if (res<=0) ec++;
-                dr+=res;
-            } while ((res<=5) && (dr<0x200) && (ec<5));
-
-            //if (res>5) DumpBytes(blocks,rb,res);
-
-
-            done=false;
-            if (blocks==0) {
-                if (res>5)
-                for (int i=0;i<res-2;i++) {
-                    if ((rb[i]==0xf2) && (rb[i+1]==0x80) && (rb[i+2]==0x00)) {
-                        fnd=true;
-                        startpos=i+9;
-                        break;
-                    }
-                }
-                if (!fnd) {
-
-                    qDebug() << "Retrying..";
-                    fails++;
-                    break; // reissue the F5 and try again
-                } else {
-                    qDebug() << "Found";
-                }
-
-                //  84 95 7c
-                // 0x10556 bytes..
-                // 0x82b blocks
-                length=0;
-                while (rb[startpos]!=0xf0) {
-                    length=(length << 7) | (rb[startpos++] & 0x7f);
-                }
-                //length=(rb[startpos++] & 0x7f) << 14;
-                //length|=(rb[startpos++] & 0x7f) << 7;
-                //length|=(rb[startpos++] & 0x7f);
-                //if (!(rb[startpos]&0x80)) {
-                //    length <<= 8;
-                //    length|=rb[startpos++];
-                //}
-                //length=(rb[startpos] ^ 0x80)<< 7 | (rb[startpos+1]);
-                //startpos+=2;
-                //if (!(rb[startpos]&0x80)) {
-                //    length|=(rb[startpos]&0x7f) << 14;
-                //    startpos++;
-                //} else oneoff=true;
-                buffer=new unsigned char [length+32];
-
-                //qDebug() << length << startpos;
-                bytes+=res-startpos;
-                memcpy((char *)buffer,(char *)&rb[startpos],bytes);
-                qprogress->setValue((75.0/length)*bytes);
-                QApplication::processEvents();
-            } else {
-                qprogress->setValue((75.0/length)*bytes);
-                QApplication::processEvents();
-
-                memcpy((char *)&buffer[bytes],(char *)rb,res);
-                bytes+=res;
-            }
-
-            blocks++;
-            if (res<rb_size) {
-                qDebug() << "Read "<< bytes << " bytes of " << length;
-                done=true;
-                break;
-            }
-        } while (bytes<length);
-        if (done) break;
-        if (fails>4) break;
-    }
-    if (done) {
-        if (oneoff) bytes--; // this is retarded..
-
-        QDateTime date=QDateTime::currentDateTime().toUTC();
-        SessionID sid=date.toTime_t();
-        session->SetSessionID(sid);
-        qDebug() << "Read " << bytes << "Bytes";
-        qDebug() << "Creating session " << sid;
-        unsigned short pulse,spo2,lastpulse=0,lastspo2=0;
-
-        qint64 tt=sid-(bytes/3);
-        tt*=1000;
-        session->set_first(tt);
-        ev_pulse->setMin(999999);
-        ev_pulse->setMax(-999999);
-        ev_spo2->setMin(999999);
-        ev_spo2->setMax(-999999);
-
-        ev_pulse->setFirst(tt);
-        ev_spo2->setFirst(tt);
-
-        EventList *oxf1=NULL,*oxf2=NULL;
-        EventDataType data;
-        unsigned i=0;
-        const int rb_size=60; // last rb_size seconds of data
-        unsigned rb_pulse[rb_size]={0};
-        unsigned rb_spo2[rb_size]={0};
-        int rb_pos=0;
-        while (i<bytes) {
-            if (buffer[i++]!=0xf0) {
-                qDebug() << "Faulty PulseOx data";
-                continue;
-            }
-            pulse=buffer[i++] & 0x7f;
-            spo2=buffer[i++];
-            if (pulse!=lastpulse) {
-                data=pulse;
-                ev_pulse->AddEvent(tt,data);
-                //qDebug() << "Pulse: " << int(pulse);
-            }
-            if (spo2!=lastspo2) {
-                data=spo2;
-                ev_spo2->AddEvent(tt,data);
-                //qDebug() << "SpO2: " << int(spo2);
-            }
-
-            lastpulse=pulse;
-            lastspo2=spo2;
-
-            rb_pulse[rb_pos]=(unsigned)pulse;
-            rb_spo2[rb_pos]=(unsigned)spo2;
-
-            unsigned int min=255,max=0;
-            for (int k=rb_pos;k>rb_pos-4;k--) {
-                int j=abs(k % rb_size);
-                if (rb_pulse[j]<min) min=rb_pulse[j];
-                if (rb_pulse[j]>min) max=rb_pulse[j];
-            }
-            if (min>0 && max>0) {
-                int drop=max-min;
-                if (drop>6) {
-                    if (!oxf1) {
-                        oxf1=session->AddEventList(OXI_PulseChange,EVL_Event);
-                    }
-                    oxf1->AddEvent(tt,drop);
-                }
-            }
-
-            min=255,max=0;
-            for (int k=rb_pos;k>rb_pos-10;k--) {
-                int j=abs(k % rb_size);
-                if (rb_spo2[j]<min) min=rb_spo2[j];
-                if (rb_spo2[j]>min) max=rb_spo2[j];
-            }
-            if (min>0 && max>0) {
-                int drop=max-min;
-                if (drop>4) {
-                    if (!oxf1) {
-                        oxf2=session->AddEventList(OXI_SPO2Drop,EVL_Event);
-                    }
-                    oxf2->AddEvent(tt,drop);
-                }
-            }
-
-            ++rb_pos;
-            rb_pos=rb_pos % rb_size;
-
-            tt+=1000;
-            qprogress->setValue(75+(25.0/bytes)*i);
-            QApplication::processEvents();
-        }
-        ev_pulse->AddEvent(tt,pulse);
-        ev_spo2->AddEvent(tt,spo2);
-        session->set_last(tt);
-
-        session->m_cnt.clear();
-
-        session->setMin(OXI_Pulse,ev_pulse->min());
-        session->setMax(OXI_Pulse,ev_pulse->max());
-        session->avg(OXI_Pulse);
-        session->p90(OXI_Pulse);
-        session->cph(OXI_Pulse);
-        session->wavg(OXI_Pulse);
-        session->count(OXI_Pulse);
-
-        session->setMin(OXI_SPO2,ev_pulse->min());
-        session->setMax(OXI_SPO2,ev_pulse->max());
-        session->avg(OXI_SPO2);
-        session->p90(OXI_SPO2);
-        session->cph(OXI_SPO2);
-        session->wavg(OXI_SPO2);
-        session->count(OXI_SPO2);
-
-        session->SetChanged(true);
-        mach->AddSession(session,p_profile);
-        mach->Save();
-        // Output Pulse & SPO2 here..
-        delete [] buffer;
-        port->write((char *)b2,3);
-
-        // Need to create a new session as this one got pinched.
-        session=new Session(mach,0);
-        day->getSessions().clear();
-        day->AddSession(session);
-
-        // As did these
-        ev_plethy=session->AddEventList(OXI_Plethy,EVL_Waveform,1,0,0,0,1000.0/50.0);
-
-        ev_pulse=session->AddEventList(OXI_Pulse,EVL_Event,1);
-
-        ev_spo2=session->AddEventList(OXI_SPO2,EVL_Event,1);
-    }
-    delete port;
-    port=NULL;
-    msgbox.hide();
-    qprogress->hide();
     ui->SerialPortsCombo->setEnabled(true);
     qstatus->setText("Ready");
     ui->ImportButton->setDisabled(false);
+    ui->saveButton->setEnabled(true);
+
+    if (qprogress) {
+        qprogress->setValue(100);
+        QApplication::processEvents();
+        qprogress->hide();
+    }
+}
+
+void Oximetry::on_import_aborted()
+{
+    import_finished();
+}
+
+void Oximetry::on_import_complete(Session * session)
+{
+    qDebug() << "Oximetry import complete";
+    import_finished();
+
+    PLETHY->setVisible(false);
+    CONTROL->setVisible(false);
+
+    qint64 f=session->first();
+    qint64 l=session->last();
+    day->setFirst(f);
+    day->setLast(l);
+
+    plethy->setMinX(f);
+    pulse->setMinX(f);
+    spo2->setMinX(f);
+    PLETHY->SetMinX(f);
+    CONTROL->SetMinX(f);
+    PULSE->SetMinX(f);
+    SPO2->SetMinX(f);
+
+    plethy->setMaxX(l);
+    pulse->setMaxX(l);
+    spo2->setMaxX(l);
+    PLETHY->SetMaxX(l);
+    CONTROL->SetMaxX(l);
+    PULSE->SetMaxX(l);
+    SPO2->SetMaxX(l);
+
+
+    PLETHY->forceMinY(0);
+    PLETHY->forceMaxY(128);
+    PULSE->forceMinY(30);
+    PULSE->forceMaxY(180);
+    SPO2->forceMinY(50);
+    SPO2->forceMaxY(100);
+
+    PULSE->setDay(day);
+    SPO2->setDay(day);
+    for (int i=0;i<GraphView->size();i++) {
+        (*GraphView)[i]->SetXBounds(f,l);
+    }
+
+    {
+        int len=(l-f)/1000L;
+        int h=len/3600;
+        int m=(len /60) % 60;
+        int s=(len % 60);
+        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
+    }
+    GraphView->updateScale();
+
+    GraphView->updateGL();
 
 }
 
+void Oximetry::onPulseChanged(float p)
+{
+    ui->pulseLCD->display(p);
+    if (firstPulseUpdate) {
+        if (secondPulseUpdate) {
+            secondPulseUpdate=false;
+        } else {
+            firstPulseUpdate=false;
+            GraphView->updateScale();
+        }
+    }
+}
+
+// Only really need to do this once..
+void Oximetry::onSpO2Changed(float o2)
+{
+    ui->spo2LCD->display(o2);
+    if (firstSPO2Update) {
+        if (secondSPO2Update) {
+            secondSPO2Update=false;
+        } else {
+            firstSPO2Update=false;
+            GraphView->updateScale();
+        }
+    }
+}
+
+void Oximetry::on_saveButton_clicked()
+{
+    if (QMessageBox::question(this,"Keep This Recording?","A save dialog will go here allowing you to edit parameters for this oximetry session..\nFor now, would you like to save this as is?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
+        Session *session=oximeter->getSession();
+        // Process???
+
+        session->UpdateSummaries();
+        oximeter->getMachine()->AddSession(session,p_profile);
+        oximeter->getMachine()->Save();
+    }
+}
+void Oximetry::on_updateProgress(float f)
+{
+    if (qprogress) {
+        qprogress->setValue(f*100.0);
+        QApplication::processEvents();
+    }
+}

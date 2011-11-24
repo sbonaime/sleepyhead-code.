@@ -136,7 +136,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
         EventList & el=*((*s)->eventlist[m_code][0]);
 
-        for (int i=0;i<el.count();i++) {
+        for (quint32 i=0;i<el.count();i++) {
             X=el.time(i);
             Y=X-(el.data(i)*1000);
             if (Y < minx) continue;

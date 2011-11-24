@@ -26,7 +26,7 @@ EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, 
 EventList::~EventList()
 {
 }
-qint64 EventList::time(int i)
+qint64 EventList::time(quint32 i)
 {
     if (m_type==EVL_Event) {
         return m_first+qint64(m_time[i]);
@@ -35,7 +35,7 @@ qint64 EventList::time(int i)
     return m_first+qint64((EventDataType(i)*m_rate));
 }
 
-EventDataType EventList::data(int i)
+EventDataType EventList::data(quint32 i)
 {
     return EventDataType(m_data[i])*m_gain;
 }
@@ -59,7 +59,7 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
         // This really shouldn't happen.
 
         qint64 t=(m_first-time);
-        for (int i=0;i<m_count;i++) {
+        for (quint32 i=0;i<m_count;i++) {
             m_time[i]-=t & 0xffffffff;
         }
         m_first=time;

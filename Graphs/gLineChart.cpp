@@ -532,14 +532,19 @@ void AHIChart::SetDay(Day *d)
     for (qint64 ti=first;ti<last;ti+=winsize) {
         f=ti-3600000L;
         //if (f<first) f=first;
-        EventList *el[4];
+        EventList *el[6];
         EventDataType ahi=0;
         int cnt=0;
 
+        bool fnd=false;
         for (s=d->begin();s!=d->end();s++) {
             Session *sess=*s;
             if ((ti<sess->first()) || (f>sess->last())) continue;
 
+            // Drop off suddenly outside of sessions
+            //if (ti>sess->last()) continue;
+
+            fnd=true;
             if (sess->eventlist.contains(CPAP_Obstructive))
                 el[0]=sess->eventlist[CPAP_Obstructive][0];
             else el[0]=NULL;
@@ -552,18 +557,25 @@ void AHIChart::SetDay(Day *d)
             if (sess->eventlist.contains(CPAP_ClearAirway))
                 el[3]=sess->eventlist[CPAP_ClearAirway][0];
             else el[3]=NULL;
+            if (sess->eventlist.contains(CPAP_NRI))
+                el[4]=sess->eventlist[CPAP_NRI][0];
+            else el[4]=NULL;
+            /*if (sess->eventlist.contains(CPAP_ExP))
+                el[5]=sess->eventlist[CPAP_ExP][0];
+            else el[5]=NULL;*/
 
             qint64 t;
-            for (int i=0;i<4;i++) {
+            for (int i=0;i<5;i++) {
                 if (!el[i]) continue;
-                for (int j=0;j<el[i]->count();j++) {
+                for (quint32 j=0;j<el[i]->count();j++) {
                     t=el[i]->time(j);
-                    if ((t>=f) && (t<=ti)) {
+                    if ((t>=f) && (t<ti)) {
                         cnt++;
                     }
                 }
             }
         }
+        if (!fnd) cnt=0;
         double g=double(ti-f)/3600000.0;
         if (g>0) ahi=cnt/g;
 

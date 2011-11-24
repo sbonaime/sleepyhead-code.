@@ -218,7 +218,7 @@ void gTAPGraph::SetDay(Day *d)
             }
             //first=true;
             //changed=false;
-            for (int i=1;i<el.count();i++) {
+            for (quint32 i=1;i<el.count();i++) {
                 data=el.raw(i);
                 time=el.time(i);
                 if (lastval!=data) {

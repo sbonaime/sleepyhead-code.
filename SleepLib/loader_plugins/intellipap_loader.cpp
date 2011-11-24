@@ -75,8 +75,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     lookup["Pl"]="MinPressure";
     //lookup["Ds"]="Ds";
     //lookup["Pc"]="Pc";
-    lookup["Pd"]="RampPressure";
-    lookup["Dt"]="RampTime";
+    lookup["Pd"]="RampPressure"; // Delay Pressure
+    lookup["Dt"]="RampTime";  // Delay Time
     //lookup["Ld"]="Ld";
     //lookup["Lh"]="Lh";
     //lookup["FC"]="FC";
@@ -88,8 +88,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     lookup["Hd"]="HypopneaDuration";
     //lookup["Pi"]="Pi"; //080
     //lookup["Pe"]="Pe"; //WF
-    //lookup["Ri"]="SmartFlexIRnd"; //1
-    //lookup["Re"]="SmartFlexERnd"; //2
+    lookup["Ri"]="SmartFlexIRnd"; // Inhale Rounding (0-5)
+    lookup["Re"]="SmartFlexERnd"; // Exhale Rounding (0-5)
     //lookup["Bu"]="Bu"; //WF
     //lookup["Ie"]="Ie"; //20
     //lookup["Se"]="Se"; //05
@@ -102,7 +102,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     //lookup["Hp"]="Hp"; //1
     //lookup["Hs"]="Hs"; //02
     //lookup["Lu"]="LowUseThreshold"; // defaults to 0 (4 hours)
-    //lookup["Sf"]="SmartFlex";
+    lookup["Sf"]="SmartFlex";
     //lookup["Sm"]="SmartFlexMode";
     lookup["Ks=s"]="Ks_s";
     lookup["Ks=i"]="Ks_i";
@@ -254,13 +254,22 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
                 sess->eventlist[CPAP_Te][0]->AddEvent(time,m_buffer[pos+0xf]);
                 sess->eventlist[CPAP_Ti][0]->AddEvent(time,m_buffer[pos+0xc]);
 
-                sess->eventlist[CPAP_Snore][0]->AddEvent(time,m_buffer[pos+0x5]); //4/5??
+                sess->eventlist[CPAP_Snore][0]->AddEvent(time,m_buffer[pos+0x4]); //4/5??
 
-                if (m_buffer[pos+0x5]>0) {
-                    if (!sess->eventlist.contains(CPAP_VSnore)) {
-                        sess->AddEventList(CPAP_VSnore,EVL_Event);
+                // 0x0f == Leak Event
+                // 0x04 == Snore?
+                if (m_buffer[pos+0xf]>0) { // Leak Event
+                    if (!sess->eventlist.contains(CPAP_LeakFlag)) {
+                        sess->AddEventList(CPAP_LeakFlag,EVL_Event);
                     }
-                    sess->eventlist[CPAP_VSnore][0]->AddEvent(time,m_buffer[pos+0x5]);
+                    sess->eventlist[CPAP_LeakFlag][0]->AddEvent(time,m_buffer[pos+0xf]);
+                }
+
+                if (m_buffer[pos+0x5]>4) { // This matches Exhale Puff.. not sure why 4
+                    if (!sess->eventlist.contains(CPAP_ExP)) {
+                        sess->AddEventList(CPAP_ExP,EVL_Event);
+                    }
+                    sess->eventlist[CPAP_ExP][0]->AddEvent(time,m_buffer[pos+0x5]);
                 }
 
                 if (m_buffer[pos+0x10]>0) {
@@ -273,13 +282,14 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
                     if (!sess->eventlist.contains(CPAP_Hypopnea)) {
                         sess->AddEventList(CPAP_Hypopnea,EVL_Event);
                     }
+                    //for (int i=0;i<m_buffer[pos+0x11];i++)
                     sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time,m_buffer[pos+0x11]);
                 }
-                if (m_buffer[pos+0x12]>0) {
-                    if (!sess->eventlist.contains(CPAP_Apnea)) {
-                        sess->AddEventList(CPAP_Apnea,EVL_Event);
+                if (m_buffer[pos+0x12]>0) { // NRI // is this == to RERA?? CA??
+                    if (!sess->eventlist.contains(CPAP_NRI)) {
+                        sess->AddEventList(CPAP_NRI,EVL_Event);
                     }
-                    sess->eventlist[CPAP_Apnea][0]->AddEvent(time,m_buffer[pos+0x12]);
+                    sess->eventlist[CPAP_NRI][0]->AddEvent(time,m_buffer[pos+0x12]);
                 }
                 quint16 tv=(m_buffer[pos+0x8] << 8) | m_buffer[pos+0x9]; // correct
                 sess->eventlist[CPAP_TidalVolume][0]->AddEvent(time,tv);

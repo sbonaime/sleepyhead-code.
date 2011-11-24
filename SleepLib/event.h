@@ -25,13 +25,13 @@ public:
     void AddWaveform(qint64 start, unsigned char * data, int recs, qint64 duration);
     void AddWaveform(qint64 start, char * data, int recs, qint64 duration);
 
-    inline const int & count() { return m_count; }
-    void setCount(int count) { m_count=count; }
+    inline const quint32 & count() { return m_count; }
+    void setCount(quint32 count) { m_count=count; }
 
     inline EventStoreType raw(int i) { return m_data[i]; }
 
-    EventDataType data(int i);
-    qint64 time(int i);
+    EventDataType data(quint32 i);
+    qint64 time(quint32 i);
     inline const qint64 & first() { return m_first; }
     inline const qint64 & last() { return m_last; }
     inline qint64 duration() { return m_last-m_first; }
@@ -64,7 +64,7 @@ protected:
     QVector<EventStoreType> m_data;
     //ChannelID m_code;
     EventListType m_type;
-    int m_count;
+    quint32 m_count;
 
     EventDataType m_gain;
     EventDataType m_offset;

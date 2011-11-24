@@ -274,11 +274,11 @@ bool Session::StoreEvents(QString filename)
         for (int j=0;j<i.value().size();j++) {
             EventList &e=*i.value()[j];
 
-            for (int c=0;c<e.count();c++) {
+            for (quint32 c=0;c<e.count();c++) {
                 out << e.raw(c);
             }
             if (e.type()!=EVL_Waveform) {
-                for (int c=0;c<e.count();c++) {
+                for (quint32 c=0;c<e.count();c++) {
                     out << e.getTime()[c];
                 }
             }
@@ -384,7 +384,7 @@ bool Session::LoadEvents(QString filename)
         for (int j=0;j<size2;j++) {
             EventList &evec=*eventlist[code][j];
             evec.m_data.reserve(evec.m_count);
-            for (int c=0;c<evec.m_count;c++) {
+            for (quint32 c=0;c<evec.m_count;c++) {
                 in >> t;
                 //evec.m_data[c]=t;
                 evec.m_data.push_back(t);
@@ -392,7 +392,7 @@ bool Session::LoadEvents(QString filename)
             //last=evec.first();
             if (evec.type()!=EVL_Waveform) {
                 evec.m_time.reserve(evec.m_count);
-                for (int c=0;c<evec.m_count;c++) {
+                for (quint32 c=0;c<evec.m_count;c++) {
                     in >> x;
                     //last+=x;
                     evec.m_time.push_back(x);
@@ -591,7 +591,7 @@ double Session::sum(ChannelID id)
 
     double sum=0;
     for (int i=0;i<evec.size();i++) {
-        for (int j=0;j<evec[i]->count();j++) {
+        for (quint32 j=0;j<evec[i]->count();j++) {
             sum+=evec[i]->data(j);
         }
     }
@@ -615,7 +615,7 @@ EventDataType Session::avg(ChannelID id)
     double val=0;
     int cnt=0;
     for (int i=0;i<evec.size();i++) {
-        for (int j=0;j<evec[i]->count();j++) {
+        for (quint32 j=0;j<evec[i]->count();j++) {
             val+=evec[i]->data(j);
             cnt++;
         }
@@ -734,7 +734,7 @@ EventDataType Session::wavg(ChannelID id)
         if (!evec[i]->count()) continue;
         lastval=evec[i]->raw(0);
         lasttime=evec[i]->time(0);
-        for (int j=1;j<evec[i]->count();j++) {
+        for (quint32 j=1;j<evec[i]->count();j++) {
             val=evec[i]->raw(j);
             time=evec[i]->time(j);
             td=(time-lasttime);

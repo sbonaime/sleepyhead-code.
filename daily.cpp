@@ -112,10 +112,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     gFlagsGroup *fg=new gFlagsGroup();
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",true)));
+    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true)));
     fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),"A")));
     fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),"H",true)));
+    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),"E",false)));
+    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),"L",false)));
+    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),"NRI",false)));
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),"FL")));
     fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),"RE")));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
@@ -305,7 +308,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 mcr=mcroot[code];
             }
             for (int z=0;z<m.value().size();z++) {
-                for (int o=0;o<m.value()[z]->count();o++) {
+                for (quint32 o=0;o<m.value()[z]->count();o++) {
                     qint64 t=m.value()[z]->time(o);
 
                     if (code==CPAP_CSR) {
@@ -469,7 +472,7 @@ void Daily::Load(QDate date)
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
         float uai=cpap->count(CPAP_Apnea)/cpap->hours();
         float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
-        float hi=cpap->count(CPAP_Hypopnea)/cpap->hours();
+        float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/cpap->hours();
         float cai=cpap->count(CPAP_ClearAirway)/cpap->hours();
         float rei=cpap->count(CPAP_RERA)/cpap->hours();
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
@@ -558,7 +561,7 @@ void Daily::Load(QDate date)
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
             CPAP_MinuteVent,CPAP_RespRate,CPAP_RespEvent,CPAP_FLG,
             CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
-            CPAP_TidalVolume, OXI_Pulse,OXI_SPO2
+            CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
         int suboffset;
@@ -916,3 +919,4 @@ void Daily::on_todayButton_clicked()
     if (d > PROFILE.LastDay()) d=PROFILE.LastDay();
     LoadDate(d);
 }
+

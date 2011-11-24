@@ -245,7 +245,7 @@ void ExportCSV::on_exportButton_clicked()
                             //header="DateTime"+sep+"Session"+sep+"Event"+sep+"Data/Duration";
                             for (int e=0;e<fnd.value().size();e++) {
                                 EventList *ev=fnd.value()[e];
-                                for (int q=0;q<ev->count();q++) {
+                                for (quint32 q=0;q<ev->count();q++) {
                                     data=QDateTime::fromTime_t(ev->time(q)/1000L).toString(Qt::ISODate);
                                     data+=sep+QString::number(sess->session());
                                     data+=sep+key;

@@ -46,6 +46,9 @@ One id code per item
   <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Trgt Min Vent." unit="" color="dark cyan"/>
   <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
+  <channel id="0x1116" class="data" name="LeakFlag" details="Leak Event" label="L" unit="" color="dark blue"/>
+  <channel id="0x1117" class="data" name="NRI" details="Non Responding Event" label="NRI" unit="" color="orange"/>
+  <channel id="0x1118" class="data" name="EP" details="Exhale Puff" label="EP" unit="" color="dark purple"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="" color="black"/>
@@ -69,7 +72,7 @@ One id code per item
  </group>
  <group name="OXI">
   <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse" color="red"/>
-  <channel id="0x1801" class="data" name="SPO2" details="SPO2" label="SPO2" color="blue"/>
+  <channel id="0x1801" class="data" name="SPO2" details="% SpO2" label="SpO2" color="blue"/>
   <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
   <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="red"/>
   <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="blue"/>
