@@ -255,7 +255,10 @@ void Daily::on_Link_clicked(const QUrl &url)
     } else if (code=="event")  {
         QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(data,Qt::MatchContains);
         if (list.size()>0) {
-            ui->treeWidget->setCurrentItem(list.at(0));
+            ui->treeWidget->collapseAll();
+            ui->treeWidget->expandItem(list.at(0));
+            QTreeWidgetItem *wi=list.at(0)->child(0);
+            ui->treeWidget->setCurrentItem(wi);
             ui->tabWidget->setCurrentIndex(1);
         }
     } else {
@@ -457,8 +460,8 @@ void Daily::Load(QDate date)
     QString html="<html><head><style type='text/css'>"
     "p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; }"
     "p,a,td,body { font-size: 12px; }"
-    "a:link,a:visited { color: inherit; text-decoration: none; }"
-    "a:hover { background-color: white; color: black; text-decoration:none; font-weight: bold; }"
+    "a:link,a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
+    "a:hover { background-color: inherit; color: inherit; text-decoration:none; font-weight: bold; }"
     "</style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
@@ -549,24 +552,24 @@ void Daily::Load(QDate date)
 
         QString cs;
         if (cpap->machine->GetClass()!="PRS1") {
-            cs="4 align=center>";
-        } else cs="2>";
+            cs="4 width='100%' align=center>";
+        } else cs="2 width='50%'>";
         html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>"
         "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td  bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'><a href='event=Hypopnea'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event=Hypopnea'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
         if (cpap->machine->GetClass()=="ResMed") {
-            html+="<tr><td align='right' bgcolor='#208020'><b><a href='event=Apnea'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+            html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event=Apnea'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
         }
-        html+="<tr><td align='right' bgcolor='#40afbf'><b><a href='event=Obstructive'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-        "<tr><td align='right' bgcolor='#b254cd'><b><a href='event=Clear Airway'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
+        html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event=Obstructive'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+        "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event=Clear Airway'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
         "</table></td>";
 
         if (cpap->machine->GetClass()=="PRS1") {
             html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=Respiratory Effort'>"+tr("RERA")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b><font color='white'><a href='event=Flow Limit'>"+tr("FlowLimit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
-            "<tr><td align='right' bgcolor='#ff4040'><b><a href='event=Vibratory snore'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#80ff80'><b><a href='event=Cheyne Stokes'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event=Respiratory Effort'>"+tr("RERA")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event=Flow Limit'>"+tr("FlowLimit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+            "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event=Vibratory snore'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event=Cheyne Stokes'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
             "</table></td>";
         } else if (cpap->machine->GetClass()=="Intellipap") {
             html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
