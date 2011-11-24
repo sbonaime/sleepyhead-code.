@@ -37,6 +37,7 @@ public:
     inline qint64 duration() { return m_last-m_first; }
     void setFirst(qint64 val) { m_first=val; }
     void setLast(qint64 val) { m_last=val; }
+    void setType(EventListType type) { m_type=type; }
 
     void setGain(EventDataType v) { m_gain=v; }
     void setOffset(EventDataType v) { m_offset=v; }

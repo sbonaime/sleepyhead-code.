@@ -41,7 +41,9 @@ public:
 
     Session *createSession();
     Session * getSession() { return session; }
-    Session * takeSession() { Session * s=session; session=NULL; return s; }
+
+    void compactEventList(EventList *e);
+    void compactAll();
 
     void setPortName(QString portname);
     void setBaudRate(BaudRateType baud);

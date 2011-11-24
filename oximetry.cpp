@@ -158,10 +158,24 @@ void SerialOximeter::onReadyRead()
 
 void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
+    EventDataType min=0,max=0;
+    if (pr>0) {
+        if (pr<pulse->min())
+            min=pr;
+        if (pr>pulse->max())
+            max=pr;
+    }
+
     pulse->AddEvent(time,pr);
     session->setCount(OXI_Pulse,pulse->count()); // update the cache
-    session->setMin(OXI_Pulse,pulse->min());
-    session->setMax(OXI_Pulse,pulse->max());
+    if (min>0) {
+        pulse->setMin(min);
+        session->setMin(OXI_Pulse,min);
+    }
+    if (max>0) {
+        pulse->setMax(max);
+        session->setMax(OXI_Pulse,max);
+    }
     session->setLast(OXI_Pulse,time);
     pulse->setLast(time);
     session->set_last(lasttime);
@@ -170,10 +184,23 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 
 void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
 {
+    EventDataType min=0,max=0;
+    if (o2>0) {
+        if (o2<spo2->min())
+            min=o2;
+        if (o2>spo2->max())
+            max=o2;
+    }
     spo2->AddEvent(time,o2);
     session->setCount(OXI_SPO2,spo2->count()); // update the cache
-    session->setMin(OXI_SPO2,spo2->min());
-    session->setMax(OXI_SPO2,spo2->max());
+    if (min>0) {
+        spo2->setMin(min);
+        session->setMin(OXI_SPO2,min);
+    }
+    if (max>0) {
+        spo2->setMax(max);
+        session->setMax(OXI_SPO2,max);
+    }
     session->setLast(OXI_SPO2,time);
     session->set_last(lasttime);
     spo2->setLast(time);
@@ -190,6 +217,24 @@ void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
     session->set_last(lasttime);
     plethy->setLast(time);
 }
+void SerialOximeter::compactEventList(EventList *el)
+{
+    double rate=double(el->duration())/double(el->count());
+    el->setType(EVL_Waveform);
+    el->setRate(rate);
+    el->getTime().clear();
+}
+
+void SerialOximeter::compactAll()
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator i;
+
+    for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
+        for (int j=0;j<i.value().size();j++) {
+            compactEventList(i.value()[j]);
+        }
+    }
+ }
 
 /*void SerialOximeter::addEvents(EventDataType pr,EventDataType o2, EventDataType pleth)
 {
@@ -246,6 +291,7 @@ bool SerialOximeter::startLive()
 void SerialOximeter::stopLive()
 {
     Close();
+    compactAll();
     emit(liveStopped(session));
 }
 
@@ -288,21 +334,27 @@ void CMS50Serial::on_import_process()
                 if (pulse->min()<plmin) plmin=pulse->min();
                 if (pulse->max()>plmax) plmax=pulse->max();
                 plcnt+=pulse->count();
+                compactEventList(pulse); // converts to waveform..
+
                 pulse=new EventList(EVL_Event);
                 session->eventlist[OXI_Pulse].push_back(pulse);
             }
-        } else pulse->AddEvent(lasttime,pl);
+        } else {
+            pulse->AddEvent(lasttime,pl);
+        }
         if (o2==0) {
             if (lasto2!=o2) {
                 spo2->setLast(lasttime);
                 if (spo2->min()<o2min) o2min=spo2->min();
                 if (spo2->max()>o2max) o2max=spo2->max();
                 o2cnt+=spo2->count();
+                compactEventList(spo2); // convert to waveform
                 spo2=new EventList(EVL_Event);
                 session->eventlist[OXI_SPO2].push_back(spo2);
             }
-        } else spo2->AddEvent(lasttime,o2);
-
+        } else {
+            spo2->AddEvent(lasttime,o2);
+        }
 
         lasttime+=1000;
         emit(updateProgress(float(i)/float(size)));
@@ -345,6 +397,7 @@ void CMS50Serial::onReadyRead()
     int size=bytes.size();
     // Process all incoming serial data packets
     unsigned char c;
+    unsigned char pl,o2;
     while (i<bytes.size()) {
         if (import_mode) {
             if (waitf6) { //ack sequence from f6 command.
@@ -400,11 +453,8 @@ void CMS50Serial::onReadyRead()
                             data.push_back(bytes.at(z));
                             received_bytes++;
                         }
-                        //i=z;
-                        //size-=i;
                         waitf6=false;
                         return;
-                        //continue;
                     }
                 }
             } else {
@@ -426,9 +476,6 @@ void CMS50Serial::onReadyRead()
                 break;
                 //read data blocks..
             }
-            /*if (size<200) && (received_bytes>=datasize) {
-
-            } */
         } else {
             if (bytes[i]&0x80) { // 0x80 == sync bit
                 EventDataType d=bytes[i+1] & 0x7f;
@@ -436,8 +483,10 @@ void CMS50Serial::onReadyRead()
                 lasttime+=20;
                 i+=3;
             } else {
-                addPulse(lasttime,bytes[i]);
-                addSpO2(lasttime,bytes[i+1]);
+                pl=bytes[i];
+                o2=bytes[i+1];
+                addPulse(lasttime,pl);
+                addSpO2(lasttime,o2);
                 i+=2;
             }
         }
@@ -873,7 +922,6 @@ void Oximetry::on_saveButton_clicked()
     if (QMessageBox::question(this,"Keep This Recording?","A save dialog will go here allowing you to edit parameters for this oximetry session..\nFor now, would you like to save this as is?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
         Session *session=oximeter->getSession();
         // Process???
-
         session->UpdateSummaries();
         oximeter->getMachine()->AddSession(session,p_profile);
         oximeter->getMachine()->Save();
