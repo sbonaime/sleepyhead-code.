@@ -64,6 +64,8 @@ private slots:
     void on_calButton_toggled(bool checked);
 
     void on_todayButton_clicked();
+
+    void on_Link_clicked(const QUrl &url);
 protected:
 
 private:

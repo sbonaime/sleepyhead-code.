@@ -226,18 +226,48 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->tabWidget->setCurrentWidget(ui->details);
 
     ui->webView->settings()->setFontSize(QWebSettings::DefaultFontSize,QApplication::font().pointSize());
+    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    connect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(on_Link_clicked(QUrl)));
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
 }
 
 Daily::~Daily()
 {
+    disconnect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(on_Link_clicked(QUrl)));
     // Save any last minute changes..
     if (previous_date.isValid())
         Unload(previous_date);
 
 //    delete splitter;
     delete ui;
+}
+void Daily::on_Link_clicked(const QUrl &url)
+{
+    QString code=url.toString().section("=",0,0).toLower();
+    QString data=url.toString().section("=",1);
+    int sid=data.toInt();
+    Day *day=NULL;
+    if (code=="cpap")  {
+        day=PROFILE.GetDay(previous_date,MT_CPAP);
+    } else if (code=="oxi") {
+        day=PROFILE.GetDay(previous_date,MT_OXIMETER);
+    } else if (code=="event")  {
+        QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(data,Qt::MatchContains);
+        if (list.size()>0) {
+            ui->treeWidget->setCurrentItem(list.at(0));
+            ui->tabWidget->setCurrentIndex(1);
+        }
+    } else {
+        qDebug() << "Clicked on" << code << data;
+    }
+    if (day) {
+
+        Session *sess=day->machine->sessionlist[sid];
+        if (sess) {
+            GraphView->SetXBounds(sess->first(),sess->last());
+        }
+    }
 }
 
 void Daily::ReloadGraphs()
@@ -288,6 +318,9 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_ClearAirway)
                 && (code!=CPAP_CSR)
                 && (code!=CPAP_RERA)
+                && (code!=CPAP_NRI)
+                && (code!=CPAP_LeakFlag)
+                && (code!=CPAP_ExP)
                 && (code!=CPAP_FlowLimit)
                 && (code!=CPAP_PressurePulse)
                 && (code!=CPAP_VSnore)) continue;
@@ -421,7 +454,12 @@ void Daily::Load(QDate date)
         }
     }
     lastcpapday=cpap;
-    QString html="<html><head><style type='text/css'>p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; } p,a,td,body { font-size: 12px; } </style>"
+    QString html="<html><head><style type='text/css'>"
+    "p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; }"
+    "p,a,td,body { font-size: 12px; }"
+    "a:link,a:visited { color: inherit; text-decoration: none; }"
+    "a:hover { background-color: white; color: black; text-decoration:none; font-weight: bold; }"
+    "</style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
     "<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
@@ -477,6 +515,9 @@ void Daily::Load(QDate date)
         float rei=cpap->count(CPAP_RERA)/cpap->hours();
         float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
+        float nri=cpap->count(CPAP_NRI)/cpap->hours();
+        float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
+        float exp=cpap->count(CPAP_ExP)/cpap->hours();
 
         //float p90=cpap->p90(CPAP_Pressure);
         //eap90=cpap->p90(CPAP_EPAP);
@@ -512,21 +553,29 @@ void Daily::Load(QDate date)
         } else cs="2>";
         html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>"
         "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td  bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>"+tr("Hypopnea")+"</font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'><a href='event=Hypopnea'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
         if (cpap->machine->GetClass()=="ResMed") {
-            html+="<tr><td align='right' bgcolor='#208020'><b>"+tr("Apnea")+"</b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+            html+="<tr><td align='right' bgcolor='#208020'><b><a href='event=Apnea'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
         }
-        html+="<tr><td align='right' bgcolor='#40afbf'><b>"+tr("Obstructive")+"</b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-        "<tr><td align='right' bgcolor='#b254cd'><b>"+tr("Clear Airway")+"</b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
+        html+="<tr><td align='right' bgcolor='#40afbf'><b><a href='event=Obstructive'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+        "<tr><td align='right' bgcolor='#b254cd'><b><a href='event=Clear Airway'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
         "</table></td>";
 
         if (cpap->machine->GetClass()=="PRS1") {
             html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b>"+tr("RERA")+"</b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b><font color='white'>"+tr("FlowLimit")+"</font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
-            "<tr><td align='right' bgcolor='#ff4040'><b>"+tr("Vsnore")+"</b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#80ff80'><b>"+tr("PB/CSR")+"</b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=Respiratory Effort'>"+tr("RERA")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b><font color='white'><a href='event=Flow Limit'>"+tr("FlowLimit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+            "<tr><td align='right' bgcolor='#ff4040'><b><a href='event=Vibratory snore'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#80ff80'><b><a href='event=Cheyne Stokes'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
             "</table></td>";
+        } else if (cpap->machine->GetClass()=="Intellipap") {
+            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
+            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=NRI'>"+tr("NRI")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b><font color='white'><a href='event=Leak'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
+            "<tr><td align='right' bgcolor='#ff4040'><b><a href='event=VSnore'>"+tr("Vibratory Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#80ff80'><b><a href='event=ExP'>"+tr("Exhalation Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"%</td></tr>\n"
+            "</table></td>";
+
         }
 
 
@@ -640,7 +689,7 @@ void Daily::Load(QDate date)
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+                tmp.sprintf(("<tr><td align=center><a href='cpap=%i'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
             }
         }
@@ -650,7 +699,7 @@ void Daily::Load(QDate date)
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=center>%08i</td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session());
+                tmp.sprintf(("<tr><td align=center><a href='oxi=%i'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
             }
         }
