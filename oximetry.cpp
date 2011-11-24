@@ -359,7 +359,7 @@ void CMS50Serial::onReadyRead()
                             qDebug() << "Session start (according to CMS50)" << d << h << m;
                         } else {
                             // otherwise pick the first session of the last days data..
-                            Day *day=PROFILE.GetDay(PROFILE.LastDay().addDays(-1),MT_CPAP);
+                            Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
                             QDateTime d;
 
                             if (day) {
@@ -371,7 +371,7 @@ void CMS50Serial::onReadyRead()
                                 qDebug() << "Can't guess start time, defaulting to 6pm yesterday" << d;
                                 d=QDateTime::currentDateTime();
                                 d.setTime(QTime(18,0,0));
-                                d.addDays(-1);
+                                //d.addDays(-1);
                             }
                             f2time.push_back(d);
                         }
