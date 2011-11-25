@@ -120,6 +120,7 @@ protected:
     virtual void onReadyRead();
     bool waitf6;
     short cntf6;
+    short failcnt;
 
     QByteArray data;
     QVector<QDateTime> f2time;

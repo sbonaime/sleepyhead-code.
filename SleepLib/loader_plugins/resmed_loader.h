@@ -70,6 +70,7 @@ public:
 
     QVector<EDFSignal *> edfsignals;
     QHash<QString,EDFSignal *> lookup;
+    EDFSignal * lookupSignal(ChannelID);
 
     long GetNumSignals() { return num_signals; }
     long GetNumDataRecords() { return num_data_records; }

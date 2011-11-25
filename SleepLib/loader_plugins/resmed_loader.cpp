@@ -24,6 +24,20 @@ extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;
 QHash<ChannelID, QVector<QString> > resmed_codes;
 
+EDFSignal * EDFParser::lookupSignal(ChannelID ch)
+{
+    QHash<ChannelID, QVector<QString> >::iterator ci;
+    QHash<QString,EDFSignal *>::iterator jj;
+    ci=resmed_codes.find(ch);
+    if (ci==resmed_codes.end()) return NULL;
+    for (int i=0;i<ci.value().size();i++) {
+        jj=lookup.find(ci.value()[i]);
+        if (jj==lookup.end()) continue;
+        return jj.value();
+    }
+    return NULL;
+}
+
 EDFParser::EDFParser(QString name)
 {
     buffer=NULL;
@@ -384,6 +398,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
         QApplication::processEvents();
 
+        EDFSignal *sig;
         if (!sess) continue;
         if (!sess->first()) {
             delete sess;
@@ -394,37 +409,46 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             int dn=dif/86400000L;
             if (dn<days) {
                 int mode;
-                if (stredf.lookup.contains("Mode"))
-                    mode=(*stredf.lookup["Mode"]).data[dn];
-                else mode=0;
+                sig=stredf.lookupSignal(CPAP_Mode);
+                if (sig) {
+                    mode=sig->data[dn];
+                } else mode=0;
 
                 // AutoSV machines don't have both fields
-                if (stredf.lookup.contains("EPR"))
-                    sess->settings["EPR"]=(*stredf.lookup["EPR"]).data[dn];
-                if (stredf.lookup.contains("EPRSet"))
-                    sess->settings["EPRSet"]=(*stredf.lookup["EPR Level"]).data[dn];
+                sig=stredf.lookupSignal("EPR");
+                if (sig) {
+                    sess->settings["EPR"]=sig->data[dn];
+                }
 
-                EDFSignal *sig;
+                sig=stredf.lookupSignal("EPRLevel");
+                if (sig)  {
+                    sess->settings["EPRSet"]=sig->data[dn];
+                }
+
                 if (mode==0) {
                     sess->settings[CPAP_Mode]=MODE_CPAP;
-                    sig=stredf.lookup["Set Pressure"];
-                    EventDataType pressure=sig->data[dn]*sig->gain;
-                    sess->settings[CPAP_Pressure]=pressure;
-                    sess->setWavg(CPAP_Pressure,pressure);
-                    sess->setAvg(CPAP_Pressure,pressure);
-                    sess->set90p(CPAP_Pressure,pressure);
-                    sess->setMax(CPAP_Pressure,pressure);
-                    sess->setMin(CPAP_Pressure,pressure);
+                    sig=stredf.lookupSignal("Set Pressure");
+                    if (sig) {
+                        EventDataType pressure=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_Pressure]=pressure;
+                        sess->setWavg(CPAP_Pressure,pressure);
+                        sess->setAvg(CPAP_Pressure,pressure);
+                        sess->set90p(CPAP_Pressure,pressure);
+                        sess->setMax(CPAP_Pressure,pressure);
+                        sess->setMin(CPAP_Pressure,pressure);
+                    }
                 } else {
                     if (mode>5) {
                         sess->settings[CPAP_Mode]=MODE_BIPAP;
                     } else {
                         sess->settings[CPAP_Mode]=MODE_APAP;
                     }
-                    sig=stredf.lookup["Min Pressure"];
+
+                    sig=stredf.lookupSignal(CPAP_PressureMin);
                     if (sig)
                         sess->setMin(CPAP_Pressure,sig->data[dn]*sig->gain);
-                    sig=stredf.lookup["Max Pressure"];
+
+                    sig=stredf.lookupSignal(CPAP_PressureMax);
                     if (sig)
                         sess->setMax(CPAP_Pressure,sig->data[dn]*sig->gain);
                 }
@@ -643,7 +667,7 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         //qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
         ChannelID code;
-        if (edf.edfsignals[s]->label=="Pulse") {
+        if (edf.edfsignals[s]->label.startsWith("Puls")) {
             code=OXI_Pulse;
         } else if (edf.edfsignals[s]->label=="SpO2") {
             code=OXI_SPO2;
@@ -694,7 +718,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         if (es.label=="Snore Index") {
             code=CPAP_Snore;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="Therapy Pres") {
+        } else if (es.label.startsWith("Therapy Pres")) {
             code=CPAP_Pressure; //TherapyPressure;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Insp Pressure") {
@@ -704,7 +728,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         } else if (es.label=="MV") {
             code=CPAP_MinuteVent;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="RR") {
+        } else if ((es.label=="RR") || (es.label=="AF")) {
             code=CPAP_RespRate;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
@@ -713,7 +737,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             es.physical_maximum=es.physical_minimum=0;
             es.gain*=1000.0;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="Leak") {
+        } else if ((es.label=="Leak") || (es.label.startsWith("Leck"))) {
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_dimension="L/M";
@@ -803,8 +827,13 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_EPAP].push_back("Exp Press");
     resmed_codes[CPAP_EPAP].push_back("Exp Pressure"); // vpap
+
     resmed_codes[CPAP_Leak].push_back("Leak");
+    resmed_codes[CPAP_Leak].push_back("Leck.");
+
     resmed_codes[CPAP_RespRate].push_back("RR");
+    resmed_codes[CPAP_RespRate].push_back("AF");
+
     resmed_codes[CPAP_TidalVolume].push_back("Vt");
     resmed_codes[CPAP_MinuteVent].push_back("MV");
     resmed_codes[CPAP_IE].push_back("I:E"); // vpap
@@ -817,6 +846,7 @@ void ResInitModelMap()
 
     // Sad (oximetry)
     resmed_codes[OXI_Pulse].push_back("Pulse");
+    resmed_codes[OXI_Pulse].push_back("Puls");
     resmed_codes[OXI_SPO2].push_back("SpO2");
 
     // Event annotations
@@ -824,6 +854,18 @@ void ResInitModelMap()
     resmed_codes[CPAP_Hypopnea].push_back("Hypopnea");
     resmed_codes[CPAP_Apnea].push_back("Apnea");
     resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
+
+    resmed_codes[CPAP_Mode].push_back("Mode");
+    resmed_codes[CPAP_Mode].push_back("Modus");
+    resmed_codes["Set Pressure"].push_back("Eingest. Druck");
+    resmed_codes["Set Pressure"].push_back("Set Pressure");
+    resmed_codes["EPR"].push_back("EPR");
+    resmed_codes["EPRLevel"].push_back("EPR Level");
+    resmed_codes["EPRLevel"].push_back("EPR-Stufe");
+    resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
+    resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
+    resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
+    resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
 
     // STR.edf
 }

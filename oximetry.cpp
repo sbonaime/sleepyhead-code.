@@ -229,29 +229,29 @@ void SerialOximeter::compactToEvent(EventList *el)
     EventList nel(EVL_Waveform);
     EventDataType t,lastt=el->data(0);
     qint64 ti=el->time(0);
-    for (qint32 i=0;i<el->count();i++) {
+    for (quint32 i=0;i<el->count();i++) {
         t=el->data(i);
         if (t!=lastt) {
             nel.AddEvent(ti,lastt);
             ti=el->time(i);
+            nel.AddEvent(ti,t);
         }
-
         lastt=t;
     }
     nel.AddEvent(el->last(),t);
 
     el->getData().clear();
     el->getTime().clear();
-    el->setCount(nel.count());
+    el->setCount(0);//nel.count());
 
-    el->getData()=nel.getData();
-    el->getTime()=nel.getTime();
+    //el->getData()=nel.getData();
+    //el->getTime()=nel.getTime();
 
 
-/*    for (int i=0;i<nel.count();i++) {
+    for (int i=0;i<nel.count();i++) {
         el->getData().push_back(nel.data(i));
-        el->getTime().push_back(nel.g)
-    }*/
+        el->getTime().push_back(nel.time(i));
+    }
 
     /*double rate=double(el->duration())/double(el->count());
     el->setType(EVL_Waveform);
@@ -265,24 +265,14 @@ void SerialOximeter::compactAll()
 
     for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
         for (int j=0;j<i.value().size();j++) {
-            if (i.key()==OXI_Plethy) {
-                compactToWaveform(i.value()[j]);
-            } else {
+            if (i.key()==OXI_SPO2) {
                 compactToEvent(i.value()[j]);
+            } else {
+                compactToWaveform(i.value()[j]);
             }
         }
     }
- }
-
-/*void SerialOximeter::addEvents(EventDataType pr,EventDataType o2, EventDataType pleth)
-{
-    lasttime=qint64(QDateTime::currentDateTime().toTime_t())*1000L;
-    addPulse(lasttime,pr);
-    addSpO2(lasttime,o2);
-    addPlethy(lasttime,pleth);
-    session->set_last(lasttime);
-    //emit(dataChanged());
-}*/
+}
 
 Session *SerialOximeter::createSession()
 {
@@ -529,6 +519,13 @@ void CMS50Serial::onReadyRead()
             }
         }
     }
+    if (import_mode && waitf6 && (cntf6==0)) {
+        failcnt++;
+        if (failcnt>2) {
+            emit(importAborted());
+            return;
+        }
+    }
     emit(dataChanged());
 }
 
@@ -537,6 +534,7 @@ bool CMS50Serial::startImport()
     import_mode=true;
     waitf6=true;
     cntf6=0;
+    failcnt=0;
     //QMessageBox::information(0,"!!!Important Notice!!!","This Oximetry import method does NOT allow syncing of Oximetry and CPAP data.\nIf you really wish to record your oximetry data and have sync, you have to use the Live View mode (click Start) with the Oximeter connected to a computer via USB cable all night..\nEven then it will be out a bit because of your CPAP machines realtime clock drifts.",QMessageBox::Ok);
     if (!Open(QextSerialPort::EventDriven)) return false;
     connect(this,SIGNAL(importProcess()),this,SLOT(on_import_process()));
@@ -869,9 +867,9 @@ void Oximetry::import_finished()
 
 void Oximetry::on_import_aborted()
 {
+    qDebug() << "Oximetry import failed";
     import_finished();
 }
-
 void Oximetry::on_import_complete(Session * session)
 {
     qDebug() << "Oximetry import complete";
@@ -900,7 +898,6 @@ void Oximetry::on_import_complete(Session * session)
     CONTROL->SetMaxX(l);
     PULSE->SetMaxX(l);
     SPO2->SetMaxX(l);
-
 
     PLETHY->forceMinY(0);
     PLETHY->forceMaxY(128);
