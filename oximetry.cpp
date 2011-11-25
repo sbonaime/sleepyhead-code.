@@ -242,16 +242,16 @@ void SerialOximeter::compactToEvent(EventList *el)
 
     el->getData().clear();
     el->getTime().clear();
-    el->setCount(0);//nel.count());
+    el->setCount(nel.count());
 
-    //el->getData()=nel.getData();
-    //el->getTime()=nel.getTime();
+    el->getData()=nel.getData();
+    el->getTime()=nel.getTime();
 
 
-    for (int i=0;i<nel.count();i++) {
+    /*for (int i=0;i<nel.count();i++) {
         el->getData().push_back(nel.data(i));
         el->getTime().push_back(nel.time(i));
-    }
+    } */
 
     /*double rate=double(el->duration())/double(el->count());
     el->setType(EVL_Waveform);
