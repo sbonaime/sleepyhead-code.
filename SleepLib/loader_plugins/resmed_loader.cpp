@@ -725,14 +725,14 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_IPAP; //TherapyPressure;
             sess->settings[CPAP_Mode]=MODE_BIPAP;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label=="MV") {
+        } else if ((es.label=="MV") || (es.label=="VM")){
             code=CPAP_MinuteVent;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if ((es.label=="RR") || (es.label=="AF")) {
+        } else if ((es.label=="RR") || (es.label=="AF") || (es.label=="FR")) {
             code=CPAP_RespRate;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
-        } else if (es.label=="Vt") {
+        } else if ((es.label=="Vt") || (es.label=="VC")) {
             code=CPAP_TidalVolume;
             es.physical_maximum=es.physical_minimum=0;
             es.gain*=1000.0;
@@ -833,9 +833,14 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_RespRate].push_back("RR");
     resmed_codes[CPAP_RespRate].push_back("AF");
+    resmed_codes[CPAP_RespRate].push_back("FR");
 
     resmed_codes[CPAP_TidalVolume].push_back("Vt");
+    resmed_codes[CPAP_TidalVolume].push_back("VC");
+
     resmed_codes[CPAP_MinuteVent].push_back("MV");
+    resmed_codes[CPAP_MinuteVent].push_back("VM");
+
     resmed_codes[CPAP_IE].push_back("I:E"); // vpap
     resmed_codes[CPAP_Snore].push_back("Snore Index");
     resmed_codes[CPAP_FLG].push_back("FFL Index");
@@ -858,14 +863,19 @@ void ResInitModelMap()
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus");
     resmed_codes["Set Pressure"].push_back("Eingest. Druck");
-    resmed_codes["Set Pressure"].push_back("Set Pressure");
+    resmed_codes["Set Pressure"].push_back("Set Pressure"); // Prescription
+    resmed_codes["Set Pressure"].push_back("Pres. prescrite");
     resmed_codes["EPR"].push_back("EPR");
     resmed_codes["EPRLevel"].push_back("EPR Level");
     resmed_codes["EPRLevel"].push_back("EPR-Stufe");
+    resmed_codes["EPRLevel"].push_back("Niveau EPR");
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
+    resmed_codes[CPAP_PressureMax].push_back("Pression max.");
+
     resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
     resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
+    resmed_codes[CPAP_PressureMin].push_back("Pression min.");
 
     // STR.edf
 }
