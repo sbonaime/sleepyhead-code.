@@ -16,6 +16,7 @@
 #include <QSettings>
 #include <QPixmap>
 #include <QDesktopWidget>
+#include <QListView>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -246,15 +247,33 @@ void MainWindow::on_action_Import_Data_triggered()
     }
 
     if (asknew) {
-        newdir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
+        QFileDialog w;
+        w.setFileMode(QFileDialog::DirectoryOnly);
+        w.setOption(QFileDialog::DontUseNativeDialog,false);
+
+        QListView *l = w.findChild<QListView*>("listView");
+        if (l) {
+            l->setSelectionMode(QAbstractItemView::MultiSelection);
+        }
+        QTreeView *t = w.findChild<QTreeView*>();
+        if (t) {
+            t->setSelectionMode(QAbstractItemView::MultiSelection);
+        }
+        if (w.exec()!=QDialog::Accepted) {
+            return;
+        }
+        for (int i=0;i<w.selectedFiles().size();i++) {
+            QString newdir=w.selectedFiles().at(i);
+            if (!importLocations.contains(newdir)) {
+                importLocations.append(newdir);
+                addnew=true;
+            }
+        }
+        /*newdir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
         if (newdir.isEmpty()) {
             // inform the user or just abort?
             return;
-        }
-        if (!importLocations.contains(newdir)) {
-            importLocations.append(newdir);
-            addnew=true;
-        }
+        } */
     }
 
     int successful=false;
