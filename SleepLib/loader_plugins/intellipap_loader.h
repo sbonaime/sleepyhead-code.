@@ -1,3 +1,10 @@
+/*
+ Intellipap Loader Header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
+
 #ifndef INTELLIPAP_LOADER_H
 #define INTELLIPAP_LOADER_H
 

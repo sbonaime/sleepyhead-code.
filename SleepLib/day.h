@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  SleepLib Day Class Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef DAY_H
 #define DAY_H

@@ -1,3 +1,9 @@
+/*
+ Profile Select Header (Login Screen)
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef PROFILESELECT_H
 #define PROFILESELECT_H
 

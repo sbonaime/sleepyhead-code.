@@ -1,9 +1,9 @@
-/********************************************************************
+/*
  SleepLib Session Header
  This stuff contains the base calculation smarts
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #ifndef SESSION_H
 #define SESSION_H

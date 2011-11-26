@@ -1,3 +1,9 @@
+/*
+ Create New Profile Header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef NEWPROFILE_H
 #define NEWPROFILE_H
 

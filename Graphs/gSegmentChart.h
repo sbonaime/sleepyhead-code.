@@ -1,3 +1,9 @@
+/*
+ gSegmentChart Header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef GSEGMENTCHART_H
 #define GSEGMENTCHART_H
 

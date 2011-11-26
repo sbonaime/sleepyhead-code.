@@ -1,3 +1,9 @@
+/*
+ Report Module Header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef REPORT_H
 #define REPORT_H
 

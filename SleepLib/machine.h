@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  SleepLib Machine Class Header
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
- *********************************************************************/
+ */
 
 #ifndef MACHINE_H
 #define MACHINE_H

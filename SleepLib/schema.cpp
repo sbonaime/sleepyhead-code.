@@ -1,3 +1,9 @@
+/*
+ Schema Implementation (Parse Channel XML data)
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #include <QFile>
 #include <QDebug>
 #include <QDomDocument>

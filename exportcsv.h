@@ -1,3 +1,9 @@
+/*
+ ExportCSV module header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef EXPORTCSV_H
 #define EXPORTCSV_H
 

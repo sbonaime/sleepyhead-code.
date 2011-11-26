@@ -1,3 +1,9 @@
+/*
+ gGraphView Header
+ Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
+ License: GPL
+*/
+
 #ifndef GGRAPHVIEW_H
 #define GGRAPHVIEW_H
 
