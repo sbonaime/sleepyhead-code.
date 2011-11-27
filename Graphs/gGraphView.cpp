@@ -1867,9 +1867,11 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)
     qint64 m1=0,m2=0;
+    gGraph *g;
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->ResetBounds();
         if (!m_graphs[i]->min_x) continue;
+        g=m_graphs[i];
         if (!m1 || m_graphs[i]->min_x<m1) m1=m_graphs[i]->min_x;
         if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
     }
@@ -1880,7 +1882,9 @@ void gGraphView::ResetBounds(bool refresh) //short group)
             m_graphs[i]->SetMaxX(m2);
         }
     }
-    qint64 xx=m_graphs[0]->max_x - m_graphs[0]->min_x;
+    if (!g) g=m_graphs[0];
+
+    qint64 xx=g->max_x - g->min_x;
     double d=xx/86400000L;
     int h=xx/3600000L;
     int m=(xx/60000) % 60;
@@ -1998,7 +2002,6 @@ void gGraphView::paintGL()
 
     if (width()<=0) return;
     if (height()<=0) return;
-
 
     glClearColor(255,255,255,255);
     //glClearDepth(1);
@@ -2410,8 +2413,10 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
     gGraph *g;
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==0) {
-            g=m_graphs[i];
-            break;
+            if (!m_graphs[i]->isEmpty()) {
+                g=m_graphs[i];
+                break;
+            }
         }
     }
     if (!g) return;
