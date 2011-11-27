@@ -988,5 +988,30 @@ void Daily::on_evViewSlider_valueChanged(int value)
 {
     ui->evViewLCD->display(value);
     PROFILE["EventViewSize"]=value;
+    ui->evViewSlider->value();
+
+    {
+        if (ui->treeWidget->selectedItems().size()==0) return;
+        QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
+        if (!item) return;
+        QDateTime d;
+        if (!item->text(1).isEmpty()) {
+            d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
+            int winsize=PROFILE["EventViewSize"].toInt()*60;
+
+            double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
+            double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
+            if (st<(*GraphView)[0]->rmin_x) {
+                st=(*GraphView)[0]->rmin_x;
+                et=st+winsize*1000;
+            }
+            if (et>(*GraphView)[0]->rmax_x) {
+                et=(*GraphView)[0]->rmax_x;
+                st=et-winsize*1000;
+            }
+            GraphView->SetXBounds(st,et);
+        }
+
+    }
 }
 
