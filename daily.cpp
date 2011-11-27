@@ -4,9 +4,6 @@
  License: GPL
 */
 
-#include "daily.h"
-#include "ui_daily.h"
-
 #include <QTextCharFormat>
 #include <QPalette>
 #include <QTextBlock>
@@ -17,6 +14,9 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QScrollBar>
+
+#include "daily.h"
+#include "ui_daily.h"
 
 #include "common_gui.h"
 #include "SleepLib/profiles.h"
@@ -188,7 +188,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    RR->AddLayer(AddCPAP(new gLineChart("RespRate2",Qt::red,square)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
@@ -912,11 +911,8 @@ void Daily::RedrawGraphs()
     GraphView->updateGL();
 }
 
-void Daily::on_treeWidget_itemSelectionChanged()
+void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
-    if (ui->treeWidget->selectedItems().size()==0) return;
-    QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
-    if (!item) return;
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
@@ -924,17 +920,26 @@ void Daily::on_treeWidget_itemSelectionChanged()
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
-        if (st<(*GraphView)[0]->rmin_x) {
-            st=(*GraphView)[0]->rmin_x;
-            //et=st+winsize*1000;
+        gGraph *g=GraphView->findGraph("Event Flags");
+        if (!g) return;
+        if (st<g->rmin_x) {
+            st=g->rmin_x;
+            et=st+winsize*1000;
         }
-        if (et>(*GraphView)[0]->rmax_x) {
-            et=(*GraphView)[0]->rmax_x;
-            //st=et-winsize*1000;
+        if (et>g->rmax_x) {
+            et=g->rmax_x;
+            st=et-winsize*1000;
         }
-
         GraphView->SetXBounds(st,et);
     }
+}
+
+void Daily::on_treeWidget_itemSelectionChanged()
+{
+    if (ui->treeWidget->selectedItems().size()==0) return;
+    QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
+    if (!item) return;
+    on_treeWidget_itemClicked(item, 0);
 }
 
 void Daily::on_JournalNotesUnderline_clicked()
@@ -1004,10 +1009,10 @@ void Daily::on_evViewSlider_valueChanged(int value)
 {
     ui->evViewLCD->display(value);
     PROFILE["EventViewSize"]=value;
-    //ui->evViewSlider->value();
 
     int winsize=PROFILE["EventViewSize"].toInt()*60;
 
+    return;
     if (0) {
 /*        if (ui->treeWidget->selectedItems().size()==0) return;
         QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
@@ -1020,34 +1025,38 @@ void Daily::on_evViewSlider_valueChanged(int value)
             double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
             double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
 
-            if (st<(*GraphView)[0]->rmin_x) {
-                st=(*GraphView)[0]->rmin_x;
+            gGraph *g=GraphView->findGraph("Event Flags");
+            if (!g) return;
+            if (st<g->rmin_x) {
+                st=g->rmin_x;
                 et=st+winsize*1000;
             }
-            if (et>(*GraphView)[0]->rmax_x) {
-                et=(*GraphView)[0]->rmax_x;
+            if (et>g->rmax_x) {
+                et=g->rmax_x;
                 st=et-winsize*1000;
             }
             GraphView->SetXBounds(st,et);
         }
 */
     } else {
-        qint64 st=(*GraphView)[0]->min_x;
-        qint64 et=(*GraphView)[0]->max_x;
+        gGraph *g=GraphView->findGraph("Event Flags");
+        if (!g) return;
+
+        qint64 st=g->min_x;
+        qint64 et=g->max_x;
         qint64 len=et-st;
         qint64 d=st+len/2.0;
 
         st=d-(winsize/2)*1000;
         et=d+(winsize/2)*1000;
-        if (st<(*GraphView)[0]->rmin_x) {
-            st=(*GraphView)[0]->rmin_x;
+        if (st<g->rmin_x) {
+            st=g->rmin_x;
             et=st+winsize*1000;
         }
-        if (et>(*GraphView)[0]->rmax_x) {
-            et=(*GraphView)[0]->rmax_x;
+        if (et>g->rmax_x) {
+            et=g->rmax_x;
             st=et-winsize*1000;
         }
         GraphView->SetXBounds(st,et);
     }
 }
-

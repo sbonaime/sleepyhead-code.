@@ -585,6 +585,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
     int pos=0;
     int cnt=0;
     short delta;
+    int tdata;
     while (pos<size) {
         unsigned char code=buffer[pos++];
         if (code>0x12) {
@@ -721,7 +722,8 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             if (!Code[17]) {
                 if (!(Code[17]=session->AddEventList(PRS1_0E,EVL_Event))) return false;
             }
-            Code[17]->AddEvent(t,data[0]);
+            tdata=unsigned(data[1]) << 8 | unsigned(data[0]);
+            Code[17]->AddEvent(t,tdata);
             //qDebug() << hex << data[0] << data[1] << data[2];
             //session->AddEvent(new Event(t,cpapcode, 0, data, 3));
             //tt-=data[1]*1000;

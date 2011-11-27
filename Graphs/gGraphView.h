@@ -404,7 +404,7 @@ public:
     void SaveSettings(QString title);
     bool LoadSettings(QString title);
 
-    int findGraph(QString name);
+    gGraph *findGraph(QString name);
 
     //bool hasGraphs() { return m_graphs.size()>0; }
 

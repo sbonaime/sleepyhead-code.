@@ -68,6 +68,8 @@ private slots:
     void on_Link_clicked(const QUrl &url);
     void on_evViewSlider_valueChanged(int value);
 
+    void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
+
 protected:
 
 private:

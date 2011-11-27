@@ -2585,3 +2585,9 @@ bool gGraphView::LoadSettings(QString title)
     return true;
 }
 
+gGraph *gGraphView::findGraph(QString name)
+{
+    QHash<QString,gGraph*>::iterator i=m_graphsbytitle.find(name);
+    if (i==m_graphsbytitle.end()) return NULL;
+    return i.value();
+}
