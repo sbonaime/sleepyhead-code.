@@ -495,6 +495,7 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
         }
 
     }
+    gv->updateScale();
 //    qDebug() << name << checked;
 }
 
@@ -621,6 +622,7 @@ void PreferencesDialog::on_resetGraphButton_clicked()
                     g->setRecMinY(0);
                     g->setVisible(true);
                 }
+                gv[j]->updateScale();
             }
         }
         resetGraphModel();

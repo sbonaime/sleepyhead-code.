@@ -2581,6 +2581,7 @@ bool gGraphView::LoadSettings(QString title)
     }
 
     f.close();
+    updateScale();
     return true;
 }
 
