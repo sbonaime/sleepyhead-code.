@@ -917,6 +917,15 @@ void Daily::on_treeWidget_itemSelectionChanged()
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
+        if (st<(*GraphView)[0]->rmin_x) {
+            st=(*GraphView)[0]->rmin_x;
+            //et=st+winsize*1000;
+        }
+        if (et>(*GraphView)[0]->rmax_x) {
+            et=(*GraphView)[0]->rmax_x;
+            //st=et-winsize*1000;
+        }
+
         GraphView->SetXBounds(st,et);
     }
 }
@@ -988,19 +997,22 @@ void Daily::on_evViewSlider_valueChanged(int value)
 {
     ui->evViewLCD->display(value);
     PROFILE["EventViewSize"]=value;
-    ui->evViewSlider->value();
+    //ui->evViewSlider->value();
 
-    {
-        if (ui->treeWidget->selectedItems().size()==0) return;
+    int winsize=PROFILE["EventViewSize"].toInt()*60;
+
+    if (0) {
+/*        if (ui->treeWidget->selectedItems().size()==0) return;
         QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
         if (!item) return;
         QDateTime d;
         if (!item->text(1).isEmpty()) {
             d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-            int winsize=PROFILE["EventViewSize"].toInt()*60;
+
 
             double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
             double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
+
             if (st<(*GraphView)[0]->rmin_x) {
                 st=(*GraphView)[0]->rmin_x;
                 et=st+winsize*1000;
@@ -1011,7 +1023,24 @@ void Daily::on_evViewSlider_valueChanged(int value)
             }
             GraphView->SetXBounds(st,et);
         }
+*/
+    } else {
+        qint64 st=(*GraphView)[0]->min_x;
+        qint64 et=(*GraphView)[0]->max_x;
+        qint64 len=et-st;
+        qint64 d=st+len/2.0;
 
+        st=d-(winsize/2)*1000;
+        et=d+(winsize/2)*1000;
+        if (st<(*GraphView)[0]->rmin_x) {
+            st=(*GraphView)[0]->rmin_x;
+            et=st+winsize*1000;
+        }
+        if (et>(*GraphView)[0]->rmax_x) {
+            et=(*GraphView)[0]->rmax_x;
+            st=et-winsize*1000;
+        }
+        GraphView->SetXBounds(st,et);
     }
 }
 
