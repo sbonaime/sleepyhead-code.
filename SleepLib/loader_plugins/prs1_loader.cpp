@@ -1278,8 +1278,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         }
         session->updateLast(start+qint64(wdur[i])*1000L);
     }
-   // if (!session->eventlist.contains(CPAP_RespRate)) // only ASV machines have it..
+    if (num_signals<2) {
         CalcRespiratoryRate(session);
+    }
     return true;
 }
 // Generate RespiratoryRate graph
@@ -1290,9 +1291,7 @@ void PRS1Loader::CalcRespiratoryRate(Session *session)
         flow=session->eventlist[CPAP_FlowRate][ws];
         if (flow->count() > 5) {
             rr=new EventList(EVL_Event);//EVL_Waveform,1,0,0,0,60000);
-            ChannelID resp="RespRate2";
-            //if (session->eventlist.contains(resp)) resp+="2";
-            session->eventlist[resp].push_back(rr);
+            session->eventlist[CPAP_RespRate].push_back(rr);
             filterFlow(flow,rr);
         }
     }
