@@ -897,6 +897,9 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
     m_forceMinY=m_forceMaxY=false;
+    rec_miny=rec_maxy=0;
+    m_recMinY=true;
+    m_recMaxY=false;
 }
 gGraph::~gGraph()
 {
@@ -1597,33 +1600,43 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
     int m;
+    if (m_recMinY) {
+        if (miny>rec_miny)
+            miny=rec_miny;
+    }
+    if (m_recMaxY) {
+        if (maxy<rec_maxy) {
+           maxy=rec_maxy;
+           return;
+        }
+    }
     if (maxy>500) {
         m=ceil(maxy/100.0);
         maxy=m*100;
-        m=floor(miny/100.0);
-        miny=m*100;
+        //m=floor(miny/100.0);
+        //miny=m*100;
     } else if (maxy>150) {
         m=ceil(maxy/50.0);
         maxy=m*50;
-        m=floor(miny/50.0);
-        miny=m*50;
+        //m=floor(miny/50.0);
+        //miny=m*50;
     } else if (maxy>100) {
         m=ceil(maxy/20.0);
         maxy=m*20;
-        m=floor(miny/20.0);
-        miny=m*20;
+        //m=floor(miny/20.0);
+        //miny=m*20;
     } else if (maxy>40) {
         m=ceil(maxy/10.0);
         m++;
         maxy=m*10;
-        m=floor(miny/10.0);
-        if(m<0) m--;
-        miny=m*10;
+        //m=floor(miny/10.0);
+        //if(m<0) m--;
+        //miny=m*10;
     } else if (maxy>=5) {
         m=ceil(maxy/5.0)+1;
         maxy=m*5;
-        m=floor(miny/5.0);
-        miny=m*5;
+        //m=floor(miny/5.0);
+        //miny=m*5;
     } else {
         if (maxy==miny && maxy==0) {
             maxy=0.5;

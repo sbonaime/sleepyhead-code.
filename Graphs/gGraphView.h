@@ -309,11 +309,13 @@ public:
     virtual void SetMaxY(EventDataType v);
     virtual void forceMinY(EventDataType v) { f_miny=v; m_forceMinY=true; }
     virtual void forceMaxY(EventDataType v) { f_maxy=v; m_forceMaxY=true; }
+    virtual void recMinY(EventDataType v) { rec_miny=v; m_recMinY=true; }
+    virtual void recMaxY(EventDataType v) { rec_maxy=v; m_recMaxY=true; }
 
     void resize(int width, int height);      // margin recalcs..
 
     qint64 max_x,min_x,rmax_x,rmin_x;
-    EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy;
+    EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy, rec_miny, rec_maxy;
     void unforceMinY() { m_forceMinY=false; }
     void unforceMaxY() { m_forceMaxY=false; }
     bool blockZoom() { return m_blockzoom; }
@@ -372,6 +374,7 @@ protected:
     Day * m_day;
     GLBuffer * m_quad;
     bool m_forceMinY,m_forceMaxY;
+    bool m_recMinY,m_recMaxY;
 signals:
 
 protected slots:

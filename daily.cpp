@@ -188,7 +188,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    RR->AddLayer(AddCPAP(new gLineChart("RespRate2",Qt::red,false)));
+    RR->AddLayer(AddCPAP(new gLineChart("RespRate2",Qt::red,square)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
@@ -205,8 +205,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
     SPO2->forceMaxY(100);
-    SPO2->forceMinY(70);
+    SPO2->forceMinY(75);
     PULSE->forceMinY(40);
+
+    LEAK->recMinY(0);
+    LEAK->recMaxY(80);
+    PRD->recMinY(4.0);
+    PRD->recMaxY(15.0);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
         graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);

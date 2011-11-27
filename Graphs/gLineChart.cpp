@@ -492,25 +492,35 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType yy=maxy-miny;
     EventDataType ymult=EventDataType(height-3)/yy;   // time to pixel conversion multiplier
 
-    bool first=false;
+    bool first=true;
     double px,py;
     double lastpx,lastpy;
     double top1=top+height;
+    bool done=false;
     for (int i=0;i<m_time.size();i++) {
         qint64 ti=m_time[i];
         EventDataType v=m_data[i];
-        if ((ti>=minx) && (ti<maxx)) {
+        if (ti<minx) continue;
+        if (ti>maxx) done=true;
+        if (first) {
+            if (i>0) {
+                ti=m_time[i-1];
+                v=m_data[i-1];
+                i--;
+            }
             px=left+(double(ti-minx)*xmult);
             py=top1-(double(v-miny)*ymult);
-            if (!first) {
-                first=true;
-            } else {
-                lines->add(px,py,lastpx,lastpy,m_color);
-            }
+            first=false;
+        } else {
+           px=left+(double(ti-minx)*xmult);
+           py=top1-(double(v-miny)*ymult);
+           lines->add(px,py,lastpx,lastpy,m_color);
         }
         lastpx=px;
         lastpy=py;
+        if (done) break;
     }
+    lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
 }
 
 void AHIChart::SetDay(Day *d)

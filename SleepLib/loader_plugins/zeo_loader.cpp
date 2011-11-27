@@ -13,7 +13,7 @@ License: GPL
 //********************************************************************************************
 
 
-//#include <wx/log.h>
+#include <QDir>
 #include "zeo_loader.h"
 #include "SleepLib/machine.h"
 
@@ -30,6 +30,24 @@ int ZEOLoader::Open(QString & path,Profile *profile)
 {
     Q_UNUSED(path)
     Q_UNUSED(profile)
+
+    QString newpath;
+
+    QString dirtag="zeo";
+    if (path.toLower().endsWith(QDir::separator()+dirtag)) {
+        return 0;
+        //newpath=path;
+    } else {
+        newpath=path+QDir::separator()+dirtag.toUpper();
+    }
+
+    QString filename;
+
+    if (path.toLower().endsWith(".csv")) {
+
+    } else if (path.toLower().endsWith(".dat")) {
+        // not supported.
+    }
     // ZEO folder structure detection stuff here.
 
     return 0; // number of machines affected
