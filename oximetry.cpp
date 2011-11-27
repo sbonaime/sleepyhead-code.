@@ -628,10 +628,12 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     ui->RunButton->setChecked(false);
 
     ui->saveButton->setEnabled(false);
+    GraphView->LoadSettings("Oximetry");
 }
 
 Oximetry::~Oximetry()
 {
+    GraphView->SaveSettings("Oximetry");
     delete ui;
 }
 
@@ -741,12 +743,12 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PULSE->SetMinX(f);
         SPO2->SetMinX(f);
 
-        PLETHY->forceMinY(0);
-        PLETHY->forceMaxY(128);
-        PULSE->forceMinY(30);
-        PULSE->forceMaxY(180);
-        SPO2->forceMinY(50);
-        SPO2->forceMaxY(100);
+        PLETHY->setForceMinY(0);
+        PLETHY->setForceMaxY(128);
+        PULSE->setForceMinY(30);
+        PULSE->setForceMaxY(180);
+        SPO2->setForceMinY(50);
+        SPO2->setForceMaxY(100);
 
         connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
         connect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
@@ -899,12 +901,12 @@ void Oximetry::on_import_complete(Session * session)
     PULSE->SetMaxX(l);
     SPO2->SetMaxX(l);
 
-    PLETHY->forceMinY(0);
-    PLETHY->forceMaxY(128);
-    PULSE->forceMinY(30);
-    PULSE->forceMaxY(180);
-    SPO2->forceMinY(50);
-    SPO2->forceMaxY(100);
+    PLETHY->setForceMinY(0);
+    PLETHY->setForceMaxY(128);
+    PULSE->setForceMinY(30);
+    PULSE->setForceMaxY(180);
+    SPO2->setForceMinY(50);
+    SPO2->setForceMaxY(100);
 
     PULSE->setDay(day);
     SPO2->setDay(day);

@@ -108,13 +108,13 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG);
     set->addSlice("FlexSet",QColor("red"),ST_SETWAVG);
     //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
-    SET->forceMinY(0);
-    SET->forceMaxY(5);
+    SET->setRecMinY(0);
+    SET->setRecMaxY(5);
     SET->AddLayer(set);
 
     pr=new SummaryChart("cmH2O",GT_LINE);
-    PR->forceMinY(4.0);
-    //PR->forceMaxY(12.0);
+    //PR->setRecMinY(4.0);
+    //PR->setRecMaxY(12.0);
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
@@ -135,9 +135,12 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // <--- The code to the previous marker is crap
 
     report=NULL;
+
+    GraphView->LoadSettings("Overview");
 }
 Overview::~Overview()
 {
+    GraphView->SaveSettings("Overview");
     disconnect(this,SLOT(dateStart_currentPageChanged(int,int)));
     disconnect(this,SLOT(dateEnd_currentPageChanged(int,int)));
     if (report) {

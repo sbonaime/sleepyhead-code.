@@ -10,6 +10,7 @@
 #include "SleepLib/profiles.h"
 #include <QTimer>
 #include <QLabel>
+#include <QDir>
 
 #ifdef Q_WS_MAC
 #define USE_RENDERTEXT
@@ -896,10 +897,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
     m_quad=new GLShortBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
-    m_forceMinY=m_forceMaxY=false;
+    m_enforceMinY=m_enforceMaxY=false;
     rec_miny=rec_maxy=0;
-    m_recMinY=true;
-    m_recMaxY=false;
 }
 gGraph::~gGraph()
 {
@@ -1507,7 +1506,7 @@ EventDataType gGraph::MinY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    if (m_forceMinY) return rmin_y=f_miny;
+    if (m_enforceMinY) return rmin_y=f_miny;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Miny();
@@ -1526,7 +1525,7 @@ EventDataType gGraph::MaxY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    if (m_forceMaxY) return rmax_y=f_maxy;
+    if (m_enforceMaxY) return rmax_y=f_maxy;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
         if ((*l)->isEmpty()) continue;
         tmp=(*l)->Maxy();
@@ -1599,17 +1598,24 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
-    int m;
-    if (m_recMinY) {
-        if (miny>rec_miny)
-            miny=rec_miny;
+    int m,t;
+    if (rec_miny!=rec_maxy) {
+        miny=rec_miny;
+        maxy=rec_maxy;
+        return;
     }
-    if (m_recMaxY) {
-        if (maxy<rec_maxy) {
-           maxy=rec_maxy;
-           return;
-        }
-    }
+    if (maxy==miny) {
+        m=ceil(maxy/2.0);
+        t=m*2;
+        if (maxy==t) t+=2;
+        maxy=t;
+
+        m=floor(miny/2.0);
+        t=m*2;
+        if (miny==t) t-=2;
+        miny=t;
+        return;
+    } else
     if (maxy>500) {
         m=ceil(maxy/100.0);
         maxy=m*100;
@@ -1633,10 +1639,13 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         //if(m<0) m--;
         //miny=m*10;
     } else if (maxy>=5) {
+        if (maxy==miny) {
+            int i=maxy;
+        }
         m=ceil(maxy/5.0)+1;
         maxy=m*5;
-        //m=floor(miny/5.0);
-        //miny=m*5;
+        m=floor(miny/5.0);
+        miny=m*5;
     } else {
         if (maxy==miny && maxy==0) {
             maxy=0.5;
@@ -1649,10 +1658,9 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
             miny/=4.0;
         }
     }
-    //if (m_forceMinY && miny<f_miny) miny=f_miny;
-    //if (m_forceMaxY && maxy>f_maxy) maxy=f_maxy;
-    if (m_forceMinY) miny=f_miny;
-    if (m_forceMaxY) maxy=f_maxy;
+
+    if (m_enforceMinY) { miny=f_miny; }
+    if (m_enforceMaxY) { maxy=f_maxy; }
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
@@ -1801,7 +1809,11 @@ void gGraphView::addGraph(gGraph *g,short group)
     if (!m_graphs.contains(g)) {
         g->setGroup(group);
         m_graphs.push_back(g);
-
+        if (!m_graphsbytitle.contains(g->title())) {
+            m_graphsbytitle[g->title()]=g;
+        } else {
+            qDebug() << "Can't have to graphs with the same title in one GraphView!!";
+        }
        // updateScrollBar();
     }
 }
@@ -2482,3 +2494,93 @@ void MyScrollBar::SendWheelEvent(QWheelEvent * e)
 {
     wheelEvent(e);
 }
+
+const quint32 gvmagic=0x41756728;
+const quint16 gvversion=0;
+
+void gGraphView::SaveSettings(QString title)
+{
+    QString filename=PROFILE.Get("{DataFolder}")+QDir::separator()+title.toLower()+".shg";
+    QFile f(filename);
+    f.open(QFile::WriteOnly);
+    QDataStream out(&f);
+    out.setVersion(QDataStream::Qt_4_6);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << (quint32)gvmagic;
+    out << (quint16)gvversion;
+
+    out << (qint16)size();
+    for (qint16 i=0;i<size();i++) {
+        out << m_graphs[i]->title();
+        out << m_graphs[i]->height();
+        out << m_graphs[i]->visible();
+        out << m_graphs[i]->RecMinY();
+        out << m_graphs[i]->RecMaxY();
+    }
+
+    f.close();
+}
+
+bool gGraphView::LoadSettings(QString title)
+{
+    QString filename=PROFILE.Get("{DataFolder}")+QDir::separator()+title.toLower()+".shg";
+    QFile f(filename);
+    if (!f.exists()) return false;
+
+    f.open(QFile::ReadOnly);
+    QDataStream in(&f);
+    in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    quint32 t1;
+    quint16 t2;
+
+    in >> t1;
+    if (t1!=gvmagic) {
+        qDebug() << "gGraphView" << title << "settings magic doesn't match" << t1 << gvmagic;
+        return false;
+    }
+    in >> t2;
+    if (t2!=gvversion) {
+        qDebug() << "gGraphView" << title << "version doesn't match";
+        return false;
+    }
+
+    qint16 siz;
+    in >> siz;
+    QString name;
+    float hght;
+    bool vis;
+    EventDataType recminy,recmaxy;
+
+    QVector<gGraph *> neworder;
+    QHash<QString,gGraph *>::iterator gi;
+
+    for (int i=0;i<siz;i++) {
+        in >> name;
+        in >> hght;
+        in >> vis;
+        in >> recminy;
+        in >> recmaxy;
+        gi=m_graphsbytitle.find(name);
+        if (gi==m_graphsbytitle.end()) {
+            qDebug() << "Graph" << name << "has been renamed or removed";
+        } else {
+            gGraph *g=gi.value();
+            neworder.push_back(g);
+            g->setHeight(hght);
+            g->setVisible(vis);
+            g->setRecMinY(recminy);
+            g->setRecMaxY(recmaxy);
+        }
+    }
+
+    if (neworder.size()==m_graphs.size()) {
+        m_graphs=neworder;
+    }
+
+    f.close();
+    return true;
+}
+

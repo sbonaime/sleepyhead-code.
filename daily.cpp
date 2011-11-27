@@ -89,8 +89,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     TE=new gGraph(GraphView,"Te",default_height);
     TI=new gGraph(GraphView,"Ti",default_height);
     TgMV=new gGraph(GraphView,"TgMV",default_height);
-    INTPULSE=new gGraph(GraphView,"Pulse",default_height,1);
-    INTSPO2=new gGraph(GraphView,"SPO2",default_height,1);
+    INTPULSE=new gGraph(GraphView,"R-Pulse",default_height,1);
+    INTSPO2=new gGraph(GraphView,"R-SPO2",default_height,1);
     PULSE=new gGraph(GraphView,"Pulse",default_height,1);
     SPO2=new gGraph(GraphView,"SPO2",default_height,1);
     PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
@@ -204,14 +204,17 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,square)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
-    SPO2->forceMaxY(100);
-    SPO2->forceMinY(75);
-    PULSE->forceMinY(40);
+    //FRW->setRecMinY(-120);
+    //FRW->setRecMaxY(0);
 
-    LEAK->recMinY(0);
-    LEAK->recMaxY(80);
-    PRD->recMinY(4.0);
-    PRD->recMaxY(15.0);
+    /*SPO2->setRecMaxY(100);
+    SPO2->setRecMinY(75);
+    PULSE->setRecMinY(40);
+
+    LEAK->setRecMinY(0);
+    LEAK->setRecMaxY(80);
+    PRD->setRecMinY(4.0);
+    PRD->setRecMaxY(15.0); */
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
         graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -240,12 +243,16 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->evViewSlider->setValue(ews);
     ui->evViewLCD->display(ews);
 
+    GraphView->LoadSettings("Daily");
+
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
 }
 
 Daily::~Daily()
 {
+    GraphView->SaveSettings("Daily");
+
     disconnect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(on_Link_clicked(QUrl)));
     // Save any last minute changes..
     if (previous_date.isValid())

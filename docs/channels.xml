@@ -48,7 +48,7 @@ One id code per item
   <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
   <channel id="0x1116" class="data" name="LeakFlag" details="Leak Event" label="L" unit="" color="dark blue"/>
   <channel id="0x1117" class="data" name="NRI" details="Non Responding Event" label="NRI" unit="" color="orange"/>
-  <channel id="0x1118" class="data" name="EP" details="Exhale Puff" label="EP" unit="" color="dark purple"/>
+  <channel id="0x1118" class="data" name="EP" details="Exhale Puff" label="EP" unit="" color="dark magenta"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="" color="black"/>

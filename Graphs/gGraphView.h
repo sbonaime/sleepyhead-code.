@@ -307,17 +307,21 @@ public:
     virtual void SetMaxX(qint64 v);
     virtual void SetMinY(EventDataType v);
     virtual void SetMaxY(EventDataType v);
-    virtual void forceMinY(EventDataType v) { f_miny=v; m_forceMinY=true; }
-    virtual void forceMaxY(EventDataType v) { f_maxy=v; m_forceMaxY=true; }
-    virtual void recMinY(EventDataType v) { rec_miny=v; m_recMinY=true; }
-    virtual void recMaxY(EventDataType v) { rec_maxy=v; m_recMaxY=true; }
+    virtual void setForceMinY(EventDataType v) { f_miny=v; m_enforceMinY=true; }
+    virtual void setForceMaxY(EventDataType v) { f_maxy=v; m_enforceMaxY=true; }
+    virtual EventDataType forceMinY() { return rec_miny; }
+    virtual EventDataType forceMaxY() { return rec_maxy; }
+    virtual void setRecMinY(EventDataType v) { rec_miny=v; }
+    virtual void setRecMaxY(EventDataType v) { rec_maxy=v; }
+    virtual EventDataType RecMinY() { return rec_miny; }
+    virtual EventDataType RecMaxY() { return rec_maxy; }
 
     void resize(int width, int height);      // margin recalcs..
 
     qint64 max_x,min_x,rmax_x,rmin_x;
     EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy, rec_miny, rec_maxy;
-    void unforceMinY() { m_forceMinY=false; }
-    void unforceMaxY() { m_forceMaxY=false; }
+    void setEnforceMinY(bool b) { m_enforceMinY=b; }
+    void setEnforceMaxY(bool b) { m_enforceMaxY=b; }
     bool blockZoom() { return m_blockzoom; }
     void setBlockZoom(bool b) { m_blockzoom=b; }
     int flipY(int y); // flip GL coordinates
@@ -373,8 +377,7 @@ protected:
     short m_lastx23;
     Day * m_day;
     GLBuffer * m_quad;
-    bool m_forceMinY,m_forceMaxY;
-    bool m_recMinY,m_recMaxY;
+    bool m_enforceMinY,m_enforceMaxY;
 signals:
 
 protected slots:
@@ -398,6 +401,10 @@ public:
 
     void ResetBounds(bool refresh=true); //short group=0);
     void SetXBounds(qint64 minx, qint64 maxx, short group=0,bool refresh=true);
+    void SaveSettings(QString title);
+    bool LoadSettings(QString title);
+
+    int findGraph(QString name);
 
     //bool hasGraphs() { return m_graphs.size()>0; }
 
@@ -468,6 +475,7 @@ protected:
 
     gGraphView *m_shared;       // convenient link to daily's graphs.
     QVector<gGraph *> m_graphs;
+    QHash<QString,gGraph*> m_graphsbytitle;
 
     int m_offsetY,m_offsetX;          // Scroll Offsets
     float m_scaleY;

@@ -474,7 +474,7 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
             ui->graphView->update();
         }  else {
             if ((val < graph->rec_maxy) || (val==0)) {
-                graph->recMinY(val);
+                graph->setRecMinY(val);
             } else {
                 graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
                 ui->graphView->update();
@@ -487,7 +487,7 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
             ui->graphView->update();
         }  else {
             if ((val > graph->rec_miny) || (val==0)) {
-                graph->recMaxY(val);
+                graph->setRecMaxY(val);
             } else {
                 graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
                 ui->graphView->update();
@@ -617,8 +617,8 @@ void PreferencesDialog::on_resetGraphButton_clicked()
             if (gv[j]!=NULL) {
                 for (int i=0;i<gv[j]->size();i++) {
                     gGraph *g=(*(gv[j]))[i];
-                    g->recMaxY(0);
-                    g->recMinY(0);
+                    g->setRecMaxY(0);
+                    g->setRecMinY(0);
                     g->setVisible(true);
                 }
             }
