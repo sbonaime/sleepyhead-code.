@@ -188,6 +188,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
+    RR->AddLayer(AddCPAP(new gLineChart("RespRate2",Qt::red,false)));
     RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
     TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
@@ -465,7 +466,7 @@ void Daily::Load(QDate date)
     "</style>"
     "</head>"
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<table cellspacing=0 cellpadding=2 border=0 width='100%'>\n";
+    "<table cellspacing=0 cellpadding=1 border=0 width='100%'>\n";
     QString tmp;
     //const int gwwidth=240;
     //const int gwheight=100;
@@ -554,8 +555,8 @@ void Daily::Load(QDate date)
         if (cpap->machine->GetClass()!="PRS1") {
             cs="4 width='100%' align=center>";
         } else cs="2 width='50%'>";
-        html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-        "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td  bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
+        html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
+        "<tr><td align='right' bgcolor='#F88017'><b><font color='black'>"+tr("AHI")+"</font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
         "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event=Hypopnea'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
         if (cpap->machine->GetClass()=="ResMed") {
             html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event=Apnea'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
@@ -565,15 +566,15 @@ void Daily::Load(QDate date)
         "</table></td>";
 
         if (cpap->machine->GetClass()=="PRS1") {
-            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event=Respiratory Effort'>"+tr("RERA")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event=Flow Limit'>"+tr("FlowLimit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+            html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
+            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event=Respiratory Effort'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event=Flow Limit'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
             "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event=Vibratory snore'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
             "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event=Cheyne Stokes'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
             "</table></td>";
         } else if (cpap->machine->GetClass()=="Intellipap") {
             html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=NRI'>"+tr("NRI")+"</a></b></td><td bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=NRI'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
             "<tr><td align='right' bgcolor='#404040'><b><font color='white'><a href='event=Leak'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
             "<tr><td align='right' bgcolor='#ff4040'><b><a href='event=VSnore'>"+tr("Vibratory Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
             "<tr><td align='right' bgcolor='#80ff80'><b><a href='event=ExP'>"+tr("Exhalation Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"%</td></tr>\n"

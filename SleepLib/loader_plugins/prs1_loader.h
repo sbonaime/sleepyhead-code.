@@ -59,9 +59,9 @@ protected:
     bool OpenWaveforms(Session *session,QString filename);
     bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp);
     bool Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp);
-
+    void CalcRespiratoryRate(Session *);
+    void filterFlow(EventList *in, EventList *out);
     unsigned char * m_buffer;
 };
-
 
 #endif // PRS1LOADER_H

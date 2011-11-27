@@ -38,11 +38,7 @@ extern QProgressBar *qprogress;
 
 QHash<int,QString> ModelMap;
 
-const quint16 CRC16_INIT_VALUE=0xffff;
-const quint16 CRC16_XOR_VALUE=0x0000;
-
 typedef quint16 crc_t;
-//quint16 crctable[256];
 
 static const crc_t crc_table[256] = {
     0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -1166,9 +1162,9 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
     //EventList *FlowData=EventList(CPAP_FlowRate, EVL_Waveform,1,0,-128,128);
     //EventList *MaskData=EventList(CPAP_MaskPressure, EVL_Waveform,1,0,-128,128);
 
-    QString FlowRate="FlowRate";
-    QString MaskPressure="MaskPressure";
-    QString wc[2]={FlowRate,MaskPressure};
+    //QString FlowRate=CPAP_FlowRate;
+    //QString MaskPressure="MaskPressure";
+    QString wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
     do {
         timestamp=m_buffer[pos+0xb] | m_buffer[pos+0xc] << 8 | m_buffer[pos+0xd] << 16 | m_buffer[pos+0x0e] << 24;
         register unsigned char sum8=0;
@@ -1221,10 +1217,10 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
                     else {
                         a->AddWaveform(qint64(start)*1000L,(char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
                     }
-                    if (wc[i]==FlowRate) {
+                    if (wc[i]==CPAP_FlowRate) {
                         a->setMax(120);
                         a->setMin(-120);
-                    } else if (wc[i]==MaskPressure) {
+                    } else if (wc[i]==CPAP_MaskPressure) {
                     /*    int v=ceil(a->max()/5);
                         a->setMax(v*5);
                         v=floor(a->min()/5);
@@ -1275,14 +1271,210 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
         else {
             a->AddWaveform(qint64(start)*1000L,(char *)waveform[i],wlength[i],qint64(wdur[i])*1000L);
         }
-        if (wc[i]==FlowRate) {
+        if (wc[i]==CPAP_FlowRate) {
             a->setMax(120);
             a->setMin(-120);
-        } else if (wc[i]==MaskPressure) {
+        } else if (wc[i]==CPAP_MaskPressure) {
         }
         session->updateLast(start+qint64(wdur[i])*1000L);
     }
+   // if (!session->eventlist.contains(CPAP_RespRate)) // only ASV machines have it..
+        CalcRespiratoryRate(session);
     return true;
+}
+// Generate RespiratoryRate graph
+void PRS1Loader::CalcRespiratoryRate(Session *session)
+{
+    EventList *flow, *rr;
+    for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
+        flow=session->eventlist[CPAP_FlowRate][ws];
+        if (flow->count() > 5) {
+            rr=new EventList(EVL_Event);//EVL_Waveform,1,0,0,0,60000);
+            ChannelID resp="RespRate";
+            if (session->eventlist.contains(resp)) resp+="2";
+            session->eventlist[resp].push_back(rr);
+            filterFlow(flow,rr);
+        }
+    }
+}
+
+void PRS1Loader::filterFlow(EventList *in, EventList *out)
+{
+    int size=in->count();
+    EventDataType *stage1=new EventDataType [size];
+    EventDataType *stage2=new EventDataType [size];
+
+    QVector<EventDataType> med;
+    med.reserve(8);
+
+    EventDataType r;
+    int cnt;
+
+    // Anti-Alias the flow waveform to get rid of jagged edges.
+    EventDataType c;
+    double avg;
+    int i;
+
+
+    /*i=2;
+    stage1[0]=in->data(0);
+    stage1[1]=in->data(1);
+    //stage1[2]=in->data(2);
+    for (;i<size-2;i++) {
+        med.clear();
+        for (quint32 k=0;k<5;k++) {
+            med.push_back(in->data(i-2+k));
+        }
+        qSort(med);
+        stage1[i]=med[3];
+    }
+    stage1[i]=in->data(i);
+    i++;
+    stage1[i]=in->data(i); */
+
+    //i++;
+    //stage1[i]=in->data(i);
+
+    stage2[0]=stage1[0];
+    stage2[1]=stage1[1];
+    stage2[2]=stage1[2];
+
+    i=3;
+    for (;i<size-3;i++) {
+        cnt=0;
+        r=0;
+        for (quint32 k=0;k<7;k++) {
+            //r+=stage1[i-3+k];
+            r+=in->data(i-3+k);
+            cnt++;
+        }
+        c=r/float(cnt);
+        stage2[i]=c;
+    }
+    stage2[i]=in->data(i);
+    i++;
+    stage2[i]=in->data(i);
+    i++;
+    stage2[i]=in->data(i);
+    //i++;
+    //stage2[i]=in->data(i);
+
+    float weight=0.6;
+    //stage2[0]=in->data(0);
+    stage1[0]=stage2[0];
+    for (int i=1;i<size;i++) {
+        //stage2[i]=in->data(i);
+        stage1[i]=weight*stage2[i]+(1.0-weight)*stage1[i-1];
+    }
+
+
+    qint64 time=in->first();
+    qint64 u1=0,u2=0,len,l1=0,l2=0;
+    EventDataType lastc=0,thresh=0;
+    QVector<int> breaths;
+    QVector<qint64> breaths_start;
+
+    for (i=0;i<size;i++) {
+        c=stage1[i];
+        if (c>thresh) {
+            if (lastc<=thresh) {
+                u2=u1;
+                u1=time;
+                if (u2>0) {
+                    len=abs(u2-u1);
+                    //if (len>1500) {
+                        breaths_start.push_back(time);
+                        breaths.push_back(len);
+                    //}
+                }
+            }
+        } else {
+            if (lastc>thresh) {
+                l2=l1;
+                l1=time;
+                if (l2>0) {
+                    len=abs(l2-l1);
+                    //if (len>1500) {
+                    //    breaths2_start.push_back(time);
+                    //  breaths2.push_back(len);
+                    //}
+                }
+            }
+
+        }
+        lastc=c;
+        time+=200;
+    }
+
+    qint64 window=60000;
+    qint64 t1=in->first()-window/2;
+    qint64 t2=in->first()+window/2;
+    qint64 t;
+    EventDataType br,q;
+    int z=0;
+    int l;
+
+    QVector<int> breaths2;
+    QVector<qint64> breaths2_start;
+
+    int fir=0;
+    do {
+        br=0;
+        bool first=true;
+        bool cont=false;
+        for (int i=fir;i<breaths.size();i++) {
+            t=breaths_start[i];
+            l=breaths[i];
+            if (t+l < t1) continue;
+            if (t > t2) break;
+
+            if (first) {
+                first=false;
+                fir=i;
+            }
+            //q=1;
+            if (t<t1) {
+                // move to start of previous breath
+                t1=breaths_start[++i];
+                t2=t1+window;
+                fir=i;
+                cont=true;
+                break;
+                //q=(t+l)-t1;
+                //br+=(1.0/double(l))*double(q);
+
+            } else if (t+l>t2) {
+                q=t2-t;
+                br+=(1.0/double(l))*double(q);
+                continue;
+            } else
+            br+=1.0;
+        }
+        if (cont) continue;
+        breaths2.push_back(br);
+        breaths2_start.push_back(t1+window/2);
+        //out->AddEvent(t,br);
+        //stage2[z++]=br;
+
+        t1+=window/2.0;
+        t2+=window/2.0;
+    } while (t2<in->last());
+
+
+    for (int i=1;i<breaths2.size()-2;i++) {
+        t=breaths2_start[i];
+        med.clear();
+        for (int j=0;j<4;j++)  {
+            med.push_back(breaths2[i+j-1]);
+        }
+        qSort(med);
+        br=med[2];
+        out->AddEvent(t,br);
+    }
+
+    delete [] stage2;
+    delete [] stage1;
+
 }
 
 void InitModelMap()
@@ -1304,4 +1496,6 @@ void PRS1Loader::Register()
     InitModelMap();
     initialized=true;
 }
+
+
 

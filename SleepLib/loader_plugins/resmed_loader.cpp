@@ -806,13 +806,14 @@ void ResInitModelMap()
     RMS9ModelMap[36006]="ResMed S9 VPAP Auto";
     RMS9ModelMap[36007]="ResMed S9 VPAP Adapt";
     RMS9ModelMap[36008]="ResMed S9 VPAP ST";
-// S8 Series
+    /* S8 Series
     RMS9ModelMap[33007]="ResMed S8 Escape";
     RMS9ModelMap[33039]="ResMed S8 Elite II";
     RMS9ModelMap[33051]="ResMed S8 Escape II";
     RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
     RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
     RMS9ModelMap[33129]="ResMed S8 AutoSet II";
+    */
 
     resmed_codes[CPAP_FlowRate].push_back("Flow");
     resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
