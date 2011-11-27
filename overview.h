@@ -29,6 +29,7 @@ public:
     explicit Overview(QWidget *parent, gGraphView *shared=NULL);
     ~Overview();
 
+    gGraphView *graphView() { return GraphView; }
     void ReloadGraphs();
     void ResetGraphLayout();
     void RedrawGraphs();

@@ -199,10 +199,10 @@ void MainWindow::Startup()
     daily=new Daily(ui->tabWidget,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
-    overview=new Overview(ui->tabWidget,daily->SharedWidget());
+    overview=new Overview(ui->tabWidget,daily->graphView());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
     if (PROFILE["EnableOximetry"].toBool()) {
-        oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+        oximetry=new Oximetry(ui->tabWidget,daily->graphView());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
     }
     if (daily) daily->ReloadGraphs();
@@ -467,7 +467,7 @@ void MainWindow::on_oximetryButton_clicked()
             if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.\nNote: This section is not fully completed yet.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
             PROFILE["EnableOximetry"]=true;
         }
-        oximetry=new Oximetry(ui->tabWidget,daily->SharedWidget());
+        oximetry=new Oximetry(ui->tabWidget,daily->graphView());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
         first=true;
     }
@@ -599,3 +599,4 @@ void MainWindow::on_action_Frequently_Asked_Questions_triggered()
     ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
     ui->tabWidget->setCurrentIndex(0);
 }
+

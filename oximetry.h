@@ -146,6 +146,8 @@ public:
 
     void RedrawGraphs();
 
+    gGraphView *graphView() { return GraphView; }
+
 private slots:
     void on_RefreshPortsButton_clicked();
     void on_RunButton_toggled(bool checked);

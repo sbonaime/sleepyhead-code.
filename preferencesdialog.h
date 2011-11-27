@@ -10,11 +10,24 @@
 #include <QDialog>
 #include <QModelIndex>
 #include <QStringListModel>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include "SleepLib/profiles.h"
 
 namespace Ui {
     class PreferencesDialog;
 }
+
+class MySortFilterProxyModel:public QSortFilterProxyModel
+{
+    Q_OBJECT
+public:
+    MySortFilterProxyModel(QObject *parent = 0);
+
+protected:
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+
+};
 
 class PreferencesDialog : public QDialog
 {
@@ -39,13 +52,25 @@ private slots:
 
     void on_removeImportLocation_clicked();
 
+    void on_graphView_activated(const QModelIndex &index);
+
+    void on_graphFilter_textChanged(const QString &arg1);
+
+    void on_graphModel_changed(QStandardItem * item);
+
+    void on_resetGraphButton_clicked();
+
 private:
+    void resetGraphModel();
     Ui::PreferencesDialog *ui;
     Profile * profile;
     QHash<int,QColor> m_new_colors;
     QStringList importLocations;
     QStringListModel *importModel;
+    MySortFilterProxyModel *graphFilterModel;
+    QStandardItemModel *graphModel;
 
 };
+
 
 #endif // PREFERENCESDIALOG_H

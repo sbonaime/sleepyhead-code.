@@ -7,12 +7,17 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include "preferencesdialog.h"
+
+
+#include <Graphs/gGraphView.h>
+#include <mainwindow.h>
 #include "ui_preferencesdialog.h"
 #include "SleepLib/machine_common.h"
 
 extern QFont * defaultfont;
 extern QFont * mediumfont;
 extern QFont * bigfont;
+extern MainWindow * mainwin;
 
 PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     QDialog(parent),
@@ -40,7 +45,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     }
     importModel=new QStringListModel(importLocations,this);
     ui->importListWidget->setModel(importModel);
-    ui->tabWidget->removeTab(3);
+    //ui->tabWidget->removeTab(3);
 
     Q_ASSERT(profile!=NULL);
     ui->tabWidget->setCurrentIndex(0);
@@ -158,28 +163,24 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
         shortformat.replace("yy","yyyy");
     }*/
 
-    QTreeWidget *tree=ui->graphTree;
-    tree->clear();
-    tree->setColumnCount(1); // 1 visible common.. (1 hidden)
+    graphFilterModel=new MySortFilterProxyModel(this);
+    graphModel=new QStandardItemModel(this);
+    graphFilterModel->setSourceModel(graphModel);
+    graphFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    graphFilterModel->setFilterKeyColumn(0);
+    ui->graphView->setModel(graphFilterModel);
 
-    QTreeWidgetItem *daily=new QTreeWidgetItem((QTreeWidget *)0,QStringList("Daily Graphs"));
-    QTreeWidgetItem *overview=new QTreeWidgetItem((QTreeWidget *)0,QStringList("Overview Graphs"));
-    tree->insertTopLevelItem(0,daily);
-    tree->insertTopLevelItem(0,overview);
-    QTreeWidgetItem *it=new QTreeWidgetItem(daily,QStringList("Event Flags"));//,QTreeWidgetItem::UserType);
-    it->setFlags(Qt::ItemIsUserCheckable|Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-    it->setCheckState(0,Qt::Checked);
-    daily->addChild(it);
-    //QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
-    //=new QTreeWidgetItem(root,l);
-    //ui->graphTree->setModel(
-    tree->sortByColumn(0,Qt::AscendingOrder);
+
+
+    resetGraphModel();
+//    tree->sortByColumn(0,Qt::AscendingOrder);
 
 }
 
 
 PreferencesDialog::~PreferencesDialog()
 {
+    disconnect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(on_graphModel_changed(QStandardItem*)));
     delete ui;
 }
 
@@ -402,3 +403,227 @@ void PreferencesDialog::on_removeImportLocation_clicked()
         importLocations.removeAll(dir);
     }
 }
+
+
+void PreferencesDialog::on_graphView_activated(const QModelIndex &index)
+{
+    QString a=index.data().toString();
+    qDebug() << "Could do something here with" << a;
+}
+
+void PreferencesDialog::on_graphFilter_textChanged(const QString &arg1)
+{
+    graphFilterModel->setFilterFixedString(arg1);
+}
+
+
+MySortFilterProxyModel::MySortFilterProxyModel(QObject *parent)
+    :QSortFilterProxyModel(parent)
+{
+
+}
+
+bool MySortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+{
+    if (source_parent == qobject_cast<QStandardItemModel*>(sourceModel())->invisibleRootItem()->index()) {
+         // always accept children of rootitem, since we want to filter their children
+         return true;
+    }
+
+    return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
+}
+
+void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
+{
+    QModelIndex index=item->index();
+
+    gGraphView *gv=NULL;
+    bool ok;
+
+    const QModelIndex & row=index.sibling(index.row(),0);
+    bool checked=row.data(Qt::CheckStateRole)!=0;
+    QString name=row.data().toString();
+
+    int group=row.data(Qt::UserRole+1).toInt();
+    int id=row.data(Qt::UserRole+2).toInt();
+    switch(group) {
+        case 0: gv=mainwin->getDaily()->graphView(); break;
+        case 1: gv=mainwin->getOverview()->graphView(); break;
+        case 2: gv=mainwin->getOximetry()->graphView(); break;
+    default: ;
+    }
+
+    if (!gv)
+        return;
+
+    gGraph *graph=(*gv)[id];
+    if (!graph)
+        return;
+
+    if (graph->visible()!=checked) {
+        graph->setVisible(checked);
+    }
+
+    EventDataType val;
+
+    if (index.column()==1) {
+        val=index.data().toDouble(&ok);
+
+        if (!ok) {
+            graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
+            ui->graphView->update();
+        }  else {
+            if ((val < graph->rec_maxy) || (val==0)) {
+                graph->recMinY(val);
+            } else {
+                graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
+                ui->graphView->update();
+            }
+        }
+    } else if (index.column()==2) {
+        val=index.data().toDouble(&ok);
+        if (!ok) {
+            graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
+            ui->graphView->update();
+        }  else {
+            if ((val > graph->rec_miny) || (val==0)) {
+                graph->recMaxY(val);
+            } else {
+                graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
+                ui->graphView->update();
+            }
+        }
+
+    }
+//    qDebug() << name << checked;
+}
+
+void PreferencesDialog::resetGraphModel()
+{
+
+    graphModel->clear();
+    QStandardItem *daily=new QStandardItem("Daily Graphs");
+    QStandardItem *overview=new QStandardItem("Overview Graphs");
+    daily->setEditable(false);
+    overview->setEditable(false);
+
+    graphModel->appendRow(daily);
+    graphModel->appendRow(overview);
+    connect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(on_graphModel_changed(QStandardItem*)));
+
+    ui->graphView->setAlternatingRowColors(true);
+
+    ui->graphView->setFirstColumnSpanned(0,daily->index(),true);
+    graphModel->setColumnCount(3);
+    QStringList headers;
+    headers.append("Graph");
+    headers.append("Min");
+    headers.append("Max");
+    graphModel->setHorizontalHeaderLabels(headers);
+    ui->graphView->setColumnWidth(0,250);
+    ui->graphView->setColumnWidth(1,50);
+    ui->graphView->setColumnWidth(2,50);
+
+    gGraphView *gv=mainwin->getDaily()->graphView();
+    for (int i=0;i<gv->size();i++) {
+        QList<QStandardItem *> items;
+        QString title=(*gv)[i]->title();
+        QStandardItem *it=new QStandardItem(title);
+        it->setCheckable(true);
+        it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
+        it->setEditable(false);
+        it->setData(0,Qt::UserRole+1);
+        it->setData(i,Qt::UserRole+2);
+        items.push_back(it);
+
+        if (title!="Event Flags") {
+
+            it=new QStandardItem(QString::number((*gv)[i]->rec_miny,'f',1));
+            it->setEditable(true);
+            items.push_back(it);
+
+            it=new QStandardItem(QString::number((*gv)[i]->rec_maxy,'f',1));
+            it->setEditable(true);
+            items.push_back(it);
+        } else {
+            it=new QStandardItem(tr("N/A")); // not applicable.
+            it->setEditable(false);
+            items.push_back(it);
+            items.push_back(it->clone());
+        }
+
+        daily->insertRow(i,items);
+    }
+
+    gv=mainwin->getOverview()->graphView();
+    for (int i=0;i<gv->size();i++) {
+        QList<QStandardItem *> items;
+        QStandardItem *it=new QStandardItem((*gv)[i]->title());
+        it->setCheckable(true);
+        it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
+        it->setEditable(false);
+        items.push_back(it);
+        it->setData(1,Qt::UserRole+1);
+        it->setData(i,Qt::UserRole+2);
+
+        it=new QStandardItem(QString::number((*gv)[i]->rec_miny,'f',1));
+        it->setEditable(true);
+        items.push_back(it);
+
+        it=new QStandardItem(QString::number((*gv)[i]->rec_maxy,'f',1));
+        it->setEditable(true);
+        items.push_back(it);
+
+        overview->insertRow(i,items);
+    }
+    if (mainwin->getOximetry()) {
+        QStandardItem *oximetry=new QStandardItem("Oximetry Graphs");
+        graphModel->appendRow(oximetry);
+        oximetry->setEditable(false);
+        gv=mainwin->getOximetry()->graphView();
+        for (int i=0;i<gv->size();i++) {
+            QList<QStandardItem *> items;
+            QStandardItem *it=new QStandardItem((*gv)[i]->title());
+            it->setCheckable(true);
+            it->setCheckState((*gv)[i]->visible() ? Qt::Checked : Qt::Unchecked);
+            it->setEditable(false);
+            it->setData(2,Qt::UserRole+1);
+            it->setData(i,Qt::UserRole+2);
+            items.push_back(it);
+
+            it=new QStandardItem(QString::number((*gv)[i]->rec_miny,'f',1));
+            it->setEditable(true);
+            items.push_back(it);
+
+            it=new QStandardItem(QString::number((*gv)[i]->rec_maxy,'f',1));
+            it->setEditable(true);
+            items.push_back(it);
+
+            oximetry->insertRow(i,items);
+        }
+    }
+
+    ui->graphView->expandAll();
+}
+
+void PreferencesDialog::on_resetGraphButton_clicked()
+{
+    if (QMessageBox::question(this,"Confirmation","Are you sure you want to reset your graph preferences to the defaults?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        gGraphView *gv[3];
+        gv[0]=mainwin->getDaily()->graphView();
+        gv[1]=mainwin->getOverview()->graphView();
+        gv[2]=mainwin->getOximetry()->graphView();
+        for (int j=0;j<3;j++) {
+            if (gv[j]!=NULL) {
+                for (int i=0;i<gv[j]->size();i++) {
+                    gGraph *g=(*(gv[j]))[i];
+                    g->recMaxY(0);
+                    g->recMinY(0);
+                    g->setVisible(true);
+                }
+            }
+        }
+        resetGraphModel();
+        ui->graphView->update();
+    }
+ }

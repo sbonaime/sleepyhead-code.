@@ -39,7 +39,7 @@ public:
     ~Daily();
     void ReloadGraphs();
     void ResetGraphLayout();
-    gGraphView *SharedWidget() { return GraphView; }
+    gGraphView *graphView() { return GraphView; }
     void RedrawGraphs();
     void LoadDate(QDate date);
     QDate getDate() { return previous_date; }
