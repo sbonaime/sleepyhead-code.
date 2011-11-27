@@ -1012,7 +1012,6 @@ void Daily::on_evViewSlider_valueChanged(int value)
 
     int winsize=PROFILE["EventViewSize"].toInt()*60;
 
-    return;
     if (0) {
 /*        if (ui->treeWidget->selectedItems().size()==0) return;
         QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
