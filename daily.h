@@ -66,6 +66,8 @@ private slots:
     void on_todayButton_clicked();
 
     void on_Link_clicked(const QUrl &url);
+    void on_evViewSlider_valueChanged(int value);
+
 protected:
 
 private:

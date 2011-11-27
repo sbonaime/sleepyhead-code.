@@ -234,6 +234,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->webView->settings()->setFontSize(QWebSettings::DefaultFontSize,QApplication::font().pointSize());
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     connect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(on_Link_clicked(QUrl)));
+
+    if (!PROFILE.Exists("EventViewSize")) PROFILE["EventViewSize"]=4;
+    int ews=PROFILE["EventViewSize"].toInt();
+    ui->evViewSlider->setValue(ews);
+    ui->evViewLCD->display(ews);
+
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
 }
@@ -907,7 +913,7 @@ void Daily::on_treeWidget_itemSelectionChanged()
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        int winsize=PROFILE["EventWindowSize"].toInt()*60;
+        int winsize=PROFILE["EventViewSize"].toInt()*60;
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
@@ -976,5 +982,11 @@ void Daily::on_todayButton_clicked()
     QDate d=QDate::currentDate();
     if (d > PROFILE.LastDay()) d=PROFILE.LastDay();
     LoadDate(d);
+}
+
+void Daily::on_evViewSlider_valueChanged(int value)
+{
+    ui->evViewLCD->display(value);
+    PROFILE["EventViewSize"]=value;
 }
 
