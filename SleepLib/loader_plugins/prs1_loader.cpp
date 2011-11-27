@@ -1290,8 +1290,8 @@ void PRS1Loader::CalcRespiratoryRate(Session *session)
         flow=session->eventlist[CPAP_FlowRate][ws];
         if (flow->count() > 5) {
             rr=new EventList(EVL_Event);//EVL_Waveform,1,0,0,0,60000);
-            ChannelID resp="RespRate";
-            if (session->eventlist.contains(resp)) resp+="2";
+            ChannelID resp="RespRate2";
+            //if (session->eventlist.contains(resp)) resp+="2";
             session->eventlist[resp].push_back(rr);
             filterFlow(flow,rr);
         }
