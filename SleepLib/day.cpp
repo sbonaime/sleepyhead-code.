@@ -5,6 +5,7 @@
 */
 
 #include "day.h"
+#include "profiles.h"
 
 Day::Day(Machine *m)
 :machine(m)

@@ -36,6 +36,9 @@ public:
 protected:
 };
 
+int calcPulseChange(Session *session);
+int calcSPO2Drop(Session *session);
+
 EventDataType calcAHI(Session *session,qint64 start=0, qint64 end=0);
 
 #endif // CALCS_H

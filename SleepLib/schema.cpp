@@ -133,7 +133,7 @@ bool ChannelList::Load(QString filename)
         group=node.toElement().attribute("name");
         //qDebug() << "Group Name" << group;
         // Why do I have to skip the first node here? (shows up empty)
-        n=node.firstChild().nextSibling();
+        n=node.firstChildElement();
 
         while (!n.isNull()) {
             line=n.lineNumber();
@@ -174,6 +174,9 @@ bool ChannelList::Load(QString filename)
             name=e.attribute("name","");
             details=e.attribute("details","");
             label=e.attribute("label","");
+            if (name=="Pulse") {
+                int i=5;
+            }
 
             if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
                 qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;
@@ -216,6 +219,7 @@ bool ChannelList::Load(QString filename)
             chan=new Channel(id,type,scope,name,details,label,unit,datatype,color,linkid);
             channels[id]=chan;
             names[name]=chan;
+            qDebug() << "Channel" << id << name << label;
             groups[group][name]=chan;
             if (linkid>0) {
                 if (channels.contains(linkid)) {

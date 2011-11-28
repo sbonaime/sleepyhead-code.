@@ -9,10 +9,12 @@
 #include "qextserialport/qextserialenumerator.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
+#include "SleepLib/calcs.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gSummaryChart.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
+#include "Graphs/gLineOverlay.h"
 
 extern QLabel * qstatus2;
 
@@ -320,6 +322,9 @@ void SerialOximeter::stopLive()
 {
     Close();
     compactAll();
+    calcSPO2Drop(session);
+    calcPulseChange(session);
+
     emit(liveStopped(session));
 }
 
@@ -611,15 +616,24 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
 
     pulse=new gLineChart(OXI_Pulse,Qt::red,true);
-    pulse->SetDay(day);
+    //pulse->SetDay(day);
 
     spo2=new gLineChart(OXI_SPO2,Qt::blue,true);
-    spo2->SetDay(day);
+    //spo2->SetDay(day);
+
 
     PLETHY->AddLayer(plethy);
 
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
+
+    gLineOverlayBar *go;
+    PULSE->AddLayer(go=new gLineOverlayBar(OXI_PulseChange,QColor("blue"),"PD",FT_Dot));
+    //go->SetDay(day);
+    SPO2->AddLayer(go=new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),"O2",FT_Dot));
+    PULSE->setDay(day);
+    SPO2->setDay(day);
+    //go->SetDay(day);
 
     GraphView->setEmptyText("No Oximetry Data");
     GraphView->updateGL();
@@ -706,6 +720,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(onSpO2Changed(float)));
             ui->saveButton->setEnabled(true);
 
+
             //CONTROL->setVisible(true);
     } else {
         if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
@@ -719,6 +734,12 @@ void Oximetry::on_RunButton_toggled(bool checked)
                 return;
             }
         } // else it's already saved.
+        PLETHY->setRecMinY(0);
+        PLETHY->setRecMaxY(128);
+        PULSE->setRecMinY(60);
+        PULSE->setRecMaxY(100);
+        SPO2->setRecMinY(90);
+        SPO2->setRecMaxY(100);
 
         if (!oximeter->startLive()) {
             QMessageBox::warning(this,"Error","Something is wrong with the device connection.",QMessageBox::Ok);
@@ -743,11 +764,11 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PULSE->SetMinX(f);
         SPO2->SetMinX(f);
 
-        PLETHY->setForceMinY(0);
+        /*PLETHY->setForceMinY(0);
         PLETHY->setForceMaxY(128);
         PULSE->setForceMinY(30);
         PULSE->setForceMaxY(180);
-        SPO2->setForceMinY(50);
+        SPO2->setForceMinY(50);*/
         SPO2->setForceMaxY(100);
 
         connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
@@ -877,6 +898,9 @@ void Oximetry::on_import_complete(Session * session)
     qDebug() << "Oximetry import complete";
     import_finished();
 
+    calcSPO2Drop(session);
+    calcPulseChange(session);
+
     PLETHY->setVisible(false);
     CONTROL->setVisible(false);
 
@@ -901,15 +925,10 @@ void Oximetry::on_import_complete(Session * session)
     PULSE->SetMaxX(l);
     SPO2->SetMaxX(l);
 
-    PLETHY->setForceMinY(0);
-    PLETHY->setForceMaxY(128);
-    PULSE->setForceMinY(30);
-    PULSE->setForceMaxY(180);
-    SPO2->setForceMinY(50);
-    SPO2->setForceMaxY(100);
-
     PULSE->setDay(day);
     SPO2->setDay(day);
+
+
     for (int i=0;i<GraphView->size();i++) {
         (*GraphView)[i]->SetXBounds(f,l);
     }

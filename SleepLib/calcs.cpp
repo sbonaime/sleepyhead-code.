@@ -3,6 +3,7 @@
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
 */
+#include <cmath>
 
 #include "calcs.h"
 #include "profiles.h"
@@ -274,4 +275,104 @@ int CalcAHIGraph::calculate(Session *session)
     }
 
     return AHI->count();
+}
+
+
+int calcPulseChange(Session *session)
+{
+    if (session->eventlist.contains(OXI_PulseChange)) return 0;
+
+    QHash<ChannelID,QVector<EventList *> >::iterator it=session->eventlist.find(OXI_Pulse);
+    if (it==session->eventlist.end()) return 0;
+
+    EventDataType val,val2,change,tmp;
+    qint64 time,time2;
+    bool ok;
+    qint64 window=PROFILE["PulseChangeTime"].toDouble(&ok);
+    if (!ok) {
+        PROFILE["PulseChangeTime"]=8;
+        window=8000;
+    } else window*=1000;
+    change=PROFILE["PulseChangeBPM"].toDouble(&ok);
+    if (!ok) {
+        PROFILE["PulseChangeTime"]=5;
+        change=5;
+    }
+
+    EventList *pc=new EventList(EVL_Waveform);
+
+    for (int e=0;e<it.value().size();e++) {
+        EventList & el=*(it.value()[e]);
+
+        for (unsigned i=0;i<el.count();i++) {
+            val=el.data(i);
+            time=el.time(i);
+            for (unsigned j=i;j<el.count();j++) { // scan ahead in the window
+                time2=el.time(j);
+                if (time2 > time+window) break;
+                val2=el.data(j);
+                tmp=fabs(val2-val);
+                if (tmp > change) {
+                    pc->AddEvent(time2,tmp);
+                }
+            }
+        }
+    }
+    if (pc->count()==0) {
+        delete pc;
+        return 0;
+    }
+    session->eventlist[OXI_PulseChange].push_back(pc);
+    return pc->count();
+}
+
+
+int calcSPO2Drop(Session *session)
+{
+    if (session->eventlist.contains(OXI_SPO2Drop)) return 0;
+
+    QHash<ChannelID,QVector<EventList *> >::iterator it=session->eventlist.find(OXI_SPO2);
+    if (it==session->eventlist.end()) return 0;
+
+    EventDataType val,val2,change,tmp;
+    qint64 time,time2;
+    bool ok;
+    qint64 window=PROFILE["SPO2DropTime"].toDouble(&ok);
+    if (!ok) {
+        PROFILE["SPO2DropTime"]=4;
+        window=4000;
+    } else window*=1000;
+    change=PROFILE["SPO2DropPercentage"].toDouble(&ok);
+    if (!ok) {
+        PROFILE["SPO2DropPercentage"]=4;
+        change=4;
+    }
+
+    EventList *pc=new EventList(EVL_Waveform);
+
+    for (int e=0;e<it.value().size();e++) {
+        EventList & el=*(it.value()[e]);
+
+        for (unsigned i=0;i<el.count();i++) {
+            val=el.data(i);
+            time=el.time(i);
+            for (unsigned j=i;j<el.count();j++) { // scan ahead in the window
+                time2=el.time(j);
+                if (time2 > time+window) break;
+                val2=el.data(j);
+                if (val2<val) {
+                    tmp=val2-val;
+                    if (tmp > change) {
+                        pc->AddEvent(time2,tmp);
+                    }
+                }
+            }
+        }
+    }
+    if (pc->count()==0) {
+        delete pc;
+        return 0;
+    }
+    session->eventlist[OXI_SPO2Drop].push_back(pc);
+    return pc->count();
 }

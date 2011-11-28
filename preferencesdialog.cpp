@@ -56,6 +56,21 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     //ui->timeZoneCombo->setCurrentIndex(i);
 
+    bool  ok;
+    double v;
+    v=(*profile)["SPO2DropPercentage"].toDouble(&ok);
+    if (!ok) v=4;
+    ui->spo2Drop->setValue(v);
+    v=(*profile)["SPO2DropDuration"].toDouble(&ok);
+    if (!ok) v=5;
+    ui->spo2DropTime->setValue(v);
+    v=(*profile)["PulseChangeBPM"].toDouble(&ok);
+    if (!ok) v=5;
+    ui->pulseChange->setValue(v);
+    v=(*profile)["PulseChangeDuration"].toDouble(&ok);
+    if (!ok) v=5;
+    ui->pulseChangeTime->setValue(v);
+
     QTime t=(*profile)["DaySplitTime"].toTime();
     ui->timeEdit->setTime(t);
     int val;
@@ -233,6 +248,11 @@ void PreferencesDialog::Save()
     (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
+
+    (*profile)["SPO2DropPercentage"]=ui->spo2Drop->value();
+    (*profile)["SPO2DropDuration"]=ui->spo2DropTime->value();
+    (*profile)["PulseChangeBPM"]=ui->pulseChange->value();
+    (*profile)["PulseChangeDuration"]=ui->pulseChangeTime->value();
 
     PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
 

@@ -1600,9 +1600,8 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
     int m,t;
     if (rec_miny!=rec_maxy) {
-        miny=rec_miny;
-        maxy=rec_maxy;
-        return;
+        if (miny>rec_miny) miny=rec_miny;
+        if (maxy<rec_maxy) maxy=rec_maxy;
     }
     if (maxy==miny) {
         m=ceil(maxy/2.0);
@@ -1616,7 +1615,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         miny=t;
         return;
     } else
-    if (maxy>500) {
+    /*if (maxy>500) {
         m=ceil(maxy/100.0);
         maxy=m*100;
         //m=floor(miny/100.0);
@@ -1638,12 +1637,11 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         //m=floor(miny/10.0);
         //if(m<0) m--;
         //miny=m*10;
-    } else if (maxy>=5) {
-        if (maxy==miny) {
-            int i=maxy;
-        }
-        m=ceil(maxy/5.0)+1;
-        maxy=m*5;
+    } else  */
+    if (maxy>=5) {
+        m=ceil(maxy/5.0);
+        t=m*5;
+        maxy=t;
         m=floor(miny/5.0);
         miny=m*5;
     } else {
@@ -2041,9 +2039,6 @@ void gGraphView::paintGL()
     //#endif
     //threaded=false;
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->title()=="Pulse") {
-            int i=4;
-        }
         if (m_graphs[i]->isEmpty()) continue;
         if (!m_graphs[i]->visible()) continue;
         numgraphs++;

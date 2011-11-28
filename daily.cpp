@@ -111,6 +111,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     //SF->AddLayer(AddCPAP(evseg),LayerRight,100);
 
     gFlagsGroup *fg=new gFlagsGroup();
+    SF->AddLayer(AddCPAP(fg));
     fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true)));
@@ -122,10 +123,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),"FL")));
     fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),"RE")));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
+    fg->AddLayer(AddOXI(new gFlagsLine(OXI_SPO2Drop,QColor("red"),"O2")));
+    fg->AddLayer(AddOXI(new gFlagsLine(OXI_PulseChange,QColor("blue"),"PC")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[8],QColor("dark green"),"U0E")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[10],QColor("red"),"VS2"));
     SF->setBlockZoom(true);
-    SF->AddLayer(AddCPAP(fg));
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
@@ -156,7 +158,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE,INTPULSE, INTSPO2 };
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE, INTPULSE, INTSPO2 };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());

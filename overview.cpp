@@ -87,6 +87,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     LK=createGraph("Leaks");
     SES=createGraph("Sessions");
     NPB=createGraph("% in PB");
+    RR=createGraph("Resp. Rate");
 
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
@@ -111,6 +112,12 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SET->setRecMinY(0);
     SET->setRecMaxY(5);
     SET->AddLayer(set);
+
+    rr=new SummaryChart("bpm",GT_LINE);
+    rr->addSlice(CPAP_RespRate,QColor("light blue"),ST_MIN);
+    rr->addSlice(CPAP_RespRate,QColor("light green"),ST_90P);
+    rr->addSlice(CPAP_RespRate,QColor("blue"),ST_WAVG);
+    RR->AddLayer(rr);
 
     pr=new SummaryChart("cmH2O",GT_LINE);
     //PR->setRecMinY(4.0);
