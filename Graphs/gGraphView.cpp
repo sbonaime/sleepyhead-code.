@@ -1881,6 +1881,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         }
     }
     if (!g) g=m_graphs[0];
+    if (!g) return;
 
     qint64 xx=g->max_x - g->min_x;
     double d=xx/86400000L;

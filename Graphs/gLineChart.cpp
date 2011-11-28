@@ -42,7 +42,7 @@ EventDataType gLineChart::Miny()
     int m=Layer::Miny();
     if (subtract_offset>0) {
         m-=subtract_offset;
-       // if (m<0) m=0;
+        if (m<0) m=0;
     }
     return m;
 }
@@ -78,9 +78,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
     // hmmm.. subtract_offset..
 
-    if (miny<0) {
+    /*if (miny<0) {
         miny=-MAX(fabs(miny),fabs(maxy));
-    }
+    }*/
 
     w.roundY(miny,maxy);
 

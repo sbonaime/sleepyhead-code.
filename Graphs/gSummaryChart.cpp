@@ -88,7 +88,7 @@ void SummaryChart::SetDay(Day * nullday)
                     }
                     if (suboffset>0) {
                         tmp-=suboffset;
-                        //if (tmp<0) tmp=0;
+                        if (tmp<0) tmp=0;
                     }
                     //if (tmp>0) {
                         fnd=true;

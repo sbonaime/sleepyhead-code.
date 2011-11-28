@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>599</width>
+    <width>637</width>
     <height>330</height>
    </rect>
   </property>
@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="visualTab">
       <attribute name="title">
@@ -159,7 +159,7 @@
 This takes extra space, and has been known to cause problems on certain computer configurations, hence it's turned off by default.</string>
          </property>
          <property name="text">
-          <string>Graph Snapshots</string>
+          <string>Event B/down Piechart</string>
          </property>
         </widget>
        </item>
