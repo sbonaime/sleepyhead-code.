@@ -35,6 +35,9 @@ private slots:
 
     void on_passwordEdit2_editingFinished();
 
+
+    void on_heightCombo_currentIndexChanged(int index);
+
 private:
     Ui::NewProfile *ui;
     bool m_editMode;

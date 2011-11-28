@@ -151,7 +151,11 @@ OTHER_FILES += \
     docs/graphs.xml \
     docs/channels.xml \
     docs/release_notes.html \
-    docs/startup_tips.txt
+    docs/startup_tips.txt \
+    docs/countries.txt \
+    docs/tz.txt
+
+
 
 
 

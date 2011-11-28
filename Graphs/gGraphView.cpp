@@ -1865,7 +1865,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)
     qint64 m1=0,m2=0;
-    gGraph *g;
+    gGraph *g=NULL;
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->ResetBounds();
         if (!m_graphs[i]->min_x) continue;
@@ -1881,7 +1881,6 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         }
     }
     if (!g) g=m_graphs[0];
-    if (!g) return;
 
     qint64 xx=g->max_x - g->min_x;
     double d=xx/86400000L;

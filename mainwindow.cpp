@@ -489,14 +489,13 @@ void MainWindow::CheckForUpdates()
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
     if (PREF.Exists("Updates_LastChecked")) {
-        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<3600) {
+        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<7200) {
             // Instead of doing this, just use the cached crud
             if (prefdialog) prefdialog->RefreshLastChecked();
-            mainwin->Notify("No New Updates - You already checked in the last hour...");
+            mainwin->Notify("No New Updates - You already checked recently...");
             return;
         }
     }
-    return;
     netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
 }
 void MainWindow::replyFinished(QNetworkReply * reply)

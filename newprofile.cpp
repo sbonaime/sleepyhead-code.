@@ -5,6 +5,8 @@
 */
 
 #include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
 #include <QCryptographicHash>
 #include "SleepLib/profiles.h"
 
@@ -31,6 +33,42 @@ NewProfile::NewProfile(QWidget *parent) :
     ui->stackedWidget->setCurrentIndex(0);
     on_cpapModeCombo_activated(0);
     m_passwordHashed=false;
+    ui->heightEdit2->setVisible(false);
+    ui->heightEdit->setDecimals(2);
+    ui->heightEdit->setSuffix("cm");
+
+    { // process countries list
+    QFile f(":/docs/countries.txt");
+    f.open(QFile::ReadOnly);
+    QTextStream cnt(&f);
+    QString a;
+    ui->countryCombo->clear();
+    ui->countryCombo->addItem("Select Country");
+    do {
+        a=cnt.readLine();
+        if (a.isEmpty()) break;
+        ui->countryCombo->addItem(a);
+    } while(1);
+    f.close();
+    }
+    { // timezone list
+    QFile f(":/docs/tz.txt");
+    f.open(QFile::ReadOnly);
+    QTextStream cnt(&f);
+    QString a;
+    ui->timezoneCombo->clear();
+    //ui->countryCombo->addItem("Select TimeZone");
+    do {
+        a=cnt.readLine();
+        if (a.isEmpty()) break;
+        QStringList l;
+        l=a.split("=");
+        ui->timezoneCombo->addItem(l[1],l[0]);
+    } while(1);
+    f.close();
+    }
+
+
 }
 
 NewProfile::~NewProfile()
@@ -86,7 +124,6 @@ void NewProfile::on_nextButton_clicked()
             prof["FirstName"]=ui->firstNameEdit->text();
             prof["LastName"]=ui->lastNameEdit->text();
             prof["DOB"]=ui->dobEdit->date();
-            prof["Height"]=ui->heightEdit->value();
             prof["EmailAddress"]=ui->emailEdit->text();
             prof["Phone"]=ui->phoneEdit->text();
             prof["Address"]=ui->addressEdit->toPlainText();
@@ -116,7 +153,20 @@ void NewProfile::on_nextButton_clicked()
             prof["DoctorPhone"]=ui->doctorPhoneEdit->text();
             prof["DoctorEmail"]=ui->doctorEmailEdit->text();
             prof["DoctorPatientID"]=ui->doctorPatientIDEdit->text();
-
+            prof["Language"]=ui->languageCombo->currentText();
+            prof["TimeZone"]=ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString();
+            prof["Country"]=ui->countryCombo->currentText();
+            prof["DST"]=ui->DSTcheckbox->isChecked();
+            prof["Units"]=ui->heightCombo->currentText();
+            double v=0;
+            if (ui->heightCombo->currentIndex()==1) {
+                // convert to metric
+                v=(ui->heightEdit->value()*30.48);
+                v+=ui->heightEdit2->value()*2.54;
+            } else {
+                v=ui->heightEdit->value();
+            }
+            prof["Height"]=v;
 
             PREF["Profile"]=ui->userNameEdit->text();
 
@@ -213,6 +263,38 @@ void NewProfile::edit(const QString name)
     ui->doctorEmailEdit->setText(profile->Get("DoctorEmail"));
     ui->doctorAddressEdit->setText(profile->Get("DoctorAddress"));
     ui->doctorPatientIDEdit->setText(profile->Get("DoctorPatientID"));
+
+    ui->DSTcheckbox->setChecked((*profile)["DST"].toBool());
+    int i=ui->timezoneCombo->findData(profile->Get("TimeZone"));
+    ui->timezoneCombo->setCurrentIndex(i);
+    i=ui->countryCombo->findText(profile->Get("Country"));
+    ui->countryCombo->setCurrentIndex(i);
+
+    i=ui->heightCombo->findText(profile->Get("Units"));
+    if (i<0) i=0;
+    ui->heightCombo->setCurrentIndex(i);
+
+    bool ok;
+    double v=(*profile)["Height"].toDouble(&ok);
+    if (!ok) v=0;
+
+    if (i==1)  { // evil non-metric
+        int ti=v/2.54;
+        int feet=ti / 12;
+        int inches=ti % 12;
+        ui->heightEdit->setValue(feet);
+        ui->heightEdit2->setValue(inches);
+        ui->heightEdit2->setVisible(true);
+        ui->heightEdit->setDecimals(0);
+        ui->heightEdit2->setDecimals(0);
+        ui->heightEdit->setSuffix("ft");
+        ui->heightEdit2->setSuffix("\"");
+    } else { // good wholesome metric
+        ui->heightEdit->setValue(v);
+        ui->heightEdit2->setVisible(false);
+        ui->heightEdit->setDecimals(2);
+        ui->heightEdit->setSuffix("cm");
+    }
 }
 
 void NewProfile::on_passwordEdit1_editingFinished()
@@ -223,4 +305,29 @@ void NewProfile::on_passwordEdit1_editingFinished()
 void NewProfile::on_passwordEdit2_editingFinished()
 {
     m_passwordHashed=false;
+}
+
+
+void NewProfile::on_heightCombo_currentIndexChanged(int index)
+{
+    if (index==0) {
+        //metric
+        ui->heightEdit2->setVisible(false);
+        ui->heightEdit->setDecimals(2);
+        ui->heightEdit->setSuffix("cm");
+        double v=ui->heightEdit->value()*30.48;
+        v+=ui->heightEdit2->value()*2.54;
+        ui->heightEdit->setValue(v);
+    } else {        //evil
+        ui->heightEdit->setDecimals(0);
+        ui->heightEdit2->setDecimals(0);
+        ui->heightEdit->setSuffix("ft");
+        ui->heightEdit2->setVisible(true);
+        ui->heightEdit2->setSuffix("\"");
+        int v=ui->heightEdit->value()/2.54;
+        int feet=v / 12;
+        int inches=v % 12;
+        ui->heightEdit->setValue(feet);
+        ui->heightEdit2->setValue(inches);
+    }
 }
