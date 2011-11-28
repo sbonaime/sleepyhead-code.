@@ -323,7 +323,7 @@ int calcPulseChange(Session *session)
                 tmp=fabs(val2-val);
                 if (tmp > lv) {
                     lastt=time2;
-                    lv=tmp;
+                    //lv=tmp;
                     li=j;
                 }
             }
@@ -361,13 +361,13 @@ int calcSPO2Drop(Session *session)
     bool ok;
     qint64 window=PROFILE["SPO2DropDuration"].toDouble(&ok);
     if (!ok) {
-        PROFILE["SPO2DropDuration"]=4;
-        window=4000;
+        PROFILE["SPO2DropDuration"]=10;
+        window=10000;
     } else window*=1000;
     change=PROFILE["SPO2DropPercentage"].toDouble(&ok);
     if (!ok) {
-        PROFILE["SPO2DropPercentage"]=4;
-        change=4;
+        PROFILE["SPO2DropPercentage"]=3;
+        change=3;
     }
 
     EventList *pc=new EventList(EVL_Event);
@@ -375,37 +375,56 @@ int calcSPO2Drop(Session *session)
     EventDataType lv=0;
     int li=0;
 
+    const int ringsize=10;
+    EventDataType ring[ringsize];
+    int rp=0;
+
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
 
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
+            if (!val) continue;
+            ring[rp]=val;
+            rp=++rp % ringsize;
+            if (i<ringsize)  {
+                for (int j=i;j<ringsize;j++) {
+                    ring[j]=val;
+                }
+            }
+            tmp=0;
+            for (int j=0;j<ringsize;j++) {
+                tmp+=ring[j];
+            }
+            tmp/=EventDataType(ringsize);
+
+            val=tmp;
             time=el.time(i);
             lastt=0;
-            lv=val-change;
+            lv=val;
+
 
             for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
-                if (time2 > time+window) break;
-
                 val2=el.data(j);
 
-                if (val2<=lv) {
-                    lv=val2;
+                if (val2 <= (val-change)) {
                     lastt=time2;
                     li=j;
-                    //tmp=val-val2;
-                    //if (tmp > change) {
-//                        pc->AddEvent(time2,tmp);
-                        //break;
-                    //}
-                }
+                    //lv=val2;
+                } else if (val2 <= lv) {
+                    lv=val2;
+                    //lastt=time2;
+                    //li=j;
+                } else break;
             }
             if (lastt>0) {
-                qint64 len=(lastt-time)/1000.0;
-                pc->AddEvent(lastt,len);
+                qint64 len=(lastt-time);
+                if (len>=window) {
+                    pc->AddEvent(lastt,len/1000);
 
-                i=li;
+                    i=li;
+                }
             }
         }
     }

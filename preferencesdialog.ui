@@ -960,6 +960,9 @@ p, li { white-space: pre-wrap; }
                <property name="decimals">
                 <number>0</number>
                </property>
+               <property name="minimum">
+                <double>1.000000000000000</double>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
@@ -982,6 +985,9 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="decimals">
                 <number>0</number>
+               </property>
+               <property name="minimum">
+                <double>1.000000000000000</double>
                </property>
               </widget>
              </item>

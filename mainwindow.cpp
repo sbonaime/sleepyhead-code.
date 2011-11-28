@@ -253,7 +253,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (asknew) {
         QFileDialog w;
         w.setFileMode(QFileDialog::DirectoryOnly);
-        w.setOption(QFileDialog::DontUseNativeDialog,false);
+        w.setOption(QFileDialog::DontUseNativeDialog,true);
 
         QListView *l = w.findChild<QListView*>("listView");
         if (l) {

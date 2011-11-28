@@ -204,8 +204,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     TgMV->AddLayer(AddCPAP(new gLineChart(CPAP_TgMV,Qt::darkCyan,square)));
     INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
+
+    PULSE->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),"PD",FT_Span)));
+    SPO2->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),"O2",FT_Span)));
+
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
-    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,square)));
+    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
     PTB->setForceMaxY(100);
