@@ -632,12 +632,11 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     PLETHY->AddLayer(plethy);
 
+
+    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),"PD",FT_Span));
+    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),"O2",FT_Span));
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
-
-    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("dark gray"),"PD"));
-    //go->SetDay(day);
-    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("purple"),"O2"));
     PULSE->setDay(day);
     SPO2->setDay(day);
 

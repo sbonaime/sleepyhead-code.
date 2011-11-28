@@ -288,18 +288,22 @@ int calcPulseChange(Session *session)
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
     bool ok;
-    qint64 window=PROFILE["PulseChangeTime"].toDouble(&ok);
+    qint64 window=PROFILE["PulseChangeDuration"].toDouble(&ok);
     if (!ok) {
-        PROFILE["PulseChangeTime"]=8;
+        PROFILE["PulseChangeDuration"]=8;
         window=8000;
     } else window*=1000;
     change=PROFILE["PulseChangeBPM"].toDouble(&ok);
     if (!ok) {
-        PROFILE["PulseChangeTime"]=5;
+        PROFILE["PulseChangeBPM"]=5;
         change=5;
     }
 
-    EventList *pc=new EventList(EVL_Waveform);
+    EventList *pc=new EventList(EVL_Event);
+    pc->setFirst(session->first(OXI_Pulse));
+    qint64 lastt;
+    EventDataType lv=0;
+    int li=0;
 
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
@@ -307,15 +311,27 @@ int calcPulseChange(Session *session)
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
             time=el.time(i);
-            for (unsigned j=i;j<el.count();j++) { // scan ahead in the window
+
+
+            lastt=0;
+            lv=change;
+
+            for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
                 if (time2 > time+window) break;
                 val2=el.data(j);
                 tmp=fabs(val2-val);
-                if (tmp > change) {
-                    pc->AddEvent(time2,tmp);
-                    break;
+                if (tmp > lv) {
+                    lastt=time2;
+                    lv=tmp;
+                    li=j;
                 }
+            }
+            if (lastt>0) {
+                qint64 len=(lastt-time)/1000.0;
+                pc->AddEvent(lastt,len);
+                i=li;
+
             }
         }
     }
@@ -325,7 +341,7 @@ int calcPulseChange(Session *session)
     }
     session->eventlist[OXI_PulseChange].push_back(pc);
     session->setMin(OXI_PulseChange,pc->min());
-    session->setMax(OXI_PulseChange,pc->min());
+    session->setMax(OXI_PulseChange,pc->max());
     session->setCount(OXI_PulseChange,pc->count());
     session->setFirst(OXI_PulseChange,pc->first());
     session->setLast(OXI_PulseChange,pc->last());
@@ -343,9 +359,9 @@ int calcSPO2Drop(Session *session)
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
     bool ok;
-    qint64 window=PROFILE["SPO2DropTime"].toDouble(&ok);
+    qint64 window=PROFILE["SPO2DropDuration"].toDouble(&ok);
     if (!ok) {
-        PROFILE["SPO2DropTime"]=4;
+        PROFILE["SPO2DropDuration"]=4;
         window=4000;
     } else window*=1000;
     change=PROFILE["SPO2DropPercentage"].toDouble(&ok);
@@ -354,7 +370,10 @@ int calcSPO2Drop(Session *session)
         change=4;
     }
 
-    EventList *pc=new EventList(EVL_Waveform);
+    EventList *pc=new EventList(EVL_Event);
+    qint64 lastt;
+    EventDataType lv=0;
+    int li=0;
 
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
@@ -362,17 +381,31 @@ int calcSPO2Drop(Session *session)
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
             time=el.time(i);
-            for (unsigned j=i;j<el.count();j++) { // scan ahead in the window
+            lastt=0;
+            lv=val-change;
+
+            for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
                 if (time2 > time+window) break;
+
                 val2=el.data(j);
-                if (val2<val) {
-                    tmp=val2-val;
-                    if (tmp > change) {
-                        pc->AddEvent(time2,tmp);
-                        break;
-                    }
+
+                if (val2<=lv) {
+                    lv=val2;
+                    lastt=time2;
+                    li=j;
+                    //tmp=val-val2;
+                    //if (tmp > change) {
+//                        pc->AddEvent(time2,tmp);
+                        //break;
+                    //}
                 }
+            }
+            if (lastt>0) {
+                qint64 len=(lastt-time)/1000.0;
+                pc->AddEvent(lastt,len);
+
+                i=li;
             }
         }
     }
@@ -382,7 +415,7 @@ int calcSPO2Drop(Session *session)
     }
     session->eventlist[OXI_SPO2Drop].push_back(pc);
     session->setMin(OXI_SPO2Drop,pc->min());
-    session->setMax(OXI_SPO2Drop,pc->min());
+    session->setMax(OXI_SPO2Drop,pc->max());
     session->setCount(OXI_SPO2Drop,pc->count());
     session->setFirst(OXI_SPO2Drop,pc->first());
     session->setLast(OXI_SPO2Drop,pc->last());
