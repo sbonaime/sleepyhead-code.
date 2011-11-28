@@ -123,8 +123,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),"FL")));
     fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),"RE")));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
-    fg->AddLayer(AddOXI(new gFlagsLine(OXI_SPO2Drop,QColor("red"),"O2")));
-    fg->AddLayer(AddOXI(new gFlagsLine(OXI_PulseChange,QColor("blue"),"PC")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[8],QColor("dark green"),"U0E")));
     //fg->AddLayer(AddCPAP(new gFlagsLine(flags[10],QColor("red"),"VS2"));
     SF->setBlockZoom(true);
@@ -155,6 +153,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA"))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA"))));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),"O2")));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),"PC")));
+
     FRW->AddLayer(AddCPAP(los));
 
 

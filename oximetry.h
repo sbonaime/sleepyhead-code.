@@ -176,6 +176,7 @@ private:
     QHBoxLayout *layout;
 
     gLineChart *pulse,*spo2,*plethy;
+    Layer *lo1,*lo2;
     gGraph *PULSE,*SPO2,*PLETHY,*CONTROL;
 
     QVector<gLineChart *> Data;

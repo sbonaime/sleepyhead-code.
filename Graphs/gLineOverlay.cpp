@@ -11,7 +11,7 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagType flt)
 :Layer(code),m_flag_color(color),m_label(label),m_flt(flt)
 {
-    addGLBuf(points=new GLShortBuffer(1024,GL_POINTS));
+    addGLBuf(points=new GLShortBuffer(2048,GL_POINTS));
     points->setSize(4);
     points->setColor(m_flag_color);
     addGLBuf(quads=new GLShortBuffer(2048,GL_QUADS));

@@ -314,6 +314,7 @@ int calcPulseChange(Session *session)
                 tmp=fabs(val2-val);
                 if (tmp > change) {
                     pc->AddEvent(time2,tmp);
+                    break;
                 }
             }
         }
@@ -323,6 +324,11 @@ int calcPulseChange(Session *session)
         return 0;
     }
     session->eventlist[OXI_PulseChange].push_back(pc);
+    session->setMin(OXI_PulseChange,pc->min());
+    session->setMax(OXI_PulseChange,pc->min());
+    session->setCount(OXI_PulseChange,pc->count());
+    session->setFirst(OXI_PulseChange,pc->first());
+    session->setLast(OXI_PulseChange,pc->last());
     return pc->count();
 }
 
@@ -364,6 +370,7 @@ int calcSPO2Drop(Session *session)
                     tmp=val2-val;
                     if (tmp > change) {
                         pc->AddEvent(time2,tmp);
+                        break;
                     }
                 }
             }
@@ -374,5 +381,10 @@ int calcSPO2Drop(Session *session)
         return 0;
     }
     session->eventlist[OXI_SPO2Drop].push_back(pc);
+    session->setMin(OXI_SPO2Drop,pc->min());
+    session->setMax(OXI_SPO2Drop,pc->min());
+    session->setCount(OXI_SPO2Drop,pc->count());
+    session->setFirst(OXI_SPO2Drop,pc->first());
+    session->setLast(OXI_SPO2Drop,pc->last());
     return pc->count();
 }

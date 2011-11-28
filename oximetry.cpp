@@ -524,9 +524,17 @@ void CMS50Serial::onReadyRead()
             }
         }
     }
+    static unsigned char b1[6]={0xf5,0xf5,0xf5,0xf5,0xf5,0xf5};
     if (import_mode && waitf6 && (cntf6==0)) {
         failcnt++;
-        if (failcnt>2) {
+
+        /*if (failcnt>20) {
+            qDebug() << "Retrying request";
+            if (m_port->write((char *)b1,6)==-1) {
+                qDebug() << "Couldn't write data request bytes to CMS50";
+            }
+        } */
+        if (failcnt>4) {
             emit(importAborted());
             return;
         }
@@ -627,12 +635,14 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
 
-    gLineOverlayBar *go;
-    PULSE->AddLayer(go=new gLineOverlayBar(OXI_PulseChange,QColor("blue"),"PD",FT_Dot));
+    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("dark gray"),"PD"));
     //go->SetDay(day);
-    SPO2->AddLayer(go=new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),"O2",FT_Dot));
+    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("purple"),"O2"));
     PULSE->setDay(day);
     SPO2->setDay(day);
+
+    lo1->SetDay(day);
+    lo2->SetDay(day);
     //go->SetDay(day);
 
     GraphView->setEmptyText("No Oximetry Data");
@@ -719,6 +729,9 @@ void Oximetry::on_RunButton_toggled(bool checked)
             disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
             disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(onSpO2Changed(float)));
             ui->saveButton->setEnabled(true);
+            lo2->SetDay(day);
+            lo1->SetDay(day);
+
 
 
             //CONTROL->setVisible(true);
@@ -768,8 +781,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PLETHY->setForceMaxY(128);
         PULSE->setForceMinY(30);
         PULSE->setForceMaxY(180);
-        SPO2->setForceMinY(50);*/
-        SPO2->setForceMaxY(100);
+        SPO2->setForceMinY(50);
+        SPO2->setForceMaxY(100); */
 
         connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
         connect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
@@ -901,7 +914,7 @@ void Oximetry::on_import_complete(Session * session)
     calcSPO2Drop(session);
     calcPulseChange(session);
 
-    PLETHY->setVisible(false);
+    //PLETHY->setVisible(false);
     CONTROL->setVisible(false);
 
     qint64 f=session->first();
@@ -927,7 +940,6 @@ void Oximetry::on_import_complete(Session * session)
 
     PULSE->setDay(day);
     SPO2->setDay(day);
-
 
     for (int i=0;i<GraphView->size();i++) {
         (*GraphView)[i]->SetXBounds(f,l);

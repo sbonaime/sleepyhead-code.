@@ -2405,12 +2405,23 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         event->ignore();
         return;
     }
-    gGraph *g;
+    gGraph *g=NULL;
+    int group=0;
     // Pick the first valid graph in the primary group
     for (int i=0;i<m_graphs.size();i++) {
-        if (m_graphs[i]->group()==0) {
+        if (m_graphs[i]->group()==group) {
             if (!m_graphs[i]->isEmpty()) {
                 g=m_graphs[i];
+                break;
+            }
+        }
+    }
+
+    if (!g) {
+        for (int i=0;i<m_graphs.size();i++) {
+            if (!m_graphs[i]->isEmpty()) {
+                g=m_graphs[i];
+                group=g->group();
                 break;
             }
         }
@@ -2430,7 +2441,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
             g->min_x=g->rmin_x;
             g->max_x=g->rmin_x+xx;
         }
-        SetXBounds(g->min_x,g->max_x);
+        SetXBounds(g->min_x,g->max_x,group);
     } else if (event->key()==Qt::Key_Right) {
         double xx=g->max_x-g->min_x;
         double zoom=8.0;
@@ -2441,7 +2452,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
             g->max_x=g->rmax_x;
             g->min_x=g->rmax_x-xx;
         }
-        SetXBounds(g->min_x,g->max_x);
+        SetXBounds(g->min_x,g->max_x,group);
     } else if (event->key()==Qt::Key_Up) {
         float zoom=0.75;
         if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
