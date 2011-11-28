@@ -496,6 +496,7 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
             return;
         }
     }
+    return;
     netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
 }
 void MainWindow::replyFinished(QNetworkReply * reply)

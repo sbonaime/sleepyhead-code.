@@ -18,6 +18,9 @@ One id code per item
   <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="" color="red"/>
   <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore 2" label="VS2" unit="" color="orange"/>
   <channel id="0x1009" class="data" name="PressurePulse" details="Pressure Pulse" label="PP" color="dark red"/>
+  <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="" color="dark blue"/>
+  <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="" color="orange"/>
+  <channel id="0x100c" class="data" name="EP" details="Exhale Puff" label="EP" unit="" color="dark magenta"/>
 
   <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="PMin" color="black"/>
   <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="PMax" color="black"/>
@@ -46,9 +49,7 @@ One id code per item
   <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Trgt Min Vent." unit="" color="dark cyan"/>
   <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
-  <channel id="0x1116" class="data" name="LeakFlag" details="Leak Event" label="L" unit="" color="dark blue"/>
-  <channel id="0x1117" class="data" name="NRI" details="Non Responding Event" label="NRI" unit="" color="orange"/>
-  <channel id="0x1118" class="data" name="EP" details="Exhale Puff" label="EP" unit="" color="dark magenta"/>
+  <channel id="0x1116" class="data" name="AHI" details="AHI/Hour" label="AHI/Hr" unit="" color="dark red"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="" color="black"/>

@@ -636,7 +636,7 @@ void Daily::Load(QDate date)
         html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
         ChannelID chans[]={
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
-            CPAP_MinuteVent,CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
+            CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
             CPAP_Leak,CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
             CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
         };
