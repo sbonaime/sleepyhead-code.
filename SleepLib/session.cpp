@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include <algorithm>
+#include <SleepLib/calcs.h>
 
 using namespace std;
 
@@ -406,6 +407,12 @@ bool Session::LoadEvents(QString filename)
 
 void Session::UpdateSummaries()
 {
+    CalcAHIGraph ahi;
+    CalcRespRate calc;
+
+    ahi.calculate(this);
+    calc.calculate(this);
+
     ChannelID id;
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
@@ -553,6 +560,93 @@ bool Session::channelExists(ChannelID id)
         if (q.value()==0) return false;
     }
     return true;
+}
+
+int Session::rangeCount(ChannelID id, qint64 first,qint64 last)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> & evec=j.value();
+    int sum=0;
+
+    qint64 t;
+    for (int i=0;i<evec.size();i++) {
+        EventList & ev=*evec[i];
+        for (unsigned j=0;j<ev.count();j++) {
+            t=ev.time(j);
+            if ((t>=first) && (t<=last)) {
+                sum++;
+            }
+        }
+    }
+    return sum;
+}
+double Session::rangeSum(ChannelID id, qint64 first,qint64 last)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> & evec=j.value();
+    double sum=0;
+
+    qint64 t;
+    for (int i=0;i<evec.size();i++) {
+        EventList & ev=*evec[i];
+        for (unsigned j=0;j<ev.count();j++) {
+            t=ev.time(j);
+            if ((t>=first) && (t<=last)) {
+                sum+=ev.data(j);
+            }
+        }
+    }
+    return sum;
+}
+EventDataType Session::rangeMin(ChannelID id, qint64 first,qint64 last)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> & evec=j.value();
+    EventDataType v,min=999999999;
+
+    qint64 t;
+    for (int i=0;i<evec.size();i++) {
+        EventList & ev=*evec[i];
+        for (unsigned j=0;j<ev.count();j++) {
+            t=ev.time(j);
+            if ((t>=first) && (t<=last)) {
+                v=ev.data(j);
+                if (v<min) min=v;
+            }
+        }
+    }
+    return min;
+}
+EventDataType Session::rangeMax(ChannelID id, qint64 first,qint64 last)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        return 0;
+    }
+    QVector<EventList *> & evec=j.value();
+    EventDataType v,max=-999999999;
+
+    qint64 t;
+    for (int i=0;i<evec.size();i++) {
+        EventList & ev=*evec[i];
+        for (unsigned j=0;j<ev.count();j++) {
+            t=ev.time(j);
+            if ((t>=first) && (t<=last)) {
+                v=ev.data(j);
+                if (v>max) max=v;
+            }
+        }
+    }
+    return max;
 }
 
 int Session::count(ChannelID id)

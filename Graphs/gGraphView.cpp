@@ -2411,6 +2411,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         return;
     }
     gGraph *g;
+    // Pick the first valid graph in the primary group
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==0) {
             if (!m_graphs[i]->isEmpty()) {
@@ -2420,6 +2421,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         }
     }
     if (!g) return;
+
     g->keyPressEvent(event);
 
     if (event->key()==Qt::Key_Left) {

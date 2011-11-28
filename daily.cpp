@@ -179,9 +179,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     bool square=PROFILE["SquareWavePlots"].toBool();
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::yellow,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::red,square)));
 
-    AHI->AddLayer(AddCPAP(new AHIChart(Qt::darkYellow)));
+    AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
@@ -203,6 +205,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,square)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
 
+    PTB->setForceMaxY(100);
+    SPO2->setForceMaxY(100);
+    INTSPO2->setForceMaxY(100);
     //FRW->setRecMinY(-120);
     //FRW->setRecMaxY(0);
 

@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     newprofile.cpp \
     exportcsv.cpp \
     common_gui.cpp \
-    SleepLib/loader_plugins/intellipap_loader.cpp
+    SleepLib/loader_plugins/intellipap_loader.cpp \
+    SleepLib/calcs.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -124,7 +125,8 @@ HEADERS  += \
     newprofile.h \
     exportcsv.h \
     common_gui.h \
-    SleepLib/loader_plugins/intellipap_loader.h
+    SleepLib/loader_plugins/intellipap_loader.h \
+    SleepLib/calcs.h
 
 
 FORMS    += \
@@ -150,6 +152,8 @@ OTHER_FILES += \
     docs/channels.xml \
     docs/release_notes.html \
     docs/startup_tips.txt
+
+
 
 
 

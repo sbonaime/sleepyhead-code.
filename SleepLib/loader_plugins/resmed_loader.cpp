@@ -19,6 +19,7 @@ License: GPL
 
 #include "resmed_loader.h"
 #include "SleepLib/session.h"
+#include "SleepLib/calcs.h"
 
 extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;

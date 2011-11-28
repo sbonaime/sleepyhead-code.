@@ -107,6 +107,12 @@ public:
     void setLast(ChannelID id,qint64 val) { m_lastchan[id]=val; }
 
     int count(ChannelID id);
+
+    int rangeCount(ChannelID id, qint64 first,qint64 last);
+    double rangeSum(ChannelID id, qint64 first,qint64 last);
+    EventDataType rangeMin(ChannelID id, qint64 first,qint64 last);
+    EventDataType rangeMax(ChannelID id, qint64 first,qint64 last);
+
     double sum(ChannelID id);
     EventDataType avg(ChannelID id);
     EventDataType wavg(ChannelID i);
