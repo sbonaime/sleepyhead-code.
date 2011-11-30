@@ -304,19 +304,22 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (m_graphtype==GT_SESSIONS) {
                 int j;
                 QHash<int,QHash<short,EventDataType> >::iterator times=m_times.find(zd);
+                QColor col=m_colors[0];
+                //if (hours<4) col=QColor("#f03030");
+
+                if (zd==hl_day) {
+                    col=QColor("gold");
+                }
+                QColor col2=brighten(col);
 
                 for (j=0;j<d.value().size();j++) {
-                    QColor col=m_colors[0];
-                    if (zd==hl_day) {
-                        col=QColor("gold");
-                    }
                     tmp2=times.value()[j];
                     py=top+height-(tmp2*ymult);
 
                     tmp=d.value()[j]; // length
+
                     //tmp-=miny;
                     h=tmp*ymult;
-                    QColor col2=brighten(col);
 
                     quads->add(x1,py,x1,py-h,col);
                     quads->add(x2,py-h,x2,py,col2);
@@ -349,12 +352,19 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     if (!j) continue;
                     j--;
 
+                    tmp=g.value();
+
                     QColor col=m_colors[j];
+                    if (m_type[j]==ST_HOURS) {
+                        if (tmp<4) {
+                            col=QColor("#f04040");
+                        }
+                    }
+
                     if (zd==hl_day) {
                         col=QColor("gold");
                     }
 
-                    tmp=g.value();
                     //if (!tmp) continue;
                     if (m_type[j]==ST_MAX) {
                         if (tmp>totalvalues[j]) totalvalues[j]=tmp;

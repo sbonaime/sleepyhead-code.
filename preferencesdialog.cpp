@@ -137,34 +137,24 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     //ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
 
     general.clear();
-    general.push_back(Preference(p_profile,"UseAntiAliasing",PT_Checkbox,"Use Anti-Aliasing","Enable Graphical smoothing. Doesn't always look pretty.",false));
-    general.push_back(Preference(p_profile,"SquareWavePlots",PT_Checkbox,"Square Wave Plots","Try to use Square Wave plots where possible",true));
-    general.push_back(Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,"Event Breakdown Piechart","Shows Event Breakdown in Daily view. This may cause problems on older computers.",true));
-    general.push_back(Preference(p_pref,"SkipLoginScreen",PT_Checkbox,"Skip Login Screen","Bypass the login screen at startup",false));
-    general.push_back(Preference(p_profile,"SkipEmptyDays",PT_Checkbox,"Skip Empty Days","Skip over calendar days that don't have any data",true));
-    general.push_back(Preference(p_profile,"EnableMultithreading",PT_Checkbox,"Enable Multithreading","Try to use extra processor cores where possible",false));
-    general.push_back(Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false));
+    general["UseAntiAliasing"]=Preference(p_profile,"UseAntiAliasing",PT_Checkbox,"Use Anti-Aliasing","Enable Graphical smoothing. Doesn't always look pretty.",false);
+    general["SquareWavePlots"]=Preference(p_profile,"SquareWavePlots",PT_Checkbox,"Square Wave Plots","Try to use Square Wave plots where possible",true);
+    general["EnableGraphSnapshots"]=Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,"Event Breakdown Piechart","Shows Event Breakdown in Daily view. This may cause problems on older computers.",true);
+    general["SkipLoginScreen"]=Preference(p_pref,"SkipLoginScreen",PT_Checkbox,"Skip Login Screen","Bypass the login screen at startup",false);
+    general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,"Skip Empty Days","Skip over calendar days that don't have any data",true);
+    general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,"Enable Multithreading","Try to use extra processor cores where possible",false);
+    general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false);
 
-    ui->genOpWidget->clear();
-    for (int i=0;i<general.size();i++) {
-        Preference & p=general[i];
-        QListWidgetItem *wi=new QListWidgetItem(p.label());
-        wi->setToolTip(p.tooltip());
-
-        bool b=p.value().toBool();
-        wi->setCheckState(b ? Qt::Checked : Qt::Unchecked);
-        QVariant t;
-        t.setValue(p);
-        wi->setData(Qt::UserRole,t);
-        ui->genOpWidget->addItem(wi);
-    }
-    ui->genOpWidget->sortItems();
+    ui->useAntiAliasing->setChecked(general["UseAntiAliasing"].value().toBool());
+    ui->useSquareWavePlots->setChecked(general["SquareWavePlots"].value().toBool());
+    ui->enableGraphSnapshots->setChecked(general["EnableGraphSnapshots"].value().toBool());
+    ui->skipLoginScreen->setChecked(general["SkipLoginScreen"].value().toBool());
+    ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
+    ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
+    ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
-
-    if (!PREF.Exists("SkipLoginScreen")) PREF["SkipLoginScreen"]=false;
-    ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
 
     if (!PREF.Exists("Updates_CheckFrequency")) PREF["Updates_CheckFrequency"]=3;
     ui->updateCheckEvery->setValue(PREF["Updates_CheckFrequency"].toInt());
@@ -266,20 +256,16 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
-    for (int i=0;i<ui->genOpWidget->count();i++) {
-        QListWidgetItem *item=ui->genOpWidget->item(i);
-        bool checked=item->checkState() == Qt::Checked;
-        QVariant data=item->data(Qt::UserRole);
-
-        Preference p=data.value<Preference>();
-
-        if (p.value().toBool()!=checked) {
-            p.setValue(checked);
-            if (p.code()=="SquareWavePlots") {
-                needs_restart=true;
-            }
-        }
+    general["UseAntiAliasing"].setValue(ui->useAntiAliasing->isChecked());
+    if (ui->useSquareWavePlots->isChecked()!=general["SquareWavePlots"].value().toBool()) {
+        general["SquareWavePlots"].setValue(ui->useSquareWavePlots->isChecked());
+        needs_restart=true;
     }
+    general["EnableGraphSnapshots"].setValue(ui->enableGraphSnapshots->isChecked());
+    general["SkipLoginScreen"].setValue(ui->skipLoginScreen->isChecked());
+    general["SkipEmptyDays"].setValue(ui->skipEmptyDays->isChecked());
+    general["EnableMultithreading"].setValue(ui->enableMultithreading->isChecked());
+    general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
 
 
     if ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) needs_restart=true;
@@ -287,8 +273,6 @@ void PreferencesDialog::Save()
 
     (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
     (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
-
-    //(*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
 
     if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) needs_restart=true;
 

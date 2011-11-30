@@ -78,7 +78,7 @@ private:
     QStringListModel *importModel;
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
-    QVector<Preference> general;
+    QHash<QString,Preference> general;
 
 };
 

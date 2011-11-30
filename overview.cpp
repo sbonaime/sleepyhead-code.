@@ -103,7 +103,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     UC->AddLayer(uc);
 
     us=new SummaryChart("Hours",GT_SESSIONS);
-    us->addSlice("",QColor("#c0c0ff"),ST_HOURS);
+    us->addSlice("",QColor("dark blue"),ST_HOURS);
     us->addSlice("",QColor("blue"),ST_SESSIONS);
     US->AddLayer(us);
 
