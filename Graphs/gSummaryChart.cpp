@@ -498,6 +498,8 @@ QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false
     if (show_12hr) {
         h>=12 ? pm[0]='p' : pm[0]='a'; // yes, inverted..
         h %= 12;
+        if (h==0) h=12;
+
     } else {
         pm[0]=0;
     }
