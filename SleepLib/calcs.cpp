@@ -29,21 +29,31 @@ int CalcRespRate::calculate(Session *session)
 
     if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform
 
-    EventList *flow, *rr;
+    EventList *flow, *rr,  *tv=NULL, *mv=NULL;
+    if (!session->eventlist.contains(CPAP_TidalVolume)) {
+        tv=new EventList(EVL_Event);
+        session->eventlist[CPAP_TidalVolume].push_back(tv);
+    }
+    if (!session->eventlist.contains(CPAP_MinuteVent)) {
+        mv=new EventList(EVL_Event);
+        session->eventlist[CPAP_MinuteVent].push_back(mv);
+    }
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
         flow=session->eventlist[CPAP_FlowRate][ws];
         if (flow->count() > 5) {
             rr=new EventList(EVL_Event);
             session->eventlist[CPAP_RespRate].push_back(rr);
-            cnt+=filterFlow(flow,rr,flow->rate());
+
+            cnt+=filterFlow(flow,rr,tv,mv,flow->rate());
         }
     }
     return cnt;
 }
 
-int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
+int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
 {
+
     int size=in->count();
     EventDataType *stage1=new EventDataType [size];
     EventDataType *stage2=new EventDataType [size];
@@ -51,7 +61,7 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
     QVector<EventDataType> med;
     med.reserve(8);
 
-    EventDataType r;
+    EventDataType r,tmp;
     int cnt;
 
     EventDataType c;
@@ -115,9 +125,12 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
 
     qint64 time=in->first();
     qint64 u1=0,u2=0,len,l1=0,l2=0;
+    int z1=0,z2=0;
     EventDataType lastc=0,thresh=0;
     QVector<int> breaths;
+    QVector<EventDataType> TV;
     QVector<qint64> breaths_start;
+    int lasti=0;
 
     for (i=0;i<size;i++) {
         c=stage1[i];
@@ -126,11 +139,18 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
                 u2=u1;
                 u1=time;
                 if (u2>0) {
+                    z2=i;
                     len=abs(u2-u1);
-                    //if (len>1500) {
-                        breaths_start.push_back(time);
-                        breaths.push_back(len);
-                    //}
+                    if (tv) { // && z1>0) { // Tidal Volume Calculations
+                        EventDataType t=0;
+                        for (int g=z1;g<z2;g++) {
+                            tmp=-stage1[g];
+                            t+=tmp;
+                        }
+                        TV.push_back(t);
+                    }
+                    breaths_start.push_back(time);
+                    breaths.push_back(len);
                 }
             }
         } else {
@@ -138,11 +158,20 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
                 l2=l1;
                 l1=time;
                 if (l2>0) {
+                    z1=i;
                     len=abs(l2-l1);
-                    //if (len>1500) {
-                    //    breaths2_start.push_back(time);
-                    //  breaths2.push_back(len);
-                    //}
+                    if (tv) {
+                        // Average the other half of the breath to increase accuracy.
+                        EventDataType t=0;
+                        for (int g=z2;g<z1;g++) {
+                            tmp=stage1[g];
+                            t+=tmp;
+                        }
+                        int ts=TV.size()-2;
+                        if (ts>=0) {
+                          //  TV[ts]=(TV[ts]+t)/2.0;
+                        }
+                    }
                 }
             }
 
@@ -162,11 +191,17 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
     QVector<int> breaths2;
     QVector<qint64> breaths2_start;
 
-    int fir=0;
+    QVector<EventDataType> TV2;
+    QVector<qint64> TV2_start;
+
+    int fir=0,fir2=0;
+    EventDataType T,L;
     do {
         br=0;
         bool first=true;
         bool cont=false;
+        T=0;
+        L=0;
         for (int i=fir;i<breaths.size();i++) {
             t=breaths_start[i];
             l=breaths[i];
@@ -194,10 +229,15 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
                 continue;
             } else
             br+=1.0;
+
+            T+=TV[i]/2.0;
+            L+=l/1000.0;
         }
         if (cont) continue;
         breaths2.push_back(br);
         breaths2_start.push_back(t1+window/2);
+        //TV2_start.push_back(t2);
+        TV2.push_back(T);
         //out->AddEvent(t,br);
         //stage2[z++]=br;
 
@@ -205,16 +245,26 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, double rate)
         t2+=window/2.0;
     } while (t2<in->last());
 
-
-    for (int i=1;i<breaths2.size()-2;i++) {
+    for (int i=2;i<breaths2.size()-2;i++) {
         t=breaths2_start[i];
         med.clear();
-        for (int j=0;j<4;j++)  {
-            med.push_back(breaths2[i+j-1]);
+        for (int j=0;j<5;j++)  {
+            med.push_back(breaths2[i+j-2]);
         }
         qSort(med);
         br=med[2];
         out->AddEvent(t,br);
+
+        //t=TV2_start[i];
+        med.clear();
+        for (int j=0;j<5;j++)  {
+            med.push_back(TV2[i+j-2]);
+        }
+        qSort(med);
+        tmp=med[3];
+        tv->AddEvent(t,tmp);
+
+        mv->AddEvent(t,(tmp*br)/1000.0);
     }
 
     delete [] stage2;

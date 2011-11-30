@@ -98,6 +98,9 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SES=createGraph("Sessions");
     NPB=createGraph("% in PB");
     RR=createGraph("Resp. Rate");
+    TV=createGraph("Tidal Volume");
+    MV=createGraph("Minute Vent.");
+    PTB=createGraph("Pat. Trig. Br.");
 
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
@@ -128,11 +131,30 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SET->setRecMaxY(5);
     SET->AddLayer(set);
 
-    rr=new SummaryChart("bpm",GT_LINE);
+    rr=new SummaryChart("breaths/min",GT_LINE);
     rr->addSlice(CPAP_RespRate,QColor("light blue"),ST_MIN);
     rr->addSlice(CPAP_RespRate,QColor("light green"),ST_90P);
     rr->addSlice(CPAP_RespRate,QColor("blue"),ST_WAVG);
     RR->AddLayer(rr);
+
+    tv=new SummaryChart("L/b",GT_LINE);
+    tv->addSlice(CPAP_TidalVolume,QColor("light blue"),ST_MIN);
+    tv->addSlice(CPAP_TidalVolume,QColor("light green"),ST_90P);
+    tv->addSlice(CPAP_TidalVolume,QColor("blue"),ST_WAVG);
+    TV->AddLayer(tv);
+
+    mv=new SummaryChart("L/m",GT_LINE);
+    mv->addSlice(CPAP_MinuteVent,QColor("light blue"),ST_MIN);
+    mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_90P);
+    mv->addSlice(CPAP_MinuteVent,QColor("blue"),ST_WAVG);
+    MV->AddLayer(mv);
+
+
+    ptb=new SummaryChart("%PTB",GT_LINE);
+    ptb->addSlice(CPAP_PTB,QColor("yellow"),ST_MIN);
+    ptb->addSlice(CPAP_PTB,QColor("light gray"),ST_90P);
+    ptb->addSlice(CPAP_PTB,QColor("orange"),ST_WAVG);
+    PTB->AddLayer(ptb);
 
     pr=new SummaryChart("cmH2O",GT_LINE);
     //PR->setRecMinY(4.0);

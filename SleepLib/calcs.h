@@ -25,7 +25,7 @@ public:
     CalcRespRate(ChannelID id=CPAP_RespRate);
     virtual int calculate(Session *session);
 protected:
-    int filterFlow(EventList *in, EventList *out,double rate);
+    int filterFlow(EventList *in, EventList *out,EventList *tv, EventList *mv, double rate);
 };
 
 class CalcAHIGraph:public Calculation
