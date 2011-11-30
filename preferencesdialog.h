@@ -70,7 +70,6 @@ private slots:
     void on_maskTypeCombo_activated(int index);
 
 private:
-    virtual void resizeEvent(QResizeEvent *);
     void resetGraphModel();
     Ui::PreferencesDialog *ui;
     Profile * profile;

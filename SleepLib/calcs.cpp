@@ -274,7 +274,7 @@ int CalcAHIGraph::calculate(Session *session)
         AHI->AddEvent(ti,ahi);
         ti+=winsize;
     }
-    AHI->AddEvent(ti,ahi);
+    AHI->AddEvent(ti,0);
 
     return AHI->count();
 }

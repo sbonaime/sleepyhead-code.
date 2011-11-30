@@ -270,12 +270,6 @@ p, li { white-space: pre-wrap; }
            </layout>
           </item>
          </layout>
-         <zorder></zorder>
-         <zorder></zorder>
-         <zorder></zorder>
-         <zorder></zorder>
-         <zorder></zorder>
-         <zorder></zorder>
         </widget>
        </item>
        <item>
@@ -344,20 +338,12 @@ p, li { white-space: pre-wrap; }
               </spacer>
              </item>
             </layout>
-            <zorder>removeImportLocation</zorder>
-            <zorder>addImportLocation</zorder>
-            <zorder>verticalSpacer_5</zorder>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
       </layout>
-      <zorder>label</zorder>
-      <zorder>label_3</zorder>
-      <zorder>groupBox_6</zorder>
-      <zorder>groupBox_3</zorder>
-      <zorder>line</zorder>
      </widget>
      <widget class="QWidget" name="maskTab">
       <attribute name="title">
@@ -543,7 +529,7 @@ p, li { white-space: pre-wrap; }
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="layoutWidget">
+         <widget class="QWidget" name="layoutWidget2">
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="2" column="0" colspan="2">
             <widget class="QLabel" name="label_28">

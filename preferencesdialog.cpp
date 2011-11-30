@@ -28,10 +28,6 @@ MaskProfile masks[]={
 };
 const int num_masks=sizeof(masks)/sizeof(MaskProfile);
 
-void PreferencesDialog::resizeEvent(QResizeEvent *e)
-{
-}
-
 
 PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     QDialog(parent),
