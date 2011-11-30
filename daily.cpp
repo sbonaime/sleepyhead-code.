@@ -72,6 +72,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
+    int default_height=PROFILE["GraphHeight"].toInt();
     SF=new gGraph(GraphView,"Event Flags",default_height);
     FRW=new gGraph(GraphView,"Flow Rate",default_height);
     AHI=new gGraph(GraphView,"AHI",default_height);
@@ -79,12 +80,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PRD=new gGraph(GraphView,"Pressure",default_height);
     LEAK=new gGraph(GraphView,"Leak",default_height);
     SNORE=new gGraph(GraphView,"Snore",default_height);
-    RR=new gGraph(GraphView,"Respiratory Rate",default_height);
+    RR=new gGraph(GraphView,"Resp. Rate",default_height);
     TV=new gGraph(GraphView,"Tidal Volume",default_height);
-    MV=new gGraph(GraphView,"Minute Ventilation",default_height);
-    FLG=new gGraph(GraphView,"Flow Limitation",default_height);
-    PTB=new gGraph(GraphView,"Patient Trig. Breath",default_height);
-    RE=new gGraph(GraphView,"Respiratory Event",default_height);
+    MV=new gGraph(GraphView,"Minute Vent.",default_height);
+    FLG=new gGraph(GraphView,"Flow Limit.",default_height);
+    PTB=new gGraph(GraphView,"Patient Tr. Br.",default_height);
+    RE=new gGraph(GraphView,"Resp. Event",default_height);
     IE=new gGraph(GraphView,"I:E",default_height);
     TE=new gGraph(GraphView,"Te",default_height);
     TI=new gGraph(GraphView,"Ti",default_height);

@@ -84,6 +84,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI=createGraph("AHI");
     UC=createGraph("Usage");
 
+    int default_height=PROFILE["GraphHeight"].toInt();
     US=new gGraph(GraphView,"Session Usage",default_height,0);
     US->AddLayer(new gYAxisTime(),LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();
@@ -172,6 +173,7 @@ Overview::~Overview()
 }
 gGraph * Overview::createGraph(QString name)
 {
+    int default_height=PROFILE["GraphHeight"].toInt();
     gGraph *g=new gGraph(GraphView,name,default_height,0);
     g->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();

@@ -2485,6 +2485,7 @@ void gGraphView::timedRedraw(int ms)
 }
 void gGraphView::resetLayout()
 {
+    int default_height=PROFILE["GraphHeight"].toInt();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->setHeight(default_height);
     }

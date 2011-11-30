@@ -119,6 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("SPO2DropDuration")) PROFILE["PulseChangeDuration"]=5;
     if (!PROFILE.Exists("PulseChangeBPM")) PROFILE["PulseChangeDuration"]=5;
     if (!PROFILE.Exists("PulseChangeDuration")) PROFILE["PulseChangeDuration"]=8;
+    if (!PROFILE.Exists("GraphHeight")) PROFILE["GraphHeight"]=180;
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
     ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());

@@ -6,7 +6,9 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QCalendarWidget>
 #include "preferencesdialog.h"
+#include "common_gui.h"
 
 
 #include <Graphs/gGraphView.h>
@@ -51,6 +53,23 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
             on_maskTypeCombo_activated(i);
         }
     }
+    QLocale locale=QLocale::system();
+    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
+    if (!shortformat.toLower().contains("yyyy")) {
+        shortformat.replace("yy","yyyy");
+    }
+    ui->startedUsingMask->setDisplayFormat(shortformat);
+    Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+
+    ui->startedUsingMask->calendarWidget()->setFirstDayOfWeek(dow);
+
+
+    // Stop both calendar drop downs highlighting weekends in red
+    QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+
 
     //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
 
@@ -144,6 +163,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,"Skip Empty Days","Skip over calendar days that don't have any data",true);
     general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,"Enable Multithreading","Try to use extra processor cores where possible",false);
     general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false);
+    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",160);
+    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,"Mask Description","Whatever you want to record about your mask.",QString());
+    general["MaskStartDate"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",QDate::currentDate());
+
+
+    ui->maskDescription->setText(general["MaskDescription"].value().toString());
+    ui->startedUsingMask->setDate(general["MaskStartDate"].value().toDate());
 
     ui->useAntiAliasing->setChecked(general["UseAntiAliasing"].value().toBool());
     ui->useSquareWavePlots->setChecked(general["SquareWavePlots"].value().toBool());
@@ -152,6 +178,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
+    ui->graphHeight->setValue(general["GraphHeight"].value().toInt());
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
@@ -266,7 +293,9 @@ void PreferencesDialog::Save()
     general["SkipEmptyDays"].setValue(ui->skipEmptyDays->isChecked());
     general["EnableMultithreading"].setValue(ui->enableMultithreading->isChecked());
     general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
-
+    general["MaskDescription"].setValue(ui->maskDescription->text());
+    (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
+    (*profile)["GraphHeight"]=ui->graphHeight->value();
 
     if ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) needs_restart=true;
     if ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value()) needs_restart=true;
