@@ -44,10 +44,10 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     if (height<0) return;
 
-    QString fd="0";
+    static QString fd="0";
     GetTextExtent(fd,x,y);
 
-    double max_yticks=round(height / (y+15.0)); // plus spacing between lines
+    double max_yticks=round(height / (y+7.0)); // plus spacing between lines
     //double yt=1/max_yticks;
 
     double mxy=MAX(fabs(maxy),fabs(miny));
