@@ -782,7 +782,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
     //for (int i=0;i<0x20;i++) Code[i]=NULL;
 
     session->updateFirst(timestamp);
-    EventDataType data[10];
+    EventDataType data[10],tmp;
 
     //qint64 start=timestamp;
     qint64 t=timestamp;
@@ -946,7 +946,8 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
             Code[16]->AddEvent(t,buffer[pos++]); // Breaths Per Minute
             Code[17]->AddEvent(t,buffer[pos++]); // Patient Triggered Breaths
             Code[18]->AddEvent(t,buffer[pos++]); // Minute Ventilation
-            Code[19]->AddEvent(t,buffer[pos++]); // Tidal Volume
+            tmp=buffer[pos++]*10.0;
+            Code[19]->AddEvent(t,tmp); // Tidal Volume
             Code[20]->AddEvent(t,data[2]=buffer[pos++]); // Snore
             if (data[2]>0) {
                 if (!Code[21]) {
