@@ -413,6 +413,8 @@ void Session::UpdateSummaries()
     ahi.calculate(this);
     calc.calculate(this);
 
+    calcLeaks(this);
+
     ChannelID id;
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {

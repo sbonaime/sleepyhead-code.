@@ -279,6 +279,59 @@ int CalcAHIGraph::calculate(Session *session)
     return AHI->count();
 }
 
+int calcLeaks(Session *session)
+{
+    if (session->eventlist.contains(CPAP_Leak)) return 0; // abort if already there
+    if (!session->eventlist.contains(CPAP_LeakTotal)) return 0; // can't calculate without this..
+
+    const qint64 winsize=3600000; // 5 minute window
+
+    qint64 first=session->first(),
+           last=session->last(),
+           f;
+
+    EventList *leak=new EventList(EVL_Event);
+    session->eventlist[CPAP_Leak].push_back(leak);
+
+    const int rbsize=128;
+    EventDataType rbuf[rbsize],tmp,median;
+    qint64 rtime[rbsize],ti;
+    int rpos=0;
+    int tcnt=0;
+    QVector<EventDataType> med;
+
+    for (int i=0;i<session->eventlist[CPAP_LeakTotal].size();i++) {
+        EventList & el=*session->eventlist[CPAP_LeakTotal][i];
+        for (unsigned j=0;j<el.count();j++) {
+            tmp=el.data(j);
+            ti=el.time(j);
+            rbuf[rpos]=tmp;
+            rtime[rpos]=ti;
+            tcnt++;
+            rpos++;
+
+            int rcnt;
+            if (tcnt<rbsize) rcnt=tcnt; else rcnt=rbsize;
+
+            med.clear();
+            for (int k=0;k<rcnt;k++) {
+                if (rtime[k] > ti-winsize) // if fits in time window, add to the list
+                    med.push_back(rbuf[k]);
+            }
+            qSort(med);
+
+            int idx=float(med.size() * 0.0);
+            if (idx>=med.size()) idx--;
+            median=tmp-med[idx];
+            if (median<0) median=0;
+            leak->AddEvent(ti,median);
+
+            rpos=rpos % rbsize;
+        }
+    }
+    return leak->count();
+}
+
 
 int calcPulseChange(Session *session)
 {

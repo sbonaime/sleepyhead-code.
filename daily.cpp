@@ -182,16 +182,17 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
 
     bool square=PROFILE["SquareWavePlots"].toBool();
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::red,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::yellow,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
 
     AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
 
     //AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
-    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
+    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_LeakTotal,Qt::yellow,square)));
+    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
 
@@ -607,10 +608,10 @@ void Daily::Load(QDate date)
             "</table></td>";
         } else if (cpap->machine->GetClass()=="Intellipap") {
             html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b><a href='event=NRI'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b><font color='white'><a href='event=Leak'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
-            "<tr><td align='right' bgcolor='#ff4040'><b><a href='event=VSnore'>"+tr("Vibratory Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#80ff80'><b><a href='event=ExP'>"+tr("Exhalation Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"%</td></tr>\n"
+            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event=NRI'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event=Leak'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
+            "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event=VSnore'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event=ExP'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
             "</table></td>";
 
         }
@@ -650,12 +651,12 @@ void Daily::Load(QDate date)
             CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
-        int suboffset;
+        int suboffset=0;
         for (int i=0;i<numchans;i++) {
 
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
-                if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
+                //if (code==CPAP_LeakTotal) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
                 html+="<tr><td align=left>"+schema::channel[code].label();
                 html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
                 html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);

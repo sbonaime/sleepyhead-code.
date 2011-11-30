@@ -36,6 +36,8 @@ public:
 protected:
 };
 
+int calcLeaks(Session *session);
+
 int calcPulseChange(Session *session);
 int calcSPO2Drop(Session *session);
 

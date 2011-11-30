@@ -206,10 +206,10 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             sess->AddEventList(CPAP_Te,EVL_Event);
             sess->AddEventList(CPAP_Ti,EVL_Event);
 
-            sess->AddEventList(CPAP_Leak,EVL_Event);
+            sess->AddEventList(CPAP_LeakTotal,EVL_Event);
             sess->AddEventList(CPAP_MaxLeak,EVL_Event);
-            //sess->AddEventList(CPAP_AHI,EVL_Event);
             sess->AddEventList(CPAP_TidalVolume,EVL_Event);
+            sess->AddEventList(CPAP_MinuteVent,EVL_Event);
             sess->AddEventList(CPAP_RespRate,EVL_Event);
             sess->AddEventList(CPAP_Snore,EVL_Event);
         } else {
@@ -243,15 +243,16 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             if ((ts1>=(quint32)sid) && (ts1<SessionEnd[j])){
                 Session *sess=Sessions[sid];
                 qint64 time=quint64(ts1)*1000L;
-                sess->eventlist[CPAP_Pressure][0]->AddEvent(time,m_buffer[pos+0xd]/10.0); // 0x0d
-                sess->eventlist[CPAP_EPAP][0]->AddEvent(time,m_buffer[pos+0x13]/10.0);
-                sess->eventlist[CPAP_IPAP][0]->AddEvent(time,m_buffer[pos+0x14]/10.0);
+                sess->eventlist[CPAP_Pressure][0]->AddEvent(time,m_buffer[pos+0xd]/10.0); // current pressure
+                sess->eventlist[CPAP_EPAP][0]->AddEvent(time,m_buffer[pos+0x13]/10.0); // epap / low
+                sess->eventlist[CPAP_IPAP][0]->AddEvent(time,m_buffer[pos+0x14]/10.0); // ipap / high
 
-                sess->eventlist[CPAP_Leak][0]->AddEvent(time,m_buffer[pos+0x7]); //correct
-                sess->eventlist[CPAP_MaxLeak][0]->AddEvent(time,m_buffer[pos+0x6]); //correct
+                sess->eventlist[CPAP_LeakTotal][0]->AddEvent(time,m_buffer[pos+0x7]); // "Average Leak"
+                sess->eventlist[CPAP_MaxLeak][0]->AddEvent(time,m_buffer[pos+0x6]); // "Max Leak"
 
-                sess->eventlist[CPAP_RespRate][0]->AddEvent(time,m_buffer[pos+0xa]); // 0x0a is correct
-                sess->eventlist[CPAP_Te][0]->AddEvent(time,m_buffer[pos+0xf]);
+                int rr=m_buffer[pos+0xa];
+                sess->eventlist[CPAP_RespRate][0]->AddEvent(time,rr); // Respiratory Rate
+                sess->eventlist[CPAP_Te][0]->AddEvent(time,m_buffer[pos+0xf]); //
                 sess->eventlist[CPAP_Ti][0]->AddEvent(time,m_buffer[pos+0xc]);
 
                 sess->eventlist[CPAP_Snore][0]->AddEvent(time,m_buffer[pos+0x4]); //4/5??
@@ -269,30 +270,39 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
                     if (!sess->eventlist.contains(CPAP_ExP)) {
                         sess->AddEventList(CPAP_ExP,EVL_Event);
                     }
-                    sess->eventlist[CPAP_ExP][0]->AddEvent(time,m_buffer[pos+0x5]);
+
+                    for (int q=0;q<m_buffer[pos+0x5];q++)
+                        sess->eventlist[CPAP_ExP][0]->AddEvent(time,m_buffer[pos+0x5]);
                 }
 
                 if (m_buffer[pos+0x10]>0) {
                     if (!sess->eventlist.contains(CPAP_Obstructive)) {
                         sess->AddEventList(CPAP_Obstructive,EVL_Event);
                     }
-                    sess->eventlist[CPAP_Obstructive][0]->AddEvent(time,m_buffer[pos+0x10]);
+                    for (int q=0;q<m_buffer[pos+0x10];q++)
+                        sess->eventlist[CPAP_Obstructive][0]->AddEvent(time,m_buffer[pos+0x10]);
                 }
+
                 if (m_buffer[pos+0x11]>0) {
                     if (!sess->eventlist.contains(CPAP_Hypopnea)) {
                         sess->AddEventList(CPAP_Hypopnea,EVL_Event);
                     }
-                    //for (int i=0;i<m_buffer[pos+0x11];i++)
-                    sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time,m_buffer[pos+0x11]);
+                    for (int q=0;q<m_buffer[pos+0x11];q++)
+                        sess->eventlist[CPAP_Hypopnea][0]->AddEvent(time,m_buffer[pos+0x11]);
                 }
                 if (m_buffer[pos+0x12]>0) { // NRI // is this == to RERA?? CA??
                     if (!sess->eventlist.contains(CPAP_NRI)) {
                         sess->AddEventList(CPAP_NRI,EVL_Event);
                     }
-                    sess->eventlist[CPAP_NRI][0]->AddEvent(time,m_buffer[pos+0x12]);
+                    for (int q=0;q<m_buffer[pos+0x12];q++)
+                        sess->eventlist[CPAP_NRI][0]->AddEvent(time,m_buffer[pos+0x12]);
                 }
                 quint16 tv=(m_buffer[pos+0x8] << 8) | m_buffer[pos+0x9]; // correct
+
                 sess->eventlist[CPAP_TidalVolume][0]->AddEvent(time,tv);
+
+                EventDataType mv=tv*rr; // MinuteVent=TidalVolume * Respiratory Rate
+                sess->eventlist[CPAP_MinuteVent][0]->AddEvent(time,mv/1000.0);
                 break;
             }
 

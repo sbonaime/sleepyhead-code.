@@ -567,7 +567,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
     /*ChannelID Codes[]={
         PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
         PRS1_Unknown08, PRS1_Unknown09, CPAP_Hypopnea, PRS1_Unknown0B, CPAP_FlowLimit, CPAP_VSnore, PRS1_Unknown0E, CPAP_CSR, PRS1_Unknown10,
-        CPAP_Leak, PRS1_Unknown12
+        CPAP_LeakTotal, PRS1_Unknown12
     };
     int ncodes=sizeof(Codes)/sizeof(ChannelID); */
 
@@ -698,7 +698,7 @@ bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
             if (!Code[14]) {
-                if (!(Code[14]=session->AddEventList(CPAP_Leak,EVL_Event))) return false;
+                if (!(Code[14]=session->AddEventList(CPAP_LeakTotal,EVL_Event))) return false;
                 if (!(Code[15]=session->AddEventList(CPAP_Snore,EVL_Event))) return false;
             }
             Code[14]->AddEvent(t,data[0]);
@@ -773,7 +773,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
         CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
         PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F, PRS1_10,
-        CPAP_Leak, PRS1_12
+        CPAP_LeakTotal, PRS1_12
     };
 
     int ncodes=sizeof(Codes)/sizeof(QString);
@@ -929,7 +929,7 @@ bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qin
                 if (!(Code[12]=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
                 if (!(Code[13]=session->AddEventList(CPAP_IPAPLo,EVL_Event,0.1))) return false;
                 if (!(Code[14]=session->AddEventList(CPAP_IPAPHi,EVL_Event,0.1))) return false;
-                if (!(Code[15]=session->AddEventList(CPAP_Leak,EVL_Event))) return false;
+                if (!(Code[15]=session->AddEventList(CPAP_LeakTotal,EVL_Event))) return false;
                 if (!(Code[16]=session->AddEventList(CPAP_RespRate,EVL_Event))) return false;
                 if (!(Code[17]=session->AddEventList(CPAP_PTB,EVL_Event))) return false;
 

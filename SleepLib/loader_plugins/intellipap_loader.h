@@ -18,7 +18,7 @@
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int intellipap_data_version=0;
+const int intellipap_data_version=1;
 //
 //********************************************************************************************
 
