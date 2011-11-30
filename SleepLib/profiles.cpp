@@ -241,6 +241,9 @@ int Profile::Import(QString path)
 {
     int c=0;
     qDebug() << "Importing " << path;
+    path=path.replace("\\","/");
+    if (path.endsWith("/")) path.chop(1);
+
     QVector<MachineLoader *>loaders=GetLoaders();
     for (QVector<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;

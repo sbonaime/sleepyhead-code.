@@ -50,13 +50,13 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     if (sel>=0) ui->listView->setCurrentIndex(model->item(sel)->index());
     m_tries=0;
 
-    PREF["SkipLogin"]=false;
+    /*PREF["SkipLogin"]=false;
     if ((i==1) && PREF["SkipLogin"].toBool()) {
         if (!Profiles::profiles.contains(name))
             PREF["Profile"]=name;
         QTimer::singleShot(0,this,SLOT(earlyExit()));
         hide();
-    }
+    } */
     popupMenu=new QMenu(this);
     popupMenu->addAction("Open Profile",this,SLOT(openProfile()));
     popupMenu->addAction("Edit Profile",this,SLOT(editProfile()));

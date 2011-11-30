@@ -219,7 +219,7 @@ bool ChannelList::Load(QString filename)
             chan=new Channel(id,type,scope,name,details,label,unit,datatype,color,linkid);
             channels[id]=chan;
             names[name]=chan;
-            qDebug() << "Channel" << id << name << label;
+            //qDebug() << "Channel" << id << name << label;
             groups[group][name]=chan;
             if (linkid>0) {
                 if (channels.contains(linkid)) {

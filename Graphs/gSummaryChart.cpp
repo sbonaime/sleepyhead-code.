@@ -23,6 +23,14 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     m_empty=true;
     hl_day=-1;
     m_machinetype=MT_CPAP;
+
+    QDateTime d=QDateTime::currentDateTime();
+    QTime t1=d.time();
+    QTime t2=d.toUTC().time();
+
+    tz_offset=t2.secsTo(t1);
+    tz_hours=tz_offset/3600.0;
+
 }
 SummaryChart::~SummaryChart()
 {
@@ -33,24 +41,25 @@ void SummaryChart::SetDay(Day * nullday)
     Layer::SetDay(day);
 
     m_values.clear();
+    m_times.clear();
     m_days.clear();
-    m_miny=9999999;
-    m_maxy=-9999999;
+    m_hours.clear();
+    m_miny=999999999;
+    m_maxy=-999999999;
     m_minx=0;
     m_maxx=0;
 
     int dn;
-    EventDataType tmp,total;
+    EventDataType tmp,tmp2,total;
     ChannelID code;
 
     m_fday=0;
-    qint64 tt;
+    qint64 tt,zt;
     m_empty=true;
     int suboffset;
     SummaryType type;
     for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
-        //tt=QDateTime(d.key(),QTime(12,0,0)).toTime_t();
         dn=tt/86400;
         tt*=1000L;
         if (!m_minx || tt<m_minx) m_minx=tt;
@@ -58,60 +67,89 @@ void SummaryChart::SetDay(Day * nullday)
 
         total=0;
         bool fnd=false;
-        for (int j=0;j<m_codes.size();j++) {
-            code=m_codes[j];
-            if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
-            type=m_type[j];
-            for (int i=0;i<d.value().size();i++) {
+        if (m_graphtype==GT_SESSIONS) {
+            for (int i=0;i<d.value().size();i++) { // for each day
                 day=d.value()[i];
-                if (day->machine_type()!=m_machinetype) continue;
-                if (type==ST_HOURS || type==ST_SESSIONS || day->channelHasData(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
-                    m_days[dn]=day;
-                    switch(m_type[j]) {
-                        case ST_AVG: tmp=day->avg(code); break;
-                        case ST_SUM: tmp=day->sum(code); break;
-                        case ST_WAVG: tmp=day->wavg(code); break;
-                        case ST_90P: tmp=day->p90(code); break;
-                        case ST_MIN: tmp=day->min(code); break;
-                        case ST_MAX: tmp=day->max(code); break;
-                        case ST_CNT: tmp=day->count(code); break;
-                        case ST_CPH: tmp=day->cph(code); break;
-                        case ST_SPH: tmp=day->sph(code); break;
-                        case ST_HOURS: tmp=day->hours(); break;
-                        case ST_SESSIONS: tmp=day->size(); break;
-                        case ST_SETMIN: tmp=day->settings_min(code); break;
-                        case ST_SETMAX: tmp=day->settings_max(code); break;
-                        case ST_SETAVG: tmp=day->settings_avg(code); break;
-                        case ST_SETWAVG: tmp=day->settings_wavg(code); break;
-                        case ST_SETSUM: tmp=day->settings_sum(code); break;
-                    default:    break;
+                if  (!day) continue;
+                for (int s=0;s<day->size();s++) {
+                    tmp=(*day)[s]->hours();
+                    m_values[dn][s]=tmp;
+                    total+=tmp;
+                    zt=(*day)[s]->first()/1000;
+                    zt+=tz_offset;
+                    zt %= 86400;
+                    tmp2=zt/3600.0;
+                    if (tmp2+tmp<16) {
+                        m_times[dn][s]=(tmp2+12);
+                    } else {
+                        m_times[dn][s]=(tmp2)-12;
                     }
-                    if (suboffset>0) {
-                        tmp-=suboffset;
-                        if (tmp<0) tmp=0;
-                    }
-                    //if (tmp>0) {
-                        fnd=true;
-                        total+=tmp;
-                        m_values[dn][j+1]=tmp;
-                        if (tmp<m_miny) m_miny=tmp;
-                        if (tmp>m_maxy) m_maxy=tmp;
-                        break;
-                   // }
 
+                    if (tmp2 < m_miny) m_miny=tmp2;
+                    if (tmp2+tmp > m_maxy) m_maxy=tmp2+tmp;
+                }
+                if (total>0) {
+                    m_days[dn]=day;
+                    m_hours[dn]=total;
+                    m_empty=false;
                 }
             }
-        }
-        if (fnd) {
-            if (!m_fday) m_fday=dn;
-            m_values[dn][0]=total;
-            m_hours[dn]=day->hours();
-            if (m_graphtype==GT_BAR) {
-                if (total<m_miny) m_miny=total;
-                if (total>m_maxy) m_maxy=total;
+        } else {
+            for (int j=0;j<m_codes.size();j++) { // for each code slice
+                code=m_codes[j];
+                if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
+                type=m_type[j];
+                for (int i=0;i<d.value().size();i++) { // for each day
+                    day=d.value()[i];
+                    if (day->machine_type()!=m_machinetype) continue;
+                    if (type==ST_HOURS || type==ST_SESSIONS || day->channelHasData(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
+                        m_days[dn]=day;
+                        switch(m_type[j]) {
+                            case ST_AVG: tmp=day->avg(code); break;
+                            case ST_SUM: tmp=day->sum(code); break;
+                            case ST_WAVG: tmp=day->wavg(code); break;
+                            case ST_90P: tmp=day->p90(code); break;
+                            case ST_MIN: tmp=day->min(code); break;
+                            case ST_MAX: tmp=day->max(code); break;
+                            case ST_CNT: tmp=day->count(code); break;
+                            case ST_CPH: tmp=day->cph(code); break;
+                            case ST_SPH: tmp=day->sph(code); break;
+                            case ST_HOURS: tmp=day->hours(); break;
+                            case ST_SESSIONS: tmp=day->size(); break;
+                            case ST_SETMIN: tmp=day->settings_min(code); break;
+                            case ST_SETMAX: tmp=day->settings_max(code); break;
+                            case ST_SETAVG: tmp=day->settings_avg(code); break;
+                            case ST_SETWAVG: tmp=day->settings_wavg(code); break;
+                            case ST_SETSUM: tmp=day->settings_sum(code); break;
+                        default:    break;
+                        }
+                        if (suboffset>0) {
+                            tmp-=suboffset;
+                            if (tmp<0) tmp=0;
+                        }
+                        //if (tmp>0) {
+                            fnd=true;
+                            total+=tmp;
+                            m_values[dn][j+1]=tmp;
+                            if (tmp<m_miny) m_miny=tmp;
+                            if (tmp>m_maxy) m_maxy=tmp;
+                            break;
+                       // }
+
+                    }
+                }
             }
-            m_empty=false;
-       } else m_hours[dn]=0;
+            if (fnd) {
+                if (!m_fday) m_fday=dn;
+                m_values[dn][0]=total;
+                m_hours[dn]=day->hours();
+                if (m_graphtype==GT_BAR) {
+                    if (total<m_miny) m_miny=total;
+                    if (total>m_maxy) m_maxy=total;
+                }
+                m_empty=false;
+           } else m_hours[dn]=0;
+        }
     }
     if (m_graphtype==GT_BAR) {
         m_miny=0;
@@ -187,7 +225,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType total;
 
     int daynum=0;
-    EventDataType h,tmp;
+    EventDataType h,tmp,tmp2;
 
 
     l_offset=(minx) % 86400000L;
@@ -263,39 +301,21 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (x2<x1) continue;
             ChannelID code;
 
-            total=d.value()[0];
-            //if (total>0) {
-            if (day) {
-                total_val+=total;
-                total_days++;
-            }
-            //}
-            py=top+height;
-            for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
-                short j=g.key();
-                if (!j) continue;
-                j--;
-                QColor col=m_colors[j];
-                if (zd==hl_day) {
-                    col=QColor("gold");
-                }
+            if (m_graphtype==GT_SESSIONS) {
+                int j;
+                QHash<int,QHash<short,EventDataType> >::iterator times=m_times.find(zd);
 
-                tmp=g.value();
-                //if (!tmp) continue;
-                if (m_type[j]==ST_MAX) {
-                    if (tmp>totalvalues[j]) totalvalues[j]=tmp;
-                } else if (m_type[j]==ST_MIN) {
-                    if (tmp<totalvalues[j]) totalvalues[j]=tmp;
-                } else {
-                    totalvalues[j]+=tmp*hours;
-                }
-                //if (tmp) {
-                    totalcounts[j]+=hours;
-                //}
-                tmp-=miny;
-                h=tmp*ymult; // height in pixels
+                for (j=0;j<d.value().size();j++) {
+                    QColor col=m_colors[0];
+                    if (zd==hl_day) {
+                        col=QColor("gold");
+                    }
+                    tmp2=times.value()[j];
+                    py=top+height-(tmp2*ymult);
 
-                if (m_graphtype==GT_BAR) {
+                    tmp=d.value()[j]; // length
+                    //tmp-=miny;
+                    h=tmp*ymult;
                     QColor col2=brighten(col);
 
                     quads->add(x1,py,x1,py-h,col);
@@ -306,24 +326,79 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         outlines->add(x1,py,x2,py,blk);
                         outlines->add(x2,py,x2,py-h,blk);
                     } // if (bar
-                    py-=h;
-                } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
-                    col.setAlpha(128);
-                    short px2=px+barw;
-                    short py2=top+height-1-h;
-                    py2+=j;
-                    if (lastdaygood) {
-                        lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
-                        lines->add(px,py2,px2,py2,col);
-                    } else {
-                        lines->add(x1,py2,x2,py2,col);
-                    }
-                    lastX[j]=px2;
-                    lastY[j]=py2;
-
-                    //}
+                    //py-=h;
+                    totalvalues[0]+=tmp;
                 }
-            }  // for(QHash<short
+                totalcounts[0]++;
+                totalvalues[1]+=j;
+                totalcounts[1]++;
+                total_val+=hours;
+                total_days++;
+            } else {
+                total=d.value()[0];
+                //if (total>0) {
+                if (day) {
+                    total_val+=total;
+                    total_days++;
+                }
+                py=top+height;
+
+                //}
+                for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
+                    short j=g.key();
+                    if (!j) continue;
+                    j--;
+
+                    QColor col=m_colors[j];
+                    if (zd==hl_day) {
+                        col=QColor("gold");
+                    }
+
+                    tmp=g.value();
+                    //if (!tmp) continue;
+                    if (m_type[j]==ST_MAX) {
+                        if (tmp>totalvalues[j]) totalvalues[j]=tmp;
+                    } else if (m_type[j]==ST_MIN) {
+                        if (tmp<totalvalues[j]) totalvalues[j]=tmp;
+                    } else {
+                        totalvalues[j]+=tmp*hours;
+                    }
+                    //if (tmp) {
+                        totalcounts[j]+=hours;
+                    //}
+                    tmp-=miny;
+                    h=tmp*ymult; // height in pixels
+
+                    if (m_graphtype==GT_BAR) {
+                        QColor col2=brighten(col);
+
+                        quads->add(x1,py,x1,py-h,col);
+                        quads->add(x2,py-h,x2,py,col2);
+                        if (barw>2) {
+                            outlines->add(x1,py,x1,py-h,blk);
+                            outlines->add(x1,py-h,x2,py-h,blk);
+                            outlines->add(x1,py,x2,py,blk);
+                            outlines->add(x2,py,x2,py-h,blk);
+                        } // if (bar
+                        py-=h;
+                    } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
+                        col.setAlpha(128);
+                        short px2=px+barw;
+                        short py2=top+height-1-h;
+                        py2+=j;
+                        if (lastdaygood) {
+                            lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
+                            lines->add(px,py2,px2,py2,col);
+                        } else {
+                            lines->add(x1,py2,x2,py2,col);
+                        }
+                        lastX[j]=px2;
+                        lastY[j]=py2;
+
+                        //}
+                    }
+                }  // for(QHash<short
+            }
             lastdaygood=true;
             if (Q>maxx+extra) break;
         } else lastdaygood=false;
@@ -407,6 +482,31 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     w.renderText(a,left,top-3);
 }
 
+QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false,bool show_12hr=false)
+{
+    int h=int(v+12);
+
+    if (!duration) {
+        h%=24;
+    } else show_12hr=false;
+
+    int m=int(v*60) % 60;
+    int s=int(v*3600) % 60;
+
+    char pm[3]={"am"};
+
+    if (show_12hr) {
+        h>=12 ? pm[0]='p' : pm[0]='a'; // yes, inverted..
+        h %= 12;
+    } else {
+        pm[0]=0;
+    }
+    if (show_seconds)
+        return QString().sprintf("%i:%02i:%02i%s",h,m,s,pm);
+    else
+        return QString().sprintf("%i:%02i%s",h,m,pm);
+}
+
 bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 {
     int x=event->x()-l_left;
@@ -452,7 +552,31 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             // Day * day=m_days[hl_day];
             //EventDataType val;
             QString val;
-            if (m_graphtype==GT_BAR) {
+            if (m_graphtype==GT_SESSIONS) {
+                if (m_type[0]==ST_HOURS) {
+
+                    int t=day->hours()*3600.0;
+                    int h=t/3600;
+                    int m=(t / 60) % 60;
+                    //int s=t % 60;
+                    val.sprintf("%02i:%02i",h,m);
+                } else
+                    val=QString::number(d.value()[0],'f',2);
+                z+="\r\n"+m_label+"="+val;
+
+                if (m_type[1]==ST_SESSIONS){
+                    z+=" (Sess="+QString::number(day->size(),'f',0)+")";
+                }
+
+                EventDataType v=m_times[zd][0];
+                int lastt=m_times[zd].size()-1;
+                if (lastt<0) lastt=0;
+                z+="\r\nBedtime="+formatTime(v,false,false,true);
+                v=m_times[zd][lastt]+m_values[zd][lastt];
+                z+="\r\nWaketime="+formatTime(v,false,false,true);
+
+            } else
+            if (m_graphtype==GT_BAR){
                 if (m_type[0]==ST_HOURS) {
                     int t=d.value()[0]*3600.0;
                     int h=t/3600;

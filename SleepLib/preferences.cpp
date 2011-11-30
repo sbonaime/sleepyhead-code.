@@ -61,6 +61,34 @@ const QString & GetAppRoot()
     return HomeAppRoot;
 }
 
+Preference::Preference(Preferences * pref,QString code, PrefType type, QString label, QString tooltip, QVariant default_value) :
+    m_pref(pref), m_code(code), m_type(type), m_label(label),m_tooltip(tooltip), m_defaultValue(default_value)
+{
+}
+void Preference::setValue(QVariant v)
+{
+    if (!m_pref) {
+        qDebug() << "Bad Preferences object";
+        return;
+    }
+    if (m_pref)
+        (*m_pref)[m_code]=v;
+}
+QVariant & Preference::value() {
+    if (!m_pref) {
+        qDebug() << "Bad Preferences object";
+        return m_defaultValue;
+    }
+    QHash<QString,QVariant>::iterator i=m_pref->find(m_code);
+    if (i==m_pref->end()) {
+        (*m_pref)[m_code]=m_defaultValue;
+        return (*m_pref)[m_code];
+    }
+
+    return i.value();
+}
+
+
 Preferences::Preferences()
 {
     p_name="Preferences";

@@ -48,7 +48,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     GetTextExtent(fd,x,y);
 
     double max_yticks=round(height / (y+15.0)); // plus spacing between lines
-    double yt=1/max_yticks;
+    //double yt=1/max_yticks;
 
     double mxy=MAX(fabs(maxy),fabs(miny));
     double mny=miny;
@@ -56,6 +56,22 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
         mny=-mxy;
     }
     double rxy=mxy-mny;
+
+    int myt;
+    bool fnd=false;
+    for (myt=max_yticks;myt>=1;myt--) {
+        float v=rxy/float(myt);
+        if (float(v)==int(v)) {
+            fnd=true;
+            break;
+        }
+    }
+    if (fnd) max_yticks=myt;
+    else {
+        max_yticks=2;
+    }
+    double yt=1/max_yticks;
+
     double ymult=height/rxy;
 
     double min_ytick=rxy*yt;
@@ -116,6 +132,8 @@ gYAxis::~gYAxis()
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
+    if (height<0) return;
+
     int x,y;
     int labelW=0;
 
@@ -130,16 +148,10 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     EventDataType dy=maxy-miny;
 
-    //if ((w.max_x-w.min_x)==0)
-    //    return;
-
-    if (height<0) return;
-
-    QString fd="0";
+    static QString fd="0";
     GetTextExtent(fd,x,y);
 
-    double max_yticks=round(height / (y+15.0)); // plus spacing between lines
-    double yt=1/max_yticks;
+    double max_yticks=round(height / (y+7.0)); // plus spacing between lines
 
     double mxy=MAX(fabs(maxy),fabs(miny));
     double mny=miny;
@@ -148,9 +160,29 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
 
     double rxy=mxy-mny;
+
+    int myt;
+    bool fnd=false;
+    for (myt=max_yticks;myt>2;myt--) {
+        float v=rxy/float(myt);
+        if (v==int(v)) {
+            fnd=true;
+            break;
+        }
+    }
+    if (fnd) max_yticks=myt;
+    double yt=1/max_yticks;
+
     double ymult=height/rxy;
 
     double min_ytick=rxy*yt;
+
+
+    //if (dy>5) {
+    //    min_ytick=round(min_ytick);
+    //} else {
+
+    //}
 
     float ty,h;
 
@@ -163,18 +195,20 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
     lines=w.backlines();
 
+
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         if (dy<5) {
-            fd=QString().sprintf("%.2f",i*m_yaxis_scale);
+            fd=Format(i*m_yaxis_scale,2);
         } else {
-            fd=QString().sprintf("%.1f",i*m_yaxis_scale);
+            fd=Format(i*m_yaxis_scale,1);
         }
 
         GetTextExtent(fd,x,y); // performance bottleneck..
 
         if (x>labelW) labelW=x;
         h=top+height-ty;
+        if (h<top) continue;
         w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
 
         lines->add(left+width-4,h,left+width,h,m_line_color);
@@ -196,6 +230,9 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         }
     }
 }
+const QString gYAxis::Format(EventDataType v, int dp) {
+   return QString::number(v,'f',dp);
+}
 
 bool gYAxis::mouseMoveEvent(QMouseEvent * event)
 {
@@ -204,4 +241,32 @@ bool gYAxis::mouseMoveEvent(QMouseEvent * event)
     //int y=event->y();
     //qDebug() << "Hover at " << x << y;
     return false;
+}
+
+gYAxisTime::gYAxisTime(QColor col):
+    gYAxis("",col)
+{
+    show_12hr=true;
+}
+
+gYAxisTime::~gYAxisTime()
+{
+}
+
+const QString gYAxisTime::Format(EventDataType v, int dp)
+{
+    int h=int(v+12) % 24;
+    int m=int(v*60) % 60;
+    int s=int(v*3600) % 60;
+
+    char pm[3]={"am"};
+
+    if (show_12hr) {
+        h>=12 ? pm[0]='p' : pm[0]='a'; // yes, inverted..
+        h %= 12;
+    } else {
+        pm[0]=0;
+    }
+    if (dp>2) return QString().sprintf("%02i:%02i:%02i%s",h,m,s,pm);
+    return QString().sprintf("%i:%02i%s",h,m,pm);
 }

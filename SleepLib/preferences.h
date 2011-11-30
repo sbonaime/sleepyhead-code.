@@ -26,7 +26,7 @@ extern const QString & GetAppRoot(); //returns app root path plus trailing path 
 inline QString PrefMacro(QString s)
 {
     return "{"+s+"}";
-};
+}
 
 const QString & getUserName();
 
@@ -83,7 +83,12 @@ public:
 
     void SetComment(const QString & str) {
         p_comment=str;
-    };
+    }
+
+    inline QHash<QString,QVariant>::iterator find(QString key) { return p_preferences.find(key); }
+    inline QHash<QString,QVariant>::iterator end() { return p_preferences.end(); }
+    inline QHash<QString,QVariant>::iterator begin() { return p_preferences.begin(); }
+
     //int  GetCode(QString name); // For registering/looking up new preference code.
 
     QHash<QString,QVariant> p_preferences;
@@ -95,6 +100,43 @@ protected:
     QString p_path;
 };
 
+enum PrefType { PT_Checkbox, PT_Integer, PT_Number, PT_Date, PT_Time, PT_DateTime, PT_LineEdit, PT_TextEdit, PT_Dropdown };
+class Preference
+{
+public:
+    Preference() {
+        m_pref=NULL;
+    }
+    Preference(const Preference & copy) {
+        m_pref=copy.m_pref;
+        m_code=copy.m_code;
+        m_type=copy.m_type;
+        m_label=copy.m_label;
+        m_tooltip=copy.m_tooltip;
+        m_defaultValue=copy.m_defaultValue;
+    }
+    Preference(Preferences * pref, QString code, PrefType type, QString label, QString tooltip, QVariant default_value);
+    ~Preference() {}
+
+    QString code() { return m_code; }
+
+    void setValue(QVariant v);
+    QVariant & value();
+
+    PrefType type() { return m_type; }
+    QString label() { return m_label; }
+    QString tooltip() { return m_tooltip; }
+    QVariant defaultValue() { return m_defaultValue; }
+protected:
+    Preferences * m_pref;
+    QString m_code;
+    PrefType m_type;
+    QString m_label;
+    QString m_tooltip;
+    QVariant m_defaultValue;
+};
+
+Q_DECLARE_METATYPE(Preference)
 
 extern Preferences PREF;
 extern Preferences LAYOUT;

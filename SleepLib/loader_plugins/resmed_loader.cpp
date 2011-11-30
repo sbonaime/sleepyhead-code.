@@ -250,7 +250,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
     QString dirtag="DATALOG";
     if (path.endsWith(QDir::separator()+dirtag)) {
-        return 0; // id10t user..
+        return 0;
         //newpath=path;
     } else {
         newpath=path+QDir::separator()+dirtag;

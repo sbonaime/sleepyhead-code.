@@ -56,7 +56,7 @@ class gYAxis:public Layer
         void SetShowMajorTicks(bool b) { m_show_major_ticks=b; }
         bool ShowMinorTicks() { return m_show_minor_ticks; }
         bool ShowMajorTicks() { return m_show_major_ticks; }
-        virtual const QString Format(double v) { return QString().sprintf("%.1f",v); }
+        virtual const QString Format(EventDataType v, int dp);
         static const int Margin=50; // Left margin space
 
         void SetScale(float f) { m_yaxis_scale=f; } // Scale yaxis ticker values (only what's displayed)
@@ -74,6 +74,16 @@ class gYAxis:public Layer
         GLShortBuffer * lines;
         virtual bool mouseMoveEvent(QMouseEvent * event);
 
+};
+
+class gYAxisTime:public gYAxis
+{
+public:
+    gYAxisTime(QColor col=Qt::black);
+    virtual ~gYAxisTime();
+protected:
+    virtual const QString Format(EventDataType v, int dp);
+    bool show_12hr;
 };
 
 #endif // GYAXIS_H

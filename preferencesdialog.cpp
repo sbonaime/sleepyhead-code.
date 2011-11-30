@@ -19,12 +19,44 @@ extern QFont * mediumfont;
 extern QFont * bigfont;
 extern MainWindow * mainwin;
 
+MaskProfile masks[]={
+    {"Unspecified",{{4,25},{8,25},{12,25},{16,25},{20,25}}},
+    {"Nasal Pillows",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {"Hybrid F/F Mask",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {"Nasal Interface",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {"Full-Face Mask",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+};
+const int num_masks=sizeof(masks)/sizeof(MaskProfile);
+
+void PreferencesDialog::resizeEvent(QResizeEvent *e)
+{
+}
+
+
 PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     QDialog(parent),
     ui(new Ui::PreferencesDialog),
     profile(_profile)
 {
     ui->setupUi(this);
+    ui->leakProfile->setRowCount(5);
+    ui->leakProfile->setColumnCount(2);
+    ui->leakProfile->horizontalHeader()->setStretchLastSection(true);
+    ui->leakProfile->setColumnWidth(0,100);
+    ui->maskTypeCombo->clear();
+
+    QString masktype="Nasal Pillows";
+    //masktype=PROFILE["MaskType"].toString();
+    for (int i=0;i<num_masks;i++) {
+        ui->maskTypeCombo->addItem(masks[i].name);
+
+        if (masktype==masks[i].name) {
+            ui->maskTypeCombo->setCurrentIndex(i);
+            on_maskTypeCombo_activated(i);
+        }
+    }
+
+    //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
 
     {
         QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
@@ -49,9 +81,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     Q_ASSERT(profile!=NULL);
     ui->tabWidget->setCurrentIndex(0);
-    int i=ui->unitCombo->findText((*profile)["UnitSystem"].toString());
-    if (i<0) i=0;
-    ui->unitCombo->setCurrentIndex(i);
 
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     //ui->timeZoneCombo->setCurrentIndex(i);
@@ -81,39 +110,59 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
         ui->combineLCD->display(val);
     } else ui->combineLCD->display(tr("OFF"));
 
-
     val=(*profile)["IgnoreShorterSessions"].toInt();
     ui->IgnoreSlider->setValue(val);
 
     ui->applicationFont->setCurrentFont(QApplication::font());
-    ui->applicationFont->setFont(QApplication::font());
+    //ui->applicationFont->setFont(QApplication::font());
     ui->applicationFontSize->setValue(QApplication::font().pointSize());
     ui->applicationFontBold->setChecked(QApplication::font().weight()==QFont::Bold);
     ui->applicationFontItalic->setChecked(QApplication::font().italic());
 
     ui->graphFont->setCurrentFont(*defaultfont);
-    ui->graphFont->setFont(*defaultfont);
+    //ui->graphFont->setFont(*defaultfont);
     ui->graphFontSize->setValue(defaultfont->pointSize());
     ui->graphFontBold->setChecked(defaultfont->weight()==QFont::Bold);
     ui->graphFontItalic->setChecked(defaultfont->italic());
 
     ui->titleFont->setCurrentFont(*mediumfont);
-    ui->titleFont->setFont(*mediumfont);
+    //ui->titleFont->setFont(*mediumfont);
     ui->titleFontSize->setValue(mediumfont->pointSize());
     ui->titleFontBold->setChecked(mediumfont->weight()==QFont::Bold);
     ui->titleFontItalic->setChecked(mediumfont->italic());
 
     ui->bigFont->setCurrentFont(*bigfont);
-    ui->bigFont->setFont(*bigfont);
+    //ui->bigFont->setFont(*bigfont);
     ui->bigFontSize->setValue(bigfont->pointSize());
     ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
-    if (!(*profile).Exists("SkipEmptyDays")) (*profile)["SkipEmptyDays"]=true;
-    ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
+    //if (!(*profile).Exists("SkipEmptyDays")) (*profile)["SkipEmptyDays"]=true;
+    //ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
 
-    if (!(*profile).Exists("SquareWavePlots")) (*profile)["SquareWavePlots"]=true;
-    ui->squareWavePlots->setChecked((*profile)["SquareWavePlots"].toBool());
+    general.clear();
+    general.push_back(Preference(p_profile,"UseAntiAliasing",PT_Checkbox,"Use Anti-Aliasing","Enable Graphical smoothing. Doesn't always look pretty.",false));
+    general.push_back(Preference(p_profile,"SquareWavePlots",PT_Checkbox,"Square Wave Plots","Try to use Square Wave plots where possible",true));
+    general.push_back(Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,"Event Breakdown Piechart","Shows Event Breakdown in Daily view. This may cause problems on older computers.",true));
+    general.push_back(Preference(p_pref,"SkipLoginScreen",PT_Checkbox,"Skip Login Screen","Bypass the login screen at startup",false));
+    general.push_back(Preference(p_profile,"SkipEmptyDays",PT_Checkbox,"Skip Empty Days","Skip over calendar days that don't have any data",true));
+    general.push_back(Preference(p_profile,"EnableMultithreading",PT_Checkbox,"Enable Multithreading","Try to use extra processor cores where possible",false));
+    general.push_back(Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false));
+
+    ui->genOpWidget->clear();
+    for (int i=0;i<general.size();i++) {
+        Preference & p=general[i];
+        QListWidgetItem *wi=new QListWidgetItem(p.label());
+        wi->setToolTip(p.tooltip());
+
+        bool b=p.value().toBool();
+        wi->setCheckState(b ? Qt::Checked : Qt::Unchecked);
+        QVariant t;
+        t.setValue(p);
+        wi->setData(Qt::UserRole,t);
+        ui->genOpWidget->addItem(wi);
+    }
+    ui->genOpWidget->sortItems();
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
@@ -132,11 +181,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     } else ui->IgnoreLCD->display(tr("OFF"));
 
     ui->overlayFlagsCombo->setCurrentIndex((*profile)["AlwaysShowOverlayBars"].toInt());
-    ui->useAntiAliasing->setChecked((*profile)["UseAntiAliasing"].toBool());
-    ui->memoryHogCheckbox->setChecked((*profile)["MemoryHog"].toBool());
-    ui->useGraphSnapshots->setChecked((*profile)["EnableGraphSnapshots"].toBool());
-    ui->intentionalLeakEdit->setValue((*profile)["IntentionalLeak"].toDouble());
-    ui->useMultithreading->setChecked((*profile)["EnableMultithreading"].toBool());
+
+    //ui->memoryHogCheckbox->setChecked((*profile)["MemoryHog"].toBool());
+
+    //ui->intentionalLeakEdit->setValue((*profile)["IntentionalLeak"].toDouble());
+    //ui->useMultithreading->setChecked((*profile)["EnableMultithreading"].toBool());
 
     ui->oximetryGroupBox->setChecked((*profile)["EnableOximetry"].toBool());
     ui->oximetrySync->setChecked((*profile)["SyncOximetry"].toBool());
@@ -185,11 +234,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     graphFilterModel->setFilterKeyColumn(0);
     ui->graphView->setModel(graphFilterModel);
 
-
-
     resetGraphModel();
 //    tree->sortByColumn(0,Qt::AscendingOrder);
-
 }
 
 
@@ -224,8 +270,21 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
-    (*profile)["UnitSystem"]=ui->unitCombo->currentText();
-    //(*profile)["TimeZone"]=ui->timeZoneCombo->currentText();
+    for (int i=0;i<ui->genOpWidget->count();i++) {
+        QListWidgetItem *item=ui->genOpWidget->item(i);
+        bool checked=item->checkState() == Qt::Checked;
+        QVariant data=item->data(Qt::UserRole);
+
+        Preference p=data.value<Preference>();
+
+        if (p.value().toBool()!=checked) {
+            p.setValue(checked);
+            if (p.code()=="SquareWavePlots") {
+                needs_restart=true;
+            }
+        }
+    }
+
 
     if ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) needs_restart=true;
     if ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value()) needs_restart=true;
@@ -233,20 +292,37 @@ void PreferencesDialog::Save()
     (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
     (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
 
-    (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+    //(*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
 
     if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) needs_restart=true;
 
     (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
     (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
-    (*profile)["UseAntiAliasing"]=ui->useAntiAliasing->isChecked();
-    (*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
-    (*profile)["EnableGraphSnapshots"]=ui->useGraphSnapshots->isChecked();
-    (*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
-    (*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
+    //(*profile)["UseAntiAliasing"]=ui->genOpWidget->item(0)->checkState()==Qt::Checked;
+    //(*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
+    //(*profile)["EnableGraphSnapshots"]=ui->genOpWidget->item(2)->checkState()==Qt::Checked;
+
+
+    //(*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
+    //(*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
     (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
     (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
+    int oxigrp=ui->oximetrySync->isChecked() ? 0 : 1;
+    gGraphView *gv=mainwin->getDaily()->graphView();
+    gGraph *g=gv->findGraph("Pulse");
+    if (g) {
+        g->setGroup(oxigrp);
+    }
+    g=gv->findGraph("SpO2");
+    if (g) {
+        g->setGroup(oxigrp);
+    }
+    g=gv->findGraph("Plethy");
+    if (g) {
+        g->setGroup(oxigrp);
+    }
+
     (*profile)["OximeterType"]=ui->oximetryType->currentText();
 
     (*profile)["SPO2DropPercentage"]=ui->spo2Drop->value();
@@ -254,14 +330,15 @@ void PreferencesDialog::Save()
     (*profile)["PulseChangeBPM"]=ui->pulseChange->value();
     (*profile)["PulseChangeDuration"]=ui->pulseChangeTime->value();
 
-    PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
+    //PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
 
-    if (ui->squareWavePlots->isChecked() != (*profile)["SquareWavePlots"].toBool()) {
-        needs_restart=true;
-    }
-    (*profile)["SquareWavePlots"]=ui->squareWavePlots->isChecked();
+    //ui->genOpWidget->item(1)->checkState()==Qt::Checked ? true : false;
+    //if ((ui->genOpWidget->item(1)->checkState()==Qt::Checked) != (*profile)["SquareWavePlots"].toBool()) {
+    //needs_restart=true;
+    //}
+    //(*profile)["SquareWavePlots"]=ui->genOpWidget->item(1)->checkState()==Qt::Checked;
 
-    (*profile)["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
+    //(*profile)["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
     PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
     PREF["Updates_CheckFrequency"]=ui->updateCheckEvery->value();
 
@@ -378,15 +455,6 @@ void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
     if (position>0) {
         ui->IgnoreLCD->display(position);
     } else ui->IgnoreLCD->display(tr("OFF"));
-}
-
-void PreferencesDialog::on_useGraphSnapshots_toggled(bool checked)
-{
-    if (checked
-        && !(*profile)["EnableGraphSnapshots"].toBool()
-        && QMessageBox::question(this,"Warning","The Graph Snapshots feature (used by the Pie Chart in Daily stats panel) has been known to not work on some older computers.\n\nIf you experience a crash because of it, you will have to remove your SleepApp folder and recreate your profile.\n\n(I'm fairly sure this Qt bug is fixed now, but this has not been tested enough. If you have previously seen the pie chart, it's perfectly ok.)\n\nAre you sure you want to enable it?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-        ui->useGraphSnapshots->setChecked(false);
-    }
 }
 
 #include "mainwindow.h"
@@ -649,3 +717,34 @@ void PreferencesDialog::on_resetGraphButton_clicked()
         ui->graphView->update();
     }
  }
+
+
+void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
+{
+    item->setCheckState(item->checkState()==Qt::Checked ? Qt::Unchecked : Qt::Checked);
+}
+
+
+void PreferencesDialog::on_maskTypeCombo_activated(int index)
+{
+    if (index<num_masks) {
+        QTableWidgetItem *item;
+        for (int i=0;i<5;i++) {
+            MaskProfile & mp=masks[index];
+
+            item=ui->leakProfile->item(i,0);
+            QString val=QString::number(mp.pflow[i][0],'f',2);
+            if (!item) {
+                item=new QTableWidgetItem(val);
+                ui->leakProfile->setItem(i,0,item);
+            } else item->setText(val);
+
+            val=QString::number(mp.pflow[i][1],'f',2);
+            item=ui->leakProfile->item(i,1);
+            if (!item) {
+                item=new QTableWidgetItem(val);
+                ui->leakProfile->setItem(i,1,item);
+            } else item->setText(val);
+        }
+    }
+}

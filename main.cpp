@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
     ResmedLoader::Register();
     IntellipapLoader::Register();
     Profiles::Scan();
+    qRegisterMetaType<Preference>("Preference");
     PREF["AppName"]="SleepyHead";
     bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));
     if (force_login_screen) skip_login=false;

@@ -18,6 +18,7 @@
 #include "Graphs/gXAxis.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
+#include "Graphs/gSessionTime.h"
 
 Overview::Overview(QWidget *parent,gGraphView * shared) :
     QWidget(parent),
@@ -82,6 +83,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // The following code (to the closing marker) is crap --->
     AHI=createGraph("AHI");
     UC=createGraph("Usage");
+
+    US=new gGraph(GraphView,"Session Usage",default_height,0);
+    US->AddLayer(new gYAxisTime(),LayerLeft,gYAxis::Margin);
+    gXAxis *x=new gXAxis();
+    x->setUtcFix(true);
+    US->AddLayer(x,LayerBottom,0,gXAxis::Margin);
+    US->AddLayer(new gXGrid());
+
     PR=createGraph("Pressure");
     SET=createGraph("Settings");
     LK=createGraph("Leaks");
@@ -92,6 +101,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
     UC->AddLayer(uc);
+
+    us=new SummaryChart("Hours",GT_SESSIONS);
+    us->addSlice("",QColor("#c0c0ff"),ST_HOURS);
+    us->addSlice("",QColor("blue"),ST_SESSIONS);
+    US->AddLayer(us);
 
     ses=new SummaryChart("Sessions",GT_LINE);
     ses->addSlice("",QColor("blue"),ST_SESSIONS);

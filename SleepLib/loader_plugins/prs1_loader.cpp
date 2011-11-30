@@ -148,7 +148,6 @@ bool isdigit(QChar c)
 }
 int PRS1Loader::Open(QString & path,Profile *profile)
 {
-
     QString newpath,pseries="P-Series";
     qDebug() << "PRS1Loader::Open path=" << newpath;
     if (path.endsWith(QDir::separator()+pseries)) {

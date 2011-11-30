@@ -267,12 +267,14 @@ int CalcAHIGraph::calculate(Session *session)
 
     EventDataType ahi;
 
-    for (qint64 ti=first;ti<=last;ti+=winsize) {
+    qint64 ti;
+    for (ti=first;ti<=last;ti+=winsize) {
         f=ti-3600000L;
         ahi=calcAHI(session,f,ti);
         AHI->AddEvent(ti,ahi);
         ti+=winsize;
     }
+    AHI->AddEvent(ti,ahi);
 
     return AHI->count();
 }
@@ -375,7 +377,7 @@ int calcSPO2Drop(Session *session)
     EventDataType lv=0;
     int li=0;
 
-    const int ringsize=10;
+    const unsigned ringsize=10;
     EventDataType ring[ringsize];
     int rp=0;
 
@@ -386,14 +388,15 @@ int calcSPO2Drop(Session *session)
             val=el.data(i);
             if (!val) continue;
             ring[rp]=val;
-            rp=++rp % ringsize;
+            rp++;
+            rp=rp % ringsize;
             if (i<ringsize)  {
-                for (int j=i;j<ringsize;j++) {
+                for (unsigned j=i;j<ringsize;j++) {
                     ring[j]=val;
                 }
             }
             tmp=0;
-            for (int j=0;j<ringsize;j++) {
+            for (unsigned j=0;j<ringsize;j++) {
                 tmp+=ring[j];
             }
             tmp/=EventDataType(ringsize);

@@ -11,7 +11,7 @@
 #include "gGraphView.h"
 #include "gXAxis.h"
 
-enum GraphType { GT_BAR, GT_LINE };
+enum GraphType { GT_BAR, GT_LINE, GT_SESSIONS };
 
 class SummaryChart:public Layer
 {
@@ -35,6 +35,7 @@ class SummaryChart:public Layer
         QVector<ChannelID> m_codes;
         QVector<SummaryType> m_type;
         QHash<int,QHash<short,EventDataType> > m_values;
+        QHash<int,QHash<short,EventDataType> > m_times;
         QHash<int,EventDataType> m_hours;
         QHash<int,Day *> m_days;
 
@@ -53,6 +54,8 @@ class SummaryChart:public Layer
         gGraph * graph;
         GraphType m_graphtype;
         MachineType m_machinetype;
+        int tz_offset;
+        float tz_hours;
 
         virtual bool keyPressEvent(QKeyEvent * event);
         virtual bool mouseMoveEvent(QMouseEvent * event);

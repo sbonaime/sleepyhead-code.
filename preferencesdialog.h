@@ -9,6 +9,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QListWidgetItem>
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
@@ -29,6 +30,12 @@ protected:
 
 };
 
+struct MaskProfile {
+    QString name;
+    EventDataType pflow[5][2];
+};
+
+
 class PreferencesDialog : public QDialog
 {
     Q_OBJECT
@@ -44,8 +51,6 @@ private slots:
 
     void on_IgnoreSlider_valueChanged(int value);
 
-    void on_useGraphSnapshots_toggled(bool checked);
-
     void on_checkForUpdatesButton_clicked();
 
     void on_addImportLocation_clicked();
@@ -60,7 +65,12 @@ private slots:
 
     void on_resetGraphButton_clicked();
 
+    void on_genOpWidget_itemActivated(QListWidgetItem *item);
+
+    void on_maskTypeCombo_activated(int index);
+
 private:
+    virtual void resizeEvent(QResizeEvent *);
     void resetGraphModel();
     Ui::PreferencesDialog *ui;
     Profile * profile;
@@ -69,6 +79,7 @@ private:
     QStringListModel *importModel;
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
+    QVector<Preference> general;
 
 };
 

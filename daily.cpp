@@ -89,11 +89,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     TE=new gGraph(GraphView,"Te",default_height);
     TI=new gGraph(GraphView,"Ti",default_height);
     TgMV=new gGraph(GraphView,"TgMV",default_height);
-    INTPULSE=new gGraph(GraphView,"R-Pulse",default_height,1);
-    INTSPO2=new gGraph(GraphView,"R-SPO2",default_height,1);
-    PULSE=new gGraph(GraphView,"Pulse",default_height,1);
-    SPO2=new gGraph(GraphView,"SPO2",default_height,1);
-    PLETHY=new gGraph(GraphView,"Plethy",default_height,1);
+    INTPULSE=new gGraph(GraphView,"R-Pulse",default_height);
+    INTSPO2=new gGraph(GraphView,"R-SPO2",default_height);
+
+    int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
+    PULSE=new gGraph(GraphView,"Pulse",default_height,oxigrp);
+    SPO2=new gGraph(GraphView,"SpO2",default_height,oxigrp);
+    PLETHY=new gGraph(GraphView,"Plethy",default_height,oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -186,8 +188,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::yellow,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::red,square)));
 
-    AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
-    AHI->AddLayer(AddCPAP(new AHIChart(QColor("dark green"))));
+    //AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
+    AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
