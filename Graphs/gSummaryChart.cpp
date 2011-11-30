@@ -80,10 +80,13 @@ void SummaryChart::SetDay(Day * nullday)
                     zt %= 86400;
                     tmp2=zt/3600.0;
                     if (tmp2+tmp<16) {
-                        m_times[dn][s]=(tmp2+12);
+                        tmp2+=12;
+                        //m_times[dn][s]=(tmp2+12);
                     } else {
-                        m_times[dn][s]=(tmp2)-12;
+                        tmp2-=12;
+                        //m_times[dn][s]=(tmp2)-12;
                     }
+                    m_times[dn][s]=tmp2;
 
                     if (tmp2 < m_miny) m_miny=tmp2;
                     if (tmp2+tmp > m_maxy) m_maxy=tmp2+tmp;
