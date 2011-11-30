@@ -25,6 +25,7 @@ CalcRespRate::CalcRespRate(ChannelID id)
 // Generate RespiratoryRate graph
 int CalcRespRate::calculate(Session *session)
 {
+    if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_RespRate)) return 0; // already exists?
 
     if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform
@@ -304,6 +305,7 @@ CalcAHIGraph::CalcAHIGraph(ChannelID id):
 
 int CalcAHIGraph::calculate(Session *session)
 {
+    if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
 
     const qint64 winsize=30000; // 30 second windows
@@ -331,6 +333,7 @@ int CalcAHIGraph::calculate(Session *session)
 
 int calcLeaks(Session *session)
 {
+    if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_Leak)) return 0; // abort if already there
     if (!session->eventlist.contains(CPAP_LeakTotal)) return 0; // can't calculate without this..
 

@@ -361,32 +361,31 @@ void CMS50Serial::on_import_process()
         a=data.at(i++);
         pl=data.at(i++) ^ 0x80;
         o2=data.at(i++);
-        if (pl==0) {
+        if (pl!=0) {
             if (lastpl!=pl) {
-                pulse->setLast(lasttime);
-                if (pulse->min()<plmin) plmin=pulse->min();
-                if (pulse->max()>plmax) plmax=pulse->max();
-                plcnt+=pulse->count();
-                compactToEvent(pulse); // converts to waveform..
-
-                pulse=new EventList(EVL_Event);
-                session->eventlist[OXI_Pulse].push_back(pulse);
+                if (lastpl==0) {
+                    if (pulse && pulse->count()>0) {
+                    }
+                    pulse=new EventList(EVL_Event);
+                    session->eventlist[OXI_Pulse].push_back(pulse);
+                }
+                pulse->AddEvent(lasttime,pl);
+                if (pl < plmin) plmin=pl;
+                if (pl > plmax) plmax=pl;
+                plcnt++;
             }
-        } else {
-            pulse->AddEvent(lasttime,pl);
         }
-        if (o2==0) {
+        if (o2!=0) {
             if (lasto2!=o2) {
-                spo2->setLast(lasttime);
-                if (spo2->min()<o2min) o2min=spo2->min();
-                if (spo2->max()>o2max) o2max=spo2->max();
-                o2cnt+=spo2->count();
-                compactToEvent(spo2); // convert to waveform
-                spo2=new EventList(EVL_Event);
-                session->eventlist[OXI_SPO2].push_back(spo2);
+                if (lasto2==0) {
+                    spo2=new EventList(EVL_Event);
+                    session->eventlist[OXI_SPO2].push_back(spo2);
+                }
+                spo2->AddEvent(lasttime,o2);
+                if (o2 < plmin) o2min=o2;
+                if (o2 > plmax) o2max=o2;
+                o2cnt++;
             }
-        } else {
-            spo2->AddEvent(lasttime,o2);
         }
 
         lasttime+=1000;
