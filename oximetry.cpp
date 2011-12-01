@@ -762,6 +762,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(onPulseChanged(float)));
             disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(onSpO2Changed(float)));
             ui->saveButton->setEnabled(true);
+            ui->ImportButton->setEnabled(true);
             lo2->SetDay(day);
             lo1->SetDay(day);
 
@@ -795,7 +796,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             mainwin->Notify("Oximetry Error!\n\nSomething is wrong with the device connection.");
             return;
         }
-        QTimer::singleShot(100,this,SLOT(oximeter_running_check()));
+        QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
         ui->saveButton->setEnabled(false);
         day->AddSession(oximeter->getSession());
 
@@ -829,6 +830,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         // connect.
         ui->RunButton->setText("&Stop");
         ui->SerialPortsCombo->setEnabled(false);
+        ui->ImportButton->setEnabled(false);
     }
 
 }
@@ -939,7 +941,7 @@ void Oximetry::on_ImportButton_clicked()
         //qDebug() << "Error starting oximetry serial import process";
         return;
     }
-    QTimer::singleShot(100,this,SLOT(oximeter_running_check()));
+    QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
 
     day->getSessions().clear();
     day->AddSession(oximeter->getSession());

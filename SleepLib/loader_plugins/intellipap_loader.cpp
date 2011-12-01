@@ -240,7 +240,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
         for (int j=0;j<SessionStart.size();j++) {
             sid=SessionStart[j];
             if (!sid) continue;
-            if ((ts1>=(quint32)sid) && (ts1<SessionEnd[j])){
+            if ((ts1>=(quint32)sid) && (ts1<=SessionEnd[j])){
                 Session *sess=Sessions[sid];
                 qint64 time=quint64(ts1)*1000L;
                 sess->eventlist[CPAP_Pressure][0]->AddEvent(time,m_buffer[pos+0xd]/10.0); // current pressure
@@ -317,8 +317,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
              //   delete sess;
              //   continue;
             //}
-            quint64 first=quint64(sid)*1000L;
-            quint64 last=quint64(SessionEnd[i])*1000L;
+            quint64 first=qint64(sid)*1000L;
+            quint64 last=qint64(SessionEnd[i])*1000L;
             quint64 len=last-first;
             //if (len>0) {
                 //if (!sess->first()) {

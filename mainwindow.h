@@ -45,6 +45,7 @@ public:
     QMenu * CreateMenu(QString title);
     void CheckForUpdates();
     void Notify(QString s);
+    gGraphView *snapshotGraph() { return SnapshotGraph; }
     Daily *getDaily() { return daily; }
     Overview *getOverview() { return overview; }
     Oximetry *getOximetry() { return oximetry; }
@@ -113,6 +114,8 @@ private slots:
     void on_action_Rebuild_Oximetry_Index_triggered();
 
 private:
+    void PrintReport(gGraphView *gv,QString name);
+
     Ui::MainWindow *ui;
     Daily * daily;
     Overview * overview;
@@ -126,6 +129,7 @@ private:
     QTime logtime;
     QSystemTrayIcon *systray;
     QMenu *systraymenu;
+    gGraphView *SnapshotGraph;
 };
 
 #endif // MAINWINDOW_H

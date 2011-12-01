@@ -320,13 +320,17 @@ int CalcAHIGraph::calculate(Session *session)
     EventDataType ahi;
 
     qint64 ti;
-    for (ti=first;ti<=last;ti+=winsize) {
+    for (ti=first;ti<last;ti+=winsize) {
         f=ti-3600000L;
         ahi=calcAHI(session,f,ti);
+        if  (ti>=last) {
+            AHI->AddEvent(last,ahi);
+            break;
+        }
         AHI->AddEvent(ti,ahi);
         ti+=winsize;
     }
-    AHI->AddEvent(ti,0);
+    AHI->AddEvent(last,0);
 
     return AHI->count();
 }

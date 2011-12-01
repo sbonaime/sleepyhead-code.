@@ -17,6 +17,8 @@
 #include <QPixmap>
 #include <QDesktopWidget>
 #include <QListView>
+#include <QPrinter>
+#include <QPainter>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -210,6 +212,14 @@ void MainWindow::Startup()
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
     }
+
+    SnapshotGraph=new gGraphView(this,daily->graphView());
+    SnapshotGraph->setMaximumSize(1024,512);
+    SnapshotGraph->setMinimumSize(1024,512);
+    //ReportGraph->setMaximumSize(graph_print_width,graph_print_height);
+    //ReportGraph->setMinimumSize(graph_print_width,graph_print_height);
+    SnapshotGraph->hide();
+
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
@@ -555,9 +565,15 @@ void MainWindow::updatestatusBarMessage (const QString & text)
 void MainWindow::on_actionPrint_Report_triggered()
 {
     if (ui->tabWidget->currentWidget()==overview) {
-        overview->on_printButton_clicked();
-    //} else if (ui->tabWidget->currentWidget()==daily) {
+        PrintReport(overview->graphView(),"Overview");
+    } else if (ui->tabWidget->currentWidget()==daily) {
+        PrintReport(daily->graphView(),"Daily");
+    } else if (ui->tabWidget->currentWidget()==oximetry) {
+        if (oximetry)
+            PrintReport(oximetry->graphView(),"Oximetry");
     } else {
+        //QPrinter printer();
+        //ui->webView->print(printer)
         QMessageBox::information(this,"Not supported Yet","Sorry, printing from this page is not supported yet",QMessageBox::Ok);
     }
 }
@@ -630,6 +646,61 @@ EventList *packEventList(EventList *ev)
         nev->AddEvent(lasttime,val);
     }
     return nev;
+}
+
+void MainWindow::PrintReport(gGraphView *gv,QString name)
+{
+    if (!gv) return;
+
+    QString filename=PREF.Get("{home}/"+name+"_{user}.pdf");
+    QPrinter printer(QPrinter::ScreenResolution); //QPrinter::HighResolution); //QPrinter::ScreenResolution);
+    printer.setOutputFileName(filename);
+    printer.setOrientation(QPrinter::Portrait);
+    QPainter painter;
+    painter.begin(&printer);
+    QRect res=printer.pageRect();
+    qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
+
+    const int graphs_per_page=5;
+    float gw=res.width();
+    float gh=res.height()/graphs_per_page;
+    mainwin->snapshotGraph()->setMinimumSize(gw,gh);
+    mainwin->snapshotGraph()->setMaximumSize(gw,gh);
+    int page=0;
+    int i=0;
+    int top=0;
+    int gcnt=0;
+    if (qprogress) {
+        qprogress->setValue(0);
+        qprogress->setMaximum(gv->size());
+        qprogress->show();
+    }
+    do {
+        gGraph *g=(*gv)[i];
+        if (g->isEmpty()) continue;
+        if (!g->visible()) continue;
+        g->deselect();
+        QPixmap pm=g->renderPixmap(gw,gh);
+        //QPixmap pm2=pm.scaledToWidth(res.width());
+        painter.drawPixmap(0,top,pm.width(),pm.height(),pm);
+        top+=pm.height();
+        gcnt++;
+        if (gcnt>=graphs_per_page) { //top+pm.height()>res.height()) {
+            top=0;
+            gcnt=0;
+            if (!printer.newPage()) {
+                qWarning("failed in flushing page to disk, disk full?");
+                break;
+            }
+        }
+        if (qprogress) {
+            qprogress->setValue(i);
+            QApplication::processEvents();
+        }
+    } while (++i<gv->size());
+
+    qprogress->hide();
+    painter.end();
 }
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
@@ -708,5 +779,4 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     }
     getDaily()->ReloadGraphs();
     getOverview()->ReloadGraphs();
-
 }

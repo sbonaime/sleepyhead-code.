@@ -255,8 +255,11 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     } else {
         newpath=path+QDir::separator()+dirtag;
     }
+    if (!QDir().exists(newpath)) return 0;
+
     QString idfile=path+QDir::separator()+"Identification.tgt";
     QFile f(idfile);
+    if (!f.exists()) return 0;
     QHash<QString,QString> idmap;
     if (f.open(QIODevice::ReadOnly)) {
         if (!f.isReadable())

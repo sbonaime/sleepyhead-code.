@@ -44,6 +44,9 @@ public:
     void RedrawGraphs();
     void LoadDate(QDate date);
     QDate getDate() { return previous_date; }
+
+    void PrintReport();
+
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);

@@ -15,6 +15,7 @@
 #include <QMutex>
 #include <QSemaphore>
 #include <QWaitCondition>
+#include <QPixmap>
 #include <Graphs/glcommon.h>
 
 
@@ -269,6 +270,7 @@ public:
     virtual ~gGraph();
     void deselect();
     void Trigger(int ms);
+    QPixmap renderPixmap(int width, int height);
 
     void setVisible(bool b) { m_visible=b; }
     bool visible() { return m_visible; }

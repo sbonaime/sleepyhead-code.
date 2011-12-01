@@ -11,6 +11,9 @@
 #include <QTimer>
 #include <QLabel>
 #include <QDir>
+#include "mainwindow.h"
+
+extern MainWindow *mainwin;
 
 #ifdef Q_WS_MAC
 #define USE_RENDERTEXT
@@ -1095,10 +1098,11 @@ void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
 }
 void gGraphView::trashGraphs()
 {
-    for (int i=0;i<m_graphs.size();i++) {
+    //for (int i=0;i<m_graphs.size();i++) {
         //delete m_graphs[i];
-    }
+    //}
     m_graphs.clear();
+    m_graphsbytitle.clear();
 }
 gGraph * gGraphView::popGraph()
 {
@@ -1569,6 +1573,52 @@ GLShortBuffer * gGraph::quads()
     return m_graphview->quads;
 }
 
+QPixmap gGraph::renderPixmap(int w, int h)
+{
+    QFont * _defaultfont=defaultfont;
+    QFont * _mediumfont=mediumfont;
+    QFont * _bigfont=bigfont;
+
+    QFont fa=*defaultfont;
+    QFont fb=*mediumfont;
+    QFont fc=*bigfont;
+
+    //fa.setPointSizeF(fa.pointSizeF()*4.0);
+    //fb.setPointSizeF(fb.pointSizeF()*4.0);
+    //fc.setPointSizeF(fc.pointSizeF()*4.0);
+
+    defaultfont=&fa;
+    mediumfont=&fb;
+    bigfont=&fc;
+
+    gGraphView *sg=mainwin->snapshotGraph();
+    if (!sg) return QPixmap();
+    sg->hideSplitter();
+    gGraphView *tgv=m_graphview;
+    m_graphview=sg;
+    //qint64 rmx=rmin_x,rMx=rmax_x;
+    //qint64 mx=min_x, Mx=max_x;
+
+    float tmp=m_height;
+    sg->trashGraphs();
+    sg->addGraph(this);
+    //sg->ResetBounds();
+    //sg->SetXBounds(mx,Mx);
+
+    sg->updateScale();
+    QPixmap pm=sg->renderPixmap(w,h,false);
+
+    sg->trashGraphs();
+    m_graphview=tgv;
+
+    m_height=tmp;
+
+    defaultfont=_defaultfont;
+    mediumfont=_mediumfont;
+    bigfont=_bigfont;
+
+    return pm;
+}
 
 // Sets a new Min & Max X clipping, refreshing the graph and all it's layers.
 void gGraph::SetXBounds(qint64 minx, qint64 maxx)

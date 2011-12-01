@@ -15,6 +15,8 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QSpacerItem>
+//#include <QPrinter>
+//#include <QProgressBar>
 
 #include "daily.h"
 #include "ui_daily.h"
@@ -30,6 +32,8 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gSegmentChart.h"
 #include "Graphs/gStatsLine.h"
+
+//extern QProgressBar *qprogress;
 
 const int min_height=150;
 
@@ -618,7 +622,7 @@ void Daily::Load(QDate date)
                 .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
 
         QString cs;
-        if (cpap->machine->GetClass()!="PRS1") {
+        if (cpap->machine->GetClass()=="ResMed") {
             cs="4 width='100%' align=center>";
         } else cs="2 width='50%'>";
         html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
@@ -1108,3 +1112,4 @@ void Daily::on_evViewSlider_valueChanged(int value)
         GraphView->SetXBounds(st,et);
     }
 }
+
