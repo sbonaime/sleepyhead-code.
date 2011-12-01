@@ -19,6 +19,7 @@
 #include <QListView>
 #include <QPrinter>
 #include <QPainter>
+#include <cmath>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -567,7 +568,7 @@ void MainWindow::on_actionPrint_Report_triggered()
     if (ui->tabWidget->currentWidget()==overview) {
         PrintReport(overview->graphView(),"Overview");
     } else if (ui->tabWidget->currentWidget()==daily) {
-        PrintReport(daily->graphView(),"Daily");
+        PrintReport(daily->graphView(),"Daily",daily->getDate());
     } else if (ui->tabWidget->currentWidget()==oximetry) {
         if (oximetry)
             PrintReport(oximetry->graphView(),"Oximetry");
@@ -648,16 +649,19 @@ EventList *packEventList(EventList *ev)
     return nev;
 }
 
-void MainWindow::PrintReport(gGraphView *gv,QString name)
+void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 {
     if (!gv) return;
-    QDate d=QDate::currentDate();
+    //QDate d=QDate::currentDate();
 
-    if (gv->visibleGraphs()==0) {
+    int visgraphs=gv->visibleGraphs();
+    if (visgraphs==0) {
         Notify("There are no graphs visible to print");
         return;
     }
-    QString filename=QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",PREF.Get("{home}/"+name+"_{user}_"+d.toString(Qt::ISODate)+".pdf"),"PDF Files (*.pdf)");
+
+    QString username=PROFILE.Get("_{Username}_");
+    QString filename=QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf"),"PDF Files (*.pdf)");
 
     if (filename.isEmpty())
         return;
@@ -669,15 +673,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name)
     printer.setOrientation(QPrinter::Portrait);
     QPainter painter;
     painter.begin(&printer);
+
     QRect res=printer.pageRect();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
     const int graphs_per_page=5;
     float gw=res.width();
-    float gh=res.height()/graphs_per_page;
+    float gh=(res.height()-40)/graphs_per_page;
     mainwin->snapshotGraph()->setMinimumSize(gw,gh);
     mainwin->snapshotGraph()->setMaximumSize(gw,gh);
-    int page=0;
+    int page=1;
+    int pages=ceil(float(visgraphs+1)/float(graphs_per_page));
     int i=0;
     int top=0;
     int gcnt=0;
@@ -686,7 +692,85 @@ void MainWindow::PrintReport(gGraphView *gv,QString name)
         qprogress->setMaximum(gv->size());
         qprogress->show();
     }
+
+    int header_height=140;
+    if (!PROFILE["FirstName"].toString().isEmpty()) {
+        QString userinfo="Name:\t"+PROFILE["LastName"].toString()+", "+PROFILE["FirstName"].toString()+"\n";
+        userinfo+="DOB:\t"+PROFILE["DOB"].toString()+"\n";
+        userinfo+="Phone:\t"+PROFILE["Phone"].toString()+"\n";
+        userinfo+="Email:\t"+PROFILE["EmailAddress"].toString()+"\n";
+        if (!PROFILE["Address"].toString().isEmpty()) userinfo+="\nAddress:\n"+PROFILE["Address"].toString()+"\n";
+        QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),200),userinfo,QTextOption(Qt::AlignLeft));
+        painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft));
+        top=header_height;
+    }
+    if (name=="Daily") {
+        QString cpapinfo="Date: "+date.toString(Qt::SystemLocaleLongDate)+"\n";
+        Day *cpap=PROFILE.GetDay(date,MT_CPAP);
+        if (cpap) {
+            int f=cpap->first()/1000L;
+            int l=cpap->last()/1000L;
+            int tt=qint64(cpap->total_time())/1000L;
+            int h=tt/3600;
+            int m=(tt/60)%60;
+            int s=tt % 60;
+
+            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours %2i minutes",h,m)+"\n";
+            cpapinfo+="Bedtime: "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+"\n";
+            cpapinfo+="Wake-up: "+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
+            float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
+            float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
+            float uai=cpap->count(CPAP_Apnea)/cpap->hours();
+            float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
+            float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/cpap->hours();
+            float cai=cpap->count(CPAP_ClearAirway)/cpap->hours();
+            float rei=cpap->count(CPAP_RERA)/cpap->hours();
+            float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
+            float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
+            float nri=cpap->count(CPAP_NRI)/cpap->hours();
+            float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
+            float exp=cpap->count(CPAP_ExP)/cpap->hours();
+
+            QString stats;
+            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
+            stats+="AI \t"+QString::number(oai,'f',2)+"\n";
+            stats+="HI \t"+QString::number(hi,'f',2)+"\n";
+            stats+="CAI\t"+QString::number(cai,'f',2)+"\n";
+            if (cpap->machine->GetClass()=="PRS1") {
+                stats+="REI\t"+QString::number(rei,'f',2)+"\n";
+                stats+="VSI\t"+QString::number(vsi,'f',2)+"\n";
+                stats+="FLI\t"+QString::number(fli,'f',2)+"\n";
+                stats+="PB/CSR\t"+QString::number(csr,'f',2)+"%\n";
+            } else if (cpap->machine->GetClass()=="ResMed") {
+                stats+="UAI\t"+QString::number(uai,'f',2)+"\n";
+            } else if (cpap->machine->GetClass()=="Intellipap") {
+                stats+="NRI\t"+QString::number(nri,'f',2)+"\n";
+                stats+="LKI\t"+QString::number(lki,'f',2)+"\n";
+                stats+="EPI\t"+QString::number(exp,'f',2)+"\n";
+            }
+            QRectF bounds=painter.boundingRect(QRectF(res.width()-250,0,250,200),stats,QTextOption(Qt::AlignRight));
+            painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
+        }
+        QRectF bounds=painter.boundingRect(QRectF(250,0,res.width()-250,200),cpapinfo,QTextOption(Qt::AlignLeft));
+        painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
+    }
+
+
+
+    const int footer_height=40;
+    bool first=true;
     do {
+        //+" on "+d.toString(Qt::SystemLocaleLongDate)
+        if (first) {
+            QString footer="SleepyHead v"+PREF["VersionString"].toString();
+
+            QRectF bounds=painter.boundingRect(QRectF(0,res.height()-footer_height,res.width(),footer_height),footer,QTextOption(Qt::AlignHCenter));
+            painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
+
+            QRectF pagebnds(res.width()-80,res.height()-footer_height,80,footer_height);
+            painter.drawText(pagebnds,"Page "+QString::number(page)+" of "+QString::number(pages),QTextOption(Qt::AlignRight));
+            first=false;
+        }
         gGraph *g=(*gv)[i];
         if (g->isEmpty()) continue;
         if (!g->visible()) continue;
@@ -696,9 +780,13 @@ void MainWindow::PrintReport(gGraphView *gv,QString name)
         painter.drawPixmap(0,top,pm.width(),pm.height(),pm);
         top+=pm.height();
         gcnt++;
-        if (gcnt>=graphs_per_page) { //top+pm.height()>res.height()) {
+        if ((gcnt>=graphs_per_page) || (top>(res.height()-footer_height-header_height))) { //top+pm.height()>res.height()) {
             top=0;
             gcnt=0;
+            header_height=0;
+            page++;
+            if (page>pages) break;
+            first=true;
             if (!printer.newPage()) {
                 qWarning("failed in flushing page to disk, disk full?");
                 break;

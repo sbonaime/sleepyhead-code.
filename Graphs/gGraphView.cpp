@@ -1600,6 +1600,7 @@ QPixmap gGraph::renderPixmap(int w, int h)
     //qint64 mx=min_x, Mx=max_x;
 
     float tmp=m_height;
+    m_height=PROFILE["GraphHeight"].toInt();
     sg->trashGraphs();
     sg->addGraph(this);
     //sg->ResetBounds();

@@ -114,7 +114,7 @@ private slots:
     void on_action_Rebuild_Oximetry_Index_triggered();
 
 private:
-    void PrintReport(gGraphView *gv,QString name);
+    void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
 
     Ui::MainWindow *ui;
     Daily * daily;
