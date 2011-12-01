@@ -693,14 +693,21 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         qprogress->show();
     }
 
-    int header_height=140;
+    int header_height=200;
+    QString title=name+" Report";
+    QTextOption t_op(Qt::AlignCenter);
+    painter.setFont(*bigfont);
+    QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),50),title,QTextOption(Qt::AlignCenter));
+    painter.drawText(bounds,title,QTextOption(Qt::AlignCenter));
+    painter.setFont(*defaultfont);
+
     if (!PROFILE["FirstName"].toString().isEmpty()) {
         QString userinfo="Name:\t"+PROFILE["LastName"].toString()+", "+PROFILE["FirstName"].toString()+"\n";
         userinfo+="DOB:\t"+PROFILE["DOB"].toString()+"\n";
         userinfo+="Phone:\t"+PROFILE["Phone"].toString()+"\n";
         userinfo+="Email:\t"+PROFILE["EmailAddress"].toString()+"\n";
         if (!PROFILE["Address"].toString().isEmpty()) userinfo+="\nAddress:\n"+PROFILE["Address"].toString()+"\n";
-        QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),200),userinfo,QTextOption(Qt::AlignLeft));
+        QRectF bounds=painter.boundingRect(QRectF(0,50,res.width(),200),userinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft));
         top=header_height;
     }
@@ -708,8 +715,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QString cpapinfo="Date: "+date.toString(Qt::SystemLocaleLongDate)+"\n";
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
         if (cpap) {
-            int f=cpap->first()/1000L;
-            int l=cpap->last()/1000L;
+            time_t f=cpap->first()/1000L;
+            time_t l=cpap->last()/1000L;
             int tt=qint64(cpap->total_time())/1000L;
             int h=tt/3600;
             int m=(tt/60)%60;
@@ -748,21 +755,25 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                 stats+="LKI\t"+QString::number(lki,'f',2)+"\n";
                 stats+="EPI\t"+QString::number(exp,'f',2)+"\n";
             }
-            QRectF bounds=painter.boundingRect(QRectF(res.width()-250,0,250,200),stats,QTextOption(Qt::AlignRight));
+            QRectF bounds=painter.boundingRect(QRectF(res.width()-250,50,250,200),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
         }
-        QRectF bounds=painter.boundingRect(QRectF(250,0,res.width()-250,200),cpapinfo,QTextOption(Qt::AlignLeft));
+        QRectF bounds=painter.boundingRect(QRectF(250,50,res.width()-250,200),cpapinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
+    } else if (name=="Overview") {
+        QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
+        QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
+        QString ovinfo="Reporting from "+first.date().toString(Qt::SystemLocaleShortDate)+" to "+last.date().toString(Qt::SystemLocaleShortDate);
+        QRectF bounds=painter.boundingRect(QRectF(250,50,res.width()-250,200),ovinfo,QTextOption(Qt::AlignLeft));
+        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignLeft));
     }
-
-
 
     const int footer_height=40;
     bool first=true;
     do {
         //+" on "+d.toString(Qt::SystemLocaleLongDate)
         if (first) {
-            QString footer="SleepyHead v"+PREF["VersionString"].toString();
+            QString footer="SleepyHead v"+PREF["VersionString"].toString()+" - http://sleepyhead.sourceforge.net";
 
             QRectF bounds=painter.boundingRect(QRectF(0,res.height()-footer_height,res.width(),footer_height),footer,QTextOption(Qt::AlignHCenter));
             painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
