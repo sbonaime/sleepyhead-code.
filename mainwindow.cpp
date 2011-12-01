@@ -290,7 +290,7 @@ void MainWindow::on_action_Import_Data_triggered()
             qstatus->setText(tr("Importing Data"));
             int c=PROFILE.Import(dir);
             if (!c) {
-                QMessageBox::warning(this,"Import Problem","Couldn't Find any Machine Data at this location:\n"+dir,QMessageBox::Ok);
+                mainwin->Notify("Import Problem\n\nCouldn't Find any Machine Data at this location:\n"+dir);
                 if (newdir==dir) addnew=false; // Don't bother asking to add it.
             }
             qDebug() << "Finished Importing data" << c;
@@ -469,7 +469,7 @@ void MainWindow::on_oximetryButton_clicked()
     bool first=false;
     if (!oximetry) {
         if (!PROFILE.Exists("EnableOximetry") || !PROFILE["EnableOximetry"].toBool()) {
-            if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.\nNote: This section is not fully completed yet.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+            if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
             PROFILE["EnableOximetry"]=true;
         }
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
@@ -605,3 +605,57 @@ void MainWindow::on_action_Frequently_Asked_Questions_triggered()
     ui->tabWidget->setCurrentIndex(0);
 }
 
+
+void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
+{
+    Day *day;
+    QMap<QDate,QVector<Day *> >::iterator z;
+    QHash<Machine *,QString> machines;
+    QVector<QString> valid;
+    valid.push_back(OXI_Pulse);
+    valid.push_back(OXI_SPO2);
+    valid.push_back(OXI_Plethy);
+    valid.push_back(OXI_PulseChange);
+    valid.push_back(OXI_SPO2Drop);
+
+    QVector<QString> invalid;
+
+    for (z=p_profile->daylist.begin();z!=p_profile->daylist.end();z++) {
+        for (int y=0;y<z.value().size();y++) {
+            day=z.value()[y];
+            if (day->machine->GetType()!=MT_OXIMETER) continue;
+            for (int s=0;s<day->getSessions().size();s++) {
+                Session *sess=day->getSessions()[s];
+                machines[sess->machine()]=sess->machine()->GetClass();
+                invalid.clear();
+                for (QHash<ChannelID,QVector<EventList *> >::iterator e=sess->eventlist.begin();e!=sess->eventlist.end();e++) {
+                    if (!valid.contains(e.key())) {
+                        invalid.push_back(e.key());
+                    }
+                }
+                for (int i=0;i<invalid.size();i++) {
+                    sess->eventlist.erase(sess->eventlist.find(invalid[i]));
+                }
+                sess->m_sum.clear();
+                sess->m_min.clear();
+                sess->m_max.clear();
+                sess->m_cph.clear();
+                sess->m_sph.clear();
+                sess->m_avg.clear();
+                sess->m_wavg.clear();
+                sess->m_90p.clear();
+                sess->m_firstchan.clear();
+                sess->m_lastchan.clear();
+                sess->SetChanged(true);
+            }
+
+        }
+    }
+    for (QHash<Machine *,QString>::iterator i=machines.begin();i!=machines.end();i++) {
+        Machine *m=i.key();
+        m->Save();
+    }
+    getDaily()->ReloadGraphs();
+    getOverview()->ReloadGraphs();
+
+}

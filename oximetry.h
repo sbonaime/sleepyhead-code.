@@ -20,6 +20,7 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gFooBar.h"
 
+enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE };
 class SerialOximeter:public QObject
 {
     Q_OBJECT
@@ -35,6 +36,11 @@ public:
 
     virtual bool startLive();
     virtual void stopLive();
+
+    SerialOxMode mode() { return m_mode; }
+
+    bool isOpen() { return m_opened; }
+    int callbacks() { return m_callbacks; }
 
     qint64 lastTime() { return lasttime; }
     Machine * getMachine() { return machine; }
@@ -91,7 +97,7 @@ protected:
     EventList * spo2;
     EventList * plethy;
     QextSerialPort *m_port;
-
+    SerialOxMode m_mode;
     bool m_opened;
     QString m_oxiname;
     QString m_portname;
@@ -100,11 +106,13 @@ protected:
     ParityType m_parity;
     DataBitsType m_databits;
     StopBitsType m_stopbits;
-    QextSerialPort::QueryMode m_mode;
+    QextSerialPort::QueryMode m_portmode;
     Machine *machine;
 
     qint64 lasttime;
     bool import_mode;
+
+    int m_callbacks;
 };
 
 class CMS50Serial:public SerialOximeter
@@ -166,6 +174,8 @@ private slots:
     void on_updateProgress(float f);
     void on_import_aborted();
     void on_import_complete(Session *session);
+
+    void oximeter_running_check();
 
 private:
     void import_finished();

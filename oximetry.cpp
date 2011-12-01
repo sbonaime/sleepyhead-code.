@@ -3,6 +3,7 @@
 #include <QProgressBar>
 #include <QMessageBox>
 #include <QLabel>
+#include <QTimer>
 
 #include "oximetry.h"
 #include "ui_oximetry.h"
@@ -66,9 +67,9 @@ bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
         if (m_port) m_port->close();
     }
 
-    m_mode=mode;
+    m_portmode=mode;
 
-    m_port=new QextSerialPort(m_portname,m_mode);
+    m_port=new QextSerialPort(m_portname,m_portmode);
     m_port->setBaudRate(m_baud);
     m_port->setFlowControl(m_flow);
     m_port->setParity(m_parity);
@@ -95,8 +96,9 @@ void SerialOximeter::Close()
     if (!m_opened) return;
 
     if (m_port) m_port->close();
-    if (m_mode==QextSerialPort::EventDriven)
+    if (m_portmode==QextSerialPort::EventDriven)
         disconnect(m_port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    m_mode=SO_OFF;
     m_opened=false;
 }
 
@@ -230,6 +232,7 @@ void SerialOximeter::compactToWaveform(EventList *el)
 }
 void SerialOximeter::compactToEvent(EventList *el)
 {
+    if (el->count()==0) return;
     EventList nel(EVL_Waveform);
     EventDataType t,lastt=el->data(0);
     qint64 ti=el->time(0);
@@ -305,12 +308,15 @@ Session *SerialOximeter::createSession()
     spo2->setFirst(lasttime);
     plethy->setFirst(lasttime);
 
+    m_callbacks=0;
+
     emit(sessionCreated(session));
     return session;
 }
 
 bool SerialOximeter::startLive()
 {
+    m_mode=SO_LIVE;
     import_mode=false;
     if (Open(QextSerialPort::EventDriven)) {
         createSession();
@@ -432,12 +438,14 @@ void CMS50Serial::on_import_process()
     emit(importComplete(session));
     disconnect(this,SIGNAL(importProcess()),this,SLOT(on_import_process()));
 }
+
 void CMS50Serial::onReadyRead()
 {
     QByteArray bytes;
     int a = m_port->bytesAvailable();
     bytes.resize(a);
     m_port->read(bytes.data(), bytes.size());
+    m_callbacks++;
 
     int i=0;
 
@@ -568,6 +576,7 @@ void CMS50Serial::onReadyRead()
 
 bool CMS50Serial::startImport()
 {
+    m_mode=SO_IMPORT;
     import_mode=true;
     waitf6=true;
     cntf6=0;
@@ -777,8 +786,9 @@ void Oximetry::on_RunButton_toggled(bool checked)
         SPO2->setRecMinY(90);
         SPO2->setRecMaxY(100);
 
+        QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
         if (!oximeter->startLive()) {
-            QMessageBox::warning(this,"Error","Something is wrong with the device connection.",QMessageBox::Ok);
+            mainwin->Notify("Oximetry Error!\n\nSomething is wrong with the device connection.");
             return;
         }
         ui->saveButton->setEnabled(false);
@@ -878,6 +888,17 @@ void DumpBytes(int blocks, unsigned char * b,int len)
     }
     qDebug() << a;
 }
+void Oximetry::oximeter_running_check()
+{
+    if (!oximeter->isOpen()) {
+        qDebug() << "Not sure how oximeter_running_check gets called with a closed oximeter";
+        mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2");
+        return;
+    }
+    if (oximeter->callbacks()==0) {
+        mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on.");
+    }
+}
 
 // Move this code to CMS50 Importer??
 void Oximetry::on_ImportButton_clicked()
@@ -887,10 +908,13 @@ void Oximetry::on_ImportButton_clicked()
     connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(on_updateProgress(float)));
     //connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
 
+    QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
     if (!oximeter->startImport()) {
-        qDebug() << "Error starting oximetry serial import process";
+        mainwin->Notify("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on.");
+        //qDebug() << "Error starting oximetry serial import process";
         return;
     }
+
     day->getSessions().clear();
     day->AddSession(oximeter->getSession());
 
@@ -926,7 +950,9 @@ void Oximetry::import_finished()
 
 void Oximetry::on_import_aborted()
 {
-    qDebug() << "Oximetry import failed";
+    //QMessageBox::warning(mainwin,"Oximeter Error","Please make sure your oximeter is switched on, and able to transmit data.\n(You may need to enter the oximeters Settings screen for it to be able to transmit.)",QMessageBox::Ok);
+    mainwin->Notify("Oximeter Error!\n\nPlease make sure your oximeter is switched on, and in the right mode to transmit data.");
+    //qDebug() << "Oximetry import failed";
     import_finished();
 }
 void Oximetry::on_import_complete(Session * session)
@@ -1023,7 +1049,7 @@ void Oximetry::onSpO2Changed(float o2)
 
 void Oximetry::on_saveButton_clicked()
 {
-    if (QMessageBox::question(this,"Keep This Recording?","A save dialog will go here allowing you to edit parameters for this oximetry session..\nFor now, would you like to save this as is?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
+    if (QMessageBox::question(this,"Keep This Recording?","Would you like to save this oximetery session?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
         Session *session=oximeter->getSession();
         // Process???
         //session->UpdateSummaries();

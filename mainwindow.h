@@ -110,6 +110,8 @@ private slots:
 
     void on_action_Frequently_Asked_Questions_triggered();
 
+    void on_action_Rebuild_Oximetry_Index_triggered();
+
 private:
     Ui::MainWindow *ui;
     Daily * daily;

@@ -609,8 +609,15 @@
     <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
+   <widget class="QMenu" name="menu_Data">
+    <property name="title">
+     <string>&amp;Data</string>
+    </property>
+    <addaction name="action_Rebuild_Oximetry_Index"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
+   <addaction name="menu_Data"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -758,6 +765,11 @@
   <action name="action_Frequently_Asked_Questions">
    <property name="text">
     <string>&amp;Frequently Asked Questions</string>
+   </property>
+  </action>
+  <action name="action_Rebuild_Oximetry_Index">
+   <property name="text">
+    <string>&amp;Rebuild Oximetry Indices</string>
    </property>
   </action>
  </widget>
