@@ -44,7 +44,8 @@ void SummaryChart::SetDay(Day * nullday)
     m_times.clear();
     m_days.clear();
     m_hours.clear();
-    m_badcodes.clear();
+    m_goodcodes.clear();
+    m_goodcodes[""]=1;
     m_miny=999999999;
     m_maxy=-999999999;
     m_minx=0;
@@ -132,17 +133,13 @@ void SummaryChart::SetDay(Day * nullday)
                             tmp-=suboffset;
                             if (tmp<0) tmp=0;
                         }
-                        //if (tmp>0) {
-                            fnd=true;
-                            total+=tmp;
-                            m_values[dn][j+1]=tmp;
-                            if (tmp<m_miny) m_miny=tmp;
-                            if (tmp>m_maxy) m_maxy=tmp;
-                            break;
-                       // }
-
-                    } else {
-                        m_badcodes[code]=1;
+                        fnd=true;
+                        total+=tmp;
+                        m_values[dn][j+1]=tmp;
+                        if (tmp<m_miny) m_miny=tmp;
+                        if (tmp>m_maxy) m_maxy=tmp;
+                        m_goodcodes[code]=1;
+                        break;
                     }
                 }
             }
@@ -434,7 +431,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     for (int j=0;j<m_codes.size();j++) {
         if (totalcounts[j]==0) continue;
-        if (m_badcodes.contains(m_codes[j])) continue;
+        if (!m_goodcodes.contains(m_codes[j])) continue;
         a=schema::channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {

@@ -33,7 +33,7 @@ class SummaryChart:public Layer
 
         QVector<QColor> m_colors;
         QVector<ChannelID> m_codes;
-        QHash<ChannelID,char> m_badcodes;
+        QHash<ChannelID,char> m_goodcodes;
         QVector<SummaryType> m_type;
         QHash<int,QHash<short,EventDataType> > m_values;
         QHash<int,QHash<short,EventDataType> > m_times;
