@@ -433,6 +433,7 @@ public:
     void updateScrollBar();
     void updateScale();         // update scale & Scrollbar
     void resetLayout();
+    int visibleGraphs();
 
     int horizTravel() { return m_horiz_travel; }
     void setEmptyText(QString s) { m_emptytext=s; }

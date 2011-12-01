@@ -2638,3 +2638,11 @@ gGraph *gGraphView::findGraph(QString name)
     if (i==m_graphsbytitle.end()) return NULL;
     return i.value();
 }
+int gGraphView::visibleGraphs()
+{
+    int cnt=0;
+    for (int i=0;i<m_graphs.size();i++) {
+        if (!m_graphs[i]->isEmpty() &&  m_graphs[i]->visible()) cnt++;
+    }
+    return cnt;
+}

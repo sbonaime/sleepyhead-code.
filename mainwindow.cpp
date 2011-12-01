@@ -651,8 +651,19 @@ EventList *packEventList(EventList *ev)
 void MainWindow::PrintReport(gGraphView *gv,QString name)
 {
     if (!gv) return;
+    QDate d=QDate::currentDate();
 
-    QString filename=PREF.Get("{home}/"+name+"_{user}.pdf");
+    if (gv->visibleGraphs()==0) {
+        Notify("There are no graphs visible to print");
+        return;
+    }
+    QString filename=QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",PREF.Get("{home}/"+name+"_{user}_"+d.toString(Qt::ISODate)+".pdf"),"PDF Files (*.pdf)");
+
+    if (filename.isEmpty())
+        return;
+
+    Notify("Saving "+name+" report as \""+filename+"\".");
+    //QString filename=PREF.Get("{home}/"+name+"_{user}.pdf");
     QPrinter printer(QPrinter::ScreenResolution); //QPrinter::HighResolution); //QPrinter::ScreenResolution);
     printer.setOutputFileName(filename);
     printer.setOrientation(QPrinter::Portrait);
