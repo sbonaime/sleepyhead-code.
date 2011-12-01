@@ -25,5 +25,8 @@
         <file>icons/save.png</file>
         <file>docs/countries.txt</file>
         <file>docs/tz.txt</file>
+        <file>icons/arrow-end.png</file>
+        <file>icons/arrow-left.png</file>
+        <file>icons/arrow-right.png</file>
     </qresource>
 </RCC>

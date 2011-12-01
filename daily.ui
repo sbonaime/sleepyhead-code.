@@ -77,7 +77,7 @@
           </property>
           <property name="icon">
            <iconset resource="Resources.qrc">
-            <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
+            <normaloff>:/icons/arrow-left.png</normaloff>:/icons/arrow-left.png</iconset>
           </property>
           <property name="toolButtonStyle">
            <enum>Qt::ToolButtonIconOnly</enum>
@@ -161,7 +161,7 @@
           </property>
           <property name="icon">
            <iconset resource="Resources.qrc">
-            <normaloff>:/icons/forward.png</normaloff>:/icons/forward.png</iconset>
+            <normaloff>:/icons/arrow-right.png</normaloff>:/icons/arrow-right.png</iconset>
           </property>
           <property name="toolButtonStyle">
            <enum>Qt::ToolButtonIconOnly</enum>
@@ -191,18 +191,15 @@
           <property name="toolTip">
            <string>Go to the most recent day with data records</string>
           </property>
-          <property name="text">
-           <string>&gt;|</string>
-          </property>
           <property name="icon">
            <iconset resource="Resources.qrc">
-            <normaloff>:/icons/last.png</normaloff>:/icons/last.png</iconset>
+            <normaloff>:/icons/arrow-end.png</normaloff>:/icons/arrow-end.png</iconset>
           </property>
           <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextOnly</enum>
+           <enum>Qt::ToolButtonIconOnly</enum>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
