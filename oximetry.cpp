@@ -17,6 +17,8 @@
 #include "Graphs/gLineOverlay.h"
 
 extern QLabel * qstatus2;
+#include "mainwindow.h"
+extern MainWindow * mainwin;
 
 int lastpulse;
 SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portname, BaudRateType baud, FlowType flow, ParityType parity, DataBitsType databits, StopBitsType stopbits) :
@@ -344,31 +346,36 @@ void CMS50Serial::on_import_process()
     unsigned char a,pl,o2,lastpl=0,lasto2=0;
     int i=0;
     int size=data.size();
-    EventList * pulse=(session->eventlist[OXI_Pulse][0]);
-    EventList * spo2=(session->eventlist[OXI_SPO2][0]);
+    EventList * pulse=NULL; //(session->eventlist[OXI_Pulse][0]);
+    EventList * spo2=NULL; // (session->eventlist[OXI_SPO2][0]);
     lasttime=f2time[0].toTime_t();
     session->SetSessionID(lasttime);
     lasttime*=1000;
 
-    session->set_first(lasttime);
-    pulse->setFirst(lasttime);
-    spo2->setFirst(lasttime);
+    //spo2->setFirst(lasttime);
 
     EventDataType plmin=999,plmax=0;
     EventDataType o2min=100,o2max=0;
     int plcnt=0,o2cnt=0;
+    qint64 lastpltime=0,lasto2time=0;
+    bool first=true;
     while (i<(size-3)) {
         a=data.at(i++);
         pl=data.at(i++) ^ 0x80;
         o2=data.at(i++);
         if (pl!=0) {
             if (lastpl!=pl) {
-                if (lastpl==0) {
-                    if (pulse && pulse->count()>0) {
+                if (lastpl==0 || !pulse) {
+                    if (first) {
+                        session->set_first(lasttime);
+                        first=false;
                     }
+                    if (plcnt==0)
+                        session->setFirst(OXI_Pulse,lasttime);
                     pulse=new EventList(EVL_Event);
                     session->eventlist[OXI_Pulse].push_back(pulse);
                 }
+                lastpltime=lasttime;
                 pulse->AddEvent(lasttime,pl);
                 if (pl < plmin) plmin=pl;
                 if (pl > plmax) plmax=pl;
@@ -377,13 +384,20 @@ void CMS50Serial::on_import_process()
         }
         if (o2!=0) {
             if (lasto2!=o2) {
-                if (lasto2==0) {
+                if (lasto2==0  || !spo2) {
+                    if (first) {
+                        session->set_first(lasttime);
+                        first=false;
+                    }
+                    if (o2cnt==0)
+                        session->setFirst(OXI_SPO2,lasttime);
                     spo2=new EventList(EVL_Event);
                     session->eventlist[OXI_SPO2].push_back(spo2);
                 }
+                lasto2time=lasttime;
                 spo2->AddEvent(lasttime,o2);
-                if (o2 < plmin) o2min=o2;
-                if (o2 > plmax) o2max=o2;
+                if (o2 < o2min) o2min=o2;
+                if (o2 > o2max) o2max=o2;
                 o2cnt++;
             }
         }
@@ -394,9 +408,20 @@ void CMS50Serial::on_import_process()
         lastpl=pl;
         lasto2=o2;
     }
-    pulse->setLast(lasttime);
-    spo2->setLast(lasttime);
+    if (pulse && (lastpltime!=lasttime) && (pl!=0)) {
+        // lastpl==pl
+        pulse->AddEvent(lasttime,pl);
+        lastpltime=lastpltime;
+        plcnt++;
+    }
+    if (spo2 && (lasto2time!=lasttime) && (o2!=0)) {
+        spo2->AddEvent(lasttime,o2);
+        lasto2time=lasttime;
+        o2cnt++;
+    }
     session->set_last(lasttime);
+    session->setLast(OXI_Pulse,lastpltime);
+    session->setLast(OXI_SPO2,lasto2time);
     session->setMin(OXI_Pulse,plmin);
     session->setMax(OXI_Pulse,plmax);
     session->setMin(OXI_SPO2,o2min);
@@ -912,6 +937,19 @@ void Oximetry::on_import_complete(Session * session)
     calcSPO2Drop(session);
     calcPulseChange(session);
 
+    ui->pulseLCD->display(session->min(OXI_Pulse));
+    ui->spo2LCD->display(session->min(OXI_SPO2));
+
+    pulse->setMinY(session->min(OXI_Pulse));
+    pulse->setMaxY(session->max(OXI_Pulse));
+    spo2->setMinY(session->min(OXI_SPO2));
+    spo2->setMaxY(session->max(OXI_SPO2));
+
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
     //PLETHY->setVisible(false);
     CONTROL->setVisible(false);
 
@@ -988,9 +1026,12 @@ void Oximetry::on_saveButton_clicked()
     if (QMessageBox::question(this,"Keep This Recording?","A save dialog will go here allowing you to edit parameters for this oximetry session..\nFor now, would you like to save this as is?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
         Session *session=oximeter->getSession();
         // Process???
-        session->UpdateSummaries();
+        //session->UpdateSummaries();
         oximeter->getMachine()->AddSession(session,p_profile);
         oximeter->getMachine()->Save();
+        day->getSessions().clear();
+        mainwin->getDaily()->ReloadGraphs();
+        mainwin->getOverview()->ReloadGraphs();
     }
 }
 void Oximetry::on_updateProgress(float f)

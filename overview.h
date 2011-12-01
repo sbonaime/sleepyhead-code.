@@ -36,8 +36,8 @@ public:
     gGraph * createGraph(QString name);
 
 
-    gGraph *AHI,*UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB;
-    SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb;
+    gGraph *AHI,*UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2;
+    SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2;
     QVector<SummaryChart *> OverviewCharts;
 
 public slots:

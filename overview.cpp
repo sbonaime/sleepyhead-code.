@@ -101,6 +101,22 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     TV=createGraph("Tidal Volume");
     MV=createGraph("Minute Vent.");
     PTB=createGraph("Pat. Trig. Br.");
+    PULSE=createGraph("Pulse Rate");
+    SPO2=createGraph("SpO2");
+
+    pulse=new SummaryChart("Pulse Rate",GT_LINE);
+    pulse->setMachineType(MT_OXIMETER);
+    pulse->addSlice(OXI_Pulse,QColor("red"),ST_WAVG);
+    pulse->addSlice(OXI_Pulse,QColor("light red"),ST_MIN);
+    pulse->addSlice(OXI_Pulse,QColor("orange"),ST_MAX);
+    PULSE->AddLayer(pulse);
+
+    spo2=new SummaryChart("SpO2",GT_LINE);
+    spo2->setMachineType(MT_OXIMETER);
+    spo2->addSlice(OXI_SPO2,QColor("cyan"),ST_WAVG);
+    spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_90P);
+    spo2->addSlice(OXI_SPO2,QColor("blue"),ST_MIN);
+    SPO2->AddLayer(spo2);
 
     uc=new SummaryChart("Hours",GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS);
