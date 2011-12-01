@@ -415,6 +415,9 @@ void Session::UpdateSummaries()
 
     calcLeaks(this);
 
+    calcSPO2Drop(this);
+    calcPulseChange(this);
+
     ChannelID id;
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
@@ -819,6 +822,10 @@ EventDataType Session::wavg(ChannelID id)
         return 0;
     QVector<EventList *> & evec=jj.value();
 
+    int size=evec.size();
+    if (size==0)
+        return 0;
+
     qint64 lasttime=0,time,td;
     EventStoreType val,lastval=0;
 
@@ -826,7 +833,7 @@ EventDataType Session::wavg(ChannelID id)
 
     EventDataType gain=evec[0]->gain();
 
-    for (int i=0;i<evec.size();i++) {
+    for (int i=0;i<size;i++) {
         if (!evec[i]->count()) continue;
         lastval=evec[i]->raw(0);
         lasttime=evec[i]->time(0);

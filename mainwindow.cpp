@@ -605,54 +605,105 @@ void MainWindow::on_action_Frequently_Asked_Questions_triggered()
     ui->tabWidget->setCurrentIndex(0);
 }
 
+EventList *packEventList(EventList *ev)
+{
+    EventList *nev=new EventList(EVL_Event);
+
+    EventDataType val,lastval=0;
+    qint64 time,lasttime=0,lasttime2=0;
+
+    lastval=ev->data(0);
+    lasttime=ev->time(0);
+    nev->AddEvent(lasttime,lastval);
+
+    for (int i=1;i<ev->count();i++) {
+        val=ev->data(i);
+        time=ev->time(i);
+        if (val!=lastval) {
+            nev->AddEvent(time,val);
+            lasttime2=time;
+        }
+        lastval=val;
+        lasttime=time;
+    }
+    if (val==lastval) {
+        nev->AddEvent(lasttime,val);
+    }
+    return nev;
+}
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 {
     Day *day;
-    QMap<QDate,QVector<Day *> >::iterator z;
-    QHash<Machine *,QString> machines;
     QVector<QString> valid;
     valid.push_back(OXI_Pulse);
     valid.push_back(OXI_SPO2);
     valid.push_back(OXI_Plethy);
-    valid.push_back(OXI_PulseChange);
-    valid.push_back(OXI_SPO2Drop);
+    //valid.push_back(OXI_PulseChange); // Delete these and recalculate..
+    //valid.push_back(OXI_SPO2Drop);
 
     QVector<QString> invalid;
 
-    for (z=p_profile->daylist.begin();z!=p_profile->daylist.end();z++) {
-        for (int y=0;y<z.value().size();y++) {
-            day=z.value()[y];
-            if (day->machine->GetType()!=MT_OXIMETER) continue;
-            for (int s=0;s<day->getSessions().size();s++) {
-                Session *sess=day->getSessions()[s];
-                machines[sess->machine()]=sess->machine()->GetClass();
-                invalid.clear();
-                for (QHash<ChannelID,QVector<EventList *> >::iterator e=sess->eventlist.begin();e!=sess->eventlist.end();e++) {
-                    if (!valid.contains(e.key())) {
-                        invalid.push_back(e.key());
-                    }
-                }
-                for (int i=0;i<invalid.size();i++) {
-                    sess->eventlist.erase(sess->eventlist.find(invalid[i]));
-                }
-                sess->m_sum.clear();
-                sess->m_min.clear();
-                sess->m_max.clear();
-                sess->m_cph.clear();
-                sess->m_sph.clear();
-                sess->m_avg.clear();
-                sess->m_wavg.clear();
-                sess->m_90p.clear();
-                sess->m_firstchan.clear();
-                sess->m_lastchan.clear();
-                sess->SetChanged(true);
-            }
+    QVector<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
 
+    Machine *m;
+    for (int z=0;z<machines.size();z++) {
+        m=machines[z];
+        //m->sessionlist.erase(m->sessionlist.find(0));
+        for (QHash<SessionID,Session *>::iterator s=m->sessionlist.begin();s!=m->sessionlist.end();s++) {
+            Session *sess=s.value();
+            if (!sess) continue;
+            sess->OpenEvents();
+            invalid.clear();
+            for (QHash<ChannelID,QVector<EventList *> >::iterator e=sess->eventlist.begin();e!=sess->eventlist.end();e++) {
+                if (!valid.contains(e.key())) {
+                    for (int i=0;i<e.value().size();i++)  {
+                        delete e.value()[i];
+                    }
+                    e.value().clear();
+                    invalid.push_back(e.key());
+                } else {
+                    int i=0;
+                    QVector<EventList *> newlist;
+                    for (int i=0;i<e.value().size();i++)  {
+                        if (e.value()[i]->count() > 1) {
+                            newlist.push_back(e.value()[i]);
+                        } else {
+                            delete e.value()[i];
+                        }
+                    }
+                    for (int i=0;i<newlist.size();i++) {
+                        EventList *nev=packEventList(newlist[i]);
+                        if (nev->count()!=e.value()[i]->count() ) {
+                            delete newlist[i];
+                            newlist[i]=nev;
+                        } else {
+                            delete nev;
+                        }
+                    }
+                   e.value()=newlist;
+                }
+            }
+            for (int i=0;i<invalid.size();i++) {
+                sess->eventlist.erase(sess->eventlist.find(invalid[i]));
+            }
+            sess->m_cnt.clear();
+            sess->m_sum.clear();
+            sess->m_min.clear();
+            sess->m_max.clear();
+            sess->m_cph.clear();
+            sess->m_sph.clear();
+            sess->m_avg.clear();
+            sess->m_wavg.clear();
+            sess->m_90p.clear();
+            sess->m_firstchan.clear();
+            sess->m_lastchan.clear();
+            sess->SetChanged(true);
         }
+
     }
-    for (QHash<Machine *,QString>::iterator i=machines.begin();i!=machines.end();i++) {
-        Machine *m=i.key();
+    for (int i=0;i<machines.size();i++) {
+        Machine *m=machines[i];
         m->Save();
     }
     getDaily()->ReloadGraphs();
