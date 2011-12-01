@@ -570,12 +570,12 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
             graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
             ui->graphView->update();
         }  else {
-            if ((val < graph->rec_maxy) || (val==0)) {
+            //if ((val < graph->rec_maxy) || (val==0)) {
                 graph->setRecMinY(val);
-            } else {
+            /*} else {
                 graphModel->setData(index,QString::number(graph->rec_miny,'f',1));
                 ui->graphView->update();
-            }
+             } */
         }
     } else if (index.column()==2) {
         val=index.data().toDouble(&ok);
@@ -583,12 +583,12 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
             graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
             ui->graphView->update();
         }  else {
-            if ((val > graph->rec_miny) || (val==0)) {
+            //if ((val > graph->rec_miny) || (val==0)) {
                 graph->setRecMaxY(val);
-            } else {
+            /*} else {
                 graphModel->setData(index,QString::number(graph->rec_maxy,'f',1));
                 ui->graphView->update();
-            }
+            }*/
         }
 
     }

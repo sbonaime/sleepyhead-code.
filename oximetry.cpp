@@ -268,8 +268,8 @@ void SerialOximeter::compactToEvent(EventList *el)
 
 void SerialOximeter::compactAll()
 {
+    if (!session) return;
     QHash<ChannelID,QVector<EventList *> >::iterator i;
-
     for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
         for (int j=0;j<i.value().size();j++) {
             if (i.key()==OXI_SPO2) {
@@ -329,10 +329,11 @@ bool SerialOximeter::startLive()
 void SerialOximeter::stopLive()
 {
     Close();
-    compactAll();
-    calcSPO2Drop(session);
-    calcPulseChange(session);
-
+    if (session) {
+        compactAll();
+        calcSPO2Drop(session);
+        calcPulseChange(session);
+    }
     emit(liveStopped(session));
 }
 
@@ -779,6 +780,9 @@ void Oximetry::on_RunButton_toggled(bool checked)
                 return;
             }
         } // else it's already saved.
+        GraphView->setEmptyText("Please Wait");
+        GraphView->updateGL();
+
         PLETHY->setRecMinY(0);
         PLETHY->setRecMaxY(128);
         PULSE->setRecMinY(60);
@@ -786,13 +790,13 @@ void Oximetry::on_RunButton_toggled(bool checked)
         SPO2->setRecMinY(90);
         SPO2->setRecMaxY(100);
 
-        QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
+        day->getSessions().clear();
         if (!oximeter->startLive()) {
             mainwin->Notify("Oximetry Error!\n\nSomething is wrong with the device connection.");
             return;
         }
+        QTimer::singleShot(100,this,SLOT(oximeter_running_check()));
         ui->saveButton->setEnabled(false);
-        day->getSessions().clear();
         day->AddSession(oximeter->getSession());
 
         firstPulseUpdate=true;
@@ -810,6 +814,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         PULSE->SetMinX(f);
         SPO2->SetMinX(f);
 
+        //graphView()->updateScale();
         /*PLETHY->setForceMinY(0);
         PLETHY->setForceMaxY(128);
         PULSE->setForceMinY(30);
@@ -834,19 +839,21 @@ void Oximetry::onDataChanged()
     qint64 first=last-30000L;
     day->setLast(last);
 
-    //plethy->setMinX(first);
-    //plethy->setMaxX(last);
+    plethy->setMinX(first);
+    plethy->setMaxX(last);
     pulse->setMinX(first);
     pulse->setMaxX(last);
     spo2->setMinX(first);
     spo2->setMaxX(last);
 
-    plethy->setMinY(0);
-    plethy->setMaxY(128);
-    pulse->setMinY(0);
-    pulse->setMaxY(120);
-    spo2->setMinY(0);
-    spo2->setMaxY(100);
+
+
+    plethy->setMinY((oximeter->Plethy())->min());
+    plethy->setMaxY((oximeter->Plethy())->max());
+    pulse->setMinY((oximeter->Pulse())->min());
+    pulse->setMaxY((oximeter->Pulse())->max());
+    spo2->setMinY((oximeter->Spo2())->min());
+    spo2->setMaxY((oximeter->Spo2())->max());
 
     PLETHY->MinY();
     PLETHY->MaxY();
@@ -897,6 +904,19 @@ void Oximetry::oximeter_running_check()
     }
     if (oximeter->callbacks()==0) {
         mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on.");
+        if (oximeter->mode()==SO_IMPORT) oximeter->stopImport();
+        if (oximeter->mode()==SO_LIVE) oximeter->stopLive();
+
+        oximeter->destroySession();
+        day->getSessions().clear();
+        ui->SerialPortsCombo->setEnabled(true);
+        qstatus->setText("Ready");
+        ui->ImportButton->setEnabled(true);
+        ui->RunButton->setChecked(false);
+        ui->saveButton->setEnabled(false);
+        GraphView->setEmptyText("Check Oximeter is Ready");
+        GraphView->updateGL();
+
     }
 }
 
@@ -908,12 +928,12 @@ void Oximetry::on_ImportButton_clicked()
     connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(on_updateProgress(float)));
     //connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
 
-    QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
     if (!oximeter->startImport()) {
         mainwin->Notify("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on.");
         //qDebug() << "Error starting oximetry serial import process";
         return;
     }
+    QTimer::singleShot(100,this,SLOT(oximeter_running_check()));
 
     day->getSessions().clear();
     day->AddSession(oximeter->getSession());
@@ -1058,6 +1078,8 @@ void Oximetry::on_saveButton_clicked()
         day->getSessions().clear();
         mainwin->getDaily()->ReloadGraphs();
         mainwin->getOverview()->ReloadGraphs();
+        GraphView->setEmptyText("No Oximetry Data");
+        GraphView->updateGL();
     }
 }
 void Oximetry::on_updateProgress(float f)

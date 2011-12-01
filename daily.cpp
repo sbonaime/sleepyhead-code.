@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QSpacerItem>
 
 #include "daily.h"
 #include "ui_daily.h"
@@ -263,6 +264,19 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     GraphView->LoadSettings("Daily");
 
+    for (int i=0;i<GraphView->size();i++) {
+        QString title=(*GraphView)[i]->title();
+        QPushButton *btn=new QPushButton(title,this);
+        btn->setCheckable(true);
+        btn->setChecked(true);
+        GraphToggles[title]=btn;
+        btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
+        ui->graphToggleArea->addWidget(btn);
+        connect(btn,SIGNAL(toggled(bool)),this,SLOT(on_graphtogglebutton_toggled(bool)));
+    }
+    ui->graphToggleArea->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
+
+
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
 }
@@ -405,6 +419,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     tree->sortByColumn(0,Qt::AscendingOrder);
     //tree->expandAll();
 }
+
 void Daily::UpdateCalendarDay(QDate date)
 {
     QTextCharFormat bold;
@@ -478,6 +493,15 @@ void Daily::ShowHideGraphs()
     //splitter->update();
     RedrawGraphs(); */
 }
+void Daily::on_graphtogglebutton_toggled(bool b)
+{
+    for (int i=0;i<GraphView->size();i++) {
+        QString title=(*GraphView)[i]->title();
+        (*GraphView)[i]->setVisible(GraphToggles[title]->isChecked());
+    }
+    GraphView->updateScale();
+    GraphView->updateGL();
+}
 void Daily::Load(QDate date)
 {
     static Day * lastcpapday=NULL;
@@ -530,6 +554,11 @@ void Daily::Load(QDate date)
     snapGV->updateGL();
 
     //RedrawGraphs();
+
+    for (int i=0;i<GraphView->size();i++) {
+        QString title=(*GraphView)[i]->title();
+        GraphToggles[title]->setVisible(!(*GraphView)[i]->isEmpty());
+    }
 
     QString epr,modestr;
     //float iap90,eap90;

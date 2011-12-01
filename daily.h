@@ -13,6 +13,7 @@
 #include <QWidget>
 #include <QTreeWidget>
 #include <QHBoxLayout>
+#include <QPushButton>
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
@@ -70,6 +71,7 @@ private slots:
 
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
+    void on_graphtogglebutton_toggled(bool);
 protected:
 
 private:
@@ -86,7 +88,7 @@ private:
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
-
+    QHash<QString,QPushButton *> GraphToggles;
     QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
 

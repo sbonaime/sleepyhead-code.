@@ -38,6 +38,7 @@ public:
     virtual void stopLive();
 
     SerialOxMode mode() { return m_mode; }
+    void destroySession() { delete session; session=NULL; }
 
     bool isOpen() { return m_opened; }
     int callbacks() { return m_callbacks; }
@@ -65,6 +66,10 @@ public:
     ParityType parity() { return m_parity; }
     DataBitsType dataBits() { return m_databits; }
     StopBitsType stopBits() { return m_stopbits; }
+
+    EventList * Pulse() { return pulse; }
+    EventList * Spo2() { return spo2; }
+    EventList * Plethy() { return plethy; }
 
 signals:
     void sessionCreated(Session *);

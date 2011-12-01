@@ -133,7 +133,7 @@ gYAxis::~gYAxis()
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
     if (height<0) return;
-
+    if (height>2000) return;
     int x,y;
     int labelW=0;
 

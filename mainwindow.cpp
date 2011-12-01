@@ -616,7 +616,7 @@ EventList *packEventList(EventList *ev)
     lasttime=ev->time(0);
     nev->AddEvent(lasttime,lastval);
 
-    for (int i=1;i<ev->count();i++) {
+    for (unsigned i=1;i<ev->count();i++) {
         val=ev->data(i);
         time=ev->time(i);
         if (val!=lastval) {

@@ -330,6 +330,7 @@ public:
     void setGroup(short group) { m_group=group; }
     void DrawTextQue();
     void setDay(Day * day);
+    Day * day() { return m_day; }
     virtual void paint(int originX, int originY, int width, int height);
     void ToolTip(QString text, int x, int y, int timeout=2000);
     void redraw();
