@@ -44,6 +44,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_times.clear();
     m_days.clear();
     m_hours.clear();
+    m_badcodes.clear();
     m_miny=999999999;
     m_maxy=-999999999;
     m_minx=0;
@@ -105,7 +106,8 @@ void SummaryChart::SetDay(Day * nullday)
                 for (int i=0;i<d.value().size();i++) { // for each day
                     day=d.value()[i];
                     if (day->machine_type()!=m_machinetype) continue;
-                    if (type==ST_HOURS || type==ST_SESSIONS || day->channelHasData(code) || day->settingExists(code)) { // too many lookups happening here.. stop the crap..
+                    bool hascode=day->channelHasData(code) || day->settingExists(code);
+                    if (type==ST_HOURS || type==ST_SESSIONS || hascode) { // too many lookups happening here.. stop the crap..
                         m_days[dn]=day;
                         switch(m_type[j]) {
                             case ST_AVG: tmp=day->avg(code); break;
@@ -139,6 +141,8 @@ void SummaryChart::SetDay(Day * nullday)
                             break;
                        // }
 
+                    } else {
+                        m_badcodes[code]=1;
                     }
                 }
             }
@@ -430,6 +434,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     for (int j=0;j<m_codes.size();j++) {
         if (totalcounts[j]==0) continue;
+        if (m_badcodes.contains(m_codes[j])) continue;
         a=schema::channel[m_codes[j]].label();
         a+=" ";
         switch(m_type[j]) {
