@@ -1599,48 +1599,49 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
     int m,t;
+    bool ymin_good=false,ymax_good=false;
     if (rec_miny!=rec_maxy) {
         if (miny>rec_miny) miny=rec_miny;
         if (maxy<rec_maxy) maxy=rec_maxy;
 
-        if (miny==rec_miny) return;
-        if (maxy==rec_maxy) return;
+        if (miny==rec_miny) ymin_good=true;
+        if (maxy==rec_maxy) ymax_good=true;
     }
     if (maxy==miny) {
         m=ceil(maxy/2.0);
         t=m*2;
         if (maxy==t) t+=2;
-        maxy=t;
+        if (!ymax_good) maxy=t;
 
         m=floor(miny/2.0);
         t=m*2;
         if (miny==t) t-=2;
         if (miny>=0 && t<0) t=0;
-        miny=t;
+        if (!ymin_good) miny=t;
         return;
     }
 
     if (maxy>=5) {
         m=ceil(maxy/5.0);
         t=m*5;
-        maxy=t;
+        if (!ymax_good) maxy=t;
         m=floor(miny/5.0);
-        miny=m*5;
+        if (!ymin_good) miny=m*5;
     } else {
         if (maxy==miny && maxy==0) {
             maxy=0.5;
         } else {
             //maxy*=4.0;
             //miny*=4.0;
-            maxy=ceil(maxy);
-            miny=floor(miny);
+            if (!ymax_good) maxy=ceil(maxy);
+            if (!ymin_good) miny=floor(miny);
             //maxy/=4.0;
             //miny/=4.0;
         }
     }
 
-    if (m_enforceMinY) { miny=f_miny; }
-    if (m_enforceMaxY) { maxy=f_maxy; }
+    //if (m_enforceMinY) { miny=f_miny; }
+    //if (m_enforceMaxY) { maxy=f_maxy; }
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :

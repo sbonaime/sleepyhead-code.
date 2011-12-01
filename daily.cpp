@@ -269,6 +269,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
         QPushButton *btn=new QPushButton(title,this);
         btn->setCheckable(true);
         btn->setChecked((*GraphView)[i]->visible());
+        btn->setToolTip("Show/Hide "+title);
         GraphToggles[title]=btn;
         btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
         ui->graphToggleArea->addWidget(btn);

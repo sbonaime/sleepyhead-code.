@@ -182,8 +182,8 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
         pulse->setMax(max);
         session->setMax(OXI_Pulse,max);
     }
+    //pulse->setLast(time);
     session->setLast(OXI_Pulse,time);
-    pulse->setLast(time);
     session->set_last(lasttime);
     emit(updatePulse(pr));
 }
@@ -209,7 +209,7 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
     }
     session->setLast(OXI_SPO2,time);
     session->set_last(lasttime);
-    spo2->setLast(time);
+    //spo2->setLast(time);
     emit(updateSpO2(o2));
 }
 
@@ -846,8 +846,6 @@ void Oximetry::onDataChanged()
     spo2->setMinX(first);
     spo2->setMaxX(last);
 
-
-
     plethy->setMinY((oximeter->Plethy())->min());
     plethy->setMaxY((oximeter->Plethy())->max());
     pulse->setMinY((oximeter->Pulse())->min());
@@ -855,12 +853,19 @@ void Oximetry::onDataChanged()
     spo2->setMinY((oximeter->Spo2())->min());
     spo2->setMaxY((oximeter->Spo2())->max());
 
-    PLETHY->MinY();
+    PLETHY->SetMinY((oximeter->Plethy())->min());
+    PLETHY->SetMaxY((oximeter->Plethy())->max());
+    PULSE->SetMinY((oximeter->Pulse())->min());
+    PULSE->SetMaxY((oximeter->Pulse())->max());
+    SPO2->SetMinY((oximeter->Spo2())->min());
+    SPO2->SetMaxY((oximeter->Spo2())->max());
+
+    /*PLETHY->MinY();
     PLETHY->MaxY();
     PULSE->MinY();
     PULSE->MaxY();
     SPO2->MinY();
-    SPO2->MaxY();
+    SPO2->MaxY(); */
 
     PLETHY->SetMaxX(last);
     PULSE->SetMaxX(last);
@@ -879,6 +884,7 @@ void Oximetry::onDataChanged()
         if (qstatus2) qstatus2->setText(QString().sprintf("Rec %02i:%02i:%02i",h,m,s));
     }
 
+    GraphView->updateScale();
     GraphView->updateGL();
 }
 
@@ -1043,6 +1049,7 @@ void Oximetry::on_import_complete(Session * session)
 void Oximetry::onPulseChanged(float p)
 {
     ui->pulseLCD->display(p);
+    return;
     if (firstPulseUpdate) {
         if (secondPulseUpdate) {
             secondPulseUpdate=false;
@@ -1057,6 +1064,7 @@ void Oximetry::onPulseChanged(float p)
 void Oximetry::onSpO2Changed(float o2)
 {
     ui->spo2LCD->display(o2);
+    return;
     if (firstSPO2Update) {
         if (secondSPO2Update) {
             secondSPO2Update=false;
