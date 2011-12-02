@@ -48,10 +48,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     for (int i=0;i<num_masks;i++) {
         ui->maskTypeCombo->addItem(masks[i].name);
 
-        if (masktype==masks[i].name) {
+        /*if (masktype==masks[i].name) {
             ui->maskTypeCombo->setCurrentIndex(i);
             on_maskTypeCombo_activated(i);
-        }
+        }*/
     }
     QLocale locale=QLocale::system();
     QString shortformat=locale.dateFormat(QLocale::ShortFormat);
@@ -69,6 +69,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
     ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+
 
 
     //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
@@ -168,11 +169,25 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false);
     general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",160);
     general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,"Mask Description","Whatever you want to record about your mask.",QString());
-    general["MaskStartDate"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",QDate::currentDate());
+
+    if (!(p_profile)->Exists("MaskStartDate")) {
+        (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
+    }
+    ui->startedUsingMask->setDate((*profile)["MaskStartDate"].toDate());
+
+    if (!(p_profile)->Exists("ShowLeaksMode")) {
+        PROFILE["ShowLeaksMode"]=0;
+    }
+    ui->leakModeCombo->setCurrentIndex((*profile)["ShowLeaksMode"].toInt());
+    if (!(p_profile)->Exists("MaskType")) {
+        PROFILE["MaskType"]=0;
+    }
+    int mt=(*profile)["MaskType"].toInt();
+    ui->maskTypeCombo->setCurrentIndex(mt);
+    on_maskTypeCombo_activated(mt);
 
 
     ui->maskDescription->setText(general["MaskDescription"].value().toString());
-    ui->startedUsingMask->setDate(general["MaskStartDate"].value().toDate());
 
     ui->useAntiAliasing->setChecked(general["UseAntiAliasing"].value().toBool());
     ui->useSquareWavePlots->setChecked(general["SquareWavePlots"].value().toBool());
@@ -311,6 +326,8 @@ void PreferencesDialog::Save()
     (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
     (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
+    (*profile)["ShowLeaksMode"]=ui->leakModeCombo->currentIndex();
+    (*profile)["MaskType"]=ui->maskTypeCombo->currentIndex();
     //(*profile)["UseAntiAliasing"]=ui->genOpWidget->item(0)->checkState()==Qt::Checked;
     //(*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
     //(*profile)["EnableGraphSnapshots"]=ui->genOpWidget->item(2)->checkState()==Qt::Checked;

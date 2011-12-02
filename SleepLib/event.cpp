@@ -7,16 +7,17 @@
 #include <QDebug>
 #include "event.h"
 
-EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, EventDataType min, EventDataType max,double rate)
-    :m_type(et),m_gain(gain),m_offset(offset),m_min(min),m_max(max),m_rate(rate)
+EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, EventDataType min, EventDataType max,double rate,bool second_field)
+    :m_type(et),m_gain(gain),m_offset(offset),m_min(min),m_max(max),m_rate(rate),m_second_field(second_field)
 {
     m_first=m_last=0;
     m_count=0;
 
     if (min==max) {  // Update Min & Max unless forceably set here..
         m_update_minmax=true;
-        m_min=999999999;
-        m_max=-999999999;
+        m_min2=m_min=999999999;
+        m_max2=m_max=-999999999;
+
     } else {
         m_update_minmax=false;
     }
@@ -39,11 +40,22 @@ EventDataType EventList::data(quint32 i)
 {
     return EventDataType(m_data[i])*m_gain;
 }
+EventDataType EventList::data2(quint32 i)
+{
+    return EventDataType(m_data2[i]);
+}
 
-void EventList::AddEvent(qint64 time, EventStoreType data)
+void EventList::AddEvent(qint64 time, EventStoreType data, EventStoreType data2)
 {
     // Apply gain & offset
     m_data.push_back(data);
+
+    if (m_second_field) {
+        m_data2.push_back(data2);
+        if (m_min2>data2) m_min2=data2;
+        if (m_max2<data2) m_max2=data2;
+    }
+
     EventDataType val=EventDataType(data)*m_gain+m_offset;
     if (m_update_minmax) {
         if (m_min>val) m_min=val;
@@ -58,14 +70,14 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
         // Crud.. Update all the previous records
         // This really shouldn't happen.
 
-        qint64 t=(m_first-time);
+        qint32 t=(m_first-time);
         for (quint32 i=0;i<m_count;i++) {
-            m_time[i]-=t & 0xffffffff;
+            m_time[i]-=t;
         }
         m_first=time;
     }
     if (m_last < time) m_last=time;
-    quint32 t=(time-m_first) & 0xffffffff;
+    quint32 t=(time-m_first);
 
     m_time.push_back(t);
     m_count++;

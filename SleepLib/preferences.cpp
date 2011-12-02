@@ -68,7 +68,7 @@ Preference::Preference(Preferences * pref,QString code, PrefType type, QString l
 void Preference::setValue(QVariant v)
 {
     if (!m_pref) {
-        qDebug() << "Bad Preferences object";
+        qDebug() << "Bad Preferences object" << m_code;
         return;
     }
     if (m_pref)
@@ -76,7 +76,7 @@ void Preference::setValue(QVariant v)
 }
 QVariant & Preference::value() {
     if (!m_pref) {
-        qDebug() << "Bad Preferences object";
+        qDebug() << "Bad Preferences object" << m_code;
         return m_defaultValue;
     }
     QHash<QString,QVariant>::iterator i=m_pref->find(m_code);

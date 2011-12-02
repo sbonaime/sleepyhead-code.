@@ -353,8 +353,9 @@ void CMS50Serial::on_import_process()
     unsigned char a,pl,o2,lastpl=0,lasto2=0;
     int i=0;
     int size=data.size();
-    EventList * pulse=NULL; //(session->eventlist[OXI_Pulse][0]);
-    EventList * spo2=NULL; // (session->eventlist[OXI_SPO2][0]);
+
+    EventList * pulse=(session->eventlist[OXI_Pulse][0]);
+    EventList * spo2=(session->eventlist[OXI_SPO2][0]);
     lasttime=f2time[0].toTime_t();
     session->SetSessionID(lasttime);
     lasttime*=1000;
@@ -379,8 +380,12 @@ void CMS50Serial::on_import_process()
                     }
                     if (plcnt==0)
                         session->setFirst(OXI_Pulse,lasttime);
-                    pulse=new EventList(EVL_Event);
-                    session->eventlist[OXI_Pulse].push_back(pulse);
+                    if (pulse && pulse->count()==0)  {
+
+                    } else {
+                        pulse=new EventList(EVL_Event);
+                        session->eventlist[OXI_Pulse].push_back(pulse);
+                    }
                 }
                 lastpltime=lasttime;
                 pulse->AddEvent(lasttime,pl);
@@ -398,8 +403,11 @@ void CMS50Serial::on_import_process()
                     }
                     if (o2cnt==0)
                         session->setFirst(OXI_SPO2,lasttime);
-                    spo2=new EventList(EVL_Event);
-                    session->eventlist[OXI_SPO2].push_back(spo2);
+                    if (spo2 && spo2->count()==0) {
+                    } else {
+                        spo2=new EventList(EVL_Event);
+                        session->eventlist[OXI_SPO2].push_back(spo2);
+                    }
                 }
                 lasto2time=lasttime;
                 spo2->AddEvent(lasttime,o2);
@@ -988,8 +996,8 @@ void Oximetry::on_import_complete(Session * session)
     qDebug() << "Oximetry import complete";
     import_finished();
 
-    calcSPO2Drop(session);
-    calcPulseChange(session);
+    //calcSPO2Drop(session);
+    //calcPulseChange(session);
 
     ui->pulseLCD->display(session->min(OXI_Pulse));
     ui->spo2LCD->display(session->min(OXI_SPO2));

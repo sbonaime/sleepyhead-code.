@@ -16,6 +16,15 @@
 
 using namespace std;
 
+
+const quint16 filetype_summary=0;
+const quint16 filetype_data=1;
+
+// This is the uber important database version for SleepyHeads internal storage
+// Increment this after stuffing with Session's save & load code.
+const quint16 summary_version=6;
+const quint16 events_version=7;
+
 Session::Session(Machine * m,SessionID session)
 {
     if (!session) {
@@ -103,9 +112,6 @@ bool Session::Store(QString path)
     return a;
 }
 
-const quint16 filetype_summary=0;
-const quint16 filetype_data=1;
-
 bool Session::StoreSummary(QString filename)
 {
 
@@ -117,7 +123,7 @@ bool Session::StoreSummary(QString filename)
     out.setByteOrder(QDataStream::LittleEndian);
 
     out << (quint32)magic;
-    out << (quint16)dbversion;
+    out << (quint16)summary_version;
     out << (quint16)filetype_summary;
     out << (quint32)s_machine->id();
 
@@ -180,7 +186,7 @@ bool Session::LoadSummary(QString filename)
     }
 
     in >> t16;      // DB Version
-    if (t16!=dbversion) {
+    if (t16!=summary_version) {
         throw OldDBVersion();
         //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
         return false;
@@ -241,7 +247,7 @@ bool Session::StoreEvents(QString filename)
     out.setByteOrder(QDataStream::LittleEndian);
 
     out << (quint32)magic;          // Magic Number
-    out << (quint16)dbversion;      // File Version
+    out << (quint16)events_version;      // File Version
     out << (quint16)filetype_data;  // File type 1 == Event
     out << (quint32)s_machine->id();// Machine ID
 
@@ -269,6 +275,11 @@ bool Session::StoreEvents(QString filename)
             out << e.min();
             out << e.max();
             out << e.dimension();
+            out << e.hasSecondField();
+            if (e.hasSecondField()) {
+                out << e.min2();
+                out << e.max2();
+            }
         }
     }
     for (i=eventlist.begin(); i!=eventlist.end(); i++) {
@@ -277,6 +288,11 @@ bool Session::StoreEvents(QString filename)
 
             for (quint32 c=0;c<e.count();c++) {
                 out << e.raw(c);
+            }
+            if (e.hasSecondField()) {
+                for (quint32 c=0;c<e.count();c++) {
+                    out << e.raw2(c);
+                }
             }
             if (e.type()!=EVL_Waveform) {
                 for (quint32 c=0;c<e.count();c++) {
@@ -308,14 +324,17 @@ bool Session::LoadEvents(QString filename)
     quint16 t16;
     quint8 t8;
     //qint16 i16;
+    qint16 version;
 
     in >> t32;      // Magic Number
     if (t32!=magic) {
         qWarning() << "Wrong Magic number in " << filename;
         return false;
     }
-    in >> t16;      // File Version
-    if (t16!=dbversion) {
+
+    in >> version;      // File Version
+
+    if (version<6) {    // prior to version 6 is too old to deal with
         throw OldDBVersion();
         //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
         return false;
@@ -367,18 +386,31 @@ bool Session::LoadEvents(QString filename)
             in >> mn;
             in >> mx;
             in >> dim;
-            EventList *elist=AddEventList(code,elt,gain,offset,mn,mx,rate);
+            bool second_field=false;
+            if (version>=7) // version 7 added this field
+                in >> second_field;
+
+            EventList *elist=AddEventList(code,elt,gain,offset,mn,mx,rate,second_field);
             elist->setDimension(dim);
 
             //eventlist[code].push_back(elist);
             elist->m_count=evcount;
             elist->m_first=ts1;
             elist->m_last=ts2;
+
+            if (second_field) {
+                EventDataType min,max;
+                in >> min;
+                in >> max;
+                elist->setMin2(min);
+                elist->setMax2(max);
+            }
         }
     }
 
     EventStoreType t;
     quint32 x;
+
     for (int i=0;i<mcsize;i++) {
         code=mcorder[i];
         size2=sizevec[i];
@@ -387,8 +419,14 @@ bool Session::LoadEvents(QString filename)
             evec.m_data.reserve(evec.m_count);
             for (quint32 c=0;c<evec.m_count;c++) {
                 in >> t;
-                //evec.m_data[c]=t;
                 evec.m_data.push_back(t);
+            }
+            if (evec.hasSecondField()) {
+                evec.m_data2.reserve(evec.m_count);
+                for (quint32 c=0;c<evec.m_count;c++) {
+                    in >> t;
+                    evec.m_data2.push_back(t);
+                }
             }
             //last=evec.first();
             if (evec.type()!=EVL_Waveform) {
@@ -401,6 +439,13 @@ bool Session::LoadEvents(QString filename)
                 }
             }
         }
+    }
+    file.close();
+
+    if (version<events_version) {
+        qDebug() << "Upgrading Events file to version" << events_version;
+        UpdateSummaries();
+        StoreEvents(filename);
     }
     return true;
 }
@@ -868,14 +913,14 @@ EventDataType Session::wavg(ChannelID id)
     return v;
 }
 
-EventList * Session::AddEventList(QString chan, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate)
+EventList * Session::AddEventList(QString chan, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate,bool second_field)
 {
     schema::Channel * channel=&schema::channel[chan];
     if (!channel) {
         qWarning() << "Channel" << chan << "does not exist!";
         //return NULL;
     }
-    EventList * el=new EventList(et,gain,offset,min,max,rate);
+    EventList * el=new EventList(et,gain,offset,min,max,rate,second_field);
     eventlist[chan].push_back(el);
     s_machine->registerChannel(chan);
     return el;

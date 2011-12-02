@@ -24,9 +24,7 @@ typedef qint16 EventStoreType;
 class BoundsError {};
 class OldDBVersion {};
 
-// This is the uber important database version for SleepyHeads internal storage
-// Increment this after stuffing with Session's save & load code.
-const quint16 dbversion=6;
+const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don't touch!
 
 //const int max_number_event_fields=10;
 

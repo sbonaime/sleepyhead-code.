@@ -410,12 +410,13 @@ int calcPulseChange(Session *session)
         change=5;
     }
 
-    EventList *pc=new EventList(EVL_Event);
+    EventList *pc=new EventList(EVL_Event,1,0,0,0,0,true);
     pc->setFirst(session->first(OXI_Pulse));
     qint64 lastt;
     EventDataType lv=0;
     int li=0;
 
+    int max;
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
 
@@ -426,6 +427,7 @@ int calcPulseChange(Session *session)
 
             lastt=0;
             lv=change;
+            max=0;
 
             for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
@@ -434,13 +436,14 @@ int calcPulseChange(Session *session)
                 tmp=qAbs(val2-val);
                 if (tmp > lv) {
                     lastt=time2;
+                    if (tmp>max) max=tmp;
                     //lv=tmp;
                     li=j;
                 }
             }
             if (lastt>0) {
                 qint64 len=(lastt-time)/1000.0;
-                pc->AddEvent(lastt,len);
+                pc->AddEvent(lastt,len,tmp);
                 i=li;
 
             }
@@ -481,7 +484,7 @@ int calcSPO2Drop(Session *session)
         change=3;
     }
 
-    EventList *pc=new EventList(EVL_Event);
+    EventList *pc=new EventList(EVL_Event,1,0,0,0,0,true);
     qint64 lastt;
     EventDataType lv=0;
     int li=0;
@@ -489,10 +492,9 @@ int calcSPO2Drop(Session *session)
     const unsigned ringsize=10;
     EventDataType ring[ringsize];
     int rp=0;
-
+    int min;
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
-
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
             if (!val) continue;
@@ -516,10 +518,11 @@ int calcSPO2Drop(Session *session)
             lv=val;
 
 
+            min=val;
             for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
                 val2=el.data(j);
-
+                if (val2<min) min=val2;
                 if (val2 <= (val-change)) {
                     lastt=time2;
                     li=j;
@@ -533,7 +536,7 @@ int calcSPO2Drop(Session *session)
             if (lastt>0) {
                 qint64 len=(lastt-time);
                 if (len>=window) {
-                    pc->AddEvent(lastt,len/1000);
+                    pc->AddEvent(lastt,len/1000,val-min);
 
                     i=li;
                 }

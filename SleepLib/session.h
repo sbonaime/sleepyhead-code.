@@ -17,7 +17,6 @@
 #include "SleepLib/event.h"
 //class EventList;
 class Machine;
-const quint32 magic=0xC73216AB;
 
 enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM };
 
@@ -137,7 +136,7 @@ public:
     qint64 last(ChannelID code);
 
     void UpdateSummaries();
-    EventList * AddEventList(QString chan, EventListType et, EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, EventDataType rate=0.0);
+    EventList * AddEventList(QString chan, EventListType et, EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, EventDataType rate=0.0, bool second_field=false);
     Machine * machine() { return s_machine; }
 protected:
     SessionID s_session;
