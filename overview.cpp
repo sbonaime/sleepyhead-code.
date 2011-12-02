@@ -109,6 +109,18 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PTB=createGraph("Pat. Trig. Br.");
     PULSE=createGraph("Pulse Rate");
     SPO2=createGraph("SpO2");
+    WEIGHT=createGraph("Weight");
+    ZOMBIE=createGraph("Zombie");
+
+    weight=new SummaryChart("Pulse Rate",GT_LINE);
+    weight->setMachineType(MT_JOURNAL);
+    weight->addSlice("Weight",QColor("black"),ST_SETAVG);
+    WEIGHT->AddLayer(weight);
+
+    zombie=new SummaryChart("Zombie Meter",GT_LINE);
+    zombie->setMachineType(MT_JOURNAL);
+    zombie->addSlice("ZombieMeter",QColor("dark gray"),ST_SETAVG);
+    ZOMBIE->AddLayer(zombie);
 
     pulse=new SummaryChart("Pulse Rate",GT_LINE);
     pulse->setMachineType(MT_OXIMETER);
