@@ -848,7 +848,7 @@ void Daily::Unload(QDate date)
     bool ok;
     if (journal) {
         QString jhtml=ui->JournalNotes->toHtml();
-        if ((!journal->settings.contains(Journal_Notes) && !nonotes) || (!nonotes && (journal->settings[Journal_Notes]!=jhtml))) {
+        if ((!journal->settings.contains(Journal_Notes) && !nonotes) || (journal->settings[Journal_Notes]!=jhtml)) {
             journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
@@ -910,6 +910,12 @@ void Daily::Unload(QDate date)
     }
 
     if (journal) {
+        if (nonotes) {
+            QHash<ChannelID,QVariant>::iterator it=journal->settings.find(Journal_Notes);
+            if (it!=journal->settings.end()) {
+                journal->settings.erase(it);
+            }
+        }
         Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
     }
