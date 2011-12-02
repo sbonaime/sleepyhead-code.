@@ -164,52 +164,63 @@ void SerialOximeter::onReadyRead()
 
 void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
+    static EventDataType lastpr=0;
     EventDataType min=0,max=0;
     if (pr>0) {
-        if (pr<pulse->min())
-            min=pr;
-        if (pr>pulse->max())
-            max=pr;
+        if (lastpr==0) {
+            if (pulse->count()==0)
+               pulse->setFirst(time);
+            else {
+                qDebug() << "Shouldn't happen in addPulse()";
+            }
+        }
+        pulse->AddEvent(time,pr);
+        session->setCount(OXI_Pulse,session->count(OXI_Pulse)+1);
+        session->setLast(OXI_Pulse,time);
+    } else {
+        if (lastpr!=0) {
+            if (pulse->count() > 0) {
+                pulse->AddEvent(time,lastpr);
+                this->compactToEvent(pulse);
+                session->setLast(OXI_Pulse,time);
+                pulse=session->AddEventList(OXI_Pulse,EVL_Event);
+            }
+        }
     }
-
-    pulse->AddEvent(time,pr);
-    session->setCount(OXI_Pulse,pulse->count()); // update the cache
-    if (min>0) {
-        pulse->setMin(min);
-        session->setMin(OXI_Pulse,min);
-    }
-    if (max>0) {
-        pulse->setMax(max);
-        session->setMax(OXI_Pulse,max);
-    }
-    //pulse->setLast(time);
-    session->setLast(OXI_Pulse,time);
-    session->set_last(lasttime);
+    session->set_last(time);
+    lastpr=pr;
     emit(updatePulse(pr));
 }
 
 void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
 {
+    static EventDataType lasto2=0;
     EventDataType min=0,max=0;
     if (o2>0) {
-        if (o2<spo2->min())
-            min=o2;
-        if (o2>spo2->max())
-            max=o2;
+        if (lasto2==0) {
+            if (spo2->count()==0)
+               spo2->setFirst(time);
+            else {
+                qDebug() << "Shouldn't happen in addSpO2()";
+            }
+        }
+
+        spo2->AddEvent(time,o2);
+        session->setCount(OXI_SPO2,session->count(OXI_SPO2)+1);
+        session->setLast(OXI_SPO2,time);
+    } else {
+        if (lasto2!=0) {
+            if (spo2->count() > 0) {
+                spo2->AddEvent(time,lasto2);
+                this->compactToEvent(spo2);
+                session->setLast(OXI_SPO2,time);
+                spo2=session->AddEventList(OXI_SPO2,EVL_Event);
+            }
+        }
     }
-    spo2->AddEvent(time,o2);
-    session->setCount(OXI_SPO2,spo2->count()); // update the cache
-    if (min>0) {
-        spo2->setMin(min);
-        session->setMin(OXI_SPO2,min);
-    }
-    if (max>0) {
-        spo2->setMax(max);
-        session->setMax(OXI_SPO2,max);
-    }
-    session->setLast(OXI_SPO2,time);
-    session->set_last(lasttime);
-    //spo2->setLast(time);
+    session->set_last(time);
+
+    lasto2=o2;
     emit(updateSpO2(o2));
 }
 
@@ -236,16 +247,21 @@ void SerialOximeter::compactToEvent(EventList *el)
     EventList nel(EVL_Waveform);
     EventDataType t,lastt=el->data(0);
     qint64 ti=el->time(0);
-    for (quint32 i=0;i<el->count();i++) {
+    nel.AddEvent(ti,lastt);
+    bool f;
+    for (quint32 i=1;i<el->count();i++) {
         t=el->data(i);
+        f=false;
         if (t!=lastt) {
-            nel.AddEvent(ti,lastt);
             ti=el->time(i);
             nel.AddEvent(ti,t);
+            f=true;
         }
         lastt=t;
     }
-    nel.AddEvent(el->last(),t);
+    if (!f) {
+        nel.AddEvent(el->last(),t);
+    }
 
     el->getData().clear();
     el->getTime().clear();
