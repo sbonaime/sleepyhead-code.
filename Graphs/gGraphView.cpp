@@ -13,6 +13,7 @@
 #include <QDir>
 #include "mainwindow.h"
 
+
 extern MainWindow *mainwin;
 
 #ifdef Q_WS_MAC
@@ -2257,7 +2258,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             if (m_button_down || ((y >= py) && (y < py + h))) {
                 if (m_button_down || (x >= titleWidth)) {
                     this->setCursor(Qt::ArrowCursor);
-                    m_horiz_travel+=abs(x-m_lastxpos)+abs(y-m_lastypos);
+                    m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
                     m_lastxpos=x;
                     m_lastypos=y;
                     QPoint p(x-titleWidth,y-py);

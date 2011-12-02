@@ -1192,7 +1192,7 @@ bool PRS1Loader::OpenWaveforms(Session *session,QString filename)
             duration=m_buffer[pos+0xf] | m_buffer[pos+0x10] << 8;    // block duration in seconds
             if (diff<0) {
                 qDebug() << "Padding waveform to keep sync" << block;
-                //diff=abs(diff);
+                //diff=qAbs(diff);
                 for (int i=0;i<num_signals;i++) {
                     for (int j=0;j<diff;j++) {
                         for (int k=0;k<whl[i].interleave;k++)

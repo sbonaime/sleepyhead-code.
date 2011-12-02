@@ -3,7 +3,6 @@
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
 */
-#include <cmath>
 
 #include "calcs.h"
 #include "profiles.h"
@@ -132,7 +131,6 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
     QVector<EventDataType> TV;
     QVector<qint64> breaths_start;
     int lasti=0;
-    long tmp32;
 
     for (i=0;i<size;i++) {
         c=stage1[i];
@@ -142,8 +140,7 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
                 u1=time;
                 if (u2>0) {
                     z2=i;
-                    tmp32=u2-u1;
-                    len=abs(tmp32);
+                    len=qAbs(u2-u1);
                     if (tv) { // && z1>0) { // Tidal Volume Calculations
                         EventDataType t=0;
                         for (int g=z1;g<z2;g++) {
@@ -162,8 +159,7 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
                 l1=time;
                 if (l2>0) {
                     z1=i;
-                    tmp32=l2-l1;
-                    len=abs(tmp32);
+                    len=qAbs(l2-l1);
                     if (tv) {
                         // Average the other half of the breath to increase accuracy.
                         EventDataType t=0;
@@ -435,7 +431,7 @@ int calcPulseChange(Session *session)
                 time2=el.time(j);
                 if (time2 > time+window) break;
                 val2=el.data(j);
-                tmp=fabs(val2-val);
+                tmp=qAbs(val2-val);
                 if (tmp > lv) {
                     lastt=time2;
                     //lv=tmp;
