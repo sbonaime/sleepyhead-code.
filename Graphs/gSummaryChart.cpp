@@ -73,6 +73,8 @@ void SummaryChart::SetDay(Day * nullday)
             for (int i=0;i<d.value().size();i++) { // for each day
                 day=d.value()[i];
                 if  (!day) continue;
+                if (day->machine_type()!=m_machinetype) continue;
+
                 for (int s=0;s<day->size();s++) {
                     tmp=(*day)[s]->hours();
                     m_values[dn][s]=tmp;

@@ -15,6 +15,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QSpacerItem>
+#include <cmath>
 //#include <QPrinter>
 //#include <QProgressBar>
 
@@ -36,6 +37,7 @@
 //extern QProgressBar *qprogress;
 
 const int min_height=150;
+const float ounce_convert=28.3495231;
 
 Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
@@ -289,6 +291,16 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
+    if (PROFILE["Units"].toString()=="metric") {
+        ui->ouncesSpinBox->setVisible(false);
+        ui->weightSpinBox->setDecimals(3);
+        ui->weightSpinBox->setSuffix("Kg");
+    } else {
+        ui->weightSpinBox->setSuffix("lb");
+        ui->weightSpinBox->setDecimals(0);
+        ui->ouncesSpinBox->setVisible(true);
+        ui->ouncesSpinBox->setSuffix("oz");
+    }
 }
 
 Daily::~Daily()
@@ -474,6 +486,17 @@ void Daily::on_calendar_selectionChanged()
     Load(ui->calendar->selectedDate());
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
+
+    if (PROFILE["Units"].toString()=="metric") {
+        ui->ouncesSpinBox->setVisible(false);
+        ui->weightSpinBox->setDecimals(3);
+        ui->weightSpinBox->setSuffix("Kg");
+    } else {
+        ui->weightSpinBox->setSuffix("lb");
+        ui->weightSpinBox->setDecimals(0);
+        ui->ouncesSpinBox->setVisible(true);
+        ui->ouncesSpinBox->setSuffix("oz");
+    }
 }
 void Daily::ResetGraphLayout()
 {
@@ -802,6 +825,7 @@ void Daily::Load(QDate date)
     sl.append("Notes");
     ui->bookmarkTable->setHorizontalHeaderLabels(sl);
     ui->weightSpinBox->setValue(0);
+    ui->ouncesSpinBox->setValue(0);
     ui->ZombieMeter->setValue(50);
     Session *journal=GetJournalSession(date);
     if (journal) {
@@ -809,8 +833,28 @@ void Daily::Load(QDate date)
         if (journal->settings.contains(Journal_Notes))
             ui->JournalNotes->setHtml(journal->settings[Journal_Notes].toString());
 
-        if (journal->settings.contains("Weight"))
-            ui->weightSpinBox->setValue(journal->settings["Weight"].toDouble(&ok));
+        if (journal->settings.contains("Weight")) {
+            double kg=journal->settings["Weight"].toDouble(&ok);
+            if (PROFILE["Units"].toString()=="metric") {
+                ui->weightSpinBox->setDecimals(3);
+                ui->weightSpinBox->setValue(kg);
+                ui->ouncesSpinBox->setVisible(false);
+                ui->weightSpinBox->setSuffix("Kg");
+            } else {
+                float ounces=(kg*1000.0)/ounce_convert;
+                int pounds=ounces/16.0;
+                double oz;
+                double frac=modf(ounces,&oz);
+                ounces=(int(ounces) % 16)+frac;
+                ui->weightSpinBox->setValue(pounds);
+                ui->ouncesSpinBox->setValue(ounces);
+
+                ui->weightSpinBox->setSuffix("lb");
+                ui->weightSpinBox->setDecimals(0);
+                ui->ouncesSpinBox->setVisible(true);
+                ui->ouncesSpinBox->setSuffix("oz");
+            }
+        }
 
         if (journal->settings.contains("ZombieMeter"))
             ui->ZombieMeter->setValue(journal->settings["ZombieMeter"].toDouble(&ok));
@@ -840,6 +884,32 @@ void Daily::Load(QDate date)
     }
 
 }
+
+void Daily::UnitsChanged()
+{
+    double kg;
+    if (PROFILE["Units"].toString()!="metric") {
+        kg=ui->weightSpinBox->value();
+        float ounces=(kg*1000.0)/ounce_convert;
+        int pounds=ounces/16;
+        float oz=fmodf(ounces,16);
+        ui->weightSpinBox->setValue(pounds);
+        ui->ouncesSpinBox->setValue(oz);
+
+        ui->weightSpinBox->setDecimals(0);
+        ui->weightSpinBox->setSuffix("lb");
+        ui->ouncesSpinBox->setVisible(true);
+        ui->ouncesSpinBox->setSuffix("oz");
+    } else {
+        kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
+        kg/=1000.0;
+        ui->weightSpinBox->setDecimals(3);
+        ui->weightSpinBox->setValue(kg);
+        ui->ouncesSpinBox->setVisible(false);
+        ui->weightSpinBox->setSuffix("Kg");
+    }
+}
+
 void Daily::Unload(QDate date)
 {
     Session *journal=GetJournalSession(date);
@@ -853,7 +923,14 @@ void Daily::Unload(QDate date)
             journal->SetChanged(true);
         }
         if ((!journal->settings.contains("Weight") && (ui->weightSpinBox->value()>0)) || (journal->settings["Weight"].toDouble(&ok)!=ui->weightSpinBox->value())) {
-            journal->settings["Weight"]=ui->weightSpinBox->value();
+            double kg;
+            if (PROFILE["Units"].toString()=="metric") {
+                kg=ui->weightSpinBox->value();
+            } else {
+                kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
+                kg/=1000.0;
+            }
+            journal->settings["Weight"]=kg;
             journal->SetChanged(true);
         }
         if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=50)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
@@ -888,7 +965,14 @@ void Daily::Unload(QDate date)
                 journal->SetChanged(true);
             }
             if (ui->weightSpinBox->value() > 0) {
-                journal->settings["Weight"]=ui->weightSpinBox->value();
+                double kg;
+                if (PROFILE["Units"].toString()=="metric") {
+                    kg=ui->weightSpinBox->value();
+                } else {
+                    kg=(ui->weightSpinBox->value()*(ounce_convert*16))+(ui->ouncesSpinBox->value()*ounce_convert);
+                    kg/=1000.0;
+                }
+                journal->settings["Weight"]=kg;
                 journal->SetChanged(true);
             }
             if (ui->bookmarkTable->rowCount()>0) {
@@ -915,6 +999,9 @@ void Daily::Unload(QDate date)
             if (it!=journal->settings.end()) {
                 journal->settings.erase(it);
             }
+        }
+        if (journal->IsChanged()) {
+            mainwin->getOverview()->ReloadGraphs();
         }
         Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);

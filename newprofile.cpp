@@ -12,6 +12,9 @@
 
 #include "newprofile.h"
 #include "ui_newprofile.h"
+#include "mainwindow.h"
+
+extern MainWindow *mainwin;
 
 NewProfile::NewProfile(QWidget *parent) :
     QDialog(parent),
@@ -157,7 +160,11 @@ void NewProfile::on_nextButton_clicked()
             prof["TimeZone"]=ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString();
             prof["Country"]=ui->countryCombo->currentText();
             prof["DST"]=ui->DSTcheckbox->isChecked();
-            prof["Units"]=ui->heightCombo->currentText();
+            if (prof["Units"].toString()!=ui->heightCombo->currentText()) {
+
+                prof["Units"]=ui->heightCombo->currentText();
+                mainwin->getDaily()->UnitsChanged();
+            }
             double v=0;
             if (ui->heightCombo->currentIndex()==1) {
                 // convert to metric

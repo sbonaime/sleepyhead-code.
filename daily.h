@@ -47,6 +47,7 @@ public:
     QDate getDate() { return previous_date; }
 
     void PrintReport();
+    void UnitsChanged();
 
 private slots:
 
