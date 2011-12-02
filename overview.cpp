@@ -112,14 +112,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     WEIGHT=createGraph("Weight");
     ZOMBIE=createGraph("Zombie");
 
-    weight=new SummaryChart("Pulse Rate",GT_LINE);
+    weight=new SummaryChart("Weight",GT_LINE);
     weight->setMachineType(MT_JOURNAL);
     weight->addSlice("Weight",QColor("black"),ST_SETAVG);
     WEIGHT->AddLayer(weight);
 
     zombie=new SummaryChart("Zombie Meter",GT_LINE);
     zombie->setMachineType(MT_JOURNAL);
-    zombie->addSlice("ZombieMeter",QColor("dark gray"),ST_SETAVG);
+    zombie->addSlice("ZombieMeter",QColor("dark red"),ST_SETAVG);
     ZOMBIE->AddLayer(zombie);
 
     pulse=new SummaryChart("Pulse Rate",GT_LINE);

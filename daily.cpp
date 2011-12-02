@@ -448,17 +448,24 @@ void Daily::UpdateCalendarDay(QDate date)
     QTextCharFormat cpapcol;
     QTextCharFormat normal;
     QTextCharFormat oxiday;
+    QTextCharFormat jourday;
+    bold.setForeground(QBrush(QColor("dark blue"), Qt::SolidPattern));
     bold.setFontWeight(QFont::Bold);
     cpapcol.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
+    jourday.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
+    jourday.setFontWeight(QFont::Bold);
+
     bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
     bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
-
+    bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=NULL;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxiday);
+        } else if (hasjournal) {
+            ui->calendar->setDateTextFormat(date,jourday);
         } else {
             ui->calendar->setDateTextFormat(date,cpapcol);
         }
@@ -827,6 +834,7 @@ void Daily::Load(QDate date)
     ui->weightSpinBox->setValue(0);
     ui->ouncesSpinBox->setValue(0);
     ui->ZombieMeter->setValue(50);
+    BookmarksChanged=false;
     Session *journal=GetJournalSession(date);
     if (journal) {
         bool ok;
@@ -938,7 +946,7 @@ void Daily::Unload(QDate date)
             journal->SetChanged(true);
         }
         bool ok;
-        if (ui->bookmarkTable->rowCount()>0) {
+        if (BookmarksChanged) {
             QVariantList start;
             QVariantList end;
             QStringList notes;
@@ -975,7 +983,7 @@ void Daily::Unload(QDate date)
                 journal->settings["Weight"]=kg;
                 journal->SetChanged(true);
             }
-            if (ui->bookmarkTable->rowCount()>0) {
+            if (BookmarksChanged) {
                 QVariantList start;
                 QVariantList end;
                 QStringList notes;
@@ -1326,6 +1334,7 @@ void Daily::on_addBookmarkButton_clicked()
     tw->setData(Qt::UserRole,st);
     tw->setData(Qt::UserRole+1,et);
 
+    BookmarksChanged=true;
     //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
     //ui->bookmarkTable->setItem(row,3,new QTableWidgetItem(QString::number(et)));
 }
@@ -1335,6 +1344,7 @@ void Daily::on_removeBookmarkButton_clicked()
     int row=ui->bookmarkTable->currentRow();
     if (row>=0) {
         ui->bookmarkTable->removeRow(row);
+        BookmarksChanged=true;
     }
 }
 
@@ -1354,3 +1364,8 @@ void Daily::on_ZombieMeter_actionTriggered(int action)
     //s->summary[JOURNAL_Energy]=position;
     //s->SetChanged(true);
 //}
+void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
+{
+    Q_UNUSED(item);
+    BookmarksChanged=true;
+}

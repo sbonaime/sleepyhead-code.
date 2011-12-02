@@ -86,6 +86,8 @@ private slots:
 
     void on_bookmarkTable_itemClicked(QTableWidgetItem *item);
 
+    void on_bookmarkTable_itemChanged(QTableWidgetItem *item);
+
 protected:
 
 private:
@@ -122,9 +124,7 @@ private:
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
     bool ZombieMeterMoved;
+    bool BookmarksChanged;
 };
 
 #endif // DAILY_H
-
-
-
