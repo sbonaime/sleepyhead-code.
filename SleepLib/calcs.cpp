@@ -132,6 +132,7 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
     QVector<EventDataType> TV;
     QVector<qint64> breaths_start;
     int lasti=0;
+    long tmp32;
 
     for (i=0;i<size;i++) {
         c=stage1[i];
@@ -141,7 +142,8 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
                 u1=time;
                 if (u2>0) {
                     z2=i;
-                    len=abs(u2-u1);
+                    tmp32=u2-u1;
+                    len=abs(tmp32);
                     if (tv) { // && z1>0) { // Tidal Volume Calculations
                         EventDataType t=0;
                         for (int g=z1;g<z2;g++) {
@@ -160,7 +162,8 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
                 l1=time;
                 if (l2>0) {
                     z1=i;
-                    len=abs(l2-l1);
+                    tmp32=l2-l1;
+                    len=abs(tmp32);
                     if (tv) {
                         // Average the other half of the breath to increase accuracy.
                         EventDataType t=0;
