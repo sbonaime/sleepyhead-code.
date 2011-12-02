@@ -1917,6 +1917,9 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     }
     if (!g) g=m_graphs[0];
 
+    m_minx=g->min_x;
+    m_maxx=g->max_x;
+
     qint64 xx=g->max_x - g->min_x;
     double d=xx/86400000L;
     int h=xx/3600000L;
@@ -1934,6 +1937,11 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     }
     updateScale();
 }
+void gGraphView::GetXBounds(qint64 & st,qint64 & et)
+{
+    st=m_minx;
+    et=m_maxx;
+}
 
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
 {
@@ -1942,6 +1950,9 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
             m_graphs[i]->SetXBounds(minx,maxx);
         }
     }
+    m_minx=minx;
+    m_maxx=maxx;
+
     qint64 xx=maxx-minx;
     double d=xx/86400000L;
     int h=xx/3600000L;

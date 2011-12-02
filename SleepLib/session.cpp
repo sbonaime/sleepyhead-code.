@@ -452,12 +452,8 @@ bool Session::LoadEvents(QString filename)
 
 void Session::UpdateSummaries()
 {
-    CalcAHIGraph ahi;
-    CalcRespRate calc;
-
-    ahi.calculate(this);
-    calc.calculate(this);
-
+    calcAHIGraph(this);
+    calcRespRate(this);
     calcLeaks(this);
 
     calcSPO2Drop(this);

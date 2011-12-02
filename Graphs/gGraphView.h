@@ -402,6 +402,7 @@ public:
 
     float scaleY() { return m_scaleY; }
 
+    void GetXBounds(qint64 & st,qint64 & et);
     void ResetBounds(bool refresh=true); //short group=0);
     void SetXBounds(qint64 minx, qint64 maxx, short group=0,bool refresh=true);
     void SaveSettings(QString title);
@@ -504,6 +505,8 @@ protected:
 
     QString m_emptytext;
     bool m_showsplitter;
+
+    qint64 m_minx,m_maxx;
 signals:
 
 

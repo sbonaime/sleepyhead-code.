@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
+#include <QTableWidgetItem>
 #include "Graphs/gSummaryChart.h"
 
 #include <SleepLib/profiles.h>
@@ -55,7 +56,6 @@ private slots:
     void on_JournalNotesBold_clicked();
     void on_JournalNotesFontsize_activated(int index);
     void on_JournalNotesColour_clicked();
-    void on_EnergySlider_sliderMoved(int position);
 
     void on_treeWidget_itemSelectionChanged();
 
@@ -75,6 +75,16 @@ private slots:
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
     void on_graphtogglebutton_toggled(bool);
+    void on_ZombieMeter_actionTriggered(int action);
+
+    void on_addBookmarkButton_clicked();
+
+    void on_removeBookmarkButton_clicked();
+
+    void on_bookmarkTable_itemActivated(QTableWidgetItem *item);
+
+    void on_bookmarkTable_itemClicked(QTableWidgetItem *item);
+
 protected:
 
 private:
@@ -110,6 +120,10 @@ private:
     gGraphView *GraphView,*snapGV;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
+    bool ZombieMeterMoved;
 };
 
 #endif // DAILY_H
+
+
+

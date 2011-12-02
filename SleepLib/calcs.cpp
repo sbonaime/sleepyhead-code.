@@ -7,51 +7,9 @@
 #include "calcs.h"
 #include "profiles.h"
 
-Calculation::Calculation(ChannelID id,QString name)
-    :m_id(id),m_name(name)
-{
-}
 
-Calculation::~Calculation()
-{
-}
-
-CalcRespRate::CalcRespRate(ChannelID id)
-    :Calculation(id,"Resp. Rate")
-{
-}
-
-// Generate RespiratoryRate graph
-int CalcRespRate::calculate(Session *session)
-{
-    if (session->machine()->GetType()!=MT_CPAP) return 0;
-    if (session->eventlist.contains(CPAP_RespRate)) return 0; // already exists?
-
-    if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform
-
-    EventList *flow, *rr,  *tv=NULL, *mv=NULL;
-    if (!session->eventlist.contains(CPAP_TidalVolume)) {
-        tv=new EventList(EVL_Event);
-        session->eventlist[CPAP_TidalVolume].push_back(tv);
-    }
-    if (!session->eventlist.contains(CPAP_MinuteVent)) {
-        mv=new EventList(EVL_Event);
-        session->eventlist[CPAP_MinuteVent].push_back(mv);
-    }
-    int cnt=0;
-    for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
-        flow=session->eventlist[CPAP_FlowRate][ws];
-        if (flow->count() > 5) {
-            rr=new EventList(EVL_Event);
-            session->eventlist[CPAP_RespRate].push_back(rr);
-
-            cnt+=filterFlow(flow,rr,tv,mv,flow->rate());
-        }
-    }
-    return cnt;
-}
-
-int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
+// Support function for calcRespRate()
+int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
 {
 
     int size=in->count();
@@ -273,6 +231,37 @@ int CalcRespRate::filterFlow(EventList *in, EventList *out, EventList *tv, Event
     return out->count();
 }
 
+// Generate RespiratoryRate graph
+int calcRespRate(Session *session)
+{
+    if (session->machine()->GetType()!=MT_CPAP) return 0;
+    if (session->eventlist.contains(CPAP_RespRate)) return 0; // already exists?
+
+    if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform
+
+    EventList *flow, *rr,  *tv=NULL, *mv=NULL;
+    if (!session->eventlist.contains(CPAP_TidalVolume)) {
+        tv=new EventList(EVL_Event);
+        session->eventlist[CPAP_TidalVolume].push_back(tv);
+    }
+    if (!session->eventlist.contains(CPAP_MinuteVent)) {
+        mv=new EventList(EVL_Event);
+        session->eventlist[CPAP_MinuteVent].push_back(mv);
+    }
+    int cnt=0;
+    for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
+        flow=session->eventlist[CPAP_FlowRate][ws];
+        if (flow->count() > 5) {
+            rr=new EventList(EVL_Event);
+            session->eventlist[CPAP_RespRate].push_back(rr);
+
+            cnt+=filterFlow(flow,rr,tv,mv,flow->rate());
+        }
+    }
+    return cnt;
+}
+
+
 EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 {
     double hours,ahi,cnt;
@@ -297,12 +286,7 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
     return ahi;
 }
 
-CalcAHIGraph::CalcAHIGraph(ChannelID id):
-    Calculation(id,"AHI/hour")
-{
-}
-
-int CalcAHIGraph::calculate(Session *session)
+int calcAHIGraph(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there

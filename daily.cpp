@@ -43,7 +43,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     ui->setupUi(this);
 
     // Remove Incomplete Extras Tab
-    ui->tabWidget->removeTab(3);
+    //ui->tabWidget->removeTab(3);
 
     QList<int> a;
     a.push_back(300);
@@ -73,6 +73,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
     scrollbar->setMaximumWidth(20);
 
+    ui->bookmarkTable->setColumnCount(2);
+    ui->bookmarkTable->setColumnWidth(0,70);
+    //ui->bookmarkTable->setEditTriggers(QAbstractItemView::SelectedClicked);
+    //ui->bookmarkTable->setColumnHidden(2,true);
+    //ui->bookmarkTable->setColumnHidden(3,true);
     GraphView->setScrollBar(scrollbar);
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
@@ -461,9 +466,11 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
+
     if (previous_date.isValid())
         Unload(previous_date);
 
+    ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
@@ -787,30 +794,121 @@ void Daily::Load(QDate date)
     ui->webView->setHtml(html);
 
     ui->JournalNotes->clear();
+
+    ui->bookmarkTable->clear();
+    ui->bookmarkTable->setRowCount(0);
+    QStringList sl;
+    sl.append("Starts");
+    sl.append("Notes");
+    ui->bookmarkTable->setHorizontalHeaderLabels(sl);
+    ui->weightSpinBox->setValue(0);
+    ui->ZombieMeter->setValue(50);
     Session *journal=GetJournalSession(date);
     if (journal) {
-        ui->JournalNotes->setHtml(journal->settings[Journal_Notes].toString());
+        bool ok;
+        if (journal->settings.contains(Journal_Notes))
+            ui->JournalNotes->setHtml(journal->settings[Journal_Notes].toString());
+
+        if (journal->settings.contains("Weight"))
+            ui->weightSpinBox->setValue(journal->settings["Weight"].toDouble(&ok));
+
+        if (journal->settings.contains("ZombieMeter"))
+            ui->ZombieMeter->setValue(journal->settings["ZombieMeter"].toDouble(&ok));
+
+        if (journal->settings.contains("BookmarkStart")) {
+            QVariantList start=journal->settings["BookmarkStart"].toList();
+            QVariantList end=journal->settings["BookmarkEnd"].toList();
+            QStringList notes=journal->settings["BookmarkNotes"].toStringList();
+
+            bool ok;
+            for (int i=0;i<start.size();i++) {
+                qint64 st=start.at(i).toLongLong(&ok);
+                qint64 et=end.at(i).toLongLong(&ok);
+
+                QDateTime d=QDateTime::fromTime_t(st/1000L);
+                //int row=ui->bookmarkTable->rowCount();
+                ui->bookmarkTable->insertRow(i);
+                QTableWidgetItem *tw=new QTableWidgetItem(notes.at(i));
+                QTableWidgetItem *dw=new QTableWidgetItem(d.time().toString("HH:mm:ss"));
+                dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                ui->bookmarkTable->setItem(i,0,dw);
+                ui->bookmarkTable->setItem(i,1,tw);
+                tw->setData(Qt::UserRole,st);
+                tw->setData(Qt::UserRole+1,et);
+            }
+        }
     }
 
 }
 void Daily::Unload(QDate date)
 {
     Session *journal=GetJournalSession(date);
-    if (!ui->JournalNotes->toPlainText().isEmpty()) {
-        QString jhtml=ui->JournalNotes->toHtml();
-        if (journal) {
-            if (journal->settings[Journal_Notes]!=jhtml) {
-                journal->settings[Journal_Notes]=jhtml;
-                journal->SetChanged(true);
-            }
 
-        } else {
-            journal=CreateJournalSession(date);
+    bool nonotes=ui->JournalNotes->toPlainText().isEmpty();
+    bool ok;
+    if (journal) {
+        QString jhtml=ui->JournalNotes->toHtml();
+        if ((!journal->settings.contains(Journal_Notes) && !nonotes) || (!nonotes && (journal->settings[Journal_Notes]!=jhtml))) {
             journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
-
+        if ((!journal->settings.contains("Weight") && (ui->weightSpinBox->value()>0)) || (journal->settings["Weight"].toDouble(&ok)!=ui->weightSpinBox->value())) {
+            journal->settings["Weight"]=ui->weightSpinBox->value();
+            journal->SetChanged(true);
+        }
+        if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=50)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
+            journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
+            journal->SetChanged(true);
+        }
+        bool ok;
+        if (ui->bookmarkTable->rowCount()>0) {
+            QVariantList start;
+            QVariantList end;
+            QStringList notes;
+            QTableWidgetItem *item;
+            for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
+                item=ui->bookmarkTable->item(row,1);
+                start.push_back(item->data(Qt::UserRole));
+                end.push_back(item->data(Qt::UserRole+1));
+                notes.push_back(item->text());
+            }
+            journal->settings["BookmarkStart"]=start;
+            journal->settings["BookmarkEnd"]=end;
+            journal->settings["BookmarkNotes"]=notes;
+        }
+    } else {
+        if (!nonotes || ZombieMeterMoved || (ui->weightSpinBox->value() > 0) || (ui->bookmarkTable->rowCount()>0)) {
+            journal=CreateJournalSession(date);
+            if (!nonotes) {
+                journal->settings[Journal_Notes]=ui->JournalNotes->toHtml();
+                journal->SetChanged(true);
+            }
+            if (ZombieMeterMoved) {
+                journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
+                journal->SetChanged(true);
+            }
+            if (ui->weightSpinBox->value() > 0) {
+                journal->settings["Weight"]=ui->weightSpinBox->value();
+                journal->SetChanged(true);
+            }
+            if (ui->bookmarkTable->rowCount()>0) {
+                QVariantList start;
+                QVariantList end;
+                QStringList notes;
+                QTableWidgetItem *item;
+                for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
+                    item=ui->bookmarkTable->item(row,1);
+                    start.push_back(item->data(Qt::UserRole));
+                    end.push_back(item->data(Qt::UserRole+1));
+                    notes.push_back(item->text());
+                }
+                journal->settings["BookmarkStart"]=start;
+                journal->settings["BookmarkEnd"]=end;
+                journal->settings["BookmarkNotes"]=notes;
+            }
+        }
     }
+
     if (journal) {
         Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
@@ -924,16 +1022,6 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
     if (s!=journal->end())
         return *s;
     return NULL;
-}
-void Daily::on_EnergySlider_sliderMoved(int position)
-{
-    position=position;
-    //Session *s=GetJournalSession(previous_date);
-    //if (!s)
-      //  s=CreateJournalSession(previous_date);
-
-    //s->summary[JOURNAL_Energy]=position;
-    //s->SetChanged(true);
 }
 
 void Daily::UpdateCPAPGraphs(Day *day)
@@ -1113,3 +1201,63 @@ void Daily::on_evViewSlider_valueChanged(int value)
     }
 }
 
+void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
+{
+    int row=item->row();
+    qint64 st,et;
+
+    QTableWidgetItem *it=ui->bookmarkTable->item(row,1);
+    bool ok;
+    st=it->data(Qt::UserRole).toLongLong(&ok);
+    et=it->data(Qt::UserRole+1).toLongLong(&ok);
+    GraphView->SetXBounds(st,et);
+    GraphView->updateGL();
+}
+
+void Daily::on_bookmarkTable_itemActivated(QTableWidgetItem *item)
+{
+}
+
+void Daily::on_addBookmarkButton_clicked()
+{
+    qint64 st,et;
+    GraphView->GetXBounds(st,et);
+    QDateTime d=QDateTime::fromTime_t(st/1000L);
+    int row=ui->bookmarkTable->rowCount();
+    ui->bookmarkTable->insertRow(row);
+    QTableWidgetItem *tw=new QTableWidgetItem("Bookmark at "+d.time().toString("HH:mm:ss"));
+    QTableWidgetItem *dw=new QTableWidgetItem(d.time().toString("HH:mm:ss"));
+    dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    ui->bookmarkTable->setItem(row,0,dw);
+    ui->bookmarkTable->setItem(row,1,tw);
+    tw->setData(Qt::UserRole,st);
+    tw->setData(Qt::UserRole+1,et);
+
+    //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
+    //ui->bookmarkTable->setItem(row,3,new QTableWidgetItem(QString::number(et)));
+}
+
+void Daily::on_removeBookmarkButton_clicked()
+{
+    int row=ui->bookmarkTable->currentRow();
+    if (row>=0) {
+        ui->bookmarkTable->removeRow(row);
+    }
+}
+
+void Daily::on_ZombieMeter_actionTriggered(int action)
+{
+    ZombieMeterMoved=true;
+    qDebug() << "ZombieMeter" << action;
+}
+
+//void Daily::on_EnergySlider_sliderMoved(int position)
+//{
+  //  position=position;
+    //Session *s=GetJournalSession(previous_date);
+    //if (!s)
+      //  s=CreateJournalSession(previous_date);
+
+    //s->summary[JOURNAL_Energy]=position;
+    //s->SetChanged(true);
+//}
