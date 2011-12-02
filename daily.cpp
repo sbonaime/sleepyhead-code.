@@ -945,7 +945,6 @@ void Daily::Unload(QDate date)
             journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
             journal->SetChanged(true);
         }
-        bool ok;
         if (BookmarksChanged) {
             QVariantList start;
             QVariantList end;
@@ -1155,6 +1154,7 @@ void Daily::RedrawGraphs()
 
 void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column);
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
@@ -1315,10 +1315,6 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     GraphView->updateGL();
 }
 
-void Daily::on_bookmarkTable_itemActivated(QTableWidgetItem *item)
-{
-}
-
 void Daily::on_addBookmarkButton_clicked()
 {
     qint64 st,et;
@@ -1350,8 +1346,8 @@ void Daily::on_removeBookmarkButton_clicked()
 
 void Daily::on_ZombieMeter_actionTriggered(int action)
 {
+    Q_UNUSED(action);
     ZombieMeterMoved=true;
-    qDebug() << "ZombieMeter" << action;
 }
 
 //void Daily::on_EnergySlider_sliderMoved(int position)

@@ -50,6 +50,7 @@ public:
     Overview *getOverview() { return overview; }
     Oximetry *getOximetry() { return oximetry; }
     void JumpDaily();
+    void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
 private slots:
     void on_action_Import_Data_triggered();
 
@@ -114,7 +115,6 @@ private slots:
     void on_action_Rebuild_Oximetry_Index_triggered();
 
 private:
-    void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
 
     Ui::MainWindow *ui;
     Daily * daily;

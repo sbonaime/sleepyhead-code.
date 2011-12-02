@@ -61,8 +61,6 @@ private slots:
 
     void on_toolButton_clicked();
 
-    void on_htmlButton_clicked();
-
 private:
     Ui::Overview *ui;
     gGraphView *GraphView;

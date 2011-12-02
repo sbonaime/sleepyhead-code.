@@ -22,8 +22,8 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gSessionTime.h"
 
-//#include "mainwindow.h"
-//extern MainWindow * mainwin;
+#include "mainwindow.h"
+extern MainWindow * mainwin;
 //extern QProgressBar * qprogress;
 
 Overview::Overview(QWidget *parent,gGraphView * shared) :
@@ -348,41 +348,10 @@ QString Overview::GetHTML()
 }
 void Overview::on_printButton_clicked()
 {
-    report->Print(GetHTML());
+    mainwin->PrintReport(GraphView,"Overview");
+    //report->Print(GetHTML());
 }
 
-void Overview::on_htmlButton_clicked()
-{
-    QString filename;
-
-    for (int i=0;i<GraphView->size();i++) {
-        gGraph *g=(*GraphView)[i];
-        if (g->isEmpty()) continue;
-        if (!g->visible()) continue;
-
-        g->deselect();
-        QPixmap pm=g->renderPixmap(1024,512);
-        filename=PREF.Get("{home}/graph_"+g->title()+".png");
-        pm.save(filename,"png");
-    }
-
-        //QString filename=QFileDialog::getSaveFileName(this,tr("Save PNG Test"),PREF.Get("{home}"),tr("PNG Pictures(*.png)"));
-    //if (!filename.isEmpty()) {
-//        pm.save(filename,"png");
-//    }
-
-    /*QString html=GetHTML();
-    QString filename=QFileDialog::getSaveFileName(this,tr("Save HTML Report"),PREF.Get("{home}"),tr("HTML Documents (*.html)"));
-    if (!filename.isEmpty()) {
-        QFile file(filename);
-        file.open(QIODevice::WriteOnly);
-        QByteArray ba;
-        ba.append(html);
-        file.write(ba);
-        file.close();
-    } */
-
-}
 void Overview::ResetGraphLayout()
 {
     GraphView->resetLayout();

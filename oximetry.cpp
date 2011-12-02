@@ -165,7 +165,7 @@ void SerialOximeter::onReadyRead()
 void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
     static EventDataType lastpr=0;
-    EventDataType min=0,max=0;
+    //EventDataType min=0,max=0;
     if (pr>0) {
         if (lastpr==0) {
             if (pulse->count()==0)
@@ -195,7 +195,7 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
 {
     static EventDataType lasto2=0;
-    EventDataType min=0,max=0;
+    //EventDataType min=0,max=0;
     if (o2>0) {
         if (lasto2==0) {
             if (spo2->count()==0)
@@ -385,6 +385,7 @@ void CMS50Serial::on_import_process()
     bool first=true;
     while (i<(size-3)) {
         a=data.at(i++);
+        Q_UNUSED(a);
         pl=data.at(i++) ^ 0x80;
         o2=data.at(i++);
         if (pl!=0) {
@@ -581,7 +582,7 @@ void CMS50Serial::onReadyRead()
             }
         }
     }
-    static unsigned char b1[6]={0xf5,0xf5,0xf5,0xf5,0xf5,0xf5};
+    //static unsigned char b1[6]={0xf5,0xf5,0xf5,0xf5,0xf5,0xf5};
     if (import_mode && waitf6 && (cntf6==0)) {
         failcnt++;
 

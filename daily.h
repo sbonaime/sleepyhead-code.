@@ -82,8 +82,6 @@ private slots:
 
     void on_removeBookmarkButton_clicked();
 
-    void on_bookmarkTable_itemActivated(QTableWidgetItem *item);
-
     void on_bookmarkTable_itemClicked(QTableWidgetItem *item);
 
     void on_bookmarkTable_itemChanged(QTableWidgetItem *item);

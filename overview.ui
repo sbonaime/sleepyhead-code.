@@ -115,16 +115,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QToolButton" name="htmlButton">
-        <property name="toolTip">
-         <string>Save a HTML report</string>
-        </property>
-        <property name="text">
-         <string>HTML</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="printButton">
         <property name="toolTip">
          <string>Send a Report to your Printer</string>
