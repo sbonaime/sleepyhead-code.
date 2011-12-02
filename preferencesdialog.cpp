@@ -114,6 +114,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     v=(*profile)["PulseChangeDuration"].toDouble(&ok);
     if (!ok) v=5;
     ui->pulseChangeTime->setValue(v);
+    v=(*profile)["OxiDiscardThreshold"].toDouble(&ok);
+    if (!ok) v=10;
+    ui->oxiDiscardThreshold->setValue(v);
 
     QTime t=(*profile)["DaySplitTime"].toTime();
     ui->timeEdit->setTime(t);
@@ -338,6 +341,7 @@ void PreferencesDialog::Save()
     (*profile)["SPO2DropDuration"]=ui->spo2DropTime->value();
     (*profile)["PulseChangeBPM"]=ui->pulseChange->value();
     (*profile)["PulseChangeDuration"]=ui->pulseChangeTime->value();
+    (*profile)["OxiDiscardThreshold"]=ui->oxiDiscardThreshold->value();
 
     //PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
 

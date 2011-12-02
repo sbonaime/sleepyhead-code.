@@ -123,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("PulseChangeBPM")) PROFILE["PulseChangeDuration"]=5;
     if (!PROFILE.Exists("PulseChangeDuration")) PROFILE["PulseChangeDuration"]=8;
     if (!PROFILE.Exists("GraphHeight")) PROFILE["GraphHeight"]=180;
+    if (!PROFILE.Exists("OxiDiscardThreshold")) PROFILE["OxiDiscardThreshold"]=10;
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
     ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());
@@ -827,6 +828,9 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
     QVector<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
 
+    bool ok;
+    int discard_threshold=PROFILE["OxiDiscardThreshold"].toInt(&ok);
+    if (!ok) discard_threshold=10;
     Machine *m;
     for (int z=0;z<machines.size();z++) {
         m=machines[z];
@@ -847,7 +851,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
                     int i=0;
                     QVector<EventList *> newlist;
                     for (int i=0;i<e.value().size();i++)  {
-                        if (e.value()[i]->count() > 1) {
+                        if (e.value()[i]->count() > discard_threshold) {
                             newlist.push_back(e.value()[i]);
                         } else {
                             delete e.value()[i];
