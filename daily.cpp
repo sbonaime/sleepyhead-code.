@@ -48,6 +48,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     // Remove Incomplete Extras Tab
     //ui->tabWidget->removeTab(3);
 
+    ZombieMeterMoved=false;
+    BookmarksChanged=false;
+
     QList<int> a;
     a.push_back(300);
     a.push_back(this->width()-300);
