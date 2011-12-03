@@ -233,7 +233,7 @@ bool Machine::Load()
     if (!dir.exists() || !dir.isReadable())
         return false;
 
-    QString fn=path+"/channels.dat";
+/*    QString fn=path+"/channels.dat";
     QFile cf(fn);
     cf.open(QIODevice::ReadOnly);
     QDataStream in(&cf);
@@ -255,8 +255,7 @@ bool Machine::Load()
         qDebug() << "Machine Channel file format is wrong" << fn;
     }
     in >> m_channels;
-    cf.close();
-
+    cf.close(); */
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -322,7 +321,7 @@ bool Machine::Save()
         dir.mkdir(path);
     }
 
-    QString fn=path+"/channels.dat";
+    /*QString fn=path+"/channels.dat";
     QFile cf(fn);
     if (!cf.open(QIODevice::WriteOnly)) {
         qDebug() << "Couldn't write.. Permissions? Hard disk crashing?";
@@ -337,7 +336,7 @@ bool Machine::Save()
     out << (quint32)m_id;// Machine ID
 
     out << m_channels;
-    cf.close();
+    cf.close(); */
 
 
     // Calculate size for progress bar

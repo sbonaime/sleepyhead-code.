@@ -84,8 +84,8 @@ signals:
     void updateSpO2(float p);
 
 protected slots:
-    virtual void onReadyRead();
-    virtual void on_import_process()=0;
+    virtual void ReadyRead();
+    virtual void import_process()=0;
 
 
 protected:
@@ -128,9 +128,9 @@ public:
     virtual bool startImport();
 
 protected:
-    virtual void on_import_process();
+    virtual void import_process();
 
-    virtual void onReadyRead();
+    virtual void ReadyRead();
     bool waitf6;
     short cntf6;
     short failcnt;
@@ -163,7 +163,7 @@ public:
 
 private slots:
     void on_RefreshPortsButton_clicked();
-    void on_RunButton_toggled(bool checked);
+    void RunButton_toggled(bool checked);
 
     void on_SerialPortsCombo_activated(const QString &arg1);
     //void onReadyRead();
@@ -171,14 +171,14 @@ private slots:
 
     void on_ImportButton_clicked();
 
-    void onDataChanged();
-    void onPulseChanged(float p);
-    void onSpO2Changed(float o2);
+    void DataChanged();
+    void PulseChanged(float p);
+    void SpO2Changed(float o2);
 
     void on_saveButton_clicked();
-    void on_updateProgress(float f);
-    void on_import_aborted();
-    void on_import_complete(Session *session);
+    void updateProgress(float f);
+    void import_aborted();
+    void import_complete(Session *session);
 
     void oximeter_running_check();
 

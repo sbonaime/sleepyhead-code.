@@ -70,12 +70,12 @@ private slots:
 
     void on_todayButton_clicked();
 
-    void on_Link_clicked(const QUrl &url);
+    void Link_clicked(const QUrl &url);
     void on_evViewSlider_valueChanged(int value);
 
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
-    void on_graphtogglebutton_toggled(bool);
+    void graphtogglebutton_toggled(bool);
     void on_ZombieMeter_actionTriggered(int action);
 
     void on_addBookmarkButton_clicked();

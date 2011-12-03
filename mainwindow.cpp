@@ -188,12 +188,12 @@ MainWindow::~MainWindow()
     mainwin=NULL;
     delete ui;
 }
-void MainWindow::Notify(QString s)
+void MainWindow::Notify(QString s,int ms)
 {
     if (systray) {
-        systray->showMessage("SleepyHead v"+PREF["VersionString"].toString(),s,QSystemTrayIcon::Information,5000);
+        systray->showMessage("SleepyHead v"+PREF["VersionString"].toString(),s,QSystemTrayIcon::Information,ms);
     } else {
-        ui->statusbar->showMessage(s,5000);
+        ui->statusbar->showMessage(s,ms);
     }
 }
 

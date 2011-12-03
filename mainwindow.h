@@ -44,7 +44,7 @@ public:
     void Log(QString s);
     QMenu * CreateMenu(QString title);
     void CheckForUpdates();
-    void Notify(QString s);
+    void Notify(QString s,int ms=5000);
     gGraphView *snapshotGraph() { return SnapshotGraph; }
     Daily *getDaily() { return daily; }
     Overview *getOverview() { return overview; }

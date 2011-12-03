@@ -918,6 +918,6 @@ EventList * Session::AddEventList(QString chan, EventListType et,EventDataType g
     }
     EventList * el=new EventList(et,gain,offset,min,max,rate,second_field);
     eventlist[chan].push_back(el);
-    s_machine->registerChannel(chan);
+    //s_machine->registerChannel(chan);
     return el;
 }

@@ -345,8 +345,9 @@ bool Day::settingExists(ChannelID id)
 }
 bool Day::channelExists(ChannelID id)
 {
-    if (machine->hasChannel(id)) return true;
-    return false;
+    return channelHasData(id);
+    //if (machine->hasChannel(id)) return true;
+    //return false;
 }
 bool Day::channelHasData(ChannelID id)
 {
