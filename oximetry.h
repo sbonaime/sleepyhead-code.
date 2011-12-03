@@ -149,6 +149,7 @@ protected:
     int datasize;
 
     int received_bytes;
+    int import_fails;
 };
 
 namespace Ui {

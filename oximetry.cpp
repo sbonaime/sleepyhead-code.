@@ -45,6 +45,8 @@ SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portnam
     }
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(Timeout()));
+    import_mode=false;
+    m_mode=SO_WAIT;
 }
 
 SerialOximeter::~SerialOximeter()
@@ -325,10 +327,10 @@ Session *SerialOximeter::createSession()
 
 bool SerialOximeter::startLive()
 {
-    m_mode=SO_LIVE;
     import_mode=false;
+    m_mode=SO_LIVE;
 
-    if (!Open(QextSerialPort::EventDriven)) return false;
+    if (!m_opened && !Open(QextSerialPort::EventDriven)) return false;
     createSession();
 
     return true;
@@ -337,7 +339,7 @@ bool SerialOximeter::startLive()
 void SerialOximeter::stopLive()
 {
     if (timer->isActive()) timer->stop();
-    Close();
+    m_mode=SO_WAIT;
     if (session) {
         compactAll();
         calcSPO2Drop(session);
@@ -348,7 +350,6 @@ void SerialOximeter::stopLive()
 CMS50Serial::CMS50Serial(QObject * parent, QString portname="") :
  SerialOximeter(parent,"CMS50", portname, BAUD19200, FLOW_OFF, PAR_ODD, DATA_8, STOP_1)
 {
-    import_mode=false;
 }
 
 CMS50Serial::~CMS50Serial()
@@ -613,7 +614,7 @@ void CMS50Serial::ReadyRead()
 
         if (failcnt>4) {
             // Device missed the 0xf5 code sequence somehow..
-            Close();
+            m_mode=SO_WAIT;
             emit(importAborted());
             return;
         }
@@ -623,7 +624,7 @@ void CMS50Serial::ReadyRead()
     else if (done_import) {
         qDebug() << "End";
         resetDevice();
-        Close();
+        m_mode=SO_WAIT;
         emit(importProcess());
 
     }
@@ -650,8 +651,11 @@ bool CMS50Serial::startImport()
 {
     m_mode=SO_WAIT;
 
-    if (!Open(QextSerialPort::EventDriven))
+    if (!m_opened && !Open(QextSerialPort::EventDriven))
         return false;
+
+    m_callbacks=0;
+    import_fails=0;
 
     QTimer::singleShot(250,this,SLOT(startImportTimeout()));
     //make sure there is a data stream first..
@@ -671,14 +675,15 @@ void CMS50Serial::startImportTimeout()
         failcnt=0;
         m_mode=SO_IMPORT;
         requestData();
-
-
-
     } else {
-        resetDevice();
-        //delete session;
-        qDebug() << "No oximeter signal!!!!!!!!!!!!!!!!";
-        emit(importAborted());
+        import_fails++;
+        if (import_fails<5) {
+            resetDevice();
+            QTimer::singleShot(250,this,SLOT(startImportTimeout()));
+        } else {
+            qDebug() << "No oximeter signal!!!!!!!!!!!!!!!!";
+            emit(importAborted());
+        }
     }
 }
 
@@ -775,6 +780,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
 Oximetry::~Oximetry()
 {
+    delete oximeter;
     GraphView->SaveSettings("Oximetry");
     delete ui;
 }
