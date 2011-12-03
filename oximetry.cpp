@@ -105,7 +105,7 @@ void SerialOximeter::Close()
     if (!m_opened) return;
 
     if (m_port) m_port->close();
-    if (m_portmode==QextSerialPort::EventDriven)
+    //if (m_portmode==QextSerialPort::EventDriven)
         disconnect(m_port, SIGNAL(readyRead()), this, SLOT(ReadyRead()));
     m_mode=SO_OFF;
     m_opened=false;
@@ -374,7 +374,6 @@ CMS50Serial::~CMS50Serial()
 
 void CMS50Serial::import_process()
 {
-    disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
     if (!session) {
         qDebug() << "User pushing import too many times in a row?";
         return;
@@ -477,6 +476,7 @@ void CMS50Serial::import_process()
     session->setCount(OXI_SPO2,o2cnt);
     session->UpdateSummaries();
     emit(importComplete(session));
+    disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 }
 
 void CMS50Serial::ReadyRead()
@@ -634,6 +634,12 @@ void CMS50Serial::ReadyRead()
             }
         } */
         if (failcnt>4) {
+            static unsigned char b1[3]={0xf6,0xf6,0xf6};
+            if (m_port->write((char *)b1,2)==-1) {
+                qDebug() << "Couldn't write closing bytes to CMS50";
+            }
+            m_port->flush();
+            Close();
             emit(importAborted());
             return;
         }
@@ -646,6 +652,7 @@ void CMS50Serial::ReadyRead()
         if (m_port->write((char *)b1,2)==-1) {
             qDebug() << "Couldn't write closing bytes to CMS50";
         }
+        m_port->flush();
         Close();
         emit(importProcess());
 
@@ -1029,6 +1036,9 @@ void Oximetry::on_ImportButton_clicked()
 
     if (!oximeter->startImport()) {
         mainwin->Notify("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on.");
+        disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
+        disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
+        disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
         //qDebug() << "Error starting oximetry serial import process";
         return;
     }
@@ -1061,7 +1071,6 @@ void Oximetry::import_finished()
 
     if (qprogress) {
         qprogress->setValue(100);
-        QApplication::processEvents();
         qprogress->hide();
     }
 }
@@ -1071,12 +1080,18 @@ void Oximetry::import_aborted()
     //QMessageBox::warning(mainwin,"Oximeter Error","Please make sure your oximeter is switched on, and able to transmit data.\n(You may need to enter the oximeters Settings screen for it to be able to transmit.)",QMessageBox::Ok);
     mainwin->Notify("Oximeter Error!\n\nPlease make sure your oximeter is switched on, and in the right mode to transmit data.");
     //qDebug() << "Oximetry import failed";
+    oximeter->disconnect(oximeter,SIGNAL(importProcess()),0,0);
     import_finished();
+
 }
 void Oximetry::import_complete(Session * session)
 {
     qDebug() << "Oximetry import complete";
     import_finished();
+    if (!session) {
+        qDebug() << "Shouldn't happen";
+        return;
+    }
 
     //calcSPO2Drop(session);
     //calcPulseChange(session);
