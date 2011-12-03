@@ -264,6 +264,8 @@ void MainWindow::on_action_Import_Data_triggered()
         if (res==2) return;
     }
 
+    QStringList importFrom=importLocations;
+
     if (asknew) {
         QFileDialog w;
         w.setFileMode(QFileDialog::DirectoryOnly);
@@ -282,32 +284,27 @@ void MainWindow::on_action_Import_Data_triggered()
         }
         for (int i=0;i<w.selectedFiles().size();i++) {
             QString newdir=w.selectedFiles().at(i);
-            if (!importLocations.contains(newdir)) {
-                importLocations.append(newdir);
+            if (!importFrom.contains(newdir)) {
+                importFrom.append(newdir);
                 addnew=true;
             }
         }
-        /*newdir=QFileDialog::getExistingDirectory(this,"Select a folder to import","",QFileDialog::ShowDirsOnly);
-        if (newdir.isEmpty()) {
-            // inform the user or just abort?
-            return;
-        } */
     }
 
     int successful=false;
-    for (int i=0;i<importLocations.size();i++) {
-        QString dir=importLocations[i];
+
+    QStringList goodlocations;
+    for (int i=0;i<importFrom.size();i++) {
+        QString dir=importFrom[i];
         if (!dir.isEmpty()) {
             qprogress->setValue(0);
             qprogress->show();
             qstatus->setText(tr("Importing Data"));
             int c=PROFILE.Import(dir);
-            if (!c) {
-                mainwin->Notify("Import Problem\n\nCouldn't Find any Machine Data at this location:\n"+dir);
-                if (newdir==dir) addnew=false; // Don't bother asking to add it.
-            }
             qDebug() << "Finished Importing data" << c;
             if (c) {
+                if (!importLocations.contains(dir))
+                    goodlocations.push_back(dir);
                 successful=true;
             }
             qstatus->setText("");
@@ -318,7 +315,10 @@ void MainWindow::on_action_Import_Data_triggered()
         PROFILE.Save();
         if (daily) daily->ReloadGraphs();
         if (overview) overview->ReloadGraphs();
-        if (addnew && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
+        if ((goodlocations.size()>0) && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
+            for (int i=0;i<goodlocations.size();i++) {
+                importLocations.push_back(goodlocations[i]);
+            }
             QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
             QFile file(filename);
             file.open(QFile::WriteOnly);
@@ -329,6 +329,8 @@ void MainWindow::on_action_Import_Data_triggered()
             }
             file.close();
         }
+    } else {
+        mainwin->Notify("Import Problem\n\nCouldn't find any new Machine Data at the locations given");
     }
 }
 QMenu * MainWindow::CreateMenu(QString title)

@@ -70,8 +70,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     ui->startedUsingMask->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
 
-
-
     //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
 
     {
@@ -220,7 +218,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     ui->oximetryGroupBox->setChecked((*profile)["EnableOximetry"].toBool());
     ui->oximetrySync->setChecked((*profile)["SyncOximetry"].toBool());
-    ui->oximetryType->setCurrentIndex(ui->oximetryType->findText((*profile)["OximeterType"].toString(),Qt::MatchExactly));
+    int ot=ui->oximetryType->findText((*profile)["OximeterType"].toString(),Qt::MatchExactly);
+    if (ot<0) ot=0;
+    ui->oximetryType->setCurrentIndex(ot);
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);

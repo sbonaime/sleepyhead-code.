@@ -1415,6 +1415,7 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
         ui->BMI->display(bmi);
+        ui->BMI->setVisible(true);
         //ui->BMI->setDigitCount(5);
         //ui->BMI->setSmallDecimalPoint(true);
     }
@@ -1427,6 +1428,7 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
         ui->BMI->display(bmi);
+        ui->BMI->setVisible(true);
         //ui->BMI->setDigitCount(5);
         //ui->BMI->setSmallDecimalPoint(true);
     }

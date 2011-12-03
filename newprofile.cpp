@@ -163,7 +163,7 @@ void NewProfile::on_nextButton_clicked()
             if (prof["Units"].toString()!=ui->heightCombo->currentText()) {
 
                 prof["Units"]=ui->heightCombo->currentText();
-                mainwin->getDaily()->UnitsChanged();
+                if (mainwin && mainwin->getDaily()) mainwin->getDaily()->UnitsChanged();
             }
             double v=0;
             if (ui->heightCombo->currentIndex()==1) {
