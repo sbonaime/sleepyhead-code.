@@ -676,7 +676,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     printer.setOrientation(QPrinter::Portrait);
     printer.setFullPage(false); // This has nothing to do with scaling
     printer.setNumCopies(1);
-    //printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
+    printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
     QPrintDialog *dialog = new QPrintDialog(&printer);
     if ( dialog->exec() != QDialog::Accepted) {
         return;
@@ -712,16 +712,15 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),50),title,QTextOption(Qt::AlignCenter));
     painter.drawText(bounds,title,QTextOption(Qt::AlignCenter));
     painter.setFont(*defaultfont);
-
+    top+=50;
     if (!PROFILE["FirstName"].toString().isEmpty()) {
         QString userinfo="Name:\t"+PROFILE["LastName"].toString()+", "+PROFILE["FirstName"].toString()+"\n";
         userinfo+="DOB:\t"+PROFILE["DOB"].toString()+"\n";
         userinfo+="Phone:\t"+PROFILE["Phone"].toString()+"\n";
         userinfo+="Email:\t"+PROFILE["EmailAddress"].toString()+"\n";
         if (!PROFILE["Address"].toString().isEmpty()) userinfo+="\nAddress:\n"+PROFILE["Address"].toString()+"\n";
-        QRectF bounds=painter.boundingRect(QRectF(0,50,res.width(),200),userinfo,QTextOption(Qt::AlignLeft));
+        QRectF bounds=painter.boundingRect(QRectF(0,50,res.width(),150),userinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft));
-        top=header_height;
     }
     if (name=="Daily") {
         QString cpapinfo="Date: "+date.toString(Qt::SystemLocaleLongDate)+"\n";
@@ -779,6 +778,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QRectF bounds=painter.boundingRect(QRectF(250,50,res.width()-250,200),ovinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignLeft));
     }
+    top+=150;
+    //top=header_height;
 
     const int footer_height=40;
     bool first=true;
@@ -803,7 +804,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         painter.drawPixmap(0,top,pm.width(),pm.height(),pm);
         top+=pm.height();
         gcnt++;
-        if ((gcnt>=graphs_per_page) || (top>(res.height()-footer_height-header_height))) { //top+pm.height()>res.height()) {
+        if ((gcnt>=graphs_per_page) || (top+gh>(res.height()-footer_height))) { //top+pm.height()>res.height()) {
             top=0;
             gcnt=0;
             header_height=0;
