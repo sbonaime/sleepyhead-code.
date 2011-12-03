@@ -77,6 +77,7 @@ bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
     }
 
     m_portmode=mode;
+    m_callbacks=0;
 
     m_port=new QextSerialPort(m_portname,m_portmode);
     m_port->setBaudRate(m_baud);
@@ -469,6 +470,8 @@ void CMS50Serial::ReadyRead()
     m_port->read(bytes.data(), bytes.size());
     m_callbacks++;
 
+    if (m_mode==SO_WAIT) return;
+
     int i=0;
 
     // Was going out of sync previously.. To fix this unfortunately requires 4.7
@@ -646,22 +649,35 @@ void CMS50Serial::requestData()
 
 bool CMS50Serial::startImport()
 {
-    m_mode=SO_IMPORT;
-    import_mode=true;
-    waitf6=true;
-    done_import=false;
-    cntf6=0;
-    failcnt=0;
-    //QMessageBox::information(0,"Get Ready","Please make sure your oximeter is switched on and in the correct mode for data transfer.",QMessageBox::Ok);
+    m_mode=SO_WAIT;
+
     if (!Open(QextSerialPort::EventDriven)) return false;
 
+    QTimer::singleShot(200,this,SLOT(startImportTimeout()));
+    //make sure there is a data stream first..
     createSession();
 
-    connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
-
-    requestData();
 
     return true;
+}
+
+void CMS50Serial::startImportTimeout()
+{
+    if (m_callbacks>0) {
+        connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
+        m_mode=SO_IMPORT;
+        import_mode=true;
+        waitf6=true;
+        done_import=false;
+        cntf6=0;
+        failcnt=0;
+        requestData();
+    } else {
+        resetDevice();
+        delete session;
+        qDebug() << "No oximeter signal!!!!!!!!!!!!!!!!";
+        emit(importAborted());
+    }
 }
 
 
@@ -1058,10 +1074,11 @@ void Oximetry::import_finished()
 
 void Oximetry::import_aborted()
 {
+    oximeter->disconnect(oximeter,SIGNAL(importProcess()),0,0);
+    day->getSessions().clear();
     //QMessageBox::warning(mainwin,"Oximeter Error","Please make sure your oximeter is switched on, and able to transmit data.\n(You may need to enter the oximeters Settings screen for it to be able to transmit.)",QMessageBox::Ok);
     mainwin->Notify("Oximeter Error!\n\nPlease make sure your oximeter is switched on, and in the right mode to transmit data.");
     //qDebug() << "Oximetry import failed";
-    oximeter->disconnect(oximeter,SIGNAL(importProcess()),0,0);
     import_finished();
 
 }

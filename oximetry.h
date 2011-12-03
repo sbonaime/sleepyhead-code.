@@ -20,7 +20,7 @@
 #include "Graphs/gLineChart.h"
 #include "Graphs/gFooBar.h"
 
-enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE };
+enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE, SO_WAIT };
 class SerialOximeter:public QObject
 {
     Q_OBJECT
@@ -90,6 +90,7 @@ protected slots:
     virtual void ReadyRead()=0;
     virtual void import_process()=0;
     virtual void Timeout();
+    virtual void startImportTimeout()=0;
 
 protected:
     //virtual void addEvents(EventDataType pr, EventDataType o2, EventDataType pleth=-1000000);
@@ -135,6 +136,7 @@ public:
     virtual void requestData();
 
 protected:
+    virtual void startImportTimeout();
     virtual void import_process();
 
     virtual void ReadyRead();
