@@ -36,7 +36,7 @@ One id code per item
   <channel id="0x1106" class="data" name="RespRate" details="Respiratory Rate" label="Resp. Rate" unit="breaths/min" color="dark magenta"/>
   <channel id="0x1107" class="data" name="PTB" details="Patient Triggered Breaths" label="Pat. Trig. Breaths" unit="%" color="dark grey"/>
   <channel id="0x1108" class="data" name="Leak" details="Leak Rate" label="Leaks" unit="L/min" color="dark green"/>
-  <channel id="0x1109" class="data" name="I:E" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
+  <channel id="0x1109" class="data" name="IE" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
   <channel id="0x110a" class="data" name="Te" details="Te" label="Te" unit="" color="dark green"/>
   <channel id="0x110b" class="data" name="Ti" details="Ti" label="Ti" unit="" color="dark blue"/>
   <channel id="0x110c" class="data" name="Pressure" details="Pressure" label="Pressure" unit="cmH20" color="dark green"/>
