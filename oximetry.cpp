@@ -630,11 +630,11 @@ void CMS50Serial::ReadyRead()
 }
 void CMS50Serial::resetDevice()
 {
+    m_port->flush();
     static unsigned char b1[3]={0xf6,0xf6,0xf6};
     if (m_port->write((char *)b1,3)==-1) {
         qDebug() << "Couldn't write closing bytes to CMS50";
     }
-    m_port->flush();
 }
 
 void CMS50Serial::requestData()
@@ -644,16 +644,16 @@ void CMS50Serial::requestData()
     if (m_port->write((char *)b1,2)==-1) {
         qDebug() << "Couldn't write data request bytes to CMS50";
     }
-    m_port->flush();
 }
 
 bool CMS50Serial::startImport()
 {
     m_mode=SO_WAIT;
 
-    if (!Open(QextSerialPort::EventDriven)) return false;
+    if (!Open(QextSerialPort::EventDriven))
+        return false;
 
-    QTimer::singleShot(200,this,SLOT(startImportTimeout()));
+    QTimer::singleShot(250,this,SLOT(startImportTimeout()));
     //make sure there is a data stream first..
     createSession();
 
@@ -664,16 +664,19 @@ void CMS50Serial::startImportTimeout()
 {
     if (m_callbacks>0) {
         connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
-        m_mode=SO_IMPORT;
         import_mode=true;
         waitf6=true;
         done_import=false;
         cntf6=0;
         failcnt=0;
+        m_mode=SO_IMPORT;
         requestData();
+
+
+
     } else {
         resetDevice();
-        delete session;
+        //delete session;
         qDebug() << "No oximeter signal!!!!!!!!!!!!!!!!";
         emit(importAborted());
     }
@@ -1038,7 +1041,7 @@ void Oximetry::on_ImportButton_clicked()
         //qDebug() << "Error starting oximetry serial import process";
         return;
     }
-    QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
+    //QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
 
     day->getSessions().clear();
     day->AddSession(oximeter->getSession());
