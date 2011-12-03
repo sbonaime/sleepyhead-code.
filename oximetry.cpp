@@ -489,6 +489,17 @@ void CMS50Serial::onReadyRead()
     // Process all incoming serial data packets
     unsigned char c;
     unsigned char pl,o2;
+
+    if (!import_mode) {
+        QString data="Read: ";
+        for (int i=0;i<bytes.size();i++) {
+            c=bytes[i];
+            data+=QString().sprintf("%02X,",c);
+        }
+        qDebug() << data;
+    }
+
+
     while (i<bytes.size()) {
         if (import_mode) {
             if (waitf6) { //ack sequence from f6 command.
@@ -568,6 +579,7 @@ void CMS50Serial::onReadyRead()
                 //read data blocks..
             }
         } else {
+
             if (bytes[i]&0x80) { // 0x80 == sync bit
                 EventDataType d=bytes[i+1] & 0x7f;
                 addPlethy(lasttime,d);
@@ -817,11 +829,11 @@ void Oximetry::on_RunButton_toggled(bool checked)
         SPO2->setRecMaxY(100);
 
         day->getSessions().clear();
+        //QTimer::singleShot(10000,this,SLOT(oximeter_running_check()));
         if (!oximeter->startLive()) {
             mainwin->Notify("Oximetry Error!\n\nSomething is wrong with the device connection.");
             return;
         }
-        QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
         ui->saveButton->setEnabled(false);
         day->AddSession(oximeter->getSession());
 
