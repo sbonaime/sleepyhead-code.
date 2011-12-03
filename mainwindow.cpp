@@ -668,31 +668,21 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 #ifdef Q_WS_X11
     printer.setPrinterName("Print to File (PDF)");
     printer.setOutputFormat(QPrinter::PdfFormat);
+    QString filename=PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf");//QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",,"PDF Files (*.pdf)");
+
+    printer.setOutputFileName(filename);
 #endif
     printer.setPrintRange(QPrinter::AllPages);
     printer.setOrientation(QPrinter::Portrait);
     printer.setFullPage(false); // This has nothing to do with scaling
     printer.setNumCopies(1);
-    QString filename=PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf");//QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",,"PDF Files (*.pdf)");
-
-    printer.setOutputFileName(filename);
     //printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
     QPrintDialog *dialog = new QPrintDialog(&printer);
-    //printer.setOutputFileName("printYou.pdf");
     if ( dialog->exec() != QDialog::Accepted) {
         return;
     }
 
-
-
-    //if (filename.isEmpty())
-    //        return;
-
-    //Notify("Saving "+name+" report as \""+filename+"\".");
-    //QString filename=PREF.Get("{home}/"+name+"_{user}.pdf");
-    //QPrinter printer(QPrinter::ScreenResolution); //QPrinter::HighResolution); //QPrinter::ScreenResolution);
-    //printer.setOutputFileName(filename);
-    //printer.setOrientation(QPrinter::Portrait);
+    Notify("Printing "+name+" Report");
     QPainter painter;
     painter.begin(&printer);
 
