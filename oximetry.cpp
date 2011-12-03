@@ -657,7 +657,6 @@ bool CMS50Serial::startImport()
     //make sure there is a data stream first..
     createSession();
 
-
     return true;
 }
 
