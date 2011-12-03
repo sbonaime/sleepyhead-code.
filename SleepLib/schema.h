@@ -55,6 +55,7 @@ public:
     const QString & name() { return m_name; }
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
+    const QString & units() { return m_unit; }
     QColor & defaultColor() { return m_defaultcolor; }
     void setDefaultColor(QColor color) { m_defaultcolor=color; }
     QHash<int,QString> m_options;

@@ -30,10 +30,10 @@ One id code per item
   <channel id="0x1100" class="data" name="FlowRate" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
   <channel id="0x1101" class="data" name="MaskPressure" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
   <channel id="0x1102" class="data" name="MaskPressureHi" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue" link="0x1101"/>
-  <channel id="0x1103" class="data" name="TidalVolume" details="Tidal Volume" label="Tidal Volume" unit="" color="magenta"/>
+  <channel id="0x1103" class="data" name="TidalVolume" details="Tidal Volume" label="Tidal Volume" unit="ml" color="magenta"/>
   <channel id="0x1104" class="data" name="Snore" details="Snore" label="Snore" unit="" color="grey"/>
   <channel id="0x1105" class="data" name="MinuteVent" details="Minute Ventilation" label="Minute Vent." unit="" color="dark cyan"/>
-  <channel id="0x1106" class="data" name="RespRate" details="Respiratory Rate" label="Resp. Rate" unit="Breaths/Min" color="dark magenta"/>
+  <channel id="0x1106" class="data" name="RespRate" details="Respiratory Rate" label="Resp. Rate" unit="breaths/min" color="dark magenta"/>
   <channel id="0x1107" class="data" name="PTB" details="Patient Triggered Breaths" label="Pat. Trig. Breaths" unit="%" color="dark grey"/>
   <channel id="0x1108" class="data" name="Leak" details="Leak Rate" label="Leaks" unit="L/min" color="dark green"/>
   <channel id="0x1109" class="data" name="I:E" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
@@ -49,7 +49,7 @@ One id code per item
   <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Trgt Min Vent." unit="" color="dark cyan"/>
   <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
-  <channel id="0x1116" class="data" name="AHI" details="AHI/Hour" label="AHI/Hr" unit="" color="dark red"/>
+  <channel id="0x1116" class="data" name="AHI" details="AHI/Hour" label="AHI/Hr" unit="events/hr" color="dark red"/>
   <channel id="0x1117" class="data" name="LeakTotal" details="Total Leak Rate" label="Total Leaks" unit="L/min" color="dark green"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="" color="black"/>
@@ -73,8 +73,8 @@ One id code per item
   </channel>
  </group>
  <group name="OXI">
-  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse" color="red"/>
-  <channel id="0x1801" class="data" name="SPO2" details="% SpO2" label="SpO2" color="blue"/>
+  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse" unit="bpm" color="red"/>
+  <channel id="0x1801" class="data" name="SPO2" details="Oxygen Saturation" label="SpO2" unit="%" color="blue"/>
   <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
   <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="red"/>
   <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="blue"/>

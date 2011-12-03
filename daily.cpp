@@ -335,6 +335,8 @@ void Daily::on_Link_clicked(const QUrl &url)
             ui->treeWidget->setCurrentItem(wi);
             ui->tabWidget->setCurrentIndex(1);
         }
+    } else if (code=="graph") {
+        qDebug() << "Select graph " << data;
     } else {
         qDebug() << "Clicked on" << code << data;
     }
@@ -731,7 +733,9 @@ void Daily::Load(QDate date)
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
                 //if (code==CPAP_LeakTotal) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
-                html+="<tr><td align=left>"+schema::channel[code].label();
+                QString tooltip=schema::channel[code].description();
+                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
                 html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
                 html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
                 html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
@@ -739,7 +743,9 @@ void Daily::Load(QDate date)
                 html+="</td><tr>";
             }
             if (oxi && oxi->channelHasData(code)) {
-                html+="<tr><td align=left>"+schema::channel[code].label();
+                QString tooltip=schema::channel[code].description();
+                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
                 html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
@@ -954,7 +960,7 @@ void Daily::Unload(QDate date)
             double bmi=(height*height)/kg;
             if (kg>0) {
                 journal->settings["Weight"]=kg;
-                journal->settings["BMI"]=kg;
+                journal->settings["BMI"]=bmi;
                 journal->SetChanged(true);
             } else {
                 if (journal->settings.contains("Weight")) {
