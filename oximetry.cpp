@@ -165,12 +165,6 @@ void SerialOximeter::setStopBits(StopBitsType stopbits)
     m_stopbits=stopbits;
 }
 
-void SerialOximeter::ReadyRead()
-{
-    int i=5;
-    qDebug() << "Foo"  << i;
-}
-
 void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
     static EventDataType lastpr=0;
@@ -278,17 +272,6 @@ void SerialOximeter::compactToEvent(EventList *el)
 
     el->getData()=nel.getData();
     el->getTime()=nel.getTime();
-
-
-    /*for (int i=0;i<nel.count();i++) {
-        el->getData().push_back(nel.data(i));
-        el->getTime().push_back(nel.time(i));
-    } */
-
-    /*double rate=double(el->duration())/double(el->count());
-    el->setType(EVL_Waveform);
-    el->setRate(rate);
-    el->getTime().clear();*/
 }
 
 void SerialOximeter::compactAll()
@@ -343,12 +326,11 @@ bool SerialOximeter::startLive()
 {
     m_mode=SO_LIVE;
     import_mode=false;
-    if (Open(QextSerialPort::EventDriven)) {
-        createSession();
-        return true;
-    } else {
-        return false;
-    }
+
+    if (!Open(QextSerialPort::EventDriven)) return false;
+    createSession();
+
+    return true;
 }
 
 void SerialOximeter::stopLive()
@@ -623,22 +605,11 @@ void CMS50Serial::ReadyRead()
             }
         }
     }
-    //static unsigned char b1[6]={0xf5,0xf5,0xf5,0xf5,0xf5,0xf5};
     if (import_mode && waitf6 && (cntf6==0)) {
         failcnt++;
 
-        /*if (failcnt>20) {
-            qDebug() << "Retrying request";
-            if (m_port->write((char *)b1,6)==-1) {
-                qDebug() << "Couldn't write data request bytes to CMS50";
-            }
-        } */
         if (failcnt>4) {
-            static unsigned char b1[3]={0xf6,0xf6,0xf6};
-            if (m_port->write((char *)b1,2)==-1) {
-                qDebug() << "Couldn't write closing bytes to CMS50";
-            }
-            m_port->flush();
+            // Device missed the 0xf5 code sequence somehow..
             Close();
             emit(importAborted());
             return;
@@ -646,17 +617,31 @@ void CMS50Serial::ReadyRead()
     }
     if (!import_mode)
         emit(dataChanged());
-    else if (done_import){
+    else if (done_import) {
         qDebug() << "End";
-        static unsigned char b1[3]={0xf6,0xf6,0xf6};
-        if (m_port->write((char *)b1,2)==-1) {
-            qDebug() << "Couldn't write closing bytes to CMS50";
-        }
-        m_port->flush();
+        resetDevice();
         Close();
         emit(importProcess());
 
     }
+}
+void CMS50Serial::resetDevice()
+{
+    static unsigned char b1[3]={0xf6,0xf6,0xf6};
+    if (m_port->write((char *)b1,3)==-1) {
+        qDebug() << "Couldn't write closing bytes to CMS50";
+    }
+    m_port->flush();
+}
+
+void CMS50Serial::requestData()
+{
+    static unsigned char b1[2]={0xf5,0xf5};
+
+    if (m_port->write((char *)b1,2)==-1) {
+        qDebug() << "Couldn't write data request bytes to CMS50";
+    }
+    m_port->flush();
 }
 
 bool CMS50Serial::startImport()
@@ -668,17 +653,13 @@ bool CMS50Serial::startImport()
     cntf6=0;
     failcnt=0;
     //QMessageBox::information(0,"Get Ready","Please make sure your oximeter is switched on and in the correct mode for data transfer.",QMessageBox::Ok);
-    if (!Open(QextSerialPort::EventDriven))
-        return false;
-    connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
+    if (!Open(QextSerialPort::EventDriven)) return false;
 
     createSession();
 
-    static unsigned char b1[2]={0xf5,0xf5};
+    connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 
-    if (m_port->write((char *)b1,2)==-1) {
-        qDebug() << "Couldn't write data request bytes to CMS50";
-    }
+    requestData();
 
     return true;
 }

@@ -37,6 +37,9 @@ public:
     virtual bool startLive();
     virtual void stopLive();
 
+    virtual void resetDevice()=0;
+    virtual void requestData()=0;
+
     SerialOxMode mode() { return m_mode; }
     void destroySession() { delete session; session=NULL; }
 
@@ -84,7 +87,7 @@ signals:
     void updateSpO2(float p);
 
 protected slots:
-    virtual void ReadyRead();
+    virtual void ReadyRead()=0;
     virtual void import_process()=0;
     virtual void Timeout();
 
@@ -128,6 +131,8 @@ public:
     explicit CMS50Serial(QObject * parent,QString portname);
     virtual ~CMS50Serial();
     virtual bool startImport();
+    virtual void resetDevice();
+    virtual void requestData();
 
 protected:
     virtual void import_process();
