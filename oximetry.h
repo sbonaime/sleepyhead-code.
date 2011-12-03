@@ -86,7 +86,7 @@ signals:
 protected slots:
     virtual void ReadyRead();
     virtual void import_process()=0;
-
+    virtual void Timeout();
 
 protected:
     //virtual void addEvents(EventDataType pr, EventDataType o2, EventDataType pleth=-1000000);
@@ -118,6 +118,8 @@ protected:
     bool import_mode;
 
     int m_callbacks;
+    bool done_import;
+    QTimer *timer;
 };
 
 class CMS50Serial:public SerialOximeter
@@ -163,24 +165,22 @@ public:
 
 private slots:
     void on_RefreshPortsButton_clicked();
-    void on_RunButton_toggled(bool checked);
+    void on_RunButton_toggled(bool checked); // Live mode button
 
     void on_SerialPortsCombo_activated(const QString &arg1);
-    //void ReadyRead();
-    //void DsrChanged(bool status);
-
     void on_ImportButton_clicked();
-
-    void DataChanged();
-    void PulseChanged(float p);
-    void SpO2Changed(float o2);
-
     void on_saveButton_clicked();
-    void updateProgress(float f);
+
+    void data_changed();
+    void pulse_changed(float p);
+    void spo2_changed(float o2);
+
+    void update_progress(float f);
     void import_aborted();
     void import_complete(Session *session);
 
     void oximeter_running_check();
+    void live_stopped(Session *session);
 
 private:
     void import_finished();

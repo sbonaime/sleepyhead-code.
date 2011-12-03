@@ -43,6 +43,8 @@ SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portnam
         }
         qDebug() << "Create Oximeter device";
     }
+    timer=new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(Timeout()));
 }
 
 SerialOximeter::~SerialOximeter()
@@ -50,7 +52,14 @@ SerialOximeter::~SerialOximeter()
     if (m_opened) {
         if (m_port) m_port->close();
     }
-    // free up??
+    disconnect(timer,SIGNAL(timeout()),this,SLOT(Timeout()));
+    delete timer;
+}
+
+void SerialOximeter::Timeout()
+{
+    qDebug() << "Timeout!";
+    if (!import_mode) emit(liveStopped(session));
 }
 
 bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
@@ -344,13 +353,13 @@ bool SerialOximeter::startLive()
 
 void SerialOximeter::stopLive()
 {
+    if (timer->isActive()) timer->stop();
     Close();
     if (session) {
         compactAll();
         calcSPO2Drop(session);
         calcPulseChange(session);
     }
-    emit(liveStopped(session));
 }
 
 CMS50Serial::CMS50Serial(QObject * parent, QString portname="") :
@@ -365,10 +374,16 @@ CMS50Serial::~CMS50Serial()
 
 void CMS50Serial::import_process()
 {
+    disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
+    if (!session) {
+        qDebug() << "User pushing import too many times in a row?";
+        return;
+    }
     qDebug() << "CMS50 import complete. Processing" << data.size() << "bytes";
     unsigned char a,pl,o2,lastpl=0,lasto2=0;
     int i=0;
     int size=data.size();
+
 
     EventList * pulse=(session->eventlist[OXI_Pulse][0]);
     EventList * spo2=(session->eventlist[OXI_SPO2][0]);
@@ -435,7 +450,7 @@ void CMS50Serial::import_process()
         }
 
         lasttime+=1000;
-        emit(updateProgress(float(i)/float(size)));
+        //emit(updateProgress(float(i)/float(size)));
 
         lastpl=pl;
         lasto2=o2;
@@ -462,7 +477,6 @@ void CMS50Serial::import_process()
     session->setCount(OXI_SPO2,o2cnt);
     session->UpdateSummaries();
     emit(importComplete(session));
-    disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 }
 
 void CMS50Serial::ReadyRead()
@@ -485,6 +499,7 @@ void CMS50Serial::ReadyRead()
 #endif
     // else (don't bother - we can work some magic at the end of recording.)
 
+    static int lastbytesize=0;
     int size=bytes.size();
     // Process all incoming serial data packets
     unsigned char c;
@@ -497,8 +512,24 @@ void CMS50Serial::ReadyRead()
             data+=QString().sprintf("%02X,",c);
         }
         qDebug() << data;
+        if (bytes.size()==1) { // transmits a single 0 when switching off.
+            if (lastbytesize!=1) {
+                if (timer->isActive()) {
+                    timer->stop();
+                }
+                timer->setSingleShot(true);
+                timer->setInterval(10000);
+                timer->start();
+            }
+            return;
+            //qDebug() << "Oximeter switched of.. wait for timeout?";
+        } else {
+            if (timer->isActive()) {
+                timer->stop();
+            }
+        }
     }
-
+    lastbytesize=size;
 
     while (i<bytes.size()) {
         if (import_mode) {
@@ -543,20 +574,24 @@ void CMS50Serial::ReadyRead()
                             datasize=(((unsigned char)bytes.at(i) & 0x3f) << 14) | (((unsigned char)bytes.at(i+1)&0x7f) << 7) | ((unsigned char)bytes.at(i+2) & 0x7f);
                             received_bytes=0;
                             qDebug() << "Data Size=" << datasize << "??";
+                            done_import=false;
+
                             i+=3;
                         }
                         int z;
                         for (z=i;z<size;z++) {
                             c=bytes.at(z);
-                            if (z&0x80) break;
+                            if (c & 0x80) break;
                         }
                         data.clear();
-                        for (int z=i;z<size;z++) {
+                        for (z=i;z<size;z++) {
                             data.push_back(bytes.at(z));
                             received_bytes++;
                         }
+                        if (z>=datasize)
+                            done_import=true;
                         waitf6=false;
-                        return;
+                        break;
                     }
                 }
             } else {
@@ -567,13 +602,7 @@ void CMS50Serial::ReadyRead()
                 }
                 emit(updateProgress(float(received_bytes)/float(datasize)));
                 if ((received_bytes>=datasize) || (((received_bytes/datasize)>0.7) && (size<250))) {
-                    qDebug() << "End";
-                    static unsigned char b1[3]={0xf6,0xf6,0xf6};
-                    if (m_port->write((char *)b1,2)==-1) {
-                        qDebug() << "Couldn't write closing bytes to CMS50";
-                    }
-                    Close();
-                    emit(importProcess());
+                    done_import=true;
                 }
                 break;
                 //read data blocks..
@@ -609,7 +638,18 @@ void CMS50Serial::ReadyRead()
             return;
         }
     }
-    emit(dataChanged());
+    if (!import_mode)
+        emit(dataChanged());
+    else if (done_import){
+        qDebug() << "End";
+        static unsigned char b1[3]={0xf6,0xf6,0xf6};
+        if (m_port->write((char *)b1,2)==-1) {
+            qDebug() << "Couldn't write closing bytes to CMS50";
+        }
+        Close();
+        emit(importProcess());
+
+    }
 }
 
 bool CMS50Serial::startImport()
@@ -617,10 +657,12 @@ bool CMS50Serial::startImport()
     m_mode=SO_IMPORT;
     import_mode=true;
     waitf6=true;
+    done_import=false;
     cntf6=0;
     failcnt=0;
-    //QMessageBox::information(0,"!!!Important Notice!!!","This Oximetry import method does NOT allow syncing of Oximetry and CPAP data.\nIf you really wish to record your oximetry data and have sync, you have to use the Live View mode (click Start) with the Oximeter connected to a computer via USB cable all night..\nEven then it will be out a bit because of your CPAP machines realtime clock drifts.",QMessageBox::Ok);
-    if (!Open(QextSerialPort::EventDriven)) return false;
+    //QMessageBox::information(0,"Get Ready","Please make sure your oximeter is switched on and in the correct mode for data transfer.",QMessageBox::Ok);
+    if (!Open(QextSerialPort::EventDriven))
+        return false;
     connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 
     createSession();
@@ -789,15 +831,23 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
     oximeter->setPortName(arg1);
 }
 
+void Oximetry::live_stopped(Session * session)
+{
+    mainwin->Notify("Oximetry live recording has been terminated due to timeout");
+    //qDebug () << "Live Stopped";
+    on_RunButton_toggled(false);
+}
+
 void Oximetry::on_RunButton_toggled(bool checked)
 {
     if (!checked) {
             oximeter->stopLive();
             ui->RunButton->setText("&Start");
             ui->SerialPortsCombo->setEnabled(true);
-            disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(DataChanged()));
-            disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(PulseChanged(float)));
-            disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(SpO2Changed(float)));
+            disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(data_changed()));
+            disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(pulse_changed(float)));
+            disconnect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(spo2_changed(float)));
+            disconnect(oximeter,SIGNAL(liveStopped(Session*)),this,SLOT(live_stopped(Session *)));
             ui->saveButton->setEnabled(true);
             ui->ImportButton->setEnabled(true);
             lo2->SetDay(day);
@@ -860,9 +910,11 @@ void Oximetry::on_RunButton_toggled(bool checked)
         SPO2->setForceMinY(50);
         SPO2->setForceMaxY(100); */
 
-        connect(oximeter,SIGNAL(dataChanged()),this,SLOT(DataChanged()));
-        connect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(PulseChanged(float)));
-        connect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(SpO2Changed(float)));
+        connect(oximeter,SIGNAL(dataChanged()),this,SLOT(data_changed()));
+        connect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(pulse_changed(float)));
+        connect(oximeter,SIGNAL(updateSpO2(float)),this,SLOT(spo2_changed(float)));
+        connect(oximeter,SIGNAL(liveStopped(Session*)),this,SLOT(live_stopped(Session *)));
+
         CONTROL->setVisible(false);
         // connect.
         ui->RunButton->setText("&Stop");
@@ -871,7 +923,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
     }
 
 }
-void Oximetry::DataChanged()
+void Oximetry::data_changed()
 {
 
     qint64 last=oximeter->lastTime();
@@ -943,9 +995,12 @@ void DumpBytes(int blocks, unsigned char * b,int len)
 void Oximetry::oximeter_running_check()
 {
     if (!oximeter->isOpen()) {
-        qDebug() << "Not sure how oximeter_running_check gets called with a closed oximeter";
-        mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2");
-        return;
+        if (oximeter->callbacks()==0) {
+            qDebug() << "Not sure how oximeter_running_check gets called with a closed oximeter.. Restarting import process";
+            //mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2");
+            on_ImportButton_clicked();
+            return;
+        }
     }
     if (oximeter->callbacks()==0) {
         mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on.");
@@ -970,8 +1025,7 @@ void Oximetry::on_ImportButton_clicked()
 {
     connect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
     connect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
-    connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(updateProgress(float)));
-    //connect(oximeter,SIGNAL(dataChanged()),this,SLOT(onDataChanged()));
+    connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
     if (!oximeter->startImport()) {
         mainwin->Notify("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on.");
@@ -998,8 +1052,7 @@ void Oximetry::import_finished()
 {
     disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
     disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
-    disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(updateProgress(float)));
-    //disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(DataChanged()));
+    disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
     ui->SerialPortsCombo->setEnabled(true);
     qstatus->setText("Ready");
@@ -1085,7 +1138,7 @@ void Oximetry::import_complete(Session * session)
 
 }
 
-void Oximetry::PulseChanged(float p)
+void Oximetry::pulse_changed(float p)
 {
     ui->pulseLCD->display(p);
     return;
@@ -1100,7 +1153,7 @@ void Oximetry::PulseChanged(float p)
 }
 
 // Only really need to do this once..
-void Oximetry::SpO2Changed(float o2)
+void Oximetry::spo2_changed(float o2)
 {
     ui->spo2LCD->display(o2);
     return;
@@ -1129,7 +1182,7 @@ void Oximetry::on_saveButton_clicked()
         GraphView->updateGL();
     }
 }
-void Oximetry::updateProgress(float f)
+void Oximetry::update_progress(float f)
 {
     if (qprogress) {
         qprogress->setValue(f*100.0);
