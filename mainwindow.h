@@ -114,6 +114,8 @@ private slots:
 
     void on_action_Rebuild_Oximetry_Index_triggered();
 
+    void on_actionChange_User_triggered();
+
 private:
 
     Ui::MainWindow *ui;

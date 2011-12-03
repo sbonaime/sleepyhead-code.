@@ -20,6 +20,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QPainter>
+#include <QProcess>
 #include <cmath>
 
 #include "mainwindow.h"
@@ -735,7 +736,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             int m=(tt/60)%60;
             int s=tt % 60;
 
-            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours %2i minutes",h,m)+"\n";
+            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours %2i minutes, %2i seconds",h,m,s)+"\n";
             cpapinfo+="Bedtime: "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+"\n";
             cpapinfo+="Wake-up: "+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
@@ -830,7 +831,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 {
-    Day *day;
     QVector<QString> valid;
     valid.push_back(OXI_Pulse);
     valid.push_back(OXI_SPO2);
@@ -862,10 +862,9 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
                     e.value().clear();
                     invalid.push_back(e.key());
                 } else {
-                    int i=0;
                     QVector<EventList *> newlist;
                     for (int i=0;i<e.value().size();i++)  {
-                        if (e.value()[i]->count() > discard_threshold) {
+                        if (e.value()[i]->count() > (unsigned)discard_threshold) {
                             newlist.push_back(e.value()[i]);
                         } else {
                             delete e.value()[i];
@@ -907,4 +906,39 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     }
     getDaily()->ReloadGraphs();
     getOverview()->ReloadGraphs();
+}
+
+void MainWindow::on_actionChange_User_triggered()
+{
+    PROFILE.Save();
+    PREF.Save();
+    QString apppath;
+#ifdef Q_OS_MAC
+        // In Mac OS the full path of aplication binary is:
+        //    <base-path>/myApp.app/Contents/MacOS/myApp
+
+        // prune the extra bits to just get the app bundle path
+        apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
+
+        QStringList args;
+        args << "-n" << apppath; // -n option is important, as it opens a new process
+
+        if (QProcess::startDetached("/usr/bin/open",args)) {
+            QApplication::instance()->exit();
+        } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
+
+#else
+        apppath=QApplication::instance()->applicationFilePath();
+
+        // If this doesn't work on windoze, try uncommenting this method
+        // Technically should be the same thing..
+
+        //if (QDesktopServices::openUrl(apppath)) {
+        //    QApplication::instance()->exit();
+        //} else
+        if (QProcess::startDetached(apppath)) {
+            QApplication::instance()->exit();
+        } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
+#endif
+
 }

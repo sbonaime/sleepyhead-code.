@@ -580,6 +580,8 @@
     <addaction name="actionPrint_Report"/>
     <addaction name="actionExp_ort"/>
     <addaction name="separator"/>
+    <addaction name="actionChange_User"/>
+    <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -770,6 +772,11 @@
   <action name="action_Rebuild_Oximetry_Index">
    <property name="text">
     <string>&amp;Rebuild Oximetry Indices</string>
+   </property>
+  </action>
+  <action name="actionChange_User">
+   <property name="text">
+    <string>Change &amp;User</string>
    </property>
   </action>
  </widget>
