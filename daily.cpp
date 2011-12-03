@@ -412,7 +412,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             if (mcroot.find(code)==mcroot.end()) {
                 int cnt=day->count(code);
                 total_events+=cnt;
-                QString st=schema::channel[m.key()].description();
+                QString st=schema::channel[code].description();
                 if (st.isEmpty())  {
                     st="Fixme "+code;
                 }

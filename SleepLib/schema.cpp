@@ -174,9 +174,6 @@ bool ChannelList::Load(QString filename)
             name=e.attribute("name","");
             details=e.attribute("details","");
             label=e.attribute("label","");
-            if (name=="Pulse") {
-                int i=5;
-            }
 
             if (name.isEmpty() || details.isEmpty() || label.isEmpty()) {
                 qWarning() << "Missing name,details or label attribute in" << filename << "line" << line;

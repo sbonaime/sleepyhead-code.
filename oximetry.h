@@ -163,11 +163,11 @@ public:
 
 private slots:
     void on_RefreshPortsButton_clicked();
-    void RunButton_toggled(bool checked);
+    void on_RunButton_toggled(bool checked);
 
     void on_SerialPortsCombo_activated(const QString &arg1);
-    //void onReadyRead();
-    //void onDsrChanged(bool status);
+    //void ReadyRead();
+    //void DsrChanged(bool status);
 
     void on_ImportButton_clicked();
 

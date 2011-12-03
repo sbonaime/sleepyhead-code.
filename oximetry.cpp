@@ -78,8 +78,8 @@ bool SerialOximeter::Open(QextSerialPort::QueryMode mode)
 
     if (m_port->open(QIODevice::ReadWrite) == true) {
        // if (m_mode==QextSerialPort::EventDriven)
-            connect(m_port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-        //connect(port, SIGNAL(dsrChanged(bool)), this, SLOT(onDsrChanged(bool)));
+            connect(m_port, SIGNAL(readyRead()), this, SLOT(ReadyRead()));
+        //connect(port, SIGNAL(dsrChanged(bool)), this, SLOT(DsrChanged(bool)));
         if (!(m_port->lineStatus() & LS_DSR))
             qDebug() << "check device is turned on";
         qDebug() << "listening for data on" << m_port->portName();
@@ -97,7 +97,7 @@ void SerialOximeter::Close()
 
     if (m_port) m_port->close();
     if (m_portmode==QextSerialPort::EventDriven)
-        disconnect(m_port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+        disconnect(m_port, SIGNAL(readyRead()), this, SLOT(ReadyRead()));
     m_mode=SO_OFF;
     m_opened=false;
 }
@@ -789,7 +789,7 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
     oximeter->setPortName(arg1);
 }
 
-void Oximetry::RunButton_toggled(bool checked)
+void Oximetry::on_RunButton_toggled(bool checked)
 {
     if (!checked) {
             oximeter->stopLive();
