@@ -97,8 +97,8 @@ bool Session::Store(QString path)
     if (eventlist.size()>0) {
         s_eventfile=base+".001";
         StoreEvents(s_eventfile);
-    } else {
-        qDebug() << "Trying to save empty events file";
+    } else { // who cares..
+        //qDebug() << "Trying to save empty events file";
     }
     //qDebug() << " Events done";
     s_changed=false;

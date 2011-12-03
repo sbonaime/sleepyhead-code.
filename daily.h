@@ -86,6 +86,10 @@ private slots:
 
     void on_bookmarkTable_itemChanged(QTableWidgetItem *item);
 
+    void on_weightSpinBox_valueChanged(double arg1);
+
+    void on_ouncesSpinBox_valueChanged(int arg1);
+
 protected:
 
 private:
@@ -126,3 +130,4 @@ private:
 };
 
 #endif // DAILY_H
+

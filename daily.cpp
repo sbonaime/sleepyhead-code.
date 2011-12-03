@@ -38,6 +38,7 @@
 
 const int min_height=150;
 const float ounce_convert=28.3495231;
+const float pound_convert=ounce_convert*16;
 
 Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
@@ -834,6 +835,10 @@ void Daily::Load(QDate date)
     ui->weightSpinBox->setValue(0);
     ui->ouncesSpinBox->setValue(0);
     ui->ZombieMeter->setValue(50);
+    ui->BMI->display(0);
+    ui->BMI->setVisible(false);
+    ui->BMIlabel->setVisible(false);
+
     BookmarksChanged=false;
     Session *journal=GetJournalSession(date);
     if (journal) {
@@ -861,6 +866,13 @@ void Daily::Load(QDate date)
                 ui->weightSpinBox->setDecimals(0);
                 ui->ouncesSpinBox->setVisible(true);
                 ui->ouncesSpinBox->setSuffix("oz");
+            }
+            double height=PROFILE["Height"].toDouble(&ok)/100.0;
+            if (height>0 && kg>0) {
+                //double bmi=kg/(height*height);
+                ui->BMI->setVisible(true);
+                ui->BMIlabel->setVisible(true);
+                //ui->BMI->display(bmi);
             }
         }
 
@@ -938,8 +950,22 @@ void Daily::Unload(QDate date)
                 kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
                 kg/=1000.0;
             }
-            journal->settings["Weight"]=kg;
-            journal->SetChanged(true);
+            double height=PROFILE["Height"].toDouble(&ok);
+            double bmi=(height*height)/kg;
+            if (kg>0) {
+                journal->settings["Weight"]=kg;
+                journal->settings["BMI"]=kg;
+                journal->SetChanged(true);
+            } else {
+                if (journal->settings.contains("Weight")) {
+                    journal->settings.erase(journal->settings.find("Weight"));
+                    journal->SetChanged(true);
+                }
+                if (journal->settings.contains("BMI")) {
+                    journal->settings.erase(journal->settings.find("BMI"));
+                    journal->SetChanged(true);
+                }
+            }
         }
         if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=50)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
             journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
@@ -979,8 +1005,13 @@ void Daily::Unload(QDate date)
                     kg=(ui->weightSpinBox->value()*(ounce_convert*16))+(ui->ouncesSpinBox->value()*ounce_convert);
                     kg/=1000.0;
                 }
-                journal->settings["Weight"]=kg;
-                journal->SetChanged(true);
+                double height=PROFILE["Height"].toDouble(&ok);
+                double bmi=(height*height)/kg;
+                if (kg>0) {
+                    journal->settings["Weight"]=kg;
+                    journal->settings["BMI"]=bmi;
+                    journal->SetChanged(true);
+                }
             }
             if (BookmarksChanged) {
                 QVariantList start;
@@ -1364,4 +1395,33 @@ void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
 {
     Q_UNUSED(item);
     BookmarksChanged=true;
+}
+void Daily::on_weightSpinBox_valueChanged(double arg1)
+{
+    bool ok;
+    double height=PROFILE["Height"].toDouble(&ok)/100.0;
+    double kg;
+    if (PROFILE["Units"].toString()=="metric")
+        kg=arg1;
+    else {
+        kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
+    }
+    if ((height>0) && (kg>0)) {
+        double bmi=kg/(height * height);
+        ui->BMI->display(bmi);
+        //ui->BMI->setDigitCount(5);
+        //ui->BMI->setSmallDecimalPoint(true);
+    }
+}
+void Daily::on_ouncesSpinBox_valueChanged(int arg1)
+{
+    bool ok;
+    double height=PROFILE["Height"].toDouble(&ok)/100.0;
+    double kg=(ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert);
+    if ((height>0) && (kg>0)) {
+        double bmi=kg/(height * height);
+        ui->BMI->display(bmi);
+        //ui->BMI->setDigitCount(5);
+        //ui->BMI->setSmallDecimalPoint(true);
+    }
 }
