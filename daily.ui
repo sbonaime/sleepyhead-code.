@@ -492,6 +492,9 @@
          <item>
           <widget class="QWidget" name="widget" native="true">
            <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
             <property name="horizontalSpacing">
              <number>4</number>
             </property>
@@ -510,7 +513,7 @@
             <property name="bottomMargin">
              <number>2</number>
             </property>
-            <item row="2" column="0" colspan="2">
+            <item row="0" column="0" colspan="2">
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="0">
                <widget class="QLabel" name="label">
@@ -531,7 +534,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1" colspan="7">
+              <item row="0" column="1" colspan="6">
                <widget class="QLabel" name="label_9">
                 <property name="font">
                  <font>
@@ -567,7 +570,7 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0" colspan="9">
+              <item row="1" column="0" colspan="8">
                <widget class="QSlider" name="ZombieMeter">
                 <property name="value">
                  <number>50</number>
@@ -590,7 +593,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="8">
+              <item row="0" column="7">
                <widget class="QLabel" name="label_10">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -612,23 +615,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="4">
-               <widget class="QLabel" name="BMIlabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>B.M.I.</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="5" colspan="2">
+              <item row="2" column="7">
                <widget class="QLCDNumber" name="BMI">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
@@ -650,18 +637,21 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="7" colspan="2">
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+              <item row="2" column="4" colspan="3">
+               <widget class="QLabel" name="BMIlabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
+                <property name="text">
+                 <string>B.M.I.</string>
                 </property>
-               </spacer>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -600,7 +600,7 @@ Mask Leak Profiles
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>This doesn't work yet..</string>
+          <string>This doesn't save yet...</string>
          </property>
         </widget>
        </item>

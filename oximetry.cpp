@@ -493,11 +493,13 @@ void CMS50Serial::ReadyRead()
 
     if (!import_mode) {
         QString data="Read: ";
+#ifdef SERIAL_DEBUG
         for (int i=0;i<bytes.size();i++) {
             c=bytes[i];
             data+=QString().sprintf("%02X,",c);
         }
         qDebug() << data;
+#endif
         if (bytes.size()==1) { // transmits a single 0 when switching off.
             if (lastbytesize!=1) {
                 if (timer->isActive()) {
@@ -753,9 +755,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     spo2=new gLineChart(OXI_SPO2,Qt::blue,true);
     //spo2->SetDay(day);
 
-
     PLETHY->AddLayer(plethy);
-
 
     PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),"PD",FT_Span));
     SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),"O2",FT_Span));
