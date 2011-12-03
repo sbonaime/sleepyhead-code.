@@ -530,7 +530,12 @@ void MainWindow::replyFinished(QNetworkReply * reply)
             if (prefdialog) prefdialog->RefreshLastChecked();
             if (a>PREF["VersionString"].toString()) {
                 if (QMessageBox::question(this,"New Version","A newer version of SleepyHead is available, v"+a+".\nWould you like to update?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-                    QMessageBox::information(this,"Laziness Warning","I'd love to do it for you automatically, but it's not implemented yet.. :)",QMessageBox::Ok);
+                    QString fileurl="http://sourceforge.net/projects/sleepyhead/files/";
+                    QString msg="<html><p>Sorry, I haven't implemented the auto-update yet</p>";
+                    msg+="<a href='"+fileurl+"'>Click Here</a> for a link to the latest version";
+                    msg+="</html>";
+
+                    QMessageBox::information(this,"Laziness Warning",msg,QMessageBox::Ok);
                 }
             } else {
                 mainwin->Notify("Checked for Updates: SleepyHead is already up to date!");
