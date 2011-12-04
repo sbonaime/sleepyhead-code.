@@ -104,12 +104,13 @@ void SummaryChart::SetDay(Day * nullday)
         } else {
             for (int j=0;j<m_codes.size();j++) { // for each code slice
                 code=m_codes[j];
+                //m_values[dn][0]=0;
                 if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
                 type=m_type[j];
                 for (int i=0;i<d.value().size();i++) { // for each machine object for this day
                     day=d.value()[i];
                     if (day->machine_type()!=m_machinetype) continue;
-                    m_values[dn][j+1]=0;
+                    //m_values[dn][j+1]=0;
 
                     bool hascode=day->channelHasData(code) || day->settingExists(code);
                     if (type==ST_HOURS || type==ST_SESSIONS || hascode) { // too many lookups happening here.. stop the crap..
@@ -137,12 +138,12 @@ void SummaryChart::SetDay(Day * nullday)
                             tmp-=suboffset;
                             if (tmp<0) tmp=0;
                         }
-                        fnd=true;
                         total+=tmp;
                         m_values[dn][j+1]=tmp;
                         if (tmp<m_miny) m_miny=tmp;
                         if (tmp>m_maxy) m_maxy=tmp;
                         m_goodcodes[code]=true;
+                        fnd=true;
                         break;
                     }
                 }
@@ -159,17 +160,36 @@ void SummaryChart::SetDay(Day * nullday)
            } else m_hours[dn]=0;
         }
     }
+    if (m_graphtype!=GT_SESSIONS)
     for (int j=0;j<m_codes.size();j++) { // for each code slice
         ChannelID code=m_codes[j];
         if (!m_goodcodes.contains(code)) {
             m_goodcodes[code]=false;
-        }
-        /*if (m_goodcodes[code]) {
-            for (QHash<int,QHash<short,EventDataType> >::iterator i=m_values.begin();i!=m_values.end();i++) {
-                if (!m_values[i.key()].contains(j+1))
-                    m_values[i.key()][j+1]=30;
+        } else {
+
+            if (type==ST_HOURS || type==ST_SESSIONS) continue; // too many lookups happening here.. stop the crap..
+
+            for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
+                tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+                dn=tt/86400;
+                for (int i=0;i<d.value().size();i++) { // for each machine object for this day
+                    day=d.value()[i];
+                    if (day->machine_type()!=m_machinetype) continue;
+                    if (!m_values[dn].contains(j+1)) {
+                        m_days[dn]=day;
+                        m_values[dn][j+1]=0;
+                        if (!m_values[dn].contains(0)) {
+                            m_values[dn][0]=0;
+                        }
+                        if (0<m_miny) m_miny=0;
+                        if (0>m_maxy) m_maxy=0;
+                        m_hours[dn]=day->hours();
+                    }
+                    break;
+                }
             }
-        } */
+            m_empty=false;
+        }
     }
     if (m_graphtype==GT_BAR) {
         m_miny=0;
