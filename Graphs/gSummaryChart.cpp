@@ -192,7 +192,14 @@ void SummaryChart::SetDay(Day * nullday)
                     break;
                 }
             }
+            //m_empty=false;
+        }
+    }
+    m_empty=true;
+    for (int i=0;i<m_goodcodes.size();i++) {
+        if (m_goodcodes[m_codes[i]]) {
             m_empty=false;
+            break;
         }
     }
     if (m_graphtype==GT_BAR) {

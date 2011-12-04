@@ -154,6 +154,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
 
     int fir=0,fir2=0;
     EventDataType T,L;
+    bool done=false;
     do {
         br=0;
         bool first=true;
@@ -170,14 +171,20 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                 first=false;
                 fir=i;
             }
-            //q=1;
+            //q=1; // 22:28pm
             if (t<t1) {
-                // move to start of previous breath
-                t1=breaths_start[++i];
-                t2=t1+window;
-                fir=i;
-                cont=true;
-                break;
+                // move to start of next breath
+                i++;
+                if (i>=breaths.size()) {
+                    done=true;
+                    break;
+                } else {
+                    t1=breaths_start[i];
+                    t2=t1+window;
+                    fir=i;
+                    cont=true;
+                    break;
+                }
                 //q=(t+l)-t1;
                 //br+=(1.0/double(l))*double(q);
 
