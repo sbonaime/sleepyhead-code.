@@ -80,6 +80,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
             if (m_flt==FT_Span) {
                 //x2=w.x2p(Y);
                 x2=double(width)/double(xx)*double(Y-w.min_x)+left;
+                if (int(x1)==int(x2)) x2+=1;
                 if (x2<left) x2=left;
                 if (x1>width+left) x1=width+left;
                 //double w1=x2-x1;
