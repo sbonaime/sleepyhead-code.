@@ -373,7 +373,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                     quads->add(x1,py,x1,py-h,col);
                     quads->add(x2,py-h,x2,py,col2);
-                    if (barw>2) {
+                    if (h>0 && barw>2) {
                         outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,blk);
                         outlines->add(x1,py,x2,py,x2,py,x2,py-h,blk);
                     } // if (bar
