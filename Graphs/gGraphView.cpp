@@ -2046,6 +2046,8 @@ void gGraphView::paintGL()
 
     if (width()<=0) return;
     if (height()<=0) return;
+    QTime time;
+    time.start();
 
     glClearColor(255,255,255,255);
     //glClearDepth(1);
@@ -2115,8 +2117,6 @@ void gGraphView::paintGL()
     }
 
     //int thr=m_idealthreads;
-    QTime time;
-    time.start();
 #ifdef ENABLED_THREADED_DRAWING
         for (int i=0;i<m_idealthreads;i++) {
             masterlock->acquire(1);
@@ -2160,8 +2160,14 @@ void gGraphView::paintGL()
     m_tooltip->paint();
     if (m_showsplitter && PROFILE["ShowDebug"].toBool()) {
         QString ss;
-        ss="PreDraw took "+QString::number(elapsed)+"ms";
-        AddTextQue(ss,width()-140,10,0,col,defaultfont);
+        int ela=time.elapsed();
+        ss="Debug Mode "+QString::number(ela)+"ms ("+QString::number(1000.0/float(ela),'f',1)+"fps)";
+        int w,h;
+        GetTextExtent(ss,w,h);
+        QColor col=Qt::white;
+        quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col);
+        quads->draw();
+        AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
         DrawTextQue();
     }
     //glDisable(GL_TEXTURE_2D);
@@ -2267,7 +2273,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
             if (m_button_down || ((y >= py) && (y < py + h))) {
-                if (m_button_down || (x >= titleWidth)) {
+                if (m_button_down || (x >= titleWidth+(20))) {
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
                     m_lastxpos=x;
@@ -2277,6 +2283,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
                     m_graphs[i]->mouseMoveEvent(&e);
                 } else {
+                    //qDebug() << "Hovering over" << m_graphs[i]->title();
                     this->setCursor(Qt::OpenHandCursor);
                 }
             } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
@@ -2309,7 +2316,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
         if ((py + h + graphSpacer) >= 0) {
             if ((y >= py) && (y < py + h)) {
                 //qDebug() << "Clicked" << i;
-                if (x < titleWidth) { // clicked on title to drag graph..
+                if (x < titleWidth+20) { // clicked on title to drag graph..
                     m_graph_dragging=true;
                     m_graph_index=i;
                     m_sizer_point.setX(x);

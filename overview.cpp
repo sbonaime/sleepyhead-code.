@@ -118,7 +118,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     weight->addSlice("Weight",QColor("black"),ST_SETAVG);
     WEIGHT->AddLayer(weight);
 
-    bmi=new SummaryChart("B.M.I.",GT_LINE);
+    bmi=new SummaryChart("BMI",GT_LINE);
     bmi->setMachineType(MT_JOURNAL);
     bmi->addSlice("BMI",QColor("dark blue"),ST_SETAVG);
     BMI->AddLayer(bmi);
