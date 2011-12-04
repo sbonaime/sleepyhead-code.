@@ -22,7 +22,7 @@ class SummaryChart:public Layer
         virtual void paint(gGraph & w,int left, int top, int width, int height);
         virtual void SetDay(Day * day=NULL);
         virtual bool isEmpty() { return m_empty; }
-        void addSlice(ChannelID code, QColor color, SummaryType type) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); }
+        void addSlice(ChannelID code, QColor color, SummaryType type, bool ignore_zeros) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); m_zeros.push_back(ignore_zeros); }
         virtual void deselect() {
             hl_day=-1;
         }
@@ -34,6 +34,7 @@ class SummaryChart:public Layer
         QVector<QColor> m_colors;
         QVector<ChannelID> m_codes;
         QHash<ChannelID,bool> m_goodcodes;
+        QVector<bool> m_zeros;
         QVector<SummaryType> m_type;
         QHash<int,QHash<short,EventDataType> > m_values;
         QHash<int,QHash<short,EventDataType> > m_times;

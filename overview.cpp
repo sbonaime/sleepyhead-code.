@@ -115,108 +115,108 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     weight=new SummaryChart("Weight",GT_LINE);
     weight->setMachineType(MT_JOURNAL);
-    weight->addSlice("Weight",QColor("black"),ST_SETAVG);
+    weight->addSlice("Weight",QColor("black"),ST_SETAVG,true);
     WEIGHT->AddLayer(weight);
 
     bmi=new SummaryChart("BMI",GT_LINE);
     bmi->setMachineType(MT_JOURNAL);
-    bmi->addSlice("BMI",QColor("dark blue"),ST_SETAVG);
+    bmi->addSlice("BMI",QColor("dark blue"),ST_SETAVG,true);
     BMI->AddLayer(bmi);
 
     zombie=new SummaryChart("Zombie Meter",GT_LINE);
     zombie->setMachineType(MT_JOURNAL);
-    zombie->addSlice("ZombieMeter",QColor("dark red"),ST_SETAVG);
+    zombie->addSlice("ZombieMeter",QColor("dark red"),ST_SETAVG,true);
     ZOMBIE->AddLayer(zombie);
 
     pulse=new SummaryChart("Pulse Rate",GT_LINE);
     pulse->setMachineType(MT_OXIMETER);
-    pulse->addSlice(OXI_Pulse,QColor("red"),ST_WAVG);
-    pulse->addSlice(OXI_Pulse,QColor("light red"),ST_MIN);
-    pulse->addSlice(OXI_Pulse,QColor("orange"),ST_MAX);
+    pulse->addSlice(OXI_Pulse,QColor("red"),ST_WAVG,true);
+    pulse->addSlice(OXI_Pulse,QColor("pink"),ST_MIN,true);
+    pulse->addSlice(OXI_Pulse,QColor("orange"),ST_MAX,true);
     PULSE->AddLayer(pulse);
 
     spo2=new SummaryChart("SpO2",GT_LINE);
     spo2->setMachineType(MT_OXIMETER);
-    spo2->addSlice(OXI_SPO2,QColor("cyan"),ST_WAVG);
-    spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_90P);
-    spo2->addSlice(OXI_SPO2,QColor("blue"),ST_MIN);
+    spo2->addSlice(OXI_SPO2,QColor("cyan"),ST_WAVG,true);
+    spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_90P,true);
+    spo2->addSlice(OXI_SPO2,QColor("blue"),ST_MIN,true);
     SPO2->AddLayer(spo2);
 
     uc=new SummaryChart("Hours",GT_BAR);
-    uc->addSlice("",QColor("green"),ST_HOURS);
+    uc->addSlice("",QColor("green"),ST_HOURS,true);
     UC->AddLayer(uc);
 
     us=new SummaryChart("Hours",GT_SESSIONS);
-    us->addSlice("",QColor("dark blue"),ST_HOURS);
-    us->addSlice("",QColor("blue"),ST_SESSIONS);
+    us->addSlice("",QColor("dark blue"),ST_HOURS,true);
+    us->addSlice("",QColor("blue"),ST_SESSIONS,true);
     US->AddLayer(us);
 
     ses=new SummaryChart("Sessions",GT_LINE);
-    ses->addSlice("",QColor("blue"),ST_SESSIONS);
+    ses->addSlice("",QColor("blue"),ST_SESSIONS,true);
     SES->AddLayer(ses);
 
     bc=new SummaryChart("AHI",GT_BAR);
-    bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
-    bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
-    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
-    bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH);
+    bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH,false);
+    bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH,false);
+    bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH,false);
+    bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH,false);
     AHI->AddLayer(bc);
 
     set=new SummaryChart("",GT_LINE);
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
-    set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG);
-    set->addSlice("FlexSet",QColor("red"),ST_SETWAVG);
-    set->addSlice("EPR",QColor("red"),ST_SETWAVG);
-    set->addSlice("SmartFlex",QColor("red"),ST_SETWAVG);
+    set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG,false);
+    set->addSlice("FlexSet",QColor("red"),ST_SETWAVG,false);
+    set->addSlice("EPR",QColor("red"),ST_SETWAVG,false);
+    set->addSlice("SmartFlex",QColor("red"),ST_SETWAVG,false);
     SET->setRecMinY(0);
     SET->setRecMaxY(5);
     SET->AddLayer(set);
 
     rr=new SummaryChart("breaths/min",GT_LINE);
-    rr->addSlice(CPAP_RespRate,QColor("light blue"),ST_MIN);
-    rr->addSlice(CPAP_RespRate,QColor("light green"),ST_90P);
-    rr->addSlice(CPAP_RespRate,QColor("blue"),ST_WAVG);
+    rr->addSlice(CPAP_RespRate,QColor("light blue"),ST_MIN,true);
+    rr->addSlice(CPAP_RespRate,QColor("light green"),ST_90P,true);
+    rr->addSlice(CPAP_RespRate,QColor("blue"),ST_WAVG,true);
     RR->AddLayer(rr);
 
     tv=new SummaryChart("L/b",GT_LINE);
-    tv->addSlice(CPAP_TidalVolume,QColor("light blue"),ST_MIN);
-    tv->addSlice(CPAP_TidalVolume,QColor("light green"),ST_90P);
-    tv->addSlice(CPAP_TidalVolume,QColor("blue"),ST_WAVG);
+    tv->addSlice(CPAP_TidalVolume,QColor("light blue"),ST_MIN,true);
+    tv->addSlice(CPAP_TidalVolume,QColor("light green"),ST_90P,true);
+    tv->addSlice(CPAP_TidalVolume,QColor("blue"),ST_WAVG,true);
     TV->AddLayer(tv);
 
     mv=new SummaryChart("L/m",GT_LINE);
-    mv->addSlice(CPAP_MinuteVent,QColor("light blue"),ST_MIN);
-    mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_90P);
-    mv->addSlice(CPAP_MinuteVent,QColor("blue"),ST_WAVG);
+    mv->addSlice(CPAP_MinuteVent,QColor("light blue"),ST_MIN,true);
+    mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_90P,true);
+    mv->addSlice(CPAP_MinuteVent,QColor("blue"),ST_WAVG,true);
     MV->AddLayer(mv);
 
 
     ptb=new SummaryChart("%PTB",GT_LINE);
-    ptb->addSlice(CPAP_PTB,QColor("yellow"),ST_MIN);
-    ptb->addSlice(CPAP_PTB,QColor("light gray"),ST_90P);
-    ptb->addSlice(CPAP_PTB,QColor("orange"),ST_WAVG);
+    ptb->addSlice(CPAP_PTB,QColor("yellow"),ST_MIN,true);
+    ptb->addSlice(CPAP_PTB,QColor("light gray"),ST_90P,true);
+    ptb->addSlice(CPAP_PTB,QColor("orange"),ST_WAVG,true);
     PTB->AddLayer(ptb);
 
     pr=new SummaryChart("cmH2O",GT_LINE);
     //PR->setRecMinY(4.0);
     //PR->setRecMaxY(12.0);
-    pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
-    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN);
-    pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX);
-    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P);
-    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN);
-    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX);
+    pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
+    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN,true);
+    pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX,true);
+    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
+    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN,true);
+    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX,true);
     PR->AddLayer(pr);
 
     lk=new SummaryChart("Avg Leak",GT_LINE);
-    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P);
-    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
+    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P,false);
+    lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG,false);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
     LK->AddLayer(lk);
 
     NPB->AddLayer(npb=new SummaryChart("% PB",GT_BAR));
-    npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
+    npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH,false);
     // <--- The code to the previous marker is crap
 
     report=NULL;

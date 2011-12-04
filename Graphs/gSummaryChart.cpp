@@ -168,10 +168,10 @@ void SummaryChart::SetDay(Day * nullday)
             m_goodcodes[code]=false;
         } else {
 
-            if (type==ST_HOURS || type==ST_SESSIONS ||
-                    code=="Weight" ||
-                    code=="BMI" ||
-                    code=="ZombieMeter") continue; // too many lookups happening here.. stop the crap..
+            if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
+                    //code=="Weight" ||
+                    //code=="BMI" ||
+                    //code=="ZombieMeter") continue; // too many lookups happening here.. stop the crap..
 
             for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
                 tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
@@ -241,10 +241,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     rtop=top;
     GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
-    outlines->add(left, top, left, top+height, blk);
-    outlines->add(left, top+height, left+width,top+height, blk);
-    outlines->add(left+width,top+height, left+width, top, blk);
-    outlines->add(left+width, top, left, top, blk);
+    outlines->add(left, top, left, top+height, left, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, left+width, top, left, top, blk);
+    //if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
 
     qint64 minx=w.min_x, maxx=w.max_x;
     //qint64 minx=m_minx, maxx=m_maxx;
@@ -375,10 +374,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     quads->add(x1,py,x1,py-h,col);
                     quads->add(x2,py-h,x2,py,col2);
                     if (barw>2) {
-                        outlines->add(x1,py,x1,py-h,blk);
-                        outlines->add(x1,py-h,x2,py-h,blk);
-                        outlines->add(x1,py,x2,py,blk);
-                        outlines->add(x2,py,x2,py-h,blk);
+                        outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,blk);
+                        outlines->add(x1,py,x2,py,x2,py,x2,py-h,blk);
                     } // if (bar
                     //py-=h;
                     totalvalues[0]+=tmp;
@@ -435,11 +432,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                         quads->add(x1,py,x1,py-h,col);
                         quads->add(x2,py-h,x2,py,col2);
-                        if (barw>2) {
-                            outlines->add(x1,py,x1,py-h,blk);
-                            outlines->add(x1,py-h,x2,py-h,blk);
-                            outlines->add(x1,py,x2,py,blk);
-                            outlines->add(x2,py,x2,py-h,blk);
+                        if (h>0 && barw>2) {
+                            outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,blk);
+                            outlines->add(x1,py,x2,py,x2,py,x2,py-h,blk);
+                            if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
                         } // if (bar
                         py-=h;
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
