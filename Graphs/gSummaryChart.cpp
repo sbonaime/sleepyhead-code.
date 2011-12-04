@@ -106,9 +106,11 @@ void SummaryChart::SetDay(Day * nullday)
                 code=m_codes[j];
                 if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
                 type=m_type[j];
-                for (int i=0;i<d.value().size();i++) { // for each day
+                for (int i=0;i<d.value().size();i++) { // for each machine object for this day
                     day=d.value()[i];
                     if (day->machine_type()!=m_machinetype) continue;
+                    m_values[dn][j+1]=0;
+
                     bool hascode=day->channelHasData(code) || day->settingExists(code);
                     if (type==ST_HOURS || type==ST_SESSIONS || hascode) { // too many lookups happening here.. stop the crap..
                         m_days[dn]=day;
@@ -140,7 +142,7 @@ void SummaryChart::SetDay(Day * nullday)
                         m_values[dn][j+1]=tmp;
                         if (tmp<m_miny) m_miny=tmp;
                         if (tmp>m_maxy) m_maxy=tmp;
-                        m_goodcodes[code]=1;
+                        m_goodcodes[code]=true;
                         break;
                     }
                 }
@@ -156,6 +158,18 @@ void SummaryChart::SetDay(Day * nullday)
                 m_empty=false;
            } else m_hours[dn]=0;
         }
+    }
+    for (int j=0;j<m_codes.size();j++) { // for each code slice
+        ChannelID code=m_codes[j];
+        if (!m_goodcodes.contains(code)) {
+            m_goodcodes[code]=false;
+        }
+        /*if (m_goodcodes[code]) {
+            for (QHash<int,QHash<short,EventDataType> >::iterator i=m_values.begin();i!=m_values.end();i++) {
+                if (!m_values[i.key()].contains(j+1))
+                    m_values[i.key()][j+1]=30;
+            }
+        } */
     }
     if (m_graphtype==GT_BAR) {
         m_miny=0;
@@ -427,7 +441,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     // Draw Ledgend
     px=left+width-3;
-    py=top+10;
+    py=top-5;
     QString a;
     int x,y;
 
@@ -467,8 +481,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         a+="="+val;
         GetTextExtent(a,x,y);
         px-=20+x;
-        w.renderText(a,px+20,py+5);
-        quads->add(px+5,py-3,px+18,py-3,px+18,py+4,px+5,py+4,m_colors[j]);
+        w.renderText(a,px+20,py+2);
+        quads->add(px+5,py-7,px+18,py-7,px+18,py+1,px+5,py+1,m_colors[j]);
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
@@ -478,7 +492,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             a=m_label+"="+QString::number(val,'f',2)+" ";
             GetTextExtent(a,x,y);
             px-=20+x;
-            w.renderText(a,px+24,py+5);
+            w.renderText(a,px+24,py+2);
             //
         }
     }
@@ -496,7 +510,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     px-=30+x;
     //w.renderText(a,px+24,py+5);
 
-    w.renderText(a,left,top-3);
+    w.renderText(a,left,py+2);
 }
 
 QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false,bool show_12hr=false)

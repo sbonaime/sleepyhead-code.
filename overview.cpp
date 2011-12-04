@@ -166,7 +166,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
     set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG);
     set->addSlice("FlexSet",QColor("red"),ST_SETWAVG);
-    //set->addSlice("PAPMode",QColor("red"),ST_SETAVG);
+    set->addSlice("EPR",QColor("red"),ST_SETWAVG);
+    set->addSlice("SmartFlex",QColor("red"),ST_SETWAVG);
     SET->setRecMinY(0);
     SET->setRecMaxY(5);
     SET->AddLayer(set);

@@ -248,7 +248,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -668,7 +668,7 @@
          <item>
           <widget class="QPushButton" name="addBookmarkButton">
            <property name="text">
-            <string>Bookmark Selection</string>
+            <string>Add Bookmark</string>
            </property>
           </widget>
          </item>
