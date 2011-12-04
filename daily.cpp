@@ -980,7 +980,14 @@ void Daily::Unload(QDate date)
             journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
-        if ((!journal->settings.contains("Weight") && (ui->weightSpinBox->value()>0)) || (journal->settings["Weight"].toDouble(&ok)!=ui->weightSpinBox->value())) {
+        double w=ui->weightSpinBox->value();
+        if (journal->settings.contains("Weight") && ui->weightSpinBox->value()==0) {
+            journal->settings.erase(journal->settings.find("Weight"));
+            if (journal->settings.contains("BMI")) {
+                journal->settings.erase(journal->settings.find("BMI"));
+            }
+            journal->SetChanged(true);
+        } else if (ui->weightSpinBox->value()>0) {
             double kg;
             if (PROFILE["Units"].toString()=="metric") {
                 kg=ui->weightSpinBox->value();
@@ -988,22 +995,13 @@ void Daily::Unload(QDate date)
                 kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
                 kg/=1000.0;
             }
-            double height=PROFILE["Height"].toDouble(&ok);
-            double bmi=(height*height)/kg;
-            if (kg>0) {
-                journal->settings["Weight"]=kg;
-                journal->settings["BMI"]=bmi;
-                journal->SetChanged(true);
-            } else {
-                if (journal->settings.contains("Weight")) {
-                    journal->settings.erase(journal->settings.find("Weight"));
-                    journal->SetChanged(true);
-                }
-                if (journal->settings.contains("BMI")) {
-                    journal->settings.erase(journal->settings.find("BMI"));
-                    journal->SetChanged(true);
-                }
-            }
+            double height=PROFILE["Height"].toDouble(&ok)/100.0;
+            double bmi=0;
+            if (height>0)
+                bmi=kg/(height*height);
+            journal->settings["Weight"]=kg;
+            journal->settings["BMI"]=bmi;
+            journal->SetChanged(true);
         }
         if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=50)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
             journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
@@ -1043,13 +1041,16 @@ void Daily::Unload(QDate date)
                     kg=(ui->weightSpinBox->value()*(ounce_convert*16))+(ui->ouncesSpinBox->value()*ounce_convert);
                     kg/=1000.0;
                 }
-                double height=PROFILE["Height"].toDouble(&ok);
-                double bmi=(height*height)/kg;
-                if (kg>0) {
+                double height=PROFILE["Height"].toDouble(&ok)/100.0;
+                double bmi=0;
+                if (height>0)
+                    bmi=kg/(height*height);
+                //if (kg>0) {
                     journal->settings["Weight"]=kg;
-                    journal->settings["BMI"]=bmi;
+                    if (bmi>0)
+                        journal->settings["BMI"]=bmi;
                     journal->SetChanged(true);
-                }
+                //}
             }
             if (BookmarksChanged) {
                 QVariantList start;

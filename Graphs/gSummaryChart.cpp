@@ -45,7 +45,6 @@ void SummaryChart::SetDay(Day * nullday)
     m_days.clear();
     m_hours.clear();
     m_goodcodes.clear();
-    m_goodcodes[""]=1;
     m_miny=999999999;
     m_maxy=-999999999;
     m_minx=0;
@@ -70,6 +69,8 @@ void SummaryChart::SetDay(Day * nullday)
         total=0;
         bool fnd=false;
         if (m_graphtype==GT_SESSIONS) {
+            for (int i=0;i<m_codes.size();i++)
+                m_goodcodes[m_codes[i]]=true;
             for (int i=0;i<d.value().size();i++) { // for each day
                 day=d.value()[i];
                 if  (!day) continue;
@@ -167,7 +168,10 @@ void SummaryChart::SetDay(Day * nullday)
             m_goodcodes[code]=false;
         } else {
 
-            if (type==ST_HOURS || type==ST_SESSIONS) continue; // too many lookups happening here.. stop the crap..
+            if (type==ST_HOURS || type==ST_SESSIONS ||
+                    code=="Weight" ||
+                    code=="BMI" ||
+                    code=="ZombieMeter") continue; // too many lookups happening here.. stop the crap..
 
             for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
                 tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
@@ -467,8 +471,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     for (int j=0;j<m_codes.size();j++) {
         if (totalcounts[j]==0) continue;
-        if (!m_goodcodes.contains(m_codes[j])) continue;
-        a=schema::channel[m_codes[j]].label();
+        ChannelID code=m_codes[j];
+        if (!m_goodcodes.contains(code) || !m_goodcodes[code]) continue;
+        a=schema::channel[code].label();
         a+=" ";
         switch(m_type[j]) {
                 case ST_WAVG: a+="Avg"; break;
