@@ -131,7 +131,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"CSR",false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"PB",false,FT_Span)));
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true)));
     fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),"A")));

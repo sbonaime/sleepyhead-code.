@@ -14,6 +14,7 @@
 #include "mainwindow.h"
 
 #include "Graphs/gYAxis.h"
+#include "Graphs/gFlagsLine.h"
 
 extern MainWindow *mainwin;
 
@@ -1319,9 +1320,13 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 qint64 a1=MIN(j1,j2)
                 qint64 a2=MAX(j1,j2)
                 //if (a1<rmin_x) a1=rmin_x;
-                if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
                 if (a2>rmax_x) a2=rmax_x;
-                m_graphview->SetXBounds(a1,a2,m_group);
+                if (a1<=rmin_x && a2<=rmin_x) {
+                    //qDebug() << "Foo??";
+                } else {
+                    if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
+                    m_graphview->SetXBounds(a1,a2,m_group);
+                }
             } else {
                 xx=rmax_x-rmin_x;
                 xmult=xx/double(w);
@@ -1329,10 +1334,15 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 qint64 j2=rmin_x+xmult*x2;
                 qint64 a1=MIN(j1,j2)
                 qint64 a2=MAX(j1,j2)
-                if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
                 //if (a1<rmin_x) a1=rmin_x;
                 if (a2>rmax_x) a2=rmax_x;
-                m_graphview->SetXBounds(a1,a2,m_group);
+
+                if (a1<=rmin_x && a2<=rmin_x) {
+                    qDebug() << "Foo2??";
+                } else  {
+                    if (a2-a1<zoom_hard_limit) a2=a1+zoom_hard_limit;
+                    m_graphview->SetXBounds(a1,a2,m_group);
+                }
             }
 
             return;
@@ -2287,7 +2297,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
             if (m_button_down || ((y >= py) && (y < py + h))) {
-                if (m_button_down || (x >= titleWidth+(gYAxis::Margin-20))) {
+                if (m_button_down || (x >= titleWidth+(gYAxis::Margin-5))) {
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
                     m_lastxpos=x;
@@ -2298,10 +2308,36 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     m_graphs[i]->mouseMoveEvent(&e);
                 } else {
                     //qDebug() << "Hovering over" << m_graphs[i]->title();
+                    if (m_graphsbytitle["Event Flags"]==m_graphs[i]) {
+                        QVector<Layer *> & layers=m_graphs[i]->layers();
+                        gFlagsGroup *fg;
+                        for (int i=0;i<layers.size();i++) {
+                            if ((fg=dynamic_cast<gFlagsGroup *>(layers[i]))!=NULL) {
+                                float bh=fg->barHeight();
+                                int count=fg->count();
+                                float yp=py+m_graphs[i]->marginTop();
+                                yp=y-yp;
+                                float th=(float(count)*bh);
+                                if (yp>=0 && yp<th) {
+                                    int i=yp/bh;
+                                    if (i<count) {
+                                        ChannelID code=fg->visibleLayers()[i]->code();
+                                        QString ttip=schema::channel[code].description();
+                                        m_tooltip->display(ttip,x,y-20,800);
+                                        updateGL();
+                                        //qDebug() << code << ttip;
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    } else {
                         if (!m_graphs[i]->units().isEmpty()) {
                             m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
                             updateGL();
                         }
+                    }
                     this->setCursor(Qt::OpenHandCursor);
                 }
 

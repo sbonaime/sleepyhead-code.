@@ -174,9 +174,13 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
     //EventDataType min=0,max=0;
     if (pr>0) {
         if (lastpr==0) {
-            if (pulse->count()==0)
+            if (pulse->count()==0) {
                pulse->setFirst(time);
-            else {
+               if (session->eventlist[OXI_Pulse].size()==1) {
+                   session->setFirst(OXI_Pulse,time);
+               }
+
+            } else {
                 qDebug() << "Shouldn't happen in addPulse()";
             }
         }
@@ -204,9 +208,12 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
     //EventDataType min=0,max=0;
     if (o2>0) {
         if (lasto2==0) {
-            if (spo2->count()==0)
-               spo2->setFirst(time);
-            else {
+            if (spo2->count()==0) {
+                spo2->setFirst(time);
+                if (session->eventlist[OXI_SPO2].size()==1) {
+                    session->setFirst(OXI_SPO2,time);
+                }
+            } else {
                 qDebug() << "Shouldn't happen in addSpO2()";
             }
         }

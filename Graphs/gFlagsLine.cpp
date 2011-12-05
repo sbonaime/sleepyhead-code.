@@ -18,6 +18,7 @@ gFlagsGroup::gFlagsGroup()
     addGLBuf(lines=new GLShortBuffer(20,GL_LINE_LOOP));
     quads->setAntiAlias(true);
     lines->setAntiAlias(false);
+    m_barh=0;
 }
 gFlagsGroup::~gFlagsGroup()
 {
@@ -48,7 +49,7 @@ void gFlagsGroup::SetDay(Day * d)
             lvisible.push_back(f);
         }
     }
-
+    m_barh=0;
 }
 
 void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
@@ -57,7 +58,7 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     if (!m_day) return;
 
     int vis=lvisible.size();
-    float barh=float(height)/float(vis);
+    m_barh=float(height)/float(vis);
     float linetop=top;
 
     static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
@@ -66,19 +67,17 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
         if (i & 1) barcol=&col1; else barcol=&col2;
-        quads->add(left,linetop,left,linetop+barh,left+width-1,linetop+barh,left+width-1,linetop,*barcol);
+        quads->add(left,linetop,left,linetop+m_barh,left+width-1,linetop+m_barh,left+width-1,linetop,*barcol);
 
         // Paint the actual flags
-        lvisible[i]->paint(w,left,linetop,width,barh);
-        linetop+=barh;
+        lvisible[i]->paint(w,left,linetop,width,m_barh);
+        linetop+=m_barh;
     }
 
     GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
-    outlines->add(left-1, top, left-1, top+height, blk);
-    outlines->add(left-1, top+height, left+width,top+height, blk);
-    outlines->add(left+width,top+height, left+width, top, blk);
-    outlines->add(left+width, top, left-1, top, blk);
+    outlines->add(left-1, top, left-1, top+height,left-1, top+height, left+width,top+height, blk);
+    outlines->add(left+width,top+height, left+width, top, left+width, top, left-1, top, blk);
 
     //lines->add(left-1, top, left-1, top+height);
     //lines->add(left+width, top+height, left+width, top);

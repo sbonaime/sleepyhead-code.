@@ -215,6 +215,7 @@ public:
     virtual bool isEmpty();
     virtual void SetDay(Day * d);
     virtual void drawGLBuf();
+    QVector<Layer *> & getLayers() { return layers; }
 
 protected:
     QVector<Layer *> layers;
@@ -358,6 +359,7 @@ public:
 
     QRect m_lastbounds;
     QTimer * timer;
+    QVector<Layer *>  & layers() { return m_layers; }
 
 protected:
     //void invalidate();
@@ -376,7 +378,6 @@ protected:
     QString m_units;
     QVector<Layer *> m_layers;
     float m_height,m_width;
-
 
     int m_min_height;
     int m_max_height;
