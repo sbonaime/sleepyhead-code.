@@ -470,7 +470,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int x,y;
 
     for (int j=0;j<m_codes.size();j++) {
-        if (totalcounts[j]==0) continue;
+        //if (totalcounts[j]==0) continue;
         if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
         a=schema::channel[code].label();
@@ -491,10 +491,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
         QString val;
         float f=0;
-        if ((m_type[j]==ST_MIN) || (m_type[j]==ST_MAX)) {
-            f=totalvalues[j];
-        } else {
-            f=totalvalues[j]/totalcounts[j];
+        if (totalcounts[j]>0) {
+            if ((m_type[j]==ST_MIN) || (m_type[j]==ST_MAX)) {
+                f=totalvalues[j];
+            } else {
+                f=totalvalues[j]/totalcounts[j];
+            }
         }
         if (m_type[j]==ST_HOURS) {
             int h=f;
@@ -649,7 +651,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             } else {
                 QString a;
                 for (int i=0;i<m_type.size();i++) {
-                    if (m_goodcodes[i]) continue;
+                    if (!m_goodcodes[i]) continue;
                     switch(m_type[i]) {
                             case ST_WAVG: a="W-avg"; break;
                             case ST_AVG:  a="Avg"; break;
