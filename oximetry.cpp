@@ -1225,17 +1225,6 @@ void Oximetry::update_progress(float f)
 
 bool Oximetry::openSPOFile(QString filename)
 {
-    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
-        if (res==0) {
-            on_saveButton_clicked();
-            return false;
-        } else if (res==2) {
-            return false;
-        }
-    } // else it's already saved.
-    //GraphView->setEmptyText("Please Wait");
-    //GraphView->updateGL();
     QFile f(filename);
     if (!f.open(QFile::ReadOnly)) return false;
 
@@ -1384,15 +1373,6 @@ bool Oximetry::openSPOFile(QString filename)
 
 bool Oximetry::openSPORFile(QString filename)
 {
-    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
-        if (res==0) {
-            on_saveButton_clicked();
-            return false;
-        } else if (res==2) {
-            return false;
-        }
-    } // else it's already saved.
     //GraphView->setEmptyText("Please Wait");
     //GraphView->updateGL();
     QFile f(filename);
@@ -1521,6 +1501,16 @@ bool Oximetry::openSPORFile(QString filename)
 
 void Oximetry::on_openButton_clicked()
 {
+    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
+        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
+        if (res==0) {
+            on_saveButton_clicked();
+            return;
+        } else if (res==2) {
+            return;
+        }
+    } // else it's already saved.
+
     QString dir="";
     QFileDialog fd(this,"Select an oximetry file",dir,"Oximetry Files (*.spo *.spoR)");
     fd.setAcceptMode(QFileDialog::AcceptOpen);
