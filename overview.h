@@ -33,7 +33,7 @@ public:
     void ReloadGraphs();
     void ResetGraphLayout();
     void RedrawGraphs();
-    gGraph * createGraph(QString name);
+    gGraph * createGraph(QString name,QString units="");
 
     void PrintReport();
 

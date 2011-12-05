@@ -725,10 +725,10 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     layout->layout();
 
-    PLETHY=new gGraph(GraphView,tr("Plethy"),120);
-    CONTROL=new gGraph(GraphView,tr("Control"),75);
-    PULSE=new gGraph(GraphView,tr("Pulse Rate"),120);
-    SPO2=new gGraph(GraphView,tr("SPO2"),120);
+    PLETHY=new gGraph(GraphView,schema::channel[OXI_Plethy].label(),schema::channel[OXI_Plethy].units(),120);
+    CONTROL=new gGraph(GraphView,tr("Control"),"",75);
+    PULSE=new gGraph(GraphView,schema::channel[OXI_Pulse].label(),schema::channel[OXI_Pulse].units(),120);
+    SPO2=new gGraph(GraphView,schema::channel[OXI_SPO2].label(),schema::channel[OXI_SPO2].units(),120);
     foobar=new gShadowArea();
     CONTROL->AddLayer(foobar);
     Layer *cl=new gLineChart(OXI_Plethy);

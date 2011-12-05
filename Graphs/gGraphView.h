@@ -244,6 +244,7 @@ class gToolTip: public QObject
 public:
     gToolTip(gGraphView * graphview);
     virtual ~gToolTip();
+    void calcSize(QString text, int & w, int & h);
     virtual void display(QString text, int x, int y, int timeout=2000);
     virtual void paint(); //actually paints it.
     void cancel();
@@ -266,7 +267,7 @@ public:
     friend class gGraphView;
 
     //gGraph();
-    gGraph(gGraphView * graphview=NULL, QString title="",int height=100,short group=0);
+    gGraph(gGraphView * graphview=NULL, QString title="", QString units="", int height=100,short group=0);
     virtual ~gGraph();
     void deselect();
     void Trigger(int ms);
@@ -294,6 +295,9 @@ public:
 
     void drawGLBuf();
     QString title() { return m_title; }
+    QString units() { return m_units; }
+    void setTitle(const QString title) { m_title=title; }
+    void setUnits(const QString units) { m_units=units; }
 
     //virtual void repaint(); // Repaint individual graph..
 
@@ -369,6 +373,7 @@ protected:
 
     gGraphView * m_graphview;
     QString m_title;
+    QString m_units;
     QVector<Layer *> m_layers;
     float m_height,m_width;
 

@@ -101,7 +101,7 @@ private:
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
-           *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF,*INTPULSE,*INTSPO2, *THPR,
+           *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF, *THPR,
            *PLETHY,*TI,*TE, *RE, *IE, *TgMV, *AHI;
 
     QList<Layer *> OXIData;

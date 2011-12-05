@@ -87,31 +87,31 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // TODO: Automate graph creation process
 
     // The following code (to the closing marker) is crap --->
-    AHI=createGraph("AHI");
-    UC=createGraph("Usage");
+    AHI=createGraph("AHI","Apnea\nHypopnea\nIndex");
+    UC=createGraph("Usage","Usage\n(time)");
 
     int default_height=PROFILE["GraphHeight"].toInt();
-    US=new gGraph(GraphView,"Session Usage",default_height,0);
+    US=new gGraph(GraphView,"Session Times","Session Times\n(time)",default_height,0);
     US->AddLayer(new gYAxisTime(),LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();
     x->setUtcFix(true);
     US->AddLayer(x,LayerBottom,0,gXAxis::Margin);
     US->AddLayer(new gXGrid());
 
-    PR=createGraph("Pressure");
-    SET=createGraph("Settings");
-    LK=createGraph("Leaks");
-    SES=createGraph("Sessions");
-    NPB=createGraph("% in PB");
-    RR=createGraph("Resp. Rate");
-    TV=createGraph("Tidal Volume");
-    MV=createGraph("Minute Vent.");
-    PTB=createGraph("Pat. Trig. Br.");
-    PULSE=createGraph("Pulse Rate");
-    SPO2=createGraph("SpO2");
-    WEIGHT=createGraph("Weight");
-    BMI=createGraph("BMI");
-    ZOMBIE=createGraph("Zombie");
+    PR=createGraph("Pressure","Pressure\n(cmH2O)");
+    SET=createGraph("Settings","Settings");
+    LK=createGraph("Leaks","Leak Rate\n(L/min)");
+    SES=createGraph("Sessions","Sessions\n(count)");
+    NPB=createGraph("% in PB","Periodic\nBreathing\n(% of night)");
+    RR=createGraph("Resp. Rate","Respiratory\nRate\n(breaths/min)");
+    TV=createGraph("Tidal Volume","Tidal\nVolume\n(ml)");
+    MV=createGraph("Minute Vent.","Minute\nVentilation\n(L/min)");
+    PTB=createGraph("Pat. Trig. Br.","Patient\nTriggered\nBreaths\n(%)");
+    PULSE=createGraph("Pulse Rate","Pulse Rate\n(bpm)");
+    SPO2=createGraph("SpO2","Oxygen Saturation\n(%)");
+    WEIGHT=createGraph("Weight","Weight\n(kg)");
+    BMI=createGraph("BMI","Body\nMass\nIndex");
+    ZOMBIE=createGraph("Zombie","How you felt\n(% awesome)");
 
     weight=new SummaryChart("Weight",GT_LINE);
     weight->setMachineType(MT_JOURNAL);
@@ -234,10 +234,10 @@ Overview::~Overview()
     }
     delete ui;
 }
-gGraph * Overview::createGraph(QString name)
+gGraph * Overview::createGraph(QString name,QString units)
 {
     int default_height=PROFILE["GraphHeight"].toInt();
-    gGraph *g=new gGraph(GraphView,name,default_height,0);
+    gGraph *g=new gGraph(GraphView,name,units,default_height,0);
     g->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();
     x->setUtcFix(true);

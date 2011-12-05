@@ -35,25 +35,25 @@ Report::Report(QWidget *parent, gGraphView * shared, Overview * overview) :
     // Reusing the layer data from overview screen,
     // (Can't reuse the graphs objects without breaking things)
 
-    graphs["Usage"]=UC=new gGraph(GraphView,"Usage",graph_print_height,0);
+    graphs["Usage"]=UC=new gGraph(GraphView,"Usage","",graph_print_height,0);
     UC->AddLayer(m_overview->uc);
 
-    graphs["AHI"]=AHI=new gGraph(GraphView,"AHI",graph_print_height,0);
+    graphs["AHI"]=AHI=new gGraph(GraphView,"AHI","",graph_print_height,0);
     AHI->AddLayer(m_overview->bc);
 
-    graphs["Pressure"]=PR=new gGraph(GraphView,"Pressure",graph_print_height,0);
+    graphs["Pressure"]=PR=new gGraph(GraphView,"Pressure","",graph_print_height,0);
     PR->AddLayer(m_overview->pr);
 
-    graphs["Leaks"]=LK=new gGraph(GraphView,"Leaks",graph_print_height,0);
+    graphs["Leaks"]=LK=new gGraph(GraphView,"Leaks","",graph_print_height,0);
     LK->AddLayer(m_overview->lk);
 
-    graphs["%PB"]=NPB=new gGraph(GraphView,"% in PB",graph_print_height,0);
+    graphs["%PB"]=NPB=new gGraph(GraphView,"% in PB","",graph_print_height,0);
     NPB->AddLayer(m_overview->npb);
 
-    graphs["Settings"]=SET=new gGraph(GraphView,"Settings",graph_print_height,0);
+    graphs["Settings"]=SET=new gGraph(GraphView,"Settings","",graph_print_height,0);
     SET->AddLayer(m_overview->set);
 
-    graphs["Sessions"]=SES=new gGraph(GraphView,"Sessions",graph_print_height,0);
+    graphs["Sessions"]=SES=new gGraph(GraphView,"Sessions","",graph_print_height,0);
     SES->AddLayer(m_overview->ses);
 
 

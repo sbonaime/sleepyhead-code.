@@ -13,6 +13,7 @@
 #include <QDir>
 #include "mainwindow.h"
 
+#include "Graphs/gYAxis.h"
 
 extern MainWindow *mainwin;
 
@@ -589,17 +590,25 @@ gToolTip::~gToolTip()
     disconnect(timer,SLOT(timerDone()));
     delete timer;
 }
+void gToolTip::calcSize(QString text,int &w, int &h)
+{
+    /*GetTextExtent(text,w,h);
+    w+=m_spacer*2;
+    h+=m_spacer*2; */
+}
 
 void gToolTip::display(QString text, int x, int y, int timeout)
 {
     m_text=text;
-    m_pos.setX(x);
-    m_pos.setY(y);
     m_visible=true;
     // TODO: split multiline here
-    GetTextExtent(m_text,tw,th);
-    tw+=m_spacer*2;
-    th+=m_spacer*2;
+    //calcSize(m_text,tw,th);
+
+    m_pos.setX(x);
+    m_pos.setY(y);
+
+    //tw+=m_spacer*2;
+    //th+=m_spacer*2;
     //th*=2;
     if (timer->isActive()) {
         timer->stop();
@@ -640,9 +649,13 @@ void gToolTip::paint()     //actually paints it.
     QRect rect(x,y,0,0);
     painter.setFont(*defaultfont);
     rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
-    rect.setLeft(rect.x()-m_spacer);
+    int w=rect.width()+m_spacer*2;
+    int xx=rect.x()-m_spacer;
+    if (xx<0) xx=0;
+    rect.setLeft(xx);
     rect.setTop(rect.y()-rect.height()/2);
-    rect.setWidth(rect.width()+m_spacer*2);
+    rect.setWidth(w);
+
     //rect.setHeight(rect.height());
     QBrush brush(QColor(255,255,128,200));
     painter.setBrush(brush);
@@ -875,9 +888,10 @@ void gThread::run()
 }
 
 #endif
-gGraph::gGraph(gGraphView *graphview,QString title,int height,short group) :
+gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,short group) :
     m_graphview(graphview),
     m_title(title),
+    m_units(units),
     m_height(height),
     m_visible(true)
 {
@@ -2273,7 +2287,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
             if (m_button_down || ((y >= py) && (y < py + h))) {
-                if (m_button_down || (x >= titleWidth+(20))) {
+                if (m_button_down || (x >= titleWidth+(gYAxis::Margin-20))) {
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
                     m_lastxpos=x;
@@ -2284,8 +2298,13 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     m_graphs[i]->mouseMoveEvent(&e);
                 } else {
                     //qDebug() << "Hovering over" << m_graphs[i]->title();
+                        if (!m_graphs[i]->units().isEmpty()) {
+                            m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
+                            updateGL();
+                        }
                     this->setCursor(Qt::OpenHandCursor);
                 }
+
             } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                 this->setCursor(Qt::SplitVCursor);
             }
