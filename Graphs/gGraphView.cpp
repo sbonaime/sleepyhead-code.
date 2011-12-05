@@ -2297,7 +2297,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
             if (m_button_down || ((y >= py) && (y < py + h))) {
-                if (m_button_down || (x >= titleWidth+(gYAxis::Margin-5))) {
+                if (m_button_down || (x >= titleWidth+10)) { //(gYAxis::Margin-5)
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
                     m_lastxpos=x;
@@ -2306,38 +2306,41 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
 
                     m_graphs[i]->mouseMoveEvent(&e);
-                } else {
-                    //qDebug() << "Hovering over" << m_graphs[i]->title();
-                    if (m_graphsbytitle["Event Flags"]==m_graphs[i]) {
-                        QVector<Layer *> & layers=m_graphs[i]->layers();
-                        gFlagsGroup *fg;
-                        for (int i=0;i<layers.size();i++) {
-                            if ((fg=dynamic_cast<gFlagsGroup *>(layers[i]))!=NULL) {
-                                float bh=fg->barHeight();
-                                int count=fg->count();
-                                float yp=py+m_graphs[i]->marginTop();
-                                yp=y-yp;
-                                float th=(float(count)*bh);
-                                if (yp>=0 && yp<th) {
-                                    int i=yp/bh;
-                                    if (i<count) {
-                                        ChannelID code=fg->visibleLayers()[i]->code();
-                                        QString ttip=schema::channel[code].description();
-                                        m_tooltip->display(ttip,x,y-20,800);
-                                        updateGL();
-                                        //qDebug() << code << ttip;
+                    if (x<=titleWidth+(gYAxis::Margin-5)) {
+                        //qDebug() << "Hovering over" << m_graphs[i]->title();
+                        if (m_graphsbytitle["Event Flags"]==m_graphs[i]) {
+                            QVector<Layer *> & layers=m_graphs[i]->layers();
+                            gFlagsGroup *fg;
+                            for (int i=0;i<layers.size();i++) {
+                                if ((fg=dynamic_cast<gFlagsGroup *>(layers[i]))!=NULL) {
+                                    float bh=fg->barHeight();
+                                    int count=fg->count();
+                                    float yp=py+m_graphs[i]->marginTop();
+                                        yp=y-yp;
+                                    float th=(float(count)*bh);
+                                    if (yp>=0 && yp<th) {
+                                        int i=yp/bh;
+                                        if (i<count) {
+                                            ChannelID code=fg->visibleLayers()[i]->code();
+                                            QString ttip=schema::channel[code].description();
+                                            m_tooltip->display(ttip,x,y-20,800);
+                                            updateGL();
+                                            //qDebug() << code << ttip;
+                                        }
                                     }
-                                }
 
-                                break;
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (!m_graphs[i]->units().isEmpty()) {
+                                m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
+                                updateGL();
                             }
                         }
-                    } else {
-                        if (!m_graphs[i]->units().isEmpty()) {
-                            m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
-                            updateGL();
-                        }
                     }
+                } else {
+
                     this->setCursor(Qt::OpenHandCursor);
                 }
 
