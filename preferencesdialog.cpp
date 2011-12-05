@@ -102,13 +102,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     bool  ok;
     double v;
     v=(*profile)["SPO2DropPercentage"].toDouble(&ok);
-    if (!ok) v=4;
+    if (!ok) v=3;
     ui->spo2Drop->setValue(v);
     v=(*profile)["SPO2DropDuration"].toDouble(&ok);
-    if (!ok) v=5;
+    if (!ok) v=10;
     ui->spo2DropTime->setValue(v);
     v=(*profile)["PulseChangeBPM"].toDouble(&ok);
-    if (!ok) v=5;
+    if (!ok) v=8;
     ui->pulseChange->setValue(v);
     v=(*profile)["PulseChangeDuration"].toDouble(&ok);
     if (!ok) v=5;

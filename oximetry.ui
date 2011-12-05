@@ -249,6 +249,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="openButton">
+        <property name="text">
+         <string>&amp;Open</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="ImportButton">
         <property name="text">
          <string>&amp;Import</string>

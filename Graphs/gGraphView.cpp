@@ -591,12 +591,12 @@ gToolTip::~gToolTip()
     disconnect(timer,SLOT(timerDone()));
     delete timer;
 }
-void gToolTip::calcSize(QString text,int &w, int &h)
-{
+//void gToolTip::calcSize(QString text,int &w, int &h)
+//{
     /*GetTextExtent(text,w,h);
     w+=m_spacer*2;
     h+=m_spacer*2; */
-}
+//}
 
 void gToolTip::display(QString text, int x, int y, int timeout)
 {
@@ -2163,7 +2163,7 @@ void gGraphView::paintGL()
 #ifdef ENABLED_THREADED_DRAWING
     }
 #endif
-    int elapsed=time.elapsed();
+    //int elapsed=time.elapsed();
     QColor col=Qt::black;
     if (!numgraphs) {
         int x,y;

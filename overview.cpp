@@ -219,8 +219,6 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH,false);
     // <--- The code to the previous marker is crap
 
-    report=NULL;
-
     GraphView->LoadSettings("Overview");
 }
 Overview::~Overview()
@@ -228,10 +226,6 @@ Overview::~Overview()
     GraphView->SaveSettings("Overview");
     disconnect(this,SLOT(dateStart_currentPageChanged(int,int)));
     disconnect(this,SLOT(dateEnd_currentPageChanged(int,int)));
-    if (report) {
-        report->close();
-        delete report;
-    }
     delete ui;
 }
 gGraph * Overview::createGraph(QString name,QString units)
@@ -333,30 +327,9 @@ void Overview::on_toolButton_clicked()
     GraphView->SetXBounds(d1,d2);
 }
 
-QString Overview::GetHTML()
-{
-    if (!report) {
-        report=new Report(this,m_shared,this);
-        report->hide();
-    }
-
-    QString html;
-    if (report) {
-        GraphView->deselect();
-
-        report->ReloadGraphs();
-        QString reportname="overview";
-        html=report->GenerateReport(reportname,ui->dateStart->date(),ui->dateEnd->date());
-        if (html.isEmpty()) {
-            qDebug() << "Faulty Report" << reportname;
-        }
-    }
-    return html;
-}
 void Overview::on_printButton_clicked()
 {
     mainwin->PrintReport(GraphView,"Overview");
-    //report->Print(GetHTML());
 }
 
 void Overview::ResetGraphLayout()

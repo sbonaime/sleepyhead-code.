@@ -245,7 +245,7 @@ class gToolTip: public QObject
 public:
     gToolTip(gGraphView * graphview);
     virtual ~gToolTip();
-    void calcSize(QString text, int & w, int & h);
+    //void calcSize(QString text, int & w, int & h);
     virtual void display(QString text, int x, int y, int timeout=2000);
     virtual void paint(); //actually paints it.
     void cancel();

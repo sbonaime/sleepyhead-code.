@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QWebFrame>
+#include <QWebView>
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"

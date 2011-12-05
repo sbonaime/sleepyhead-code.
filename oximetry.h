@@ -47,9 +47,10 @@ public:
     int callbacks() { return m_callbacks; }
 
     qint64 lastTime() { return lasttime; }
+    void setLastTime(qint64 t) { lasttime=t; }
     Machine * getMachine() { return machine; }
 
-    Session *createSession();
+    Session *createSession(QDateTime date=QDateTime::currentDateTime());
     Session * getSession() { return session; }
 
     void compactToWaveform(EventList *el);
@@ -73,6 +74,9 @@ public:
     EventList * Pulse() { return pulse; }
     EventList * Spo2() { return spo2; }
     EventList * Plethy() { return plethy; }
+    virtual void addPulse(qint64 time, EventDataType pr);
+    virtual void addSpO2(qint64 time, EventDataType o2);
+    virtual void addPlethy(qint64 time, EventDataType pleth);
 
 signals:
     void sessionCreated(Session *);
@@ -94,11 +98,6 @@ protected slots:
 
 protected:
     //virtual void addEvents(EventDataType pr, EventDataType o2, EventDataType pleth=-1000000);
-
-    virtual void addPulse(qint64 time, EventDataType pr);
-    virtual void addSpO2(qint64 time, EventDataType o2);
-    virtual void addPlethy(qint64 time, EventDataType pleth);
-
 
     Session * session;
 
@@ -124,6 +123,8 @@ protected:
     int m_callbacks;
     bool done_import;
     QTimer *timer;
+    EventDataType lasto2,lastpr;
+
 };
 
 class CMS50Serial:public SerialOximeter
@@ -190,7 +191,11 @@ private slots:
     void oximeter_running_check();
     void live_stopped(Session *session);
 
+    void on_openButton_clicked();
+
 private:
+    bool openSPOFile(QString filename);
+    bool openSPORFile(QString filename);
     void import_finished();
     Ui::Oximetry *ui;
 

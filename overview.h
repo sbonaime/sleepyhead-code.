@@ -14,7 +14,6 @@
 #include "SleepLib/profiles.h"
 #include "Graphs/gGraphView.h"
 #include "Graphs/gSummaryChart.h"
-#include "report.h"
 
 namespace Ui {
     class Overview;
@@ -67,13 +66,10 @@ private:
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
     gGraphView * m_shared;
-    Report * report;
 
     void UpdateHTML();
     void UpdateCalendarDay(QDateEdit * calendar,QDate date);
 
-
-    QString GetHTML();
 
     //SessionTimes *session_times;
     //,*PRESSURE,*LEAK,*SESSTIMES;

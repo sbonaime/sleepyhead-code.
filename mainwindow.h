@@ -16,7 +16,6 @@
 #include "daily.h"
 #include "overview.h"
 #include "oximetry.h"
-#include "report.h"
 #include "preferencesdialog.h"
 
 const int major_version=0;

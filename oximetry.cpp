@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QProgressBar>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QLabel>
 #include <QTimer>
@@ -170,14 +171,15 @@ void SerialOximeter::setStopBits(StopBitsType stopbits)
 
 void SerialOximeter::addPulse(qint64 time, EventDataType pr)
 {
-    static EventDataType lastpr=0;
     //EventDataType min=0,max=0;
     if (pr>0) {
         if (lastpr==0) {
             if (pulse->count()==0) {
                pulse->setFirst(time);
-               if (session->eventlist[OXI_Pulse].size()==1) {
+               if (session->eventlist[OXI_Pulse].size()<=1) {
                    session->setFirst(OXI_Pulse,time);
+                   if (session->first()==0)
+                       session->set_first(time);
                }
 
             } else {
@@ -187,6 +189,7 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
         pulse->AddEvent(time,pr);
         session->setCount(OXI_Pulse,session->count(OXI_Pulse)+1);
         session->setLast(OXI_Pulse,time);
+        session->set_last(time);
     } else {
         if (lastpr!=0) {
             if (pulse->count() > 0) {
@@ -197,21 +200,21 @@ void SerialOximeter::addPulse(qint64 time, EventDataType pr)
             }
         }
     }
-    session->set_last(time);
     lastpr=pr;
     emit(updatePulse(pr));
 }
 
 void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
 {
-    static EventDataType lasto2=0;
     //EventDataType min=0,max=0;
     if (o2>0) {
         if (lasto2==0) {
             if (spo2->count()==0) {
                 spo2->setFirst(time);
-                if (session->eventlist[OXI_SPO2].size()==1) {
+                if (session->eventlist[OXI_SPO2].size()<=1) {
                     session->setFirst(OXI_SPO2,time);
+                    if (session->first()==0)
+                        session->set_first(time);
                 }
             } else {
                 qDebug() << "Shouldn't happen in addSpO2()";
@@ -221,6 +224,7 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
         spo2->AddEvent(time,o2);
         session->setCount(OXI_SPO2,session->count(OXI_SPO2)+1);
         session->setLast(OXI_SPO2,time);
+        session->set_last(time);
     } else {
         if (lasto2!=0) {
             if (spo2->count() > 0) {
@@ -231,7 +235,6 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
             }
         }
     }
-    session->set_last(time);
 
     lasto2=o2;
     emit(updateSpO2(o2));
@@ -244,7 +247,7 @@ void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
     session->setMin(OXI_Plethy,plethy->min());
     session->setMax(OXI_Plethy,plethy->max());
     session->setLast(OXI_Plethy,time);
-    session->set_last(lasttime);
+    session->set_last(time);
     plethy->setLast(time);
 }
 void SerialOximeter::compactToWaveform(EventList *el)
@@ -299,13 +302,14 @@ void SerialOximeter::compactAll()
     }
 }
 
-Session *SerialOximeter::createSession()
+Session *SerialOximeter::createSession(QDateTime date)
 {
     if (session) {
          delete session;
     }
-    int sid=QDateTime::currentDateTime().toTime_t();
+    int sid=date.toTime_t();
     lasttime=qint64(sid)*1000L;
+    lasto2=lastpr=0;
 
     session=new Session(machine,sid);
     session->SetChanged(true);
@@ -336,6 +340,7 @@ bool SerialOximeter::startLive()
 {
     import_mode=false;
     m_mode=SO_LIVE;
+    lastpr=lasto2=0;
 
     if (!m_opened && !Open(QextSerialPort::EventDriven)) return false;
     createSession();
@@ -1216,4 +1221,322 @@ void Oximetry::update_progress(float f)
         qprogress->setValue(f*100.0);
         QApplication::processEvents();
     }
+}
+
+bool Oximetry::openSPOFile(QString filename)
+{
+    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
+        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
+        if (res==0) {
+            on_saveButton_clicked();
+            return false;
+        } else if (res==2) {
+            return false;
+        }
+    } // else it's already saved.
+    //GraphView->setEmptyText("Please Wait");
+    //GraphView->updateGL();
+    QFile f(filename);
+    if (!f.open(QFile::ReadOnly)) return false;
+
+    QByteArray data;
+
+    data=f.readAll();
+    long size=data.size();
+
+    int pos=((unsigned char)data.at(1) << 8) | (unsigned char)data.at(0);
+    char dchr[20];
+    int j=0;
+    for (int i=0;i<18*2;i+=2) {
+        dchr[j++]=data.at(8+i);
+    }
+    dchr[j]=0;
+    QString dstr(dchr);
+    QDateTime date=QDateTime::fromString(dstr,"MM/dd/yy HH:mm:ss");
+    if (date.date().year()<2000) date=date.addYears(100);
+    qDebug() << date << pos;
+
+    day->getSessions().clear();
+    oximeter->createSession(date);
+    Session *session=oximeter->getSession();
+    day->AddSession(session);
+    session->set_first(0);
+
+    PLETHY->setRecMinY(0);
+    PLETHY->setRecMaxY(128);
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    firstPulseUpdate=true;
+    firstSPO2Update=true;
+    secondPulseUpdate=true;
+    secondSPO2Update=true;
+
+    unsigned char o2,pr;
+    quint16 pl;
+    qint64 tt=qint64(date.toTime_t())*1000L;
+
+
+    /*session->set_first(tt);
+    day->setFirst(tt);
+    plethy->setMinX(tt);
+    pulse->setMinX(tt);
+    spo2->setMinX(tt);
+    PLETHY->SetMinX(tt);
+    CONTROL->SetMinX(tt);
+    PULSE->SetMinX(tt);
+    SPO2->SetMinX(tt); */
+
+    for (int i=pos;i<size-5;) {
+        o2=(unsigned char)(data.at(i+4));
+        pr=(unsigned char)(data.at(i+3));
+        //oximeter->setLastTime(tt);
+        oximeter->addPulse(tt,pr);
+        oximeter->addSpO2(tt,o2);
+        pl=(unsigned char)(data.at(i+1));
+        //oximeter->addPlethy(tt,pl);
+        //pl=(unsigned char)(data.at(i+1));
+        //oximeter->addPlethy(tt,pl);
+        //pl=(unsigned char)(data.at(i+2));
+        //oximeter->addPlethy(tt,pl);
+        i+=5;
+        //data_changed();
+        tt+=1000;
+    }
+    qint64 t1=session->first(OXI_Pulse);
+    qint64 t2=session->first(OXI_SPO2);
+    qint64 t3=qMin(t1,t2);
+    session->set_first(t3);
+    day->setFirst(t3);
+    t1=session->last(OXI_Pulse);
+    t2=session->last(OXI_SPO2);
+    t3=qMax(t1,t2);
+    session->set_last(t3);
+    day->setLast(t3);
+    //session->setLast(OXI_Pulse,tt);
+    //session->setLast(OXI_Plethy,tt);
+    //session->setLast(OXI_SPO2,tt);
+    //session->set_last(tt);
+
+    ui->pulseLCD->display(session->min(OXI_Pulse));
+    ui->spo2LCD->display(session->min(OXI_SPO2));
+
+    pulse->setMinY(session->min(OXI_Pulse));
+    pulse->setMaxY(session->max(OXI_Pulse));
+    spo2->setMinY(session->min(OXI_SPO2));
+    spo2->setMaxY(session->max(OXI_SPO2));
+
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    //PLETHY->setVisible(false);
+    CONTROL->setVisible(false);
+
+    {
+    qint64 f=session->first();
+    qint64 l=session->last();
+    day->setFirst(f);
+    day->setLast(l);
+
+    plethy->setMinX(f);
+    pulse->setMinX(f);
+    spo2->setMinX(f);
+    PLETHY->SetMinX(f);
+    CONTROL->SetMinX(f);
+    PULSE->SetMinX(f);
+    SPO2->SetMinX(f);
+
+    plethy->setMaxX(l);
+    pulse->setMaxX(l);
+    spo2->setMaxX(l);
+    PLETHY->SetMaxX(l);
+    CONTROL->SetMaxX(l);
+    PULSE->SetMaxX(l);
+    SPO2->SetMaxX(l);
+
+    PULSE->setDay(day);
+    SPO2->setDay(day);
+    session->UpdateSummaries();
+
+    for (int i=0;i<GraphView->size();i++) {
+        (*GraphView)[i]->SetXBounds(f,l);
+    }
+
+    {
+        int len=(l-f)/1000L;
+        int h=len/3600;
+        int m=(len /60) % 60;
+        int s=(len % 60);
+        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
+    }
+    GraphView->updateScale();
+
+    GraphView->updateGL();
+    }
+    f.close();
+    ui->saveButton->setEnabled(true);
+    return true;
+}
+
+bool Oximetry::openSPORFile(QString filename)
+{
+    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
+        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
+        if (res==0) {
+            on_saveButton_clicked();
+            return false;
+        } else if (res==2) {
+            return false;
+        }
+    } // else it's already saved.
+    //GraphView->setEmptyText("Please Wait");
+    //GraphView->updateGL();
+    QFile f(filename);
+    if (!f.open(QFile::ReadOnly)) return false;
+
+    QByteArray data;
+
+    data=f.readAll();
+    long size=data.size();
+
+    int pos=((unsigned char)data.at(1) << 8) | (unsigned char)data.at(0);
+    char dchr[20];
+    int j=0;
+    for (int i=0;i<18*2;i+=2) {
+        dchr[j++]=data.at(8+i);
+    }
+    dchr[j]=0;
+    QString dstr(dchr);
+    QDateTime date=QDateTime::fromString(dstr,"MM/dd/yy HH:mm:ss");
+    if (date.date().year()<2000) date=date.addYears(100);
+    qDebug() << date << pos;
+
+    day->getSessions().clear();
+    oximeter->createSession(date);
+    Session *session=oximeter->getSession();
+    day->AddSession(session);
+    session->set_first(0);
+
+    PLETHY->setRecMinY(0);
+    PLETHY->setRecMaxY(128);
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    firstPulseUpdate=true;
+    firstSPO2Update=true;
+    secondPulseUpdate=true;
+    secondSPO2Update=true;
+
+    unsigned char o2,pr;
+    quint16 pl;
+    qint64 tt=qint64(date.toTime_t())*1000L;
+
+    for (int i=pos;i<size-2;) {
+        o2=(unsigned char)(data.at(i+1));
+        pr=(unsigned char)(data.at(i+0));
+        oximeter->addPulse(tt,pr);
+        oximeter->addSpO2(tt,o2);
+        pl=(unsigned char)(data.at(i+1));
+        i+=2;
+        tt+=1000;
+    }
+    qint64 t1=session->first(OXI_Pulse);
+    qint64 t2=session->first(OXI_SPO2);
+    qint64 t3=qMin(t1,t2);
+    session->set_first(t3);
+    day->setFirst(t3);
+    t1=session->last(OXI_Pulse);
+    t2=session->last(OXI_SPO2);
+    t3=qMax(t1,t2);
+    session->set_last(t3);
+    day->setLast(t3);
+
+    ui->pulseLCD->display(session->min(OXI_Pulse));
+    ui->spo2LCD->display(session->min(OXI_SPO2));
+
+    pulse->setMinY(session->min(OXI_Pulse));
+    pulse->setMaxY(session->max(OXI_Pulse));
+    spo2->setMinY(session->min(OXI_SPO2));
+    spo2->setMaxY(session->max(OXI_SPO2));
+
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    //PLETHY->setVisible(false);
+    CONTROL->setVisible(false);
+
+    {
+    qint64 f=session->first();
+    qint64 l=session->last();
+    day->setFirst(f);
+    day->setLast(l);
+
+    plethy->setMinX(f);
+    pulse->setMinX(f);
+    spo2->setMinX(f);
+    PLETHY->SetMinX(f);
+    CONTROL->SetMinX(f);
+    PULSE->SetMinX(f);
+    SPO2->SetMinX(f);
+
+    plethy->setMaxX(l);
+    pulse->setMaxX(l);
+    spo2->setMaxX(l);
+    PLETHY->SetMaxX(l);
+    CONTROL->SetMaxX(l);
+    PULSE->SetMaxX(l);
+    SPO2->SetMaxX(l);
+
+    PULSE->setDay(day);
+    SPO2->setDay(day);
+    session->UpdateSummaries();
+
+    for (int i=0;i<GraphView->size();i++) {
+        (*GraphView)[i]->SetXBounds(f,l);
+    }
+
+    {
+        int len=(l-f)/1000L;
+        int h=len/3600;
+        int m=(len /60) % 60;
+        int s=(len % 60);
+        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
+    }
+    GraphView->updateScale();
+
+    GraphView->updateGL();
+    }
+    f.close();
+    ui->saveButton->setEnabled(true);
+    return true;
+}
+
+void Oximetry::on_openButton_clicked()
+{
+    QString dir="";
+    QFileDialog fd(this,"Select an oximetry file",dir,"Oximetry Files (*.spo *.spoR)");
+    fd.setAcceptMode(QFileDialog::AcceptOpen);
+    fd.setFileMode(QFileDialog::ExistingFile);
+    if (fd.exec()!=QFileDialog::Accepted) return;
+    QStringList filenames=fd.selectedFiles();
+    if (filenames.size()>1) {
+        qDebug() << "Can only open one oximetry file at a time";
+    }
+    QString filename=filenames[0];
+    bool r=false;
+    if (filename.toLower().endsWith(".spo")) r=openSPOFile(filename);
+    else if (filename.toLower().endsWith(".spor")) r=openSPORFile(filename);
+
+    if (!r) {
+        mainwin->Notify("Couldn't open oximetry file \""+filename+"\".");
+    }
+    qDebug() << "opening" << filename;
 }
