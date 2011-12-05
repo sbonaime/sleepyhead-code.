@@ -2306,7 +2306,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
 
                     m_graphs[i]->mouseMoveEvent(&e);
-                    if (x<=titleWidth+(gYAxis::Margin-5)) {
+                    if (!m_button_down && (x<=titleWidth+(gYAxis::Margin-5))) {
                         //qDebug() << "Hovering over" << m_graphs[i]->title();
                         if (m_graphsbytitle["Event Flags"]==m_graphs[i]) {
                             QVector<Layer *> & layers=m_graphs[i]->layers();

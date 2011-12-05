@@ -54,6 +54,10 @@ void SummaryChart::SetDay(Day * nullday)
     EventDataType tmp,tmp2,total;
     ChannelID code;
 
+    m_goodcodes.resize(m_codes.size());
+    for (int i=0;i<m_codes.size();i++) {
+        m_goodcodes[i]=false;
+    }
     m_fday=0;
     qint64 tt,zt;
     m_empty=true;
@@ -70,7 +74,7 @@ void SummaryChart::SetDay(Day * nullday)
         bool fnd=false;
         if (m_graphtype==GT_SESSIONS) {
             for (int i=0;i<m_codes.size();i++)
-                m_goodcodes[m_codes[i]]=true;
+                m_goodcodes[i]=true;
             for (int i=0;i<d.value().size();i++) { // for each day
                 day=d.value()[i];
                 if  (!day) continue;
@@ -143,7 +147,7 @@ void SummaryChart::SetDay(Day * nullday)
                         m_values[dn][j+1]=tmp;
                         if (tmp<m_miny) m_miny=tmp;
                         if (tmp>m_maxy) m_maxy=tmp;
-                        m_goodcodes[code]=true;
+                        m_goodcodes[j]=true;
                         fnd=true;
                         break;
                     }
@@ -157,47 +161,38 @@ void SummaryChart::SetDay(Day * nullday)
                     if (total<m_miny) m_miny=total;
                     if (total>m_maxy) m_maxy=total;
                 }
-                m_empty=false;
+                //m_empty=false;
            } else m_hours[dn]=0;
         }
     }
     if (m_graphtype!=GT_SESSIONS)
     for (int j=0;j<m_codes.size();j++) { // for each code slice
         ChannelID code=m_codes[j];
-        if (!m_goodcodes.contains(code)) {
-            m_goodcodes[code]=false;
-        } else {
+        if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
 
-            if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
-                    //code=="Weight" ||
-                    //code=="BMI" ||
-                    //code=="ZombieMeter") continue; // too many lookups happening here.. stop the crap..
-
-            for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
-                tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
-                dn=tt/86400;
-                for (int i=0;i<d.value().size();i++) { // for each machine object for this day
-                    day=d.value()[i];
-                    if (day->machine_type()!=m_machinetype) continue;
-                    if (!m_values[dn].contains(j+1)) {
-                        m_days[dn]=day;
-                        m_values[dn][j+1]=0;
-                        if (!m_values[dn].contains(0)) {
-                            m_values[dn][0]=0;
-                        }
-                        if (0<m_miny) m_miny=0;
-                        if (0>m_maxy) m_maxy=0;
-                        m_hours[dn]=day->hours();
+        for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
+            tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
+            dn=tt/86400;
+            for (int i=0;i<d.value().size();i++) { // for each machine object for this day
+                day=d.value()[i];
+                if (day->machine_type()!=m_machinetype) continue;
+                if (!m_values[dn].contains(j+1)) {
+                    m_days[dn]=day;
+                    m_values[dn][j+1]=0;
+                    if (!m_values[dn].contains(0)) {
+                        m_values[dn][0]=0;
                     }
-                    break;
+                    if (0<m_miny) m_miny=0;
+                    if (0>m_maxy) m_maxy=0;
+                    m_hours[dn]=day->hours();
                 }
-            }
-            //m_empty=false;
+                break;
+           }
         }
     }
     m_empty=true;
     for (int i=0;i<m_goodcodes.size();i++) {
-        if (m_goodcodes[m_codes[i]]) {
+        if (m_goodcodes[i]) {
             m_empty=false;
             break;
         }
@@ -318,6 +313,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         } else {
             totalvalues[i]=0;
         }
+        if (!m_goodcodes[i]) continue;
        // lastvalues[i]=0;
         lastX[i]=px;
         if (d!=m_values.end()) {
@@ -399,6 +395,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     short j=g.key();
                     if (!j) continue;
                     j--;
+                    if (!m_goodcodes[j]) continue;
 
                     tmp=g.value();
 
@@ -474,8 +471,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     for (int j=0;j<m_codes.size();j++) {
         if (totalcounts[j]==0) continue;
+        if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
-        if (!m_goodcodes.contains(code) || !m_goodcodes[code]) continue;
         a=schema::channel[code].label();
         a+=" ";
         switch(m_type[j]) {
@@ -652,6 +649,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             } else {
                 QString a;
                 for (int i=0;i<m_type.size();i++) {
+                    if (m_goodcodes[i]) continue;
                     switch(m_type[i]) {
                             case ST_WAVG: a="W-avg"; break;
                             case ST_AVG:  a="Avg"; break;
