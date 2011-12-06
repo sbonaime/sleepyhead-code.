@@ -350,10 +350,10 @@ public:
         m_marginleft=left; m_marginright=right;
         m_margintop=top; m_marginbottom=bottom;
     }
-    inline short marginLeft();
-    inline short marginRight();
-    inline short marginTop();
-    inline short marginBottom();
+    short marginLeft();
+    short marginRight();
+    short marginTop();
+    short marginBottom();
 
     GLShortBuffer * lines();
     GLShortBuffer * backlines();

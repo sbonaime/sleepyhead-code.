@@ -167,6 +167,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false);
     general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",160);
     general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,"Mask Description","Whatever you want to record about your mask.",QString());
+    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,"High Resolution Printing","Use much slower but better quality high resolution printing.",QString());
 
     if (!(p_profile)->Exists("MaskStartDate")) {
         (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
@@ -194,6 +195,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
+    ui->highResolutionPrinting->setChecked(general["HighResPrinting"].value().toBool());
     ui->graphHeight->setValue(general["GraphHeight"].value().toInt());
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
@@ -312,6 +314,8 @@ void PreferencesDialog::Save()
     general["EnableMultithreading"].setValue(ui->enableMultithreading->isChecked());
     general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
     general["MaskDescription"].setValue(ui->maskDescription->text());
+    general["HighResPrinting"].setValue(ui->highResolutionPrinting->isChecked());
+
     (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
     (*profile)["GraphHeight"]=ui->graphHeight->value();
 

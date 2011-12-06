@@ -676,8 +676,16 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     QString username=PROFILE.Get("_{Username}_");
 
-    //QPrinter printer(QPrinter::ScreenResolution);
-    QPrinter printer(QPrinter::HighResolution);
+    QPrinter * zprinter;
+
+    if (PROFILE.ExistsAndTrue("HighResPrinting")) {
+        zprinter=new QPrinter(QPrinter::HighResolution);
+    } else {
+        zprinter=new QPrinter(QPrinter::ScreenResolution);
+    }
+
+    QPrinter & printer=*zprinter;;
+    //QPrinter printer(QPrinter::HighResolution);
 #ifdef Q_WS_X11
     printer.setPrinterName("Print to File (PDF)");
     printer.setOutputFormat(QPrinter::PdfFormat);
@@ -690,8 +698,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     printer.setFullPage(false); // This has nothing to do with scaling
     printer.setNumCopies(1);
     printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
-    QPrintDialog *dialog = new QPrintDialog(&printer);
-    if ( dialog->exec() != QDialog::Accepted) {
+    QPrintDialog dialog(&printer);
+    if (dialog.exec() != QDialog::Accepted) {
+        delete zprinter;
         return;
     }
 
@@ -703,7 +712,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
     const int graphs_per_page=5;
-    const int footer_height=(res.height()/20);
+    const int footer_height=(res.height()/22);
     float gw=res.width();
     float gh=(res.height()-footer_height)/graphs_per_page;
     float gw2=gv->width();
@@ -824,8 +833,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             QRectF bounds=painter.boundingRect(QRectF(0,res.height()-footer_height,res.width(),footer_height),footer,QTextOption(Qt::AlignHCenter));
             painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
 
-            QRectF pagebnds(res.width()-80*xscale,res.height()-footer_height,80*xscale,footer_height);
-            painter.drawText(pagebnds,"Page "+QString::number(page)+" of "+QString::number(pages),QTextOption(Qt::AlignRight));
+            QString pagestr="Page "+QString::number(page)+" of "+QString::number(pages);
+            QRectF pagebnds=painter.boundingRect(QRectF(0,res.height()-footer_height,res.width(),footer_height),pagestr,QTextOption(Qt::AlignRight));
+            painter.drawText(pagebnds,pagestr,QTextOption(Qt::AlignRight));
             first=false;
         }
         gGraph *g=(*gv)[i];
@@ -857,6 +867,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     qprogress->hide();
     painter.end();
+    delete zprinter;
 }
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()

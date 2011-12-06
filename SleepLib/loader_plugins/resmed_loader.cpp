@@ -108,6 +108,13 @@ bool EDFParser::Parse()
         return false;
     }
     startdate=qint64(startDate.toTime_t())*1000L;
+    QDateTime d=QDateTime::currentDateTime();
+    QTime t1=d.time();
+    QTime t2=d.toUTC().time();
+    qint64 tz_offset=t2.secsTo(t1);
+    //tz_hours=tz_offset/3600.0;
+    tz_offset*=1000L;
+    startdate-=tz_offset;
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
@@ -287,8 +294,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     qint64 duration=stredf.GetNumDataRecords()*stredf.GetDuration();
     int days=duration/86400000L;
 
-    QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
-    QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
+    //QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
+    //QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
     //QDate dd1=dt1.date();
     //QDate dd2=dt2.date();
     for (int s=0;s<stredf.GetNumSignals();s++) {
@@ -310,7 +317,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     QFileInfoList flist=dir.entryInfoList();
     QMap<SessionID,QVector<QString> > sessfiles;
 
-    QString ext,rest,datestr,s,codestr;
+    QString ext,rest,datestr;//,s,codestr;
     SessionID sessionid;
     QDateTime date;
     QString filename;

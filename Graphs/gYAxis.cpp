@@ -262,7 +262,7 @@ const QString gYAxisTime::Format(EventDataType v, int dp)
     char pm[3]={"am"};
 
     if (show_12hr) {
-        h>=12 ? pm[0]='p' : pm[0]='a'; // yes, inverted..
+        h>=12 ? pm[0]='a' : pm[0]='p';
         h %= 12;
         if (h==0) h=12;
     } else {

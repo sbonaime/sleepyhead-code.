@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -995,6 +995,13 @@ this application to be unstable with this feature enabled.</string>
             </property>
             <property name="text">
              <string>Enable Graph Snapshots</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QCheckBox" name="highResolutionPrinting">
+            <property name="text">
+             <string>High Resolution Printing (Slow)</string>
             </property>
            </widget>
           </item>

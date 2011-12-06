@@ -24,11 +24,10 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     hl_day=-1;
     m_machinetype=MT_CPAP;
 
-    QDateTime d=QDateTime::currentDateTime();
-    QTime t1=d.time();
-    QTime t2=d.toUTC().time();
-
-    tz_offset=t2.secsTo(t1);
+    QDateTime d1=QDateTime::currentDateTime();
+    QDateTime d2=d1;
+    d1.setTimeSpec(Qt::UTC);
+    tz_offset=d2.secsTo(d1);
     tz_hours=tz_offset/3600.0;
 
 }
@@ -79,26 +78,38 @@ void SummaryChart::SetDay(Day * nullday)
                 day=d.value()[i];
                 if  (!day) continue;
                 if (day->machine_type()!=m_machinetype) continue;
+                int ft=qint64(day->first())/1000L;
+                ft+=tz_offset; // convert to local time
+
+                int dz2=ft/86400;
+                dz2*=86400;  // ft = first sessions time, rounded back to midnight..
 
                 for (int s=0;s<day->size();s++) {
                     tmp=(*day)[s]->hours();
                     m_values[dn][s]=tmp;
                     total+=tmp;
-                    zt=(*day)[s]->first()/1000;
+                    zt=qint64((*day)[s]->first())/1000L;
                     zt+=tz_offset;
-                    zt %= 86400;
-                    tmp2=zt/3600.0;
-                    if (tmp2+tmp<16) {
-                        tmp2+=12;
+                    tmp2=zt-dn*86400;
+
+                    //zt %= 86400;
+                    tmp2/=3600.0;
+                    //tmp2-=24.0;
+
+                    //if (zdn>dn2) {
+                    //if (tmp2<12) {
+                    //    tmp2-=24;
                         //m_times[dn][s]=(tmp2+12);
-                    } else {
-                        tmp2-=12;
+                    //}/* else {
+                      //  tmp2-=12;
                         //m_times[dn][s]=(tmp2)-12;
-                    }
+                    //}*/
                     m_times[dn][s]=tmp2;
 
-                    if (tmp2 < m_miny) m_miny=tmp2;
-                    if (tmp2+tmp > m_maxy) m_maxy=tmp2+tmp;
+                    if (tmp2 < m_miny)
+                        m_miny=tmp2;
+                    if (tmp2+tmp > m_maxy)
+                        m_maxy=tmp2+tmp;
                 }
                 if (total>0) {
                     m_days[dn]=day;
@@ -250,7 +261,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     /*if (m_codes[0]=="HumidSet") {
         int i=1;
     }*/
-
+    if (w.title()=="Session Times") {
+        int i=5;
+    }
     w.roundY(miny,maxy);
 
     EventDataType yy=maxy-miny;
@@ -359,7 +372,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 QColor col2=brighten(col);
 
                 for (j=0;j<d.value().size();j++) {
-                    tmp2=times.value()[j];
+                    tmp2=times.value()[j]-miny;
                     py=top+height-(tmp2*ymult);
 
                     tmp=d.value()[j]; // length
