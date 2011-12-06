@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>436</height>
+    <width>961</width>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -232,6 +232,27 @@
         </property>
         <property name="segmentStyle">
          <enum>QLCDNumber::Flat</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Date</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateTimeEdit" name="dateEdit">
+        <property name="displayFormat">
+         <string>d/MM/yy h:mm:ss AP</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="resetTimeButton">
+        <property name="text">
+         <string>R</string>
         </property>
        </widget>
       </item>

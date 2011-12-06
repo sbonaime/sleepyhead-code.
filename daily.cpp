@@ -328,6 +328,12 @@ void Daily::Link_clicked(const QUrl &url)
         day=PROFILE.GetDay(previous_date,MT_CPAP);
     } else if (code=="oxi") {
         day=PROFILE.GetDay(previous_date,MT_OXIMETER);
+        Session *sess=day->machine->sessionlist[sid];
+        if (mainwin->getOximetry()) {
+            mainwin->getOximetry()->openSession(sess);
+            mainwin->selectOximetryTab();
+        }
+        return;
     } else if (code=="event")  {
         QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[data].description(),Qt::MatchContains);
         if (list.size()>0) {
@@ -355,7 +361,11 @@ void Daily::Link_clicked(const QUrl &url)
 
 void Daily::ReloadGraphs()
 {
-    QDate d=PROFILE.LastDay();
+    QDate d;
+    if (previous_date.isValid()) {
+        d=previous_date;
+        Unload(d);
+    } else d=PROFILE.LastDay();
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
@@ -818,11 +828,12 @@ void Daily::Load(QDate date)
 
         //}
         html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
-        html+="<tr><td align=center>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
         if (cpap) {
+            html+="<tr><td align=left><b>SessionID</b></td><td align=center><b>Date</b></td><td align=center><b>Start</b></td><td align=center><b>End</b></td></tr>";
+            html+="<tr><td align=left colspan=4><i>CPAP Sessions</i></td></tr>";
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -833,11 +844,14 @@ void Daily::Load(QDate date)
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
                 tooltip=cpap->machine->GetClass()+" CPAP "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=center><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
+                tmp.sprintf(("<tr><td align=left><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
             }
+            //if (oxi) html+="<tr><td colspan=4><hr></td></tr>";
         }
         if (oxi) {
+            html+="<tr><td align=left colspan=4><i>Oximetry Sessions</i></td></tr>";
+            //html+="<tr><td align=left>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
             for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -848,7 +862,7 @@ void Daily::Load(QDate date)
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
                 tooltip=oxi->machine->GetClass()+" Oximeter "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=center><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
+                tmp.sprintf(("<tr><td align=left><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
             }
         }

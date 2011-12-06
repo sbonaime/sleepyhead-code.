@@ -51,6 +51,9 @@ public:
     void SetSessionID(SessionID s) {
         s_session=s;
     }
+    void offsetSession(qint64 d);
+    void really_set_first(qint64 d) { s_first=d; }
+    void really_set_last(qint64 d) { s_last=d; }
     void set_first(qint64 d) {
         if (!s_first) s_first=d;
         else if (d<s_first) s_first=d;

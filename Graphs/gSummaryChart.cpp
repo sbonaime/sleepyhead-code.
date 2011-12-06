@@ -262,8 +262,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     graph=&w;
     float px=left;
-    l_left=w.m_marginleft+gYAxis::Margin;
-    l_top=w.m_margintop;
+    l_left=w.marginLeft()+gYAxis::Margin;
+    l_top=w.marginTop();
     l_width=width;
     l_height=height;
     float py;

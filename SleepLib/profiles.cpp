@@ -292,6 +292,35 @@ Machine * Profile::GetMachine(MachineType t)
 
 }
 
+void Profile::RemoveSession(Session * sess)
+{
+    QMap<QDate,QVector<Day *> >::iterator di;
+
+    for (di=daylist.begin();di!=daylist.end();di++) {
+        for (int d=0;d<di.value().size();d++) {
+            Day *day=di.value()[d];
+
+            int i=day->getSessions().indexOf(sess);
+            if (i>=0) {
+                for (;i<day->getSessions().size()-1;i++) {
+                    day->getSessions()[i]=day->getSessions()[i+1];
+                }
+                day->getSessions().pop_back();
+                qint64 first=0,last=0;
+                for (int i=0;i<day->getSessions().size();i++) {
+                    Session & sess=*day->getSessions()[i];
+                    if (!first || first>sess.first()) first=sess.first();
+                    if (!last || last<sess.last()) last=sess.last();
+                }
+                day->setFirst(first);
+                day->setLast(last);
+                return;
+            }
+        }
+    }
+}
+
+
 //Profile *profile=NULL;
 QString SHA1(QString pass)
 {
@@ -405,6 +434,7 @@ void Scan()
     }
 
 }
+
 
 }; // namespace Profiles
 

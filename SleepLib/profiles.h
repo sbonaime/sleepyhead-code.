@@ -38,6 +38,7 @@ public:
     void LoadMachineData();
     void DataFormatError(Machine *m);
     int Import(QString path);
+    void RemoveSession(Session * sess);
 
     void AddDay(QDate date,Day *day,MachineType mt);
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);

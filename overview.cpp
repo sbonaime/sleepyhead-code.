@@ -101,17 +101,23 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR=createGraph("Pressure","Pressure\n(cmH2O)");
     SET=createGraph("Settings","Settings");
     LK=createGraph("Leaks","Leak Rate\n(L/min)");
-    SES=createGraph("Sessions","Sessions\n(count)");
     NPB=createGraph("% in PB","Periodic\nBreathing\n(% of night)");
+    AHIHR=createGraph("AHI/Hour","AHI Events/Hour\n(ahi/hr)");
     RR=createGraph("Resp. Rate","Respiratory\nRate\n(breaths/min)");
     TV=createGraph("Tidal Volume","Tidal\nVolume\n(ml)");
     MV=createGraph("Minute Vent.","Minute\nVentilation\n(L/min)");
     PTB=createGraph("Pat. Trig. Br.","Patient\nTriggered\nBreaths\n(%)");
+    SES=createGraph("Sessions","Sessions\n(count)");
     PULSE=createGraph("Pulse Rate","Pulse Rate\n(bpm)");
     SPO2=createGraph("SpO2","Oxygen Saturation\n(%)");
     WEIGHT=createGraph("Weight","Weight\n(kg)");
     BMI=createGraph("BMI","Body\nMass\nIndex");
     ZOMBIE=createGraph("Zombie","How you felt\n(% awesome)");
+
+    ahihr=new SummaryChart("AHI/Hr",GT_LINE);
+    ahihr->addSlice(CPAP_AHI,QColor("blue"),ST_MAX,true);
+    ahihr->addSlice(CPAP_AHI,QColor("orange"),ST_WAVG,true);
+    AHIHR->AddLayer(ahihr);
 
     weight=new SummaryChart("Weight",GT_LINE);
     weight->setMachineType(MT_JOURNAL);

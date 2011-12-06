@@ -48,6 +48,9 @@ public:
     Daily *getDaily() { return daily; }
     Overview *getOverview() { return overview; }
     Oximetry *getOximetry() { return oximetry; }
+
+    void selectOximetryTab();
+
     void JumpDaily();
     void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
 private slots:

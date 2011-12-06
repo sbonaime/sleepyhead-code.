@@ -961,6 +961,9 @@ bool gGraph::isEmpty()
     }
     return empty;
 }
+float gGraph::printScaleX() { return m_graphview->printScaleX(); }
+float gGraph::printScaleY() { return m_graphview->printScaleY(); }
+
 
 void gGraph::drawGLBuf()
 {
@@ -1042,28 +1045,28 @@ void gGraph::paint(int originX, int originY, int width, int height)
     */
 
     //glColor4f(0,0,0,1);
-    renderText(title(),20,originY+height/2,90,Qt::black,mediumfont);
+    renderText(title(),20*m_graphview->printScaleX(),originY+height/2,90,Qt::black,mediumfont);
 
     left=0,right=0,top=0,bottom=0;
 
     int tmp;
 
-    originX+=m_marginleft;
-    originY+=m_margintop;
-    width-=m_marginleft+m_marginright;
-    height-=m_margintop+m_marginbottom;
+    originX+=marginLeft();
+    originY+=marginTop();
+    width-=marginLeft()+marginRight();
+    height-=marginTop()+marginBottom();
     //int lsize=m_layers.size();
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
-        tmp=ll->Height();
+        tmp=ll->Height()*m_graphview->printScaleY();
         if (ll->position()==LayerTop) top+=tmp;
         if (ll->position()==LayerBottom) bottom+=tmp;
     }
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
-        tmp=ll->Width();
+        tmp=ll->Width()*m_graphview->printScaleX();
         if (ll->position()==LayerLeft) {
             ll->paint(*this,originX+left,originY+top,tmp,height-top-bottom);
             left+=tmp;
@@ -1077,7 +1080,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     bottom=0; top=0;
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
-        tmp=ll->Height();
+        tmp=ll->Height()*m_graphview->printScaleY();
         if (ll->position()==LayerTop) {
             ll->paint(*this,originX+left,originY+top,width-left-right,tmp);
             top+=tmp;
@@ -1597,6 +1600,10 @@ GLShortBuffer * gGraph::quads()
 {
     return m_graphview->quads;
 }
+short gGraph::marginLeft() { return m_marginleft*m_graphview->printScaleX(); }
+short gGraph::marginRight() { return m_marginright*m_graphview->printScaleX(); }
+short gGraph::marginTop() { return m_margintop*m_graphview->printScaleY(); }
+short gGraph::marginBottom() { return m_marginbottom*m_graphview->printScaleY(); }
 
 QPixmap gGraph::renderPixmap(int w, int h)
 {
@@ -1608,16 +1615,19 @@ QPixmap gGraph::renderPixmap(int w, int h)
     QFont fb=*mediumfont;
     QFont fc=*bigfont;
 
-    //fa.setPointSizeF(fa.pointSizeF()*4.0);
-    //fb.setPointSizeF(fb.pointSizeF()*4.0);
-    //fc.setPointSizeF(fc.pointSizeF()*4.0);
+    gGraphView *sg=mainwin->snapshotGraph();
+    if (!sg) return QPixmap();
+
+    float scale=sg->printScaleX();
+
+    fa.setPointSize(fa.pointSize()*scale);
+    fb.setPointSize(fb.pointSize()*scale);
+    fc.setPointSize(fc.pointSize()*scale);
 
     defaultfont=&fa;
     mediumfont=&fb;
     bigfont=&fc;
 
-    gGraphView *sg=mainwin->snapshotGraph();
-    if (!sg) return QPixmap();
     sg->hideSplitter();
     gGraphView *tgv=m_graphview;
     m_graphview=sg;
@@ -1625,12 +1635,12 @@ QPixmap gGraph::renderPixmap(int w, int h)
     //qint64 mx=min_x, Mx=max_x;
 
     float tmp=m_height;
-    m_height=PROFILE["GraphHeight"].toInt();
+    m_height=PROFILE["GraphHeight"].toInt()*sg->printScaleY();
     sg->trashGraphs();
     sg->addGraph(this);
     //sg->ResetBounds();
     //sg->SetXBounds(mx,Mx);
-
+    //sg->updateScrollBar();
     sg->updateScale();
     QPixmap pm=sg->renderPixmap(w,h,false);
 
@@ -1697,7 +1707,13 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         return;
     }
 
-    if (maxy>=5) {
+    if (maxy>=300) {
+        m=ceil(maxy/10.0);
+        t=m*10;
+        if (!ymax_good) maxy=t;
+        m=floor(miny/10.0);
+        if (!ymin_good) miny=m*10;
+    } else if (maxy>=5) {
         m=ceil(maxy/5.0);
         t=m*5;
         if (!ymax_good) maxy=t;
@@ -1753,7 +1769,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_showsplitter=true;
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),SLOT(refreshTimeout()));
-
+    print_scaleY=print_scaleX=1.0;
 }
 gGraphView::~gGraphView()
 {
@@ -2123,7 +2139,6 @@ void gGraphView::paintGL()
 
         if ((py + h + graphSpacer) >= 0) {
             w=width();
-
             queGraph(m_graphs[i],px,py,width()-titleWidth,h);
 
             if (m_showsplitter) {
@@ -2296,7 +2311,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             break; // we are done.. can't draw anymore
 
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
-            if (m_button_down || ((y >= py) && (y < py + h))) {
+            if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                this->setCursor(Qt::SplitVCursor);
+            } else if (m_button_down || ((y >= py) && (y < py + h))) {
                 if (m_button_down || (x >= titleWidth+10)) { //(gYAxis::Margin-5)
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
@@ -2344,8 +2361,6 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     this->setCursor(Qt::OpenHandCursor);
                 }
 
-            } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
-                this->setCursor(Qt::SplitVCursor);
             }
 
         }

@@ -90,7 +90,7 @@ gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool alway
     //addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
     quads->setAntiAlias(true);
     //lines->setAntiAlias(true);
-    GetTextExtent(m_label,m_lx,m_ly);
+    //GetTextExtent(m_label,m_lx,m_ly);
     //m_static.setText(m_label);;
 }
 gFlagsLine::~gFlagsLine()
@@ -119,6 +119,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
     double xmult=width/xx;
 
+    GetTextExtent(m_label,m_lx,m_ly);
 
     // Draw text label
     w.renderText(m_label,left-m_lx-10,top+(height/2)+(m_ly/2));

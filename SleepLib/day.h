@@ -61,7 +61,7 @@ public:
 
     QVector<Session *>::iterator begin() { return sessions.begin(); }
     QVector<Session *>::iterator end() { return sessions.end(); }
-
+    int find(Session * sess) { return sessions.indexOf(sess); }
     int size() { return sessions.size(); }
     Machine *machine;
 

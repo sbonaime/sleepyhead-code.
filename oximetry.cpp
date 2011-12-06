@@ -4,10 +4,14 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QLabel>
+#include <QLocale>
 #include <QTimer>
+#include <QCalendarWidget>
+#include <QTextCharFormat>
 
 #include "oximetry.h"
 #include "ui_oximetry.h"
+#include "common_gui.h"
 #include "qextserialport/qextserialenumerator.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
@@ -48,6 +52,7 @@ SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portnam
     connect(timer,SIGNAL(timeout()),this,SLOT(Timeout()));
     import_mode=false;
     m_mode=SO_WAIT;
+
 }
 
 SerialOximeter::~SerialOximeter()
@@ -259,25 +264,48 @@ void SerialOximeter::compactToWaveform(EventList *el)
 }
 void SerialOximeter::compactToEvent(EventList *el)
 {
-    if (el->count()==0) return;
+    if (el->count()<2) return;
     EventList nel(EVL_Waveform);
-    EventDataType t,lastt=el->data(0);
-    qint64 ti=el->time(0);
-    nel.AddEvent(ti,lastt);
+    EventDataType t,lastt=0; //el->data(0);
+    qint64 ti;//=el->time(0);
+    //nel.AddEvent(ti,lastt);
     bool f;
-    for (quint32 i=1;i<el->count();i++) {
+    qint64 lasttime=0;
+    EventDataType min=999,max=0;
+    for (quint32 i=0;i<el->count();i++) {
         t=el->data(i);
+        ti=el->time(i);
         f=false;
-        if (t!=lastt) {
-            ti=el->time(i);
-            nel.AddEvent(ti,t);
-            f=true;
+        if (t!=0) {
+            if (t!=lastt) {
+                if (!lasttime) {
+                    nel.setFirst(ti);
+                }
+                nel.AddEvent(ti,t);
+                if (t < min) min=t;
+                if (t > max) max=t;
+                lasttime=ti;
+                f=true;
+            }
+        } else {
+            if (lastt!=0) {
+                nel.AddEvent(ti,lastt);
+                lasttime=ti;
+                f=true;
+            }
         }
         lastt=t;
     }
     if (!f) {
-        nel.AddEvent(el->last(),t);
+        if (t!=0) {
+            nel.AddEvent(ti,t);
+            lasttime=ti;
+        }
     }
+    el->setFirst(nel.first());
+    el->setLast(nel.last());
+    el->setMin(min);
+    el->setMax(max);
 
     el->getData().clear();
     el->getTime().clear();
@@ -291,15 +319,45 @@ void SerialOximeter::compactAll()
 {
     if (!session) return;
     QHash<ChannelID,QVector<EventList *> >::iterator i;
+
+    qint64 tminx=0,tmaxx=0,minx,maxx;
+    EventDataType min,max;
     for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
+        const QString & code=i.key();
+        min=999,max=0;
+        minx=maxx=0;
         for (int j=0;j<i.value().size();j++) {
-            if (i.key()==OXI_SPO2) {
-                compactToEvent(i.value()[j]);
-            } else {
-                compactToWaveform(i.value()[j]);
+            EventList *e=i.value()[j];
+            if ((code==OXI_SPO2) || (code==OXI_Pulse)) {
+                compactToEvent(e);
+            } else if (code==OXI_Plethy) {
+                compactToWaveform(e);
+            }
+            if (min > e->min())
+                min=e->min();
+            if (max < e->max())
+                max=e->max();
+            if (!minx || (minx > e->first()))
+                minx=e->first();
+            if (!maxx || (maxx < e->last()))
+                maxx=e->last();
+        }
+        if ((code==OXI_SPO2) || (code==OXI_Pulse) || (code==OXI_Plethy)) {
+            session->setMin(code,min);
+            session->setMax(code,max);
+            if (minx!=0) {
+                session->setFirst(code,minx);
+                if (!tminx || tminx > minx) tminx=minx;
+            }
+            if (maxx!=0){
+                session->setLast(code,maxx);
+                if (!tmaxx || tmaxx < max) tmaxx=maxx;
             }
         }
     }
+
+    if (tminx>0) session->really_set_first(tminx);
+    if (tmaxx>0) session->really_set_last(tmaxx);
 }
 
 Session *SerialOximeter::createSession(QDateTime date)
@@ -420,6 +478,12 @@ void CMS50Serial::import_process()
                 if (pl > plmax) plmax=pl;
                 plcnt++;
             }
+        } else {
+            if (lastpl!=0) {
+                pulse->AddEvent(lasttime,pl);
+                lastpltime=lasttime;
+                plcnt++;
+            }
         }
         if (o2!=0) {
             if (lasto2!=o2) {
@@ -442,6 +506,12 @@ void CMS50Serial::import_process()
                 if (o2 > o2max) o2max=o2;
                 o2cnt++;
             }
+        } else {
+            if (lasto2!=0) {
+                spo2->AddEvent(lasttime,o2);
+                lasto2time=lasttime;
+                o2cnt++;
+            }
         }
 
         lasttime+=1000;
@@ -450,7 +520,7 @@ void CMS50Serial::import_process()
         lastpl=pl;
         lasto2=o2;
     }
-    if (pulse && (lastpltime!=lasttime) && (pl!=0)) {
+    /*if (pulse && (lastpltime!=lasttime) && (pl!=0)) {
         // lastpl==pl
         pulse->AddEvent(lasttime,pl);
         lastpltime=lastpltime;
@@ -460,8 +530,9 @@ void CMS50Serial::import_process()
         spo2->AddEvent(lasttime,o2);
         lasto2time=lasttime;
         o2cnt++;
-    }
-    session->set_last(lasttime);
+    }*/
+    qint64 rlasttime=qMax(lastpltime,lasto2time);
+    session->set_last(rlasttime);
     session->setLast(OXI_Pulse,lastpltime);
     session->setLast(OXI_SPO2,lasto2time);
     session->setMin(OXI_Pulse,plmin);
@@ -788,6 +859,24 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     ui->saveButton->setEnabled(false);
     GraphView->LoadSettings("Oximetry");
+
+    QLocale locale=QLocale::system();
+    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
+    if (!shortformat.toLower().contains("yyyy")) {
+        shortformat.replace("yy","yyyy");
+    }
+    ui->dateEdit->setDisplayFormat(shortformat+" HH:mm:ss");
+    //Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
+
+    //ui->dateEdit->calendarWidget()->setFirstDayOfWeek(dow);
+
+
+    // Stop both calendar drop downs highlighting weekends in red
+    //QTextCharFormat format = ui->dateEdit->calendarWidget()->weekdayTextFormat(Qt::Saturday);
+    //format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    //ui->dateEdit->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
+    //ui->dateEdit->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
+    dont_update_date=false;
 }
 
 Oximetry::~Oximetry()
@@ -876,6 +965,8 @@ void Oximetry::on_RunButton_toggled(bool checked)
             ui->ImportButton->setEnabled(true);
             lo2->SetDay(day);
             lo1->SetDay(day);
+            if (oximeter->getSession())
+                saved_starttime=oximeter->getSession()->first();
 
 
 
@@ -1113,62 +1204,17 @@ void Oximetry::import_complete(Session * session)
 
     //calcSPO2Drop(session);
     //calcPulseChange(session);
-
-    ui->pulseLCD->display(session->min(OXI_Pulse));
-    ui->spo2LCD->display(session->min(OXI_SPO2));
-
-    pulse->setMinY(session->min(OXI_Pulse));
-    pulse->setMaxY(session->max(OXI_Pulse));
-    spo2->setMinY(session->min(OXI_SPO2));
-    spo2->setMaxY(session->max(OXI_SPO2));
-
-    PULSE->setRecMinY(60);
-    PULSE->setRecMaxY(100);
-    SPO2->setRecMinY(90);
-    SPO2->setRecMaxY(100);
-
     //PLETHY->setVisible(false);
+
     CONTROL->setVisible(false);
 
-    qint64 f=session->first();
-    qint64 l=session->last();
-    day->setFirst(f);
-    day->setLast(l);
+    saved_starttime=session->first();
+    dont_update_date=true;
+    ui->dateEdit->setDateTime(QDateTime::fromTime_t(saved_starttime/1000L));
+    dont_update_date=false;
 
-    plethy->setMinX(f);
-    pulse->setMinX(f);
-    spo2->setMinX(f);
-    PLETHY->SetMinX(f);
-    CONTROL->SetMinX(f);
-    PULSE->SetMinX(f);
-    SPO2->SetMinX(f);
 
-    plethy->setMaxX(l);
-    pulse->setMaxX(l);
-    spo2->setMaxX(l);
-    PLETHY->SetMaxX(l);
-    CONTROL->SetMaxX(l);
-    PULSE->SetMaxX(l);
-    SPO2->SetMaxX(l);
-
-    PULSE->setDay(day);
-    SPO2->setDay(day);
-
-    for (int i=0;i<GraphView->size();i++) {
-        (*GraphView)[i]->SetXBounds(f,l);
-    }
-
-    {
-        int len=(l-f)/1000L;
-        int h=len/3600;
-        int m=(len /60) % 60;
-        int s=(len % 60);
-        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
-    }
-    GraphView->updateScale();
-
-    GraphView->updateGL();
-
+    updateGraphs();
 }
 
 void Oximetry::pulse_changed(float p)
@@ -1204,11 +1250,20 @@ void Oximetry::on_saveButton_clicked()
 {
     if (QMessageBox::question(this,"Keep This Recording?","Would you like to save this oximetery session?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
         Session *session=oximeter->getSession();
+
         // Process???
         //session->UpdateSummaries();
-        oximeter->getMachine()->AddSession(session,p_profile);
+        PROFILE.RemoveSession(session);
+        Machine *m=oximeter->getMachine();
+        if (m->SessionExists(session->session())) {
+            m->sessionlist.erase(m->sessionlist.find(session->session()));
+        }
+        m->AddSession(session,p_profile);
+        //}
         oximeter->getMachine()->Save();
         day->getSessions().clear();
+
+
         mainwin->getDaily()->ReloadGraphs();
         mainwin->getOverview()->ReloadGraphs();
         GraphView->setEmptyText("No Oximetry Data");
@@ -1243,20 +1298,13 @@ bool Oximetry::openSPOFile(QString filename)
     QString dstr(dchr);
     QDateTime date=QDateTime::fromString(dstr,"MM/dd/yy HH:mm:ss");
     if (date.date().year()<2000) date=date.addYears(100);
-    qDebug() << date << pos;
+    //ui->dateEdit->setDateTime(date);
 
     day->getSessions().clear();
     oximeter->createSession(date);
     Session *session=oximeter->getSession();
     day->AddSession(session);
     session->set_first(0);
-
-    PLETHY->setRecMinY(0);
-    PLETHY->setRecMaxY(128);
-    PULSE->setRecMinY(60);
-    PULSE->setRecMaxY(100);
-    SPO2->setRecMinY(90);
-    SPO2->setRecMaxY(100);
 
     firstPulseUpdate=true;
     firstSPO2Update=true;
@@ -1266,17 +1314,6 @@ bool Oximetry::openSPOFile(QString filename)
     unsigned char o2,pr;
     quint16 pl;
     qint64 tt=qint64(date.toTime_t())*1000L;
-
-
-    /*session->set_first(tt);
-    day->setFirst(tt);
-    plethy->setMinX(tt);
-    pulse->setMinX(tt);
-    spo2->setMinX(tt);
-    PLETHY->SetMinX(tt);
-    CONTROL->SetMinX(tt);
-    PULSE->SetMinX(tt);
-    SPO2->SetMinX(tt); */
 
     for (int i=pos;i<size-5;) {
         o2=(unsigned char)(data.at(i+4));
@@ -1299,73 +1336,22 @@ bool Oximetry::openSPOFile(QString filename)
     qint64 t3=qMin(t1,t2);
     session->set_first(t3);
     day->setFirst(t3);
+    int zi=t3/1000L;
+    session->SetSessionID(zi);
+    date.fromTime_t(zi);
+    dont_update_date=true;
+    ui->dateEdit->setDateTime(date);
+    dont_update_date=false;
+
     t1=session->last(OXI_Pulse);
     t2=session->last(OXI_SPO2);
     t3=qMax(t1,t2);
     session->set_last(t3);
     day->setLast(t3);
-    //session->setLast(OXI_Pulse,tt);
-    //session->setLast(OXI_Plethy,tt);
-    //session->setLast(OXI_SPO2,tt);
-    //session->set_last(tt);
-
-    ui->pulseLCD->display(session->min(OXI_Pulse));
-    ui->spo2LCD->display(session->min(OXI_SPO2));
-
-    pulse->setMinY(session->min(OXI_Pulse));
-    pulse->setMaxY(session->max(OXI_Pulse));
-    spo2->setMinY(session->min(OXI_SPO2));
-    spo2->setMaxY(session->max(OXI_SPO2));
-
-    PULSE->setRecMinY(60);
-    PULSE->setRecMaxY(100);
-    SPO2->setRecMinY(90);
-    SPO2->setRecMaxY(100);
-
-    //PLETHY->setVisible(false);
     CONTROL->setVisible(false);
 
-    {
-    qint64 f=session->first();
-    qint64 l=session->last();
-    day->setFirst(f);
-    day->setLast(l);
+    updateGraphs();
 
-    plethy->setMinX(f);
-    pulse->setMinX(f);
-    spo2->setMinX(f);
-    PLETHY->SetMinX(f);
-    CONTROL->SetMinX(f);
-    PULSE->SetMinX(f);
-    SPO2->SetMinX(f);
-
-    plethy->setMaxX(l);
-    pulse->setMaxX(l);
-    spo2->setMaxX(l);
-    PLETHY->SetMaxX(l);
-    CONTROL->SetMaxX(l);
-    PULSE->SetMaxX(l);
-    SPO2->SetMaxX(l);
-
-    PULSE->setDay(day);
-    SPO2->setDay(day);
-    session->UpdateSummaries();
-
-    for (int i=0;i<GraphView->size();i++) {
-        (*GraphView)[i]->SetXBounds(f,l);
-    }
-
-    {
-        int len=(l-f)/1000L;
-        int h=len/3600;
-        int m=(len /60) % 60;
-        int s=(len % 60);
-        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
-    }
-    GraphView->updateScale();
-
-    GraphView->updateGL();
-    }
     f.close();
     ui->saveButton->setEnabled(true);
     return true;
@@ -1393,20 +1379,12 @@ bool Oximetry::openSPORFile(QString filename)
     QString dstr(dchr);
     QDateTime date=QDateTime::fromString(dstr,"MM/dd/yy HH:mm:ss");
     if (date.date().year()<2000) date=date.addYears(100);
-    qDebug() << date << pos;
 
     day->getSessions().clear();
     oximeter->createSession(date);
     Session *session=oximeter->getSession();
     day->AddSession(session);
     session->set_first(0);
-
-    PLETHY->setRecMinY(0);
-    PLETHY->setRecMaxY(128);
-    PULSE->setRecMinY(60);
-    PULSE->setRecMaxY(100);
-    SPO2->setRecMinY(90);
-    SPO2->setRecMaxY(100);
 
     firstPulseUpdate=true;
     firstSPO2Update=true;
@@ -1431,69 +1409,25 @@ bool Oximetry::openSPORFile(QString filename)
     qint64 t3=qMin(t1,t2);
     session->set_first(t3);
     day->setFirst(t3);
+    int zi=t3/1000L;
+    session->SetSessionID(zi);
+    date.fromTime_t(zi);
+    dont_update_date=true;
+    ui->dateEdit->setDateTime(date);
+    dont_update_date=false;
+
+
     t1=session->last(OXI_Pulse);
     t2=session->last(OXI_SPO2);
     t3=qMax(t1,t2);
     session->set_last(t3);
     day->setLast(t3);
 
-    ui->pulseLCD->display(session->min(OXI_Pulse));
-    ui->spo2LCD->display(session->min(OXI_SPO2));
-
-    pulse->setMinY(session->min(OXI_Pulse));
-    pulse->setMaxY(session->max(OXI_Pulse));
-    spo2->setMinY(session->min(OXI_SPO2));
-    spo2->setMaxY(session->max(OXI_SPO2));
-
-    PULSE->setRecMinY(60);
-    PULSE->setRecMaxY(100);
-    SPO2->setRecMinY(90);
-    SPO2->setRecMaxY(100);
 
     //PLETHY->setVisible(false);
     CONTROL->setVisible(false);
 
-    {
-    qint64 f=session->first();
-    qint64 l=session->last();
-    day->setFirst(f);
-    day->setLast(l);
-
-    plethy->setMinX(f);
-    pulse->setMinX(f);
-    spo2->setMinX(f);
-    PLETHY->SetMinX(f);
-    CONTROL->SetMinX(f);
-    PULSE->SetMinX(f);
-    SPO2->SetMinX(f);
-
-    plethy->setMaxX(l);
-    pulse->setMaxX(l);
-    spo2->setMaxX(l);
-    PLETHY->SetMaxX(l);
-    CONTROL->SetMaxX(l);
-    PULSE->SetMaxX(l);
-    SPO2->SetMaxX(l);
-
-    PULSE->setDay(day);
-    SPO2->setDay(day);
-    session->UpdateSummaries();
-
-    for (int i=0;i<GraphView->size();i++) {
-        (*GraphView)[i]->SetXBounds(f,l);
-    }
-
-    {
-        int len=(l-f)/1000L;
-        int h=len/3600;
-        int m=(len /60) % 60;
-        int s=(len % 60);
-        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
-    }
-    GraphView->updateScale();
-
-    GraphView->updateGL();
-    }
+    updateGraphs();
     f.close();
     ui->saveButton->setEnabled(true);
     return true;
@@ -1529,4 +1463,133 @@ void Oximetry::on_openButton_clicked()
         mainwin->Notify("Couldn't open oximetry file \""+filename+"\".");
     }
     qDebug() << "opening" << filename;
+}
+
+void Oximetry::on_dateEdit_dateTimeChanged(const QDateTime &date)
+{
+    Session *session=oximeter->getSession();
+    if (!session)
+        return;
+    if (dont_update_date)
+        return;
+
+    qint64 first=session->first();
+    qint64 last=session->last();
+    qint64 tt=qint64(date.toTime_t())*1000L;
+    qint64 offset=tt-first;
+
+    if (offset!=0) {
+        session->SetChanged(true);
+        ui->saveButton->setEnabled(true);
+    }
+
+    session->offsetSession(offset);
+
+    updateGraphs();
+}
+
+void Oximetry::openSession(Session * session)
+{
+    if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
+        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry session will destroy the unsavedsession in the oximetry tab.\nWould you like to store it first?","Save","Destroy It","Cancel",0,2);
+        if (res==0) {
+            on_saveButton_clicked();
+            return;
+        } else if (res==2) {
+            return;
+        }
+    } // else it's already saved.
+
+    day->getSessions().clear();
+    day->AddSession(session);
+
+    oximeter->setSession(session);
+
+    saved_starttime=session->first();
+    oximeter->compactAll();
+
+    QDateTime date=QDateTime::fromTime_t(saved_starttime/1000L);
+    dont_update_date=true;
+    ui->dateEdit->setDateTime(date);
+    dont_update_date=false;
+    updateGraphs();
+
+}
+void Oximetry::updateGraphs()
+{
+    Session * session=oximeter->getSession();
+    if (!session) return;
+
+    qint64 first=session->first();
+    qint64 last=session->last();
+
+    ui->pulseLCD->display(session->min(OXI_Pulse));
+    ui->spo2LCD->display(session->min(OXI_SPO2));
+
+    pulse->setMinY(session->min(OXI_Pulse));
+    pulse->setMaxY(session->max(OXI_Pulse));
+    spo2->setMinY(session->min(OXI_SPO2));
+    spo2->setMaxY(session->max(OXI_SPO2));
+
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    day->setFirst(first);
+    day->setLast(last);
+    pulse->setMinY(session->min(OXI_Pulse));
+    pulse->setMaxY(session->max(OXI_Pulse));
+    spo2->setMinY(session->min(OXI_SPO2));
+    spo2->setMaxY(session->max(OXI_SPO2));
+
+    PULSE->setRecMinY(60);
+    PULSE->setRecMaxY(100);
+    SPO2->setRecMinY(90);
+    SPO2->setRecMaxY(100);
+
+    plethy->setMinX(first);
+    pulse->setMinX(first);
+    spo2->setMinX(first);
+    PLETHY->SetMinX(first);
+    CONTROL->SetMinX(first);
+    PULSE->SetMinX(first);
+    SPO2->SetMinX(first);
+
+    plethy->setMaxX(last);
+    pulse->setMaxX(last);
+    spo2->setMaxX(last);
+    PLETHY->SetMaxX(last);
+    CONTROL->SetMaxX(last);
+    PULSE->SetMaxX(last);
+    SPO2->SetMaxX(last);
+
+    PULSE->setDay(day);
+    SPO2->setDay(day);
+    for (int i=0;i<GraphView->size();i++) {
+       (*GraphView)[i]->SetXBounds(first,last);
+    }
+    {
+        int len=(last-first)/1000L;
+        int h=len/3600;
+        int m=(len /60) % 60;
+        int s=(len % 60);
+        if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
+    }
+    GraphView->updateScale();
+    GraphView->updateGL();
+}
+
+void Oximetry::on_resetTimeButton_clicked() //revert to original session time
+{
+    if (oximeter->getSession()) {
+
+        //qint64 tt=ui->dateEdit->dateTime().toTime_t()*1000;
+        //qint64 offset=saved_starttime-tt;
+        //oximeter->getSession()->offsetSession(offset);
+        dont_update_date=false;
+        //ui->dateEdit->setDateTime(QDateTime::fromTime_t(saved_starttime/1000L));
+        ui->dateEdit->setDateTime(QDateTime::fromTime_t(saved_starttime/1000L));
+        dont_update_date=false;
+    }
 }

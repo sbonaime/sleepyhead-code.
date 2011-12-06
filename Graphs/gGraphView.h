@@ -158,6 +158,8 @@ public:
     void setMovable(bool b) { m_movable=b; }
     bool movable() { return m_movable; }
 
+
+
     virtual void paint(gGraph & gv,int left,int top,int width, int height)=0;
 
     void setLayout(LayerPosition position, short width, short height, short order);
@@ -286,6 +288,8 @@ public:
     int maxHeight() { return m_max_height; }
     void setMaxHeight(int height) { m_max_height=height; }
 
+    float printScaleX();
+    float printScaleY();
     bool isEmpty();
 
     void AddLayer(Layer * l,LayerPosition position=LayerCenter, short pixelsX=0, short pixelsY=0, short order=0, bool movable=false, short x=0, short y=0);
@@ -346,15 +350,14 @@ public:
         m_marginleft=left; m_marginright=right;
         m_margintop=top; m_marginbottom=bottom;
     }
-    inline short marginLeft() { return m_marginleft; }
-    inline short marginRight() { return m_marginright; }
-    inline short marginTop() { return m_margintop; }
-    inline short marginBottom() { return m_marginbottom; }
+    inline short marginLeft();
+    inline short marginRight();
+    inline short marginTop();
+    inline short marginBottom();
 
     GLShortBuffer * lines();
     GLShortBuffer * backlines();
     GLShortBuffer * quads();
-    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
     short left,right,top,bottom; // dirty magin hacks..
 
     QRect m_lastbounds;
@@ -362,6 +365,7 @@ public:
     QVector<Layer *>  & layers() { return m_layers; }
 
 protected:
+    short m_marginleft, m_marginright, m_margintop, m_marginbottom;
     //void invalidate();
 
     virtual void wheelEvent(QWheelEvent * event);
@@ -420,7 +424,10 @@ public:
 
     gGraph *findGraph(QString name);
 
-    //bool hasGraphs() { return m_graphs.size()>0; }
+    inline float printScaleX() { return print_scaleX; }
+    inline float printScaleY() { return print_scaleY; }
+    inline void setPrintScaleX(float x) { print_scaleX=x; }
+    inline void setPrintScaleY(float y) { print_scaleY=y; }
 
     void deselect();
     QPoint pointClicked() { return m_point_clicked; }
@@ -517,6 +524,7 @@ protected:
     bool m_showsplitter;
 
     qint64 m_minx,m_maxx;
+    float print_scaleX,print_scaleY;
 signals:
 
 

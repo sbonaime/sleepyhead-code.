@@ -921,3 +921,31 @@ EventList * Session::AddEventList(QString chan, EventListType et,EventDataType g
     //s_machine->registerChannel(chan);
     return el;
 }
+void Session::offsetSession(qint64 offset)
+{
+    //qDebug() << "Session starts" << QDateTime::fromTime_t(s_first/1000).toString("yyyy-MM-dd HH:mm:ss");
+    s_first+=offset;
+    s_last+=offset;
+    QHash<ChannelID,quint64>::iterator it;
+
+    for (it=m_firstchan.begin();it!=m_firstchan.end();it++) {
+        if (it.value()>0)
+            it.value()+=offset;
+    }
+    for (it=m_lastchan.begin();it!=m_lastchan.end();it++) {
+        if (it.value()>0)
+            it.value()+=offset;
+    }
+
+    QHash<ChannelID,QVector<EventList *> >::iterator i;
+    for (i=eventlist.begin();i!=eventlist.end();i++) {
+        for (int j=0;j<i.value().size();j++) {
+            EventList *e=i.value()[j];
+
+            e->setFirst(e->first()+offset);
+            e->setLast(e->last()+offset);
+        }
+    }
+    qDebug() << "Session now starts" << QDateTime::fromTime_t(s_first/1000).toString("yyyy-MM-dd HH:mm:ss");
+
+}

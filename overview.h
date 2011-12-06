@@ -36,8 +36,8 @@ public:
 
     void PrintReport();
 
-    gGraph *AHI,*UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI;
-    SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi;
+    gGraph *AHI, *AHIHR, *UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI;
+    SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi, *ahihr;
     QVector<SummaryChart *> OverviewCharts;
 
 public slots:

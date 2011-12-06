@@ -321,25 +321,6 @@ bool Machine::Save()
         dir.mkdir(path);
     }
 
-    /*QString fn=path+"/channels.dat";
-    QFile cf(fn);
-    if (!cf.open(QIODevice::WriteOnly)) {
-        qDebug() << "Couldn't write.. Permissions? Hard disk crashing?";
-        return false;
-    }
-    QDataStream out(&cf);
-    out.setVersion(QDataStream::Qt_4_6);
-    out.setByteOrder(QDataStream::LittleEndian);
-
-    out << (quint32)magic;          // Magic Number
-    out << (quint32)channel_version;// File Version
-    out << (quint32)m_id;// Machine ID
-
-    out << m_channels;
-    cf.close(); */
-
-
-    // Calculate size for progress bar
     //size=sessionlist.size();
 
     QHash<SessionID,Session *>::iterator s;

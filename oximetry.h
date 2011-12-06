@@ -28,6 +28,7 @@ public:
     explicit SerialOximeter(QObject * parent,QString oxiname, QString portname="",BaudRateType baud=BAUD19200, FlowType flow=FLOW_OFF, ParityType parity=PAR_ODD, DataBitsType databits=DATA_8, StopBitsType stopbits=STOP_1);
     virtual ~SerialOximeter();
 
+    virtual void setSession(Session * sess) { session=sess; }
     virtual bool Open(QextSerialPort::QueryMode mode=QextSerialPort::EventDriven);
     virtual void Close();
 
@@ -171,6 +172,7 @@ public:
     void RedrawGraphs();
 
     gGraphView *graphView() { return GraphView; }
+    void openSession(Session * session);
 
 private slots:
     void on_RefreshPortsButton_clicked();
@@ -193,10 +195,15 @@ private slots:
 
     void on_openButton_clicked();
 
+    void on_dateEdit_dateTimeChanged(const QDateTime &date);
+
+    void on_resetTimeButton_clicked();
+
 private:
     bool openSPOFile(QString filename);
     bool openSPORFile(QString filename);
     void import_finished();
+    void updateGraphs();
     Ui::Oximetry *ui;
 
     gGraphView *GraphView;
@@ -224,11 +231,12 @@ private:
     gGraphView * m_shared;
 
     SerialOximeter *oximeter;
+    qint64 saved_starttime;
     bool firstSPO2Update;
     bool firstPulseUpdate;
     bool secondPulseUpdate;
     bool secondSPO2Update;
-
+    bool dont_update_date;
 };
 
 #endif // OXIMETRY_H

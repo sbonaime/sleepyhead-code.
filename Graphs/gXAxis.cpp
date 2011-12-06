@@ -155,16 +155,19 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     py=left+float(aligned_start-minx)*xmult;
 
 
+    int texttop=top+18*w.printScaleX();
+    int mintop=top+4*w.printScaleX();
+    int majtop=top+6*w.printScaleX();
     for (int i=0;i<num_minor_ticks;i++) {
         py-=step_pixels;
         if (py<start_px) continue;
-        lines->add(py,top,py,top+4,linecol);
+        lines->add(py,top,py,mintop,linecol);
     }
 
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=(i-minx)*xmult;
         px+=left;
-        lines->add(px,top,px,top+6,linecol);
+        lines->add(px,top,px,majtop,linecol);
         qint64 j=i;
         if (!m_utcfix) j+=tz_offset;
         int ms=j % 1000;
@@ -196,12 +199,12 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (m_utcfix)
             tx+=step_pixels/2.0;
         if ((tx+x)<(left+width))
-            w.renderText(tmpstr,tx,top+18);
+            w.renderText(tmpstr,tx,texttop);
         py=px;
         for (int j=1;j<num_minor_ticks;j++) {
             py+=step_pixels;
             if (py>=left+width) break;
-            lines->add(py,top,py,top+4,linecol);
+            lines->add(py,top,py,mintop,linecol);
         }
 
         if (lines->full()) {

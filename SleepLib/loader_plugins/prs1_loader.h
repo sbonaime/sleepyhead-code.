@@ -62,6 +62,7 @@ protected:
     void CalcRespiratoryRate(Session *);
     void filterFlow(EventList *in, EventList *out);
     unsigned char * m_buffer;
+    QHash<SessionID, Session *> extra_session;
 };
 
 #endif // PRS1LOADER_H

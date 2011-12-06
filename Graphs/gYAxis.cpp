@@ -47,7 +47,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     static QString fd="0";
     GetTextExtent(fd,x,y);
 
-    double max_yticks=round(height / (y+7.0)); // plus spacing between lines
+    double max_yticks=round(height / (y+10.0)); // plus spacing between lines
     //double yt=1/max_yticks;
 
     double mxy=MAX(fabs(maxy),fabs(miny));
@@ -151,7 +151,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     static QString fd="0";
     GetTextExtent(fd,x,y);
 
-    double max_yticks=round(height / (y+7.0)); // plus spacing between lines
+    double max_yticks=round(height / (y+10.0)); // plus spacing between lines
 
     double mxy=MAX(fabs(maxy),fabs(miny));
     double mny=miny;
