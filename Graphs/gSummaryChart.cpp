@@ -555,7 +555,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
 QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false,bool show_12hr=false)
 {
-    int h=int(v+12);
+    int h=int(v);
 
     if (!duration) {
         h%=24;
@@ -567,7 +567,7 @@ QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false
     char pm[3]={"am"};
 
     if (show_12hr) {
-        h>=12 ? pm[0]='p' : pm[0]='a'; // yes, inverted..
+        h>=12 ? pm[0]='p' : pm[0]='a';
         h %= 12;
         if (h==0) h=12;
 

@@ -255,14 +255,15 @@ gYAxisTime::~gYAxisTime()
 
 const QString gYAxisTime::Format(EventDataType v, int dp)
 {
-    int h=int(v+12) % 24;
+    int h=int(v) % 24;
     int m=int(v*60) % 60;
     int s=int(v*3600) % 60;
 
     char pm[3]={"am"};
 
     if (show_12hr) {
-        h>=12 ? pm[0]='a' : pm[0]='p';
+
+        h>=12 ? pm[0]='p' : pm[0]='a';
         h %= 12;
         if (h==0) h=12;
     } else {

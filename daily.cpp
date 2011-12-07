@@ -832,7 +832,7 @@ void Daily::Load(QDate date)
             } */
 
         //}
-        html+="</table><hr height=2><form method='get' action='sessions.php'><table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
@@ -849,7 +849,7 @@ void Daily::Load(QDate date)
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
                 tooltip=cpap->machine->GetClass()+" CPAP "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=left><input type=checkbox on_click='dosession("+QString::number((*s)->session())+")'><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
+                tmp.sprintf(("<tr><td align=left><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
             }
             //if (oxi) html+="<tr><td colspan=4><hr></td></tr>";
@@ -871,7 +871,7 @@ void Daily::Load(QDate date)
                 html+=tmp;
             }
         }
-        html+="</table><input type=submit name='submit'></form>";
+        html+="</table>";
         if (corrupted_waveform) {
             html+="<hr><div align=center><i>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</i></div>";
         }
