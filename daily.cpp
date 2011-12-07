@@ -200,15 +200,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     bool square=PROFILE["SquareWavePlots"].toBool();
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::red,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::yellow,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::darkRed,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
+    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::darkRed,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
 
     AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
 
     //AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
-    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_LeakTotal,Qt::yellow,square)));
+    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_LeakTotal,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));

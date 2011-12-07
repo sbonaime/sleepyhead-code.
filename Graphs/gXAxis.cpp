@@ -155,9 +155,9 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     py=left+float(aligned_start-minx)*xmult;
 
 
-    int texttop=top+18*w.printScaleX();
-    int mintop=top+4*w.printScaleX();
-    int majtop=top+6*w.printScaleX();
+    int texttop=top+18*w.printScaleY();
+    int mintop=top+4*w.printScaleY();
+    int majtop=top+6*w.printScaleY();
     for (int i=0;i<num_minor_ticks;i++) {
         py-=step_pixels;
         if (py<start_px) continue;

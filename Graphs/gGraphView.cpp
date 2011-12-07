@@ -1045,16 +1045,29 @@ void gGraph::paint(int originX, int originY, int width, int height)
     */
 
     //glColor4f(0,0,0,1);
-    renderText(title(),20*m_graphview->printScaleX(),originY+height/2,90,Qt::black,mediumfont);
+    left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
+    int x,y;
+    GetTextExtent(title(),x,y,mediumfont);
+    int title_x=(float(y)*2);
+    renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
+    left+=title_x;
 
-    left=0,right=0,top=0,bottom=0;
+//#define DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
+    QColor col=Qt::red;
+    lines()->add(0,originY,0,originY+height,col);
+    lines()->add(left,originY,left,originY+height,col);
+#endif
+    //renderText(title(),0,originY+height/2,90,Qt::black,mediumfont);
+
 
     int tmp;
 
-    originX+=marginLeft();
-    originY+=marginTop();
-    width-=marginLeft()+marginRight();
-    height-=marginTop()+marginBottom();
+    //originX=0;//marginLeft()+title_x;
+    left=0;
+    //originY+=marginTop();
+    //width-=marginLeft()+marginRight();
+    //height-=marginTop()+marginBottom();
     //int lsize=m_layers.size();
 
     for (int i=0;i<m_layers.size();i++) {
@@ -1070,14 +1083,20 @@ void gGraph::paint(int originX, int originY, int width, int height)
         if (ll->position()==LayerLeft) {
             ll->paint(*this,originX+left,originY+top,tmp,height-top-bottom);
             left+=tmp;
+#ifdef DEBUG_LAYOUT
+            lines()->add(originX+left-1,originY,originX+left-1,originY+height,col);
+#endif
         }
         if (ll->position()==LayerRight) {
             right+=tmp;
             ll->paint(*this,originX+width-right,originY+top,tmp,height-top-bottom);
+#ifdef DEBUG_LAYOUT
+            lines()->add(originX+width-right,originY,originX+width-right,originY+height,col);
+#endif
         }
     }
 
-    bottom=0; top=0;
+    bottom=marginBottom(); top=marginTop();
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
         tmp=ll->Height()*m_graphview->printScaleY();
@@ -1618,7 +1637,7 @@ QPixmap gGraph::renderPixmap(int w, int h)
     gGraphView *sg=mainwin->snapshotGraph();
     if (!sg) return QPixmap();
 
-    float scale=sg->printScaleX();
+    double scale=sg->printScaleY(); //sqrt(sg->printScaleX()*sg->printScaleX()+sg->printScaleY()*sg->printScaleY());
 
     fa.setPointSize(fa.pointSize()*scale);
     fb.setPointSize(fb.pointSize()*scale);
@@ -2735,7 +2754,7 @@ int gGraphView::visibleGraphs()
 {
     int cnt=0;
     for (int i=0;i<m_graphs.size();i++) {
-        if (!m_graphs[i]->isEmpty() &&  m_graphs[i]->visible()) cnt++;
+        if (m_graphs[i]->visible() && !m_graphs[i]->isEmpty()) cnt++;
     }
     return cnt;
 }
