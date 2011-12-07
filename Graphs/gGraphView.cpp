@@ -1120,7 +1120,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     if (m_selection.width()>0 && m_selecting_area) {
         QColor col(128,128,255,128);
         quads()->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top,col);
-        quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-top-bottom, originX+m_selection.x(),originY+height-top-bottom,col);
+        quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-bottom, originX+m_selection.x(),originY+height-bottom,col);
     }
 }
 void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
@@ -1178,7 +1178,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
     //int y=event->pos().y();
     int x=event->pos().x();
     int x2=m_graphview->pointClicked().x();//,y2=m_graphview->pointClicked().y();
-    int w=m_lastbounds.width()-(right+m_marginright);
+    int w=m_lastbounds.width()-(right);
     //int h=m_lastbounds.height()-(bottom+m_marginbottom);
     double xx=max_x-min_x;
     double xmult=xx/w;
@@ -1196,7 +1196,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (a2>w) a2=w;
             m_selecting_area=true;
             m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
-            double w2=m_lastbounds.width()-(right+m_marginright)-(m_marginleft+left);
+            double w2=m_lastbounds.width();-(right+m_marginright)-(m_marginleft+left);
             if (m_blockzoom) {
                 xmult=(rmax_x-rmin_x)/w2;
             } else xmult=(max_x-min_x)/w2;

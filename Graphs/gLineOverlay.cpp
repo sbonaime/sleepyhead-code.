@@ -44,7 +44,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
     int x,y;
 
-    float bottom=start_py+height-25, top=start_py+25;
+    float bottom=start_py+height-25*w.printScaleY(), top=start_py+25*w.printScaleY();
 
     double X;
     double Y;
@@ -114,7 +114,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                if (lines->full()) { verts_exceeded=true; break; }
                if (xx<(1800000)) {
                     GetTextExtent(m_label,x,y);
-                    w.renderText(m_label,x1-(x/2),top-y+3);
+                    w.renderText(m_label,x1-(x/2),top-y+(3*w.printScaleY()));
                }
 
            }

@@ -29,14 +29,16 @@ gXAxis::gXAxis(QColor col,bool fadeout)
     m_show_major_ticks=true;
     m_utcfix=false;
     m_fadeout=fadeout;
-    QDateTime d=QDateTime::currentDateTime();
-    QTime t1=d.time();
-    QTime t2=d.toUTC().time();
+//    QDateTime d=QDateTime::currentDateTime();
+//    QTime t1=d.time();
+//    QTime t2=d.toUTC().time();
 
-    tz_offset=t2.secsTo(t1);
-    tz_hours=tz_offset/3600.0;
-    tz_offset*=1000L;
+//    tz_offset=t2.secsTo(t1);
+//    tz_hours=tz_offset/3600.0;
+//    tz_offset*=1000L;
 
+    tz_offset=timezoneOffset();
+    tz_hours=tz_offset/3600000.0;
 }
 gXAxis::~gXAxis()
 {

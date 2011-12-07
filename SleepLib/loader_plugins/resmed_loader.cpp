@@ -98,6 +98,7 @@ bool EDFParser::Parse()
         serialnumber+=recordingident[i];
     }
     QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
+    //startDate.toTimeSpec(Qt::UTC);
     QDate d2=startDate.date();
     if (d2.year()<2000) {
         d2.setYMD(d2.year()+100,d2.month(),d2.day());
@@ -108,13 +109,7 @@ bool EDFParser::Parse()
         return false;
     }
     startdate=qint64(startDate.toTime_t())*1000L;
-    QDateTime d=QDateTime::currentDateTime();
-    QTime t1=d.time();
-    QTime t2=d.toUTC().time();
-    qint64 tz_offset=t2.secsTo(t1);
-    //tz_hours=tz_offset/3600.0;
-    tz_offset*=1000L;
-    startdate-=tz_offset;
+    //startdate-=timezoneOffset();
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 

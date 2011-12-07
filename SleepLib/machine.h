@@ -130,6 +130,7 @@ public:
 protected:
 };
 
+qint64 timezoneOffset();
 
 #endif // MACHINE_H
 

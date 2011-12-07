@@ -1258,8 +1258,11 @@ void Oximetry::on_saveButton_clicked()
         if (m->SessionExists(session->session())) {
             m->sessionlist.erase(m->sessionlist.find(session->session()));
         }
+        // Forgetting to reset the session ID sucks, as it will delete sessions you don't want to delete..
+        session->SetSessionID(qint64(session->first())/1000L);
+
         m->AddSession(session,p_profile);
-        //}
+
         oximeter->getMachine()->Save();
         day->getSessions().clear();
 
