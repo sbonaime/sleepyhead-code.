@@ -721,8 +721,27 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     float realheight=res.height()-footer_height;
     float ph=realheight / graphs_per_page;
 
-    float div=highres ? 4.0 : 1.0;
-    float fontdiv=highres ? 2.3 : 0.75;
+    float div,fontdiv;
+    if (pw>8000) {
+        div=4;
+#ifdef Q_WS_WIN32
+        fontdiv=2;
+#else
+        fontdiv=2.3;
+#endif
+    } else if (pw>2000) {
+        div=2;
+        fontdiv=1;
+    } else {
+        div=1;
+#ifdef Q_WS_WIN32 // windows really doesn like the resulting font size
+        fontdiv=1;
+#else
+        fontdiv=0.75;
+#endif
+    }
+    //float div=highres ? 4.0 : 1.0;
+
 
     float gw=pw/div;
     float gh=ph/div;
