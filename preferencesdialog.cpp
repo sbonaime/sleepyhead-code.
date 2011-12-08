@@ -632,7 +632,6 @@ void PreferencesDialog::resetGraphModel()
 
     graphModel->appendRow(daily);
     graphModel->appendRow(overview);
-    connect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(graphModel_changed(QStandardItem*)));
 
     ui->graphView->setAlternatingRowColors(true);
 
@@ -725,6 +724,7 @@ void PreferencesDialog::resetGraphModel()
             oximetry->insertRow(i,items);
         }
     }
+    connect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(graphModel_changed(QStandardItem*)));
 
     ui->graphView->expandAll();
 }

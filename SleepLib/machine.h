@@ -68,7 +68,7 @@ public:
     void SetType(MachineType t) { m_type=t; }
     const QString & GetClass() { return m_class; }
     const MachineType & GetType() { return m_type; }
-    inline QString hexid() { return QString().sprintf("%08lx",m_id); }
+    QString hexid() { return QString().sprintf("%08lx",m_id); }
     SessionID CreateSessionID() { return highest_sessionid+1; }
     const MachineID & id() { return m_id; }
     const QDate & FirstDay() { return firstday; }

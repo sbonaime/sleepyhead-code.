@@ -1016,7 +1016,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         m=day->machine;
         QString path=PROFILE.Get("DataFolder")+QDir::separator()+m->hexid()+QDir::separator();
 
-        QVector<Session *>::iterator s,km=day->end();
+        QVector<Session *>::iterator s;
 
         for (s=day->begin();s!=day->end();s++) {
             SessionID id=(*s)->session();
