@@ -251,7 +251,7 @@ void MainWindow::on_action_Import_Data_triggered()
         file.close();
     }
 
-    bool addnew=false;
+    //bool addnew=false;
     QString newdir;
 
     bool asknew=false;
@@ -287,7 +287,7 @@ void MainWindow::on_action_Import_Data_triggered()
             QString newdir=w.selectedFiles().at(i);
             if (!importFrom.contains(newdir)) {
                 importFrom.append(newdir);
-                addnew=true;
+                //addnew=true;
             }
         }
     }

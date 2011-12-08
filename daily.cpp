@@ -998,7 +998,7 @@ void Daily::Unload(QDate date)
             journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
-        double w=ui->weightSpinBox->value();
+        //double w=ui->weightSpinBox->value();
         if (journal->settings.contains("Weight") && ui->weightSpinBox->value()==0) {
             journal->settings.erase(journal->settings.find("Weight"));
             if (journal->settings.contains("BMI")) {

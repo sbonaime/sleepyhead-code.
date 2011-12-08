@@ -627,7 +627,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     }
     return true;
 }
-EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType min,EventDataType max)
+EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType min,EventDataType max,bool square)
 {
     bool first=true;
     double rate=(duration/recs); // milliseconds per record
@@ -650,6 +650,7 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
             first=false;
         } else {
             if (last!=c) {
+                if (square) el->AddEvent(tt,last); // square waves look better on some charts.
                 el->AddEvent(tt,c);
             }
         }
@@ -747,7 +748,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_dimension="L/M";
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0,true);
         } else if (es.label=="FFL Index") {
             code=CPAP_FLG;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);

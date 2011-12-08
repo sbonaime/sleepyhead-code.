@@ -946,6 +946,7 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 
 void Oximetry::live_stopped(Session * session)
 {
+    Q_UNUSED(session);
     mainwin->Notify("Oximetry live recording has been terminated due to timeout");
     //qDebug () << "Live Stopped";
     on_RunButton_toggled(false);
@@ -1477,7 +1478,7 @@ void Oximetry::on_dateEdit_dateTimeChanged(const QDateTime &date)
         return;
 
     qint64 first=session->first();
-    qint64 last=session->last();
+    //qint64 last=session->last();
     qint64 tt=qint64(date.toTime_t())*1000L;
     qint64 offset=tt-first;
 

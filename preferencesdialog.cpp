@@ -274,7 +274,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
 PreferencesDialog::~PreferencesDialog()
 {
-    disconnect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(on_graphModel_changed(QStandardItem*)));
+    disconnect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(graphModel_changed(QStandardItem*)));
     delete ui;
 }
 
@@ -555,7 +555,7 @@ bool MySortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
     return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
 
-void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
+void PreferencesDialog::graphModel_changed(QStandardItem * item)
 {
     QModelIndex index=item->index();
 
@@ -564,7 +564,7 @@ void PreferencesDialog::on_graphModel_changed(QStandardItem * item)
 
     const QModelIndex & row=index.sibling(index.row(),0);
     bool checked=row.data(Qt::CheckStateRole)!=0;
-    QString name=row.data().toString();
+    //QString name=row.data().toString();
 
     int group=row.data(Qt::UserRole+1).toInt();
     int id=row.data(Qt::UserRole+2).toInt();
@@ -632,7 +632,7 @@ void PreferencesDialog::resetGraphModel()
 
     graphModel->appendRow(daily);
     graphModel->appendRow(overview);
-    connect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(on_graphModel_changed(QStandardItem*)));
+    connect(graphModel,SIGNAL(itemChanged(QStandardItem*)),this,SLOT(graphModel_changed(QStandardItem*)));
 
     ui->graphView->setAlternatingRowColors(true);
 
@@ -753,10 +753,10 @@ void PreferencesDialog::on_resetGraphButton_clicked()
  }
 
 
-void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
+/*void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
 {
     item->setCheckState(item->checkState()==Qt::Checked ? Qt::Unchecked : Qt::Checked);
-}
+}  */
 
 
 void PreferencesDialog::on_maskTypeCombo_activated(int index)

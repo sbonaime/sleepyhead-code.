@@ -108,7 +108,7 @@ public:
 
     virtual int Version() { return resmed_data_version; }
     virtual const QString & ClassName() { return resmed_class_name; }
-    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0);
+    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0,bool square=false);
 
     Machine *CreateMachine(QString serial,Profile *profile);
 

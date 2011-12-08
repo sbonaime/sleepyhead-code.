@@ -61,11 +61,11 @@ private slots:
 
     void on_graphFilter_textChanged(const QString &arg1);
 
-    void on_graphModel_changed(QStandardItem * item);
+    void graphModel_changed(QStandardItem * item);
 
     void on_resetGraphButton_clicked();
 
-    void on_genOpWidget_itemActivated(QListWidgetItem *item);
+    //void on_genOpWidget_itemActivated(QListWidgetItem *item);
 
     void on_maskTypeCombo_activated(int index);
 

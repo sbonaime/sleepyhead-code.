@@ -34,6 +34,7 @@ qint64 timezoneOffset() {
     return _TZ_offset;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +226,6 @@ bool Machine::Purge(int secret)
         } else could_not_kill++;
 
     }
-    dir.remove(path+"/channels.dat");
     if (could_not_kill>0) {
       //  qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
     //    return false;
@@ -246,30 +246,6 @@ bool Machine::Load()
 
     if (!dir.exists() || !dir.isReadable())
         return false;
-
-/*    QString fn=path+"/channels.dat";
-    QFile cf(fn);
-    cf.open(QIODevice::ReadOnly);
-    QDataStream in(&cf);
-    in.setVersion(QDataStream::Qt_4_6);
-    in.setByteOrder(QDataStream::LittleEndian);
-
-    quint32 tmp;
-    in >> tmp;
-    if (magic!=tmp) {
-        qDebug() << "Machine Channel file format is wrong" << fn;
-    }
-    in >> tmp;
-    if (tmp!=channel_version) {
-        qDebug() << "Machine Channel file format is wrong" << fn;
-    }
-    qint32 tmp2;
-    in >> tmp2;
-    if (tmp2!=m_id) {
-        qDebug() << "Machine Channel file format is wrong" << fn;
-    }
-    in >> m_channels;
-    cf.close(); */
 
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
@@ -369,7 +345,6 @@ bool Machine::Save()
         thread[i]->start();
     }
     while (!savelistSem->tryAcquire(threads,250)) {
-        //qDebug() << savelistSem->available();
         if (qprogress) {
         //    qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
            QApplication::processEvents();

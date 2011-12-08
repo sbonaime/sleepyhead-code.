@@ -242,6 +242,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
 int calcRespRate(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
+    if (session->machine()->GetClass()!="PRS1") return 0;
     if (session->eventlist.contains(CPAP_RespRate)) return 0; // already exists?
 
     if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform

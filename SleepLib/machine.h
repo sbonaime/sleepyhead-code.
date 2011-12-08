@@ -45,12 +45,12 @@ signals:
     void UpdateProgress(int i);
 };
 
+
 class Machine
 {
 public:
     Machine(Profile *p,MachineID id=0);
     virtual ~Machine();
-//	virtual bool Open(QString path){};
 
     bool Load();
     bool Save();
@@ -61,38 +61,25 @@ public:
     QHash<SessionID,Session *> sessionlist;
     QHash<QString,QString> properties;
 
+    Session * SessionExists(SessionID session);
+    Day *AddSession(Session *s,Profile *p);
+
+    void SetClass(QString t) { m_class=t; }
+    void SetType(MachineType t) { m_type=t; }
+    const QString & GetClass() { return m_class; }
+    const MachineType & GetType() { return m_type; }
+    inline QString hexid() { return QString().sprintf("%08lx",m_id); }
+    SessionID CreateSessionID() { return highest_sessionid+1; }
+    const MachineID & id() { return m_id; }
+    const QDate & FirstDay() { return firstday; }
+    const QDate & LastDay() { return lastday; }
+
     Session *popSaveList();
     QList<Session *> m_savelist;
     volatile int savelistCnt;
     int savelistSize;
     QMutex savelistMutex;
     QSemaphore *savelistSem;
-    Session * SessionExists(SessionID session);
-    Day *AddSession(Session *s,Profile *p);
-
-    void SetClass(QString t) {
-        m_class=t;
-    }
-    void SetType(MachineType t) {
-        m_type=t;
-    }
-    const QString & GetClass() {
-        return m_class;
-    }
-    const MachineType & GetType() {
-        return m_type;
-    }
-    const QString hexid() {
-        QString s;
-        s.sprintf("%08lx",m_id);
-        return s;
-    }
-    SessionID CreateSessionID() { return highest_sessionid+1; }
-    const MachineID & id() { return m_id; }
-    const QDate & FirstDay() { return firstday; }
-    const QDate & LastDay() { return lastday; }
-    //bool hasChannel(QString id) { return m_channels.contains(id) && m_channels[id]; }
-    //void registerChannel(QString id,bool b=true) { m_channels[id]=b; }
 
 protected:
     QDate firstday,lastday;
@@ -104,7 +91,6 @@ protected:
     Profile *profile;
     bool changed;
     bool firstsession;
-    //QHash<QString,bool> m_channels;
 };
 
 class CPAP:public Machine
