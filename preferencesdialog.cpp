@@ -440,7 +440,7 @@ void PreferencesDialog::Save()
         file.close();
     }
 
-    profile->Save();
+    PROFILE.Save();
     PREF.Save();
 
     if (needs_restart) {
@@ -636,7 +636,7 @@ void PreferencesDialog::resetGraphModel()
 
     ui->graphView->setAlternatingRowColors(true);
 
-    ui->graphView->setFirstColumnSpanned(0,daily->index(),true);
+    // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
     graphModel->setColumnCount(3);
     QStringList headers;
     headers.append("Graph");
