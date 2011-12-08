@@ -70,10 +70,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     GraphView=new gGraphView(ui->graphMainArea,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    snapGV=new gGraphView(ui->graphMainArea,shared);
+    snapGV=new gGraphView(ui->graphMainArea);
     snapGV->setMinimumSize(172,172);
     snapGV->hideSplitter();
     snapGV->hide();
+
     scrollbar=new MyScrollBar(ui->graphMainArea);
     scrollbar->setOrientation(Qt::Vertical);
     scrollbar->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding);
@@ -736,7 +737,9 @@ void Daily::Load(QDate date)
             if (ahi+rei+fli>0) {
                 html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
                 //G_AHI->setFixedSize(gwwidth,120);
-                QPixmap pixmap=snapGV->renderPixmap(172,172,false); //gwwidth,gwheight,false);
+                //mainwin->snapshotGraph()->setPrintScaleX(1);
+                //mainwin->snapshotGraph()->setPrintScaleY(1);
+                QPixmap pixmap=snapGV->renderPixmap(172,172);
                 QByteArray byteArray;
                 QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                 buffer.open(QIODevice::WriteOnly);

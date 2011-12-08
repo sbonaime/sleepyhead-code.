@@ -99,8 +99,12 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
 #endif
     QFontMetrics fm(*font);
     //QRect r=fm.tightBoundingRect(text);
-    width=fm.width(text); //fm.width(text);
+    width=fm.width(text);
+#ifdef Q_WS_WIN32
+    height=fm.ascent();
+#else
     height=fm.xHeight()+2; //fm.ascent();
+#endif
 #ifdef ENABLE_THREADED_DRAWING
     mut.unlock();
 #endif

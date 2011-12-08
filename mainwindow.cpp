@@ -207,6 +207,11 @@ void MainWindow::Startup()
     // profile is a global variable set in main after login
     PROFILE.LoadMachineData();
 
+    SnapshotGraph=new gGraphView(this); //daily->graphView());
+    SnapshotGraph->setMaximumSize(1024,512);
+    SnapshotGraph->setMinimumSize(1024,512);
+    SnapshotGraph->hide();
+
     daily=new Daily(ui->tabWidget,NULL,this);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
@@ -217,12 +222,6 @@ void MainWindow::Startup()
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
     }
 
-    SnapshotGraph=new gGraphView(this,daily->graphView());
-    SnapshotGraph->setMaximumSize(1024,512);
-    SnapshotGraph->setMinimumSize(1024,512);
-    //ReportGraph->setMaximumSize(graph_print_width,graph_print_height);
-    //ReportGraph->setMinimumSize(graph_print_width,graph_print_height);
-    SnapshotGraph->hide();
 
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
@@ -725,23 +724,21 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     if (pw>8000) {
         div=4;
 #ifdef Q_WS_WIN32
-        fontdiv=2;
+        fontdiv=2.3;
 #else
         fontdiv=2.3;
 #endif
     } else if (pw>2000) {
-        div=2;
-        fontdiv=1;
+        div=2.0;
+        fontdiv=2.0;
     } else {
         div=1;
-#ifdef Q_WS_WIN32 // windows really doesn like the resulting font size
-        fontdiv=1;
+#ifdef Q_WS_WIN32
+        fontdiv=1; // windows will crash if it's any smaller than this
 #else
         fontdiv=0.75;
 #endif
     }
-    //float div=highres ? 4.0 : 1.0;
-
 
     float gw=pw/div;
     float gh=ph/div;
