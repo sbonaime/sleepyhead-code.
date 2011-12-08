@@ -88,7 +88,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     QVector<int> breaths;
     QVector<EventDataType> TV;
     QVector<qint64> breaths_start;
-    int lasti=0;
+    //int lasti=0;
 
     for (i=0;i<size;i++) {
         c=stage1[i];
@@ -152,7 +152,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     QVector<EventDataType> TV2;
     QVector<qint64> TV2_start;
 
-    int fir=0,fir2=0;
+    int fir=0;//,fir2=0;
     EventDataType T,L;
     bool done=false;
     do {
@@ -208,7 +208,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
 
         t1+=window/2.0;
         t2+=window/2.0;
-    } while (t2<in->last());
+    } while (t2<in->last() && !done);
 
     for (int i=2;i<breaths2.size()-2;i++) {
         t=breaths2_start[i];
@@ -333,9 +333,7 @@ int calcLeaks(Session *session)
 
     const qint64 winsize=3600000; // 5 minute window
 
-    qint64 first=session->first(),
-           last=session->last(),
-           f;
+    //qint64 first=session->first(), last=session->last(), f;
 
     EventList *leak=new EventList(EVL_Event);
     session->eventlist[CPAP_Leak].push_back(leak);

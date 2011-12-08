@@ -309,9 +309,9 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     // NOTE: This only allows for one CMS50 machine per profile..
     // Upgrading their oximeter will use this same record..
 
-    QVector<Machine *> ml=profile->GetMachines(MT_OXIMETER);
+    QList<Machine *> ml=profile->GetMachines(MT_OXIMETER);
 
-    for (QVector<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
+    for (QList<Machine *>::iterator i=ml.begin(); i!=ml.end(); i++) {
         if ((*i)->GetClass()==cms50_class_name)  {
             return (*i);
             break;

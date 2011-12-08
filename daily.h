@@ -45,7 +45,6 @@ public:
     void RedrawGraphs();
     void LoadDate(QDate date);
     QDate getDate() { return previous_date; }
-
     void PrintReport();
     void UnitsChanged();
 

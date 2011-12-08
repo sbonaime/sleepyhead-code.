@@ -215,9 +215,9 @@ ResmedLoader::~ResmedLoader()
 Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 {
     if (!profile) return NULL;
-    QVector<Machine *> ml=profile->GetMachines(MT_CPAP);
+    QList<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
-    QVector<Machine *>::iterator i;
+    QList<Machine *>::iterator i;
     for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==resmed_class_name) && ((*i)->properties["Serial"]==serial)) {
             ResmedList[serial]=*i; //static_cast<CPAP *>(*i);

@@ -173,8 +173,8 @@ Day *Machine::AddSession(Session *s,Profile *p)
         for (QVector<Session *>::iterator i=nextday.value()->begin();i!=nextday.value()->end();i++) {
             dd->AddSession(*i);
         }
-        QMap<QDate,QVector<Day *> >::iterator nd=p->daylist.find(date.addDays(1));
-        for (QVector<Day *>::iterator i=nd->begin();i!=nd->end();i++) {
+        QMap<QDate,QList<Day *> >::iterator nd=p->daylist.find(date.addDays(1));
+        for (QList<Day *>::iterator i=nd->begin();i!=nd->end();i++) {
             if (*i==nextday.value()) {
                 nd.value().erase(i);
             }

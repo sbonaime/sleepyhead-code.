@@ -204,8 +204,8 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     if (m_last<date) m_last=date;
 
     // Check for any other machines of same type.. Throw an exception if one already exists.
-    QVector<Day *> & dl=daylist[date];
-    for (QVector<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
+    QList<Day *> & dl=daylist[date];
+    for (QList<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
             throw OneTypePerDay();
         }
@@ -218,7 +218,7 @@ Day * Profile::GetDay(QDate date,MachineType type)
     Day *day=NULL;
     // profile->     why did I d that??
     if (daylist.find(date)!=daylist.end()) {
-        for (QVector<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
+        for (QList<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
             if (type==MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
                 day=(*di);
                 break;
@@ -244,8 +244,8 @@ int Profile::Import(QString path)
     path=path.replace("\\","/");
     if (path.endsWith("/")) path.chop(1);
 
-    QVector<MachineLoader *>loaders=GetLoaders();
-    for (QVector<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
+    QList<MachineLoader *>loaders=GetLoaders();
+    for (QList<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if (c+=(*i)->Open(path,this)) break;
     }
     //qDebug() << "Import Done";
@@ -255,8 +255,8 @@ int Profile::Import(QString path)
 MachineLoader * GetLoader(QString name)
 {
     MachineLoader *l=NULL;
-    QVector<MachineLoader *>loaders=GetLoaders();
-    for (QVector<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
+    QList<MachineLoader *>loaders=GetLoaders();
+    for (QList<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
         if ((*i)->ClassName()==name) {
             l=*i;
             break;
@@ -266,10 +266,10 @@ MachineLoader * GetLoader(QString name)
 }
 
 
-QVector<Machine *> Profile::GetMachines(MachineType t)
+QList<Machine *> Profile::GetMachines(MachineType t)
 // Returns a QVector containing all machine objects regisered of type t
 {
-    QVector<Machine *> vec;
+    QList<Machine *> vec;
     QHash<MachineID,Machine *>::iterator i;
 
     for (i=machlist.begin(); i!=machlist.end(); i++) {
@@ -286,7 +286,7 @@ QVector<Machine *> Profile::GetMachines(MachineType t)
 
 Machine * Profile::GetMachine(MachineType t)
 {
-    QVector<Machine *>vec=GetMachines(t);
+    QList<Machine *>vec=GetMachines(t);
     if (vec.size()==0) return NULL;
     return vec[0];
 
@@ -294,7 +294,7 @@ Machine * Profile::GetMachine(MachineType t)
 
 void Profile::RemoveSession(Session * sess)
 {
-    QMap<QDate,QVector<Day *> >::iterator di;
+    QMap<QDate,QList<Day *> >::iterator di;
 
     for (di=daylist.begin();di!=daylist.end();di++) {
         for (int d=0;d<di.value().size();d++) {

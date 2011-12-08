@@ -47,7 +47,7 @@ public:
     virtual bool SaveWaveform(Machine * m, QString & filename);*/
 
 protected:
-    QVector<Machine *> m_machlist;
+    QList<Machine *> m_machlist;
     QString m_class;
     MachineType m_type;
     Profile * m_profile;
@@ -55,6 +55,6 @@ protected:
 
 void RegisterLoader(MachineLoader *loader);
 void DestroyLoaders();
-QVector<MachineLoader *> GetLoaders();
+QList<MachineLoader *> GetLoaders();
 
 #endif //MACHINE_LOADER_H

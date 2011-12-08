@@ -62,7 +62,7 @@ void SummaryChart::SetDay(Day * nullday)
     m_empty=true;
     int suboffset;
     SummaryType type;
-    for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
+    for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
         dn=tt/86400;
         tt*=1000L;
@@ -75,7 +75,7 @@ void SummaryChart::SetDay(Day * nullday)
             for (int i=0;i<m_codes.size();i++)
                 m_goodcodes[i]=true;
             for (int i=0;i<d.value().size();i++) { // for each day
-                day=d.value()[i];
+                day=d.value().at(i);
                 if  (!day) continue;
                 if (day->machine_type()!=m_machinetype) continue;
                 int ft=qint64(day->first())/1000L;
@@ -181,11 +181,11 @@ void SummaryChart::SetDay(Day * nullday)
         ChannelID code=m_codes[j];
         if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
 
-        for (QMap<QDate,QVector<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
+        for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
             tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
             dn=tt/86400;
             for (int i=0;i<d.value().size();i++) { // for each machine object for this day
-                day=d.value()[i];
+                day=d.value().at(i);
                 if (day->machine_type()!=m_machinetype) continue;
                 if (!m_values[dn].contains(j+1)) {
                     m_days[dn]=day;

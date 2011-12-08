@@ -118,6 +118,8 @@ private slots:
 
     void on_actionChange_User_triggered();
 
+    void on_actionPurge_Current_Day_triggered();
+
 private:
 
     Ui::MainWindow *ui;

@@ -11,7 +11,6 @@ License: GPL
 #define PROFILES_H
 
 #include <QString>
-#include <map>
 #include "machine.h"
 #include "machine_loader.h"
 #include "preferences.h"
@@ -43,14 +42,14 @@ public:
     void AddDay(QDate date,Day *day,MachineType mt);
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
 
-    QVector<Machine *> GetMachines(MachineType t);
+    QList<Machine *> GetMachines(MachineType t);
     Machine * GetMachine(MachineType t,QDate date);
     Machine * GetMachine(MachineType t);
 
     virtual void ExtraLoad(QDomElement & root);
     virtual QDomElement ExtraSave(QDomDocument & doc);
 
-    QMap<QDate,QVector<Day *> > daylist;
+    QMap<QDate,QList<Day *> > daylist;
     const QDate & FirstDay() { return m_first; }
     const QDate & LastDay() { return m_last; }
 

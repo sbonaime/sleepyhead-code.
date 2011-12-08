@@ -615,7 +615,22 @@
     <property name="title">
      <string>&amp;Data</string>
     </property>
+    <widget class="QMenu" name="menu_Advanced">
+     <property name="title">
+      <string>&amp;Advanced</string>
+     </property>
+     <widget class="QMenu" name="menu_Purge_CPAP_Data">
+      <property name="title">
+       <string>&amp;Purge CPAP Data</string>
+      </property>
+      <addaction name="actionPurge_Current_Day"/>
+     </widget>
+     <addaction name="menu_Purge_CPAP_Data"/>
+    </widget>
     <addaction name="action_Rebuild_Oximetry_Index"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Advanced"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
@@ -777,6 +792,11 @@
   <action name="actionChange_User">
    <property name="text">
     <string>Change &amp;User</string>
+   </property>
+  </action>
+  <action name="actionPurge_Current_Day">
+   <property name="text">
+    <string>&amp;Current Selected Day</string>
    </property>
   </action>
  </widget>

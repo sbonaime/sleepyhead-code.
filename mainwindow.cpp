@@ -860,9 +860,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             first=false;
         }
         gGraph *g=(*gv)[i];
-        if (g->title()=="Minute Vent.") {
-            int i=0;
-        }
         if (g->isEmpty()) continue;
         if (!g->visible()) continue;
         g->deselect();
@@ -907,14 +904,14 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
     QVector<QString> invalid;
 
-    QVector<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
+    QList<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
 
     bool ok;
     int discard_threshold=PROFILE["OxiDiscardThreshold"].toInt(&ok);
     if (!ok) discard_threshold=10;
     Machine *m;
     for (int z=0;z<machines.size();z++) {
-        m=machines[z];
+        m=machines.at(z);
         //m->sessionlist.erase(m->sessionlist.find(0));
         for (QHash<SessionID,Session *>::iterator s=m->sessionlist.begin();s!=m->sessionlist.end();s++) {
             Session *sess=s.value();
@@ -1008,4 +1005,38 @@ void MainWindow::on_actionChange_User_triggered()
         } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
 #endif
 
+}
+
+void MainWindow::on_actionPurge_Current_Day_triggered()
+{
+    QDate date=getDaily()->getDate();
+    Day *day=PROFILE.GetDay(date,MT_CPAP);
+    Machine *m;
+    if (day) {
+        m=day->machine;
+        QString path=PROFILE.Get("DataFolder")+QDir::separator()+m->hexid()+QDir::separator();
+
+        QVector<Session *>::iterator s,km=day->end();
+
+        for (s=day->begin();s!=day->end();s++) {
+            SessionID id=(*s)->session();
+            QString filename0=path+QString().sprintf("%08lx.000",id);
+            QString filename1=path+QString().sprintf("%08lx.001",id);
+            qDebug() << "Removing" << filename0;
+            qDebug() << "Removing" << filename1;
+            QFile::remove(filename0);
+            QFile::remove(filename1);
+            m->sessionlist.erase(m->sessionlist.find(id)); // remove from machines session list
+        }
+        QList<Day *> & dl=PROFILE.daylist[date];
+        QList<Day *>::iterator it;//=dl.begin();
+        for (it=dl.begin();it!=dl.end();it++) {
+            if ((*it)==day) break;
+        }
+        if (it!=dl.end()) {
+            PROFILE.daylist[date].erase(it);
+            delete day;
+        }
+    }
+    getDaily()->ReloadGraphs();
 }
