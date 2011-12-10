@@ -595,9 +595,10 @@ void Daily::Load(QDate date)
         }
     }
     lastcpapday=cpap;
+
     QString html="<html><head><style type='text/css'>"
-    "p,a,td,body { font-family: 'FreeSans', 'Sans Serif'; }"
-    "p,a,td,body { font-size: 12px; }"
+    "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
+    "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
     "a:link,a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
     "a:hover { background-color: inherit; color: inherit; text-decoration:none; font-weight: bold; }"
     "</style>"
