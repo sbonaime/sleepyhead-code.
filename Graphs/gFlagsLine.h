@@ -45,6 +45,7 @@ public:
     virtual qint64 Minx();
     virtual qint64 Maxx();
     virtual void SetDay(Day *);
+    virtual bool isEmpty() { return m_empty; }
     int count() { return lvisible.size(); }
     int barHeight() { return m_barh; }
     QVector<gFlagsLine *> & visibleLayers() { return lvisible; }
@@ -53,6 +54,7 @@ protected:
     GLShortBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;
     float m_barh;
+    bool m_empty;
 };
 
 #endif // GFLAGSLINE_H

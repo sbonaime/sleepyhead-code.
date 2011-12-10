@@ -7,6 +7,7 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
+
 #include <QString>
 #include <QVariant>
 #include <QDateTime>
@@ -25,6 +26,7 @@
 #include "SleepLib/session.h"
 
 #include "SleepLib/day.h"
+
 
 class Day;
 class Session;

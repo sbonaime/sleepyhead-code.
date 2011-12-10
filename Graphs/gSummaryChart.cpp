@@ -128,8 +128,16 @@ void SummaryChart::SetDay(Day * nullday)
                     if (day->machine_type()!=m_machinetype) continue;
                     //m_values[dn][j+1]=0;
 
-                    bool hascode=day->channelHasData(code) || day->settingExists(code);
-                    if (type==ST_HOURS || type==ST_SESSIONS || hascode) { // too many lookups happening here.. stop the crap..
+                    bool hascode=//day->channelHasData(code) ||
+                            type==ST_HOURS ||
+                            type==ST_SESSIONS ||
+                            day->settingExists(code) ||
+                            day->hasData(code,type);
+
+                    if (code==CPAP_RespRate) {
+                        int i=5;
+                    }
+                    if (hascode) {
                         m_days[dn]=day;
                         switch(m_type[j]) {
                             case ST_AVG: tmp=day->avg(code); break;
@@ -149,6 +157,9 @@ void SummaryChart::SetDay(Day * nullday)
                             case ST_SETWAVG: tmp=day->settings_wavg(code); break;
                             case ST_SETSUM: tmp=day->settings_sum(code); break;
                         default:    break;
+                        }
+                        if (tmp>10000) {
+                            int i=5;
                         }
                         if (suboffset>0) {
                             tmp-=suboffset;

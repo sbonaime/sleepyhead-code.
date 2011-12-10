@@ -21,7 +21,7 @@ License: GPL
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int prs1_data_version=7;
+const int prs1_data_version=8;
 //
 //********************************************************************************************
 
@@ -54,15 +54,27 @@ protected:
     QHash<QString,Machine *> PRS1List;
     int OpenMachine(Machine *m,QString path,Profile *profile);
     bool ParseProperties(Machine *m,QString filename);
-    bool OpenSummary(Session *session,QString filename);
-    bool OpenEvents(Session *session,QString filename);
-    bool OpenWaveforms(Session *session,QString filename);
-    bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp);
-    bool Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp);
-    void CalcRespiratoryRate(Session *);
-    void filterFlow(EventList *in, EventList *out);
+    //bool OpenSummary(Session *session,QString filename);
+    //bool OpenEvents(Session *session,QString filename);
+    bool OpenWaveforms(SessionID sid, QString filename);
+    bool ParseWaveform(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
+    bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version);
+    bool Parse002(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+    bool Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+
+    bool OpenFile(Machine *mach, QString filename);
+    //bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos);
+    //bool Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos);
     unsigned char * m_buffer;
     QHash<SessionID, Session *> extra_session;
+    QHash<SessionID, Session *> new_sessions;
+    qint32 summary_duration;
+};
+
+struct WaveHeaderList {
+    quint16 interleave;
+    quint8  sample_format;
+    WaveHeaderList(quint16 i,quint8 f){ interleave=i; sample_format=f; }
 };
 
 #endif // PRS1LOADER_H

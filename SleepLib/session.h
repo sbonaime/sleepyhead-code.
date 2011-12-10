@@ -18,7 +18,6 @@
 //class EventList;
 class Machine;
 
-enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM };
 
 class Session
 {

@@ -428,6 +428,7 @@ public:
     inline float printScaleY() { return print_scaleY; }
     inline void setPrintScaleX(float x) { print_scaleX=x; }
     inline void setPrintScaleY(float y) { print_scaleY=y; }
+    bool isEmpty();
 
     void deselect();
     QPoint pointClicked() { return m_point_clicked; }

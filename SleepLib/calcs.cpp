@@ -49,9 +49,9 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     //stage1[i]=in->data(i);
 
     // Anti-Alias the flow waveform to get rid of jagged edges.
-    stage2[0]=stage1[0];
-    stage2[1]=stage1[1];
-    stage2[2]=stage1[2];
+    stage2[0]=in->data(0);
+    stage2[1]=in->data(1);
+    stage2[2]=in->data(2);
 
     i=3;
     for (;i<size-3;i++) {
@@ -75,11 +75,11 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
 
     float weight=0.6;
     //stage2[0]=in->data(0);
-    stage1[0]=stage2[0];
-    for (int i=1;i<size;i++) {
+//    stage1[0]=stage2[0];
+   /* for (int i=1;i<size;i++) {
         //stage2[i]=in->data(i);
         stage1[i]=weight*stage2[i]+(1.0-weight)*stage1[i-1];
-    }
+    } */
 
     qint64 time=in->first();
     qint64 u1=0,u2=0,len,l1=0,l2=0;
@@ -91,7 +91,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     //int lasti=0;
 
     for (i=0;i<size;i++) {
-        c=stage1[i];
+        c=stage2[i];
         if (c>thresh) {
             if (lastc<=thresh) {
                 u2=u1;
@@ -102,7 +102,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                     if (tv) { // && z1>0) { // Tidal Volume Calculations
                         EventDataType t=0;
                         for (int g=z1;g<z2;g++) {
-                            tmp=-stage1[g];
+                            tmp=-stage2[g];
                             t+=tmp;
                         }
                         TV.push_back(t);
@@ -122,7 +122,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                         // Average the other half of the breath to increase accuracy.
                         EventDataType t=0;
                         for (int g=z2;g<z1;g++) {
-                            tmp=stage1[g];
+                            tmp=stage2[g];
                             t+=tmp;
                         }
                         int ts=TV.size()-2;
@@ -136,6 +136,10 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
         }
         lastc=c;
         time+=rate;
+    }
+    if (!breaths.size()) {
+
+        return 0;
     }
 
     qint64 window=60000;
@@ -218,7 +222,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
         }
         qSort(med);
         br=med[2];
-        out->AddEvent(t,br);
+        if (out) out->AddEvent(t,br);
 
         //t=TV2_start[i];
         med.clear();
@@ -227,9 +231,10 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
         }
         qSort(med);
         tmp=med[3];
-        tv->AddEvent(t,tmp);
 
-        mv->AddEvent(t,(tmp*br)/1000.0);
+        if (tv) tv->AddEvent(t,tmp);
+
+        if (mv) mv->AddEvent(t,(tmp*br)/1000.0);
     }
 
     delete [] stage2;
@@ -243,27 +248,43 @@ int calcRespRate(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->machine()->GetClass()!="PRS1") return 0;
-    if (session->eventlist.contains(CPAP_RespRate)) return 0; // already exists?
+    if (!session->eventlist.contains(CPAP_FlowRate))
+        return 0; //need flow waveform
 
-    if (!session->eventlist.contains(CPAP_FlowRate)) return 0; //need flow waveform
+    if (session->eventlist.contains(CPAP_RespRate))
+        return 0; // already exists?
 
-    EventList *flow, *rr,  *tv=NULL, *mv=NULL;
+    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL;
+
     if (!session->eventlist.contains(CPAP_TidalVolume)) {
         tv=new EventList(EVL_Event);
-        session->eventlist[CPAP_TidalVolume].push_back(tv);
-    }
+    } else tv=NULL;
     if (!session->eventlist.contains(CPAP_MinuteVent)) {
         mv=new EventList(EVL_Event);
-        session->eventlist[CPAP_MinuteVent].push_back(mv);
-    }
+    } else mv=NULL;
+    if (!session->eventlist.contains(CPAP_RespRate)) {
+        rr=new EventList(EVL_Event);
+    } else rr=NULL;
+
+    if (!rr & !tv & !mv) return 0;
+    if (rr) session->eventlist[CPAP_RespRate].push_back(rr);
+    if (tv) session->eventlist[CPAP_TidalVolume].push_back(tv);
+    if (mv) session->eventlist[CPAP_MinuteVent].push_back(mv);
+
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
         flow=session->eventlist[CPAP_FlowRate][ws];
         if (flow->count() > 5) {
-            rr=new EventList(EVL_Event);
-            session->eventlist[CPAP_RespRate].push_back(rr);
 
+
+            if (flow->count()==103200) {
+                int i=5;
+            }
             cnt+=filterFlow(flow,rr,tv,mv,flow->rate());
+
+            if (tv->count()==0) {
+                int i=5;
+            }
         }
     }
     return cnt;
@@ -298,6 +319,11 @@ int calcAHIGraph(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
+
+    if (!session->channelExists(CPAP_Obstructive) &&
+            !session->channelExists(CPAP_Hypopnea) &&
+            !session->channelExists(CPAP_Apnea) &&
+            !session->channelExists(CPAP_ClearAirway)) return 0;
 
     const qint64 winsize=30000; // 30 second windows
 
@@ -370,6 +396,9 @@ int calcLeaks(Session *session)
             if (idx>=med.size()) idx--;
             median=tmp-med[idx];
             if (median<0) median=0;
+            if (median>9999) {
+                int i=5;
+            }
             leak->AddEvent(ti,median);
 
             rpos=rpos % rbsize;

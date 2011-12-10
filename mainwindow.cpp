@@ -557,7 +557,21 @@ void MainWindow::on_action_Screenshot_triggered()
 }
 void MainWindow::DelayedScreenshot()
 {
+//#ifdef Q_WS_MAC
+//    CGImageRef windowImage = CGWindowListCreateImage(imageBounds, singleWindowListOptions, windowID, imageOptions);
+//    originalPixmap = new QPixmap(QPixmap::fromMacCGImageRef(windowImage));
+
+
+//    CGImageRef img = CGDisplayCreateImageForRect(displayID, *rect);
+//    CFMutableDataRef imgData = CFDataCreateMutable(0, 0);
+//    CGImageDestinationRef imgDst = CGImageDestinationCreateWithData(imgData, kUTTypeJPEG2000, 1, 0);
+//    CGImageDestinationAddImage(imgDst, img, 0);
+//    CGImageDestinationFinalize(imgDst);
+//    CFRelease(imgDst);
+//    QPixmap pixmap=QPixmap::fromMacCGImageRef(img);
+//#else
     QPixmap pixmap = QPixmap::grabWindow(this->winId());
+//#endif
     QString a=PREF.Get("{home}")+"/Screenshots";
     QDir dir(a);
     if (!dir.exists()){

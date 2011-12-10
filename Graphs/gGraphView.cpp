@@ -103,7 +103,7 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
 #ifdef Q_WS_WIN32
     height=fm.ascent();
 #else
-    height=fm.xHeight()+2; //fm.ascent();
+    height=fm.xHeight()+2; // doesn't work properly on windows..
 #endif
 #ifdef ENABLE_THREADED_DRAWING
     mut.unlock();
@@ -733,7 +733,8 @@ void Layer::SetDay(Day * d)
 
 bool Layer::isEmpty()
 {
-    if (m_day && (m_day->count(m_code)>0))
+    //if (m_day && (m_day->count(m_code)>0))
+    if (m_day && (m_day->channelExists(m_code)))
         return false;
     return true;
 }
@@ -2621,6 +2622,18 @@ void gGraphView::setDay(Day * day)
     }
     ResetBounds();
 }
+bool gGraphView::isEmpty()
+{
+    bool res=true;
+    for (int i=0;i<m_graphs.size();i++) {
+        if (!m_graphs[i]->isEmpty()) {
+            res=false;
+            break;
+        }
+    }
+    return res;
+}
+
 void gGraphView::refreshTimeout()
 {
     updateGL();

@@ -37,6 +37,8 @@ public:
     EventDataType sum(ChannelID code);
     EventDataType wavg(ChannelID code);
 
+    bool hasData(ChannelID code, SummaryType type);
+
     EventDataType percentile(ChannelID mc,double percent);
 
     // Note, the following convert to doubles without considering the consequences fully.

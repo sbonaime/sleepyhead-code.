@@ -29,6 +29,8 @@ const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don'
 //const int max_number_event_fields=10;
 
 
+enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM };
+
 enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL };
 //void InitMapsWithoutAwesomeInitializerLists();
 

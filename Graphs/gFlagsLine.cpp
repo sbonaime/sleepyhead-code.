@@ -19,6 +19,7 @@ gFlagsGroup::gFlagsGroup()
     quads->setAntiAlias(true);
     lines->setAntiAlias(false);
     m_barh=0;
+    m_empty=true;
 }
 gFlagsGroup::~gFlagsGroup()
 {
@@ -41,14 +42,21 @@ void gFlagsGroup::SetDay(Day * d)
 {
     LayerGroup::SetDay(d);
     lvisible.clear();
+    int cnt=0;
     for (int i=0;i<layers.size();i++) {
         gFlagsLine *f=dynamic_cast<gFlagsLine *>(layers[i]);
         if (!f) continue;
 
-        if (!f->isEmpty() || f->isAlwaysVisible()) {
+        bool e=f->isEmpty();
+        if (!e || f->isAlwaysVisible()) {
             lvisible.push_back(f);
+            if (!e) cnt++;
         }
     }
+    if (cnt==0)
+        m_empty=true;
+    else m_empty=false;
+    //if (lvisible.size()==0) m_empty=false;
     m_barh=0;
 }
 

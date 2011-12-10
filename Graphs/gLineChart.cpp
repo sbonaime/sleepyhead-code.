@@ -131,6 +131,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
             continue;
         }
+        if (m_code==CPAP_FlowRate){
+            int i=5;
+        }
         schema::Channel ch=schema::channel[m_code];
         bool fndbetter=false;
         for (QList<schema::Channel *>::iterator l=ch.m_links.begin();l!=ch.m_links.end();l++) {

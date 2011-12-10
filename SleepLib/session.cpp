@@ -500,8 +500,10 @@ EventDataType Session::min(ChannelID id)
     QVector<EventList *> & evec=j.value();
 
     bool first=true;
-    EventDataType min,t1;
+    EventDataType min=0,t1;
     for (int i=0;i<evec.size();i++) {
+        if (evec[i]->count()==0)
+            continue;
         t1=evec[i]->min();
         if (t1==0 && t1==evec[i]->max()) continue;
         if (first) {
@@ -510,6 +512,9 @@ EventDataType Session::min(ChannelID id)
         } else {
             if (min>t1) min=t1;
         }
+    }
+    if (min>10000) {
+        int i=5;
     }
     m_min[id]=min;
     return min;
@@ -528,8 +533,9 @@ EventDataType Session::max(ChannelID id)
     QVector<EventList *> & evec=j.value();
 
     bool first=true;
-    EventDataType max,t1;
+    EventDataType max=0,t1;
     for (int i=0;i<evec.size();i++) {
+        if (evec[i]->count()==0) continue;
         t1=evec[i]->max();
         if (t1==0 && t1==evec[i]->min()) continue;
         if (first) {
@@ -896,6 +902,9 @@ EventDataType Session::wavg(ChannelID id)
        s0=i.value();
        s1+=i.key()*s0;
        s2+=s0;
+    }
+    if (s2==0) {
+        return m_wavg[id]=0;
     }
     double j=double(s1)/double(s2);
     EventDataType v=j*gain;

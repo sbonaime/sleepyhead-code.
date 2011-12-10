@@ -91,7 +91,7 @@ One id code per item
   <channel id="0x0804" class="data" scope="!day" name="Height" details="Height" label="Height" unit="cm" color="blue"/>
   <channel id="0x0805" class="data" name="Bookmark" details="Session Bookmark" label="Bookmark" unit="duration" color="orange"/>
   <channel id="0x0806" class="data" name="BMI" details="Body Mass Index" label="BMI" unit="kg/m2" color="orange"/>
-  <channel id="0x0807" class="data" name="ZombieMeter" details="How good you feel." label="Alive" unit="%" color="orange"/>
+  <channel id="0x0807" class="data" name="ZombieMeter" details="How good you feel." label="Alive" unit="0-10" color="orange"/>
   <channel id="0xd000" class="data" scope="!day" unique="true" name="Journal" details="Journal Notes" label="Journal" type="richtext"/>
  </group>
  <group name="PRS1">

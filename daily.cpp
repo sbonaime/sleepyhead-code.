@@ -366,7 +366,8 @@ void Daily::ReloadGraphs()
     if (previous_date.isValid()) {
         d=previous_date;
         Unload(d);
-    } else d=PROFILE.LastDay();
+    } //else
+    d=PROFILE.LastDay();
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
@@ -646,7 +647,14 @@ void Daily::Load(QDate date)
     CPAPMode mode=MODE_UNKNOWN;
     PRTypes pr;
     QString a;
+    bool isBrick=false;
     if (cpap) {
+        if (GraphView->isEmpty()) {
+            GraphView->setEmptyText("Brick Machine :(");
+            isBrick=true;
+        } else {
+            GraphView->setEmptyText("No Data");
+        }
         mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
         pr=(PRTypes)cpap->settings_max(PRS1_FlexMode);
         if (pr==PR_NONE)
@@ -698,107 +706,114 @@ void Daily::Load(QDate date)
                 .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
 
         QString cs;
-        if (cpap->machine->GetClass()=="ResMed") {
-            cs="4 width='100%' align=center>";
-        } else cs="2 width='50%'>";
-        html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-        "<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-        "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+CPAP_Hypopnea+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
-        if (cpap->machine->GetClass()=="ResMed") {
-            html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+CPAP_Apnea+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
-        }
-        html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+CPAP_Obstructive+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-        "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+CPAP_ClearAirway+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
-        "</table></td>";
-
-        if (cpap->machine->GetClass()=="PRS1") {
-            html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_RERA+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_FlowLimit+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
-            "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-                    "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_CSR+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
-            "</table></td>";
-        } else if (cpap->machine->GetClass()=="Intellipap") {
-            html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_NRI+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_Leak+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
-            "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_ExP+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
+        if (!isBrick) {
+            if (cpap->machine->GetClass()=="ResMed") {
+                cs="4 width='100%' align=center>";
+            } else cs="2 width='50%'>";
+            html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
+            "<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
+            "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+CPAP_Hypopnea+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+            if (cpap->machine->GetClass()=="ResMed") {
+                html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+CPAP_Apnea+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+            }
+            html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+CPAP_Obstructive+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+CPAP_ClearAirway+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
             "</table></td>";
 
-        }
+            if (cpap->machine->GetClass()=="PRS1") {
+                html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
+                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_RERA+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_FlowLimit+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+                        "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_CSR+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+                "</table></td>";
+            } else if (cpap->machine->GetClass()=="Intellipap") {
+                html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
+                "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_NRI+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_Leak+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
+                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_ExP+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
+                "</table></td>";
 
-
-        // Note, this may not be a problem since Qt bug 13622 was discovered
-        // as it only relates to text drawing, which the Pie chart does not do
-        // ^^ Scratch that.. pie now includes text..
-
-        if (PROFILE["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
-            if (ahi+rei+fli>0) {
-                html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
-                //G_AHI->setFixedSize(gwwidth,120);
-                //mainwin->snapshotGraph()->setPrintScaleX(1);
-                //mainwin->snapshotGraph()->setPrintScaleY(1);
-                QPixmap pixmap=snapGV->renderPixmap(172,172);
-                QByteArray byteArray;
-                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "PNG");
-                html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            } else {
-                html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
             }
-        }
-    }
-    html+="</table>";
-    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-    if (cpap || oxi) {
-        html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
 
-        //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
 
-        html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
-        ChannelID chans[]={
-            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
-            CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
-            CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
-            CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
-        };
-        int numchans=sizeof(chans)/sizeof(ChannelID);
-        int suboffset=0;
-        for (int i=0;i<numchans;i++) {
+            // Note, this may not be a problem since Qt bug 13622 was discovered
+            // as it only relates to text drawing, which the Pie chart does not do
+            // ^^ Scratch that.. pie now includes text..
 
-            ChannelID code=chans[i];
-            if (cpap && cpap->channelHasData(code)) {
-                //if (code==CPAP_LeakTotal) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
-                QString tooltip=schema::channel[code].description();
-                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
-                html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
-                html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
-                html+="</td><td>"+a.sprintf("%.2f",cpap->max(code)-suboffset);
-                html+="</td><tr>";
+            if (PROFILE["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+                if (ahi+rei+fli>0) {
+                    html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
+                    //G_AHI->setFixedSize(gwwidth,120);
+                    //mainwin->snapshotGraph()->setPrintScaleX(1);
+                    //mainwin->snapshotGraph()->setPrintScaleY(1);
+                    QPixmap pixmap=snapGV->renderPixmap(172,172);
+                    QByteArray byteArray;
+                    QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
+                    buffer.open(QIODevice::WriteOnly);
+                    pixmap.save(&buffer, "PNG");
+                    html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+                } else {
+                    html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+                }
             }
-            if (oxi && oxi->channelHasData(code)) {
-                QString tooltip=schema::channel[code].description();
-                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->max(code));
-                html+="</td><tr>";
-            }
-        }
 
+            html+="</table>";
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+            if (cpap || oxi) {
+                html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
+
+                //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
+
+                html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
+                ChannelID chans[]={
+                    CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
+                    CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
+                    CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
+                    CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
+                };
+                int numchans=sizeof(chans)/sizeof(ChannelID);
+                int suboffset=0;
+                for (int i=0;i<numchans;i++) {
+
+                    ChannelID code=chans[i];
+                    if (cpap && cpap->channelHasData(code)) {
+                        //if (code==CPAP_LeakTotal) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
+                        QString tooltip=schema::channel[code].description();
+                        if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                        html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->max(code)-suboffset);
+                        html+="</td><tr>";
+                    }
+                    if (oxi && oxi->channelHasData(code)) {
+                        QString tooltip=schema::channel[code].description();
+                        if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                        html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->max(code));
+                        html+="</td><tr>";
+                    }
+                }
+            }
+        } else {
+            html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
+            html+="<tr><td colspan='5' align='center'><i>Sorry, your machine does not record data.</i></td></tr>\n";
+            html+="<tr><td colspan='5' align='center'><i>Complain to your Equipment Provider!</i></td></tr>\n";
+            html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
+        }
     } else {
         html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
     html+="</table>";
-    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    //html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     if (cpap) {
       //  if ((*profile)["EnableGraphSnapshots"].toBool()) {
@@ -833,9 +848,10 @@ void Daily::Load(QDate date)
                 pixmap.save(&buffer, "PNG");
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             } */
+        html+="</table><hr height=2>";
 
         //}
-        html+="</table><hr height=2><table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
@@ -893,7 +909,7 @@ void Daily::Load(QDate date)
     ui->bookmarkTable->setHorizontalHeaderLabels(sl);
     ui->weightSpinBox->setValue(0);
     ui->ouncesSpinBox->setValue(0);
-    ui->ZombieMeter->setValue(50);
+    ui->ZombieMeter->setValue(5);
     ui->BMI->display(0);
     ui->BMI->setVisible(false);
     ui->BMIlabel->setVisible(false);
@@ -1024,7 +1040,7 @@ void Daily::Unload(QDate date)
             journal->settings["BMI"]=bmi;
             journal->SetChanged(true);
         }
-        if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=50)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
+        if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=5)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
             journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
             journal->SetChanged(true);
         }

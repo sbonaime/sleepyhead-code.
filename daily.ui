@@ -248,7 +248,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>2</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -572,8 +572,14 @@
               </item>
               <item row="1" column="0" colspan="8">
                <widget class="QSlider" name="ZombieMeter">
+                <property name="maximum">
+                 <number>10</number>
+                </property>
+                <property name="pageStep">
+                 <number>5</number>
+                </property>
                 <property name="value">
-                 <number>50</number>
+                 <number>5</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -582,7 +588,7 @@
                  <enum>QSlider::TicksAbove</enum>
                 </property>
                 <property name="tickInterval">
-                 <number>5</number>
+                 <number>1</number>
                 </property>
                </widget>
               </item>

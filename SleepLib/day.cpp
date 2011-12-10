@@ -188,8 +188,8 @@ EventDataType Day::wavg(ChannelID code)
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.m_wavg.contains(code)) {
-            d=sess.last(code)-sess.first(code);
-            s0=double(d)/1000.0;
+            d=sess.length();//.last(code)-sess.first(code);
+            s0=double(d)/3600000.0;
             if (s0>0) {
                 s1+=sess.wavg(code)*s0;
                 s2+=s0;
@@ -280,6 +280,54 @@ EventDataType Day::min(ChannelID code)
     return min;
 }
 
+bool Day::hasData(ChannelID code, SummaryType type)
+{
+    bool has=false;
+    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        Session *sess=*s;
+        switch(type) {
+        case ST_90P:
+            has=sess->m_90p.contains(code);
+            break;
+        case ST_MIN:
+            has=sess->m_min.contains(code);
+            break;
+        case ST_MAX:
+            has=sess->m_max.contains(code);
+            break;
+        case ST_CNT:
+            has=sess->m_cnt.contains(code);
+            break;
+        case ST_AVG:
+            has=sess->m_avg.contains(code);
+            break;
+        case ST_WAVG:
+            has=sess->m_wavg.contains(code);
+            break;
+        case ST_CPH:
+            has=sess->m_cph.contains(code);
+            break;
+        case ST_SPH:
+            has=sess->m_sph.contains(code);
+            break;
+        case ST_FIRST:
+            has=sess->m_firstchan.contains(code);
+            break;
+        case ST_LAST:
+            has=sess->m_lastchan.contains(code);
+            break;
+        case ST_SUM:
+            has=sess->m_sum.contains(code);
+            break;
+        default:
+            break;
+        }
+
+        if (has) break;
+    }
+    return has;
+}
+
 EventDataType Day::max(ChannelID code)
 {
     EventDataType max=0;
@@ -345,7 +393,15 @@ bool Day::settingExists(ChannelID id)
 }
 bool Day::channelExists(ChannelID id)
 {
-    return channelHasData(id);
+    bool r=false;
+    for (int i=0;i<sessions.size();i++) {
+        if (sessions[i]->eventlist.contains(id)) {
+            r=true;
+            break;
+        }
+    }
+    return r;
+//    return channelHasData(id);
     //if (machine->hasChannel(id)) return true;
     //return false;
 }
@@ -355,6 +411,7 @@ bool Day::channelHasData(ChannelID id)
     for (int i=0;i<sessions.size();i++) {
         if (sessions[i]->channelExists(id)) {
             r=true;
+            break;
         }
     }
     return r;
