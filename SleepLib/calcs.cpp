@@ -508,31 +508,43 @@ int calcSPO2Drop(Session *session)
     EventDataType lv=0;
     int li=0;
 
+    // Fix me.. Time scale varies.
     const unsigned ringsize=10;
-    EventDataType ring[ringsize];
+    EventDataType ring[ringsize]={0};
+    qint64 rtime[ringsize]={0};
     int rp=0;
     int min;
+    int cnt=0;
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
             if (!val) continue;
             ring[rp]=val;
+            time=el.time(i);
+            rtime[rp]=time;
             rp++;
             rp=rp % ringsize;
             if (i<ringsize)  {
                 for (unsigned j=i;j<ringsize;j++) {
                     ring[j]=val;
+                    rtime[j]=0;
                 }
             }
             tmp=0;
+            cnt=0;
             for (unsigned j=0;j<ringsize;j++) {
-                tmp+=ring[j];
+                if (rtime[j] > time-window) {
+                    tmp+=ring[j];
+                    cnt++;
+                }
             }
-            tmp/=EventDataType(ringsize);
+            if (!cnt) {
+                unsigned j=abs((rp-1) % ringsize);
+                tmp=ring[j];
+            } else tmp/=EventDataType(cnt);
 
             val=tmp;
-            time=el.time(i);
             lastt=0;
             lv=val;
 
