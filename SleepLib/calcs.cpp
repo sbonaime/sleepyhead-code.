@@ -4,6 +4,7 @@
  License: GPL
 */
 
+#include <cmath>
 #include "calcs.h"
 #include "profiles.h"
 
@@ -509,19 +510,38 @@ int calcSPO2Drop(Session *session)
     int li=0;
 
     // Fix me.. Time scale varies.
-    const unsigned ringsize=10;
+    const unsigned ringsize=30;
     EventDataType ring[ringsize]={0};
     qint64 rtime[ringsize]={0};
     int rp=0;
     int min;
     int cnt=0;
+    tmp=0;
+
+    // Calculate baseline from first 15 minutes of data, hopefully meaning they are still awake..
+    qint64 start=0;
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
-            if (!val) continue;
-            ring[rp]=val;
             time=el.time(i);
+            if (!start) start=time;
+            if (time > start+900000) break;// 15 minutes
+            tmp+=val;
+            cnt++;
+        }
+    }
+    EventDataType baseline=round(tmp/EventDataType(cnt));
+    EventDataType current;
+    qDebug() << "Calculated baseline" << baseline;
+
+    for (int e=0;e<it.value().size();e++) {
+        EventList & el=*(it.value()[e]);
+        for (unsigned i=0;i<el.count();i++) {
+            current=el.data(i);
+            if (!current) continue;
+            time=el.time(i);
+            /*ring[rp]=val;
             rtime[rp]=time;
             rp++;
             rp=rp % ringsize;
@@ -534,41 +554,35 @@ int calcSPO2Drop(Session *session)
             tmp=0;
             cnt=0;
             for (unsigned j=0;j<ringsize;j++) {
-                if (rtime[j] > time-window) {
+                if (rtime[j] > time-300000) {  // only look at recent entries..
                     tmp+=ring[j];
                     cnt++;
                 }
             }
             if (!cnt) {
                 unsigned j=abs((rp-1) % ringsize);
-                tmp=ring[j];
-            } else tmp/=EventDataType(cnt);
+                tmp=(ring[j]+val)/2;
+            } else tmp/=EventDataType(cnt); */
 
-            val=tmp;
+            val=baseline;
             lastt=0;
             lv=val;
 
 
             min=val;
-            for (unsigned j=i+1;j<el.count();j++) { // scan ahead in the window
+            for (unsigned j=i;j<el.count();j++) { // scan ahead in the window
                 time2=el.time(j);
+                //if (time2 > time+window) break;
                 val2=el.data(j);
-                if (val2<min) min=val2;
-                if (val2 <= (val-change)) {
-                    lastt=time2;
-                    li=j;
-                    //lv=val2;
-                } else if (val2 <= lv) {
-                    lv=val2;
-                    //lastt=time2;
-                    //li=j;
-                } else break;
+
+                if (val2 > baseline-change) break;
+                lastt=time2;
+                li=j+1;
             }
             if (lastt>0) {
                 qint64 len=(lastt-time);
                 if (len>=window) {
                     pc->AddEvent(lastt,len/1000,val-min);
-
                     i=li;
                 }
             }
