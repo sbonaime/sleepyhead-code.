@@ -486,6 +486,14 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         duration=data[offset+0x12] | (data[0x13] << 8);
         duration*=2;
         session->really_set_last(qint64(timestamp+duration)*1000L);
+        if (max>0) {
+            session->setMin(CPAP_Pressure,min);
+            session->setMax(CPAP_Pressure,max);
+        } else {
+            session->setWavg(CPAP_Pressure,min  );
+
+        }
+
     } else {
         // 0X28 & 0X29 is length on r5
 

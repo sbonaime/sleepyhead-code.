@@ -89,6 +89,8 @@ private slots:
 
     void on_ouncesSpinBox_valueChanged(int arg1);
 
+    void on_ZombieMeter_valueChanged(int value);
+
 protected:
 
 private:
@@ -129,4 +131,5 @@ private:
 };
 
 #endif // DAILY_H
+
 
