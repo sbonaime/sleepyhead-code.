@@ -463,35 +463,43 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 
 void Daily::UpdateCalendarDay(QDate date)
 {
-    QTextCharFormat bold;
-    QTextCharFormat cpapcol;
-    QTextCharFormat normal;
+    QTextCharFormat nodata;
+    QTextCharFormat cpaponly;
+    QTextCharFormat cpapjour;
     QTextCharFormat oxiday;
+    QTextCharFormat oxicpap;
     QTextCharFormat jourday;
-    bold.setForeground(QBrush(QColor("dark blue"), Qt::SolidPattern));
-    bold.setFontWeight(QFont::Bold);
-    cpapcol.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
-    cpapcol.setFontWeight(QFont::Bold);
+
+    cpaponly.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpaponly.setFontWeight(QFont::Normal);
+    cpapjour.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpapjour.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
-    oxiday.setFontWeight(QFont::Bold);
+    oxiday.setFontWeight(QFont::Normal);
+    oxicpap.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxicpap.setFontWeight(QFont::Bold);
     jourday.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
     jourday.setFontWeight(QFont::Bold);
+    nodata.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
+    nodata.setFontWeight(QFont::Normal);
 
     bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
     bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
     bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=NULL;
     if (hascpap) {
         if (hasoxi) {
-            ui->calendar->setDateTextFormat(date,oxiday);
+            ui->calendar->setDateTextFormat(date,oxicpap);
         } else if (hasjournal) {
-            ui->calendar->setDateTextFormat(date,jourday);
+            ui->calendar->setDateTextFormat(date,cpapjour);
         } else {
-            ui->calendar->setDateTextFormat(date,cpapcol);
+            ui->calendar->setDateTextFormat(date,cpaponly);
         }
-    } else if (PROFILE.GetDay(date)) {
-        ui->calendar->setDateTextFormat(date,bold);
+    } else if (hasoxi) {
+        ui->calendar->setDateTextFormat(date,oxiday);
+    } else if (hasjournal) {
+        ui->calendar->setDateTextFormat(date,jourday);
     } else {
-        ui->calendar->setDateTextFormat(date,normal);
+        ui->calendar->setDateTextFormat(date,nodata);
     }
     ui->calendar->setHorizontalHeaderFormat(QCalendarWidget::ShortDayNames);
 
@@ -588,7 +596,7 @@ void Daily::Load(QDate date)
             GraphView->findGraph("Plethy")->setGroup(1);
             mainwin->Notify("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked.",3000);
         } else {
-            mainwin->Notify("Oximetry & CPAP graphs are linked for this day",2000);
+            //mainwin->Notify("Oximetry & CPAP graphs are linked for this day",2000);
             GraphView->findGraph("Pulse")->setGroup(0);
             GraphView->findGraph("SpO2")->setGroup(0);
             GraphView->findGraph("Plethy")->setGroup(0);

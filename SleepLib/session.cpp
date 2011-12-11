@@ -882,7 +882,7 @@ EventDataType Session::wavg(ChannelID id)
 
     for (int i=0;i<size;i++) {
         if (!evec[i]->count()) continue;
-        lastval=evec[i]->raw(0);
+        /*lastval=evec[i]->raw(0);
         lasttime=evec[i]->time(0);
         for (quint32 j=1;j<evec[i]->count();j++) {
             val=evec[i]->raw(j);
@@ -894,19 +894,44 @@ EventDataType Session::wavg(ChannelID id)
             } else vtime[lastval]=td;
             lasttime=time;
             lastval=val;
+        }*/
+
+        time=evec[i]->time(0)/1000L;
+        val=evec[i]->raw(0);
+        for (quint32 j=1;j<evec[i]->count();j++) {
+            lastval=val;
+            lasttime=time;
+            val=evec[i]->raw(j);
+            time=evec[i]->time(j)/1000L;
+            td=(time-lasttime);
+            if (vtime.contains(lastval)) {
+                vtime[lastval]+=td;
+            } else vtime[lastval]=td;
+        }
+        if (lasttime>0) {
+            td=last()-time;
+            if (vtime.contains(val)) {
+                vtime[val]+=td;
+            } else vtime[val]=td;
+
         }
     }
 
-    qint64 s0=0,s1=0,s2=0; // 32bit may all be thats needed here..
+    if (id==CPAP_Snore) {
+        int i=5;
+    }
+    qint64 s0=0,s1=0,s2=0,s3=0; // 32bit may all be thats needed here..
     for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
        s0=i.value();
-       s1+=i.key()*s0;
+       s3=i.key()+1;
+       s1+=s3*s0;
        s2+=s0;
     }
     if (s2==0) {
         return m_wavg[id]=0;
     }
     double j=double(s1)/double(s2);
+    j-=1;
     EventDataType v=j*gain;
     if (v>32768*gain) {
         v=0;

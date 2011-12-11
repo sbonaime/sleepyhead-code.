@@ -88,10 +88,10 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     // The following code (to the closing marker) is crap --->
     AHI=createGraph("AHI","Apnea\nHypopnea\nIndex");
-    UC=createGraph("Usage","Usage\n(time)");
+    UC=createGraph("Usage","Usage\n(hours)");
 
     int default_height=PROFILE["GraphHeight"].toInt();
-    US=new gGraph(GraphView,"Session Times","Session Times\n(time)",default_height,0);
+    US=new gGraph(GraphView,"Session Times","Session Times\n(hours)",default_height,0);
     US->AddLayer(new gYAxisTime(),LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();
     x->setUtcFix(true);
@@ -112,11 +112,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SPO2=createGraph("SpO2","Oxygen Saturation\n(%)");
     WEIGHT=createGraph("Weight","Weight\n(kg)");
     BMI=createGraph("BMI","Body\nMass\nIndex");
-    ZOMBIE=createGraph("Zombie","How you felt\n(% awesome)");
+    ZOMBIE=createGraph("Zombie","How you felt\n(0-10)");
 
     ahihr=new SummaryChart("AHI/Hr",GT_LINE);
-    ahihr->addSlice(CPAP_AHI,QColor("blue"),ST_MAX,true);
-    ahihr->addSlice(CPAP_AHI,QColor("orange"),ST_WAVG,true);
+    ahihr->addSlice(CPAP_AHI,QColor("blue"),ST_MAX,false);
+    ahihr->addSlice(CPAP_AHI,QColor("orange"),ST_WAVG,false);
     AHIHR->AddLayer(ahihr);
 
     weight=new SummaryChart("Weight",GT_LINE);
@@ -251,7 +251,10 @@ void Overview::ReloadGraphs()
     ui->dateStart->setDate(p_profile->FirstDay());
     ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
-
+    if (PROFILE.ExistsAndTrue("RebuildCache")) {
+        PROFILE["RebuildCache"]=false;
+        mainwin->Notify("Cache rebuild complete");
+    }
 }
 
 void Overview::RedrawGraphs()

@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     QDateTime lastchecked, today=QDateTime::currentDateTime();
     if (!PREF.Exists("Updates_AutoCheck")) {
         PREF["Updates_AutoCheck"]=true;
-        PREF["Updates_CheckFrequency"]=3;
+        PREF["Updates_CheckFrequency"]=7;
     }
     bool check_updates=false;
     if (PREF["Updates_AutoCheck"].toBool()) {
@@ -186,6 +186,7 @@ int main(int argc, char *argv[])
                                 PREF["Fonts_Application_Bold"].toBool() ? QFont::Bold : QFont::Normal,
                                 PREF["Fonts_Application_Italic"].toBool()));
 
+    qDebug() << "Selected" << QApplication::font().family();
     qInstallMsgHandler(MyOutputHandler);
 
     MainWindow w;

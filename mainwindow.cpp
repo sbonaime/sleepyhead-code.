@@ -502,8 +502,8 @@ void MainWindow::on_oximetryButton_clicked()
 
 void MainWindow::CheckForUpdates()
 {
-    mainwin->Notify("Checking for Updates");
-    on_actionCheck_for_Updates_triggered();
+    QTimer::singleShot(100,this,SLOT(on_actionCheck_for_Updates_triggered()));
+    //on_actionCheck_for_Updates_triggered();
 }
 
 void MainWindow::on_actionCheck_for_Updates_triggered()
@@ -516,6 +516,7 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
             return;
         }
     }
+    mainwin->Notify("Checking for Updates");
     netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
 }
 void MainWindow::replyFinished(QNetworkReply * reply)
@@ -523,7 +524,7 @@ void MainWindow::replyFinished(QNetworkReply * reply)
     if (reply->error()==QNetworkReply::NoError) {
         // Wrap this crap in XML/JSON so can do other stuff.
         if (reply->size()>20) {
-            qDebug() << "Doesn't look like a version file... :(";
+            mainwin->Notify("Update check failed.. Version file on the server is broken.");
         } else {
             // check in size
             QByteArray data=reply->readAll();
@@ -545,7 +546,7 @@ void MainWindow::replyFinished(QNetworkReply * reply)
             }
        }
     } else {
-        qDebug() << "Network Error:" << reply->errorString();
+        mainwin->Notify("Couldn't check for updates. The network is down.\n\n("+reply->errorString()+")");
     }
     reply->deleteLater();
 }

@@ -36,10 +36,13 @@ public:
     EventDataType avg(ChannelID code);
     EventDataType sum(ChannelID code);
     EventDataType wavg(ChannelID code);
+    EventDataType percentile(ChannelID code,EventDataType percentile);
 
     bool hasData(ChannelID code, SummaryType type);
 
-    EventDataType percentile(ChannelID mc,double percent);
+    QHash<ChannelID, EventDataType> m_p90; // 90% cache
+
+    //EventDataType percentile(ChannelID mc,double percent);
 
     // Note, the following convert to doubles without considering the consequences fully.
     EventDataType settings_avg(ChannelID code);

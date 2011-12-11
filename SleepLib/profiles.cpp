@@ -18,6 +18,10 @@ License: GPL
 #include "machine.h"
 #include "machine_loader.h"
 
+#include <QApplication>
+#include "mainwindow.h"
+
+extern MainWindow * mainwin;
 Preferences *p_pref;
 Preferences *p_layout;
 Profile * p_profile;
@@ -46,6 +50,48 @@ Profile::Profile(QString path)
 
 Profile::~Profile()
 {
+    QMap<QDate,QList<Day *> >::iterator di;
+    QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
+
+    QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > >::iterator ci;
+    for (di=daylist.begin();di!=daylist.end();di++) {
+        QDate date=di.key();
+        for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
+            Day *day=*d;
+            MachineID mach=day->machine->id();
+            QHash<ChannelID, EventDataType>::iterator i;
+
+            for (i=day->m_p90.begin();i!=day->m_p90.end();i++) {
+                cache[mach][date][i.key()]=day->m_p90[i.key()];
+            }
+        }
+    }
+    QString filename=Get("{DataFolder}")+QDir::separator()+"cache.day";
+    QFile f(filename);
+    if (f.open(QFile::WriteOnly)) {
+        QDataStream out(&f);
+        out.setVersion(QDataStream::Qt_4_6);
+        out.setByteOrder(QDataStream::LittleEndian);
+        quint16 size=cache.size();
+        out << size;
+        for (ci=cache.begin();ci!=cache.end();ci++) {
+            quint32 mid=ci.key();
+            out << mid;
+            out << ci.value();
+        }
+        /*quint16 size=cache.size();
+        out << size;
+        QMap<QDate,QHash<ChannelID, EventDataType> >::iterator i;
+        for (i=cache.begin();i!=cache.end();i++) {
+            QDate a=i.key();
+            out << a;
+        }
+        for (i=cache.begin();i!=cache.end();i++) {
+            out << cache[i.key()];
+        }*/
+        f.close();
+    }
+
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         delete i.value();
     }
@@ -72,6 +118,31 @@ void Profile::DataFormatError(Machine *m)
 }
 void Profile::LoadMachineData()
 {
+    QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
+
+    QString filename=Get("{DataFolder}")+QDir::separator()+"cache.day";
+    QFile f(filename);
+    if (f.exists(filename) && (f.open(QFile::ReadOnly))) {
+        QDataStream in(&f);
+        in.setVersion(QDataStream::Qt_4_6);
+        in.setByteOrder(QDataStream::LittleEndian);
+
+        quint16 size;
+        quint32 mid;
+        in >> size;
+        for (int i=0;i<size;i++) {
+            in >> mid;
+            in >> cache[mid];
+        }
+        PROFILE["RebuildCache"]=false;
+    } else {
+        if (mainwin) {
+            mainwin->Notify("Caching session data, this may take a little while.");
+            PROFILE["RebuildCache"]=true;
+
+            QApplication::processEvents();
+        }
+    }
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         Machine *m=i.value();
 
@@ -101,6 +172,18 @@ void Profile::LoadMachineData()
             m->Load();
         }
     }
+    for (QMap<QDate,QList<Day *> >::iterator di=daylist.begin();di!=daylist.end();di++) {
+        for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
+            Day *day=*d;
+            MachineID mid=day->machine->id();
+            if (cache.contains(mid)) {
+                if (cache[mid].contains(di.key())) {
+                    day->m_p90=cache[mid][di.key()];
+                }
+            }
+        }
+    }
+    // Load Day Cache here..
 }
 
 /**

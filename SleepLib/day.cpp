@@ -128,23 +128,121 @@ EventDataType Day::settings_wavg(ChannelID code)
     return (s1/s2);
 
 }
-EventDataType Day::p90(ChannelID code) // The "average" p90.. this needs fixing.
+EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 {
-    double val=0;
-    // Cache this?
-    int cnt=0;
+    // Cache this calculation
+
+
+    //if (percentile>=1) return 0; // probably better to crash and burn.
+
     QVector<Session *>::iterator s;
 
     // Don't assume sessions are in order.
+    QVector<EventDataType> ar;
     for (s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
-        if (sess.m_90p.contains(code)) {
-            val+=sess.p90(code);
-            cnt++;
+        QHash<ChannelID,QVector<EventList *> >::iterator ei=sess.eventlist.find(code);
+
+        if (ei==sess.eventlist.end())
+            continue;
+        for (int e=0;e<ei.value().size();e++) {
+            EventList *ev=ei.value()[e];
+            //if ()
+            for (unsigned j=0;j<ev->count();j++) {
+                ar.push_back(ev->data(j));
+            }
         }
     }
-    if (cnt==0) return 0;
-    return EventDataType(val/float(cnt));
+    int size=ar.size();
+    if (!size)
+        return 0;
+    size--;
+    qSort(ar);
+    int p=EventDataType(size)*percentile;
+    float p2=EventDataType(size)*percentile;
+    float diff=p2-p;
+    EventDataType val=ar[p];
+    if (diff>0) {
+        int s=p+1;
+        if (s>size-1) s=size-1;
+        EventDataType v2=ar[s];
+        EventDataType v3=v2-val;
+        if (v3>0) {
+            val+=v3*diff;
+        }
+
+    }
+
+    return val;
+}
+
+EventDataType Day::p90(ChannelID code) // The "average" p90.. this needs fixing.
+{
+    int size=sessions.size();
+
+    if (size==0) return 0;
+    else if (size==1) return sessions[0]->p90(code);
+
+    QHash<ChannelID,EventDataType>::iterator i=m_p90.find(code);
+    if (i!=m_p90.end())
+        return i.value();
+
+
+    QVector<Session *>::iterator s;
+
+    // Don't assume sessions are in order.
+
+    unsigned cnt=0,c;
+    EventDataType p,tmp;
+
+    QMap<EventDataType, unsigned> pmap;
+    QMap<EventDataType, float> tmap;
+    QMap<EventDataType, unsigned>::iterator pi;
+    for (s=sessions.begin();s!=sessions.end();s++) {
+        Session & sess=*(*s);
+        c=sess.count(code);
+        if (c>0) {
+            cnt+=c;
+            p=sess.p90(code); //percentile(code,0.9);
+            if (!pmap.contains(p)) {
+                pmap[p]=c;
+                tmap[p]=sess.hours();
+            } else {
+                pmap[p]+=c;
+                tmap[p]+=sess.hours();
+            }
+        }
+    }
+    EventDataType val;
+    size=pmap.size();
+    if (!size) {
+        m_p90[code]=val=0;
+        return val;
+    } else if (size==1) {
+        m_p90[code]=val=pmap.begin().key();
+        return val;
+    }
+
+    OpenEvents();
+    EventDataType realp90=percentile(code,0.9);
+
+    val=realp90;
+    /*double s0=0,s1=0,s2=0,s3=0;
+
+    for (pi=pmap.begin();pi!=pmap.end();pi++) {
+        s2=tmap[pi.key()];
+        s3=pi.value();
+        s0+=pi.key() * s3 * s2;
+        s1+=s3*s2;
+    }
+    if (s1==0)
+        return 0;
+
+    val=s0/s1;
+    qDebug() << first() << code << realp90 << val; */
+
+    m_p90[code]=val;
+    return val;
 }
 
 EventDataType Day::avg(ChannelID code)
@@ -211,7 +309,7 @@ qint64 Day::total_time()
     }
     return d_totaltime;
 }
-EventDataType Day::percentile(ChannelID code,double percent)
+/*EventDataType Day::percentile(ChannelID code,double percent)
 {
     double val=0;
     int cnt=0;
@@ -226,7 +324,7 @@ EventDataType Day::percentile(ChannelID code,double percent)
     if (cnt==0) return 0;
     return EventDataType(val/cnt);
 
-}
+}*/
 
 qint64 Day::first(ChannelID code)
 {

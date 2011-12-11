@@ -165,7 +165,7 @@ const QString Preferences::Get(QString name)
         } else if (ref.toLower()=="user") {
             temp+=getUserName();
         } else if (ref.toLower()=="sep") { // redundant in QT
-            temp+="/";
+            temp+=QDir::separator();
         } else {
             temp+=Get(ref);
         }
