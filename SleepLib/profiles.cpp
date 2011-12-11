@@ -47,51 +47,54 @@ Profile::Profile(QString path)
     machlist.clear();
     //m_first=m_last=NULL;
 }
+bool Profile::Save(QString filename)
+{
+    if (p_profile==this) {
+        QString cachefile=Get("{DataFolder}")+QDir::separator()+"cache.day";
+        QFile f(cachefile);
+        if (ExistsAndTrue("TrashDayCache"))  {
+            if (f.exists()) {
+                f.remove();
+            }
+        } else {
+            QMap<QDate,QList<Day *> >::iterator di;
+            QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
+
+            QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > >::iterator ci;
+            for (di=daylist.begin();di!=daylist.end();di++) {
+                QDate date=di.key();
+                for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
+                    Day *day=*d;
+                    MachineID mach=day->machine->id();
+                    QHash<ChannelID, EventDataType>::iterator i;
+
+                    for (i=day->m_p90.begin();i!=day->m_p90.end();i++) {
+                        cache[mach][date][i.key()]=day->m_p90[i.key()];
+                    }
+                }
+            }
+            if (f.open(QFile::WriteOnly)) {
+                QDataStream out(&f);
+                out.setVersion(QDataStream::Qt_4_6);
+                out.setByteOrder(QDataStream::LittleEndian);
+                quint16 size=cache.size();
+                out << size;
+                for (ci=cache.begin();ci!=cache.end();ci++) {
+                    quint32 mid=ci.key();
+                    out << mid;
+                    out << ci.value();
+                }
+                f.close();
+            }
+        }
+        (*this)["TrashDayCache"]=false;
+    }
+    return Preferences::Save(filename);
+}
+
 
 Profile::~Profile()
 {
-    QMap<QDate,QList<Day *> >::iterator di;
-    QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
-
-    QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > >::iterator ci;
-    for (di=daylist.begin();di!=daylist.end();di++) {
-        QDate date=di.key();
-        for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
-            Day *day=*d;
-            MachineID mach=day->machine->id();
-            QHash<ChannelID, EventDataType>::iterator i;
-
-            for (i=day->m_p90.begin();i!=day->m_p90.end();i++) {
-                cache[mach][date][i.key()]=day->m_p90[i.key()];
-            }
-        }
-    }
-    QString filename=Get("{DataFolder}")+QDir::separator()+"cache.day";
-    QFile f(filename);
-    if (f.open(QFile::WriteOnly)) {
-        QDataStream out(&f);
-        out.setVersion(QDataStream::Qt_4_6);
-        out.setByteOrder(QDataStream::LittleEndian);
-        quint16 size=cache.size();
-        out << size;
-        for (ci=cache.begin();ci!=cache.end();ci++) {
-            quint32 mid=ci.key();
-            out << mid;
-            out << ci.value();
-        }
-        /*quint16 size=cache.size();
-        out << size;
-        QMap<QDate,QHash<ChannelID, EventDataType> >::iterator i;
-        for (i=cache.begin();i!=cache.end();i++) {
-            QDate a=i.key();
-            out << a;
-        }
-        for (i=cache.begin();i!=cache.end();i++) {
-            out << cache[i.key()];
-        }*/
-        f.close();
-    }
-
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         delete i.value();
     }

@@ -30,6 +30,8 @@ public:
     Profile();
     virtual ~Profile();
 
+    virtual bool Save(QString filename="");
+
     bool is_first_day;
     QHash<MachineID,Machine *> machlist;
     void AddMachine(Machine *m);

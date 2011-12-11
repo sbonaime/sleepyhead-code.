@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
 
     for (int i=1;i<args.size();i++) {
         if (args[i]=="-l") force_login_screen=true;
+        if (args[i]=="-p") {
+            sleep(1);
+        }
     }
 
     a.setApplicationName("SleepyHead");

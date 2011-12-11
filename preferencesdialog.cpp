@@ -319,14 +319,15 @@ void PreferencesDialog::Save()
     (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
     (*profile)["GraphHeight"]=ui->graphHeight->value();
 
-    if ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) needs_restart=true;
-    if ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value()) needs_restart=true;
+    if (((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) ||
+    ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) ||
+    ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value())) {
+        PROFILE["TrashDayCache"]=true;
+        needs_restart=true;
+    } else PROFILE["TrashDayCache"]=false;
 
     (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
     (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
-
-    if ((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) needs_restart=true;
-
     (*profile)["DaySplitTime"]=ui->timeEdit->time();
 
     (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
@@ -440,8 +441,8 @@ void PreferencesDialog::Save()
         file.close();
     }
 
-    PROFILE.Save();
-    PREF.Save();
+    //PROFILE.Save();
+    //PREF.Save();
 
     if (needs_restart) {
         if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
@@ -455,6 +456,7 @@ void PreferencesDialog::Save()
 
             QStringList args;
             args << "-n" << apppath; // -n option is important, as it opens a new process
+            args << "-p";
 
             if (QProcess::startDetached("/usr/bin/open",args)) {
                 QApplication::instance()->exit();
@@ -469,7 +471,9 @@ void PreferencesDialog::Save()
             //if (QDesktopServices::openUrl(apppath)) {
             //    QApplication::instance()->exit();
             //} else
-            if (QProcess::startDetached(apppath)) {
+            QStringList args;
+            args << "-p";
+            if (QProcess::startDetached(apppath,args)) {
                 QApplication::instance()->exit();
             } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
     #endif
