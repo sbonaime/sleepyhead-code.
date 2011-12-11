@@ -795,7 +795,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     mainwin->snapshotGraph()->setMaximumSize(gw,gh);
 
     int page=1;
-    int pages=ceil(float(visgraphs+1)/float(graphs_per_page));
     int i=0;
     int top=0;
     int gcnt=0;
@@ -896,11 +895,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (g->isEmpty()) continue;
         if (!g->visible()) continue;
         if (print_bookmarks && (g->title()=="Flow Rate")) {
+            normal=false;
+            start.push_back(st);
+            end.push_back(et);
+            graphs.push_back(g);
+            labels.push_back("Current Selection");
             if (journal) {
-                start.push_back(st);
-                end.push_back(et);
-                graphs.push_back(g);
-                labels.push_back("Current Selection");
 
                 if (journal->settings.contains("BookmarkStart")) {
                     QVariantList st1=journal->settings["BookmarkStart"].toList();
@@ -913,7 +913,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                         end.push_back(et1.at(i).toLongLong());
                         graphs.push_back(g);
                     }
-                    if (notes.size()>0) normal=false;
+
                 }
             }
         }
@@ -924,6 +924,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             labels.push_back("");
         }
     }
+    int pages=ceil(float(graphs.size()+1)/float(graphs_per_page));
 
     if (qprogress) {
         qprogress->setValue(0);
