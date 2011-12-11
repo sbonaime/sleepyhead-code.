@@ -39,7 +39,6 @@ protected:
     bool m_show_minor_lines;
     QColor m_major_color;
     QColor m_minor_color;
-    GLShortBuffer * lines;
 };
 
 class gYAxis:public Layer

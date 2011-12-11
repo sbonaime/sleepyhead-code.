@@ -42,7 +42,7 @@ const int textque_max=512;
 class GLBuffer
 {
 public:
-    GLBuffer(int max=2048,int type=GL_LINES);
+    GLBuffer(int max=2048,int type=GL_LINES,bool stippled=false);
     virtual ~GLBuffer();
     void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
     virtual void draw(){}
@@ -66,12 +66,13 @@ protected:
     bool m_antialias;
     bool m_forceantialias;
     QMutex mutex;
+    bool m_stippled;
 };
 
 class GLShortBuffer:public GLBuffer
 {
 public:
-    GLShortBuffer(int max=2048,int type=GL_LINES);
+    GLShortBuffer(int max=2048,int type=GL_LINES, bool stippled=false);
     virtual ~GLShortBuffer();
 
     // use one or the other.. can't use both
@@ -96,7 +97,7 @@ protected:
 class GLFloatBuffer:public GLBuffer
 {
 public:
-    GLFloatBuffer(int max=2048,int type=GL_LINES);
+    GLFloatBuffer(int max=2048,int type=GL_LINES, bool stippled=false);
     virtual ~GLFloatBuffer();
 
     void add(GLfloat x, GLfloat y,QColor & col);    // add with vertex color
@@ -358,6 +359,7 @@ public:
     GLShortBuffer * lines();
     GLShortBuffer * backlines();
     GLShortBuffer * quads();
+    GLShortBuffer * stippled();
     short left,right,top,bottom; // dirty magin hacks..
 
     QRect m_lastbounds;
@@ -467,7 +469,7 @@ public:
     QMutex dl_mutex;
 #endif
     void setDay(Day * day);
-    GLShortBuffer * lines, * backlines, *quads;
+    GLShortBuffer * lines, * backlines, *quads, * stippled;
 
     gGraph * popGraph(); // exposed for multithreaded drawing
     void hideSplitter() { m_showsplitter=false; }

@@ -19,7 +19,9 @@ gXGrid::gXGrid(QColor col)
     :Layer("")
 {
     Q_UNUSED(col)
-    m_major_color=QColor(180,180,180,128);
+
+    m_major_color=QColor(100,100,100,128);
+//    m_major_color=QColor(180,180,180,128);
     m_minor_color=QColor(220,220,220,128);
     m_show_major_lines=true;
     m_show_minor_lines=true;
@@ -29,6 +31,8 @@ gXGrid::~gXGrid()
 }
 void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
+    GLShortBuffer * stippled, * lines;
+
     int x,y;
 
     EventDataType miny=w.min_y;
@@ -87,12 +91,13 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     }
 
 
+    stippled=w.stippled();
     lines=w.backlines();
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         h=top+height-ty;
         if (m_show_major_lines && (i > miny)) {
-            lines->add(left,h,left+width,h,m_major_color);
+            stippled->add(left,h,left+width,h,m_major_color);
         }
         double z=(min_ytick/4)*ymult;
         double g=h;
@@ -104,13 +109,13 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 //                break;
   //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                lines->add(left,g,left+width,g,m_minor_color);
+                stippled->add(left,g,left+width,g,m_minor_color);
             }
-            if (lines->full()) {
+            if (stippled->full()) {
                 break;
             }
         }
-        if (lines->full()) {
+        if (lines->full() || stippled->full()) {
             qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
             break;
         }

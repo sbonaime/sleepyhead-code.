@@ -110,12 +110,13 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
 #endif
 }
 
-GLBuffer::GLBuffer(int max,int type)
-    :m_max(max), m_type(type)
+GLBuffer::GLBuffer(int max,int type, bool stippled)
+    :m_max(max), m_type(type), m_stippled(stippled)
 {
     m_scissor=false;
     m_antialias=true;
     m_forceantialias=false;
+
     m_cnt=0;
     m_colcnt=0;
     m_size=1;
@@ -179,8 +180,8 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x
     }
 }
 
-GLShortBuffer::GLShortBuffer(int max,int type)
-    :GLBuffer(max,type)
+GLShortBuffer::GLShortBuffer(int max,int type, bool stippled)
+    :GLBuffer(max,type,stippled)
 {
     buffer=new GLshort [max+8];
     colors=new GLubyte[max*4+(8*4)];
@@ -291,7 +292,14 @@ void GLShortBuffer::draw()
             }
         }
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            if (m_stippled) {
+                glLineStipple(1, 0xAAAA);
+                glEnable(GL_LINE_STIPPLE);
+            } else {
+                glLineStipple(1, 0xFFFF);
+            }
             glLineWidth(size);
+
         } else if (m_type==GL_POINTS) {
             glPointSize(size);
         } else if (m_type==GL_POLYGON) {
@@ -328,6 +336,11 @@ void GLShortBuffer::draw()
         if (m_type==GL_POLYGON) {
             glPolygonMode(GL_BACK,GL_FILL);
         }
+        if (m_stippled) {
+            glDisable(GL_LINE_STIPPLE);
+            glLineStipple(1, 0xFFFF);
+        }
+
         if (antialias) {
             if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
                 glDisable(GL_LINE_SMOOTH);
@@ -342,8 +355,8 @@ void GLShortBuffer::draw()
 /////////////////////////////////////////////////////////////////////
 // GLFloatBuffer
 
-GLFloatBuffer::GLFloatBuffer(int max,int type)
-    :GLBuffer(max,type)
+GLFloatBuffer::GLFloatBuffer(int max,int type,bool stippled)
+    :GLBuffer(max,type,stippled)
 {
     buffer=new GLfloat [max+8];
     colors=new GLubyte[max*4+(8*4)];
@@ -533,6 +546,10 @@ void GLFloatBuffer::draw()
     }
     if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
         glLineWidth(size);
+        if (m_stippled) {
+            glLineStipple(1, 0xAAAA);
+            glEnable(GL_LINE_STIPPLE);
+        }
     } else if (m_type==GL_POINTS) {
         glPointSize(size);
     } else if (m_type==GL_POLYGON) {
@@ -567,6 +584,7 @@ void GLFloatBuffer::draw()
     }
     if (antialias) {
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            if (m_stippled) glDisable(GL_LINE_STIPPLE);
             glDisable(GL_LINE_SMOOTH);
         } else if (m_type==GL_POLYGON) {
             glDisable(GL_POLYGON_SMOOTH);
@@ -1624,6 +1642,10 @@ GLShortBuffer * gGraph::quads()
 {
     return m_graphview->quads;
 }
+GLShortBuffer * gGraph::stippled()
+{
+    return m_graphview->stippled;
+}
 short gGraph::marginLeft() { return m_marginleft*m_graphview->printScaleX(); }
 short gGraph::marginRight() { return m_marginright*m_graphview->printScaleX(); }
 short gGraph::marginTop() { return m_margintop*m_graphview->printScaleY(); }
@@ -1789,6 +1811,10 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     backlines=new GLShortBuffer(10000,GL_LINES); // big fat shared line list
     quads=new GLShortBuffer(1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
+    stippled=new GLShortBuffer(20000,GL_LINES,true);
+    stippled->setSize(1);
+    stippled->forceAntiAlias(false);
+
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter=true;
     timer=new QTimer(this);
@@ -1808,6 +1834,7 @@ gGraphView::~gGraphView()
     }
     delete m_tooltip;
     m_graphs.clear();
+    delete stippled;
     delete lines;
     delete backlines;
     delete quads;
@@ -2214,6 +2241,7 @@ void gGraphView::paintGL()
     //((QGLContext*)context())->makeCurrent();
 
     backlines->draw();
+    stippled->draw();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->drawGLBuf();
     }

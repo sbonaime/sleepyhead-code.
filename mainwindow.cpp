@@ -1016,7 +1016,8 @@ void MainWindow::on_actionChange_User_triggered()
         apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
 
         QStringList args;
-        args << "-n" << apppath; // -n option is important, as it opens a new process
+        args << "-n" << apppath << "-p"; // -n option is important, as it opens a new process
+        // -p starts with 1 second delay, to give this process time to save..
 
         if (QProcess::startDetached("/usr/bin/open",args)) {
             QApplication::instance()->exit();
@@ -1031,7 +1032,9 @@ void MainWindow::on_actionChange_User_triggered()
         //if (QDesktopServices::openUrl(apppath)) {
         //    QApplication::instance()->exit();
         //} else
-        if (QProcess::startDetached(apppath)) {
+        QStringList args;
+        args << "-p";
+        if (QProcess::startDetached(apppath,args)) {
             QApplication::instance()->exit();
         } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
 #endif
