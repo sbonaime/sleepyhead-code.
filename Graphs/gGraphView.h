@@ -50,6 +50,8 @@ public:
     int max() { return m_max; }
     int cnt() { return m_cnt; }
     bool full() { return m_cnt>=m_max; }
+    float size() { return m_size; }
+    int type() { return m_type; }
     void setSize(float f) { m_size=f; }
     void setAntiAlias(bool b) { m_antialias=b; }
     void forceAntiAlias(bool b) { m_forceantialias=b; }
@@ -174,7 +176,7 @@ public:
     //void Y() { return m_Y; }
 
 
-    virtual void drawGLBuf();
+    virtual void drawGLBuf(float linesize);
     short m_refcount;
     void addref() { m_refcount++; }
     bool unref() { m_refcount--; if (m_refcount<=0) return true; return false; }
@@ -217,7 +219,7 @@ public:
     virtual EventDataType Maxy();
     virtual bool isEmpty();
     virtual void SetDay(Day * d);
-    virtual void drawGLBuf();
+    virtual void drawGLBuf(float linesize);
     QVector<Layer *> & getLayers() { return layers; }
 
 protected:

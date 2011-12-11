@@ -729,11 +729,21 @@ Layer::~Layer()
         delete mgl_buffers[i];
     }
 }
-void Layer::drawGLBuf()
+void Layer::drawGLBuf(float linesize)
 {
+    int type;
+    float size;
     if (!m_visible) return;
     for (int i=0;i<mgl_buffers.size();i++) {
+        size=mgl_buffers[i]->size();
+        type=mgl_buffers[i]->type();
+        if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
+            mgl_buffers[i]->setSize(linesize);
+        }
         mgl_buffers[i]->draw();
+        if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
+            mgl_buffers[i]->setSize(size);
+        }
     }
 }
 
@@ -784,11 +794,11 @@ bool LayerGroup::isEmpty()
     }
     return empty;
 }
-void LayerGroup::drawGLBuf()
+void LayerGroup::drawGLBuf(float linesize)
 {
-    Layer::drawGLBuf();
+    Layer::drawGLBuf(linesize);
     for (int i=0;i<layers.size();i++) {
-        layers[i]->drawGLBuf();
+        layers[i]->drawGLBuf(linesize);
     }
 }
 
@@ -990,8 +1000,9 @@ float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 
 void gGraph::drawGLBuf()
 {
+    float linesize=ceil(m_graphview->printScaleY());
     for (int i=0;i<m_layers.size();i++) {
-        m_layers[i]->drawGLBuf();
+        m_layers[i]->drawGLBuf(linesize);
     }
     m_quad->draw();
 }
@@ -1215,10 +1226,10 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             //qDebug() << m_title << "Moved" << x << y << left << right << top << bottom << m_width << h;
             int a1=MIN(x,x2);
             int a2=MAX(x,x2);
-            if (a1<m_marginleft+left) a1=m_marginleft+left;
+            if (a1<left) a1=left;
             if (a2>w) a2=w;
             m_selecting_area=true;
-            m_selection=QRect(a1-m_marginleft-1,0,a2-a1,m_lastbounds.height());
+            m_selection=QRect(a1-1,0,a2-a1,m_lastbounds.height());
             double w2=m_lastbounds.width(); //-(right+m_marginright)-(m_marginleft+left);
             if (m_blockzoom) {
                 xmult=(rmax_x-rmin_x)/w2;
@@ -1336,8 +1347,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
     int y=event->pos().y();
     int x=event->pos().x();
-    int w=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
-    int h=m_lastbounds.height()-(bottom+m_marginbottom);
+    int w=m_lastbounds.width()-left-right; //(m_marginleft+left+right+m_marginright);
+    int h=m_lastbounds.height()-(bottom); //+m_marginbottom);
     int x2=m_graphview->pointClicked().x(),y2=m_graphview->pointClicked().y();
 
 
@@ -1347,10 +1358,10 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         m_selection.setWidth(0);
 
         if (m_graphview->horizTravel()>mouse_movement_threshold) {
-            x-=left+m_marginleft;
-            y-=top+m_margintop;
-            x2-=left+m_marginleft;
-            y2-=top+m_margintop;
+            x-=left;//+m_marginleft;
+            y-=top;//+m_margintop;
+            x2-=left;//+m_marginleft;
+            y2-=top;//+m_margintop;
             if (x<0) x=0;
             if (x2<0) x2=0;
             if (x>w) x=w;
@@ -1394,7 +1405,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
         } else m_graphview->updateGL();
     }
 
-    if ((m_graphview->horizTravel()<mouse_movement_threshold) && (x>left+m_marginleft && x<w+m_marginleft+left && y>top+m_margintop && y<h)) { // normal click in main area
+    if ((m_graphview->horizTravel()<mouse_movement_threshold) && (x>left && x<w+left && y>top && y<h)) {
+        // normal click in main area
         if (!m_blockzoom) {
             double zoom;
             if (event->button() & Qt::RightButton) {
@@ -1409,8 +1421,8 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
                 return;
             }
         } else {
-            x-=left+m_marginleft;
-            y-=top+m_margintop;
+            x-=left;
+            y-=top;
             //w-=m_marginleft+left;
             double qq=rmax_x-rmin_x;
             double xmult;
@@ -1495,8 +1507,8 @@ void gGraph::keyPressEvent(QKeyEvent * event)
 void gGraph::ZoomX(double mult,int origin_px)
 {
 
-    int width=m_lastbounds.width()-(m_marginleft+left+right+m_marginright);
-    if (origin_px==0) origin_px=(width/2); else origin_px-=m_marginleft+left;
+    int width=m_lastbounds.width()-left-right; //(m_marginleft+left+right+m_marginright);
+    if (origin_px==0) origin_px=(width/2); else origin_px-=left;
 
     if (origin_px<0) origin_px=0;
     if (origin_px>width) origin_px=width;
@@ -2240,6 +2252,10 @@ void gGraphView::paintGL()
 
     //((QGLContext*)context())->makeCurrent();
 
+    float linesize=lines->size();
+    //if (print_scaleY>1) {
+//        lines->setSize(3);
+//    }
     backlines->draw();
     stippled->draw();
     for (int i=0;i<m_graphs.size();i++) {
@@ -2247,6 +2263,7 @@ void gGraphView::paintGL()
     }
     lines->draw();
     quads->draw();
+//    lines->setSize(linesize);
     DrawTextQue();
     m_tooltip->paint();
     if (m_showsplitter && PROFILE["ShowDebug"].toBool()) {
