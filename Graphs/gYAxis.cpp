@@ -20,8 +20,8 @@ gXGrid::gXGrid(QColor col)
 {
     Q_UNUSED(col)
 
-    m_major_color=QColor(100,100,100,128);
-//    m_major_color=QColor(180,180,180,128);
+    m_major_color=QColor(100,100,100,64);
+    //m_major_color=QColor(180,180,180,92);
     m_minor_color=QColor(220,220,220,128);
     m_show_major_lines=true;
     m_show_minor_lines=true;
@@ -156,7 +156,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     static QString fd="0";
     GetTextExtent(fd,x,y);
 
-    double max_yticks=round(height / (y+10.0)); // plus spacing between lines
+    double max_yticks=round(height / (y+12.0)); // plus spacing between lines
 
     double mxy=MAX(fabs(maxy),fabs(miny));
     double mny=miny;

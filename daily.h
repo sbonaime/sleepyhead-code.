@@ -47,6 +47,7 @@ public:
     QDate getDate() { return previous_date; }
     void PrintReport();
     void UnitsChanged();
+    Session * GetJournalSession(QDate date);
 
 private slots:
 
@@ -95,7 +96,8 @@ protected:
 
 private:
     Session * CreateJournalSession(QDate date);
-    Session * GetJournalSession(QDate date);
+    void update_Bookmarks();
+
     void Load(QDate date);
     void Unload(QDate date);
     void UpdateCalendarDay(QDate date);

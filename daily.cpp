@@ -984,6 +984,8 @@ void Daily::Load(QDate date)
             QVariantList end=journal->settings["BookmarkEnd"].toList();
             QStringList notes=journal->settings["BookmarkNotes"].toStringList();
 
+            ui->bookmarkTable->blockSignals(true);
+
             bool ok;
             for (int i=0;i<start.size();i++) {
                 qint64 st=start.at(i).toLongLong(&ok);
@@ -1000,6 +1002,8 @@ void Daily::Load(QDate date)
                 tw->setData(Qt::UserRole,st);
                 tw->setData(Qt::UserRole+1,et);
             }
+            ui->bookmarkTable->blockSignals(false);
+
         }
     }
 
@@ -1035,99 +1039,18 @@ void Daily::Unload(QDate date)
     Session *journal=GetJournalSession(date);
 
     bool nonotes=ui->JournalNotes->toPlainText().isEmpty();
-    bool ok;
     if (journal) {
         QString jhtml=ui->JournalNotes->toHtml();
         if ((!journal->settings.contains(Journal_Notes) && !nonotes) || (journal->settings[Journal_Notes]!=jhtml)) {
             journal->settings[Journal_Notes]=jhtml;
             journal->SetChanged(true);
         }
-        //double w=ui->weightSpinBox->value();
-        if (journal->settings.contains("Weight") && ui->weightSpinBox->value()==0) {
-            journal->settings.erase(journal->settings.find("Weight"));
-            if (journal->settings.contains("BMI")) {
-                journal->settings.erase(journal->settings.find("BMI"));
-            }
-            journal->SetChanged(true);
-        } else if (ui->weightSpinBox->value()>0) {
-            double kg;
-            if (PROFILE["Units"].toString()=="metric") {
-                kg=ui->weightSpinBox->value();
-            } else {
-                kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
-                kg/=1000.0;
-            }
-            double height=PROFILE["Height"].toDouble(&ok)/100.0;
-            double bmi=0;
-            if (height>0)
-                bmi=kg/(height*height);
-            journal->settings["Weight"]=kg;
-            journal->settings["BMI"]=bmi;
-            journal->SetChanged(true);
-        }
-        if ((!journal->settings.contains("ZombieMeter") && (ui->ZombieMeter->value()!=5)) || (journal->settings["ZombieMeter"].toDouble(&ok)!=ui->ZombieMeter->value())) {
-            journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
-            journal->SetChanged(true);
-        }
-        if (BookmarksChanged) {
-            QVariantList start;
-            QVariantList end;
-            QStringList notes;
-            QTableWidgetItem *item;
-            for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
-                item=ui->bookmarkTable->item(row,1);
-                start.push_back(item->data(Qt::UserRole));
-                end.push_back(item->data(Qt::UserRole+1));
-                notes.push_back(item->text());
-            }
-            journal->settings["BookmarkStart"]=start;
-            journal->settings["BookmarkEnd"]=end;
-            journal->settings["BookmarkNotes"]=notes;
-        }
     } else {
-        if (!nonotes || ZombieMeterMoved || (ui->weightSpinBox->value() > 0) || (ui->bookmarkTable->rowCount()>0)) {
+        if (!nonotes) {
             journal=CreateJournalSession(date);
             if (!nonotes) {
                 journal->settings[Journal_Notes]=ui->JournalNotes->toHtml();
                 journal->SetChanged(true);
-            }
-            if (ZombieMeterMoved) {
-                journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
-                journal->SetChanged(true);
-            }
-            if (ui->weightSpinBox->value() > 0) {
-                double kg;
-                if (PROFILE["Units"].toString()=="metric") {
-                    kg=ui->weightSpinBox->value();
-                } else {
-                    kg=(ui->weightSpinBox->value()*(ounce_convert*16))+(ui->ouncesSpinBox->value()*ounce_convert);
-                    kg/=1000.0;
-                }
-                double height=PROFILE["Height"].toDouble(&ok)/100.0;
-                double bmi=0;
-                if (height>0)
-                    bmi=kg/(height*height);
-                //if (kg>0) {
-                    journal->settings["Weight"]=kg;
-                    if (bmi>0)
-                        journal->settings["BMI"]=bmi;
-                    journal->SetChanged(true);
-                //}
-            }
-            if (BookmarksChanged) {
-                QVariantList start;
-                QVariantList end;
-                QStringList notes;
-                QTableWidgetItem *item;
-                for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
-                    item=ui->bookmarkTable->item(row,1);
-                    start.push_back(item->data(Qt::UserRole));
-                    end.push_back(item->data(Qt::UserRole+1));
-                    notes.push_back(item->text());
-                }
-                journal->settings["BookmarkStart"]=start;
-                journal->settings["BookmarkEnd"]=end;
-                journal->settings["BookmarkNotes"]=notes;
             }
         }
     }
@@ -1386,52 +1309,24 @@ void Daily::on_evViewSlider_valueChanged(int value)
 
     int winsize=PROFILE["EventViewSize"].toInt()*60;
 
-    if (0) {
-/*        if (ui->treeWidget->selectedItems().size()==0) return;
-        QTreeWidgetItem *item=ui->treeWidget->selectedItems().at(0);
-        if (!item) return;
-        QDateTime d;
-        if (!item->text(1).isEmpty()) {
-            d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
+    gGraph *g=GraphView->findGraph("Event Flags");
+    if (!g) return;
+    qint64 st=g->min_x;
+    qint64 et=g->max_x;
+    qint64 len=et-st;
+    qint64 d=st+len/2.0;
 
-
-            double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
-            double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
-
-            gGraph *g=GraphView->findGraph("Event Flags");
-            if (!g) return;
-            if (st<g->rmin_x) {
-                st=g->rmin_x;
-                et=st+winsize*1000;
-            }
-            if (et>g->rmax_x) {
-                et=g->rmax_x;
-                st=et-winsize*1000;
-            }
-            GraphView->SetXBounds(st,et);
-        }
-*/
-    } else {
-        gGraph *g=GraphView->findGraph("Event Flags");
-        if (!g) return;
-
-        qint64 st=g->min_x;
-        qint64 et=g->max_x;
-        qint64 len=et-st;
-        qint64 d=st+len/2.0;
-
-        st=d-(winsize/2)*1000;
-        et=d+(winsize/2)*1000;
-        if (st<g->rmin_x) {
-            st=g->rmin_x;
-            et=st+winsize*1000;
-        }
-        if (et>g->rmax_x) {
-            et=g->rmax_x;
-            st=et-winsize*1000;
-        }
-        GraphView->SetXBounds(st,et);
+    st=d-(winsize/2)*1000;
+    et=d+(winsize/2)*1000;
+    if (st<g->rmin_x) {
+        st=g->rmin_x;
+        et=st+winsize*1000;
     }
+    if (et>g->rmax_x) {
+        et=g->rmax_x;
+        st=et-winsize*1000;
+    }
+    GraphView->SetXBounds(st,et);
 }
 
 void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
@@ -1462,9 +1357,33 @@ void Daily::on_addBookmarkButton_clicked()
     tw->setData(Qt::UserRole,st);
     tw->setData(Qt::UserRole+1,et);
 
-    BookmarksChanged=true;
+    update_Bookmarks();
+
     //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
     //ui->bookmarkTable->setItem(row,3,new QTableWidgetItem(QString::number(et)));
+}
+void Daily::update_Bookmarks()
+{
+    QVariantList start;
+    QVariantList end;
+    QStringList notes;
+    QTableWidgetItem *item;
+    for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
+        item=ui->bookmarkTable->item(row,1);
+        start.push_back(item->data(Qt::UserRole));
+        end.push_back(item->data(Qt::UserRole+1));
+        notes.push_back(item->text());
+    }
+    Session *journal=GetJournalSession(previous_date);
+    if (!journal) {
+        journal=CreateJournalSession(previous_date);
+    }
+
+    journal->settings["BookmarkStart"]=start;
+    journal->settings["BookmarkEnd"]=end;
+    journal->settings["BookmarkNotes"]=notes;
+    journal->SetChanged(true);
+    BookmarksChanged=true;
 }
 
 void Daily::on_removeBookmarkButton_clicked()
@@ -1472,7 +1391,7 @@ void Daily::on_removeBookmarkButton_clicked()
     int row=ui->bookmarkTable->currentRow();
     if (row>=0) {
         ui->bookmarkTable->removeRow(row);
-        BookmarksChanged=true;
+        update_Bookmarks();
     }
 }
 void Daily::on_ZombieMeter_valueChanged(int action)
@@ -1501,7 +1420,7 @@ void Daily::on_ZombieMeter_actionTriggered(int action)
 void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
 {
     Q_UNUSED(item);
-    BookmarksChanged=true;
+    update_Bookmarks();
 }
 void Daily::on_weightSpinBox_valueChanged(double arg1)
 {

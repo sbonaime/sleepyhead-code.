@@ -734,16 +734,18 @@ void Layer::drawGLBuf(float linesize)
     int type;
     float size;
     if (!m_visible) return;
+    GLBuffer *buf;
     for (int i=0;i<mgl_buffers.size();i++) {
-        size=mgl_buffers[i]->size();
-        type=mgl_buffers[i]->type();
+        buf=mgl_buffers[i];
+        size=buf->size();
+        type=buf->type();
         if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
-            mgl_buffers[i]->setSize(linesize);
+            buf->setSize(linesize);
         }
-        mgl_buffers[i]->draw();
-        if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
-            mgl_buffers[i]->setSize(size);
-        }
+        buf->draw();
+        //if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
+        buf->setSize(size);
+        //}
     }
 }
 

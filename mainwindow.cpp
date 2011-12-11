@@ -680,6 +680,7 @@ EventList *packEventList(EventList *ev)
 void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 {
     if (!gv) return;
+    Session * journal=NULL;
     //QDate d=QDate::currentDate();
 
     int visgraphs=gv->visibleGraphs();
@@ -688,7 +689,20 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
+    bool print_bookmarks=false;
     QString username=PROFILE.Get("_{Username}_");
+    QStringList booknotes;
+    if (name=="Daily") {
+        journal=getDaily()->GetJournalSession(getDaily()->getDate());
+        if (journal->settings.contains("BookmarkNotes")) {
+            booknotes=journal->settings["BookmarkNotes"].toStringList();
+            if (booknotes.size()>0) {
+                if (QMessageBox::question(this,"Bookmarks","Would you like to show bookmarked areas in this report?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+                    print_bookmarks=true;
+                }
+            }
+        }
+    }
 
     QPrinter * zprinter;
 
@@ -728,8 +742,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QRect res=printer.pageRect();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
-    const int graphs_per_page=5;
-    const int footer_height=(res.height()/21);
+    const int graphs_per_page=6;
+    const int footer_height=(res.height()/22);
 
     float pw=res.width();
     float realheight=res.height()-footer_height;
@@ -785,11 +799,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     int i=0;
     int top=0;
     int gcnt=0;
-    if (qprogress) {
-        qprogress->setValue(0);
-        qprogress->setMaximum(gv->size());
-        qprogress->show();
-    }
 
     //int header_height=200;
     QString title=name+" Report";
@@ -876,6 +885,53 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     //top=header_height;
 
     bool first=true;
+    QStringList labels;
+    QVector<gGraph *> graphs;
+    QVector<qint64> start,end;
+    qint64 st,et;
+    gv->GetXBounds(st,et);
+    for (int i=0;i<gv->size();i++) {
+        bool normal=true;
+        gGraph *g=(*gv)[i];
+        if (g->isEmpty()) continue;
+        if (!g->visible()) continue;
+        if (print_bookmarks && (g->title()=="Flow Rate")) {
+            if (journal) {
+                start.push_back(st);
+                end.push_back(et);
+                graphs.push_back(g);
+                labels.push_back("Current Selection");
+
+                if (journal->settings.contains("BookmarkStart")) {
+                    QVariantList st1=journal->settings["BookmarkStart"].toList();
+                    QVariantList et1=journal->settings["BookmarkEnd"].toList();
+                    QStringList notes=journal->settings["BookmarkNotes"].toStringList();
+
+                    for (int i=0;i<notes.size();i++) {
+                        labels.push_back(notes.at(i));
+                        start.push_back(st1.at(i).toLongLong());
+                        end.push_back(et1.at(i).toLongLong());
+                        graphs.push_back(g);
+                    }
+                    if (notes.size()>0) normal=false;
+                }
+            }
+        }
+        if (normal) {
+            start.push_back(st);
+            end.push_back(et);
+            graphs.push_back(g);
+            labels.push_back("");
+        }
+    }
+
+    if (qprogress) {
+        qprogress->setValue(0);
+        qprogress->setMaximum(graphs.size());
+        qprogress->show();
+    }
+
+    i=0;
     do {
         //+" on "+d.toString(Qt::SystemLocaleLongDate)
         if (first) {
@@ -890,9 +946,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             painter.drawText(pagebnds,pagestr,QTextOption(Qt::AlignRight));
             first=false;
         }
-        gGraph *g=(*gv)[i];
-        if (g->isEmpty()) continue;
-        if (!g->visible()) continue;
+        gGraph *g=graphs[i];
+        g->SetXBounds(start[i],end[i]);
         g->deselect();
 
         if (top+ph>realheight) { //top+pm.height()>res.height()) {
@@ -907,6 +962,15 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                 break;
             }
         }
+
+        QString label=labels[i];
+        if (!label.isEmpty()) {
+            QRectF pagebnds=painter.boundingRect(QRectF(0,top,res.width(),0),label,QTextOption(Qt::AlignCenter));
+            painter.drawText(pagebnds,label,QTextOption(Qt::AlignCenter));
+            top+=pagebnds.height();
+            qDebug() << label;
+
+        }
         QPixmap pm=g->renderPixmap(gw,gh);
         QPixmap pm2=pm.scaledToWidth(pw);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
@@ -917,7 +981,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             qprogress->setValue(i);
             QApplication::processEvents();
         }
-    } while (++i<gv->size());
+    } while (++i<graphs.size());
 
     qprogress->hide();
     painter.end();
