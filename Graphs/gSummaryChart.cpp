@@ -693,21 +693,21 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                         val=QString::number(d.value()[i+1],'f',0);
                         z+="\r\n"+a+"="+val;
                     } else {
-                        if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
+                        //if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                             schema::Channel & chan=schema::channel[m_codes[i]];
                             val=QString::number(d.value()[i+1],'f',2);
                             z+="\r\n"+chan.label()+" "+a+"="+val;
-                        }
+                        //}
                     }
                 }
 
             }
 
-            graph->ToolTip(z,x,y-10,2200);
+            graph->ToolTip(z,x,y-15,2200);
             return true;
         } else {
             QString z=dt.toString(Qt::SystemLocaleShortDate)+"\r\nNo Data";
-            graph->ToolTip(z,x,y-10,2200);
+            graph->ToolTip(z,x,y-15,2200);
             return true;
         }
     }
