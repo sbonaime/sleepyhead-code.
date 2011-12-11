@@ -1345,6 +1345,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
 void Daily::on_addBookmarkButton_clicked()
 {
     qint64 st,et;
+    ui->bookmarkTable->blockSignals(true);
     GraphView->GetXBounds(st,et);
     QDateTime d=QDateTime::fromTime_t(st/1000L);
     int row=ui->bookmarkTable->rowCount();
@@ -1357,6 +1358,7 @@ void Daily::on_addBookmarkButton_clicked()
     tw->setData(Qt::UserRole,st);
     tw->setData(Qt::UserRole+1,et);
 
+    ui->bookmarkTable->blockSignals(false);
     update_Bookmarks();
 
     //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
@@ -1370,6 +1372,7 @@ void Daily::update_Bookmarks()
     QTableWidgetItem *item;
     for (int row=0;row<ui->bookmarkTable->rowCount();row++) {
         item=ui->bookmarkTable->item(row,1);
+
         start.push_back(item->data(Qt::UserRole));
         end.push_back(item->data(Qt::UserRole+1));
         notes.push_back(item->text());
@@ -1390,7 +1393,9 @@ void Daily::on_removeBookmarkButton_clicked()
 {
     int row=ui->bookmarkTable->currentRow();
     if (row>=0) {
+        ui->bookmarkTable->blockSignals(true);
         ui->bookmarkTable->removeRow(row);
+        ui->bookmarkTable->blockSignals(false);
         update_Bookmarks();
     }
 }
