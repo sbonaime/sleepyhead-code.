@@ -10,7 +10,7 @@
 
 
 // Support function for calcRespRate()
-int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate, EventList *uf1)
+int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate, EventList *uf1, EventList *uf2)
 {
 
     int size=in->count();
@@ -183,7 +183,7 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
             } else {
                 if (c<=min) {
                     min=c;
-                    peakmin=time+rate;
+                    peakmin=time;
                 }
 
             }
@@ -193,16 +193,47 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
         time+=rate;
     }
     if (!breaths.size()) {
-
         return 0;
     }
-    double avg;
+    double avgmax=0;
     for (int i=0;i<breaths_max.size();i++)  {
-        min=breaths_max[i];
-        avg+=min;
-//        uf1->AddEvent(breaths_max_peak[i],0,min);
+        max=breaths_max[i];
+        avgmax+=max;
     }
-    avg/=EventDataType(breaths_max.size());
+    avgmax/=EventDataType(breaths_max.size());
+
+    double avgmin=0;
+    for (int i=0;i<breaths_min.size();i++)  {
+        min=breaths_min[i];
+        avgmin+=min;
+        //uf2->AddEvent(breaths_min_peak[i],0,min);
+    }
+    avgmin/=EventDataType(breaths_min.size());
+
+    QVector<qint64> goodb;
+    for (int i=0;i<breaths_max.size();i++)  {
+        max=breaths_max[i];
+        time=breaths_max_peak[i];
+
+        if (max > avgmax*0.2) {
+            goodb.push_back(time);
+        }
+    }
+    for (int i=0;i<breaths_max.size();i++)  {
+        min=breaths_min[i];
+        time=breaths_min_peak[i];
+        if (min < avgmin*0.2) {
+            goodb.push_back(time);
+        }
+    }
+    qSort(goodb);
+    for (int  i=1;i<goodb.size();i++) {
+        qint64 len=qAbs(goodb[i]-goodb[i-1]);
+        if (len>=10000) {
+            time=goodb[i-1]+len/2;
+            uf1->AddEvent(time,0,1);
+        }
+    }
 
     qint64 window=60000;
     qint64 t1=in->first()-window/2;
@@ -316,7 +347,7 @@ int calcRespRate(Session *session)
     if (session->eventlist.contains(CPAP_RespRate))
         return 0; // already exists?
 
-    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL, *uf=NULL;
+    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL, *uf=NULL, *uf2=NULL;
 
     if (!session->eventlist.contains(CPAP_TidalVolume)) {
         tv=new EventList(EVL_Event);
@@ -332,8 +363,11 @@ int calcRespRate(Session *session)
     if (rr) session->eventlist[CPAP_RespRate].push_back(rr);
     if (tv) session->eventlist[CPAP_TidalVolume].push_back(tv);
     if (mv) session->eventlist[CPAP_MinuteVent].push_back(mv);
-    //uf=new EventList(EVL_Event,1,0,0,0,0,true);
-    //session->eventlist["UserFlag1"].push_back(uf1);
+    uf=new EventList(EVL_Event,1,0,0,0,0,true);
+    session->eventlist["UserFlag1"].push_back(uf);
+
+    //uf2=new EventList(EVL_Event,1,0,0,0,0,true);
+    //session->eventlist["UserFlag2"].push_back(uf2);
 
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
@@ -344,7 +378,7 @@ int calcRespRate(Session *session)
             if (flow->count()==103200) {
                 int i=5;
             }
-            cnt+=filterFlow(flow,rr,tv,mv,flow->rate(),uf);
+            cnt+=filterFlow(flow,rr,tv,mv,flow->rate(),uf,uf2);
 
             if (tv->count()==0) {
                 int i=5;
