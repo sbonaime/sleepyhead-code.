@@ -751,15 +751,20 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QPainter painter;
     painter.begin(printer);
 
+
     QRect res=printer->pageRect();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
     const int graphs_per_page=6;
-    const int footer_height=(res.height()/22);
 
     float pw=res.width();
+    QRectF pagebnds=painter.boundingRect(QRectF(0,0,res.width(),0),"W",QTextOption(Qt::AlignCenter));
+    pagebnds.moveBottom(pagebnds.bottom()+ceil(pagebnds.height()/2.5));
+    const int labelheight=pagebnds.height();
+    const int footer_height=labelheight;
+
     float realheight=res.height()-footer_height;
-    float ph=realheight / graphs_per_page;
+    float ph=(realheight-(labelheight*graphs_per_page)) / graphs_per_page;
 
     float div,fontdiv;
     if (pw>8000) {
@@ -787,24 +792,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     SnapshotGraph->setPrintScaleX(fontdiv);
     SnapshotGraph->setPrintScaleY(fontdiv);
 
-
-    /*float sw=1280; //highres ? 1280 : gv->width();
-    float gheight=350; //PROFILE["GraphHeight"].toDouble()*2;
-    float gz=gheight / sw; // aspect ratio
-    float gw=pw; //highres ? 1280 : gv->width();
-    float gh=pw * gz;
-
-    float rh=gh*div;
-    float rw=gw*div;
-
-    float xscale=pw / sw;
-    float yscale=gh / gheight;
-
-    SnapshotGraph->setPrintScaleX(xscale);
-    SnapshotGraph->setPrintScaleY(yscale); */
-
     mainwin->snapshotGraph()->setMinimumSize(gw,gh);
     mainwin->snapshotGraph()->setMaximumSize(gw,gh);
+
 
     int page=1;
     int i=0;
@@ -887,10 +877,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
         QString ovinfo="Reporting from "+first.date().toString(Qt::SystemLocaleShortDate)+" to "+last.date().toString(Qt::SystemLocaleShortDate);
         QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),ovinfo,QTextOption(Qt::AlignCenter));
-        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignLeft));
+        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
-
     }
     top+=maxy;
     /*if (name=="Daily") {
@@ -985,19 +974,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         }
 
         QString label=labels[i];
-        if (!label.isEmpty()) {
-            QRectF pagebnds=painter.boundingRect(QRectF(0,top,res.width(),0),label,QTextOption(Qt::AlignCenter));
+        //if (!label.isEmpty()) {
+            QRectF pagebnds=painter.boundingRect(QRectF(0,top,res.width(),labelheight),label,QTextOption(Qt::AlignCenter));
             painter.drawText(pagebnds,label,QTextOption(Qt::AlignCenter));
-            top+=pagebnds.height();
-            qDebug() << label;
-
-        }
+            top+=labelheight; //pagebnds.height();
+        //}
         PROFILE["UseAntiAliasing"]=force_antialiasing;
         QPixmap pm=g->renderPixmap(gw,gh);
         PROFILE["UseAntiAliasing"]=aa_setting;
         QPixmap pm2=pm.scaledToWidth(pw);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
-        top+=pm2.height();
+        top+=ph; //pm2.height();
         gcnt++;
 
         if (qprogress) {
