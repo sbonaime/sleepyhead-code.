@@ -689,14 +689,15 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
-    bool print_bookmarks=false;
     QString username=PROFILE.Get("_{Username}_");
-    QStringList booknotes;
+
+    bool print_bookmarks=false;
     if (name=="Daily") {
+        QVariantList book_start;
         journal=getDaily()->GetJournalSession(getDaily()->getDate());
-        if (journal && journal->settings.contains("BookmarkNotes")) {
-            booknotes=journal->settings["BookmarkNotes"].toStringList();
-            if (booknotes.size()>0) {
+        if (journal && journal->settings.contains("BookmarkStart")) {
+            book_start=journal->settings["BookmarkStart"].toList();
+            if (book_start.size()>0) {
                 if (QMessageBox::question(this,"Bookmarks","Would you like to show bookmarked areas in this report?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
                     print_bookmarks=true;
                 }
@@ -707,14 +708,15 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QPrinter * zprinter;
 
     bool highres;
-
     bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
 
 #ifdef Q_WS_MAC
-    highres=true;
+    PROFILE["HighResPrinting"]=true; // forced on
     bool force_antialiasing=true;
-    zprinter=new QPrinter(QPrinter::HighResolution);
 #else
+    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
+#endif
+
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
         zprinter=new QPrinter(QPrinter::HighResolution);
         highres=true;
@@ -722,12 +724,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         zprinter=new QPrinter(QPrinter::ScreenResolution);
         highres=false;
     }
-    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
-#endif
-
 
     QPrinter & printer=*zprinter;;
-    //QPrinter printer(QPrinter::HighResolution);
 #ifdef Q_WS_X11
     printer.setPrinterName("Print to File (PDF)");
     printer.setOutputFormat(QPrinter::PdfFormat);
@@ -889,8 +887,16 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignLeft));
 
         if (bounds.height()>maxy) maxy=bounds.height();
+
     }
     top+=maxy;
+    /*if (name=="Daily") {
+        QString text=getDaily()->GetDetailsText();
+        QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),text,QTextOption(Qt::AlignLeft));
+        painter.drawText(bounds,text,QTextOption(Qt::AlignLeft));
+
+        top+=bounds.height();
+    }*/
    // top+=15*yscale; //spacer
     //top=header_height;
 

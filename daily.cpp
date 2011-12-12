@@ -1494,3 +1494,11 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
     }
     journal->SetChanged(true);
 }
+QString Daily::GetDetailsText()
+{
+    ui->webView->triggerPageAction(QWebPage::SelectAll);
+    QString text=ui->webView->page()->selectedText();
+    ui->webView->triggerPageAction(QWebPage::MoveToEndOfDocument);
+    ui->webView->triggerPageAction(QWebPage::SelectEndOfDocument);
+    return text;
+}

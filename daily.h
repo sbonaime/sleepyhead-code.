@@ -48,6 +48,7 @@ public:
     void PrintReport();
     void UnitsChanged();
     Session * GetJournalSession(QDate date);
+    QString GetDetailsText();
 
 private slots:
 
