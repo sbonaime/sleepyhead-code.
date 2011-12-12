@@ -150,12 +150,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
-    SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,gXAxis::Margin);
+    SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,20); //gXAxis::Margin);
 
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
-    gLineOverlaySummary *los=new gLineOverlaySummary("Selection AHI",5,-3);
+    gLineOverlaySummary *los=new gLineOverlaySummary("Selection AHI",5,-4);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));

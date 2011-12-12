@@ -758,39 +758,44 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     const int graphs_per_page=6;
 
     float pw=res.width();
-    QRectF pagebnds=painter.boundingRect(QRectF(0,0,res.width(),0),"W",QTextOption(Qt::AlignCenter));
-    pagebnds.moveBottom(pagebnds.bottom()+ceil(pagebnds.height()/2.5));
-    const int labelheight=pagebnds.height();
+    QRectF pagebnds=painter.boundingRect(QRectF(0,0,res.width(),0),"Wg",QTextOption(Qt::AlignCenter));
+    const int labelheight=pagebnds.height()*1.33;
     const int footer_height=labelheight;
 
     float realheight=res.height()-footer_height;
     float ph=(realheight-(labelheight*graphs_per_page)) / graphs_per_page;
 
-    float div,fontdiv;
+    float div,fontscale;
     if (pw>8000) {
         div=4;
-#ifdef Q_WS_WIN32
-        fontdiv=2.3;
+#if defined(Q_WS_WIN32)
+        fontscale=2.3;
+#elif defined(Q_WS_MAC)
+        fontscale=3;
 #else
-        fontdiv=2.3;
+        fontscale=2.3;
 #endif
     } else if (pw>2000) {
         div=2.0;
-        fontdiv=2.0;
+#if defined(Q_WS_MAC)
+        fontscale=3;
+#else
+        fontscale=2.0;
+#endif
     } else {
         div=1;
-#ifdef Q_WS_WIN32
-        fontdiv=1; // windows will crash if it's any smaller than this
+#if defined(Q_WS_WIN32)
+        fontscale=1; // windows will crash if it's any smaller than this
 #else
-        fontdiv=0.75;
+        fontscale=0.75;
 #endif
     }
 
     float gw=pw/div;
     float gh=ph/div;
 
-    SnapshotGraph->setPrintScaleX(fontdiv);
-    SnapshotGraph->setPrintScaleY(fontdiv);
+    SnapshotGraph->setPrintScaleX(fontscale);
+    SnapshotGraph->setPrintScaleY(fontscale);
 
     mainwin->snapshotGraph()->setMinimumSize(gw,gh);
     mainwin->snapshotGraph()->setMaximumSize(gw,gh);
@@ -960,7 +965,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         g->SetXBounds(start[i],end[i]);
         g->deselect();
 
-        if (top+ph>realheight) { //top+pm.height()>res.height()) {
+        if ((top+ph+labelheight) > realheight) { //top+pm.height()>res.height()) {
             top=0;
             gcnt=0;
             //header_height=0;
@@ -974,19 +979,24 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         }
 
         QString label=labels[i];
-        //if (!label.isEmpty()) {
-            QRectF pagebnds=painter.boundingRect(QRectF(0,top,res.width(),labelheight),label,QTextOption(Qt::AlignCenter));
-            painter.drawText(pagebnds,label,QTextOption(Qt::AlignCenter));
-            top+=labelheight; //pagebnds.height();
-        //}
+        if (!label.isEmpty()) {
+            label+=":";
+            QRectF pagebnds=QRectF(0,top,res.width(),labelheight);
+            painter.drawText(pagebnds,label,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+        }
+        top+=labelheight; //pagebnds.height();
+
         PROFILE["UseAntiAliasing"]=force_antialiasing;
+        int tmb=g->m_marginbottom;
+        g->m_marginbottom=0;
         QPixmap pm=g->renderPixmap(gw,gh);
+        g->m_marginbottom=tmb;
         PROFILE["UseAntiAliasing"]=aa_setting;
         QPixmap pm2=pm.scaledToWidth(pw);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
         top+=ph; //pm2.height();
-        gcnt++;
 
+        gcnt++;
         if (qprogress) {
             qprogress->setValue(i);
             QApplication::processEvents();

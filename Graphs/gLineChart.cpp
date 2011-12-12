@@ -65,6 +65,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     if (width<0)
         return;
 
+
+
    // lines=w.lines();
     EventDataType miny,maxy;
     double minx,maxx;
@@ -81,6 +83,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     /*if (miny<0) {
         miny=-MAX(fabs(miny),fabs(maxy));
     }*/
+
+
 
     w.roundY(miny,maxy);
 

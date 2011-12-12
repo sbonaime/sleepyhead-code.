@@ -532,7 +532,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         a+="="+val;
         GetTextExtent(a,x,y);
         px-=20+x;
-        w.renderText(a,px+20,py+2);
+        w.renderText(a,px+20,py+1);
         quads->add(px+5,py-7,px+18,py-7,px+18,py+1,px+5,py+1,m_colors[j]);
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
@@ -543,7 +543,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             a=m_label+"="+QString::number(val,'f',2)+" ";
             GetTextExtent(a,x,y);
             px-=20+x;
-            w.renderText(a,px+24,py+2);
+            w.renderText(a,px+24,py+1);
             //
         }
     }
@@ -561,7 +561,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     px-=30+x;
     //w.renderText(a,px+24,py+5);
 
-    w.renderText(a,left,py+2);
+    w.renderText(a,left,py+1);
 }
 
 QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false,bool show_12hr=false)

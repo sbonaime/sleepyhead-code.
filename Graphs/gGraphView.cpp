@@ -1080,6 +1080,10 @@ void gGraph::paint(int originX, int originY, int width, int height)
     glDisable(GL_BLEND);
     */
 
+    int fw,font_height;
+    GetTextExtent("Wg@",fw,font_height);
+    m_margintop=font_height+(6*printScaleY());
+
     //glColor4f(0,0,0,1);
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
     int x,y;
@@ -1660,10 +1664,10 @@ GLShortBuffer * gGraph::stippled()
 {
     return m_graphview->stippled;
 }
-short gGraph::marginLeft() { return m_marginleft*m_graphview->printScaleX(); }
-short gGraph::marginRight() { return m_marginright*m_graphview->printScaleX(); }
-short gGraph::marginTop() { return m_margintop*m_graphview->printScaleY(); }
-short gGraph::marginBottom() { return m_marginbottom*m_graphview->printScaleY(); }
+short gGraph::marginLeft() { return m_marginleft; }//*m_graphview->printScaleX(); }
+short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScaleX(); }
+short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
+short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
 QPixmap gGraph::renderPixmap(int w, int h)
 {

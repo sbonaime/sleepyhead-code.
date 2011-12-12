@@ -368,8 +368,8 @@ public:
     QTimer * timer;
     QVector<Layer *>  & layers() { return m_layers; }
 
-protected:
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+protected:
     //void invalidate();
 
     virtual void wheelEvent(QWheelEvent * event);
