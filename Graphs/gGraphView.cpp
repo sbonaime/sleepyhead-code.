@@ -1083,6 +1083,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     int fw,font_height;
     GetTextExtent("Wg@",fw,font_height);
     m_margintop=font_height+(8*printScaleY());
+    m_marginbottom=5;
 
     //glColor4f(0,0,0,1);
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
@@ -1671,26 +1672,19 @@ short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printSca
 
 QPixmap gGraph::renderPixmap(int w, int h)
 {
-    QFont * _defaultfont=defaultfont;
-    QFont * _mediumfont=mediumfont;
-    QFont * _bigfont=bigfont;
-
-    QFont fa=*defaultfont;
-    QFont fb=*mediumfont;
-    QFont fc=*bigfont;
 
     gGraphView *sg=mainwin->snapshotGraph();
     if (!sg) return QPixmap();
 
     double scale=sg->printScaleY(); //sqrt(sg->printScaleX()*sg->printScaleX()+sg->printScaleY()*sg->printScaleY());
-
+/*
     fa.setPointSize(fa.pointSize()*scale);
     fb.setPointSize(fb.pointSize()*scale);
     fc.setPointSize(fc.pointSize()*scale);
 
     defaultfont=&fa;
     mediumfont=&fb;
-    bigfont=&fc;
+    bigfont=&fc; */
 
     sg->hideSplitter();
     gGraphView *tgv=m_graphview;
@@ -1706,16 +1700,19 @@ QPixmap gGraph::renderPixmap(int w, int h)
     //sg->SetXBounds(mx,Mx);
     //sg->updateScrollBar();
     sg->updateScale();
+
+    //QImage image=sg->grabFrameBuffer();
+    //QPixmap pm=QPixmap::fromImage(image);
     QPixmap pm=sg->renderPixmap(w,h,false);
 
     sg->trashGraphs();
     m_graphview=tgv;
 
     m_height=tmp;
-
+/*
     defaultfont=_defaultfont;
     mediumfont=_mediumfont;
-    bigfont=_bigfont;
+    bigfont=_bigfont; */
 
     return pm;
 }

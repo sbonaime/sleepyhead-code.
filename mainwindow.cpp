@@ -21,6 +21,7 @@
 #include <QPrintDialog>
 #include <QPainter>
 #include <QProcess>
+#include <QFontMetrics>
 #include <cmath>
 
 #include "mainwindow.h"
@@ -751,70 +752,53 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QPainter painter;
     painter.begin(printer);
 
+    QSizeF pres=printer->paperSize(QPrinter::Point);
+    QSizeF pxres=printer->paperSize(QPrinter::DevicePixel);
+    //float hscale=pxres.width()/pres.width();
+    float vscale=pxres.height()/pres.height();
 
+    QFontMetrics fm(*bigfont);
+    float title_height=fm.ascent()*vscale;
+    QFontMetrics fm2(*defaultfont);
+    float normal_height=fm2.ascent()*vscale;
+
+    //QRect screen=QApplication::desktop()->screenGeometry();
     QRect res=printer->pageRect();
+
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
+    qDebug() << "res:" << printer->resolution() << "dpi";
+
+    float printer_width=res.width();
+    float printer_height=res.height()-normal_height;
+
     const int graphs_per_page=6;
+    float full_graph_height=(printer_height-(normal_height*graphs_per_page)) / float(graphs_per_page);
 
-    float pw=res.width();
-    QRectF pagebnds=painter.boundingRect(QRectF(0,0,res.width(),0),"Wg",QTextOption(Qt::AlignCenter));
-    const int labelheight=pagebnds.height()*1.33;
-    const int footer_height=labelheight;
+    GLint gw;
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
 
-    float realheight=res.height()-footer_height;
-    float ph=(realheight-(labelheight*graphs_per_page)) / graphs_per_page;
+    bool no_scaling;
+    if (printer_width<=gw) {
+        gw=printer_width;
+        no_scaling=true;
+    } else no_scaling=false;
 
-    float div,fontscale;
-    if (pw>8000) {
-        div=4;
-#if defined(Q_WS_WIN32)
-        fontscale=2.3;
-#elif defined(Q_WS_MAC)
-        fontscale=3;
-#else
-        fontscale=2.3;
-#endif
-    } else if (pw>2000) {
-        div=2.0;
-#if defined(Q_WS_MAC)
-        fontscale=3;
-#else
-        fontscale=2.0;
-#endif
-    } else {
-        div=1;
-#if defined(Q_WS_WIN32)
-        fontscale=1; // windows will crash if it's any smaller than this
-#else
-        fontscale=0.75;
-#endif
-    }
-
-    float gw=pw/div;
-    float gh=ph/div;
-
-    SnapshotGraph->setPrintScaleX(fontscale);
-    SnapshotGraph->setPrintScaleY(fontscale);
+    float graph_xscale=gw / printer_width;
+    //float scalex=1.0/graph_xscale;
+    float gh=full_graph_height*graph_xscale;
 
     mainwin->snapshotGraph()->setMinimumSize(gw,gh);
     mainwin->snapshotGraph()->setMaximumSize(gw,gh);
 
-
-    int page=1;
-    int i=0;
-    int top=0;
-    int gcnt=0;
-
-    //int header_height=200;
     QString title=name+" Report";
-    //QTextOption t_op(Qt::AlignCenter);
     painter.setFont(*bigfont);
-    QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+    int top=0;
+    QRectF bounds(0,top,printer_width,title_height);
     painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+    top+=bounds.height();
     painter.setFont(*defaultfont);
-    top=bounds.height();
-    //top+=15*yscale; //spacer
+
     int maxy=0;
     if (!PROFILE["FirstName"].toString().isEmpty()) {
         QString userinfo="Name:\t"+PROFILE["LastName"].toString()+", "+PROFILE["FirstName"].toString()+"\n";
@@ -822,8 +806,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         userinfo+="Phone:\t"+PROFILE["Phone"].toString()+"\n";
         userinfo+="Email:\t"+PROFILE["EmailAddress"].toString()+"\n";
         if (!PROFILE["Address"].toString().isEmpty()) userinfo+="\nAddress:\n"+PROFILE["Address"].toString()+"\n";
-        QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),userinfo,QTextOption(Qt::AlignLeft));
-        painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft));
+        QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
+        painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         if (bounds.height()>maxy) maxy=bounds.height();
     }
     if (name=="Daily") {
@@ -848,9 +832,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             CPAPMode mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
             cpapinfo+="\nMode: ";
 
-            if (mode==MODE_CPAP) cpapinfo+="CPAP";
-            else if (mode==MODE_APAP) cpapinfo+="Auto-PAP";
-            else if (mode==MODE_BIPAP) cpapinfo+="Bi-Level";
+            EventDataType min=cpap->settings_min(CPAP_PressureMin);
+            EventDataType max=cpap->settings_max(CPAP_PressureMax);
+
+            if (mode==MODE_CPAP) cpapinfo+="CPAP "+QString::number(min)+"cmH2O";
+            else if (mode==MODE_APAP) cpapinfo+="APAP "+QString::number(min)+"-"+QString::number(max)+"cmH2O";
+            else if (mode==MODE_BIPAP) cpapinfo+="Bi-Level"+QString::number(min)+"-"+QString::number(max)+"cmH2O";
             else if (mode==MODE_ASV) cpapinfo+="ASV";
 
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
@@ -898,17 +885,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
+    } else if (name=="Oximetry") {
+        QString ovinfo="Reporting data goes here";
+        QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),ovinfo,QTextOption(Qt::AlignCenter));
+        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
+
+        if (bounds.height()>maxy) maxy=bounds.height();
     }
     top+=maxy;
-    /*if (name=="Daily") {
-        QString text=getDaily()->GetDetailsText();
-        QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),text,QTextOption(Qt::AlignLeft));
-        painter.drawText(bounds,text,QTextOption(Qt::AlignLeft));
-
-        top+=bounds.height();
-    }*/
-   // top+=15*yscale; //spacer
-    //top=header_height;
 
     bool first=true;
     QStringList labels;
@@ -928,19 +912,16 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             graphs.push_back(g);
             labels.push_back("Current Selection");
             if (journal) {
-
                 if (journal->settings.contains("BookmarkStart")) {
                     QVariantList st1=journal->settings["BookmarkStart"].toList();
                     QVariantList et1=journal->settings["BookmarkEnd"].toList();
                     QStringList notes=journal->settings["BookmarkNotes"].toStringList();
-
                     for (int i=0;i<notes.size();i++) {
                         labels.push_back(notes.at(i));
                         start.push_back(st1.at(i).toLongLong());
                         end.push_back(et1.at(i).toLongLong());
                         graphs.push_back(g);
                     }
-
                 }
             }
         }
@@ -959,18 +940,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         qprogress->show();
     }
 
-    i=0;
-    do {
-        //+" on "+d.toString(Qt::SystemLocaleLongDate)
+    int page=1;
+    int gcnt=0;
+    for (int i=0;i<graphs.size();i++) {
         if (first) {
             QString footer="SleepyHead v"+PREF["VersionString"].toString()+" - http://sleepyhead.sourceforge.net";
 
-            QRectF bounds=painter.boundingRect(QRectF(0,res.height(),res.width(),footer_height),footer,QTextOption(Qt::AlignHCenter));
-            //bounds.moveTop(20);
+            QRectF bounds=painter.boundingRect(QRectF(0,res.height(),res.width(),normal_height),footer,QTextOption(Qt::AlignHCenter));
             painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
 
             QString pagestr="Page "+QString::number(page)+" of "+QString::number(pages);
-            QRectF pagebnds=painter.boundingRect(QRectF(0,res.height(),res.width(),footer_height),pagestr,QTextOption(Qt::AlignRight));
+            QRectF pagebnds=painter.boundingRect(QRectF(0,res.height(),res.width(),normal_height),pagestr,QTextOption(Qt::AlignRight));
             painter.drawText(pagebnds,pagestr,QTextOption(Qt::AlignRight));
             first=false;
         }
@@ -978,12 +958,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         g->SetXBounds(start[i],end[i]);
         g->deselect();
 
-        if ((top+ph+labelheight) > realheight) { //top+pm.height()>res.height()) {
+        if ((top+full_graph_height+normal_height) > printer_height) {
             top=0;
             gcnt=0;
-            //header_height=0;
             page++;
-            if (page>pages) break;
+            if (page > pages) break;
             first=true;
             if (!printer->newPage()) {
                 qWarning("failed in flushing page to disk, disk full?");
@@ -994,18 +973,46 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QString label=labels[i];
         if (!label.isEmpty()) {
             label+=":";
-            QRectF pagebnds=QRectF(0,top,res.width(),labelheight);
+            QRectF pagebnds=QRectF(0,top,res.width(),normal_height);
             painter.drawText(pagebnds,label,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
-            top+=labelheight; //pagebnds.height();
-        } else top+=labelheight/2;
+            top+=normal_height;
+        } else top+=normal_height/2;
 
         PROFILE["UseAntiAliasing"]=force_antialiasing;
         int tmb=g->m_marginbottom;
         g->m_marginbottom=0;
+
+        if (!no_scaling ) {
+            SnapshotGraph->setPrintScaleX(1.5);
+            SnapshotGraph->setPrintScaleY(1.5);
+        }
+        QFont * _defaultfont=defaultfont;
+        QFont * _mediumfont=mediumfont;
+        QFont * _bigfont=bigfont;
+
+        QFont fa=*defaultfont;
+        QFont fb=*mediumfont;
+        QFont fc=*bigfont;
+
+        if (!no_scaling ) {
+            fa.setPointSizeF(fa.pointSizeF()*1.7);
+            fb.setPointSizeF(fb.pointSizeF()*1.7);
+            fc.setPointSizeF(fc.pointSizeF()*1.7);
+        }
+
+        defaultfont=&fa;
+        mediumfont=&fb;
+        bigfont=&fc;
+
         QPixmap pm=g->renderPixmap(gw,gh);
+
+        defaultfont=_defaultfont;
+        mediumfont=_mediumfont;
+        bigfont=_bigfont;
+
         g->m_marginbottom=tmb;
         PROFILE["UseAntiAliasing"]=aa_setting;
-        QPixmap pm2=pm.scaledToWidth(pw);
+        QPixmap pm2=pm.scaledToWidth(printer_width);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
         top+=pm2.height();
 
@@ -1014,7 +1021,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             qprogress->setValue(i);
             QApplication::processEvents();
         }
-    } while (++i<graphs.size());
+    }
 
     qprogress->hide();
     painter.end();
