@@ -767,7 +767,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
-    qDebug() << "res:" << printer->resolution() << "dpi";
+    qDebug() << "res:" << printer->resolution() << "dpi" << float(res.width()) / float(res.height());
 
     float printer_width=res.width();
     float printer_height=res.height()-normal_height;
@@ -779,7 +779,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
 
     bool no_scaling;
-    if (printer_width<=gw) {
+    if (printer_width <= gw) {
         gw=printer_width;
         no_scaling=true;
     } else no_scaling=false;
@@ -995,9 +995,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QFont fc=*bigfont;
 
         if (!no_scaling ) {
-            fa.setPointSizeF(fa.pointSizeF()*1.7);
-            fb.setPointSizeF(fb.pointSizeF()*1.7);
-            fc.setPointSizeF(fc.pointSizeF()*1.7);
+            fa.setPointSizeF(fa.pointSizeF()*2);
+            fb.setPointSizeF(fb.pointSizeF()*2);
+            fc.setPointSizeF(fc.pointSizeF()*2);
         }
 
         defaultfont=&fa;
@@ -1012,9 +1012,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
         g->m_marginbottom=tmb;
         PROFILE["UseAntiAliasing"]=aa_setting;
-        QPixmap pm2=pm.scaledToWidth(printer_width);
-        painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
-        top+=pm2.height();
+        if (!no_scaling) {
+            QPixmap pm2=pm.scaledToWidth(printer_width);
+            painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
+            top+=pm2.height();
+        } else {
+            painter.drawPixmap(0,top,pm.width(),pm.height(),pm);
+            top+=gh;
+        }
 
         gcnt++;
         if (qprogress) {
