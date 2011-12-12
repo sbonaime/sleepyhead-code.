@@ -291,6 +291,8 @@ public:
     int maxHeight() { return m_max_height; }
     void setMaxHeight(int height) { m_max_height=height; }
 
+    void showTitle(bool b);
+
     float printScaleX();
     float printScaleY();
     bool isEmpty();
@@ -399,6 +401,7 @@ protected:
     Day * m_day;
     GLBuffer * m_quad;
     bool m_enforceMinY,m_enforceMaxY;
+    bool m_showTitle;
 signals:
 
 protected slots:

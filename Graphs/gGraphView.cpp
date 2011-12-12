@@ -953,6 +953,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     f_miny=f_maxy=0;
     m_enforceMinY=m_enforceMaxY=false;
     rec_miny=rec_maxy=0;
+    m_showTitle=true;
 }
 gGraph::~gGraph()
 {
@@ -996,6 +997,12 @@ bool gGraph::isEmpty()
     }
     return empty;
 }
+
+void gGraph::showTitle(bool b)
+{
+    m_showTitle=b;
+}
+
 float gGraph::printScaleX() { return m_graphview->printScaleX(); }
 float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 
@@ -1016,43 +1023,6 @@ void gGraph::setDay(Day * day)
     }
     ResetBounds();
 }
-
-/*void gGraph::invalidate()
-{ // this may not be necessary, as scrollbar & resize issues a full redraw..
-
-    //m_lastbounds.setWidth(m_graphview->width());
-    m_lastbounds.setY(m_graphview->findTop(this));
-    m_lastbounds.setX(gGraphView::titleWidth);
-    m_lastbounds.setHeight(m_height * m_graphview->scaleY());
-    m_lastbounds.setWidth(m_graphview->width()-gGraphView::titleWidth);
-    int i=0;
-    //m_lastbounds.setHeight(0);
-}
-
-void gGraph::repaint()
-{
-    if (m_lastbounds.height()>0) {
-        //glScissor(0,m_lastbounds.y(),m_lastbounds.width(),m_lastbounds.height());
-//        m_graphview->swapBuffers(); // how fast is this??
-        //glEnable(GL_SCISSOR_BOX);
-
-        glBegin(GL_QUADS);
-        glColor4f(1,1,1,1.0); // Gradient End
-        glVertex2i(0,m_lastbounds.y());
-        glVertex2i(gGraphView::titleWidth,m_lastbounds.y());
-        glVertex2i(gGraphView::titleWidth,m_lastbounds.y()+height());
-        glVertex2i(0,m_lastbounds.y()+height());
-        glEnd();
-
-        paint(m_lastbounds.x(),m_lastbounds.y(),m_lastbounds.width(),m_lastbounds.height());
-        m_graphview->swapBuffers();
-        //glDisable(GL_SCISSOR_BOX);
-    } else {
-        qDebug() << "Wanted to redraw graph" << m_title << "but previous bounds were invalid.. Issuing a slower full redraw instead. Todo: Find out why.";
-        m_graphview->updateGL();
-    }
-}
-*/
 
 void gGraph::qglColor(QColor col)
 {
@@ -1087,11 +1057,13 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     //glColor4f(0,0,0,1);
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
-    int x,y;
-    GetTextExtent(title(),x,y,mediumfont);
-    int title_x=(float(y)*2);
-    renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
-    left+=title_x;
+    int x=0,y=0;
+    if (m_showTitle) {
+        GetTextExtent(title(),x,y,mediumfont);
+        int title_x=(float(y)*2);
+        renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
+        left+=title_x;
+    } else left=0;
 
 //#define DEBUG_LAYOUT
 #ifdef DEBUG_LAYOUT
@@ -1113,6 +1085,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
+        if (!ll->visible()) continue;
         tmp=ll->Height()*m_graphview->printScaleY();
         if (ll->position()==LayerTop) top+=tmp;
         if (ll->position()==LayerBottom) bottom+=tmp;
@@ -1120,6 +1093,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
+        if (!ll->visible()) continue;
         tmp=ll->Width()*m_graphview->printScaleX();
         if (ll->position()==LayerLeft) {
             ll->paint(*this,originX+left,originY+top,tmp,height-top-bottom);
@@ -1140,6 +1114,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     bottom=marginBottom(); top=marginTop();
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
+        if (!ll->visible()) continue;
         tmp=ll->Height()*m_graphview->printScaleY();
         if (ll->position()==LayerTop) {
             ll->paint(*this,originX+left,originY+top,width-left-right,tmp);
@@ -1153,6 +1128,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
+        if (!ll->visible()) continue;
         if (ll->position()==LayerCenter) {
             ll->paint(*this,originX+left,originY+top,width-left-right,height-top-bottom);
         }

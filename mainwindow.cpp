@@ -711,12 +711,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     bool highres;
     bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
 
-#ifdef Q_WS_MAC
+/*#ifdef Q_WS_MAC
     PROFILE["HighResPrinting"]=true; // forced on
     bool force_antialiasing=true;
-#else
+#else */
     bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
-#endif
+//#endif
 
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
         printer=new QPrinter(QPrinter::HighResolution);
@@ -754,7 +754,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     QSizeF pres=printer->paperSize(QPrinter::Point);
     QSizeF pxres=printer->paperSize(QPrinter::DevicePixel);
-    //float hscale=pxres.width()/pres.width();
+    float hscale=pxres.width()/pres.width();
     float vscale=pxres.height()/pres.height();
 
     QFontMetrics fm(*bigfont);
@@ -765,6 +765,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     //QRect screen=QApplication::desktop()->screenGeometry();
     QRect res=printer->pageRect();
 
+    qDebug() << "X" << printer->logicalDpiX() << printer->physicalDpiX();
+    qDebug() << "Y" << printer->logicalDpiY() << printer->physicalDpiY();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
     qDebug() << "res:" << printer->resolution() << "dpi" << float(res.width()) / float(res.height());
@@ -788,9 +790,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     //float scalex=1.0/graph_xscale;
     float gh=full_graph_height*graph_xscale;
 
-    mainwin->snapshotGraph()->setMinimumSize(gw,gh);
-    mainwin->snapshotGraph()->setMaximumSize(gw,gh);
-
     QString title=name+" Report";
     painter.setFont(*bigfont);
     int top=0;
@@ -798,6 +797,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     top+=bounds.height();
     painter.setFont(*defaultfont);
+    float font_scale=float(printer->physicalDpiX())/float(QApplication::desktop()->physicalDpiX());
 
     int maxy=0;
     if (!PROFILE["FirstName"].toString().isEmpty()) {
@@ -853,26 +853,70 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
             float exp=cpap->count(CPAP_ExP)/cpap->hours();
 
-            QString stats;
-            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
-            stats+="AI \t"+QString::number(oai,'f',2)+"\n";
-            stats+="HI \t"+QString::number(hi,'f',2)+"\n";
-            stats+="CAI\t"+QString::number(cai,'f',2)+"\n";
-            if (cpap->machine->GetClass()=="PRS1") {
-                stats+="REI\t"+QString::number(rei,'f',2)+"\n";
-                stats+="VSI\t"+QString::number(vsi,'f',2)+"\n";
-                stats+="FLI\t"+QString::number(fli,'f',2)+"\n";
-                stats+="PB/CSR\t"+QString::number(csr,'f',2)+"%\n";
-            } else if (cpap->machine->GetClass()=="ResMed") {
-                stats+="UAI\t"+QString::number(uai,'f',2)+"\n";
-            } else if (cpap->machine->GetClass()=="Intellipap") {
-                stats+="NRI\t"+QString::number(nri,'f',2)+"\n";
-                stats+="LKI\t"+QString::number(lki,'f',2)+"\n";
-                stats+="EPI\t"+QString::number(exp,'f',2)+"\n";
+            getDaily()->eventBreakdownPie()->showTitle(false);
+            int piesize=1.5*72.0*vscale;
+            mainwin->snapshotGraph()->setMinimumSize(piesize,piesize);
+            mainwin->snapshotGraph()->setMaximumSize(piesize,piesize);
+
+            QFont * _defaultfont=defaultfont;
+            QFont * _mediumfont=mediumfont;
+            QFont * _bigfont=bigfont;
+
+            QFont fa=*defaultfont;
+            QFont fb=*mediumfont;
+            QFont fc=*bigfont;
+
+            if (!no_scaling ) {
+
+//                fa.setPointSizeF((fa.pointSizeF()/graph_xscale)*2);
+//                fb.setPointSizeF((fb.pointSizeF()/graph_xscale)*2);
+//                fc.setPointSizeF((fc.pointSizeF()/graph_xscale)*2);
+                qDebug() << QApplication::desktop()->physicalDpiX();
+                fa.setPointSizeF(fa.pointSizeF()*font_scale);
+                fb.setPointSizeF(fb.pointSizeF()*font_scale);
+                fc.setPointSizeF(fc.pointSizeF()*font_scale);
             }
-            QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),stats,QTextOption(Qt::AlignRight));
+
+            defaultfont=&fa;
+            mediumfont=&fb;
+            bigfont=&fc;
+
+            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize);
+
+            defaultfont=_defaultfont;
+            mediumfont=_mediumfont;
+            bigfont=_bigfont;
+
+            painter.drawPixmap(res.width()-piesize,top,piesize,piesize,ebp);
+            getDaily()->eventBreakdownPie()->showTitle(true);
+
+            QString stats;
+            painter.setFont(*mediumfont);
+            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
+            QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
-            if (bounds.height()>maxy) maxy=bounds.height();
+            //if (bounds.height()>maxy) maxy=bounds.height();
+
+            painter.setFont(*defaultfont);
+
+            stats="AI="+QString::number(oai,'f',2)+" ";
+            stats+="HI="+QString::number(hi,'f',2)+" ";
+            stats+="CAI="+QString::number(cai,'f',2)+" ";
+            if (cpap->machine->GetClass()=="PRS1") {
+                stats+="REI="+QString::number(rei,'f',2)+" ";
+                stats+="VSI="+QString::number(vsi,'f',2)+" ";
+                stats+="FLI="+QString::number(fli,'f',2)+" ";
+                stats+="PB/CSR="+QString::number(csr,'f',2)+"%";
+            } else if (cpap->machine->GetClass()=="ResMed") {
+                stats+="UAI="+QString::number(uai,'f',2)+" ";
+            } else if (cpap->machine->GetClass()=="Intellipap") {
+                stats+="NRI="+QString::number(nri,'f',2)+" ";
+                stats+="LKI="+QString::number(lki,'f',2)+" ";
+                stats+="EPI="+QString::number(exp,'f',2)+" ";
+            }
+            bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),stats,QTextOption(Qt::AlignLeft));
+            painter.drawText(bounds,stats,QTextOption(Qt::AlignLeft));
+            if (top+maxy+bounds.height()>maxy) maxy=top+maxy+bounds.height();
         }
         QRectF bounds=painter.boundingRect(QRectF((res.width()/2)-(res.width()/6),top,res.width()/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
@@ -893,6 +937,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (bounds.height()>maxy) maxy=bounds.height();
     }
     top+=maxy;
+
+    mainwin->snapshotGraph()->setMinimumSize(gw,gh);
+    mainwin->snapshotGraph()->setMaximumSize(gw,gh);
 
     bool first=true;
     QStringList labels;
@@ -981,10 +1028,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         PROFILE["UseAntiAliasing"]=force_antialiasing;
         int tmb=g->m_marginbottom;
         g->m_marginbottom=0;
+        float fscale=font_scale*graph_xscale;
 
         if (!no_scaling ) {
-            SnapshotGraph->setPrintScaleX(1.5);
-            SnapshotGraph->setPrintScaleY(1.5);
+            SnapshotGraph->setPrintScaleX(fscale);
+            SnapshotGraph->setPrintScaleY(fscale);
         }
         QFont * _defaultfont=defaultfont;
         QFont * _mediumfont=mediumfont;
@@ -995,16 +1043,18 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         QFont fc=*bigfont;
 
         if (!no_scaling ) {
-            fa.setPointSizeF(fa.pointSizeF()*2);
-            fb.setPointSizeF(fb.pointSizeF()*2);
-            fc.setPointSizeF(fc.pointSizeF()*2);
+            fa.setPointSizeF(fa.pointSizeF()*fscale);
+            fb.setPointSizeF(fb.pointSizeF()*fscale);
+            fc.setPointSizeF(fc.pointSizeF()*fscale);
         }
 
         defaultfont=&fa;
         mediumfont=&fb;
         bigfont=&fc;
 
+        //g->showTitle(false);
         QPixmap pm=g->renderPixmap(gw,gh);
+        //g->showTitle(true);
 
         defaultfont=_defaultfont;
         mediumfont=_mediumfont;

@@ -494,11 +494,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int x,y;
 
     for (int j=0;j<m_codes.size();j++) {
-        //if (totalcounts[j]==0) continue;
         if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
-        a=schema::channel[code].label();
-        a+=" ";
+        a="";
+        a+=schema::channel[code].label()+" ";
         switch(m_type[j]) {
                 case ST_WAVG: a+="Avg"; break;
                 case ST_AVG:  a+="Avg"; break;
@@ -531,9 +530,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
         a+="="+val;
         GetTextExtent(a,x,y);
-        px-=20+x;
-        w.renderText(a,px+20,py+1);
-        quads->add(px+5,py-7,px+18,py-7,px+18,py+1,px+5,py+1,m_colors[j]);
+        float wt=20*w.printScaleX();
+        px-=wt+x;
+        w.renderText(a,px+wt,py+1);
+        quads->add(px+wt-y/4-y,py-y,px+wt-y/4,py-y,px+wt-y/4,py+1,px+wt-y/4-y,py+1,m_colors[j]);
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }

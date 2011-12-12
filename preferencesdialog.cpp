@@ -195,13 +195,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
-#ifdef Q_WS_MAC
-    general["HighResPrinting"].setValue(true);
-    ui->highResolutionPrinting->setChecked(true);
-    ui->highResolutionPrinting->setEnabled(false);
-#else
+//#ifdef Q_WS_MAC
+//    general["HighResPrinting"].setValue(true);
+//    ui->highResolutionPrinting->setChecked(true);
+//    ui->highResolutionPrinting->setEnabled(false);
+//#else
     ui->highResolutionPrinting->setChecked(general["HighResPrinting"].value().toBool());
-#endif
+//#endif
 
     ui->graphHeight->setValue(general["GraphHeight"].value().toInt());
 

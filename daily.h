@@ -49,7 +49,7 @@ public:
     void UnitsChanged();
     Session * GetJournalSession(QDate date);
     QString GetDetailsText();
-
+    gGraph * eventBreakdownPie() { return GAHI; }
 private slots:
 
     void on_calendar_currentPageChanged(int year, int month);
