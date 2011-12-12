@@ -439,14 +439,18 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     if (mach->SessionExists(sequence))
         return false;
 
+    if (size<40)
+        return false;
+
     Session *session=new Session(mach,sequence);
     session->really_set_first(qint64(timestamp)*1000L);
     EventDataType max,min;
 
-    min=(data[0x03])/10.0;
-    session->settings[CPAP_PressureMin]=min;
-    max=(data[0x04])/10.0;
-    session->settings[CPAP_PressureMax]=max;
+    min=float(data[0x03])/10.0;
+    session->settings[CPAP_PressureMin]=(double)min;
+    //min=session->settings[CPAP_PressureMin].toDouble();
+    max=float(data[0x04])/10.0;
+    session->settings[CPAP_PressureMax]=(double)max;
     int offset=0;
     if (version==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
         offset=4;   // non zero adds 4 extra fields..
@@ -489,11 +493,8 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         if (max>0) {
             session->setMin(CPAP_Pressure,min);
             session->setMax(CPAP_Pressure,max);
-        } else {
-            session->setWavg(CPAP_Pressure,min  );
-
         }
-
+        session->setWavg(CPAP_Pressure,min);
     } else {
         // 0X28 & 0X29 is length on r5
 
@@ -509,10 +510,10 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         // Not using these because sometimes this summary is broken.
         EventDataType minp,maxp,avgp,p90p;
 
-        minp=data[offset+0x16]/10.0;
-        maxp=data[offset+0x17]/10.0;
-        p90p=data[offset+0x18]/10.0;
-        avgp=data[offset+0x19]/10.0;
+        minp=float(data[offset+0x16])/10.0;
+        maxp=float(data[offset+0x17])/10.0;
+        p90p=float(data[offset+0x18])/10.0;
+        avgp=float(data[offset+0x19])/10.0;
 
         if (minp>0) session->setMin(CPAP_Pressure,minp); else session->setMin(CPAP_Pressure,min);
         if (maxp>0) session->setMax(CPAP_Pressure,maxp); else session->setMax(CPAP_Pressure,min);
@@ -1107,7 +1108,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         }
         datasize=size-hl-2;
 
-        data=&m_buffer[pos+hl];
+        data=&header[hl];
 
 #ifdef PRS1_CRC_CHECK
         c16=CRC16(data,datasize);

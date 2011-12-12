@@ -810,8 +810,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QString title=name+" Report";
     //QTextOption t_op(Qt::AlignCenter);
     painter.setFont(*bigfont);
-    QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),title,QTextOption(Qt::AlignCenter));
-    painter.drawText(bounds,title,QTextOption(Qt::AlignCenter));
+    QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+    painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     painter.setFont(*defaultfont);
     top=bounds.height();
     //top+=15*yscale; //spacer
@@ -827,7 +827,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (bounds.height()>maxy) maxy=bounds.height();
     }
     if (name=="Daily") {
-        QString cpapinfo="Date: "+date.toString(Qt::SystemLocaleLongDate)+"\n";
+        QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
         if (cpap) {
             time_t f=cpap->first()/1000L;
@@ -837,9 +837,22 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             int m=(tt/60)%60;
             int s=tt % 60;
 
-            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours %2i minutes, %2i seconds",h,m,s)+"\n";
-            cpapinfo+="Bedtime: "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+"\n";
+            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours, %2i minutes, %2i seconds",h,m,s)+"\n";
+            cpapinfo+="Bedtime: "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+" ";
             cpapinfo+="Wake-up: "+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
+            QString submodel;
+            cpapinfo+="Machine: ";
+            if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
+                submodel="\n"+cpap->machine->properties["SubModel"];
+            cpapinfo+=cpap->machine->properties["Brand"]+" "+cpap->machine->properties["Model"]+submodel;
+            CPAPMode mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
+            cpapinfo+="\nMode: ";
+
+            if (mode==MODE_CPAP) cpapinfo+="CPAP";
+            else if (mode==MODE_APAP) cpapinfo+="Auto-PAP";
+            else if (mode==MODE_BIPAP) cpapinfo+="Bi-Level";
+            else if (mode==MODE_ASV) cpapinfo+="ASV";
+
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
             float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
             float uai=cpap->count(CPAP_Apnea)/cpap->hours();
@@ -994,7 +1007,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         PROFILE["UseAntiAliasing"]=aa_setting;
         QPixmap pm2=pm.scaledToWidth(pw);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
-        top+=ph; //pm2.height();
+        top+=pm2.height();
 
         gcnt++;
         if (qprogress) {

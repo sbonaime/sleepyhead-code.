@@ -691,15 +691,27 @@ void Daily::Load(QDate date)
         //float p90=cpap->p90(CPAP_Pressure);
         //eap90=cpap->p90(CPAP_EPAP);
         //iap90=cpap->p90(CPAP_IPAP);
-        QString submodel=tr("Unknown Model");
+        QString submodel; //=tr("Unknown Model");
 
         //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
-            submodel=" <br>"+cpap->machine->properties["SubModel"];
+            submodel=" <br/>"+cpap->machine->properties["SubModel"];
         html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
         if (PROFILE.Exists("ShowSerialNumbers") && PROFILE["ShowSerialNumbers"].toBool()) {
             html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
         }
+        CPAPMode mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
+        html+="<tr><td colspan=4 align=center>Mode: ";
+
+        EventDataType min=cpap->settings_min(CPAP_PressureMin);
+        EventDataType max=cpap->settings_max(CPAP_PressureMax);
+        if (mode==MODE_CPAP) html+="CPAP "+QString::number(min)+"cmH2O";
+        else if (mode==MODE_APAP) html+="APAP "+QString::number(min)+"-"+QString::number(max)+"cmH2O";
+        else if (mode==MODE_BIPAP) html+="Bi-Level";
+        else if (mode==MODE_ASV) html+="ASV";
+        else html+="Unknown";
+        html+="</td></tr>\n";
+
 
         html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
         int tt=qint64(cpap->total_time())/1000L;

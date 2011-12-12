@@ -372,12 +372,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                             qDebug() << "edf Serial number doesn't match STR.edf!";
                         }
                     } else if (i.key()=="PNA") {
-                        m->properties["Model"]=i.value();
+                        //m->properties["Model"]=""; //i.value();
                     } else if (i.key()=="PCD") {
                         bool ok;
                         int j=i.value().toInt(&ok);
                         if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
-                            m->properties["SubModel"]=RMS9ModelMap[j];
+                            m->properties["Model"]=RMS9ModelMap[j];
                         }
                     } else {
                         m->properties[i.key()]=i.value();
@@ -436,27 +436,32 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     sig=stredf.lookupSignal("Set Pressure");
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_Pressure]=pressure;
-                        sess->setWavg(CPAP_Pressure,pressure);
-                        sess->setAvg(CPAP_Pressure,pressure);
-                        sess->set90p(CPAP_Pressure,pressure);
-                        sess->setMax(CPAP_Pressure,pressure);
-                        sess->setMin(CPAP_Pressure,pressure);
+                        sess->settings[CPAP_PressureMin]=pressure;
+                        //sess->setWavg(CPAP_Pressure,pressure);
+                        //sess->setAvg(CPAP_Pressure,pressure);
+                        //sess->set90p(CPAP_Pressure,pressure);
+                        //sess->setMax(CPAP_Pressure,pressure);
+                        //sess->setMin(CPAP_Pressure,pressure);
                     }
                 } else {
                     if (mode>5) {
                         sess->settings[CPAP_Mode]=MODE_BIPAP;
                     } else {
                         sess->settings[CPAP_Mode]=MODE_APAP;
+
                     }
-
-                    sig=stredf.lookupSignal(CPAP_PressureMin);
-                    if (sig)
-                        sess->setMin(CPAP_Pressure,sig->data[dn]*sig->gain);
-
-                    sig=stredf.lookupSignal(CPAP_PressureMax);
-                    if (sig)
-                        sess->setMax(CPAP_Pressure,sig->data[dn]*sig->gain);
+                    sig=stredf.lookupSignal("Min Pressure");
+                    if (sig) {
+                        EventDataType pressure=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_PressureMin]=pressure;
+                        sess->setMin(CPAP_Pressure,pressure);
+                    }
+                    sig=stredf.lookupSignal("Max Pressure");
+                    if (sig) {
+                        EventDataType pressure=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_PressureMax]=pressure;
+                        sess->setMax(CPAP_Pressure,pressure);
+                    }
                 }
 
             }
@@ -805,21 +810,21 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 void ResInitModelMap()
 {
     // Courtesy Troy Schultz
-    RMS9ModelMap[36001]="ResMed S9 Escape";
-    RMS9ModelMap[36002]="ResMed S9 Escape Auto";
-    RMS9ModelMap[36003]="ResMed S9 Elite";
-    RMS9ModelMap[36004]="ResMed S9 VPAP S";
-    RMS9ModelMap[36005]="ResMed S9 AutoSet";
-    RMS9ModelMap[36006]="ResMed S9 VPAP Auto";
-    RMS9ModelMap[36007]="ResMed S9 VPAP Adapt";
-    RMS9ModelMap[36008]="ResMed S9 VPAP ST";
+    RMS9ModelMap[36001]="S9 Escape";
+    RMS9ModelMap[36002]="S9 Escape Auto";
+    RMS9ModelMap[36003]="S9 Elite";
+    RMS9ModelMap[36004]="S9 VPAP S";
+    RMS9ModelMap[36005]="S9 AutoSet";
+    RMS9ModelMap[36006]="S9 VPAP Auto";
+    RMS9ModelMap[36007]="S9 VPAP Adapt";
+    RMS9ModelMap[36008]="S9 VPAP ST";
     /* S8 Series
-    RMS9ModelMap[33007]="ResMed S8 Escape";
-    RMS9ModelMap[33039]="ResMed S8 Elite II";
-    RMS9ModelMap[33051]="ResMed S8 Escape II";
-    RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
-    RMS9ModelMap[33064]="ResMed S8 Escape II AutoSet";
-    RMS9ModelMap[33129]="ResMed S8 AutoSet II";
+    RMS9ModelMap[33007]="S8 Escape";
+    RMS9ModelMap[33039]="S8 Elite II";
+    RMS9ModelMap[33051]="S8 Escape II";
+    RMS9ModelMap[33064]="S8 Escape II AutoSet";
+    RMS9ModelMap[33064]="S8 Escape II AutoSet";
+    RMS9ModelMap[33129]="S8 AutoSet II";
     */
 
     resmed_codes[CPAP_FlowRate].push_back("Flow");
