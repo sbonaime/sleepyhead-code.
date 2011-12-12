@@ -740,7 +740,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QPrintDialog dialog(printer);
 #ifdef Q_WS_MAC
     // QTBUG-17913
-    dialog.setModal(true);
+    QApplication::processEvents();
 #endif
     if (dialog.exec() != QDialog::Accepted) {
         delete printer;
