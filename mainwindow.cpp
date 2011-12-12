@@ -705,7 +705,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         }
     }
 
-    QPrinter * zprinter;
+    QPrinter * printer;
 
     bool highres;
     bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
@@ -718,37 +718,40 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 #endif
 
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
-        zprinter=new QPrinter(QPrinter::HighResolution);
+        printer=new QPrinter(QPrinter::HighResolution);
         highres=true;
     } else {
-        zprinter=new QPrinter(QPrinter::ScreenResolution);
+        printer=new QPrinter(QPrinter::ScreenResolution);
         highres=false;
     }
 
-    QPrinter & printer=*zprinter;;
 #ifdef Q_WS_X11
-    printer.setPrinterName("Print to File (PDF)");
-    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer->setPrinterName("Print to File (PDF)");
+    printer->setOutputFormat(QPrinter::PdfFormat);
     QString filename=PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf");//QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",,"PDF Files (*.pdf)");
 
-    printer.setOutputFileName(filename);
+    printer->setOutputFileName(filename);
 #endif
-    printer.setPrintRange(QPrinter::AllPages);
-    printer.setOrientation(QPrinter::Portrait);
-    printer.setFullPage(false); // This has nothing to do with scaling
-    printer.setNumCopies(1);
-    printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
-    QPrintDialog dialog(&printer);
+    printer->setPrintRange(QPrinter::AllPages);
+    printer->setOrientation(QPrinter::Portrait);
+    printer->setFullPage(false); // This has nothing to do with scaling
+    printer->setNumCopies(1);
+    printer->setPageMargins(10,10,10,10,QPrinter::Millimeter);
+    QPrintDialog dialog(printer);
+#ifdef Q_WS_MAC
+    // QTBUG-17913
+    dialog.setModal(true);
+#endif
     if (dialog.exec() != QDialog::Accepted) {
-        delete zprinter;
+        delete printer;
         return;
     }
 
     Notify("Printing "+name+" Report");
     QPainter painter;
-    painter.begin(&printer);
+    painter.begin(printer);
 
-    QRect res=printer.pageRect();
+    QRect res=printer->pageRect();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
 
     const int graphs_per_page=6;
@@ -975,7 +978,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             page++;
             if (page>pages) break;
             first=true;
-            if (!printer.newPage()) {
+            if (!printer->newPage()) {
                 qWarning("failed in flushing page to disk, disk full?");
                 break;
             }
@@ -1005,7 +1008,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     qprogress->hide();
     painter.end();
-    delete zprinter;
+    delete printer;
 }
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
