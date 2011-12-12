@@ -1082,7 +1082,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     int fw,font_height;
     GetTextExtent("Wg@",fw,font_height);
-    m_margintop=font_height+(6*printScaleY());
+    m_margintop=font_height+(8*printScaleY());
 
     //glColor4f(0,0,0,1);
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();

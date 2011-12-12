@@ -983,8 +983,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             label+=":";
             QRectF pagebnds=QRectF(0,top,res.width(),labelheight);
             painter.drawText(pagebnds,label,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
-        }
-        top+=labelheight; //pagebnds.height();
+            top+=labelheight; //pagebnds.height();
+        } else top+=labelheight/2;
 
         PROFILE["UseAntiAliasing"]=force_antialiasing;
         int tmb=g->m_marginbottom;
