@@ -324,7 +324,7 @@ bool Machine::Save()
     savelistSize=m_savelist.size();
     if (!PROFILE["EnableMultithreading"].toBool()) {
         for (int i=0;i<savelistSize;i++) {
-            qprogress->setValue(66.0+(float(savelistCnt)/float(savelistSize)*33.0));
+            qprogress->setValue(0+(float(savelistCnt)/float(savelistSize)*100.0));
             QApplication::processEvents();
             Session *s=m_savelist.at(i);
             s->UpdateSummaries();
@@ -372,7 +372,7 @@ bool Machine::Save()
 void SaveThread::run()
 {
     while (Session *sess=machine->popSaveList()) {
-        int i=66.0+(float(machine->savelistCnt)/float(machine->savelistSize)*33.0);
+        int i=(float(machine->savelistCnt)/float(machine->savelistSize)*100.0);
         emit UpdateProgress(i);
         sess->UpdateSummaries();
         sess->Store(path);

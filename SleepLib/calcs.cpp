@@ -10,7 +10,7 @@
 
 
 // Support function for calcRespRate()
-int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
+int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate, EventList *uf1)
 {
 
     int size=in->count();
@@ -85,19 +85,30 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     qint64 time=in->first();
     qint64 u1=0,u2=0,len,l1=0,l2=0;
     int z1=0,z2=0;
-    EventDataType lastc=0,thresh=0;
+    EventDataType lastc=0,thresh=-1;
     QVector<int> breaths;
     QVector<EventDataType> TV;
     QVector<qint64> breaths_start;
+    QVector<qint64> breaths_min_peak;
+    QVector<EventDataType> breaths_min;
+    QVector<qint64> breaths_max_peak;
+    QVector<EventDataType> breaths_max;
     //int lasti=0;
 
+    const int ringsize=256;
+    EventDataType ringmax[ringsize]={0};
+    EventDataType ringmin[ringsize]={0};
+    qint64 ringtime[ringsize]={0};
+    int rpos=0;
+    EventDataType min=0,max=0;
+    qint64 peakmin=0, peakmax=0;
     for (i=0;i<size;i++) {
         c=stage2[i];
         if (c>thresh) {
             if (lastc<=thresh) {
                 u2=u1;
                 u1=time;
-                if (u2>0) {
+                if (u2>thresh) {
                     z2=i;
                     len=qAbs(u2-u1);
                     if (tv) { // && z1>0) { // Tidal Volume Calculations
@@ -110,7 +121,16 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                     }
                     breaths_start.push_back(time);
                     breaths.push_back(len);
+                    breaths_min_peak.push_back(peakmin);
+                    breaths_min.push_back(min);
+                    max=0;
                 }
+            } else {
+                if (c>=max) {
+                    max=c;
+                    peakmax=time+rate;
+                }
+
             }
         } else {
             if (lastc>thresh) {
@@ -131,7 +151,41 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                           //  TV[ts]=(TV[ts]+t)/2.0;
                         }
                     }
+                    breaths_max_peak.push_back(peakmax);
+                    breaths_max.push_back(max);
+                    min=0;
+
+//                        ringmax[rpos]=max;
+//                        ringtime[rpos]=peakmax;
+
+//                        int zz=ringsize;
+//                        if (i<ringsize) {
+//                            zz=i;
+//                        }
+//                        int j;
+//                        if (max<=4)
+//                        for (j=1;j<zz;j++) {
+//                            int  q=(rpos-j) & 0xff;
+//                            if (ringmax[q]>4) {
+//                                q--;
+//                                q&=0xff;
+//                                if ((peakmax-ringtime[q])>8000) {
+//                                    uf1->AddEvent(peakmax,(double(ringtime[q])/1000.0),max);
+//                                }
+//                                break;
+//                            }
+//                        }
+
+//                        rpos++;
+//                        rpos &= 0xff;
+
                 }
+            } else {
+                if (c<=min) {
+                    min=c;
+                    peakmin=time+rate;
+                }
+
             }
 
         }
@@ -142,6 +196,13 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
 
         return 0;
     }
+    double avg;
+    for (int i=0;i<breaths_max.size();i++)  {
+        min=breaths_max[i];
+        avg+=min;
+//        uf1->AddEvent(breaths_max_peak[i],0,min);
+    }
+    avg/=EventDataType(breaths_max.size());
 
     qint64 window=60000;
     qint64 t1=in->first()-window/2;
@@ -255,7 +316,7 @@ int calcRespRate(Session *session)
     if (session->eventlist.contains(CPAP_RespRate))
         return 0; // already exists?
 
-    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL;
+    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL, *uf=NULL;
 
     if (!session->eventlist.contains(CPAP_TidalVolume)) {
         tv=new EventList(EVL_Event);
@@ -271,6 +332,8 @@ int calcRespRate(Session *session)
     if (rr) session->eventlist[CPAP_RespRate].push_back(rr);
     if (tv) session->eventlist[CPAP_TidalVolume].push_back(tv);
     if (mv) session->eventlist[CPAP_MinuteVent].push_back(mv);
+    //uf=new EventList(EVL_Event,1,0,0,0,0,true);
+    //session->eventlist["UserFlag1"].push_back(uf1);
 
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
@@ -281,7 +344,7 @@ int calcRespRate(Session *session)
             if (flow->count()==103200) {
                 int i=5;
             }
-            cnt+=filterFlow(flow,rr,tv,mv,flow->rate());
+            cnt+=filterFlow(flow,rr,tv,mv,flow->rate(),uf);
 
             if (tv->count()==0) {
                 int i=5;

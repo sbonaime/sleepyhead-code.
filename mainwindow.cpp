@@ -694,7 +694,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QStringList booknotes;
     if (name=="Daily") {
         journal=getDaily()->GetJournalSession(getDaily()->getDate());
-        if (journal->settings.contains("BookmarkNotes")) {
+        if (journal && journal->settings.contains("BookmarkNotes")) {
             booknotes=journal->settings["BookmarkNotes"].toStringList();
             if (booknotes.size()>0) {
                 if (QMessageBox::question(this,"Bookmarks","Would you like to show bookmarked areas in this report?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
@@ -707,6 +707,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QPrinter * zprinter;
 
     bool highres;
+
+    bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
+
+#ifdef Q_WS_MAC
+    highres=true;
+    bool force_antialiasing=true;
+    zprinter=new QPrinter(QPrinter::HighResolution);
+#else
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
         zprinter=new QPrinter(QPrinter::HighResolution);
         highres=true;
@@ -714,6 +722,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         zprinter=new QPrinter(QPrinter::ScreenResolution);
         highres=false;
     }
+    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
+#endif
+
 
     QPrinter & printer=*zprinter;;
     //QPrinter printer(QPrinter::HighResolution);
@@ -972,7 +983,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             qDebug() << label;
 
         }
+        PROFILE["UseAntiAliasing"]=force_antialiasing;
         QPixmap pm=g->renderPixmap(gw,gh);
+        PROFILE["UseAntiAliasing"]=aa_setting;
         QPixmap pm2=pm.scaledToWidth(pw);
         painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
         top+=pm2.height();
