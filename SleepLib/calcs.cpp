@@ -7,10 +7,60 @@
 #include <cmath>
 #include "calcs.h"
 #include "profiles.h"
+bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
+{
+    qint64 t;
+    QHash<ChannelID,QVector<EventList *> >::iterator it;
+    it=session->eventlist.find(CPAP_Obstructive);
+    if (it!=session->eventlist.end()) {
+        for (int i=0;i<it.value().size();i++)  {
+            EventList *el=it.value()[i];
+            for (unsigned j=0;j<el->count();j++) {
+                t=el->time(j);
+                if (qAbs(time-t)<dist)
+                    return true;
+            }
+        }
+    }
+    it=session->eventlist.find(CPAP_Apnea);
+    if (it!=session->eventlist.end()) {
+        for (int i=0;i<it.value().size();i++)  {
+            EventList *el=it.value()[i];
+            for (unsigned j=0;j<el->count();j++) {
+                t=el->time(j);
+                if (qAbs(time-t)<dist)
+                    return true;
+            }
+        }
+    }
+    it=session->eventlist.find(CPAP_ClearAirway);
+    if (it!=session->eventlist.end()) {
+        for (int i=0;i<it.value().size();i++)  {
+            EventList *el=it.value()[i];
+            for (unsigned j=0;j<el->count();j++) {
+                t=el->time(j);
+                if (qAbs(time-t)<dist)
+                    return true;
+            }
+        }
+    }
+    it=session->eventlist.find(CPAP_Hypopnea);
+    if (it!=session->eventlist.end()) {
+        for (int i=0;i<it.value().size();i++)  {
+            EventList *el=it.value()[i];
+            for (unsigned j=0;j<el->count();j++) {
+                t=el->time(j);
+                if (qAbs(time-t)<dist)
+                    return true;
+            }
+        }
+    }
 
+    return false;
+}
 
 // Support function for calcRespRate()
-int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, double rate, EventList *uf1, EventList *uf2)
+int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
 {
 
     int size=in->count();
@@ -155,30 +205,6 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
                     breaths_max.push_back(max);
                     min=0;
 
-//                        ringmax[rpos]=max;
-//                        ringtime[rpos]=peakmax;
-
-//                        int zz=ringsize;
-//                        if (i<ringsize) {
-//                            zz=i;
-//                        }
-//                        int j;
-//                        if (max<=4)
-//                        for (j=1;j<zz;j++) {
-//                            int  q=(rpos-j) & 0xff;
-//                            if (ringmax[q]>4) {
-//                                q--;
-//                                q&=0xff;
-//                                if ((peakmax-ringtime[q])>8000) {
-//                                    uf1->AddEvent(peakmax,(double(ringtime[q])/1000.0),max);
-//                                }
-//                                break;
-//                            }
-//                        }
-
-//                        rpos++;
-//                        rpos &= 0xff;
-
                 }
             } else {
                 if (c<=min) {
@@ -206,7 +232,6 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
     for (int i=0;i<breaths_min.size();i++)  {
         min=breaths_min[i];
         avgmin+=min;
-        //uf2->AddEvent(breaths_min_peak[i],0,min);
     }
     avgmin/=EventDataType(breaths_min.size());
 
@@ -226,12 +251,20 @@ int filterFlow(EventList *in, EventList *out, EventList *tv, EventList *mv, doub
             goodb.push_back(time);
         }
     }
+    EventList *uf=NULL;
+
     qSort(goodb);
     for (int  i=1;i<goodb.size();i++) {
         qint64 len=qAbs(goodb[i]-goodb[i-1]);
         if (len>=10000) {
             time=goodb[i-1]+len/2;
-            uf1->AddEvent(time,0,1);
+            if (!SearchApnea(session,time)) {
+                if (!uf) {
+                    uf=new EventList(EVL_Event,1,0,0,0,0,true);
+                    session->eventlist["UserFlag1"].push_back(uf);
+                }
+                uf->AddEvent(time,0,1);
+            }
         }
     }
 
@@ -347,7 +380,7 @@ int calcRespRate(Session *session)
     if (session->eventlist.contains(CPAP_RespRate))
         return 0; // already exists?
 
-    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL, *uf=NULL, *uf2=NULL;
+    EventList *flow, *rr=NULL,  *tv=NULL, *mv=NULL;
 
     if (!session->eventlist.contains(CPAP_TidalVolume)) {
         tv=new EventList(EVL_Event);
@@ -363,8 +396,6 @@ int calcRespRate(Session *session)
     if (rr) session->eventlist[CPAP_RespRate].push_back(rr);
     if (tv) session->eventlist[CPAP_TidalVolume].push_back(tv);
     if (mv) session->eventlist[CPAP_MinuteVent].push_back(mv);
-    uf=new EventList(EVL_Event,1,0,0,0,0,true);
-    session->eventlist["UserFlag1"].push_back(uf);
 
     //uf2=new EventList(EVL_Event,1,0,0,0,0,true);
     //session->eventlist["UserFlag2"].push_back(uf2);
@@ -373,16 +404,7 @@ int calcRespRate(Session *session)
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
         flow=session->eventlist[CPAP_FlowRate][ws];
         if (flow->count() > 5) {
-
-
-            if (flow->count()==103200) {
-                int i=5;
-            }
-            cnt+=filterFlow(flow,rr,tv,mv,flow->rate(),uf,uf2);
-
-            if (tv->count()==0) {
-                int i=5;
-            }
+            cnt+=filterFlow(session, flow,rr,tv,mv,flow->rate());
         }
     }
     return cnt;

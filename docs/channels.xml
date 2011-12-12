@@ -21,6 +21,7 @@ One id code per item
   <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="events/hour" color="dark blue"/>
   <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="events/hour" color="orange"/>
   <channel id="0x100c" class="data" name="EP" details="Exhale Puff" label="EP" unit="events/hour" color="dark magenta"/>
+  <channel id="0x101f" class="data" name="UserFlag1" details="User Flag 1" label="UF1" unit="events/hour" color="dark cyan"/>
 
   <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="PMin" color="black"/>
   <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="PMax" color="black"/>
