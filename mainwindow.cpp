@@ -793,7 +793,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QString title=name+" Report";
     painter.setFont(*bigfont);
     int top=0;
-    QRectF bounds(0,top,printer_width,title_height);
+    QRectF bounds=painter.boundingRect(QRectF(0,top,printer_width,title_height),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     top+=bounds.height();
     painter.setFont(*defaultfont);
@@ -856,6 +856,13 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
             float exp=cpap->count(CPAP_ExP)/cpap->hours();
 
+            QString stats;
+            painter.setFont(*mediumfont);
+            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
+            QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),stats,QTextOption(Qt::AlignRight));
+            painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
+
+            //if (bounds.height()>maxy) maxy=bounds.height();
             getDaily()->eventBreakdownPie()->showTitle(false);
             int piesize=1.5*72.0*vscale;
             mainwin->snapshotGraph()->setMinimumSize(piesize,piesize);
@@ -890,15 +897,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             mediumfont=_mediumfont;
             bigfont=_bigfont;
 
-            painter.drawPixmap(res.width()-piesize,top,piesize,piesize,ebp);
+            painter.drawPixmap(res.width()-piesize,bounds.height(),piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
 
-            QString stats;
-            painter.setFont(*mediumfont);
-            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
-            QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),stats,QTextOption(Qt::AlignRight));
-            painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
-            //if (bounds.height()>maxy) maxy=bounds.height();
 
             painter.setFont(*defaultfont);
 
@@ -917,9 +918,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                 stats+="LKI="+QString::number(lki,'f',2)+" ";
                 stats+="EPI="+QString::number(exp,'f',2)+" ";
             }
-            bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),stats,QTextOption(Qt::AlignLeft));
-            painter.drawText(bounds,stats,QTextOption(Qt::AlignLeft));
-            if (top+maxy+bounds.height()>maxy) maxy=top+maxy+bounds.height();
+            bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),stats,QTextOption(Qt::AlignCenter));
+            painter.drawText(bounds,stats,QTextOption(Qt::AlignCenter));
+            if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
         }
         QRectF bounds=painter.boundingRect(QRectF((res.width()/2)-(res.width()/6),top,res.width()/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
         painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
@@ -993,6 +994,19 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     int page=1;
     int gcnt=0;
     for (int i=0;i<graphs.size();i++) {
+
+        if ((top+full_graph_height+normal_height) > printer_height) {
+            top=0;
+            gcnt=0;
+            if (page > pages) break;
+            first=true;
+            if (!printer->newPage()) {
+                qWarning("failed in flushing page to disk, disk full?");
+                break;
+            }
+
+
+        }
         if (first) {
             QString footer="SleepyHead v"+PREF["VersionString"].toString()+" - http://sleepyhead.sourceforge.net";
 
@@ -1003,26 +1017,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             QRectF pagebnds=painter.boundingRect(QRectF(0,res.height(),res.width(),normal_height),pagestr,QTextOption(Qt::AlignRight));
             painter.drawText(pagebnds,pagestr,QTextOption(Qt::AlignRight));
             first=false;
+            page++;
         }
+
         gGraph *g=graphs[i];
         g->SetXBounds(start[i],end[i]);
         g->deselect();
 
-        if ((top+full_graph_height+normal_height) > printer_height) {
-            top=0;
-            gcnt=0;
-            page++;
-            if (page > pages) break;
-            first=true;
-            if (!printer->newPage()) {
-                qWarning("failed in flushing page to disk, disk full?");
-                break;
-            }
-        }
-
         QString label=labels[i];
         if (!label.isEmpty()) {
-            label+=":";
+            //label+=":";
+            top+=normal_height/3;
             QRectF pagebnds=QRectF(0,top,res.width(),normal_height);
             painter.drawText(pagebnds,label,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
             top+=normal_height;
