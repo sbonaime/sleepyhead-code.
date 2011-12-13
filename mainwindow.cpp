@@ -817,6 +817,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         if (bounds.height()>maxy) maxy=bounds.height();
     }
+
+    int graph_slots=0;
     if (name=="Daily") {
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
         QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
@@ -938,6 +940,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
         }
 
+        graph_slots=2;
     } else if (name=="Overview") {
         QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
@@ -946,12 +949,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
+        graph_slots=1;
     } else if (name=="Oximetry") {
         QString ovinfo="Reporting data goes here";
         QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),ovinfo,QTextOption(Qt::AlignCenter));
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
+        graph_slots=1;
     }
     top+=maxy;
 
@@ -996,7 +1001,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             labels.push_back("");
         }
     }
-    int pages=ceil(float(graphs.size()+2)/float(graphs_per_page));
+    int pages=ceil(float(graphs.size()+graph_slots)/float(graphs_per_page));
 
     if (qprogress) {
         qprogress->setValue(0);
