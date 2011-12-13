@@ -83,7 +83,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     float ty,h;
 
     if (min_ytick<=0) {
-        qDebug() << "min_ytick error in gXGrid::paint()";
+        qDebug() << "min_ytick error in gXGrid::paint() in" << w.title();
         return;
     }
     if (min_ytick>=1000000) {
@@ -192,7 +192,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     float ty,h;
 
     if (min_ytick<=0) {
-        qDebug() << "min_ytick error in gYAxis::Plot()";
+        qDebug() << "min_ytick error in gYAxis::paint() in" << w.title();
         return;
     }
     if (min_ytick>=1000000) {

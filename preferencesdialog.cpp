@@ -43,6 +43,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->leakProfile->setColumnWidth(0,100);
     ui->maskTypeCombo->clear();
 
+    ui->ahiGraphGroupbox->setEnabled(false);
+    ui->customEventGroupbox->setEnabled(false);
+
     QString masktype="Nasal Pillows";
     //masktype=PROFILE["MaskType"].toString();
     for (int i=0;i<num_masks;i++) {

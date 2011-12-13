@@ -273,7 +273,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_8">
+        <widget class="QGroupBox" name="customEventGroupbox">
          <property name="title">
           <string>Custom Event Flagging</string>
          </property>
@@ -304,12 +304,18 @@ p, li { white-space: pre-wrap; }
             <property name="minimum">
              <double>1.000000000000000</double>
             </property>
+            <property name="value">
+             <double>10.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="4">
            <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
             <property name="suffix">
              <string>%</string>
+            </property>
+            <property name="value">
+             <double>10.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -364,12 +370,18 @@ p, li { white-space: pre-wrap; }
             <property name="suffix">
              <string>%</string>
             </property>
+            <property name="value">
+             <double>40.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="2">
            <widget class="QDoubleSpinBox" name="hypopneaDuration">
             <property name="suffix">
              <string>s</string>
+            </property>
+            <property name="value">
+             <double>10.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -384,7 +396,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_9">
+        <widget class="QGroupBox" name="ahiGraphGroupbox">
          <property name="title">
           <string>AHI/Hour Graph Settings</string>
          </property>
@@ -427,6 +439,9 @@ p, li { white-space: pre-wrap; }
            <widget class="QSpinBox" name="ahiGraphWindowSize">
             <property name="suffix">
              <string> minutes</string>
+            </property>
+            <property name="value">
+             <number>60</number>
             </property>
            </widget>
           </item>
