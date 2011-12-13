@@ -463,6 +463,9 @@ void Session::UpdateSummaries()
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
+        if (id==CPAP_AHI) {
+            int i=5;
+        }
         if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
             min(id);
@@ -860,6 +863,7 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
 EventDataType Session::wavg(ChannelID id)
 {
+    QHash<EventStoreType,quint32> vtime;
     QHash<ChannelID,EventDataType>::iterator i=m_wavg.find(id);
     if (i!=m_wavg.end())
         return i.value();
@@ -876,9 +880,9 @@ EventDataType Session::wavg(ChannelID id)
     qint64 lasttime=0,time,td;
     EventStoreType val,lastval=0;
 
-    QHash<EventStoreType,quint32> vtime;
 
     EventDataType gain=evec[0]->gain();
+    EventStoreType minval;
 
     for (int i=0;i<size;i++) {
         if (!evec[i]->count()) continue;
@@ -895,13 +899,16 @@ EventDataType Session::wavg(ChannelID id)
             lasttime=time;
             lastval=val;
         }*/
-
+        if (id==CPAP_AHI) {
+            int i=5;
+        }
         time=evec[i]->time(0)/1000L;
-        val=evec[i]->raw(0);
+        minval=val=evec[i]->raw(0);
         for (quint32 j=1;j<evec[i]->count();j++) {
             lastval=val;
             lasttime=time;
             val=evec[i]->raw(j);
+            if (val<minval) minval=val;
             time=evec[i]->time(j)/1000L;
             td=(time-lasttime);
             if (vtime.contains(lastval)) {
@@ -909,7 +916,7 @@ EventDataType Session::wavg(ChannelID id)
             } else vtime[lastval]=td;
         }
         if (lasttime>0) {
-            td=last()-time;
+            td=(last()/1000L)-time;
             if (vtime.contains(val)) {
                 vtime[val]+=td;
             } else vtime[val]=td;
@@ -920,10 +927,13 @@ EventDataType Session::wavg(ChannelID id)
     if (id==CPAP_Snore) {
         int i=5;
     }
+    if (minval<0) minval=-minval;
+    minval++;
+   // if (minval<0) minval+=(0-minval)+1; else minval=1;
     qint64 s0=0,s1=0,s2=0,s3=0; // 32bit may all be thats needed here..
     for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
        s0=i.value();
-       s3=i.key()+1;
+       s3=i.key()+minval;
        s1+=s3*s0;
        s2+=s0;
     }
@@ -931,7 +941,7 @@ EventDataType Session::wavg(ChannelID id)
         return m_wavg[id]=0;
     }
     double j=double(s1)/double(s2);
-    j-=1;
+    j-=minval;
     EventDataType v=j*gain;
     if (v>32768*gain) {
         v=0;

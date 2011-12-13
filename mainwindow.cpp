@@ -269,8 +269,14 @@ void MainWindow::on_action_Import_Data_triggered()
 
     if (asknew) {
         QFileDialog w;
-        w.setFileMode(QFileDialog::DirectoryOnly);
+        w.setFileMode(QFileDialog::Directory);
+        w.setOption(QFileDialog::ShowDirsOnly, true);
+
+#if defined(Q_WS_MAC) && (QT_VERSION_CHECK(4,8,0) > QT_VERSION)
+        // Fix for tetragon, 10.6 barfs up Qt's custom dialog
         w.setOption(QFileDialog::DontUseNativeDialog,true);
+#else
+        w.setOption(QFileDialog::DontUseNativeDialog,false);
 
         QListView *l = w.findChild<QListView*>("listView");
         if (l) {
@@ -280,6 +286,7 @@ void MainWindow::on_action_Import_Data_triggered()
         if (t) {
             t->setSelectionMode(QAbstractItemView::MultiSelection);
         }
+#endif
         if (w.exec()!=QDialog::Accepted) {
             return;
         }

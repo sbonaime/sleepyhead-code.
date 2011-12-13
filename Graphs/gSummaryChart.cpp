@@ -134,7 +134,7 @@ void SummaryChart::SetDay(Day * nullday)
                             day->settingExists(code) ||
                             day->hasData(code,type);
 
-                    if (code==CPAP_RespRate) {
+                    if (code==CPAP_AHI) {
                         int i=5;
                     }
                     if (hascode) {

@@ -437,6 +437,10 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 
 int calcAHIGraph(Session *session)
 {
+    const qint64 window_size=3600000L;
+    const qint64 window_step=30000; // 30 second windows
+
+
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
 
@@ -444,8 +448,6 @@ int calcAHIGraph(Session *session)
             !session->channelExists(CPAP_Hypopnea) &&
             !session->channelExists(CPAP_Apnea) &&
             !session->channelExists(CPAP_ClearAirway)) return 0;
-
-    const qint64 winsize=30000; // 30 second windows
 
     qint64 first=session->first(),
            last=session->last(),
@@ -457,17 +459,23 @@ int calcAHIGraph(Session *session)
     EventDataType ahi;
 
     qint64 ti;
-    for (ti=first;ti<last;ti+=winsize) {
-        f=ti-3600000L;
+    double avg=0;
+    int cnt=0;
+    for (ti=first;ti<last;ti+=window_step) {
+        f=ti-window_size;
         ahi=calcAHI(session,f,ti);
         if  (ti>=last) {
             AHI->AddEvent(last,ahi);
+            avg+=ahi;
+            cnt++;
             break;
         }
         AHI->AddEvent(ti,ahi);
-        ti+=winsize;
+        ti+=window_step;
     }
     AHI->AddEvent(last,0);
+    if (!cnt) avg=0; else avg/=double(cnt);
+    session->setAvg(CPAP_AHI,avg);
 
     return AHI->count();
 }
