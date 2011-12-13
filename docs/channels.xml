@@ -74,7 +74,7 @@ One id code per item
   </channel>
  </group>
  <group name="OXI">
-  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse" unit="bpm" color="red"/>
+  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse Rate" unit="bpm" color="red"/>
   <channel id="0x1801" class="data" name="SPO2" details="Oxygen Saturation" label="SpO2" unit="%" color="blue"/>
   <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
   <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="light gray"/>

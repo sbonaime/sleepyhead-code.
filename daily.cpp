@@ -596,13 +596,13 @@ void Daily::Load(QDate date)
     if (cpap && oxi) {
         qint64 len=qAbs(cpap->first() - oxi->first());
         if (len>30000) {
-            GraphView->findGraph("Pulse")->setGroup(1);
+            GraphView->findGraph("Pulse Rate")->setGroup(1);
             GraphView->findGraph("SpO2")->setGroup(1);
             GraphView->findGraph("Plethy")->setGroup(1);
             mainwin->Notify("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked.",3000);
         } else {
             //mainwin->Notify("Oximetry & CPAP graphs are linked for this day",2000);
-            GraphView->findGraph("Pulse")->setGroup(0);
+            GraphView->findGraph("Pulse Rate")->setGroup(0);
             GraphView->findGraph("SpO2")->setGroup(0);
             GraphView->findGraph("Plethy")->setGroup(0);
         }

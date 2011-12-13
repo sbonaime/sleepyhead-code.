@@ -490,28 +490,29 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     // Draw Ledgend
     px=left+width-3;
     py=top-5;
-    QString a;
+    QString a,b;
     int x,y;
 
     for (int j=0;j<m_codes.size();j++) {
         if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
-        a="";
-        a+=schema::channel[code].label()+" ";
         switch(m_type[j]) {
-                case ST_WAVG: a+="Avg"; break;
-                case ST_AVG:  a+="Avg"; break;
-                case ST_90P:  a+="90%"; break;
-                case ST_MIN:  a+="Min"; break;
-                case ST_MAX:  a+="Max"; break;
-                case ST_CPH:  a+=""; break;
-                case ST_SPH:  a+="%"; break;
-                case ST_HOURS: a+="Hours"; break;
-                case ST_SESSIONS: a+="Sessions"; break;
+                case ST_WAVG: b="Avg"; break;
+                case ST_AVG:  b="Avg"; break;
+                case ST_90P:  b="90%"; break;
+                case ST_MIN:  b="Min"; break;
+                case ST_MAX:  b="Max"; break;
+                case ST_CPH:  b=""; break;
+                case ST_SPH:  b="%"; break;
+                case ST_HOURS: b="Hours"; break;
+                case ST_SESSIONS: b="Sessions"; break;
 
                 default:
                     break;
         }
+        a=schema::channel[code].label();
+        if (a==w.title() && !b.isEmpty()) a=b; else a+=" "+b;
+
         QString val;
         float f=0;
         if (totalcounts[j]>0) {
