@@ -1071,17 +1071,11 @@ void gGraph::paint(int originX, int originY, int width, int height)
     lines()->add(0,originY,0,originY+height,col);
     lines()->add(left,originY,left,originY+height,col);
 #endif
-    //renderText(title(),0,originY+height/2,90,Qt::black,mediumfont);
 
 
     int tmp;
 
-    //originX=0;//marginLeft()+title_x;
     left=0;
-    //originY+=marginTop();
-    //width-=marginLeft()+marginRight();
-    //height-=marginTop()+marginBottom();
-    //int lsize=m_layers.size();
 
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
@@ -1669,7 +1663,7 @@ QPixmap gGraph::renderPixmap(int w, int h)
     //qint64 mx=min_x, Mx=max_x;
 
     float tmp=m_height;
-    m_height=PROFILE["GraphHeight"].toInt()*sg->printScaleY();
+    m_height=PROFILE["GraphHeight"].toInt();//*sg->printScaleY();
     sg->trashGraphs();
     sg->addGraph(this);
     //sg->ResetBounds();
