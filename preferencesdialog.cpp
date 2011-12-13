@@ -453,37 +453,7 @@ void PreferencesDialog::Save()
 
     if (needs_restart) {
         if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-            QString apppath;
-    #ifdef Q_OS_MAC
-            // In Mac OS the full path of aplication binary is:
-            //    <base-path>/myApp.app/Contents/MacOS/myApp
-
-            // prune the extra bits to just get the app bundle path
-            apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
-
-            QStringList args;
-            args << "-n" << apppath; // -n option is important, as it opens a new process
-            args << "-p";
-
-            if (QProcess::startDetached("/usr/bin/open",args)) {
-                QApplication::instance()->exit();
-            } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
-
-    #else
-            apppath=QApplication::instance()->applicationFilePath();
-
-            // If this doesn't work on windoze, try uncommenting this method
-            // Technically should be the same thing..
-
-            //if (QDesktopServices::openUrl(apppath)) {
-            //    QApplication::instance()->exit();
-            //} else
-            QStringList args;
-            args << "-p";
-            if (QProcess::startDetached(apppath,args)) {
-                QApplication::instance()->exit();
-            } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
-    #endif
+            mainwin->RestartApplication();
         }
     }
 }

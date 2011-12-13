@@ -1174,10 +1174,8 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     getOverview()->ReloadGraphs();
 }
 
-void MainWindow::on_actionChange_User_triggered()
+void MainWindow::RestartApplication(bool force_login)
 {
-    PROFILE.Save();
-    PREF.Save();
     QString apppath;
 #ifdef Q_OS_MAC
         // In Mac OS the full path of aplication binary is:
@@ -1188,6 +1186,7 @@ void MainWindow::on_actionChange_User_triggered()
 
         QStringList args;
         args << "-n" << apppath << "-p"; // -n option is important, as it opens a new process
+        if (force_login) args << "-l";
         // -p starts with 1 second delay, to give this process time to save..
 
         if (QProcess::startDetached("/usr/bin/open",args)) {
@@ -1205,11 +1204,18 @@ void MainWindow::on_actionChange_User_triggered()
         //} else
         QStringList args;
         args << "-p";
+        if (force_login) args << "-l";
         if (QProcess::startDetached(apppath,args)) {
             QApplication::instance()->exit();
         } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
 #endif
+}
 
+void MainWindow::on_actionChange_User_triggered()
+{
+    PROFILE.Save();
+    PREF.Save();
+    RestartApplication(true);
 }
 
 void MainWindow::on_actionPurge_Current_Day_triggered()
@@ -1244,4 +1250,22 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
         }
     }
     getDaily()->ReloadGraphs();
+}
+
+void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
+{
+    QDate date=getDaily()->getDate();
+    Day *day=PROFILE.GetDay(date,MT_CPAP);
+    Machine *m;
+    if (day) {
+        m=day->machine;
+        if (!m) {
+            qDebug() << "Gah!! no machine to purge";
+            return;
+        }
+        if (QMessageBox::question(this,"Are you sure?","Are you sure you want to purge all CPAP data for the following machine:\n"+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["ModelNumber"]+" ("+m->properties["Serial"]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+            m->Purge(3478216);
+            RestartApplication();
+        }
+    }
 }

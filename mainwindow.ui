@@ -624,6 +624,8 @@
        <string>&amp;Purge CPAP Data</string>
       </property>
       <addaction name="actionPurge_Current_Day"/>
+      <addaction name="separator"/>
+      <addaction name="actionAll_Data_for_current_CPAP_machine"/>
      </widget>
      <addaction name="menu_Purge_CPAP_Data"/>
     </widget>
@@ -797,6 +799,11 @@
   <action name="actionPurge_Current_Day">
    <property name="text">
     <string>&amp;Current Selected Day</string>
+   </property>
+  </action>
+  <action name="actionAll_Data_for_current_CPAP_machine">
+   <property name="text">
+    <string>All data for current CPAP machine</string>
    </property>
   </action>
  </widget>

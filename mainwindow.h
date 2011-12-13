@@ -48,6 +48,7 @@ public:
     Daily *getDaily() { return daily; }
     Overview *getOverview() { return overview; }
     Oximetry *getOximetry() { return oximetry; }
+    void RestartApplication(bool force_login=false);
 
     void selectOximetryTab();
 
@@ -119,6 +120,8 @@ private slots:
     void on_actionChange_User_triggered();
 
     void on_actionPurge_Current_Day_triggered();
+
+    void on_actionAll_Data_for_current_CPAP_machine_triggered();
 
 private:
 
