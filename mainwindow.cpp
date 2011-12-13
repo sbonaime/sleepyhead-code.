@@ -797,7 +797,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     top+=bounds.height();
     painter.setFont(*defaultfont);
-    float font_scale=float(printer->physicalDpiX())/float(QApplication::desktop()->physicalDpiX());
+    float printer_dpi=qMax(printer->physicalDpiX(), printer->logicalDpiX());
+    float screen_dpi=QApplication::desktop()->physicalDpiX();
+    qDebug() << "Printer DPI vs Screen DPI" << printer_dpi << screen_dpi;
+    float font_scale=float(printer_dpi)/float(screen_dpi);
 
     int maxy=0;
     if (!PROFILE["FirstName"].toString().isEmpty()) {
