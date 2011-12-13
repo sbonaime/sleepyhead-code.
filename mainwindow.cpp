@@ -814,8 +814,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (bounds.height()>maxy) maxy=bounds.height();
     }
     if (name=="Daily") {
-        QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
+        QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         if (cpap) {
             time_t f=cpap->first()/1000L;
             time_t l=cpap->last()/1000L;
@@ -900,8 +900,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             painter.drawPixmap(res.width()-piesize,bounds.height(),piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
 
-
             painter.setFont(*defaultfont);
+            bounds=painter.boundingRect(QRectF((res.width()/2)-(res.width()/6),top,res.width()/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
+            painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
+            if (bounds.height()>maxy) maxy=bounds.height();
 
             stats="AI="+QString::number(oai,'f',2)+" ";
             stats+="HI="+QString::number(hi,'f',2)+" ";
@@ -921,10 +923,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),stats,QTextOption(Qt::AlignCenter));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignCenter));
             if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
+        } else {
+            bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),cpapinfo,QTextOption(Qt::AlignCenter));
+            painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignCenter));
+            if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
         }
-        QRectF bounds=painter.boundingRect(QRectF((res.width()/2)-(res.width()/6),top,res.width()/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
-        painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
-        if (bounds.height()>maxy) maxy=bounds.height();
+
     } else if (name=="Overview") {
         QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
