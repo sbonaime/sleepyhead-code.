@@ -711,12 +711,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     bool highres;
     bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
 
-/*#ifdef Q_WS_MAC
+#ifdef Q_WS_MAC
     PROFILE["HighResPrinting"]=true; // forced on
     bool force_antialiasing=true;
-#else */
+#else
     bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
-//#endif
+#endif
 
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
         printer=new QPrinter(QPrinter::HighResolution);
