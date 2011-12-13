@@ -98,13 +98,14 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
     mut.lock();
 #endif
     QFontMetrics fm(*font);
-    //QRect r=fm.tightBoundingRect(text);
-    width=fm.width(text);
-#ifdef Q_WS_WIN32
-    height=fm.ascent();
-#else
-    height=fm.xHeight()+2; // doesn't work properly on windows..
-#endif
+//#ifdef Q_WS_WIN32
+    QRect r=fm.tightBoundingRect(text);
+    width=r.width();
+    height=r.height();
+//#else
+//    width=fm.width(text);
+//    height=fm.xHeight()+2; // doesn't work properly on windows..
+//#endif
 #ifdef ENABLE_THREADED_DRAWING
     mut.unlock();
 #endif

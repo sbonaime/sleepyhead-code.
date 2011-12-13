@@ -14,7 +14,7 @@ class gXAxis:public Layer
         gXAxis(QColor col=QColor("black"),bool fadeout=true);
         virtual ~gXAxis();
         virtual void paint(gGraph & w,int left,int top, int width, int height);
-        static const int Margin=25; // How much room does this take up. (Bottom margin)
+        static const int Margin=20; // How much room does this take up. (Bottom margin)
         void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
         void SetShowMajorLines(bool b) { m_show_major_lines=b; }
         bool ShowMinorLines() { return m_show_minor_lines; }

@@ -77,17 +77,17 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         divmax=10;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
-        fd="00:00";
+        fd="j0:00";
         dividx=10;
         divmax=27;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
-        fd="00:00:00";
+        fd="j0:00:00";
         dividx=16;
         divmax=27;
         fitmode=2;
     } else {                   // Microseconds
-        fd="00:00:00:000";
+        fd="j0:00:00:000";
         dividx=28;
         divmax=divcnt;
         fitmode=3;
@@ -157,9 +157,9 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     py=left+float(aligned_start-minx)*xmult;
 
 
-    int texttop=top+9.0*(y/7.0)+y; // 18*w.printScaleY();
-    int mintop=top+4.0*(y/7.0);
-    int majtop=top+6.0*(y/7.0);
+    int mintop=top+4.0*(float(y)/10.0);
+    int majtop=top+6.0*(float(y)/10.0);
+    int texttop=majtop+y; // 18*w.printScaleY();
     for (int i=0;i<num_minor_ticks;i++) {
         py-=step_pixels;
         if (py<start_px) continue;

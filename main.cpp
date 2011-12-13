@@ -90,7 +90,12 @@ int main(int argc, char *argv[])
     for (int i=1;i<args.size();i++) {
         if (args[i]=="-l") force_login_screen=true;
         if (args[i]=="-p") {
+#ifdef Q_WS_WIN32
+            Sleep(1);
+#else
             sleep(1);
+#endif
+
         }
     }
 

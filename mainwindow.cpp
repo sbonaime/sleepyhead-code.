@@ -778,7 +778,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     float full_graph_height=(printer_height-(normal_height*graphs_per_page)) / float(graphs_per_page);
 
     GLint gw;
+#ifdef Q_WS_WIN32
+    gw=2048;  // Rough guess.. No GL_MAX_RENDERBUFFER_SIZE in mingw.. :(
+#else
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
+#endif
 
     bool no_scaling;
     if (printer_width <= gw) {
@@ -987,7 +991,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             labels.push_back("");
         }
     }
-    int pages=ceil(float(graphs.size()+1)/float(graphs_per_page));
+    int pages=ceil(float(graphs.size()+2)/float(graphs_per_page));
 
     if (qprogress) {
         qprogress->setValue(0);
@@ -1002,8 +1006,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if ((top+full_graph_height+normal_height) > printer_height) {
             top=0;
             gcnt=0;
-            if (page > pages) break;
             first=true;
+            if (page > pages)
+                break;
             if (!printer->newPage()) {
                 qWarning("failed in flushing page to disk, disk full?");
                 break;
