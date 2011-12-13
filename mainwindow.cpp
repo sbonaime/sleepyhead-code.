@@ -748,7 +748,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
-    Notify("Printing "+name+" Report");
+    Notify("Printing "+name+" Report.\nThis make take some time to complete..\nPlease don't touch anything until it's done.",20000);
     QPainter painter;
     painter.begin(printer);
 
@@ -904,10 +904,13 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             painter.drawPixmap(res.width()-piesize,bounds.height(),piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
 
+            cpapinfo+="\n\n";
+
             painter.setFont(*defaultfont);
             bounds=painter.boundingRect(QRectF((res.width()/2)-(res.width()/6),top,res.width()/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
             painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
-            if (bounds.height()>maxy) maxy=bounds.height();
+
+            int ttop=bounds.height();
 
             stats="AI="+QString::number(oai,'f',2)+" ";
             stats+="HI="+QString::number(hi,'f',2)+" ";
@@ -924,9 +927,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                 stats+="LKI="+QString::number(lki,'f',2)+" ";
                 stats+="EPI="+QString::number(exp,'f',2)+" ";
             }
-            bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),stats,QTextOption(Qt::AlignCenter));
+            bounds=painter.boundingRect(QRectF(0,top+ttop,res.width(),0),stats,QTextOption(Qt::AlignCenter));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignCenter));
-            if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
+            ttop+=bounds.height();
+
+            if (ttop>maxy) maxy=ttop;
         } else {
             bounds=painter.boundingRect(QRectF(0,top+maxy,res.width(),0),cpapinfo,QTextOption(Qt::AlignCenter));
             painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignCenter));
@@ -1098,6 +1103,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     qprogress->hide();
     painter.end();
     delete printer;
+    Notify("SleepyHead has finished sending the job to the printer.");
 }
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
