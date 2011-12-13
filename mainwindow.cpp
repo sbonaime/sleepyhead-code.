@@ -765,12 +765,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     //QRect screen=QApplication::desktop()->screenGeometry();
     QRect res=printer->pageRect();
 
-    qDebug() << "X" << printer->logicalDpiX() << printer->physicalDpiX();
-    qDebug() << "Y" << printer->logicalDpiY() << printer->physicalDpiY();
     qDebug() << "Printer Resolution is" << res.width() << "x" << res.height();
-
+    qDebug() << "X DPI (log vs phys):" << printer->logicalDpiX() << printer->physicalDpiX();
+    qDebug() << "Y DPI (log vs phys): " << printer->logicalDpiY() << printer->physicalDpiY();
+    qDebug() << vscale << hscale;
     qDebug() << "res:" << printer->resolution() << "dpi" << float(res.width()) / float(res.height());
-
+    qDebug() << normal_height << "normal_height, font ascent" << fm2.ascent();
     float printer_width=res.width();
     float printer_height=res.height()-normal_height;
 

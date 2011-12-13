@@ -439,7 +439,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     if (mach->SessionExists(sequence))
         return false;
 
-    if (size<40)
+    if (size<44-16)
         return false;
 
     Session *session=new Session(mach,sequence);
