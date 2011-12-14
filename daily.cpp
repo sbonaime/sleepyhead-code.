@@ -677,12 +677,7 @@ void Daily::Load(QDate date)
             GraphView->setEmptyText("No Data");
         }
         mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
-        pr=(PRTypes)cpap->settings_max(PRS1_FlexMode);
-        if (pr==PR_NONE)
-           epr=tr(" No Pressure Relief");
-        else {
-            //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
-        }
+
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
         float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
@@ -886,12 +881,19 @@ void Daily::Load(QDate date)
         if (cpap->machine->GetClass()=="PRS1") {
             int i=cpap->settings_max(PRS1_FlexMode);
             int j=cpap->settings_max(PRS1_FlexSet);
+            QString flexstr=(i>1) ? schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j) : "None";
 
-            html+="<tr><td colspan=4>Pressure Relief: "+schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j)+"</td></tr>";
+            html+="<tr><td colspan=4>Pressure Relief: "+flexstr+"</td></tr>";
 
             i=cpap->settings_max(PRS1_HumidSetting);
             QString humid=(i==0) ? "Off" : "x"+QString::number(i);
             html+="<tr><td colspan=4>Humidifier Setting: "+humid+"</td></tr>";
+        } else if (cpap->machine->GetClass()=="ResMed") {
+            int epr=cpap->settings_max("EPR");
+            int epr2=cpap->settings_max("EPRSet");
+            html+="<tr><td colspan=4>EPR Setting: "+QString::number(epr)+" / "+QString::number(epr2)+"</td></tr>";
+            //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
+
         }
         html+="</table><hr height=2>";
 
