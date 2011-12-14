@@ -804,9 +804,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QString title=name+" Report";
     painter.setFont(*bigfont);
     int top=0;
-    QRectF bounds=painter.boundingRect(QRectF(0,top,printer_width,title_height),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+    QRectF bounds=painter.boundingRect(QRectF(0,top,printer_width,0),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
     painter.drawText(bounds,title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
-    top+=bounds.height();
+    top+=bounds.height()+normal_height/2.0;
     painter.setFont(*defaultfont);
     float printer_dpi=qMax(printer->physicalDpiX(), printer->logicalDpiX());
     float screen_dpi=QApplication::desktop()->physicalDpiX();
