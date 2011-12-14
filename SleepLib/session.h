@@ -35,6 +35,9 @@ public:
     bool OpenEvents();
     void TrashEvents();
 
+    bool SearchEvent(ChannelID code, qint64 time, qint64 dist=15000);
+
+
     const SessionID & session() {
         return s_session;
     }

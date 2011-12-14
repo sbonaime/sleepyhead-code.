@@ -102,13 +102,13 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
     GLShortBuffer *lines2=w.lines();
     for (unsigned m=0;m<size;m++) {
         data=m_values[m];
-        QColor & col=schema::channel[m_codes[m % m_colors.size()]].defaultColor();
 
         if (data==0) continue;
 /////////////////////////////////////////////////////////////////////////////////////
 // Pie Chart
 /////////////////////////////////////////////////////////////////////////////////////
         if (m_graph_type==GST_Pie) {
+            QColor & col=schema::channel[m_codes[m % m_colors.size()]].defaultColor();
             j=float(data)/float(m_total); // ratio of this pie slice
 
             // Draw Filling
@@ -152,6 +152,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
 // CandleStick Chart
 /////////////////////////////////////////////////////////////////////////////////////
         } else if (m_graph_type==GST_CandleStick) {
+            QColor & col=m_colors[m % m_colors.size()];
             float bw=xmult*float(data);
 
             quads->add(xp,start_py,xp+bw,start_py,m_gradient_color);
@@ -169,8 +170,12 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             }
 
             xp+=bw;
+/////////////////////////////////////////////////////////////////////////////////////
+// Line Chart
+/////////////////////////////////////////////////////////////////////////////////////
         } else if (m_graph_type==GST_Line) {
-            float h=float(data)*ymult;
+            QColor col=Qt::black; //m_colors[m % m_colors.size()];
+            float h=(top+height)-(float(data)*ymult);
             if (line_first) {
                 line_first=false;
             } else {
@@ -255,4 +260,5 @@ void gTAPGraph::SetDay(Day *d)
         m_total+=i.value()/1000L;
         m_names.push_back(QString::number(val,'f',2));
     }
+    m_empty=m_values.size()==0;
 }

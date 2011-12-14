@@ -56,6 +56,11 @@ public:
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
     const QString & units() { return m_unit; }
+    QString option(int i) {
+        if (m_options.contains(i))
+            return m_options[i];
+        return QString();
+    }
     QColor & defaultColor() { return m_defaultcolor; }
     void setDefaultColor(QColor color) { m_defaultcolor=color; }
     QHash<int,QString> m_options;

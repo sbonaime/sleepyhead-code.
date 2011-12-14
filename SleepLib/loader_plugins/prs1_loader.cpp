@@ -471,9 +471,9 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         } else session->settings[PRS1_FlexMode]=(int)PR_CFLEX;
     } else session->settings[PRS1_FlexMode]=(int)PR_NONE;
 
-    session->settings["FlexSet"]=(int)data[offset+0x08] & 3;
-    session->settings["HumidSet"]=(int)data[offset+0x09]&0x0f;
-    session->settings["HumidStat"]=(data[offset+0x09]&0x80)==0x80;
+    session->settings[PRS1_FlexSet]=(int)data[offset+0x08] & 3;
+    session->settings[PRS1_HumidSetting]=(int)data[offset+0x09]&0x0f;
+    session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
     session->settings["SysLock"]=(data[offset+0x0a]&0x80)==0x80;
     session->settings["SysOneResistStat"]=(data[offset+0x0a]&0x40)==0x40;
     session->settings["SysOneResistSet"]=(int)data[offset+0x0a]&7;
@@ -538,7 +538,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     new_sessions[sequence]=session;
     return true;
 }
-bool PRS1Loader::Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
+bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
 {
     if (!new_sessions.contains(sequence))
         return false;
@@ -568,9 +568,6 @@ bool PRS1Loader::Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, u
     bool badcode=false;
 
     while (pos<size) {
-        if (pos>=70) {
-            int i=5;
-        }
         unsigned char code=buffer[pos++];
         if (code>=ncodes) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos;
@@ -793,7 +790,6 @@ bool PRS1Loader::Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, u
             break;
         }
         if (badcode) {
-            int i=5;
             break;
         }
     }
@@ -804,14 +800,14 @@ bool PRS1Loader::Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, u
 
 }
 
-bool PRS1Loader::Parse002(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
+bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
 {
     if (!new_sessions.contains(sequence))
         return false;
 
     unsigned char code;
     EventList * Code[0x20]={0};
-    EventDataType data[10],tmp;
+    EventDataType data[10];
     int cnt=0;
     short delta;
     int tdata;
@@ -1006,7 +1002,7 @@ bool PRS1Loader::Parse002(Machine *mach, qint32 sequence, quint32 timestamp, uns
 }
 
 
-bool PRS1Loader::ParseWaveform(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format)
+bool PRS1Loader::ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format)
 {
     if (!new_sessions.contains(sequence))
         return false;
@@ -1025,6 +1021,7 @@ bool PRS1Loader::ParseWaveform(Machine *mach, qint32 sequence, quint32 timestamp
 
     }
 
+    return true;
 }
 
 bool PRS1Loader::OpenFile(Machine *mach, QString filename)
@@ -1034,7 +1031,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
     qint64 pos;
     unsigned char ext,htype,sum;
     unsigned char *header,*data;
-    int chunk,hl,lasthl;
+    int chunk,hl;
     quint16 size,datasize,c16,crc;
 
     // waveform stuff
@@ -1131,9 +1128,9 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
             ParseSummary(mach,sequence,timestamp,data,datasize,version);
         } else if (ext==2) {
             if (version==5) {
-               Parse002v5(mach,sequence,timestamp,data,datasize);
+               Parse002v5(sequence,timestamp,data,datasize);
             } else {
-               Parse002(mach,sequence,timestamp,data,datasize);
+               Parse002(sequence,timestamp,data,datasize);
             }
         } else if (ext==5) {
             //ParseWaveform(mach,sequence,timestamp,data,datasize,duration,num_signals,interleave,sample_format);

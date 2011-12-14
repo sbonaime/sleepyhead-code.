@@ -77,7 +77,6 @@ private slots:
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
     void graphtogglebutton_toggled(bool);
-    void on_ZombieMeter_actionTriggered(int action);
 
     void on_addBookmarkButton_clicked();
 

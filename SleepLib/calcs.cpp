@@ -9,52 +9,10 @@
 #include "profiles.h"
 bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
 {
-    qint64 t;
-    QHash<ChannelID,QVector<EventList *> >::iterator it;
-    it=session->eventlist.find(CPAP_Obstructive);
-    if (it!=session->eventlist.end()) {
-        for (int i=0;i<it.value().size();i++)  {
-            EventList *el=it.value()[i];
-            for (unsigned j=0;j<el->count();j++) {
-                t=el->time(j);
-                if (qAbs(time-t)<dist)
-                    return true;
-            }
-        }
-    }
-    it=session->eventlist.find(CPAP_Apnea);
-    if (it!=session->eventlist.end()) {
-        for (int i=0;i<it.value().size();i++)  {
-            EventList *el=it.value()[i];
-            for (unsigned j=0;j<el->count();j++) {
-                t=el->time(j);
-                if (qAbs(time-t)<dist)
-                    return true;
-            }
-        }
-    }
-    it=session->eventlist.find(CPAP_ClearAirway);
-    if (it!=session->eventlist.end()) {
-        for (int i=0;i<it.value().size();i++)  {
-            EventList *el=it.value()[i];
-            for (unsigned j=0;j<el->count();j++) {
-                t=el->time(j);
-                if (qAbs(time-t)<dist)
-                    return true;
-            }
-        }
-    }
-    it=session->eventlist.find(CPAP_Hypopnea);
-    if (it!=session->eventlist.end()) {
-        for (int i=0;i<it.value().size();i++)  {
-            EventList *el=it.value()[i];
-            for (unsigned j=0;j<el->count();j++) {
-                t=el->time(j);
-                if (qAbs(time-t)<dist)
-                    return true;
-            }
-        }
-    }
+    if (session->SearchEvent(CPAP_Obstructive,time,dist)) return true;
+    if (session->SearchEvent(CPAP_Apnea,time,dist)) return true;
+    if (session->SearchEvent(CPAP_ClearAirway,time,dist)) return true;
+    if (session->SearchEvent(CPAP_Hypopnea,time,dist)) return true;
 
     return false;
 }
@@ -263,7 +221,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                     uf=new EventList(EVL_Event,1,0,0,0,0,true);
                     session->eventlist["UserFlag1"].push_back(uf);
                 }
-                uf->AddEvent(time,0,1);
+                uf->AddEvent(time,len/1000L,1);
             }
         }
     }

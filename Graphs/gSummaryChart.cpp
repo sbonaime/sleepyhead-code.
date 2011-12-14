@@ -134,9 +134,6 @@ void SummaryChart::SetDay(Day * nullday)
                             day->settingExists(code) ||
                             day->hasData(code,type);
 
-                    if (code==CPAP_AHI) {
-                        int i=5;
-                    }
                     if (hascode) {
                         m_days[dn]=day;
                         switch(m_type[j]) {
@@ -157,9 +154,6 @@ void SummaryChart::SetDay(Day * nullday)
                             case ST_SETWAVG: tmp=day->settings_wavg(code); break;
                             case ST_SETSUM: tmp=day->settings_sum(code); break;
                         default:    break;
-                        }
-                        if (tmp>10000) {
-                            int i=5;
                         }
                         if (suboffset>0) {
                             tmp-=suboffset;
@@ -269,12 +263,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     EventDataType maxy=m_maxy;
     EventDataType miny=m_miny;
-    /*if (m_codes[0]=="HumidSet") {
-        int i=1;
-    }*/
-    if (w.title()=="Session Times") {
-        int i=5;
-    }
     w.roundY(miny,maxy);
 
     EventDataType yy=maxy-miny;

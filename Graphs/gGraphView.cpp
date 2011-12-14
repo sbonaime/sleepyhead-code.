@@ -1647,7 +1647,7 @@ QPixmap gGraph::renderPixmap(int w, int h)
     gGraphView *sg=mainwin->snapshotGraph();
     if (!sg) return QPixmap();
 
-    double scale=sg->printScaleY(); //sqrt(sg->printScaleX()*sg->printScaleX()+sg->printScaleY()*sg->printScaleY());
+    //double scale=sg->printScaleY(); //sqrt(sg->printScaleX()*sg->printScaleX()+sg->printScaleY()*sg->printScaleY());
 /*
     fa.setPointSize(fa.pointSize()*scale);
     fb.setPointSize(fb.pointSize()*scale);
@@ -2226,7 +2226,7 @@ void gGraphView::paintGL()
 
     //((QGLContext*)context())->makeCurrent();
 
-    float linesize=lines->size();
+    //float linesize=lines->size();
     //if (print_scaleY>1) {
 //        lines->setSize(3);
 //    }

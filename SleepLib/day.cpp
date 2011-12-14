@@ -193,7 +193,7 @@ EventDataType Day::p90(ChannelID code) // The "average" p90.. this needs fixing.
     // Don't assume sessions are in order.
 
     unsigned cnt=0,c;
-    EventDataType p,tmp;
+    EventDataType p;
 
     QMap<EventDataType, unsigned> pmap;
     QMap<EventDataType, float> tmap;

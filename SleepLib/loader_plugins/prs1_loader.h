@@ -57,10 +57,10 @@ protected:
     //bool OpenSummary(Session *session,QString filename);
     //bool OpenEvents(Session *session,QString filename);
     bool OpenWaveforms(SessionID sid, QString filename);
-    bool ParseWaveform(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
+    bool ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
     bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version);
-    bool Parse002(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
-    bool Parse002v5(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+    bool Parse002(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+    bool Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
 
     bool OpenFile(Machine *mach, QString filename);
     //bool Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos);

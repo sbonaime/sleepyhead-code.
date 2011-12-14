@@ -117,6 +117,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
+//    TAP=new gGraph(GraphView,"Time@Pressure","cmH2O",100);
+//    TAP->showTitle(false);
+//    gTAPGraph * tap=new gTAPGraph(CPAP_Pressure,GST_Line);
+//    TAP->AddLayer(AddCPAP(tap));
+    //TAP->setMargins(0,0,0,0);
+
+
     GAHI=new gGraph(snapGV,"Breakdown","events",172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
     evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
@@ -838,21 +845,22 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
-    html+="</table>";
-    //html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    html+="</table><hr height=2/>";
 
     if (cpap) {
+
       //  if ((*profile)["EnableGraphSnapshots"].toBool()) {
-      /*      if (cpap->channelExists(CPAP_Pressure)) {
+            /*if (cpap->channelExists(CPAP_Pressure)) {
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
-                TAP->setFixedSize(gwwidth,30);
-                QPixmap pixmap=TAP->renderPixmap(gwwidth,30,false);
+                //TAP->setFixedSize(gwwidth,30);
+                QPixmap pixmap=TAP->renderPixmap(200,30);
                 QByteArray byteArray;
                 QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                 buffer.open(QIODevice::WriteOnly);
                 pixmap.save(&buffer, "PNG");
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             }
+
             if (cpap->channelExists(CPAP_EPAP)) {
                 //html+="<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n";
                 html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
@@ -874,6 +882,17 @@ void Daily::Load(QDate date)
                 pixmap.save(&buffer, "PNG");
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             } */
+        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        if (cpap->machine->GetClass()=="PRS1") {
+            int i=cpap->settings_max(PRS1_FlexMode);
+            int j=cpap->settings_max(PRS1_FlexSet);
+
+            html+="<tr><td colspan=4>Pressure Relief: "+schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j)+"</td></tr>";
+
+            i=cpap->settings_max(PRS1_HumidSetting);
+            QString humid=(i==0) ? "Off" : "x"+QString::number(i);
+            html+="<tr><td colspan=4>Humidifier Setting: "+humid+"</td></tr>";
+        }
         html+="</table><hr height=2>";
 
         //}
@@ -983,10 +1002,10 @@ void Daily::Load(QDate date)
             }
             double height=PROFILE["Height"].toDouble(&ok)/100.0;
             if (height>0 && kg>0) {
-                //double bmi=kg/(height*height);
+                double bmi=kg/(height*height);
                 ui->BMI->setVisible(true);
                 ui->BMIlabel->setVisible(true);
-                //ui->BMI->display(bmi);
+                ui->BMI->display(bmi);
             }
         }
 
@@ -1433,10 +1452,6 @@ void Daily::on_ZombieMeter_valueChanged(int action)
         if (g) g->setDay(NULL);
         //mainwin->getOverview()->RedrawGraphs();
     }
-}
-
-void Daily::on_ZombieMeter_actionTriggered(int action)
-{
 }
 
 void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)

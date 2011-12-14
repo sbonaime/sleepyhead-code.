@@ -319,7 +319,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             //}
             quint64 first=qint64(sid)*1000L;
             quint64 last=qint64(SessionEnd[i])*1000L;
-            quint64 len=last-first;
+            //quint64 len=last-first;
             //if (len>0) {
                 //if (!sess->first()) {
                     sess->set_first(first);

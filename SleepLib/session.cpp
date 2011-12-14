@@ -463,9 +463,6 @@ void Session::UpdateSummaries()
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
-        if (id==CPAP_AHI) {
-            int i=5;
-        }
         if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
             min(id);
@@ -488,6 +485,25 @@ void Session::UpdateSummaries()
     }
 
 }
+
+bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
+{
+    qint64 t;
+    QHash<ChannelID,QVector<EventList *> >::iterator it;
+    it=eventlist.find(code);
+    if (it!=eventlist.end()) {
+        for (int i=0;i<it.value().size();i++)  {
+            EventList *el=it.value()[i];
+            for (unsigned j=0;j<el->count();j++) {
+                t=el->time(j);
+                if (qAbs(time-t)<dist)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 EventDataType Session::min(ChannelID id)
 {
@@ -515,9 +531,6 @@ EventDataType Session::min(ChannelID id)
         } else {
             if (min>t1) min=t1;
         }
-    }
-    if (min>10000) {
-        int i=5;
     }
     m_min[id]=min;
     return min;
@@ -899,9 +912,6 @@ EventDataType Session::wavg(ChannelID id)
             lasttime=time;
             lastval=val;
         }*/
-        if (id==CPAP_AHI) {
-            int i=5;
-        }
         time=evec[i]->time(0)/1000L;
         minval=val=evec[i]->raw(0);
         for (quint32 j=1;j<evec[i]->count();j++) {
@@ -924,9 +934,6 @@ EventDataType Session::wavg(ChannelID id)
         }
     }
 
-    if (id==CPAP_Snore) {
-        int i=5;
-    }
     if (minval<0) minval=-minval;
     minval++;
    // if (minval<0) minval+=(0-minval)+1; else minval=1;
