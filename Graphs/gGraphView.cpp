@@ -1208,7 +1208,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (a2>w) a2=w;
             m_selecting_area=true;
             m_selection=QRect(a1-1,0,a2-a1,m_lastbounds.height());
-            double w2=m_lastbounds.width(); //-(right+m_marginright)-(m_marginleft+left);
+            double w2=m_lastbounds.width()-right-left; //-(right+m_marginright)-(m_marginleft+left);
             if (m_blockzoom) {
                 xmult=(rmax_x-rmin_x)/w2;
             } else xmult=(max_x-min_x)/w2;

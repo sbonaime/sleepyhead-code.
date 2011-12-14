@@ -116,9 +116,10 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                    GetTextExtent(m_label,x,y);
                    w.renderText(m_label,x1-(x/2),top-y+(3*w.printScaleY()));
 
-                   QString a=QString::number(int(el.data(i)));
-                   GetTextExtent(a,x,y);
-                   w.renderText(a,x1-(x/2),bottom+y+(3*w.printScaleY()));
+                   // The follow lines enable the duration display underneath
+//                   QString a=QString::number(int(el.data(i)));
+//                   GetTextExtent(a,x,y);
+//                   w.renderText(a,x1-(x/2),bottom+y+(3*w.printScaleY()));
                }
 
            }
