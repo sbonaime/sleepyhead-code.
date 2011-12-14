@@ -1641,49 +1641,57 @@ short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScale
 short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
 short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
-QPixmap gGraph::renderPixmap(int w, int h)
+QPixmap gGraph::renderPixmap(int w, int h, float scale)
 {
 
     gGraphView *sg=mainwin->snapshotGraph();
     if (!sg) return QPixmap();
 
-    //double scale=sg->printScaleY(); //sqrt(sg->printScaleX()*sg->printScaleX()+sg->printScaleY()*sg->printScaleY());
-/*
+    QFont * _defaultfont=defaultfont;
+    QFont * _mediumfont=mediumfont;
+    QFont * _bigfont=bigfont;
+
+    QFont fa=*defaultfont;
+    QFont fb=*mediumfont;
+    QFont fc=*bigfont;
+
+    sg->setPrintScaleX(scale);
+    sg->setPrintScaleY(scale);
+
     fa.setPointSize(fa.pointSize()*scale);
     fb.setPointSize(fb.pointSize()*scale);
     fc.setPointSize(fc.pointSize()*scale);
 
     defaultfont=&fa;
     mediumfont=&fb;
-    bigfont=&fc; */
+    bigfont=&fc;
 
     sg->hideSplitter();
     gGraphView *tgv=m_graphview;
     m_graphview=sg;
-    //qint64 rmx=rmin_x,rMx=rmax_x;
-    //qint64 mx=min_x, Mx=max_x;
+
+    sg->setMinimumSize(w,h);
+    sg->setMaximumSize(w,h);
+    sg->setFixedSize(w,h);
 
     float tmp=m_height;
-    m_height=PROFILE["GraphHeight"].toInt();//*sg->printScaleY();
+    m_height=h; //PROFILE["GraphHeight"].toInt();//*sg->printScaleY();
     sg->trashGraphs();
     sg->addGraph(this);
-    //sg->ResetBounds();
-    //sg->SetXBounds(mx,Mx);
-    //sg->updateScrollBar();
-    sg->updateScale();
+    //sg->updateScale();
 
-    //QImage image=sg->grabFrameBuffer();
-    //QPixmap pm=QPixmap::fromImage(image);
+    sg->setScaleY(1.0);
+
     QPixmap pm=sg->renderPixmap(w,h,false);
 
     sg->trashGraphs();
     m_graphview=tgv;
 
     m_height=tmp;
-/*
+
     defaultfont=_defaultfont;
     mediumfont=_mediumfont;
-    bigfont=_bigfont; */
+    bigfont=_bigfont;
 
     return pm;
 }

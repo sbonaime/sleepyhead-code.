@@ -277,7 +277,7 @@ public:
     virtual ~gGraph();
     void deselect();
     void Trigger(int ms);
-    QPixmap renderPixmap(int width, int height);
+    QPixmap renderPixmap(int width, int height, float fontscale=1.0);
 
     void setVisible(bool b) { m_visible=b; }
     bool visible() { return m_visible; }
@@ -422,6 +422,7 @@ public:
     float findTop(gGraph * graph);
 
     float scaleY() { return m_scaleY; }
+    void setScaleY(float sy) { m_scaleY=sy; }
 
     void GetXBounds(qint64 & st,qint64 & et);
     void ResetBounds(bool refresh=true); //short group=0);

@@ -209,8 +209,8 @@ void MainWindow::Startup()
     PROFILE.LoadMachineData();
 
     SnapshotGraph=new gGraphView(this); //daily->graphView());
-    SnapshotGraph->setMaximumSize(1024,512);
-    SnapshotGraph->setMinimumSize(1024,512);
+    //SnapshotGraph->setMaximumSize(1024,512);
+    //SnapshotGraph->setMinimumSize(1024,512);
     SnapshotGraph->hide();
 
     daily=new Daily(ui->tabWidget,NULL,this);
@@ -869,49 +869,23 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
             float exp=cpap->count(CPAP_ExP)/cpap->hours();
 
+            int piesize=1.5*72.0*vscale;
+            float fscale=font_scale;
+            if (!highres)
+                fscale=1;
+
             QString stats;
             painter.setFont(*mediumfont);
             stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
             QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
 
-            //if (bounds.height()>maxy) maxy=bounds.height();
             getDaily()->eventBreakdownPie()->showTitle(false);
-            int piesize=1.5*72.0*vscale;
-            mainwin->snapshotGraph()->setMinimumSize(piesize,piesize);
-            mainwin->snapshotGraph()->setMaximumSize(piesize,piesize);
-
-            QFont * _defaultfont=defaultfont;
-            QFont * _mediumfont=mediumfont;
-            QFont * _bigfont=bigfont;
-
-            QFont fa=*defaultfont;
-            QFont fb=*mediumfont;
-            QFont fc=*bigfont;
-
-            if (!no_scaling ) {
-
-//                fa.setPointSizeF((fa.pointSizeF()/graph_xscale)*2);
-//                fb.setPointSizeF((fb.pointSizeF()/graph_xscale)*2);
-//                fc.setPointSizeF((fc.pointSizeF()/graph_xscale)*2);
-                qDebug() << QApplication::desktop()->physicalDpiX();
-                fa.setPointSizeF(fa.pointSizeF()*font_scale);
-                fb.setPointSizeF(fb.pointSizeF()*font_scale);
-                fc.setPointSizeF(fc.pointSizeF()*font_scale);
-            }
-
-            defaultfont=&fa;
-            mediumfont=&fb;
-            bigfont=&fc;
-
-            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize);
-
-            defaultfont=_defaultfont;
-            mediumfont=_mediumfont;
-            bigfont=_bigfont;
-
+            getDaily()->eventBreakdownPie()->setMargins(0,0,0,0);
+            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,fscale);
             painter.drawPixmap(res.width()-piesize,bounds.height(),piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
+
 
             cpapinfo+="\n\n";
 
@@ -966,9 +940,6 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         graph_slots=1;
     }
     top+=maxy;
-
-    mainwin->snapshotGraph()->setMinimumSize(gw,gh);
-    mainwin->snapshotGraph()->setMaximumSize(gw,gh);
 
     bool first=true;
     QStringList labels;
@@ -1062,48 +1033,24 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         PROFILE["UseAntiAliasing"]=force_antialiasing;
         int tmb=g->m_marginbottom;
         g->m_marginbottom=0;
-        float fscale=font_scale*graph_xscale;
-
-        if (!no_scaling ) {
-            SnapshotGraph->setPrintScaleX(fscale);
-            SnapshotGraph->setPrintScaleY(fscale);
-        }
-        QFont * _defaultfont=defaultfont;
-        QFont * _mediumfont=mediumfont;
-        QFont * _bigfont=bigfont;
-
-        QFont fa=*defaultfont;
-        QFont fb=*mediumfont;
-        QFont fc=*bigfont;
-
-        if (!no_scaling ) {
-            fa.setPointSizeF(fa.pointSizeF()*fscale);
-            fb.setPointSizeF(fb.pointSizeF()*fscale);
-            fc.setPointSizeF(fc.pointSizeF()*fscale);
-        }
-
-        defaultfont=&fa;
-        mediumfont=&fb;
-        bigfont=&fc;
+        float fscale=1;
+        if (!no_scaling) fscale=font_scale*graph_xscale;
 
         //g->showTitle(false);
-        QPixmap pm=g->renderPixmap(gw,gh);
+        QPixmap pm=g->renderPixmap(gw,gh,fscale);
         //g->showTitle(true);
-
-        defaultfont=_defaultfont;
-        mediumfont=_mediumfont;
-        bigfont=_bigfont;
 
         g->m_marginbottom=tmb;
         PROFILE["UseAntiAliasing"]=aa_setting;
+        QPixmap pm2;
         if (!no_scaling) {
-            QPixmap pm2=pm.scaledToWidth(printer_width);
-            painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
-            top+=pm2.height();
+            pm2=pm.scaledToWidth(printer_width);
         } else {
-            painter.drawPixmap(0,top,pm.width(),pm.height(),pm);
-            top+=gh;
+            pm2=pm;
         }
+
+        painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
+        top+=pm2.height();
 
         gcnt++;
         if (qprogress) {
