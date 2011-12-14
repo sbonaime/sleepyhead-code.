@@ -1042,15 +1042,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
         g->m_marginbottom=tmb;
         PROFILE["UseAntiAliasing"]=aa_setting;
-        QPixmap pm2;
-        if (!no_scaling) {
-            pm2=pm.scaledToWidth(printer_width);
-        } else {
-            pm2=pm;
-        }
 
-        painter.drawPixmap(0,top,pm2.width(),pm2.height(),pm2);
-        top+=pm2.height();
+        painter.drawPixmap(0,top,printer_width,full_graph_height,pm);
+        top+=full_graph_height;
 
         gcnt++;
         if (qprogress) {
