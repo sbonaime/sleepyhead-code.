@@ -10,5 +10,6 @@
 #include <QLocale>
 
 Qt::DayOfWeek firstDayOfWeekFromLocale();
+void delay(int ms);
 
 #endif

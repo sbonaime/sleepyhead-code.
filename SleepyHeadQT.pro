@@ -69,11 +69,22 @@ SOURCES += main.cpp\
     exportcsv.cpp \
     common_gui.cpp \
     SleepLib/loader_plugins/intellipap_loader.cpp \
-    SleepLib/calcs.cpp
+    SleepLib/calcs.cpp \
+    UpdateWindow.cpp \
+    updateparser.cpp \
+    quazip/zip.c \
+    quazip/unzip.c \
+    quazip/quazipnewinfo.cpp \
+    quazip/quazipfile.cpp \
+    quazip/quazip.cpp \
+    quazip/quacrc32.cpp \
+    quazip/quaadler32.cpp \
+    quazip/qioapi.cpp \
+    quazip/JlCompress.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
-unix:!macx:LIBS        += -lX11
+unix:!macx:LIBS        += -lX11 -lz
 
 macx {
   SOURCES          += qextserialport/qextserialenumerator_osx.cpp
@@ -127,7 +138,22 @@ HEADERS  += \
     common_gui.h \
     SleepLib/loader_plugins/intellipap_loader.h \
     SleepLib/calcs.h \
-    version.h
+    version.h \
+    UpdateWindow.h \
+    updateparser.h \
+    quazip/zip.h \
+    quazip/unzip.h \
+    quazip/quazipnewinfo.h \
+    quazip/quazip_global.h \
+    quazip/quazipfileinfo.h \
+    quazip/quazipfile.h \
+    quazip/quazip.h \
+    quazip/quacrc32.h \
+    quazip/quachecksum32.h \
+    quazip/quaadler32.h \
+    quazip/JlCompress.h \
+    quazip/ioapi.h \
+    quazip/crypt.h
 
 
 FORMS    += \
@@ -139,10 +165,12 @@ FORMS    += \
     report.ui \
     profileselect.ui \
     newprofile.ui \
-    exportcsv.ui
+    exportcsv.ui \
+    UpdateWindow.ui
 
 RESOURCES += \
-    Resources.qrc
+    Resources.qrc \
+    resources.qrc
 
 OTHER_FILES += \
     docs/index.html \

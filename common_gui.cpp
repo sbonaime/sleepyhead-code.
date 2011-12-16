@@ -7,6 +7,16 @@
 #include "common_gui.h"
 #include "qglobal.h"
 
+void delay(int ms)
+{
+#ifdef Q_WS_WIN32
+    delay(ms);
+#else
+    sleep(ms/1000);
+#endif
+}
+
+
 #if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
 // Qt 4.8 makes this a whole lot easier
 Qt::DayOfWeek firstDayOfWeekFromLocale()
@@ -25,6 +35,11 @@ Qt::DayOfWeek firstDayOfWeekFromLocale()
 
 #ifdef __GLIBC__
 #include <langinfo.h>
+#endif
+
+
+#ifdef Q_WS_WIN32
+#include <dos.h>
 #endif
 
 

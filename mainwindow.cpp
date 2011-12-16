@@ -30,6 +30,7 @@
 #include "exportcsv.h"
 #include "SleepLib/schema.h"
 #include "Graphs/glcommon.h"
+#include "UpdateWindow.h"
 
 QProgressBar *qprogress;
 QLabel *qstatus;
@@ -189,10 +190,10 @@ MainWindow::~MainWindow()
     mainwin=NULL;
     delete ui;
 }
-void MainWindow::Notify(QString s,int ms)
+void MainWindow::Notify(QString s,int ms,QString title)
 {
     if (systray) {
-        systray->showMessage("SleepyHead v"+PREF["VersionString"].toString(),s,QSystemTrayIcon::Information,ms);
+        systray->showMessage(title,s,QSystemTrayIcon::Information,ms);
     } else {
         ui->statusbar->showMessage(s,ms);
     }
@@ -200,7 +201,7 @@ void MainWindow::Notify(QString s,int ms)
 
 void MainWindow::Startup()
 {
-    qDebug() << PREF["AppName"].toString().toAscii()+" v"+PREF["VersionString"].toString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << PREF["AppName"].toString().toAscii()+" v"+VersionString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -510,22 +511,26 @@ void MainWindow::on_oximetryButton_clicked()
 
 void MainWindow::CheckForUpdates()
 {
-    QTimer::singleShot(100,this,SLOT(on_actionCheck_for_Updates_triggered()));
-    //on_actionCheck_for_Updates_triggered();
+    //QTimer::singleShot(100,this,SLOT(on_actionCheck_for_Updates_triggered()));
+    on_actionCheck_for_Updates_triggered();
 }
 
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
-    if (PREF.Exists("Updates_LastChecked")) {
-        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<7200) {
-            // Instead of doing this, just use the cached crud
-            if (prefdialog) prefdialog->RefreshLastChecked();
-            mainwin->Notify("No New Updates - You already checked recently...");
-            return;
-        }
-    }
-    mainwin->Notify("Checking for Updates");
-    netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
+    UpdateWindow *w=new UpdateWindow(this);
+
+    w->checkForUpdates();
+
+//    if (PREF.Exists("Updates_LastChecked")) {
+//        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<7200) {
+//            // Instead of doing this, just use the cached crud
+//            if (prefdialog) prefdialog->RefreshLastChecked();
+//            mainwin->Notify("No New Updates - You already checked recently...");
+//            return;
+//        }
+//    }
+//    mainwin->Notify("Checking for Updates");
+//    netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
 }
 void MainWindow::replyFinished(QNetworkReply * reply)
 {
