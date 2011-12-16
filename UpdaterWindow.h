@@ -11,18 +11,18 @@
 #include "updateparser.h"
 
 namespace Ui {
-class UpdateWindow;
+class UpdaterWindow;
 }
 
 enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile, RM_UpdateQT };
 
-class UpdateWindow : public QMainWindow
+class UpdaterWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit UpdateWindow(QWidget *parent = 0);
-    ~UpdateWindow();
+    explicit UpdaterWindow(QWidget *parent = 0);
+    ~UpdaterWindow();
     void checkForUpdates();
     void ParseUpdateXML(QIODevice * dev);
 
@@ -44,7 +44,7 @@ private slots:
 private:
     UpdateParser updateparser;
 
-    Ui::UpdateWindow *ui;
+    Ui::UpdaterWindow *ui;
     QSystemTrayIcon *systray;
     QMenu *systraymenu;
     RequestMode requestmode;

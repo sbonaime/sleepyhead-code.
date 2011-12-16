@@ -30,7 +30,7 @@
 #include "exportcsv.h"
 #include "SleepLib/schema.h"
 #include "Graphs/glcommon.h"
-#include "UpdateWindow.h"
+#include "UpdaterWindow.h"
 
 QProgressBar *qprogress;
 QLabel *qstatus;
@@ -517,7 +517,7 @@ void MainWindow::CheckForUpdates()
 
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
-    UpdateWindow *w=new UpdateWindow(this);
+    UpdaterWindow *w=new UpdaterWindow(this);
 
     w->checkForUpdates();
 

@@ -70,7 +70,6 @@ SOURCES += main.cpp\
     common_gui.cpp \
     SleepLib/loader_plugins/intellipap_loader.cpp \
     SleepLib/calcs.cpp \
-    UpdateWindow.cpp \
     updateparser.cpp \
     quazip/zip.c \
     quazip/unzip.c \
@@ -80,7 +79,8 @@ SOURCES += main.cpp\
     quazip/quacrc32.cpp \
     quazip/quaadler32.cpp \
     quazip/qioapi.cpp \
-    quazip/JlCompress.cpp
+    quazip/JlCompress.cpp \
+    UpdaterWindow.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -139,7 +139,6 @@ HEADERS  += \
     SleepLib/loader_plugins/intellipap_loader.h \
     SleepLib/calcs.h \
     version.h \
-    UpdateWindow.h \
     updateparser.h \
     quazip/zip.h \
     quazip/unzip.h \
@@ -153,7 +152,8 @@ HEADERS  += \
     quazip/quaadler32.h \
     quazip/JlCompress.h \
     quazip/ioapi.h \
-    quazip/crypt.h
+    quazip/crypt.h \
+    UpdaterWindow.h
 
 
 FORMS    += \
@@ -166,7 +166,7 @@ FORMS    += \
     profileselect.ui \
     newprofile.ui \
     exportcsv.ui \
-    UpdateWindow.ui
+    UpdaterWindow.ui
 
 RESOURCES += \
     Resources.qrc \

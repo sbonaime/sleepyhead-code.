@@ -14,17 +14,17 @@
 #include "SleepLib/preferences.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
-#include "UpdateWindow.h"
-#include "ui_UpdateWindow.h"
+#include "UpdaterWindow.h"
+#include "ui_UpdaterWindow.h"
 #include "version.h"
 #include "mainwindow.h"
 #include "common_gui.h"
 
 extern MainWindow * mainwin;
 
-UpdateWindow::UpdateWindow(QWidget *parent) :
+UpdaterWindow::UpdaterWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::UpdateWindow)
+    ui(new Ui::UpdaterWindow)
 {
     ui->setupUi(this);
 
@@ -55,17 +55,16 @@ UpdateWindow::UpdateWindow(QWidget *parent) :
     ui->stackedWidget->setCurrentIndex(0);
 }
 
-UpdateWindow::~UpdateWindow()
+UpdaterWindow::~UpdaterWindow()
 {
     disconnect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     delete ui;
 }
 
 
-void UpdateWindow::checkForUpdates()
+void UpdaterWindow::checkForUpdates()
 {
     QString filename=QApplication::applicationDirPath()+QDir::separator()+"update.xml";
-    qDebug() << filename;
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
         QFileInfo fi(filename);
@@ -90,7 +89,7 @@ void UpdateWindow::checkForUpdates()
     dltime.start();
 }
 
-void UpdateWindow::dataReceived()
+void UpdaterWindow::dataReceived()
 {
     //HttpStatusCodeAttribute
     QString rs=reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
@@ -102,7 +101,7 @@ void UpdateWindow::dataReceived()
     file.write(read);
 }
 
-void UpdateWindow::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+void UpdaterWindow::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     QString rs=reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
     if (rs!="200") return;
@@ -119,7 +118,7 @@ void UpdateWindow::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     int elapsed=dltime.elapsed();
 }
 
-void UpdateWindow::requestFile()
+void UpdaterWindow::requestFile()
 {
     if (!update) return;
     QProgressBar *bar=qobject_cast<QProgressBar *>(ui->tableWidget->cellWidget(current_row,3));
@@ -159,7 +158,7 @@ void UpdateWindow::requestFile()
     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
 }
 
-void UpdateWindow::ParseUpdateXML(QIODevice * dev)
+void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
 {
     QXmlInputSource src(dev);
     QXmlSimpleReader reader;
@@ -256,7 +255,7 @@ void UpdateWindow::ParseUpdateXML(QIODevice * dev)
     }
 }
 
-void UpdateWindow::replyFinished(QNetworkReply * reply)
+void UpdaterWindow::replyFinished(QNetworkReply * reply)
 {
     netmanager->disconnect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
     if (reply->error()==QNetworkReply::NoError) {
@@ -332,15 +331,18 @@ void UpdateWindow::replyFinished(QNetworkReply * reply)
                     int fsize=files.size();
                     QByteArray ba;
                     QStringList update_txt;
-                    QStringList unzipped;
-                    QStringList original;
+
+                    QString apppath=QApplication::applicationDirPath()+QDir::separator();
+                    QString backups=apppath+"Backups"+QDir::separator();
+                    QString downloads=apppath+"Downloads"+QDir::separator();
+                    QDir().mkpath(backups);
 
                     for (int i=0;i<fsize;i++) {
                         ui->plainTextEdit->appendPlainText("Extracting "+files.at(i));
                         QuaZipFile qzf(file.fileName(),files.at(i));
                         qzf.open(QuaZipFile::ReadOnly);
 
-                        QString path=QApplication::applicationDirPath()+QDir::separator()+"Download"+QDir::separator()+files.at(i);
+                        QString path=downloads+files.at(i);
                         if (path.endsWith(QDir::separator())) {
                             QDir().mkpath(path);
                             if (update->unzipped_path.isEmpty())
@@ -357,8 +359,12 @@ void UpdateWindow::replyFinished(QNetworkReply * reply)
                                     if (!line.isNull()) update_txt.append(line);
                                 } while (!line.isNull());
                             } else {
-                                unzipped.append(path);
-                                original.append(QApplication::applicationDirPath()+QDir::separator()+files.at(i).section("/",-1));
+                                QString fn=files.at(i).section("/",-1);
+                                if (f.exists(backups+fn)) f.remove(backups+fn);
+                                if (!f.rename(apppath+fn,backups+fn)) {
+                                    errors++;
+                                }
+
                                 f.setFileName(path);
                                 f.open(QFile::WriteOnly);
                                 f.write(ba);
@@ -373,33 +379,6 @@ void UpdateWindow::replyFinished(QNetworkReply * reply)
                     }
                     zip.close();
                     if (!errors) {
-                        for (int i=0;i<unzipped.size();i++) {
-                            if (QFile::copy(unzipped[i],original[i])) {
-                                ui->plainTextEdit->appendPlainText("Copied "+unzipped[i]+" to "+original[i]);
-                            } else {
-                                QFile f(original[i]);
-                                if (f.exists()) {
-                                    if (!f.remove()) {
-                                        f.rename(original[i],original[i]+".bak");
-                                        ui->plainTextEdit->appendPlainText("Renaming "+original[i]);
-                                    } else {
-                                        ui->plainTextEdit->appendPlainText("Removing "+original[i]);
-                                    }
-                                }
-                                if (QFile::copy(unzipped[i],original[i])) {
-                                    ui->plainTextEdit->appendPlainText("Copied "+unzipped[i]+" to "+original[i]);
-                                } else {
-                                    ui->plainTextEdit->appendPlainText("Copy Failed");
-                                    failed=true;
-                                }
-                            }
-
-                        }
-                        // Parse replacement instructions file? or just dump zip over the top?
-
-
-                        // To clean up or not to clean up... is a reasonably valid question.
-                        //file.remove();
                     }
                 }
 
@@ -438,12 +417,12 @@ void UpdateWindow::replyFinished(QNetworkReply * reply)
     }
 }
 
-void UpdateWindow::on_CloseButton_clicked()
+void UpdaterWindow::on_CloseButton_clicked()
 {
     close();
 }
 
-void UpdateWindow::upgradeNext()
+void UpdaterWindow::upgradeNext()
 {
     QTableWidgetItem *item;
     bool fnd=false;
@@ -486,7 +465,7 @@ void UpdateWindow::upgradeNext()
 }
 
 
-void UpdateWindow::on_upgradeButton_clicked()
+void UpdaterWindow::on_upgradeButton_clicked()
 {
     if (!updates.size()) return;
     ui->tableWidget->clearContents();
@@ -519,7 +498,7 @@ void UpdateWindow::on_upgradeButton_clicked()
     upgradeNext();
 }
 
-void UpdateWindow::on_FinishedButton_clicked()
+void UpdaterWindow::on_FinishedButton_clicked()
 {
     if (success)
         mainwin->RestartApplication();
