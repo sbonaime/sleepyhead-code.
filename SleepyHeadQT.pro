@@ -126,7 +126,8 @@ HEADERS  += \
     exportcsv.h \
     common_gui.h \
     SleepLib/loader_plugins/intellipap_loader.h \
-    SleepLib/calcs.h
+    SleepLib/calcs.h \
+    version.h
 
 
 FORMS    += \

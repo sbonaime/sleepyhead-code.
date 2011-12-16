@@ -13,14 +13,11 @@
 #include <QNetworkReply>
 #include <QSystemTrayIcon>
 
+#include "version.h"
 #include "daily.h"
 #include "overview.h"
 #include "oximetry.h"
 #include "preferencesdialog.h"
-
-const int major_version=0;
-const int minor_version=8;
-const int revision_number=8;
 
 extern Profile * profile;
 
