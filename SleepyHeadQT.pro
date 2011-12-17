@@ -169,8 +169,7 @@ FORMS    += \
     UpdaterWindow.ui
 
 RESOURCES += \
-    Resources.qrc \
-    resources.qrc
+    Resources.qrc
 
 OTHER_FILES += \
     docs/index.html \
