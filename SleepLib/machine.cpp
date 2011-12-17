@@ -11,7 +11,7 @@
 #include <QString>
 #include <QObject>
 //#include <tr1/random>
-//#include <sys/time.h>
+#include <time.h>
 
 #include "machine.h"
 #include "profiles.h"

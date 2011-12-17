@@ -96,12 +96,12 @@ win32 {
   DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
   LIBS             += -lsetupapi
 
-  if (win32-msvc2008|win32-msvc2010):equals(TEMPLATE_PREFIX, "vc") {
-   LIBS += -ladvapi32
-   DEFINES += BUILD_WITH_MSVC
-  }
-}
 
+}
+if (win32-msvc2008|win32-msvc2010):!equals(TEMPLATE_PREFIX, "vc") {
+   LIBS += -ladvapi32
+   DEFINES += BUILD_WITH_MSVC=1
+}
 HEADERS  += \
     SleepLib/machine.h \
     SleepLib/machine_loader.h \

@@ -1470,9 +1470,9 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     lasttimestamp=start;
     duration=0;
     int corrupt=0;
-    char waveform[num_signals][500000];
-    int wlength[num_signals];
-    qint64 wdur[num_signals];
+    char waveform[2][500000];
+    int wlength[2];
+    qint64 wdur[2];
     //EventList *evl[num_signals];
     for (int i=0;i<num_signals;i++) {
         wlength[i]=0;

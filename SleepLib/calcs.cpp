@@ -5,8 +5,12 @@
 */
 
 #include <cmath>
+
 #include "calcs.h"
 #include "profiles.h"
+
+extern double round(double number);
+
 bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
 {
     if (session->SearchEvent(CPAP_Obstructive,time,dist)) return true;

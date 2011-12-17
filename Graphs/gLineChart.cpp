@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <SleepLib/profiles.h>
 #include "gLineChart.h"
+#include "glcommon.h"
 
 #define EXTRA_ASSERTS 1
 gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_accel)
