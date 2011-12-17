@@ -374,12 +374,14 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                                 } while (!line.isNull());
                             } else {
                                 QString fn=files.at(i).section("/",-1);
+                                // delete backups
                                 if (f.exists(backups+fn)) f.remove(backups+fn);
+                                // rename (move) current file to backup
                                 if (!f.rename(apppath+fn,backups+fn)) {
                                     errors++;
                                 }
-
-                                f.setFileName(path);
+                                //Save zip data as new file
+                                f.setFileName(apppath+fn);
                                 f.open(QFile::WriteOnly);
                                 f.write(ba);
                                 f.close();
