@@ -120,8 +120,8 @@ public:
     double sum(ChannelID id);
     EventDataType avg(ChannelID id);
     EventDataType wavg(ChannelID i);
-    EventDataType min(ChannelID id);
-    EventDataType max(ChannelID id);
+    EventDataType Min(ChannelID id);
+    EventDataType Max(ChannelID id);
     EventDataType p90(ChannelID id);
     EventDataType cph(ChannelID id);
     EventDataType sph(ChannelID id);

@@ -756,8 +756,8 @@ void Layer::SetDay(Day * d)
         m_day=d;
         m_minx=d->first(m_code);
         m_maxx=d->last(m_code);
-        m_miny=d->min(m_code);
-        m_maxy=d->max(m_code);
+        m_miny=d->Min(m_code);
+        m_maxy=d->Max(m_code);
     } else m_day=NULL;
 
 }

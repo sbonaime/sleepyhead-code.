@@ -625,8 +625,8 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         EventList *a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
         a->setDimension(es.physical_dimension);
         a->AddWaveform(edf.startdate,es.data,recs,duration);
-        sess->setMin(code,a->min());
-        sess->setMax(code,a->max());
+        sess->setMin(code,a->Min());
+        sess->setMax(code,a->Max());
         //delete edf.edfsignals[s]->data;
         //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
     }
@@ -697,8 +697,8 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         if (hasdata) {
             EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
             if (a) {
-                sess->setMin(code,a->min());
-                sess->setMax(code,a->max());
+                sess->setMin(code,a->Min());
+                sess->setMax(code,a->Max());
             }
         }
 
@@ -799,8 +799,8 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             a=NULL;
         }
         if (a) {
-            sess->setMin(code,a->min());
-            sess->setMax(code,a->max());
+            sess->setMin(code,a->Min());
+            sess->setMax(code,a->Max());
             a->setDimension(es.physical_dimension);
         }
     }

@@ -375,8 +375,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
             sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
             sess->setWavg(CPAP_Pressure,(sess->wavg(CPAP_EPAP)+sess->wavg(CPAP_IPAP))/2.0);
-            sess->setMin(CPAP_Pressure,sess->min(CPAP_EPAP));
-            sess->setMax(CPAP_Pressure,sess->max(CPAP_IPAP));
+            sess->setMin(CPAP_Pressure,sess->Min(CPAP_EPAP));
+            sess->setMax(CPAP_Pressure,sess->Max(CPAP_IPAP));
             sess->set90p(CPAP_Pressure,(sess->p90(CPAP_IPAP)+sess->p90(CPAP_EPAP))/2.0);
             //sess->p90(CPAP_EPAP);
             //sess->p90(CPAP_IPAP);
@@ -384,14 +384,14 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             //sess->avg(CPAP_Pressure);
             //sess->wavg(CPAP_Pressure);
             //sess->p90(CPAP_Pressure);
-            //sess->min(CPAP_Pressure);
-            //sess->max(CPAP_Pressure);
+            //sess->Min(CPAP_Pressure);
+            //sess->Max(CPAP_Pressure);
             //sess->cph(CPAP_Pressure);
 
             if (!sess->settings.contains(CPAP_PressureMin)) {
                 sess->settings[CPAP_BrokenSummary]=true;
                 //sess->set_last(sess->first());
-                if (sess->min(CPAP_Pressure)==sess->max(CPAP_Pressure)) {
+                if (sess->Min(CPAP_Pressure)==sess->Max(CPAP_Pressure)) {
                     sess->settings[CPAP_Mode]=MODE_CPAP; // no ramp
                 } else {
                     sess->settings[CPAP_Mode]=MODE_UNKNOWN;
@@ -1544,9 +1544,9 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
                         a->setMax(120);
                         a->setMin(-120);
                     } else if (wc[i]==CPAP_MaskPressure) {
-//                       int v=ceil(a->max()/5);
+//                       int v=ceil(a->Max()/5);
 //                        a->setMax(v*5);
-//                        v=floor(a->min()/5);
+//                        v=floor(a->Min()/5);
 //                        a->setMin(v*5);
                     }
 

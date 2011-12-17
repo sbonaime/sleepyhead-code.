@@ -249,8 +249,8 @@ void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
 {
     plethy->AddEvent(time,pleth);
     session->setCount(OXI_Plethy,plethy->count()); // update the cache
-    session->setMin(OXI_Plethy,plethy->min());
-    session->setMax(OXI_Plethy,plethy->max());
+    session->setMin(OXI_Plethy,plethy->Min());
+    session->setMax(OXI_Plethy,plethy->Max());
     session->setLast(OXI_Plethy,time);
     session->set_last(time);
     plethy->setLast(time);
@@ -333,10 +333,10 @@ void SerialOximeter::compactAll()
             } else if (code==OXI_Plethy) {
                 compactToWaveform(e);
             }
-            if (min > e->min())
-                min=e->min();
-            if (max < e->max())
-                max=e->max();
+            if (min > e->Min())
+                min=e->Min();
+            if (max < e->Max())
+                max=e->Max();
             if (!minx || (minx > e->first()))
                 minx=e->first();
             if (!maxx || (maxx < e->last()))
@@ -1053,19 +1053,19 @@ void Oximetry::data_changed()
     spo2->setMinX(first);
     spo2->setMaxX(last);
 
-    plethy->setMinY((oximeter->Plethy())->min());
-    plethy->setMaxY((oximeter->Plethy())->max());
-    pulse->setMinY((oximeter->Pulse())->min());
-    pulse->setMaxY((oximeter->Pulse())->max());
-    spo2->setMinY((oximeter->Spo2())->min());
-    spo2->setMaxY((oximeter->Spo2())->max());
+    plethy->setMinY((oximeter->Plethy())->Min());
+    plethy->setMaxY((oximeter->Plethy())->Max());
+    pulse->setMinY((oximeter->Pulse())->Min());
+    pulse->setMaxY((oximeter->Pulse())->Max());
+    spo2->setMinY((oximeter->Spo2())->Min());
+    spo2->setMaxY((oximeter->Spo2())->Max());
 
-    PLETHY->SetMinY((oximeter->Plethy())->min());
-    PLETHY->SetMaxY((oximeter->Plethy())->max());
-    PULSE->SetMinY((oximeter->Pulse())->min());
-    PULSE->SetMaxY((oximeter->Pulse())->max());
-    SPO2->SetMinY((oximeter->Spo2())->min());
-    SPO2->SetMaxY((oximeter->Spo2())->max());
+    PLETHY->SetMinY((oximeter->Plethy())->Min());
+    PLETHY->SetMaxY((oximeter->Plethy())->Max());
+    PULSE->SetMinY((oximeter->Pulse())->Min());
+    PULSE->SetMaxY((oximeter->Pulse())->Max());
+    SPO2->SetMinY((oximeter->Spo2())->Min());
+    SPO2->SetMaxY((oximeter->Spo2())->Max());
 
     /*PLETHY->MinY();
     PLETHY->MaxY();
@@ -1527,13 +1527,13 @@ void Oximetry::updateGraphs()
     qint64 first=session->first();
     qint64 last=session->last();
 
-    ui->pulseLCD->display(session->min(OXI_Pulse));
-    ui->spo2LCD->display(session->min(OXI_SPO2));
+    ui->pulseLCD->display(session->Min(OXI_Pulse));
+    ui->spo2LCD->display(session->Min(OXI_SPO2));
 
-    pulse->setMinY(session->min(OXI_Pulse));
-    pulse->setMaxY(session->max(OXI_Pulse));
-    spo2->setMinY(session->min(OXI_SPO2));
-    spo2->setMaxY(session->max(OXI_SPO2));
+    pulse->setMinY(session->Min(OXI_Pulse));
+    pulse->setMaxY(session->Max(OXI_Pulse));
+    spo2->setMinY(session->Min(OXI_SPO2));
+    spo2->setMaxY(session->Max(OXI_SPO2));
 
     PULSE->setRecMinY(60);
     PULSE->setRecMaxY(100);
@@ -1542,10 +1542,10 @@ void Oximetry::updateGraphs()
 
     day->setFirst(first);
     day->setLast(last);
-    pulse->setMinY(session->min(OXI_Pulse));
-    pulse->setMaxY(session->max(OXI_Pulse));
-    spo2->setMinY(session->min(OXI_SPO2));
-    spo2->setMaxY(session->max(OXI_SPO2));
+    pulse->setMinY(session->Min(OXI_Pulse));
+    pulse->setMaxY(session->Max(OXI_Pulse));
+    spo2->setMinY(session->Min(OXI_SPO2));
+    spo2->setMaxY(session->Max(OXI_SPO2));
 
     PULSE->setRecMinY(60);
     PULSE->setRecMaxY(100);

@@ -559,8 +559,8 @@ int calcPulseChange(Session *session)
         return 0;
     }
     session->eventlist[OXI_PulseChange].push_back(pc);
-    session->setMin(OXI_PulseChange,pc->min());
-    session->setMax(OXI_PulseChange,pc->max());
+    session->setMin(OXI_PulseChange,pc->Min());
+    session->setMax(OXI_PulseChange,pc->Max());
     session->setCount(OXI_PulseChange,pc->count());
     session->setFirst(OXI_PulseChange,pc->first());
     session->setLast(OXI_PulseChange,pc->last());
@@ -678,8 +678,8 @@ int calcSPO2Drop(Session *session)
         return 0;
     }
     session->eventlist[OXI_SPO2Drop].push_back(pc);
-    session->setMin(OXI_SPO2Drop,pc->min());
-    session->setMax(OXI_SPO2Drop,pc->max());
+    session->setMin(OXI_SPO2Drop,pc->Min());
+    session->setMax(OXI_SPO2Drop,pc->Max());
     session->setCount(OXI_SPO2Drop,pc->count());
     session->setFirst(OXI_SPO2Drop,pc->first());
     session->setLast(OXI_SPO2Drop,pc->last());

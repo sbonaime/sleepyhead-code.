@@ -394,11 +394,15 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                         qzf.close();
                     }
                     zip.close();
-                    if (!errors) {
+                    if (errors) {
+                        // gone and wrecked the install here..
+                        // probably should wait till get here before replacing files..
+                        // but then again, this is probably what would screw up
+                        mainwin->Notify("You may need to reinstall manually. Sorry :(",5000,"Ugh.. Something went wrong with unzipping.");
+                        // TODO: Roll back from the backup folder
+                        failed=true;
                     }
                 }
-
-
             }
             ui->tableWidget->item(current_row,0)->setCheckState(Qt::Checked);
             if (failed) {

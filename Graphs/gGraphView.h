@@ -47,7 +47,7 @@ public:
     void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
     virtual void draw(){}
     void reset() { m_cnt=0; }
-    int max() { return m_max; }
+    int Max() { return m_max; }
     int cnt() { return m_cnt; }
     bool full() { return m_cnt>=m_max; }
     float size() { return m_size; }

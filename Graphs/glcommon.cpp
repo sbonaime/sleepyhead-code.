@@ -7,6 +7,14 @@
 #include <cmath>
 #include "glcommon.h"
 
+#ifdef BUILD_WITH_MSVC
+double round(double number)
+{
+    return number < 0.0 ? ceil(number - 0.5) : floor(number+0.5);
+}
+#endif
+
+
 void RoundedRectangle(int x,int y,int w,int h,int radius,const QColor color)
 {
 

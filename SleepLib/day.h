@@ -28,8 +28,8 @@ public:
     MachineType machine_type();
 
     int count(ChannelID code);
-    EventDataType min(ChannelID code);
-    EventDataType max(ChannelID code);
+    EventDataType Min(ChannelID code);
+    EventDataType Max(ChannelID code);
     EventDataType cph(ChannelID code);
     EventDataType sph(ChannelID code);
     EventDataType p90(ChannelID code);

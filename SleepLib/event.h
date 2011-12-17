@@ -51,8 +51,8 @@ public:
     void setRate(EventDataType v) { m_rate=v; }
     //void setCode(ChannelID id) { m_code=id; }
 
-    inline const EventDataType & min() { return m_min; }
-    inline const EventDataType & max() { return m_max; }
+    inline const EventDataType & Min() { return m_min; }
+    inline const EventDataType & Max() { return m_max; }
     inline const EventDataType & min2() { return m_min2; }
     inline const EventDataType & max2() { return m_max2; }
     inline const EventDataType & gain() { return m_gain; }

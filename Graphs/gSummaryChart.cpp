@@ -141,8 +141,8 @@ void SummaryChart::SetDay(Day * nullday)
                             case ST_SUM: tmp=day->sum(code); break;
                             case ST_WAVG: tmp=day->wavg(code); break;
                             case ST_90P: tmp=day->p90(code); break;
-                            case ST_MIN: tmp=day->min(code); break;
-                            case ST_MAX: tmp=day->max(code); break;
+                            case ST_MIN: tmp=day->Min(code); break;
+                            case ST_MAX: tmp=day->Max(code); break;
                             case ST_CNT: tmp=day->count(code); break;
                             case ST_CPH: tmp=day->cph(code); break;
                             case ST_SPH: tmp=day->sph(code); break;

@@ -811,20 +811,20 @@ void Daily::Load(QDate date)
                         QString tooltip=schema::channel[code].description();
                         if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
                         html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->min(code)-suboffset);
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->Min(code)-suboffset);
                         html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
                         html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->max(code)-suboffset);
+                        html+="</td><td>"+a.sprintf("%.2f",cpap->Max(code)-suboffset);
                         html+="</td><tr>";
                     }
                     if (oxi && oxi->channelHasData(code)) {
                         QString tooltip=schema::channel[code].description();
                         if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
                         html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->min(code));
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
                         html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
                         html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->max(code));
+                        html+="</td><td>"+a.sprintf("%.2f",oxi->Max(code));
                         html+="</td><tr>";
                     }
                 }

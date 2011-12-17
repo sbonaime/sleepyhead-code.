@@ -272,8 +272,8 @@ bool Session::StoreEvents(QString filename)
             out << e.rate();
             out << e.gain();
             out << e.offset();
-            out << e.min();
-            out << e.max();
+            out << e.Min();
+            out << e.Max();
             out << e.dimension();
             out << e.hasSecondField();
             if (e.hasSecondField()) {
@@ -465,8 +465,8 @@ void Session::UpdateSummaries()
         id=c.key();
         if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
-            min(id);
-            max(id);
+            Min(id);
+            Max(id);
             count(id);
             if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
 
@@ -505,7 +505,7 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
 }
 
 
-EventDataType Session::min(ChannelID id)
+EventDataType Session::Min(ChannelID id)
 {
     QHash<ChannelID,EventDataType>::iterator i=m_min.find(id);
     if (i!=m_min.end())
@@ -523,8 +523,8 @@ EventDataType Session::min(ChannelID id)
     for (int i=0;i<evec.size();i++) {
         if (evec[i]->count()==0)
             continue;
-        t1=evec[i]->min();
-        if (t1==0 && t1==evec[i]->max()) continue;
+        t1=evec[i]->Min();
+        if (t1==0 && t1==evec[i]->Max()) continue;
         if (first) {
             min=t1;
             first=false;
@@ -535,7 +535,7 @@ EventDataType Session::min(ChannelID id)
     m_min[id]=min;
     return min;
 }
-EventDataType Session::max(ChannelID id)
+EventDataType Session::Max(ChannelID id)
 {
     QHash<ChannelID,EventDataType>::iterator i=m_max.find(id);
     if (i!=m_max.end())
@@ -552,8 +552,8 @@ EventDataType Session::max(ChannelID id)
     EventDataType max=0,t1;
     for (int i=0;i<evec.size();i++) {
         if (evec[i]->count()==0) continue;
-        t1=evec[i]->max();
-        if (t1==0 && t1==evec[i]->min()) continue;
+        t1=evec[i]->Max();
+        if (t1==0 && t1==evec[i]->Min()) continue;
         if (first) {
             max=t1;
             first=false;

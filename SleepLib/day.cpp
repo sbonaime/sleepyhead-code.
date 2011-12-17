@@ -359,7 +359,7 @@ qint64 Day::last(ChannelID code)
     }
     return date;
 }
-EventDataType Day::min(ChannelID code)
+EventDataType Day::Min(ChannelID code)
 {
     EventDataType min=0;
     EventDataType tmp;
@@ -367,7 +367,7 @@ EventDataType Day::min(ChannelID code)
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->m_min.contains(code)) continue;
         //if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
-        tmp=(*s)->min(code);
+        tmp=(*s)->Min(code);
         if (first) {
             min=tmp;
             first=false;
@@ -426,7 +426,7 @@ bool Day::hasData(ChannelID code, SummaryType type)
     return has;
 }
 
-EventDataType Day::max(ChannelID code)
+EventDataType Day::Max(ChannelID code)
 {
     EventDataType max=0;
     EventDataType tmp;
@@ -434,7 +434,7 @@ EventDataType Day::max(ChannelID code)
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->m_max.contains(code)) continue;
 //        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
-        tmp=(*s)->max(code);
+        tmp=(*s)->Max(code);
         if (first) {
             max=tmp;
             first=false;

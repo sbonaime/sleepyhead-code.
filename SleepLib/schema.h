@@ -120,8 +120,8 @@ public:
     Layer *addLayer(Layer *layer);// { m_layers.push_back(layer); return layer; }
     void setMin(EventDataType min) { m_min=min; m_hasmin=true; }
     void setMax(EventDataType max) { m_max=max; m_hasmax=true; }
-    EventDataType min() { return m_min; }
-    EventDataType max() { return m_max; }
+    EventDataType Min() { return m_min; }
+    EventDataType Max() { return m_max; }
     bool visible() { return m_visible; }
     void setVisible(bool b) { m_visible=b; }
 protected:

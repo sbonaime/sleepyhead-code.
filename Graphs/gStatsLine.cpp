@@ -40,8 +40,8 @@ void gStatsLine::SetDay(Day *d)
 {
     Layer::SetDay(d);
     if (!m_day) return;
-    m_min=d->min(m_code);
-    m_max=d->max(m_code);
+    m_min=d->Min(m_code);
+    m_max=d->Max(m_code);
     m_avg=d->wavg(m_code);
     m_p90=d->p90(m_code);
 

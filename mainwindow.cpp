@@ -229,9 +229,6 @@ void MainWindow::Startup()
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
     qstatus->setText("");
-    qDebug() << "applicationDirPath =" << QApplication::applicationDirPath();
-    qDebug() << "applicationFilePath =" << QApplication::applicationFilePath();
-
 }
 
 void MainWindow::on_action_Import_Data_triggered()
