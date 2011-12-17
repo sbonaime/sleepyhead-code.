@@ -28,7 +28,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="frontPage">
        <layout class="QGridLayout" name="gridLayout">
@@ -365,7 +365,6 @@
  </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
-  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

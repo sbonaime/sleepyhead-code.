@@ -408,10 +408,8 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             ui->tableWidget->item(current_row,0)->setData(Qt::UserRole+1,failed);
             QTimer::singleShot(100,this,SLOT(upgradeNext()));
             ui->plainTextEdit->appendPlainText("Download Complete");
-
-    } else if (requestmode==RM_UpdateQT) {
-            ui->plainTextEdit->appendPlainText("Received "+QString::number(reply->size())+" bytes");
         }
+
     } else {
         mainwin->Notify("There was an error completing a network request:\n\n("+reply->errorString()+")");
     }

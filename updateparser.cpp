@@ -43,6 +43,8 @@ bool UpdateParser::startDocument()
 
 bool UpdateParser::endElement(const QString &namespaceURI, const QString &localName, const QString &qName)
 {
+    Q_UNUSED(namespaceURI)
+    Q_UNUSED(localName)
     QString name=qName.toLower();
     if (name=="release") {
         inRelease=false;
@@ -68,6 +70,8 @@ bool UpdateParser::characters(const QString &ch)
 
 bool UpdateParser::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts)
 {
+    Q_UNUSED(namespaceURI)
+    Q_UNUSED(localName)
     QString name=qName.toLower();
     if (inRelease && name=="update") {
         QString ver, type;

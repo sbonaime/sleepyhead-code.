@@ -8,9 +8,9 @@
 class Update
 {
 public:
-    explicit Update();
-    explicit Update(const Update & copy);
-    explicit Update(QString _type, QString _version, QString _platform, QDate _date);
+    Update();
+    Update(const Update & copy);
+    Update(QString _type, QString _version, QString _platform, QDate _date);
     QString type;
     QString version;
     QString platform;

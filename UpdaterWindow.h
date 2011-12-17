@@ -14,7 +14,7 @@ namespace Ui {
 class UpdaterWindow;
 }
 
-enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile, RM_UpdateQT };
+enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile };
 
 class UpdaterWindow : public QMainWindow
 {
