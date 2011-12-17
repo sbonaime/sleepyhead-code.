@@ -81,7 +81,7 @@ void UpdaterWindow::checkForUpdates()
     }
     mainwin->Notify("Checking for SleepyHead Updates");
 
-    update_url=QUrl("http://192.168.1.8/update.xml");
+    update_url=QUrl("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/update.xml/download");
     downloadUpdateXML();
 }
 

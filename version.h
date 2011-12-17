@@ -11,9 +11,9 @@ inline QString VersionString() { return QString().sprintf("%i.%i.%i",major_versi
 
 #ifdef Q_WS_MAC
     const QString PlatformString="Mac";
-#elif Q_WS_WINDOWS
+#elif defined(Q_WS_WIN32)
     const QString PlatformString="Win32";
-#else
+#elif defined(Q_WS_X11)
     const QString PlatformString="Linux";
 #endif
 
