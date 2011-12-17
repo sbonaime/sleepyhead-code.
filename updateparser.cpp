@@ -3,6 +3,33 @@
 
 #include "updateparser.h"
 
+Update::Update()
+{
+    size=0;
+}
+Update::Update(const Update & copy)
+{
+    type=copy.type;
+    version=copy.version;
+    platform=copy.platform;
+    date=copy.date;
+    filename=copy.filename;
+    url=copy.url;
+    hash=copy.hash;
+    size=copy.size;
+    notes=copy.notes;
+    unzipped_path=copy.unzipped_path;
+}
+
+Update::Update(QString _type, QString _version, QString _platform, QDate _date)
+{
+    type=_type;
+    version=_version;
+    platform=_platform;
+    date=_date;
+    size=0;
+}
+
 bool UpdateParser::startDocument()
 {
     inRelease=false;
