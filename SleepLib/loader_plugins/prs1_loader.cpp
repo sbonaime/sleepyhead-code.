@@ -432,7 +432,7 @@ struct PRS1SummaryR5 {
     quint32 flags;
 
 
-} __attribute__((packed));
+};// __attribute__((packed));
 
 bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version)
 {

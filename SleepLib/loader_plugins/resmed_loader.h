@@ -36,7 +36,7 @@ struct EDFHeader {
     char num_data_records[8];
     char dur_data_records[8];
     char num_signals[4];
-} __attribute__ ((packed));
+};// __attribute__ ((packed));
 
 const int EDFHeaderSize=sizeof(EDFHeader);
 

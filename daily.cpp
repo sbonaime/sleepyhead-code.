@@ -676,7 +676,7 @@ void Daily::Load(QDate date)
         } else {
             GraphView->setEmptyText("No Data");
         }
-        mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
+        mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
 
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
@@ -705,7 +705,7 @@ void Daily::Load(QDate date)
         if (PROFILE.Exists("ShowSerialNumbers") && PROFILE["ShowSerialNumbers"].toBool()) {
             html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
         }
-        CPAPMode mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
+        CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
         html+="<tr><td colspan=4 align=center>Mode: ";
 
         EventDataType min=cpap->settings_min(CPAP_PressureMin);

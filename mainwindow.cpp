@@ -850,7 +850,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
                 submodel="\n"+cpap->machine->properties["SubModel"];
             cpapinfo+=cpap->machine->properties["Brand"]+" "+cpap->machine->properties["Model"]+submodel;
-            CPAPMode mode=(CPAPMode)cpap->settings_max(CPAP_Mode);
+            CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
             cpapinfo+="\nMode: ";
 
             EventDataType min=cpap->settings_min(CPAP_PressureMin);

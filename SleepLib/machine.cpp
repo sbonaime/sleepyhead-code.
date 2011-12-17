@@ -10,8 +10,8 @@
 #include <QDebug>
 #include <QString>
 #include <QObject>
-#include <tr1/random>
-#include <sys/time.h>
+//#include <tr1/random>
+//#include <sys/time.h>
 
 #include "machine.h"
 #include "profiles.h"
@@ -44,12 +44,14 @@ Machine::Machine(Profile *p,MachineID id)
     highest_sessionid=0;
     profile=p;
     if (!id) {
-        std::tr1::minstd_rand gen;
-        std::tr1::uniform_int<MachineID> unif(1, 0x7fffffff);
-        gen.seed((unsigned int) time(NULL));
+        srand(time(NULL));
+        //std::tr1::minstd_rand gen;
+        //std::tr1::uniform_int<MachineID> unif(1, 0x7fffffff);
+        //gen.seed((unsigned int) time(NULL));
         MachineID temp;
         do {
-            temp = unif(gen); //unif(gen) << 32 |
+            temp = rand();
+            //temp = unif(gen); //unif(gen) << 32 |
         } while (profile->machlist.find(temp)!=profile->machlist.end());
 
         m_id=temp;
