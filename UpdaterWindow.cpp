@@ -81,10 +81,16 @@ void UpdaterWindow::checkForUpdates()
     }
     mainwin->Notify("Checking for SleepyHead Updates");
 
+    update_url=QUrl("http://192.168.1.8/update.xml");
+    downloadUpdateXML();
+}
+
+void UpdaterWindow::downloadUpdateXML()
+{
     requestmode=RM_CheckUpdates;
 
-    reply=netmanager->get(QNetworkRequest(QUrl("http://192.168.1.8/update.xml")));
-    ui->plainTextEdit->appendPlainText("Requesting "+reply->url().toString());
+    reply=netmanager->get(QNetworkRequest(update_url));
+    ui->plainTextEdit->appendPlainText("Requesting "+update_url.toString());
     netmanager->connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
     dltime.start();
 }
@@ -259,7 +265,16 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
 {
     netmanager->disconnect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
     if (reply->error()==QNetworkReply::NoError) {
+
         if (requestmode==RM_CheckUpdates) {
+            QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+            if (!redirectUrl.isEmpty() && (redirectUrl!=reply->url())) {
+                update_url = redirectUrl;
+                reply->deleteLater();
+                QTimer::singleShot(100,this,SLOT(downloadUpdateXML()));
+                return;
+            }
+
             ui->plainTextEdit->appendPlainText(QString::number(reply->size())+" bytes received.");
             QString filename=QApplication::applicationDirPath()+QDir::separator()+reply->url().toString().section("/",-1);
             qDebug() << filename;

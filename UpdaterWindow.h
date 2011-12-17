@@ -31,6 +31,7 @@ protected slots:
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void dataReceived();
     void requestFile();
+    void downloadUpdateXML();
 
 private slots:
     void on_CloseButton_clicked();
@@ -58,6 +59,7 @@ private:
     QList<Update *> updates;
     int current_row;
     bool success;
+    QUrl update_url; // for update.xml redirects..
 };
 
 #endif // UPDATEWINDOW_H
