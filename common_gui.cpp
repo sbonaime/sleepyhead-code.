@@ -11,7 +11,7 @@
 #include "windows.h"
 void sh_delay(int ms)
 {
-    Sleep(ms)
+    Sleep(ms);
 }
 #else
 void sh_delay(int ms)

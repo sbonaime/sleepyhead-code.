@@ -64,7 +64,7 @@ UpdaterWindow::~UpdaterWindow()
 
 void UpdaterWindow::checkForUpdates()
 {
-    QString filename=QApplication::applicationDirPath()+QDir::separator()+"update.xml";
+    QString filename=QApplication::applicationDirPath()+"/update.xml";
     // Check updates.xml file if it's still recent..
     if (QFile::exists(filename)) {
         QFileInfo fi(filename);
@@ -99,10 +99,8 @@ void UpdaterWindow::downloadUpdateXML()
 
 void UpdaterWindow::dataReceived()
 {
-    //HttpStatusCodeAttribute
     QString rs=reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
     if (rs!="200") return;
-    //QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
 
     QByteArray read=reply->read(reply->bytesAvailable());
     qDebug() << "Received" << read.size() << "bytes";
@@ -151,9 +149,9 @@ void UpdaterWindow::requestFile()
 
     requestmode=RM_GetFile;
 
-    QString path=QApplication::applicationDirPath()+QDir::separator()+"Download";
-    QDir().mkdir(path);
-    path+=QDir::separator()+filename;
+    QString path=QApplication::applicationDirPath()+"/Download";
+    QDir().mkpath(path);
+    path+="/"+filename;
     ui->plainTextEdit->appendPlainText("Saving as "+path);
     file.setFileName(path);
     file.open(QFile::WriteOnly);
@@ -278,7 +276,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             }
 
             ui->plainTextEdit->appendPlainText(QString::number(reply->size())+" bytes received.");
-            QString filename=QApplication::applicationDirPath()+QDir::separator()+"update.xml";
+            QString filename=QApplication::applicationDirPath()+"/update.xml";
             qDebug() << filename;
             QFile file(filename);
             file.open(QFile::WriteOnly);
@@ -294,13 +292,13 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             file.close();
             //HttpStatusCodeAttribute
             QString rs=reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+            qDebug() << "HTTP Status Code" << rs;
 
             bool failed=false;
             if (rs=="404") {
                 qDebug() << "File not found";
                 failed=true;
             } else {
-                qDebug() << "StatCodeAttr" << rs;
                 QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
                 if (!redirectUrl.isEmpty() && (redirectUrl!=reply->url())) {
                     file.open(QFile::WriteOnly); //reopen file..
@@ -319,8 +317,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                         ui->plainTextEdit->appendPlainText("File size mismatch for "+update->filename);
                     }
                 } else {
-                    QString path=QApplication::applicationDirPath()+QDir::separator()+"Download";
-                    path+=QDir::separator()+update->filename;
+                    QString path=QApplication::applicationDirPath()+"/Download/"+update->filename;
                     QFile f(path);
                     f.open(QFile::ReadOnly);
                     QCryptographicHash hash(QCryptographicHash::Sha1);
@@ -349,9 +346,9 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                     QByteArray ba;
                     QStringList update_txt;
 
-                    QString apppath=QApplication::applicationDirPath()+QDir::separator();
-                    QString backups=apppath+"Backups"+QDir::separator();
-                    QString downloads=apppath+"Downloads"+QDir::separator();
+                    QString apppath=QApplication::applicationDirPath()+"/";
+                    QString backups=apppath+"Backups/";
+                    QString downloads=apppath+"Downloads/";
                     QDir().mkpath(backups);
 
                     for (int i=0;i<fsize;i++) {
@@ -360,7 +357,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                         qzf.open(QuaZipFile::ReadOnly);
 
                         QString path=downloads+files.at(i);
-                        if (path.endsWith(QDir::separator())) {
+                        if (path.endsWith("/") || path.endsWith("\\")) {
                             QDir().mkpath(path);
                             if (update->unzipped_path.isEmpty())
                                 update->unzipped_path=path;
