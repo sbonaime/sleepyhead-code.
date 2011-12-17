@@ -7,14 +7,18 @@
 #include "common_gui.h"
 #include "qglobal.h"
 
+#ifdef Q_WS_WIN32
+#include "windows.h"
 void sh_delay(int ms)
 {
-#ifdef Q_WS_WIN32
-    delay(ms);
-#else
-    sleep(ms/1000);
-#endif
+    Sleep(ms)
 }
+#else
+void sh_delay(int ms)
+{
+    sleep(ms/1000);
+}
+#endif
 
 
 #if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
