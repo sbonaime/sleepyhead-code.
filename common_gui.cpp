@@ -7,7 +7,7 @@
 #include "common_gui.h"
 #include "qglobal.h"
 
-void delay(int ms)
+void sh_delay(int ms)
 {
 #ifdef Q_WS_WIN32
     delay(ms);

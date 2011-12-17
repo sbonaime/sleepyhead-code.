@@ -89,7 +89,9 @@ void UpdaterWindow::downloadUpdateXML()
 {
     requestmode=RM_CheckUpdates;
 
-    reply=netmanager->get(QNetworkRequest(update_url));
+    QNetworkRequest req=QNetworkRequest(update_url);
+    req.setRawHeader("User-Agent", "Wget/1.12 (linux-gnu)");
+    reply=netmanager->get(req);
     ui->plainTextEdit->appendPlainText("Requesting "+update_url.toString());
     netmanager->connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
     dltime.start();
@@ -189,7 +191,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
         }
         if (!release || (VersionString() > release->version)) {
             mainwin->Notify("No updates were found for your platform",5000,"SleepyHead Updates");
-            delay(4000);
+            sh_delay(4000);
             close();
             return;
         }
@@ -276,7 +278,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             }
 
             ui->plainTextEdit->appendPlainText(QString::number(reply->size())+" bytes received.");
-            QString filename=QApplication::applicationDirPath()+QDir::separator()+reply->url().toString().section("/",-1);
+            QString filename=QApplication::applicationDirPath()+QDir::separator()+"update.xml";
             qDebug() << filename;
             QFile file(filename);
             file.open(QFile::WriteOnly);

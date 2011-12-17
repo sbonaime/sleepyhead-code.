@@ -26,6 +26,8 @@ quazip/(un)zip.h files for details, basically it's zlib license.
 
 #include <QtCore/qglobal.h>
 
+#define QUAZIP_BUILD
+
 /**
   This is automatically defined when building a static library, but when
   including QuaZip sources directly into a project, QUAZIP_STATIC should

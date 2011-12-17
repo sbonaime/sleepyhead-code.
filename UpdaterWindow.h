@@ -6,6 +6,7 @@
 #include <QTableWidgetItem>
 #include <QMenu>
 #include <QMainWindow>
+#include <QUrl>
 
 #include "version.h"
 #include "updateparser.h"
