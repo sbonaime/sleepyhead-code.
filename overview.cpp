@@ -170,8 +170,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     set=new SummaryChart("",GT_LINE);
     //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
-    set->addSlice("HumidSet",QColor("blue"),ST_SETWAVG,true);
-    set->addSlice("FlexSet",QColor("red"),ST_SETWAVG,true);
+    set->addSlice(PRS1_HumidSetting,QColor("blue"),ST_SETWAVG,true);
+    set->addSlice(PRS1_FlexSet,QColor("red"),ST_SETWAVG,true);
     set->addSlice("EPR",QColor("green"),ST_SETWAVG,true);
     set->addSlice("SmartFlex",QColor("purple"),ST_SETWAVG,true);
     SET->setRecMinY(0);

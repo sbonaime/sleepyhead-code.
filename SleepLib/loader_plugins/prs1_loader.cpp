@@ -471,7 +471,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         } else session->settings[PRS1_FlexMode]=(int)PR_CFLEX;
     } else session->settings[PRS1_FlexMode]=(int)PR_NONE;
 
-    session->settings[PRS1_FlexSet]=(int)data[offset+0x08] & 3;
+    session->settings[PRS1_FlexSet]=(int)(data[offset+0x08] & 3);
     session->settings[PRS1_HumidSetting]=(int)data[offset+0x09]&0x0f;
     session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
     session->settings["SysLock"]=(data[offset+0x0a]&0x80)==0x80;

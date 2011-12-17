@@ -133,6 +133,9 @@ void SummaryChart::SetDay(Day * nullday)
                             type==ST_SESSIONS ||
                             day->settingExists(code) ||
                             day->hasData(code,type);
+                    if (code==PRS1_FlexSet) {
+                        int i=5;
+                    }
 
                     if (hascode) {
                         m_days[dn]=day;

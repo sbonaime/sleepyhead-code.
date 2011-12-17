@@ -110,7 +110,7 @@ const QString PRS1_10="PRS1_10";
 const QString PRS1_12="PRS1_12";
 const QString PRS1_FlexMode="FlexMode";
 const QString PRS1_FlexSet="FlexSet";
-const QString PRS1_HumidStatus="FlexSet";
+const QString PRS1_HumidStatus="HumidStat";
 const QString PRS1_HumidSetting="HumidSet";
 
 const QString OXI_Pulse="Pulse";
