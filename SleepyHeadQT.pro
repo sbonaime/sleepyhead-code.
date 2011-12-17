@@ -88,7 +88,7 @@ unix:!macx:LIBS        += -lX11 -lz
 
 macx {
   SOURCES          += qextserialport/qextserialenumerator_osx.cpp
-  LIBS             += -framework IOKit -framework CoreFoundation
+  LIBS             += -framework IOKit -framework CoreFoundation -lz
 }
 
 win32 {
