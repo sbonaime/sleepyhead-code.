@@ -1154,7 +1154,7 @@ void MainWindow::RestartApplication(bool force_login)
 
         QStringList args;
         args << "-n"; // -n option is important, as it opens a new process
-        args << apppath << -p;
+        args << apppath << "-p";
 
         if (force_login) args << "-l";
         // -p starts with 1 second delay, to give this process time to save..
