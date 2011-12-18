@@ -372,6 +372,8 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                                 } while (!line.isNull());
                             } else {
                                 QString fn=files.at(i).section("/",-1);
+                                QFile::Permissions perm=orig.permissions(apppath+fn);
+
                                 // delete backups
                                 if (f.exists(backups+fn)) f.remove(backups+fn);
                                 // rename (move) current file to backup
@@ -383,6 +385,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                                 f.open(QFile::WriteOnly);
                                 f.write(ba);
                                 f.close();
+                                f.setPermissions(perm);
                             }
                         }
                         if (bar) {
