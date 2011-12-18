@@ -9,7 +9,10 @@
 
 #include <QLocale>
 
+//! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();
+
+//! \brief Delay of ms milliseconds
 void sh_delay(int ms);
 
 #endif

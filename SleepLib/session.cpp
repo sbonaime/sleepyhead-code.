@@ -960,15 +960,15 @@ EventDataType Session::wavg(ChannelID id)
     return v;
 }
 
-EventList * Session::AddEventList(QString chan, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate,bool second_field)
+EventList * Session::AddEventList(ChannelID code, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate,bool second_field)
 {
-    schema::Channel * channel=&schema::channel[chan];
+    schema::Channel * channel=&schema::channel[code];
     if (!channel) {
         qWarning() << "Channel" << chan << "does not exist!";
         //return NULL;
     }
     EventList * el=new EventList(et,gain,offset,min,max,rate,second_field);
-    eventlist[chan].push_back(el);
+    eventlist[code].push_back(el);
     //s_machine->registerChannel(chan);
     return el;
 }

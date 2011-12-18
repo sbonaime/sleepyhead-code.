@@ -18,44 +18,81 @@
 //class EventList;
 class Machine;
 
+/*! \class Session
+    \brief Contains a single Sessions worth of machine event/waveform information.
 
+    This class also contains all the primary database logic for SleepLib
+    */
 class Session
 {
 public:
+    /*! \fn Session(Machine *,SessionID);
+        \brief Create a session object belonging to Machine, with supplied SessionID
+        If sessionID is 0, the next in sequence will be picked
+        */
     Session(Machine *,SessionID);
     virtual ~Session();
 
+    //! \brief Stores the session in the directory supplied by path
     bool Store(QString path);
+
+    //! \brief Writes the Sessions Summary Indexes to filename, in SleepLibs custom data format.
     bool StoreSummary(QString filename);
+
+    //! \brief Writes the Sessions EventLists to filename, in SleepLibs custom data format.
     bool StoreEvents(QString filename);
+
     //bool Load(QString path);
+
+    //! \brief Loads the Sessions Summary Indexes from filename, from SleepLibs custom data format.
     bool LoadSummary(QString filename);
+
+    //! \brief Loads the Sessions EventLists from filename, from SleepLibs custom data format.
     bool LoadEvents(QString filename);
 
+    //! \brief Loads the events for this session when requested (only the summaries are loaded at startup)
     bool OpenEvents();
+
+    //! \brief Put the events away until needed again, freeing memory
     void TrashEvents();
 
+    //! \brief Search for Event code happening within dist milliseconds of supplied time (ms since epoch)
     bool SearchEvent(ChannelID code, qint64 time, qint64 dist=15000);
 
-
+    //! \brief Return the sessionID
     const SessionID & session() {
         return s_session;
     }
+
+    //! \brief Return the start of this sessions time range (in milliseconds since epoch)
     qint64 first() {
         return s_first;
     }
+
+    //! \brief Return the end of this sessions time range (in milliseconds since epoch)
     qint64 last() {
         return s_last;
     }
+
+    //! \brief Return the millisecond length of this session
     qint64 length() {
         return s_last-s_first;
     }
+
+    //! \brief Set this Sessions ID (Not does not update indexes)
     void SetSessionID(SessionID s) {
         s_session=s;
     }
+
+    //! \brief Moves all of this session data by offset d milliseconds
     void offsetSession(qint64 d);
+
+    //! \brief Just set the start of the timerange without comparing
     void really_set_first(qint64 d) { s_first=d; }
+
+    //! \brief Just set the end of the timerange without comparing
     void really_set_last(qint64 d) { s_last=d; }
+
     void set_first(qint64 d) {
         if (!s_first) s_first=d;
         else if (d<s_first) s_first=d;
@@ -69,21 +106,30 @@ public:
         else if (s_last<d) s_last=d;
     }
 
+    //! \brief Return Session Length in decimal hours
     double hours() {
         double t=(s_last-s_first)/3600000.0;
         return t;
     }
 
+    //! \brief Flag this Session as dirty, so Machine object can save it
     void SetChanged(bool val) {
         s_changed=val;
         s_events_loaded=val; // dirty hack putting this here
     }
+
+    //! \brief Return this Sessions dirty status
     bool IsChanged() {
         return s_changed;
     }
 
+    //! \brief Contains all the EventLists, indexed by ChannelID
     QHash<ChannelID,QVector<EventList *> > eventlist;
+
+    //! \brief Sessions Settings List, contianing single settings for this session.
     QHash<ChannelID,QVariant> settings;
+
+    // Session caches
     QHash<ChannelID,int> m_cnt;
     QHash<ChannelID,double> m_sum;
     QHash<ChannelID,EventDataType> m_avg;
@@ -112,36 +158,74 @@ public:
 
     int count(ChannelID id);
 
+    //! \brief Returns the Count of all events of type id between time range
     int rangeCount(ChannelID id, qint64 first,qint64 last);
+
+    //! \brief Returns the Sum of all events of type id between time range
     double rangeSum(ChannelID id, qint64 first,qint64 last);
+
+    //! \brief Returns the minimum of events of type id between time range
     EventDataType rangeMin(ChannelID id, qint64 first,qint64 last);
+
+    //! \brief Returns the maximum of events of type id between time range
     EventDataType rangeMax(ChannelID id, qint64 first,qint64 last);
 
+
+    //! \brief Returns (and caches) the Sum of all events of type id
     double sum(ChannelID id);
+
+    //! \brief Returns (and caches) the Average of all events of type id
     EventDataType avg(ChannelID id);
+
+    //! \brief Returns (and caches) the Time Weighted Average of all events of type id
     EventDataType wavg(ChannelID i);
+
+    //! \brief Returns (and caches) the Minimum of all events of type id
     EventDataType Min(ChannelID id);
+
+    //! \brief Returns (and caches) the Maximum of all events of type id
     EventDataType Max(ChannelID id);
+
+    //! \brief Returns (and caches) the 90th Percentile of all events of type id
     EventDataType p90(ChannelID id);
+
+    //! \brief Returns (and caches) the Count-Per-Hour of all events of type id
     EventDataType cph(ChannelID id);
+
+    //! \brief Returns (and caches) the Sum-Per-Hour of all events of type id
     EventDataType sph(ChannelID id);
 
+    //! \brief Returns (without caching) the requested Percentile of all events of type id
     EventDataType percentile(ChannelID id,EventDataType percentile);
 
+    //! \brief Returns true if the channel has events loaded, or a record of a count for when they are not
     bool channelExists(QString name);// { return (schema::channel.names.contains(name));}
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
+
+    //! \brief Sets the event file linked to the summary (during load, for ondemand loading)
     void SetEventFile(QString & filename) { s_eventfile=filename; }
 
+    //! \brief Update this sessions first time if it's less than the current record
     inline void updateFirst(qint64 v) { if (!s_first) s_first=v; else if (s_first>v) s_first=v; }
+
+    //! \brief Update this sessions latest time if it's more than the current record
     inline void updateLast(qint64 v) { if (!s_last) s_last=v; else if (s_last<v) s_last=v; }
 
+    //! \brief Returns (and caches) the first time for Channel code
     qint64 first(ChannelID code);
+
+    //! \brief Returns (and caches) the last time for Channel code
     qint64 last(ChannelID code);
 
+    //! \brief Regenerates the Session Index Caches, and calls the fun calculation functions
     void UpdateSummaries();
-    EventList * AddEventList(QString chan, EventListType et, EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, EventDataType rate=0.0, bool second_field=false);
+
+    //! \brief Creates and returns a new EventList for the supplied Channel code
+    EventList * AddEventList(ChannelID code, EventListType et, EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, EventDataType rate=0.0, bool second_field=false);
+
+    //! \brief Returns this sessions MachineID
     Machine * machine() { return s_machine; }
 protected:
     SessionID s_session;
