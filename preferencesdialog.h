@@ -19,6 +19,10 @@ namespace Ui {
     class PreferencesDialog;
 }
 
+
+/*! \class MySortFilterProxyModel
+    \brief Enables the Graph tabs view to be filtered
+    */
 class MySortFilterProxyModel:public QSortFilterProxyModel
 {
     Q_OBJECT
@@ -30,12 +34,17 @@ protected:
 
 };
 
+//! \note MaksProfile in still a work in progress
 struct MaskProfile {
     QString name;
     EventDataType pflow[5][2];
 };
 
+/*! \class PreferencesDialog
+    \brief SleepyHead's Main Preferences Window
 
+    This provides the Preferences form and logic to alter Preferences for SleepyHead
+*/
 class PreferencesDialog : public QDialog
 {
     Q_OBJECT
@@ -43,8 +52,12 @@ class PreferencesDialog : public QDialog
 public:
     explicit PreferencesDialog(QWidget *parent, Profile * _profile);
     ~PreferencesDialog();
+
+    /*! \fn Save()
+        \brief Save the current preferences, called when Ok button is clicked on */
     void Save();
     void RefreshLastChecked();
+
 private slots:
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void on_combineSlider_valueChanged(int value);

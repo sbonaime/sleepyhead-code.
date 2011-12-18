@@ -35,13 +35,14 @@
 #include "Graphs/gStatsLine.h"
 
 //extern QProgressBar *qprogress;
+extern MainWindow * mainwin;
 
 const int min_height=150;
 const float ounce_convert=28.3495231;
 const float pound_convert=ounce_convert*16;
 
-Daily::Daily(QWidget *parent,gGraphView * shared, MainWindow *mw)
-    :QWidget(parent),mainwin(mw), ui(new Ui::Daily)
+Daily::Daily(QWidget *parent,gGraphView * shared)
+    :QWidget(parent), ui(new Ui::Daily)
 {
     ui->setupUi(this);
 
@@ -524,7 +525,6 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
-
     if (previous_date.isValid())
         Unload(previous_date);
 
@@ -549,30 +549,6 @@ void Daily::ResetGraphLayout()
     GraphView->resetLayout();
     //splitter->setSizes(splitter_sizes);
 
-}
-void Daily::ShowHideGraphs()
-{
-/*    int vis=0;
-    for (int i=0;i<Graphs.size();i++) {
-        if (Graphs[i]->isEmpty()) {
-            GraphAction[i]->setVisible(false);
-            Graphs[i]->hide();
-        } else {
-            Graphs[i]->ResetBounds();
-            GraphAction[i]->setVisible(true);
-            if (GraphAction[i]->isChecked()) {
-                Graphs[i]->show();
-                vis++;
-            } else {
-                Graphs[i]->hide();
-            }
-        }
-    }
-    GraphLayout->setMinimumHeight(vis*default_height+10);
-    //splitter->setMaximumHeight(vis*default_height);
-    splitter->layout();
-    //splitter->update();
-    RedrawGraphs(); */
 }
 void Daily::graphtogglebutton_toggled(bool b)
 {

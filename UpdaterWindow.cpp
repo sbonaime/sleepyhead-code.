@@ -193,9 +193,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             close();
             return;
         }
-
-
-        qDebug() << "Version" << release->version << "has updates for" << platform;
+        qDebug() << "Version" << release->version << "has release section" << platform;
 
         QString latestapp="", latestqt="";
         updates.clear();

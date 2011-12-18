@@ -15,6 +15,9 @@ namespace Ui {
     class ProfileSelect;
 }
 
+/*! \class ProfileSelect
+    \brief Simple Login Window providing a list of all profiles to select from
+    */
 class ProfileSelect : public QDialog
 {
     Q_OBJECT

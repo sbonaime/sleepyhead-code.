@@ -15,8 +15,19 @@ namespace Ui {
 class UpdaterWindow;
 }
 
+/*! \enum RequestMode
+    \brief Used in replyFinished() to differentiate the current update task.
+*/
 enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile };
 
+
+/*! \class UpdaterWindow
+    \brief Auto Update Module for SleepyHead
+
+    This class handles the complete Auto-Update procedure for SleepyHead, it does the network checks,
+    parses the update.xml from SourceForge host, checks for any new updates, and provides the UI
+    and mechanisms to download and replace the binaries according to what is specified in update.xml.
+  */
 class UpdaterWindow : public QMainWindow
 {
     Q_OBJECT
@@ -24,7 +35,13 @@ class UpdaterWindow : public QMainWindow
 public:
     explicit UpdaterWindow(QWidget *parent = 0);
     ~UpdaterWindow();
+
+    //! Start the
     void checkForUpdates();
+
+    /*! \fn ParseUpdateXML(QIODevice * dev)
+        \brief Parses the update.xml from either QFile or QNetworkReply source
+        */
     void ParseUpdateXML(QIODevice * dev);
 
 protected slots:

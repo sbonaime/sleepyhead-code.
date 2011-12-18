@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     logtime.start();
     ui->setupUi(this);
+
     QString version=VersionString();
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF["Profile"].toString()));
@@ -81,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     oximetry=NULL;
     prefdialog=NULL;
 
+    // Initialize Status Bar objects
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
@@ -98,14 +100,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
 
+
+    // This next section is a mess..
+    // Preferences & Profile variables really need to initialize somewhere else
+
     if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=false;
     ui->actionDebug->setChecked(PROFILE["ShowDebug"].toBool());
 
     if (!PROFILE["ShowDebug"].toBool()) {
         ui->logText->hide();
     }
-
-    // TODO: Move all this to profile creation.
 
     // This speeds up the second part of importing craploads.. later it will speed up the first part too.
     if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
@@ -136,15 +140,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Using the dirty registry here. :(
     QSettings settings("Jedimark", "SleepyHead");
+
+    // Load previous Window geometry
     this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
+    // Start with the Welcome Tab
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
-    /*netmanager = new QNetworkAccessManager(this);
-    connect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-
-    connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString))); */
-
+    // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
         systray=new QSystemTrayIcon(QIcon(":/docs/sheep.png"),this);
         systray->show();
@@ -157,7 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
         systraymenu->addAction("Check for Updates",this,SLOT(on_actionCheck_for_Updates_triggered()));
         systraymenu->addSeparator();
         systraymenu->addAction("Exit",this,SLOT(close()));
-    } else {
+    } else { // if not available, the messages will popup in the taskbar
         systray=NULL;
         systraymenu=NULL;
     }
@@ -166,13 +169,13 @@ MainWindow::MainWindow(QWidget *parent) :
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-    if (systray) delete systray;
     if (systraymenu) delete systraymenu;
+    if (systray) delete systray;
 
-    //if (!isMaximized()) {
+    // Save current window position
         QSettings settings("Jedimark", "SleepyHead");
         settings.setValue("MainWindow/geometry", saveGeometry());
-    //}
+
     if (daily) {
         daily->close();
         delete daily;
@@ -185,7 +188,11 @@ MainWindow::~MainWindow()
         oximetry->close();
         delete oximetry;
     }
+
+    // Trash anything allocated by the Graph objects
     DoneGraphs();
+
+    // Shutdown and Save the current User profile
     Profiles::Done();
     mainwin=NULL;
     delete ui;
@@ -214,7 +221,7 @@ void MainWindow::Startup()
     //SnapshotGraph->setMinimumSize(1024,512);
     SnapshotGraph->hide();
 
-    daily=new Daily(ui->tabWidget,NULL,this);
+    daily=new Daily(ui->tabWidget,NULL);
     ui->tabWidget->insertTab(1,daily,tr("Daily"));
 
     overview=new Overview(ui->tabWidget,daily->graphView());

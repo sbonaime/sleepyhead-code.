@@ -165,6 +165,9 @@ void ProfileSelect::deleteProfile()
         }
     }
 }
+
+//! \fn ProfileSelect::QuickLogin()
+//! \brief For programmatically bypassing the login window
 void ProfileSelect::QuickLogin()
 {
     on_listView_activated(ui->listView->currentIndex());
@@ -187,6 +190,9 @@ void ProfileSelect::on_newProfileButton_clicked()
     accept();
 }
 
+
+//! \fn ProfileSelect::on_listView_activated(const QModelIndex &index)
+//! \brief Process the selected login, requesting passwords if required.
 void ProfileSelect::on_listView_activated(const QModelIndex &index)
 {
     QString name=index.data().toString();

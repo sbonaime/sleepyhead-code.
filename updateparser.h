@@ -5,6 +5,9 @@
 #include <QMetaType>
 #include <QDate>
 
+/*! \struct Update
+    \brief Holds platform specific information about an individual updates
+  */
 class Update
 {
 public:
@@ -23,6 +26,9 @@ public:
     QString unzipped_path;
 };
 
+/*! \struct Release
+    \brief Holds information about an individual major release
+  */
 struct Release
 {
     Release() {}
@@ -46,6 +52,10 @@ struct Release
 
 Q_DECLARE_METATYPE(Update *)
 
+
+/*! \class UpdateParser
+    \brief SAX XML parser for update.xml
+  */
 class UpdateParser:public QXmlDefaultHandler
 {
 public:
