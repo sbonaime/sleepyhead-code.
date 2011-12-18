@@ -39,6 +39,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     //double avg;
     int i;
 
+    // Extra median filter stage
     /*i=3;
     stage1[0]=in->data(0);
     stage1[1]=in->data(1);
@@ -86,13 +87,14 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     //i++;
     //stage2[i]=in->data(i);
 
-    float weight=0.6;
-    //stage2[0]=in->data(0);
+
+//    float weight=0.6;
+//    stage2[0]=in->data(0);
 //    stage1[0]=stage2[0];
-   /* for (int i=1;i<size;i++) {
-        //stage2[i]=in->data(i);
-        stage1[i]=weight*stage2[i]+(1.0-weight)*stage1[i-1];
-    } */
+//    for (int i=1;i<size;i++) {
+//        //stage2[i]=in->data(i);
+//        stage1[i]=weight*stage2[i]+(1.0-weight)*stage1[i-1];
+//    }
 
     qint64 time=in->first();
     qint64 u1=0,u2=0,len,l1=0,l2=0;
@@ -105,46 +107,52 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     QVector<EventDataType> breaths_min;
     QVector<qint64> breaths_max_peak;
     QVector<EventDataType> breaths_max;
-    //int lasti=0;
 
-    const int ringsize=256;
-    EventDataType ringmax[ringsize]={0};
-    EventDataType ringmin[ringsize]={0};
-    qint64 ringtime[ringsize]={0};
-    int rpos=0;
+//    const int ringsize=256;
+//    EventDataType ringmax[ringsize]={0};
+//    EventDataType ringmin[ringsize]={0};
+//    qint64 ringtime[ringsize]={0};
+//    int rpos=0;
     EventDataType min=0,max=0;
     qint64 peakmin=0, peakmax=0;
     for (i=0;i<size;i++) {
         c=stage2[i];
+
         if (c>thresh) {
+            // Crossing the zero line, going up
             if (lastc<=thresh) {
                 u2=u1;
                 u1=time;
-                if (u2>thresh) {
+                if (u2>0) {
                     z2=i;
                     len=qAbs(u2-u1);
-                    if (tv) { // && z1>0) { // Tidal Volume Calculations
+                    if (tv) { // Tidal Volume Calculations
                         EventDataType t=0;
+                        // looking at only half the waveform
                         for (int g=z1;g<z2;g++) {
                             tmp=-stage2[g];
                             t+=tmp;
                         }
                         TV.push_back(t);
                     }
+                    // keep zero crossings points
                     breaths_start.push_back(time);
                     breaths.push_back(len);
+
+                    // keep previously calculated negative peak
                     breaths_min_peak.push_back(peakmin);
                     breaths_min.push_back(min);
                     max=0;
                 }
             } else {
+                // Find the positive peak
                 if (c>=max) {
                     max=c;
                     peakmax=time+rate;
                 }
-
             }
         } else {
+            // Crossing the zero line, going down
             if (lastc>thresh) {
                 l2=l1;
                 l1=time;
@@ -163,12 +171,14 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                           //  TV[ts]=(TV[ts]+t)/2.0;
                         }
                     }
+                    // keep previously calculated positive peak
                     breaths_max_peak.push_back(peakmax);
                     breaths_max.push_back(max);
                     min=0;
 
                 }
             } else {
+                // Find the negative peak
                 if (c<=min) {
                     min=c;
                     peakmin=time;
@@ -354,13 +364,10 @@ int calcRespRate(Session *session)
         rr=new EventList(EVL_Event);
     } else rr=NULL;
 
-    if (!rr & !tv & !mv) return 0;
+    if (!rr && !tv && !mv) return 0; // don't bother, but flagging won't run either..
     if (rr) session->eventlist[CPAP_RespRate].push_back(rr);
     if (tv) session->eventlist[CPAP_TidalVolume].push_back(tv);
     if (mv) session->eventlist[CPAP_MinuteVent].push_back(mv);
-
-    //uf2=new EventList(EVL_Event,1,0,0,0,0,true);
-    //session->eventlist["UserFlag2"].push_back(uf2);
 
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
