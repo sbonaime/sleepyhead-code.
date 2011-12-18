@@ -16,12 +16,12 @@ License: GPL
 #include "preferences.h"
 
 class Machine;
-/**
- * @class Profile
- * @author Mark Watkins
- * @date 28/04/11
- * @file profiles.h
- * @brief User profile system
+/*!
+  \class Profile
+  \author Mark Watkins
+  \date 28/04/11
+  \file profiles.h
+  \brief User profile system
  */
 class Profile:public Preferences
 {
@@ -30,22 +30,47 @@ public:
     Profile();
     virtual ~Profile();
 
+    //! \brief Save Profile object (This is an extension to Preference::Save(..))
     virtual bool Save(QString filename="");
 
     bool is_first_day;
+
+    //! \brief List of machines, indexed by MachineID
     QHash<MachineID,Machine *> machlist;
+
+    //! \brief Add machine to this profiles machlist
     void AddMachine(Machine *m);
+
+    //! \brief Remove machine from this profiles machlist
     void DelMachine(Machine *m);
+
+    //! \brief Loads all machine (summary) data belonging to this profile
     void LoadMachineData();
+
+    //! \brief Barf because data format has changed. This does a purge of CPAP data for machine *m
     void DataFormatError(Machine *m);
+
+    /*! \brief Import Machine Data
+        \param path
+     */
     int Import(QString path);
+
+    //! \brief Remove a session from day object, without deleting the Session object
     void RemoveSession(Session * sess);
 
+    //! \brief Add Day record to Profile Day list
     void AddDay(QDate date,Day *day,MachineType mt);
+
+    //! \brief Get Day record if data available for date and machine type, else return NULL
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
 
+    //! \brief Returns a list of all machines of type t
     QList<Machine *> GetMachines(MachineType t);
+
+    //! \brief Returns the machine of type t used on date, NULL if none..
     Machine * GetMachine(MachineType t,QDate date);
+
+    //! \brief return the first machine of type t
     Machine * GetMachine(MachineType t);
 
     virtual void ExtraLoad(QDomElement & root);

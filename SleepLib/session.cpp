@@ -964,7 +964,7 @@ EventList * Session::AddEventList(ChannelID code, EventListType et,EventDataType
 {
     schema::Channel * channel=&schema::channel[code];
     if (!channel) {
-        qWarning() << "Channel" << chan << "does not exist!";
+        qWarning() << "Channel" << code << "does not exist!";
         //return NULL;
     }
     EventList * el=new EventList(et,gain,offset,min,max,rate,second_field);

@@ -38,7 +38,7 @@ NewProfile::NewProfile(QWidget *parent) :
     m_passwordHashed=false;
     ui->heightEdit2->setVisible(false);
     ui->heightEdit->setDecimals(2);
-    ui->heightEdit->setSuffix("cm");
+    ui->heightEdit->setSuffix(tr("cm"));
 
     { // process countries list
     QFile f(":/docs/countries.txt");
@@ -46,7 +46,7 @@ NewProfile::NewProfile(QWidget *parent) :
     QTextStream cnt(&f);
     QString a;
     ui->countryCombo->clear();
-    ui->countryCombo->addItem("Select Country");
+    ui->countryCombo->addItem(tr("Select Country"));
     do {
         a=cnt.readLine();
         if (a.isEmpty()) break;
@@ -88,15 +88,15 @@ void NewProfile::on_nextButton_clicked()
     switch(index) {
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
-            QMessageBox::information(this,"Error","Empty Username",QMessageBox::Ok);
+            QMessageBox::information(this,tr("Error"),tr("Empty Username"),QMessageBox::Ok);
             return;
         }
         if (ui->genderCombo->currentIndex()==0) {
-            //QMessageBox::information(this,"Notice","You did not specify Gender.",QMessageBox::Ok);
+            //QMessageBox::information(this,tr("Notice"),tr("You did not specify Gender."),QMessageBox::Ok);
         }
         if (ui->passwordGroupBox->isChecked()) {
             if (ui->passwordEdit1->text()!=ui->passwordEdit2->text()) {
-                QMessageBox::information(this,"Error","Passwords don't match",QMessageBox::Ok);
+                QMessageBox::information(this,tr("Error"),tr("Passwords don't match"),QMessageBox::Ok);
                 return;
             }
             if (ui->passwordEdit1->text().isEmpty())
@@ -118,7 +118,7 @@ void NewProfile::on_nextButton_clicked()
         ui->stackedWidget->setCurrentIndex(index);
     } else {
         // Finish button clicked.
-        if (QMessageBox::question(this,"Profile Changes","Accept and save this information?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(this,tr("Profile Changes"),tr("Accept and save this information?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             Profile *profile=Profiles::Get(ui->userNameEdit->text());
             if (!profile) { // No profile, create one.
                 profile=Profiles::Create(ui->userNameEdit->text());
@@ -140,9 +140,9 @@ void NewProfile::on_nextButton_clicked()
             }
             //prof["Password"]="";
             if (ui->genderCombo->currentIndex()==1) {
-                prof["Gender"]="Male";
+                prof["Gender"]=tr("Male");
             } else if (ui->genderCombo->currentIndex()==2) {
-                prof["Gender"]="Female";
+                prof["Gender"]=tr("Female");
             }
             prof["DateDiagnosed"]=ui->dateDiagnosedEdit->date();
             prof["UntreatedAHI"]=ui->untreatedAHIEdit->value();
@@ -183,9 +183,9 @@ void NewProfile::on_nextButton_clicked()
     }
 
     if (index>=max_pages) {
-        ui->nextButton->setText("&Finish");
+        ui->nextButton->setText(tr("&Finish"));
     } else {
-        ui->nextButton->setText("&Next");
+        ui->nextButton->setText(tr("&Next"));
     }
     ui->backButton->setEnabled(true);
 
@@ -193,7 +193,7 @@ void NewProfile::on_nextButton_clicked()
 
 void NewProfile::on_backButton_clicked()
 {
-    ui->nextButton->setText("&Next");
+    ui->nextButton->setText(tr("&Next"));
     if (ui->stackedWidget->currentIndex()>m_firstPage) {
         ui->stackedWidget->setCurrentIndex(ui->stackedWidget->currentIndex()-1);
     }
@@ -294,13 +294,13 @@ void NewProfile::edit(const QString name)
         ui->heightEdit2->setVisible(true);
         ui->heightEdit->setDecimals(0);
         ui->heightEdit2->setDecimals(0);
-        ui->heightEdit->setSuffix("ft");
-        ui->heightEdit2->setSuffix("\"");
+        ui->heightEdit->setSuffix(tr("ft")); // foot
+        ui->heightEdit2->setSuffix(tr("\"")); // inches
     } else { // good wholesome metric
         ui->heightEdit->setValue(v);
         ui->heightEdit2->setVisible(false);
         ui->heightEdit->setDecimals(2);
-        ui->heightEdit->setSuffix("cm");
+        ui->heightEdit->setSuffix(tr("cm"));
     }
 }
 
@@ -321,16 +321,16 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         //metric
         ui->heightEdit2->setVisible(false);
         ui->heightEdit->setDecimals(2);
-        ui->heightEdit->setSuffix("cm");
+        ui->heightEdit->setSuffix(tr("cm"));
         double v=ui->heightEdit->value()*30.48;
         v+=ui->heightEdit2->value()*2.54;
         ui->heightEdit->setValue(v);
     } else {        //evil
         ui->heightEdit->setDecimals(0);
         ui->heightEdit2->setDecimals(0);
-        ui->heightEdit->setSuffix("ft");
+        ui->heightEdit->setSuffix(tr("ft"));
         ui->heightEdit2->setVisible(true);
-        ui->heightEdit2->setSuffix("\"");
+        ui->heightEdit2->setSuffix(tr("\""));
         int v=ui->heightEdit->value()/2.54;
         int feet=v / 12;
         int inches=v % 12;

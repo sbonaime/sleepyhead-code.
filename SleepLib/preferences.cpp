@@ -29,7 +29,7 @@ const QString & getUserName()
     userName=getenv("USER");
 
     if (userName.isEmpty()) {
-        userName="Windows User";
+        userName=QObject::tr("Windows User");
 
 #if defined (Q_WS_WIN32)
     #if defined(UNICODE)

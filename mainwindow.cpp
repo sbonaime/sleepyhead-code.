@@ -31,6 +31,7 @@
 #include "SleepLib/schema.h"
 #include "Graphs/glcommon.h"
 #include "UpdaterWindow.h"
+#include "version.h"
 
 QProgressBar *qprogress;
 QLabel *qstatus;
@@ -199,7 +200,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::Notify(QString s,int ms,QString title)
+void MainWindow::Notify(QString s,QString title,int ms)
 {
     if (systray) {
         systray->showMessage(title,s,QSystemTrayIcon::Information,ms);
@@ -724,7 +725,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
-    Notify("Printing "+name+" Report.\nThis make take some time to complete..\nPlease don't touch anything until it's done.",20000);
+    Notify(tr("This make take some time to complete..\nPlease don't touch anything until it's done."),tr("Printing %1 Report").arg(name),20000);
     QPainter painter;
     painter.begin(printer);
 
@@ -733,7 +734,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     float hscale=pxres.width()/pres.width();
     float vscale=pxres.height()/pres.height();
 
-    QFontMetrics fm(*bigfont);
+    //QFontMetrics fm(*bigfont);
     //float title_height=fm.ascent()*vscale;
     QFontMetrics fm2(*defaultfont);
     float normal_height=fm2.ascent()*vscale;
@@ -770,7 +771,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     //float scalex=1.0/graph_xscale;
     float gh=full_graph_height*graph_xscale;
 
-    QString title=name+" Report";
+    QString title=tr("%1 Report").arg(name);
     painter.setFont(*bigfont);
     int top=0;
     QRectF bounds=painter.boundingRect(QRectF(0,top,printer_width,0),title,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
@@ -784,18 +785,18 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     int maxy=0;
     if (!PROFILE["FirstName"].toString().isEmpty()) {
-        QString userinfo="Name:\t"+PROFILE["LastName"].toString()+", "+PROFILE["FirstName"].toString()+"\n";
-        userinfo+="DOB:\t"+PROFILE["DOB"].toString()+"\n";
-        userinfo+="Phone:\t"+PROFILE["Phone"].toString()+"\n";
-        userinfo+="Email:\t"+PROFILE["EmailAddress"].toString()+"\n";
-        if (!PROFILE["Address"].toString().isEmpty()) userinfo+="\nAddress:\n"+PROFILE["Address"].toString()+"\n";
+        QString userinfo=tr("Name:\t %1, %2\n").arg(PROFILE["LastName"].toString()).arg(PROFILE["FirstName"].toString());
+        userinfo+=tr("DOB:\t%1\n").arg(PROFILE["DOB"].toString());
+        userinfo+=tr("Phone:\t%1\n").arg(PROFILE["Phone"].toString());
+        userinfo+=tr("Email:\t%1\n").arg(PROFILE["EmailAddress"].toString());
+        if (!PROFILE["Address"].toString().isEmpty()) userinfo+=tr("\nAddress:\n").arg(PROFILE["Address"].toString());
         QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         if (bounds.height()>maxy) maxy=bounds.height();
     }
 
     int graph_slots=0;
-    if (name=="Daily") {
+    if (name==tr("Daily")) {
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
         QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         if (cpap) {
@@ -806,24 +807,24 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             int m=(tt/60)%60;
             int s=tt % 60;
 
-            cpapinfo+="Mask Time: "+QString().sprintf("%2i hours, %2i minutes, %2i seconds",h,m,s)+"\n";
-            cpapinfo+="Bedtime: "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+" ";
-            cpapinfo+="Wake-up: "+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
+            cpapinfo+=tr("Mask Time: ")+QString().sprintf("%2i hours, %2i minutes, %2i seconds",h,m,s)+"\n";
+            cpapinfo+=tr("Bedtime: ")+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+" ";
+            cpapinfo+=tr("Wake-up: ")+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
             QString submodel;
-            cpapinfo+="Machine: ";
+            cpapinfo+=tr("Machine: ");
             if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
                 submodel="\n"+cpap->machine->properties["SubModel"];
             cpapinfo+=cpap->machine->properties["Brand"]+" "+cpap->machine->properties["Model"]+submodel;
             CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
-            cpapinfo+="\nMode: ";
+            cpapinfo+=tr("\nMode: ");
 
             EventDataType min=cpap->settings_min(CPAP_PressureMin);
             EventDataType max=cpap->settings_max(CPAP_PressureMax);
 
-            if (mode==MODE_CPAP) cpapinfo+="CPAP "+QString::number(min)+"cmH2O";
-            else if (mode==MODE_APAP) cpapinfo+="APAP "+QString::number(min)+"-"+QString::number(max)+"cmH2O";
-            else if (mode==MODE_BIPAP) cpapinfo+="Bi-Level"+QString::number(min)+"-"+QString::number(max)+"cmH2O";
-            else if (mode==MODE_ASV) cpapinfo+="ASV";
+            if (mode==MODE_CPAP) cpapinfo+=tr("CPAP %1cmH2O").arg(min);
+            else if (mode==MODE_APAP) cpapinfo+=tr("APAP %1-%2cmH2O").arg(min).arg(max);
+            else if (mode==MODE_BIPAP) cpapinfo+=tr("Bi-Level %1-%2cmH2O").arg(min).arg(max);
+            else if (mode==MODE_ASV) cpapinfo+=tr("ASV");
 
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
             float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
@@ -845,7 +846,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
             QString stats;
             painter.setFont(*mediumfont);
-            stats="AHI\t"+QString::number(ahi,'f',2)+"\n";
+            stats=tr("AHI\t%1\n").arg(ahi,0,'f',2);
             QRectF bounds=painter.boundingRect(QRectF(0,0,res.width(),0),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
 
@@ -864,20 +865,15 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
             int ttop=bounds.height();
 
-            stats="AI="+QString::number(oai,'f',2)+" ";
-            stats+="HI="+QString::number(hi,'f',2)+" ";
-            stats+="CAI="+QString::number(cai,'f',2)+" ";
+            stats=tr("AI=%1 HI=%2 CAI=%3 ").arg(oai,0,'f',2).arg(hi,0,'f',2).arg(cai,0,'f',2);
             if (cpap->machine->GetClass()=="PRS1") {
-                stats+="REI="+QString::number(rei,'f',2)+" ";
-                stats+="VSI="+QString::number(vsi,'f',2)+" ";
-                stats+="FLI="+QString::number(fli,'f',2)+" ";
-                stats+="PB/CSR="+QString::number(csr,'f',2)+"%";
+                stats+=tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%")
+                        .arg(rei,0,'f',2).arg(vsi,0,'f',2)
+                        .arg(fli,0,'f',2).arg(csr,0,'f',2);
             } else if (cpap->machine->GetClass()=="ResMed") {
-                stats+="UAI="+QString::number(uai,'f',2)+" ";
+                stats+=tr("UAI=%1 ").arg(uai,0,'f',2);
             } else if (cpap->machine->GetClass()=="Intellipap") {
-                stats+="NRI="+QString::number(nri,'f',2)+" ";
-                stats+="LKI="+QString::number(lki,'f',2)+" ";
-                stats+="EPI="+QString::number(exp,'f',2)+" ";
+                stats+=tr("NRI=%1 LKI=%2 EPI=%3").arg(nri,0,'f',2).arg(lki,0,'f',2).arg(exp,0,'f',2);
             }
             bounds=painter.boundingRect(QRectF(0,top+ttop,res.width(),0),stats,QTextOption(Qt::AlignCenter));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignCenter));
@@ -891,17 +887,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         }
 
         graph_slots=2;
-    } else if (name=="Overview") {
+    } else if (name==tr("Overview")) {
         QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
-        QString ovinfo="Reporting from "+first.date().toString(Qt::SystemLocaleShortDate)+" to "+last.date().toString(Qt::SystemLocaleShortDate);
+        QString ovinfo=tr("Reporting from %1 to %2").arg(first.date().toString(Qt::SystemLocaleShortDate)).arg(last.date().toString(Qt::SystemLocaleShortDate));
         QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),ovinfo,QTextOption(Qt::AlignCenter));
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
         graph_slots=1;
-    } else if (name=="Oximetry") {
-        QString ovinfo="Reporting data goes here";
+    } else if (name==tr("Oximetry")) {
+        QString ovinfo=tr("Reporting data goes here");
         QRectF bounds=painter.boundingRect(QRectF(0,top,res.width(),0),ovinfo,QTextOption(Qt::AlignCenter));
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
 
@@ -921,12 +917,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         gGraph *g=(*gv)[i];
         if (g->isEmpty()) continue;
         if (!g->visible()) continue;
-        if (print_bookmarks && (g->title()=="Flow Rate")) {
+        if (print_bookmarks && (g->title()==tr("Flow Rate"))) {
             normal=false;
             start.push_back(st);
             end.push_back(et);
             graphs.push_back(g);
-            labels.push_back("Current Selection");
+            labels.push_back(tr("Current Selection"));
             if (journal) {
                 if (journal->settings.contains("BookmarkStart")) {
                     QVariantList st1=journal->settings["BookmarkStart"].toList();
@@ -974,12 +970,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
         }
         if (first) {
-            QString footer="SleepyHead v"+PREF["VersionString"].toString()+" - http://sleepyhead.sourceforge.net";
+            QString footer=tr("SleepyHead v%1 - http://sleepyhead.sourceforge.net").arg(VersionString());
 
             QRectF bounds=painter.boundingRect(QRectF(0,res.height(),res.width(),normal_height),footer,QTextOption(Qt::AlignHCenter));
             painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
 
-            QString pagestr="Page "+QString::number(page)+" of "+QString::number(pages);
+            QString pagestr=tr("Page %1 of %2").arg(page).arg(pages);
             QRectF pagebnds=painter.boundingRect(QRectF(0,res.height(),res.width(),normal_height),pagestr,QTextOption(Qt::AlignRight));
             painter.drawText(pagebnds,pagestr,QTextOption(Qt::AlignRight));
             first=false;
@@ -1129,7 +1125,7 @@ void MainWindow::RestartApplication(bool force_login)
 
         if (QProcess::startDetached("/usr/bin/open",args)) {
             QApplication::instance()->exit();
-        } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
+        } else QMessageBox::warning(this,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
 
 #else
         apppath=QApplication::instance()->applicationFilePath();
@@ -1145,7 +1141,7 @@ void MainWindow::RestartApplication(bool force_login)
         if (force_login) args << "-l";
         if (QProcess::startDetached(apppath,args)) {
             QApplication::instance()->exit();
-        } else QMessageBox::warning(this,"Gah!","If you can read this, the restart command didn't work. Your going to have to do it yourself manually.",QMessageBox::Ok);
+        } else QMessageBox::warning(this,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
 #endif
 }
 
@@ -1201,7 +1197,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
             qDebug() << "Gah!! no machine to purge";
             return;
         }
-        if (QMessageBox::question(this,"Are you sure?","Are you sure you want to purge all CPAP data for the following machine:\n"+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["ModelNumber"]+" ("+m->properties["Serial"]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["ModelNumber"]+" ("+m->properties["Serial"]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             m->Purge(3478216);
             RestartApplication();
         }

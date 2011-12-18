@@ -851,7 +851,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     lo2->SetDay(day);
     //go->SetDay(day);
 
-    GraphView->setEmptyText("No Oximetry Data");
+    GraphView->setEmptyText(tr("No Oximetry Data"));
     GraphView->updateGL();
 
     on_RefreshPortsButton_clicked();
@@ -947,7 +947,7 @@ void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 void Oximetry::live_stopped(Session * session)
 {
     Q_UNUSED(session);
-    mainwin->Notify("Oximetry live recording has been terminated due to timeout");
+    mainwin->Notify(tr("Oximetry live recording has been terminated due to timeout."));
     //qDebug () << "Live Stopped";
     on_RunButton_toggled(false);
 }
@@ -956,7 +956,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
 {
     if (!checked) {
             oximeter->stopLive();
-            ui->RunButton->setText("&Start");
+            ui->RunButton->setText(tr("&Start"));
             ui->SerialPortsCombo->setEnabled(true);
             disconnect(oximeter,SIGNAL(dataChanged()),this,SLOT(data_changed()));
             disconnect(oximeter,SIGNAL(updatePulse(float)),this,SLOT(pulse_changed(float)));
@@ -974,7 +974,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             //CONTROL->setVisible(true);
     } else {
         if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-            int res=QMessageBox::question(this,"Save Session?","Creating a new oximetry session will destroy the old one.\nWould you like to save it first?","Save","Destroy It","Cancel",0,2);
+            int res=QMessageBox::question(this,tr("Save Session?"),tr("Creating a new oximetry session will destroy the old one.\nWould you like to save it first?"),tr("Save"),tr("Destroy It"),tr("Cancel"),0,2);
             if (res==0) {
                 ui->RunButton->setChecked(false);
                 on_saveButton_clicked();
@@ -984,7 +984,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
                 return;
             }
         } // else it's already saved.
-        GraphView->setEmptyText("Please Wait");
+        GraphView->setEmptyText(tr("Please Wait"));
         GraphView->updateGL();
 
         PLETHY->setRecMinY(0);
@@ -997,7 +997,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         day->getSessions().clear();
         //QTimer::singleShot(10000,this,SLOT(oximeter_running_check()));
         if (!oximeter->startLive()) {
-            mainwin->Notify("Oximetry Error!\n\nSomething is wrong with the device connection.");
+            mainwin->Notify(tr("Oximetry Error!\n\nSomething is wrong with the device connection."));
             return;
         }
         ui->saveButton->setEnabled(false);
@@ -1033,7 +1033,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
 
         CONTROL->setVisible(false);
         // connect.
-        ui->RunButton->setText("&Stop");
+        ui->RunButton->setText(tr("&Stop"));
         ui->SerialPortsCombo->setEnabled(false);
         ui->ImportButton->setEnabled(false);
     }
@@ -1088,7 +1088,7 @@ void Oximetry::data_changed()
         int h=len/3600;
         int m=(len /60) % 60;
         int s=(len % 60);
-        if (qstatus2) qstatus2->setText(QString().sprintf("Rec %02i:%02i:%02i",h,m,s));
+        if (qstatus2) qstatus2->setText(QString().sprintf("Rec %02i:%02i:%02i",h,m,s)); // translation fix?
     }
 
     GraphView->updateScale();
@@ -1113,24 +1113,24 @@ void Oximetry::oximeter_running_check()
     if (!oximeter->isOpen()) {
         if (oximeter->callbacks()==0) {
             qDebug() << "Not sure how oximeter_running_check gets called with a closed oximeter.. Restarting import process";
-            //mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2");
+            //mainwin->Notify(tr("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on2"));
             on_ImportButton_clicked();
             return;
         }
     }
     if (oximeter->callbacks()==0) {
-        mainwin->Notify("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on.");
+        mainwin->Notify(tr("Oximeter Error\n\nThe device has not responded.. Make sure it's switched on."));
         if (oximeter->mode()==SO_IMPORT) oximeter->stopImport();
         if (oximeter->mode()==SO_LIVE) oximeter->stopLive();
 
         oximeter->destroySession();
         day->getSessions().clear();
         ui->SerialPortsCombo->setEnabled(true);
-        qstatus->setText("Ready");
+        qstatus->setText(tr("Ready"));
         ui->ImportButton->setEnabled(true);
         ui->RunButton->setChecked(false);
         ui->saveButton->setEnabled(false);
-        GraphView->setEmptyText("Check Oximeter is Ready");
+        GraphView->setEmptyText(tr("Check Oximeter is Ready"));
         GraphView->updateGL();
 
     }
@@ -1144,7 +1144,7 @@ void Oximetry::on_ImportButton_clicked()
     connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
     if (!oximeter->startImport()) {
-        mainwin->Notify("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on.");
+        mainwin->Notify(tr("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on."));
         disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
         disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
         disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
@@ -1163,7 +1163,7 @@ void Oximetry::on_ImportButton_clicked()
     }
     ui->ImportButton->setDisabled(true);
     ui->SerialPortsCombo->setEnabled(false);
-    ui->RunButton->setText("&Start");
+    ui->RunButton->setText(tr("&Start"));
     ui->RunButton->setChecked(false);
 }
 
@@ -1174,7 +1174,7 @@ void Oximetry::import_finished()
     disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
     ui->SerialPortsCombo->setEnabled(true);
-    qstatus->setText("Ready");
+    qstatus->setText(tr("Ready"));
     ui->ImportButton->setDisabled(false);
     ui->saveButton->setEnabled(true);
 
@@ -1188,8 +1188,8 @@ void Oximetry::import_aborted()
 {
     oximeter->disconnect(oximeter,SIGNAL(importProcess()),0,0);
     day->getSessions().clear();
-    //QMessageBox::warning(mainwin,"Oximeter Error","Please make sure your oximeter is switched on, and able to transmit data.\n(You may need to enter the oximeters Settings screen for it to be able to transmit.)",QMessageBox::Ok);
-    mainwin->Notify("Oximeter Error!\n\nPlease make sure your oximeter is switched on, and in the right mode to transmit data.");
+    //QMessageBox::warning(mainwin,tr("Oximeter Error"),tr("Please make sure your oximeter is switched on, and able to transmit data.\n(You may need to enter the oximeters Settings screen for it to be able to transmit.)"),QMessageBox::Ok);
+    mainwin->Notify(tr("Please make sure your oximeter is switched on, and in the right mode to transmit data."),tr("Oximeter Error!"),5000);
     //qDebug() << "Oximetry import failed";
     import_finished();
 

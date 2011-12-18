@@ -22,11 +22,11 @@ extern QFont * bigfont;
 extern MainWindow * mainwin;
 
 MaskProfile masks[]={
-    {"Unspecified",{{4,25},{8,25},{12,25},{16,25},{20,25}}},
-    {"Nasal Pillows",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {"Hybrid F/F Mask",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {"Nasal Interface",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {"Full-Face Mask",{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {QObject::tr("Unspecified"),{{4,25},{8,25},{12,25},{16,25},{20,25}}},
+    {QObject::tr("Nasal Pillows"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {QObject::tr("Hybrid F/F Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {QObject::tr("Nasal Interface"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {QObject::tr("Full-Face Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
 };
 const int num_masks=sizeof(masks)/sizeof(MaskProfile);
 
@@ -46,7 +46,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->ahiGraphGroupbox->setEnabled(false);
     ui->customEventGroupbox->setEnabled(false);
 
-    QString masktype="Nasal Pillows";
+    QString masktype=tr("Nasal Pillows");
     //masktype=PROFILE["MaskType"].toString();
     for (int i=0;i<num_masks;i++) {
         ui->maskTypeCombo->addItem(masks[i].name);
@@ -161,16 +161,16 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     //ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
 
     general.clear();
-    general["UseAntiAliasing"]=Preference(p_profile,"UseAntiAliasing",PT_Checkbox,"Use Anti-Aliasing","Enable Graphical smoothing. Doesn't always look pretty.",false);
-    general["SquareWavePlots"]=Preference(p_profile,"SquareWavePlots",PT_Checkbox,"Square Wave Plots","Try to use Square Wave plots where possible",true);
-    general["EnableGraphSnapshots"]=Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,"Event Breakdown Piechart","Shows Event Breakdown in Daily view. This may cause problems on older computers.",true);
-    general["SkipLoginScreen"]=Preference(p_pref,"SkipLoginScreen",PT_Checkbox,"Skip Login Screen","Bypass the login screen at startup",false);
-    general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,"Skip Empty Days","Skip over calendar days that don't have any data",true);
-    general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,"Enable Multithreading","Try to use extra processor cores where possible",false);
-    general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,"Cache Session Data","Keep session data in memory to improve load speed revisiting the date.",false);
-    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,"Graph Height","Default Graph Height",160);
-    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,"Mask Description","Whatever you want to record about your mask.",QString());
-    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,"High Resolution Printing","Use much slower but better quality high resolution printing.",QString());
+    general["UseAntiAliasing"]=Preference(p_profile,"UseAntiAliasing",PT_Checkbox,tr("Use Anti-Aliasing"),tr("Enable Graphical smoothing. Doesn't always look pretty."),false);
+    general["SquareWavePlots"]=Preference(p_profile,"SquareWavePlots",PT_Checkbox,tr("Square Wave Plots"),tr("Try to use Square Wave plots where possible"),true);
+    general["EnableGraphSnapshots"]=Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,tr("Event Breakdown Piechart"),tr("Shows Event Breakdown in Daily view. This may cause problems on older computers."),true);
+    general["SkipLoginScreen"]=Preference(p_pref,"SkipLoginScreen",PT_Checkbox,tr("Skip Login Screen"),tr("Bypass the login screen at startup"),false);
+    general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,tr("Skip Empty Days"),tr("Skip over calendar days that don't have any data"),true);
+    general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,tr("Enable Multithreading"),tr("Try to use extra processor cores where possible"),false);
+    general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,tr("Cache Session Data"),tr("Keep session data in memory to improve load speed revisiting the date."),false);
+    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,tr("Graph Height"),tr("Default Graph Height"),160);
+    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
+    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),QString());
 
     if (!(p_profile)->Exists("MaskStartDate")) {
         (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
@@ -455,7 +455,7 @@ void PreferencesDialog::Save()
     //PREF.Save();
 
     if (needs_restart) {
-        if (QMessageBox::question(this,"Restart Required","One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(this,tr("Restart Required"),tr("One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             mainwin->RestartApplication();
         }
     }
@@ -484,14 +484,14 @@ void PreferencesDialog::RefreshLastChecked()
 
 void PreferencesDialog::on_checkForUpdatesButton_clicked()
 {
-    mainwin->statusBar()->showMessage("Checking for Updates");
-    ui->updateLastChecked->setText("Checking for Updates");
+    //mainwin->statusBar()->showMessage("Checking for Updates");
+    //ui->updateLastChecked->setText("Checking for Updates");
     mainwin->CheckForUpdates();
 }
 
 void PreferencesDialog::on_addImportLocation_clicked()
 {
-    QString dir=QFileDialog::getExistingDirectory(this,"Add this Location to the Import List","",QFileDialog::ShowDirsOnly);
+    QString dir=QFileDialog::getExistingDirectory(this,tr("Add this Location to the Import List"),"",QFileDialog::ShowDirsOnly);
 
     if (!dir.isEmpty()) {
         if (!importLocations.contains(dir)) {
@@ -609,8 +609,8 @@ void PreferencesDialog::resetGraphModel()
 {
 
     graphModel->clear();
-    QStandardItem *daily=new QStandardItem("Daily Graphs");
-    QStandardItem *overview=new QStandardItem("Overview Graphs");
+    QStandardItem *daily=new QStandardItem(tr("Daily Graphs"));
+    QStandardItem *overview=new QStandardItem(tr("Overview Graphs"));
     daily->setEditable(false);
     overview->setEditable(false);
 
@@ -622,9 +622,9 @@ void PreferencesDialog::resetGraphModel()
     // ui->graphView->setFirstColumnSpanned(0,daily->index(),true); // Crashes on windows.. Why do I need this again?
     graphModel->setColumnCount(3);
     QStringList headers;
-    headers.append("Graph");
-    headers.append("Min");
-    headers.append("Max");
+    headers.append(tr("Graph"));
+    headers.append(tr("Min"));
+    headers.append(tr("Max"));
     graphModel->setHorizontalHeaderLabels(headers);
     ui->graphView->setColumnWidth(0,250);
     ui->graphView->setColumnWidth(1,50);
@@ -642,7 +642,7 @@ void PreferencesDialog::resetGraphModel()
         it->setData(i,Qt::UserRole+2);
         items.push_back(it);
 
-        if (title!="Event Flags") {
+        if (title!=tr("Event Flags")) { // ouchie.. Translations will cause problems here..
 
             it=new QStandardItem(QString::number((*gv)[i]->rec_miny,'f',1));
             it->setEditable(true);
@@ -683,7 +683,7 @@ void PreferencesDialog::resetGraphModel()
         overview->insertRow(i,items);
     }
     if (mainwin->getOximetry()) {
-        QStandardItem *oximetry=new QStandardItem("Oximetry Graphs");
+        QStandardItem *oximetry=new QStandardItem(tr("Oximetry Graphs"));
         graphModel->appendRow(oximetry);
         oximetry->setEditable(false);
         gv=mainwin->getOximetry()->graphView();
@@ -715,7 +715,7 @@ void PreferencesDialog::resetGraphModel()
 
 void PreferencesDialog::on_resetGraphButton_clicked()
 {
-    if (QMessageBox::question(this,"Confirmation","Are you sure you want to reset your graph preferences to the defaults?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+    if (QMessageBox::question(this,tr("Confirmation"),tr("Are you sure you want to reset your graph preferences to the defaults?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
         gGraphView *gv[3];
         gv[0]=mainwin->getDaily()->graphView();
         gv[1]=mainwin->getOverview()->graphView();

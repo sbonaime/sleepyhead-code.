@@ -32,6 +32,7 @@ class Report;
 class Overview;
 
 /*! \class MainWindow
+    \author Mark Watkins
     \brief The Main Application window for SleepyHead
     */
 
@@ -56,8 +57,8 @@ public:
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
         \param QString string
-        \param int ms
         \param title
+        \param int ms
 
         Title is shown in bold
         string is the main message content to show
@@ -65,7 +66,7 @@ public:
 
         Mac needs Growl notification system for this to work
         */
-    void Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
+    void Notify(QString s, QString title="SleepyHead v"+VersionString(), int ms=5000);
 
     /*! \fn gGraphView *snapshotGraph()
         \brief Returns the current snapshotGraph object used by the report printing system */

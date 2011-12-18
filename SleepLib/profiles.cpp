@@ -101,16 +101,17 @@ Profile::~Profile()
 }
 void Profile::DataFormatError(Machine *m)
 {
-    QString msg="Software changes have been made that require the reimporting of the following machines data:\n\n";
+    QString msg=QObject::tr("Software changes have been made that require the reimporting of the following machines data:\n\n");
     msg=msg+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["Serial"];
-    msg=msg+"\n\nThis is still only alpha software and these changes are sometimes necessary.\n\n";
-    msg=msg+"I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n";
-    msg=msg+"Would you like me to purge this data this for you so you can run the new version?";
+    msg=msg+QObject::tr("\n\nThis is still only alpha software and these changes are sometimes necessary.\n\n");
+    msg=msg+QObject::tr("I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n");
+    msg=msg+QObject::tr("Would you like me to purge this data this for you so you can run the new version?");
 
-    if (QMessageBox::warning(NULL,"Machine Database Changes",msg,QMessageBox::Yes | QMessageBox::Cancel,QMessageBox::Yes)==QMessageBox::Yes) {
+    if (QMessageBox::warning(NULL,QObject::tr("Machine Database Changes"),msg,QMessageBox::Yes | QMessageBox::Cancel,QMessageBox::Yes)==QMessageBox::Yes) {
 
         if (!m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
-            QMessageBox::critical(NULL,"Purge Failed","Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n"+PREF["DataFolder"].toString(),QMessageBox::Ok);
+
+            QMessageBox::critical(NULL,QObject::tr("Purge Failed"),QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")+PREF["DataFolder"].toString(),QMessageBox::Ok);
             exit(-1);
         }
     } else {
@@ -140,7 +141,7 @@ void Profile::LoadMachineData()
         PROFILE["RebuildCache"]=false;
     } else {
         if (mainwin) {
-            mainwin->Notify("Caching session data, this may take a little while.");
+            mainwin->Notify(QObject::tr("Caching session data, this may take a little while."));
             PROFILE["RebuildCache"]=true;
 
             QApplication::processEvents();
@@ -319,10 +320,6 @@ Day * Profile::GetDay(QDate date,MachineType type)
 }
 
 
-/**
- * @brief Import Machine Data
- * @param path
- */
 int Profile::Import(QString path)
 {
     int c=0;
@@ -522,5 +519,5 @@ void Scan()
 }
 
 
-}; // namespace Profiles
+} // namespace Profiles
 

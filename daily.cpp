@@ -356,7 +356,7 @@ void Daily::Link_clicked(const QUrl &url)
             ui->treeWidget->setCurrentItem(wi);
             ui->tabWidget->setCurrentIndex(1);
         } else {
-            mainwin->Notify("No "+schema::channel[data].description()+" events are recorded this day",1500);
+            mainwin->Notify(tr("No %1 events are recorded this day").arg(schema::channel[data].description()),"",1500);
         }
     } else if (code=="graph") {
         qDebug() << "Select graph " << data;
@@ -579,15 +579,15 @@ void Daily::Load(QDate date)
     if (cpap && oxi) {
         qint64 len=qAbs(cpap->first() - oxi->first());
         if (len>30000) {
-            GraphView->findGraph("Pulse Rate")->setGroup(1);
-            GraphView->findGraph("SpO2")->setGroup(1);
-            GraphView->findGraph("Plethy")->setGroup(1);
-            mainwin->Notify("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked.",3000);
+            GraphView->findGraph(tr("Pulse Rate"))->setGroup(1);
+            GraphView->findGraph(tr("SpO2"))->setGroup(1);
+            GraphView->findGraph(tr("Plethy"))->setGroup(1);
+            mainwin->Notify(tr("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked."),"",3000);
         } else {
-            //mainwin->Notify("Oximetry & CPAP graphs are linked for this day",2000);
-            GraphView->findGraph("Pulse Rate")->setGroup(0);
-            GraphView->findGraph("SpO2")->setGroup(0);
-            GraphView->findGraph("Plethy")->setGroup(0);
+            //mainwin->Notify(tr("Oximetry & CPAP graphs are linked for this day"),"",2000);
+            GraphView->findGraph(tr("Pulse Rate"))->setGroup(0);
+            GraphView->findGraph(tr("SpO2"))->setGroup(0);
+            GraphView->findGraph(tr("Plethy"))->setGroup(0);
         }
     }
     lastcpapday=cpap;
@@ -647,10 +647,10 @@ void Daily::Load(QDate date)
     bool isBrick=false;
     if (cpap) {
         if (GraphView->isEmpty()) {
-            GraphView->setEmptyText("Brick Machine :(");
+            GraphView->setEmptyText(tr("Brick Machine :("));
             isBrick=true;
         } else {
-            GraphView->setEmptyText("No Data");
+            GraphView->setEmptyText(tr("No Data"));
         }
         mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
 
@@ -686,15 +686,15 @@ void Daily::Load(QDate date)
 
         EventDataType min=cpap->settings_min(CPAP_PressureMin);
         EventDataType max=cpap->settings_max(CPAP_PressureMax);
-        if (mode==MODE_CPAP) html+="CPAP "+QString::number(min)+"cmH2O";
-        else if (mode==MODE_APAP) html+="APAP "+QString::number(min)+"-"+QString::number(max)+"cmH2O";
-        else if (mode==MODE_BIPAP) html+="Bi-Level";
-        else if (mode==MODE_ASV) html+="ASV";
-        else html+="Unknown";
+        if (mode==MODE_CPAP) html+=tr("CPAP")+" "+QString::number(min)+tr("cmH2O");
+        else if (mode==MODE_APAP) html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+tr("cmH2O");
+        else if (mode==MODE_BIPAP) html+=tr("Bi-Level");
+        else if (mode==MODE_ASV) html+=tr("ASV");
+        else html+=tr("Unknown");
         html+="</td></tr>\n";
 
 
-        html+="<tr><td align='center'><b>Date</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
+        html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
         int tt=qint64(cpap->total_time())/1000L;
         QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
         QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
@@ -807,8 +807,8 @@ void Daily::Load(QDate date)
             }
         } else {
             html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-            html+="<tr><td colspan='5' align='center'><i>Sorry, your machine does not record data.</i></td></tr>\n";
-            html+="<tr><td colspan='5' align='center'><i>Complain to your Equipment Provider!</i></td></tr>\n";
+            html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
+            html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
             html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
         }
     } else {
@@ -859,15 +859,15 @@ void Daily::Load(QDate date)
             int j=cpap->settings_max(PRS1_FlexSet);
             QString flexstr=(i>1) ? schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j) : "None";
 
-            html+="<tr><td colspan=4>Pressure Relief: "+flexstr+"</td></tr>";
+            html+="<tr><td colspan=4>"+tr("Pressure Relief:")+" "+flexstr+"</td></tr>";
 
             i=cpap->settings_max(PRS1_HumidSetting);
-            QString humid=(i==0) ? "Off" : "x"+QString::number(i);
-            html+="<tr><td colspan=4>Humidifier Setting: "+humid+"</td></tr>";
+            QString humid=(i==0) ? tr("Off") : "x"+QString::number(i);
+            html+="<tr><td colspan=4>"+tr("Humidifier Setting:")+" "+humid+"</td></tr>";
         } else if (cpap->machine->GetClass()=="ResMed") {
             int epr=cpap->settings_max("EPR");
             int epr2=cpap->settings_max("EPRSet");
-            html+="<tr><td colspan=4>EPR Setting: "+QString::number(epr)+" / "+QString::number(epr2)+"</td></tr>";
+            html+="<tr><td colspan=4>"+tr("EPR Setting:")+" "+QString::number(epr)+" / "+QString::number(epr2)+"</td></tr>";
             //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
 
         }
@@ -879,8 +879,8 @@ void Daily::Load(QDate date)
         bool corrupted_waveform=false;
         QString tooltip;
         if (cpap) {
-            html+="<tr><td align=left><b>SessionID</b></td><td align=center><b>Date</b></td><td align=center><b>Start</b></td><td align=center><b>End</b></td></tr>";
-            html+="<tr><td align=left colspan=4><i>CPAP Sessions</i></td></tr>";
+            html+="<tr><td align=left><b>"+tr("SessionID")+"</b></td><td align=center><b>"+tr("Date")+"</b></td><td align=center><b>"+tr("Start")+"</b></td><td align=center><b>"+tr("End")+"</b></td></tr>";
+            html+="<tr><td align=left colspan=4><i>"+tr("CPAP Sessions")+"</i></td></tr>";
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -889,7 +889,9 @@ void Daily::Load(QDate date)
                 int m=(len/60) % 60;
                 int s1=len % 60;
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
-                tooltip=cpap->machine->GetClass()+" CPAP "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
+                tooltip=cpap->machine->GetClass()+" "+tr("CPAP")+" "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
+                // tooltip needs to lookup language.. :-/
+
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
                 tmp.sprintf(("<tr><td align=left><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
@@ -897,8 +899,7 @@ void Daily::Load(QDate date)
             //if (oxi) html+="<tr><td colspan=4><hr></td></tr>";
         }
         if (oxi) {
-            html+="<tr><td align=left colspan=4><i>Oximetry Sessions</i></td></tr>";
-            //html+="<tr><td align=left>SessionID</td><td align=center>Date</td><td align=center>Start</td><td align=center>End</td></tr>";
+            html+="<tr><td align=left colspan=4><i>"+tr("Oximetry Sessions")+"</i></td></tr>";
             for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -907,7 +908,9 @@ void Daily::Load(QDate date)
                 int m=(len/60) % 60;
                 int s1=len % 60;
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
-                tooltip=oxi->machine->GetClass()+" Oximeter "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=oxi->machine->GetClass()+" "+tr("Oximeter")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+
+
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
                 tmp.sprintf(("<tr><td align=left><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
                 html+=tmp;
@@ -915,7 +918,7 @@ void Daily::Load(QDate date)
         }
         html+="</table>";
         if (corrupted_waveform) {
-            html+="<hr><div align=center><i>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</i></div>";
+            html+="<hr><div align=center><i>"+tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.")+"</i></div>";
         }
     }
     html+="</body></html>";
@@ -924,11 +927,11 @@ void Daily::Load(QDate date)
 
     ui->JournalNotes->clear();
 
-    ui->bookmarkTable->clear();
+    ui->bookmarkTable->clearContents();
     ui->bookmarkTable->setRowCount(0);
     QStringList sl;
-    sl.append("Starts");
-    sl.append("Notes");
+    //sl.append(tr("Starts"));
+    //sl.append(tr("Notes"));
     ui->bookmarkTable->setHorizontalHeaderLabels(sl);
     ui->ZombieMeter->blockSignals(true);
     ui->weightSpinBox->blockSignals(true);

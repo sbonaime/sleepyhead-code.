@@ -1,8 +1,8 @@
-/********************************************************************
+/*
  SleepLib Machine Loader Class Implementation
  Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
  License: GPL
-*********************************************************************/
+*/
 
 #include <QFile>
 #include <QDir>

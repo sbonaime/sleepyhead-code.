@@ -51,7 +51,7 @@ ExportCSV::ExportCSV(QWidget *parent) :
     connect(ui->startDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(startDate_currentPageChanged(int,int)));
     connect(ui->endDate->calendarWidget(),SIGNAL(currentPageChanged(int,int)),SLOT(endDate_currentPageChanged(int,int)));
 
-    on_quickRangeCombo_activated("Most Recent Day");
+    on_quickRangeCombo_activated(tr("Most Recent Day"));
     ui->rb1_details->clearFocus();
     ui->quickRangeCombo->setFocus();
     ui->exportButton->setEnabled(false);
@@ -64,17 +64,17 @@ ExportCSV::~ExportCSV()
 
 void ExportCSV::on_filenameBrowseButton_clicked()
 {
-    QString timestamp="SleepyHead_";
+    QString timestamp=tr("SleepyHead_");
     timestamp+=PROFILE.Get("Username")+"_";
 
-    if (ui->rb1_details->isChecked()) timestamp+="Details_";
-    if (ui->rb1_Sessions->isChecked()) timestamp+="Sessions_";
-    if (ui->rb1_Summary->isChecked()) timestamp+="Summary_";
+    if (ui->rb1_details->isChecked()) timestamp+=tr("Details_");
+    if (ui->rb1_Sessions->isChecked()) timestamp+=tr("Sessions_");
+    if (ui->rb1_Summary->isChecked()) timestamp+=tr("Summary_");
 
     timestamp+=ui->startDate->date().toString(Qt::ISODate);
     if (ui->startDate->date()!=ui->endDate->date()) timestamp+="_"+ui->endDate->date().toString(Qt::ISODate);
     timestamp+=".csv";
-    QString name=QFileDialog::getSaveFileName(this,"Select file to export to",PREF.Get("{home}/")+timestamp,"CSV Files (*.csv)");
+    QString name=QFileDialog::getSaveFileName(this,tr("Select file to export to"),PREF.Get("{home}/")+timestamp,tr("CSV Files (*.csv)"));
     if (name.isEmpty()) {
         ui->exportButton->setEnabled(false);
         return;
@@ -91,7 +91,7 @@ void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
 {
     QDate first=PROFILE.FirstDay();
     QDate last=PROFILE.LastDay();
-    if (arg1=="Custom") {
+    if (arg1==tr("Custom")) {
         ui->startDate->setEnabled(true);
         ui->endDate->setEnabled(true);
         ui->startLabel->setEnabled(true);
@@ -102,25 +102,25 @@ void ExportCSV::on_quickRangeCombo_activated(const QString &arg1)
         ui->startLabel->setEnabled(false);
         ui->endLabel->setEnabled(false);
 
-        if (arg1=="Everything") {
+        if (arg1==tr("Everything")) {
             ui->startDate->setDate(first);
             ui->endDate->setDate(last);
-        } else if (arg1=="Most Recent Day") {
+        } else if (arg1==tr("Most Recent Day")) {
             ui->startDate->setDate(last);
             ui->endDate->setDate(last);
-        } else if (arg1=="Last Week") {
+        } else if (arg1==tr("Last Week")) {
             ui->startDate->setDate(last.addDays(-7));
             ui->endDate->setDate(last);
-        } else if (arg1=="Last Fortnight") {
+        } else if (arg1==tr("Last Fortnight")) {
             ui->startDate->setDate(last.addDays(-14));
             ui->endDate->setDate(last);
-        } else if (arg1=="Last Month") {
+        } else if (arg1==tr("Last Month")) {
             ui->startDate->setDate(last.addMonths(-1));
             ui->endDate->setDate(last);
-        } else if (arg1=="Last 6 Months") {
+        } else if (arg1==tr("Last 6 Months")) {
             ui->startDate->setDate(last.addMonths(-6));
             ui->endDate->setDate(last);
-        } else if (arg1=="Last Year") {
+        } else if (arg1==tr("Last Year")) {
             ui->startDate->setDate(last.addYears(-1));
             ui->endDate->setDate(last);
         }
@@ -154,20 +154,21 @@ void ExportCSV::on_exportButton_clicked()
     p90list.append(CPAP_IPAP);
     p90list.append(CPAP_EPAP);
 
+    // Not sure this section should be translateable.. :-/
     if (ui->rb1_details->isChecked()) {
-        header="DateTime"+sep+"Session"+sep+"Event"+sep+"Data/Duration";
+        header=tr("DateTime")+sep+tr("Session")+sep+tr("Event")+sep+tr("Data/Duration");
     } else {
         if (ui->rb1_Summary->isChecked()) {
-            header="Date"+sep+"Session Count"+sep+"Start"+sep+"End"+sep+"Total Time"+sep+"AHI";
+            header=tr("Date")+sep+tr("Session Count")+sep+tr("Start")+sep+tr("End")+sep+tr("Total Time")+sep+tr("AHI");
         } else if (ui->rb1_Sessions->isChecked()) {
-            header="Date"+sep+"Session"+sep+"Start"+sep+"End"+sep+"Total Time"+sep+"AHI";
+            header=tr("Date")+sep+tr("Session")+sep+tr("Start")+sep+tr("End")+sep+tr("Total Time")+sep+tr("AHI");
         }
         for (int i=0;i<countlist.size();i++)
-            header+=sep+countlist[i]+" Count";
+            header+=sep+countlist[i]+tr(" Count");
         for (int i=0;i<avglist.size();i++)
-            header+=sep+avglist[i]+" Avg";
+            header+=sep+avglist[i]+tr(" Avg");
         for (int i=0;i<p90list.size();i++)
-            header+=sep+p90list[i]+" 90%";
+            header+=sep+p90list[i]+tr(" 90%");
     }
     header+=newline;
     file.write(header.toAscii());

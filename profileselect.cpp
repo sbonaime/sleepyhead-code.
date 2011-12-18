@@ -58,10 +58,10 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
         hide();
     } */
     popupMenu=new QMenu(this);
-    popupMenu->addAction("Open Profile",this,SLOT(openProfile()));
-    popupMenu->addAction("Edit Profile",this,SLOT(editProfile()));
+    popupMenu->addAction(tr("Open Profile"),this,SLOT(openProfile()));
+    popupMenu->addAction(tr("Edit Profile"),this,SLOT(editProfile()));
     popupMenu->addSeparator();
-    popupMenu->addAction("Delete Profile",this,SLOT(deleteProfile()));
+    popupMenu->addAction(tr("Delete Profile"),this,SLOT(deleteProfile()));
 }
 
 ProfileSelect::~ProfileSelect()
@@ -84,7 +84,7 @@ void ProfileSelect::editProfile()
         QLineEdit *e=new QLineEdit(&dialog);
         e->setEchoMode(QLineEdit::Password);
         dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
-        dialog.setWindowTitle("Enter Password for "+name);
+        dialog.setWindowTitle(tr("Enter Password for %1").arg(name));
         dialog.setMinimumWidth(300);
         QVBoxLayout *lay=new QVBoxLayout();
         dialog.setLayout(lay);
@@ -100,9 +100,9 @@ void ProfileSelect::editProfile()
                 break;
             } else {
                 if (tries<3) {
-                    QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+                    QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
                 } else {
-                    QMessageBox::warning(this,"Error","You entered the password wrong too many times.",QMessageBox::Ok);
+                    QMessageBox::warning(this,tr("Error"),tr("You entered the password wrong too many times."),QMessageBox::Ok);
                     reject();
                 }
             }
@@ -119,13 +119,13 @@ void ProfileSelect::editProfile()
 void ProfileSelect::deleteProfile()
 {
     QString name=ui->listView->currentIndex().data().toString();
-    if (QMessageBox::question(this,"Question","Are you sure you want to trash the profile \""+name+"\"?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
-        if (QMessageBox::question(this,"Question","Double Checking: Do you really want \""+name+"\" profile to be obliterated?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
-            if (QMessageBox::question(this,"Question","Last chance to save the \""+name+"\" profile. Are you totally sure?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
+    if (QMessageBox::question(this,tr("Question"),tr("Are you sure you want to trash the profile \"%1\"?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
+        if (QMessageBox::question(this,tr("Question"),tr("Double Checking: Do you really want \"%1\" profile to be obliterated?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
+            if (QMessageBox::question(this,tr("Question"),tr("Last chance to save the \"%1\" profile. Are you totally sure?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
                 bool reallydelete=false;
                 Profile *profile=Profiles::profiles[name];
                 if (!profile) {
-                    QMessageBox::warning(this,"WTH???","If you can read this you need to delete this profile directory manually (It's under Your Documents folder -> SleepApp -> Profiles -> [profile_name])",QMessageBox::Ok);
+                    QMessageBox::warning(this,tr("WTH???"),tr("If you can read this you need to delete this profile directory manually (It's under Your Documents folder -> SleepApp -> Profiles -> [profile_name])"),QMessageBox::Ok);
                     return;
                 }
                 if (profile->Exists("Password")) {
@@ -133,7 +133,7 @@ void ProfileSelect::deleteProfile()
                     QLineEdit *e=new QLineEdit(&dialog);
                     e->setEchoMode(QLineEdit::Password);
                     dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
-                    dialog.setWindowTitle("Enter Password for "+name);
+                    dialog.setWindowTitle(tr("Enter Password for %1").arg(name));
                     dialog.setMinimumWidth(300);
                     QVBoxLayout *lay=new QVBoxLayout();
                     dialog.setLayout(lay);
@@ -149,16 +149,16 @@ void ProfileSelect::deleteProfile()
                             break;
                         } else {
                             if (tries<3) {
-                                QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+                                QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
                             } else {
-                                QMessageBox::warning(this,"Error","Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.\n\nSigned: Nasty Programmer",QMessageBox::Ok);
+                                QMessageBox::warning(this,tr("Error"),tr("Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.\n\nSigned: Nasty Programmer"),QMessageBox::Ok);
                             }
                         }
                     } while (tries<3);
                 } else reallydelete=true;
 
                 if (reallydelete) {
-                    QMessageBox::information(this,"Whoops.","After all that nagging, I haven't got around to writing this code yet.. For now you can delete the directory in SleepApp -> Profiles -> [profile_name]",QMessageBox::Ok);
+                    QMessageBox::information(this,tr("Whoops."),tr("After all that nagging, I haven't got around to writing this code yet.. For now you can delete the directory in SleepApp -> Profiles -> [profile_name]"),QMessageBox::Ok);
                     qDebug() << "delete" << name;
                 }
             }
@@ -210,7 +210,7 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             QLineEdit *e=new QLineEdit(&dialog);
             e->setEchoMode(QLineEdit::Password);
             dialog.connect(e,SIGNAL(returnPressed()),&dialog,SLOT(accept()));
-            dialog.setWindowTitle("Enter Password");
+            dialog.setWindowTitle(tr("Enter Password"));
             QVBoxLayout *lay=new QVBoxLayout();
             dialog.setLayout(lay);
             lay->addWidget(e);
@@ -224,9 +224,9 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             }
             tries++;
             if (tries<3) {
-                QMessageBox::warning(this,"Error","Incorrect Password",QMessageBox::Ok);
+                QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
             } else {
-                QMessageBox::warning(this,"Error","You entered an Incorrect Password too many times. Exiting!",QMessageBox::Ok);
+                QMessageBox::warning(this,tr("Error"),tr("You entered an Incorrect Password too many times. Exiting!"),QMessageBox::Ok);
             }
         } while (tries<3);
     }

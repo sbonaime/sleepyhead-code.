@@ -80,8 +80,9 @@ void UpdaterWindow::checkForUpdates()
             return;
         }
     }
-    mainwin->Notify("Checking for SleepyHead Updates");
+    mainwin->Notify(tr("Checking for SleepyHead Updates"));
 
+    // language code?
     update_url=QUrl("http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/update.xml/download");
     downloadUpdateXML();
 }
@@ -93,7 +94,7 @@ void UpdaterWindow::downloadUpdateXML()
     QNetworkRequest req=QNetworkRequest(update_url);
     req.setRawHeader("User-Agent", "Wget/1.12 (linux-gnu)");
     reply=netmanager->get(req);
-    ui->plainTextEdit->appendPlainText("Requesting "+update_url.toString());
+    ui->plainTextEdit->appendPlainText(tr("Requesting ")+update_url.toString());
     netmanager->connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(downloadProgress(qint64,qint64)));
     dltime.start();
 }
@@ -146,14 +147,14 @@ void UpdaterWindow::requestFile()
         bar->setStyleSheet(style);
 
     QString filename=update->filename;
-    ui->plainTextEdit->appendPlainText("Requesting "+update->url);
+    ui->plainTextEdit->appendPlainText(tr("Requesting ")+update->url);
 
     requestmode=RM_GetFile;
 
     QString path=QApplication::applicationDirPath()+"/Download";
     QDir().mkpath(path);
     path+="/"+filename;
-    ui->plainTextEdit->appendPlainText("Saving as "+path);
+    ui->plainTextEdit->appendPlainText(tr("Saving as ")+path);
     file.setFileName(path);
     file.open(QFile::WriteOnly);
     dltime.start();
@@ -171,7 +172,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
     QXmlSimpleReader reader;
     reader.setContentHandler(&updateparser);
     if (reader.parse(src)) {
-        ui->plainTextEdit->appendPlainText("XML update structure parsed cleanly");
+        ui->plainTextEdit->appendPlainText(tr("XML update structure parsed cleanly"));
 
         QStringList versions;
         for (QHash<QString,Release>::iterator it=updateparser.releases.begin();it!=updateparser.releases.end();it++) {
@@ -189,7 +190,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             } else release=NULL;
         }
         if (!release || (VersionString() > release->version)) {
-            mainwin->Notify("No updates were found for your platform.",5000,"SleepyHead Updates");
+            mainwin->Notify(tr("No updates were found for your platform."),tr("SleepyHead Updates"),5000);
             close();
             return;
         }
@@ -225,18 +226,18 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
 
 
         if (updates.size()>0) {
-            QString html="<html><h3>SleepyHead v"+release->version+" codename \""+release->codename+"\"</h3><p>"+release->notes[""]+"</p><b>";
+            QString html="<html><h3>"+tr("SleepyHead v%1, codename \"%2\"").arg(release->version).arg(release->codename)+"</h3><p>"+release->notes[""]+"</p><b>";
             html+=platform.left(1).toUpper()+platform.mid(1);
-            html+=" platform notes</b><p>"+release->notes[platform]+"</p></html>";
+            html+=" "+tr("platform notes")+"</b><p>"+release->notes[platform]+"</p></html>";
             ui->webView->setHtml(html);
             QString info;
             if (VersionString()< release->version) {
-                ui->Title->setText("<font size=+1>A new version of SleepyHead is available!</font>");
-                info="Shiny new <b>v"+latestapp+"</b> is available. You're running old and busted v"+VersionString();
+                ui->Title->setText("<font size=+1>"+tr("A new version of SleepyHead is available!")+"</font>");
+                info=tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").arg(latestapp).arg(VersionString());
                 ui->notesTabWidget->setCurrentIndex(0);
             } else {
-                ui->Title->setText("<font size=+1>An update for SleepyHead is available.</font>");
-                info="Version <b>"+latestapp+"</b> is available. You're currently running v"+VersionString();
+                ui->Title->setText("<font size=+1>"+tr("An update for SleepyHead is available.")+"</font>");
+                info=tr("Version <b>%1</b> is available. You're currently running v%1").arg(latestapp).arg(VersionString());
                 ui->notesTabWidget->setCurrentIndex(1);
             }
             ui->versionInfo->setText(info);
@@ -245,9 +246,9 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             for (int i=0;i<release->updates[platform].size();i++) {
                 update=&release->updates[platform][i];
                 if ((update->type=="application") && (update->version > VersionString())) {
-                    notes+="<b>SleepyHead v"+update->version+" build notes</b><br/>"+update->notes.trimmed()+"<br/><br/>";
+                    notes+="<b>"+tr("SleepyHead v%1 build notes").arg(update->version)+"</b><br/>"+update->notes.trimmed()+"<br/><br/>";
                 } else if ((update->type=="qtlibs") && (update->version > QT_VERSION_STR)) {
-                    notes+="<b>Update to QtLibs (v"+update->version+")</b><br/>"+update->notes.trimmed();
+                    notes+="<b>"+tr("Update to QtLibs (v%1)").arg(update->version)+"</b><br/>"+update->notes.trimmed();
                 }
             }
             ui->buildNotes->setText(notes);
@@ -255,7 +256,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             show();
         }
     } else {
-        mainwin->Notify("There was an error parsing the XML Update file.");
+        mainwin->Notify(tr("There was an error parsing the XML Update file."));
     }
 }
 
@@ -273,7 +274,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                 return;
             }
 
-            ui->plainTextEdit->appendPlainText(QString::number(reply->size())+" bytes received.");
+            ui->plainTextEdit->appendPlainText(tr("%1 bytes received").arg(reply->size()));
             QString filename=QApplication::applicationDirPath()+"/update.xml";
             qDebug() << filename;
             QFile file(filename);
@@ -301,7 +302,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                 if (!redirectUrl.isEmpty() && (redirectUrl!=reply->url())) {
                     file.open(QFile::WriteOnly); //reopen file..
                     update->url=redirectUrl.toString();
-                    ui->plainTextEdit->appendPlainText("Redirected to "+update->url);
+                    ui->plainTextEdit->appendPlainText(tr("Redirected to ")+update->url);
                     QTimer::singleShot(100,this,SLOT(requestFile()));
                     reply->deleteLater();
                     return;
@@ -312,7 +313,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                     double s2=ui->tableWidget->item(current_row,2)->text().toDouble();
                     if (s1!=s2) {
                         failed=true;
-                        ui->plainTextEdit->appendPlainText("File size mismatch for "+update->filename);
+                        ui->plainTextEdit->appendPlainText(tr("File size mismatch for %1").arg(update->filename));
                     }
                 } else {
                     QString path=QApplication::applicationDirPath()+"/Download/"+update->filename;
@@ -322,7 +323,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                     hash.addData(f.readAll());
                     QString res=hash.result().toHex();
                     if (res!=update->hash) {
-                        ui->plainTextEdit->appendPlainText("File integrity check failed for "+update->filename);
+                        ui->plainTextEdit->appendPlainText(tr("File integrity check failed for %1").arg(update->filename));
                         failed=true;
                     }
                 }
@@ -350,7 +351,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                     QDir().mkpath(backups);
 
                     for (int i=0;i<fsize;i++) {
-                        ui->plainTextEdit->appendPlainText("Extracting "+files.at(i));
+                        ui->plainTextEdit->appendPlainText(tr("Extracting ")+files.at(i));
                         QuaZipFile qzf(file.fileName(),files.at(i));
                         qzf.open(QuaZipFile::ReadOnly);
 
@@ -399,7 +400,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                         // gone and wrecked the install here..
                         // probably should wait till get here before replacing files..
                         // but then again, this is probably what would screw up
-                        mainwin->Notify("You may need to reinstall manually. Sorry :(",5000,"Ugh.. Something went wrong with unzipping.");
+                        mainwin->Notify(tr("You might need to reinstall manually. Sorry :("),tr("Ugh.. Something went wrong with unzipping."),5000);
                         // TODO: Roll back from the backup folder
                         failed=true;
                     }
@@ -409,7 +410,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             if (failed) {
                 qDebug() << "File is corrupted";
                 if (bar) {
-                    bar->setFormat("Failed");
+                    bar->setFormat(tr("Failed"));
                     QString style="QProgressBar{\
                         border: 1px solid gray;\
                         border-radius: 3px;\
@@ -428,11 +429,11 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
             }
             ui->tableWidget->item(current_row,0)->setData(Qt::UserRole+1,failed);
             QTimer::singleShot(100,this,SLOT(upgradeNext()));
-            ui->plainTextEdit->appendPlainText("Download Complete");
+            ui->plainTextEdit->appendPlainText(tr("Download Complete"));
         }
 
     } else {
-        mainwin->Notify("There was an error completing a network request:\n\n("+reply->errorString()+")");
+        mainwin->Notify(tr("There was an error completing a network request:\n\n(")+reply->errorString()+")");
     }
 }
 
@@ -468,17 +469,17 @@ void UpdaterWindow::upgradeNext()
         }
         if (ok) {
             success=true;
-            //QMessageBox::information(this,"Updates Complete","SleepyHead has been updated and needs to restart.",QMessageBox::Ok);
-            ui->downloadTitle->setText("Update Complete!");
+            //QMessageBox::information(this,tr("Updates Complete"),tr("SleepyHead has been updated and needs to restart."),QMessageBox::Ok);
+            ui->downloadTitle->setText(tr("Update Complete!"));
             ui->FinishedButton->setVisible(true);
-            ui->downloadLabel->setText("Updates Complete. SleepyHead needs to restart now, click Finished to do so.");
+            ui->downloadLabel->setText(tr("Updates Complete. SleepyHead needs to restart now, click Finished to do so."));
             PREF["Updates_LastChecked"]=QDateTime::currentDateTime();
         } else {
-            ui->downloadTitle->setText("Update Failed :(");
+            ui->downloadTitle->setText(tr("Update Failed :("));
             success=false;
-            ui->downloadLabel->setText("Download Error. Sorry, try again later.");
+            ui->downloadLabel->setText(tr("Download Error. Sorry, try again later."));
             ui->FinishedButton->setVisible(true);
-            //QMessageBox::warning(this,"Download Error","Sorry, could not get all necessary files for upgrade.. Try again later.",QMessageBox::Ok);
+            //QMessageBox::warning(this,tr("Download Error"),tr("Sorry, could not get all necessary files for upgrade.. Try again later."),QMessageBox::Ok);
             //close();
         }
     }
@@ -492,8 +493,8 @@ void UpdaterWindow::on_upgradeButton_clicked()
     ui->tableWidget->setColumnHidden(4,true);
     ui->tableWidget->setColumnHidden(5,true);
     ui->FinishedButton->setVisible(false);
-    ui->downloadLabel->setText("Downloading & Installing Updates...");
-    ui->downloadTitle->setText("Please wait while downloading and installing updates.");
+    ui->downloadLabel->setText(tr("Downloading & Installing Updates..."));
+    ui->downloadTitle->setText(tr("Please wait while downloading and installing updates."));
     success=false;
     for (int i=0;i<updates.size();i++) {
         update=updates.at(i);

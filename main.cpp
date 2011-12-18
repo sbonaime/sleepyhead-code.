@@ -61,16 +61,19 @@ void initialize()
 {
     schema::init();
 }
+
 void release_notes()
 {
     QDialog relnotes;
     QVBoxLayout layout(&relnotes);
     QWebView web(&relnotes);
+    // Language???
+
     web.load(QUrl("qrc:/docs/release_notes.html"));
     //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
     relnotes.setLayout(&layout);
     layout.insertWidget(0,&web,1);
-    QPushButton okbtn("&Ok, get on with it..",&relnotes);
+    QPushButton okbtn(QObject::tr("&Ok, get on with it.."),&relnotes);
     relnotes.connect(&okbtn,SIGNAL(clicked()),SLOT(accept()));
     layout.insertWidget(1,&okbtn,1);
     relnotes.exec();
@@ -109,11 +112,9 @@ int main(int argc, char *argv[])
     IntellipapLoader::Register();
     Profiles::Scan();
     qRegisterMetaType<Preference>("Preference");
-    PREF["AppName"]="SleepyHead";
+    PREF["AppName"]=QObject::tr("SleepyHead");
     bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));
     if (force_login_screen) skip_login=false;
-
-    QString Version=QString("%1.%2.%3").arg(major_version).arg(minor_version).arg(revision_number);
 
     QDateTime lastchecked, today=QDateTime::currentDateTime();
     if (!PREF.Exists("Updates_AutoCheck")) {
@@ -167,7 +168,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    PREF["VersionString"]=Version;
+    PREF["VersionString"]=VersionString();
 
     p_profile=Profiles::Get(PREF["Profile"].toString());
 
