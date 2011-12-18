@@ -92,7 +92,6 @@ private slots:
 
     void on_actionCheck_for_Updates_triggered();
 
-    void replyFinished(QNetworkReply*);
     void on_action_Screenshot_triggered();
     void DelayedScreenshot();
 
@@ -127,8 +126,6 @@ private:
     Overview * overview;
     Oximetry * oximetry;
     bool first_load;
-    //Profile *profile;
-    QNetworkAccessManager *netmanager;
     PreferencesDialog *prefdialog;
     QMutex loglock,strlock;
     QStringList logbuffer;

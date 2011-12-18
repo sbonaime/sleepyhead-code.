@@ -189,8 +189,9 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             } else release=NULL;
         }
         if (!release || (VersionString() > release->version)) {
-            mainwin->Notify("No updates were found for your platform",5000,"SleepyHead Updates");
+            mainwin->Notify("No updates were found for your platform.",5000,"SleepyHead Updates");
             close();
+            return;
         }
 
 
@@ -474,7 +475,6 @@ void UpdaterWindow::upgradeNext()
             ui->FinishedButton->setVisible(true);
             ui->downloadLabel->setText("Updates Complete. SleepyHead needs to restart now, click Finished to do so.");
             PREF["Updates_LastChecked"]=QDateTime::currentDateTime();
-            PREF["VersionString"]=release->version;
         } else {
             ui->downloadTitle->setText("Update Failed :(");
             success=false;

@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     logtime.start();
     ui->setupUi(this);
-    QString version=PREF["VersionString"].toString();
+    QString version=VersionString();
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF["Profile"].toString()));
     ui->tabWidget->setCurrentIndex(0);
@@ -140,17 +140,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabWidget->setCurrentWidget(ui->welcome);
 
-    netmanager = new QNetworkAccessManager(this);
+    /*netmanager = new QNetworkAccessManager(this);
     connect(netmanager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
-    connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString)));
+    connect(ui->webView, SIGNAL(statusBarMessage(QString)), this, SLOT(updatestatusBarMessage(QString))); */
 
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
         systray=new QSystemTrayIcon(QIcon(":/docs/sheep.png"),this);
         systray->show();
         systraymenu=new QMenu(this);
         systray->setContextMenu(systraymenu);
-        QAction *a=systraymenu->addAction("SleepyHead v"+PREF["VersionString"].toString());
+        QAction *a=systraymenu->addAction("SleepyHead v"+VersionString());
         a->setEnabled(false);
         systraymenu->addSeparator();
         systraymenu->addAction("About",this,SLOT(on_action_About_triggered()));
@@ -511,7 +511,6 @@ void MainWindow::on_oximetryButton_clicked()
 
 void MainWindow::CheckForUpdates()
 {
-    //QTimer::singleShot(100,this,SLOT(on_actionCheck_for_Updates_triggered()));
     on_actionCheck_for_Updates_triggered();
 }
 
@@ -519,53 +518,10 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
 {
     UpdaterWindow *w=new UpdaterWindow(this);
     w->checkForUpdates();
-
-//    if (PREF.Exists("Updates_LastChecked")) {
-//        if (PREF["Updates_LastChecked"].toDateTime().secsTo(QDateTime::currentDateTime())<7200) {
-//            // Instead of doing this, just use the cached crud
-//            if (prefdialog) prefdialog->RefreshLastChecked();
-//            mainwin->Notify("No New Updates - You already checked recently...");
-//            return;
-//        }
-//    }
-//    mainwin->Notify("Checking for Updates");
-//    netmanager->get(QNetworkRequest(QUrl("http://sleepyhead.sourceforge.net/current_version.txt")));
-}
-void MainWindow::replyFinished(QNetworkReply * reply)
-{
-    if (reply->error()==QNetworkReply::NoError) {
-        // Wrap this crap in XML/JSON so can do other stuff.
-        if (reply->size()>20) {
-            mainwin->Notify("Update check failed.. Version file on the server is broken.");
-        } else {
-            // check in size
-            QByteArray data=reply->readAll();
-            QString a=data;
-            a=a.trimmed();
-            PREF["Updates_LastChecked"]=QDateTime::currentDateTime();
-            if (prefdialog) prefdialog->RefreshLastChecked();
-            if (a>PREF["VersionString"].toString()) {
-                if (QMessageBox::question(this,"New Version","A newer version of SleepyHead is available, v"+a+".\nWould you like to update?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-                    QString fileurl="http://sourceforge.net/projects/sleepyhead/files/";
-                    QString msg="<html><p>Sorry, I haven't implemented the auto-update yet</p>";
-                    msg+="<a href='"+fileurl+"'>Click Here</a> for a link to the latest version";
-                    msg+="</html>";
-
-                    QMessageBox::information(this,"Laziness Warning",msg,QMessageBox::Ok);
-                }
-            } else {
-                mainwin->Notify("Checked for Updates: SleepyHead is already up to date!");
-            }
-       }
-    } else {
-        mainwin->Notify("Couldn't check for updates. The network is down.\n\n("+reply->errorString()+")");
-    }
-    reply->deleteLater();
 }
 
 void MainWindow::on_action_Screenshot_triggered()
 {
-
     QTimer::singleShot(250,this,SLOT(DelayedScreenshot()));
 }
 void MainWindow::DelayedScreenshot()
@@ -769,7 +725,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     float vscale=pxres.height()/pres.height();
 
     QFontMetrics fm(*bigfont);
-    float title_height=fm.ascent()*vscale;
+    //float title_height=fm.ascent()*vscale;
     QFontMetrics fm2(*defaultfont);
     float normal_height=fm2.ascent()*vscale;
 
