@@ -197,6 +197,8 @@ MainWindow::~MainWindow()
     mainwin=NULL;
     delete ui;
 }
+
+
 void MainWindow::Notify(QString s,int ms,QString title)
 {
     if (systray) {

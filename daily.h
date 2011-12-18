@@ -45,12 +45,10 @@ public:
         \brief Constructs a Daily object
         \param parent * (QObject parent)
         \param shared *
-        \param MainWindow *
 
         Creates all the graph objects and adds them to the main gGraphView area for this tab.
 
-        shared is not used for daily object
-        Neither is MainWindow * mw, as a "mainwin" global is used instead.
+        shared is not used for daily object, as it contains the default Context..
         */
     explicit Daily(QWidget *parent, gGraphView *shared);
     ~Daily();
