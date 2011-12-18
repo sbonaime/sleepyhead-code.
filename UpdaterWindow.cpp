@@ -11,6 +11,7 @@
 #include <QXmlSimpleReader>
 #include <QCryptographicHash>
 #include <QDesktopWidget>
+
 #include "SleepLib/preferences.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
@@ -372,7 +373,7 @@ void UpdaterWindow::replyFinished(QNetworkReply * reply)
                                 } while (!line.isNull());
                             } else {
                                 QString fn=files.at(i).section("/",-1);
-                                QFile::Permissions perm=orig.permissions(apppath+fn);
+                                QFile::Permissions perm=QFile::permissions(apppath+fn);
 
                                 // delete backups
                                 if (f.exists(backups+fn)) f.remove(backups+fn);
