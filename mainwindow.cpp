@@ -518,7 +518,6 @@ void MainWindow::CheckForUpdates()
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
     UpdaterWindow *w=new UpdaterWindow(this);
-
     w->checkForUpdates();
 
 //    if (PREF.Exists("Updates_LastChecked")) {
@@ -1154,7 +1153,9 @@ void MainWindow::RestartApplication(bool force_login)
         apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
 
         QStringList args;
-        args << "-n" << apppath << "-p"; // -n option is important, as it opens a new process
+        args << "-n"; // -n option is important, as it opens a new process
+        args << apppath << -p;
+
         if (force_login) args << "-l";
         // -p starts with 1 second delay, to give this process time to save..
 

@@ -189,9 +189,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
         }
         if (!release || (VersionString() > release->version)) {
             mainwin->Notify("No updates were found for your platform",5000,"SleepyHead Updates");
-            sh_delay(4000);
             close();
-            return;
         }
 
 
