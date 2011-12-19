@@ -839,7 +839,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
             getDaily()->eventBreakdownPie()->showTitle(false);
             getDaily()->eventBreakdownPie()->setMargins(0,0,0,0);
-            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,4);
+            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,1);
             painter.drawPixmap(virt_width-piesize,bounds.height(),piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
 

@@ -108,7 +108,7 @@ protected:
         GLShortBuffer * outlines;
 
         //! \brief Used by accelerated waveform plots. Must be >= Screen Resolution (or at least graph width)
-        static const int max_drawlist_size=4096;
+        static const int max_drawlist_size=10000;
 
         //! \brief The list of screen points used for accelerated waveform plots..
         QPoint m_drawlist[max_drawlist_size];
