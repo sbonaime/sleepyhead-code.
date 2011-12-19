@@ -25,6 +25,35 @@ namespace Ui {
     class MainWindow;
 }
 
+/*! \mainpage SleepyHead
+
+ \section intro_sec Introduction
+
+ SleepyHead is Cross-Platform Open-Source software for reviewing data from %CPAP machines, which are used in the treatment of Sleep Disorders.
+
+ SleepyHead has been created by <a href="http://jedimark64.blogspot.com">Mark Watkins</a> (JediMark), an Australian software developer.
+
+ This document is an attempt to provide a little technical insight into SleepyHead's program internals.
+
+ \section project_info Further Information
+ The project is hosted on sourceforge, and it's project page can be reached at <a href="http://sourceforge.net/projects/sleepyhead">http://sourceforge.net/projects/sleepyhead</a>.
+
+ There is also the <a href="http://sleepyhead.sourceforge.net">SleepyHead Wiki</a> containing further information
+
+ \section structure Program Structure
+ SleepyHead is written in C++ using Qt Toolkit library, and comprises of 3 main components
+ \list
+ \li The SleepLib Database, a specialized database for working with multiple sources of Sleep machine data.
+ \li A custom designed, high performance and interactive OpenGL Graphing Library.
+ \li and the main Application user interface.
+ \endlist
+
+ This document is still a work in progress, right now all the classes and sections are jumbled together.
+
+ */
+
+// * \section install_sec Installation
+
 extern QStatusBar *qstatusbar;
 
 class Daily;

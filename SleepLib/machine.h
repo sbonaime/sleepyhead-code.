@@ -150,7 +150,7 @@ protected:
 
 
 /*! \class CPAP
-    \brief A CPAP classed machine object.. These are only really for show
+    \brief A CPAP classed machine object..
     */
 class CPAP:public Machine
 {
@@ -161,7 +161,7 @@ public:
 
 
 /*! \class Oximeter
-    \brief An Oximeter classed machine object.. These are only really for show
+    \brief An Oximeter classed machine object..
     */
 class Oximeter:public Machine
 {
@@ -172,7 +172,7 @@ protected:
 };
 
 /*! \class SleepStage
-    \brief A SleepStage classed machine object.. These are only really for show
+    \brief A SleepStage classed machine object..
     */
 class SleepStage:public Machine
 {

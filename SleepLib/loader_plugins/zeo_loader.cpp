@@ -6,7 +6,7 @@ License: GPL
 */
 
 //********************************************************************************************
-/// IMPORTANT!!!
+// IMPORTANT!!!
 //********************************************************************************************
 // Please INCREMENT the zeo_data_version in zel_loader.h when making changes to this loader
 // that change loader behaviour or modify channels.
