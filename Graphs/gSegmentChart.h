@@ -11,18 +11,31 @@
 
 enum GraphSegmentType { GST_Pie, GST_CandleStick, GST_Line };
 
+/*! \class gSegmentChart
+    \brief Draws a PieChart, CandleStick or 2D Line plots containing multiple Channel 'slices'
+  */
 class gSegmentChart : public Layer
 {
 public:
     gSegmentChart(GraphSegmentType gt=GST_Pie, QColor gradient_color=Qt::white,QColor outline_color=Qt::black);
     virtual ~gSegmentChart();
 
+    //! \brief The drawing code that fills the Vertex buffers
     virtual void paint(gGraph & w,int left, int top, int width, int height);
+
+    //! \brief Pre-fills a buffer with the data needed to draw
     virtual void SetDay(Day *d);
+
+    //! \brief Returns true if no data available for drawing
     virtual bool isEmpty();
 
+    //! \brief Adds a channel slice, and sets the color and label
     void AddSlice(ChannelID code,QColor col,QString name="");
+
+    //! \brief Sets the fade-out color to make the graphs look more attractive
     void setGradientColor(QColor & color) { m_gradient_color=color; }
+
+    //! \brief Sets the outline color for the edges drawn around the Pie slices
     void setOutlineColor(QColor & color) { m_outline_color=color; }
     const GraphSegmentType & graphType() { return m_graph_type; }
     void setGraphType(GraphSegmentType type) { m_graph_type=type; }
@@ -41,6 +54,10 @@ protected:
     GLFloatBuffer *poly,*lines;
 };
 
+/*! \class gTAPGraph
+    \brief Time at Pressure chart, derived from gSegmentChart
+    \notes Currently unused
+    */
 class gTAPGraph:public gSegmentChart
 {
 public:

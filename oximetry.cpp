@@ -433,7 +433,7 @@ void CMS50Serial::import_process()
         return;
     }
     qDebug() << "CMS50 import complete. Processing" << data.size() << "bytes";
-    unsigned char a,pl,o2,lastpl=0,lasto2=0;
+    unsigned short a,pl,o2,lastpl=0,lasto2=0;
     int i=0;
     int size=data.size();
 
@@ -452,9 +452,8 @@ void CMS50Serial::import_process()
     qint64 lastpltime=0,lasto2time=0;
     bool first=true;
     while (i<(size-3)) {
-        a=data.at(i++);
-        Q_UNUSED(a);
-        pl=data.at(i++) ^ 0x80;
+        a=data.at(i++); // low bits are supposedly the high bits of the heart rate
+        pl=(data.at(i++) & 0x7f) | ((a & 3) << 7);
         o2=data.at(i++);
         if (pl!=0) {
             if (lastpl!=pl) {
@@ -571,8 +570,8 @@ void CMS50Serial::ReadyRead()
     static int lastbytesize=0;
     int size=bytes.size();
     // Process all incoming serial data packets
-    unsigned char c;
-    unsigned char pl,o2;
+    unsigned short c;
+    unsigned short pl,o2;
 
     if (!import_mode) {
         QString data="Read: ";
@@ -679,14 +678,17 @@ void CMS50Serial::ReadyRead()
                 //read data blocks..
             }
         } else {
+            static unsigned short hb=0;
 
             if (bytes[i]&0x80) { // 0x80 == sync bit
                 EventDataType d=bytes[i+1] & 0x7f;
+                hb=(bytes[i+2] & 0x40) << 1;
+
                 addPlethy(lasttime,d);
                 lasttime+=20;
                 i+=3;
             } else {
-                pl=bytes[i];
+                pl=(bytes[i] & 0x7f) | hb;
                 o2=bytes[i+1];
                 addPulse(lasttime,pl);
                 addSpO2(lasttime,o2);

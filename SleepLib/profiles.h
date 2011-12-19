@@ -16,17 +16,20 @@ License: GPL
 #include "preferences.h"
 
 class Machine;
+
 /*!
   \class Profile
   \author Mark Watkins
   \date 28/04/11
-  \file profiles.h
-  \brief User profile system
+  \brief The User profile system, containing all information for a user, and an index into all Machine data
  */
 class Profile:public Preferences
 {
 public:
+    //! \brief Creates a new Profile object 'name' (which is usually just set to "Profile", the XML filename is derived from this)
     Profile(QString name);
+
+    //! \brief Create a new empty Profile object
     Profile();
     virtual ~Profile();
 
@@ -51,7 +54,7 @@ public:
     void DataFormatError(Machine *m);
 
     /*! \brief Import Machine Data
-        \param path
+        \param path containing import location
      */
     int Import(QString path);
 
