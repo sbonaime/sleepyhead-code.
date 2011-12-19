@@ -20,6 +20,9 @@ extern MainWindow *mainwin;
 
 #ifdef Q_WS_MAC
 #define USE_RENDERTEXT
+#include "OpenGL/glu.h"
+#else
+#include "GL/glu.h"
 #endif
 
 
@@ -2126,6 +2129,81 @@ void gGraphView::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
+void gGraphView::renderSomethingFun()
+{
+    //glPushMatrix();
+    float w=width();
+    float h=height();
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(65.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glShadeModel(GL_SMOOTH);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    // This code has been shamelessly pinched of the interwebs..
+    // When I'm feeling more energetic, I'll change it to a textured sheep or something.
+    static float rotqube=0;
+
+    glLoadIdentity();
+
+    glTranslatef(0.0f, 0.0f,-7.0f);
+    glRotatef(rotqube,0.0f,1.0f,0.0f);
+    glRotatef(rotqube,1.0f,1.0f,1.0f);
+
+    glBegin(GL_QUADS);
+      glColor3f(0.0f,1.0f,0.0f);	// Color Blue
+      glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Top)
+      glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Top)
+      glVertex3f(-1.0f, 1.0f, 1.0f);	// Bottom Left Of The Quad (Top)
+      glVertex3f( 1.0f, 1.0f, 1.0f);	// Bottom Right Of The Quad (Top)
+      glColor3f(1.0f,0.5f,0.0f);	// Color Orange
+      glVertex3f( 1.0f,-1.0f, 1.0f);	// Top Right Of The Quad (Bottom)
+      glVertex3f(-1.0f,-1.0f, 1.0f);	// Top Left Of The Quad (Bottom)
+      glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Bottom)
+      glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Bottom)
+      glColor3f(1.0f,0.0f,0.0f);	// Color Red
+      glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Front)
+      glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Front)
+      glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Front)
+      glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Front)
+      glColor3f(1.0f,1.0f,0.0f);	// Color Yellow
+      glVertex3f( 1.0f,-1.0f,-1.0f);	// Top Right Of The Quad (Back)
+      glVertex3f(-1.0f,-1.0f,-1.0f);	// Top Left Of The Quad (Back)
+      glVertex3f(-1.0f, 1.0f,-1.0f);	// Bottom Left Of The Quad (Back)
+      glVertex3f( 1.0f, 1.0f,-1.0f);	// Bottom Right Of The Quad (Back)
+      glColor3f(0.0f,0.0f,1.0f);	// Color Blue
+      glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Left)
+      glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Left)
+      glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Left)
+      glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Left)
+      glColor3f(1.0f,0.0f,1.0f);	// Color Violet
+      glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Right)
+      glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Right)
+      glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Right)
+      glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Right)
+    glEnd();
+
+    rotqube +=0.9f;
+
+    // Restore boring 2D reality..
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glOrtho(0, width(), height(), 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+}
+
 void gGraphView::paintGL()
 {
 
@@ -2136,7 +2214,7 @@ void gGraphView::paintGL()
 
     glClearColor(255,255,255,255);
     //glClearDepth(1);
-    glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2227,8 +2305,10 @@ void gGraphView::paintGL()
     QColor col=Qt::black;
     if (!numgraphs) {
         int x,y;
-        GetTextExtent(m_emptytext,x,y,bigfont);
-        AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+        if (m_emptytext!="fun") {
+            GetTextExtent(m_emptytext,x,y,bigfont);
+            AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+        } else renderSomethingFun();
     }
 
 

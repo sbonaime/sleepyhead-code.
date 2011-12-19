@@ -245,6 +245,8 @@ protected:
 
     int received_bytes;
     int import_fails;
+
+    QTime imptime;
 };
 
 namespace Ui {

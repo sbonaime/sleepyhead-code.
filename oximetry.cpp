@@ -603,6 +603,9 @@ void CMS50Serial::ReadyRead()
 
     while (i<bytes.size()) {
         if (import_mode) {
+
+            // why can't this stay in a waitf6 loop for 30 or so seconds?
+
             if (waitf6) { //ack sequence from f6 command.
                 if ((unsigned char)bytes.at(i++)==0xf2) {
                     c=bytes.at(i);
@@ -666,10 +669,14 @@ void CMS50Serial::ReadyRead()
                 }
             } else {
                 qDebug() << "Recieving Block" << size << "(" << received_bytes << "of" << datasize <<")";
+                mainwin->getOximetry()->graphView()->setEmptyText("fun");
+                mainwin->getOximetry()->graphView()->updateGL();
                 for (int z=i;z<size;z++) {
                     data.push_back(bytes.at(z));
                     received_bytes++;
                 }
+                mainwin->getOximetry()->graphView()->updateGL();
+                mainwin->getOximetry()->graphView()->updateGL();
                 emit(updateProgress(float(received_bytes)/float(datasize)));
                 if ((received_bytes>=datasize) || (((received_bytes/datasize)>0.7) && (size<250))) {
                     done_import=true;
@@ -697,13 +704,29 @@ void CMS50Serial::ReadyRead()
         }
     }
     if (import_mode && waitf6 && (cntf6==0)) {
-        failcnt++;
+        int i=imptime.elapsed();
 
-        if (failcnt>4) {
-            // Device missed the 0xf5 code sequence somehow..
-            m_mode=SO_WAIT;
-            emit(importAborted());
-            return;
+        mainwin->getOximetry()->graphView()->setEmptyText("fun");
+        mainwin->getOximetry()->graphView()->updateGL();
+
+        if (i>1000) {
+            //mainwin->getOximetry()->graphView()->setEmptyText("fun");
+            //mainwin->getOximetry()->graphView()->updateGL();
+            imptime.start();
+            failcnt++;
+            QString a;
+
+            if (failcnt>15) { // Give up after ~15 seconds
+                m_mode=SO_WAIT;
+                emit(importAborted());
+                mainwin->getOximetry()->graphView()->setEmptyText("Import Failed");
+                mainwin->getOximetry()->graphView()->updateGL();
+                return;
+            } else {
+                a="fun";
+                //for (int i=0;i<failcnt;i++) a+=".";
+                requestData(); // retransmit the data request code
+            }
         }
     }
     if (!import_mode)
@@ -741,10 +764,12 @@ bool CMS50Serial::startImport()
     if (!m_opened && !Open(QextSerialPort::EventDriven))
         return false;
 
+    imptime.start();
+
     m_callbacks=0;
     import_fails=0;
 
-    QTimer::singleShot(250,this,SLOT(startImportTimeout()));
+    QTimer::singleShot(5000,this,SLOT(startImportTimeout()));
     //make sure there is a data stream first..
     createSession();
 
@@ -1145,6 +1170,11 @@ void Oximetry::on_ImportButton_clicked()
     connect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
     connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
+    day->getSessions().clear();
+    GraphView->setDay(day);
+    GraphView->setEmptyText("Importing");
+    GraphView->updateGL();
+
     if (!oximeter->startImport()) {
         mainwin->Notify(tr("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on."));
         disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
@@ -1154,9 +1184,6 @@ void Oximetry::on_ImportButton_clicked()
         return;
     }
     //QTimer::singleShot(1000,this,SLOT(oximeter_running_check()));
-
-    day->getSessions().clear();
-    day->AddSession(oximeter->getSession());
 
     if (qprogress) {
         qprogress->setValue(0);
@@ -1200,6 +1227,8 @@ void Oximetry::import_complete(Session * session)
 {
     qDebug() << "Oximetry import complete";
     import_finished();
+    day->AddSession(oximeter->getSession());
+
     if (!session) {
         qDebug() << "Shouldn't happen";
         return;
