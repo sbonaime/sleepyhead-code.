@@ -1817,6 +1817,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     timer=new QTimer(this);
     connect(timer,SIGNAL(timeout()),SLOT(refreshTimeout()));
     print_scaleY=print_scaleX=1.0;
+
+    redrawtimer=new QTimer(this);
+    //redrawtimer->setInterval(80);
+    //redrawtimer->start();
+    connect(redrawtimer,SIGNAL(timeout()),SLOT(repaint()));
 }
 gGraphView::~gGraphView()
 {
@@ -1838,6 +1843,7 @@ gGraphView::~gGraphView()
     if (m_scrollbar) {
         this->disconnect(SIGNAL(sliderMoved(int)),this);
     }
+    disconnect(redrawtimer,0,0,0);
     disconnect(timer,0,0,0);
     timer->stop();
     delete timer;
@@ -2137,7 +2143,7 @@ void gGraphView::renderSomethingFun()
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(65.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+    gluPerspective(35.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -2158,38 +2164,43 @@ void gGraphView::renderSomethingFun()
     glRotatef(rotqube,0.0f,1.0f,0.0f);
     glRotatef(rotqube,1.0f,1.0f,1.0f);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glBegin(GL_QUADS);
-      glColor3f(0.0f,1.0f,0.0f);	// Color Blue
+      float alpha=0.08;
+      glColor4f(0.0f,1.0f,0.0f,alpha);	// Color Blue
       glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Top)
       glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Top)
       glVertex3f(-1.0f, 1.0f, 1.0f);	// Bottom Left Of The Quad (Top)
       glVertex3f( 1.0f, 1.0f, 1.0f);	// Bottom Right Of The Quad (Top)
-      glColor3f(1.0f,0.5f,0.0f);	// Color Orange
+      glColor4f(1.0f,0.5f,0.0f,alpha);	// Color Orange
       glVertex3f( 1.0f,-1.0f, 1.0f);	// Top Right Of The Quad (Bottom)
       glVertex3f(-1.0f,-1.0f, 1.0f);	// Top Left Of The Quad (Bottom)
       glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Bottom)
       glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Bottom)
-      glColor3f(1.0f,0.0f,0.0f);	// Color Red
+      glColor4f(1.0f,0.0f,0.0f,alpha);	// Color Red
       glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Front)
       glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Front)
       glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Front)
       glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Front)
-      glColor3f(1.0f,1.0f,0.0f);	// Color Yellow
+      glColor4f(1.0f,1.0f,0.0f,alpha);	// Color Yellow
       glVertex3f( 1.0f,-1.0f,-1.0f);	// Top Right Of The Quad (Back)
       glVertex3f(-1.0f,-1.0f,-1.0f);	// Top Left Of The Quad (Back)
       glVertex3f(-1.0f, 1.0f,-1.0f);	// Bottom Left Of The Quad (Back)
       glVertex3f( 1.0f, 1.0f,-1.0f);	// Bottom Right Of The Quad (Back)
-      glColor3f(0.0f,0.0f,1.0f);	// Color Blue
+      glColor4f(0.0f,0.0f,1.0f,alpha);	// Color Blue
       glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Left)
       glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Left)
       glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Left)
       glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Left)
-      glColor3f(1.0f,0.0f,1.0f);	// Color Violet
+      glColor4f(1.0f,0.0f,1.0f,alpha);	// Color Violet
       glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Right)
       glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Right)
       glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Right)
       glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Right)
     glEnd();
+    glDisable(GL_BLEND);
 
     rotqube +=0.9f;
 
@@ -2206,6 +2217,11 @@ void gGraphView::renderSomethingFun()
 
 void gGraphView::paintGL()
 {
+    bool something_fun=PREF.ExistsAndTrue("SomeFun");
+
+    if (something_fun && redrawtimer->isActive()) {
+        redrawtimer->stop();
+    }
 
     if (width()<=0) return;
     if (height()<=0) return;
@@ -2215,6 +2231,9 @@ void gGraphView::paintGL()
     glClearColor(255,255,255,255);
     //glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (something_fun)
+        renderSomethingFun();
 
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2344,6 +2363,11 @@ void gGraphView::paintGL()
     //glDisable(GL_DEPTH_TEST);
     swapBuffers(); // Dump to screen.
 
+    if (something_fun && this->isVisible()) {
+        redrawtimer->setInterval(25);
+        redrawtimer->setSingleShot(true);
+        redrawtimer->start();
+    }
 
     //qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
 }

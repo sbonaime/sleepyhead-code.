@@ -656,6 +656,9 @@ void CMS50Serial::ReadyRead()
                             c=bytes.at(z);
                             if (c & 0x80) break;
                         }
+                        mainwin->getOximetry()->graphView()->setEmptyText("Please Wait, Importing...");
+                        mainwin->getOximetry()->graphView()->updateGL();
+
                         data.clear();
                         for (z=i;z<size;z++) {
                             data.push_back(bytes.at(z));
@@ -669,14 +672,10 @@ void CMS50Serial::ReadyRead()
                 }
             } else {
                 qDebug() << "Recieving Block" << size << "(" << received_bytes << "of" << datasize <<")";
-                mainwin->getOximetry()->graphView()->setEmptyText("fun");
-                mainwin->getOximetry()->graphView()->updateGL();
                 for (int z=i;z<size;z++) {
                     data.push_back(bytes.at(z));
                     received_bytes++;
                 }
-                mainwin->getOximetry()->graphView()->updateGL();
-                mainwin->getOximetry()->graphView()->updateGL();
                 emit(updateProgress(float(received_bytes)/float(datasize)));
                 if ((received_bytes>=datasize) || (((received_bytes/datasize)>0.7) && (size<250))) {
                     done_import=true;
@@ -706,8 +705,8 @@ void CMS50Serial::ReadyRead()
     if (import_mode && waitf6 && (cntf6==0)) {
         int i=imptime.elapsed();
 
-        mainwin->getOximetry()->graphView()->setEmptyText("fun");
-        mainwin->getOximetry()->graphView()->updateGL();
+        //mainwin->getOximetry()->graphView()->setEmptyText("fun");
+        //mainwin->getOximetry()->graphView()->updateGL();
 
         if (i>1000) {
             //mainwin->getOximetry()->graphView()->setEmptyText("fun");
@@ -723,8 +722,10 @@ void CMS50Serial::ReadyRead()
                 mainwin->getOximetry()->graphView()->updateGL();
                 return;
             } else {
-                a="fun";
-                //for (int i=0;i<failcnt;i++) a+=".";
+                a="Waiting";
+                for (int i=0;i<failcnt;i++) a+=".";
+                mainwin->getOximetry()->graphView()->setEmptyText(a);
+                mainwin->getOximetry()->graphView()->updateGL();
                 requestData(); // retransmit the data request code
             }
         }
@@ -1172,7 +1173,7 @@ void Oximetry::on_ImportButton_clicked()
 
     day->getSessions().clear();
     GraphView->setDay(day);
-    GraphView->setEmptyText("Importing");
+    GraphView->setEmptyText("Make Sure Oximeter Is Ready");
     GraphView->updateGL();
 
     if (!oximeter->startImport()) {

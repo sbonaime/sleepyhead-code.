@@ -888,6 +888,7 @@ protected:
     int m_horiz_travel;
 
     MyScrollBar * m_scrollbar;
+    QTimer *redrawtimer;
 
     bool m_graph_dragging;
     int m_graph_index;
@@ -912,6 +913,7 @@ public slots:
 
     //! \brief Simply refreshes the GL view, called when timeout expires.
     void refreshTimeout();
+
 };
 
 #endif // GGRAPHVIEW_H
