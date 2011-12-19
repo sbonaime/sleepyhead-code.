@@ -22,7 +22,7 @@ enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile };
 
 
 /*! \class UpdaterWindow
-    \brief Auto Update Module for SleepyHead
+    \brief Auto-Update Module for SleepyHead
 
     This class handles the complete Auto-Update procedure for SleepyHead, it does the network checks,
     parses the update.xml from SourceForge host, checks for any new updates, and provides the UI
@@ -45,30 +45,44 @@ public:
     void ParseUpdateXML(QIODevice * dev);
 
 protected slots:
+    //! \brief Network reply completed
     void replyFinished(QNetworkReply * reply);
+
+    //! \brief Update the progress bars as data is received
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+
+    //! \brief Save incomming data
     void dataReceived();
+
+    //! \brief Request a file to download
     void requestFile();
+
+    //! \brief Request the update.xml file
     void downloadUpdateXML();
 
 private slots:
+    //! \brief Just close the Updater window
     void on_CloseButton_clicked();
 
+    //! \brief Start processing the download que, and applying the updates
     void on_upgradeButton_clicked();
 
+    //! \brief Selects the next file in the download queue
     void upgradeNext();
 
+    //! \brief Click on finished, restart if app has been upgraded, otherwise just close the window.
     void on_FinishedButton_clicked();
 
 private:
+
+    //! \brief Holds the results of parsing the update.xml file
     UpdateParser updateparser;
 
     Ui::UpdaterWindow *ui;
-    QSystemTrayIcon *systray;
-    QMenu *systraymenu;
+
     RequestMode requestmode;
     QTime dltime;
-    QString needQtVersion;
+
     Update *update;
     Release *release;
     QFile file;
