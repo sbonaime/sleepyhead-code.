@@ -730,11 +730,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     painter.begin(printer);
 
     GLint gw;
-#ifdef Q_WS_WIN32
+//#ifdef Q_WS_WIN32
     gw=2048;  // Rough guess.. No GL_MAX_RENDERBUFFER_SIZE in mingw.. :(
-#else
-    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
-#endif
+//#else
+//    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
+//#endif
 
     //QSizeF pxres=printer->paperSize(QPrinter::DevicePixel);
     QRect prect=printer->pageRect();
