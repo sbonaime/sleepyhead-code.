@@ -1747,12 +1747,12 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
         return;
     }
 
-    if (maxy>=300) {
-        m=ceil(maxy/10.0);
-        t=m*10;
+    if (maxy>=400) {
+        m=ceil(maxy/50.0);
+        t=m*50;
         if (!ymax_good) maxy=t;
-        m=floor(miny/10.0);
-        if (!ymin_good) miny=m*10;
+        m=floor(miny/50.0);
+        if (!ymin_good) miny=m*50;
     } else if (maxy>=5) {
         m=ceil(maxy/5.0);
         t=m*5;
