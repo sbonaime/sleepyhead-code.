@@ -13,6 +13,10 @@ License: GPL
 const QString cms50_class_name="CMS50";
 const int cms50_data_version=4;
 
+
+/*! \class CMS50Loader
+    \brief Bulk Importer for CMS50 SPO2Review format.. Deprecated, as the Oximetry module does a better job
+    */
 class CMS50Loader : public MachineLoader
 {
     public:

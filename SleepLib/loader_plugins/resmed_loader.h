@@ -26,6 +26,10 @@ const int resmed_data_version=5;
 
 const QString resmed_class_name="ResMed";
 
+/*! \struct EDFHeader
+    \brief  Represents the EDF+ header structure, used as a place holder while processing the text data.
+    \note More information on the EDF+ file format can be obtained from http://edfplus.info
+*/
 struct EDFHeader {
     char version[8];
     char patientident[80];
@@ -36,50 +40,113 @@ struct EDFHeader {
     char num_data_records[8];
     char dur_data_records[8];
     char num_signals[4];
-};// __attribute__ ((packed));
+}
+#ifndef BUILD_WITH_MSVC
+__attribute__ ((packed))
+#endif
+;
 
 const int EDFHeaderSize=sizeof(EDFHeader);
 
+/*! \struct EDFSignal
+    \brief Contains information about a single EDF+ Signal
+    \note More information on the EDF+ file format can be obtained from http://edfplus.info
+    */
 struct EDFSignal {
 public:
+    //! \brief Name of this Signal
     QString label;
+
+    //! \brief Tranducer Type (source of the data, usually blank)
     QString transducer_type;
+
+    //! \brief The units of measurements represented by this signal
     QString physical_dimension;
+
+    //! \brief The minimum limits of the ungained data
     double  physical_minimum;
+
+    //! \brief The maximum limits of the ungained data
     double physical_maximum;
+
+    //! \brief The minimum limits of the data with gain and offset applied
     double digital_minimum;
+
+    //! \brief The maximum limits of the data with gain and offset applied
     double digital_maximum;
+
+    //! \brief Raw integer data is multiplied by this value
     double gain;
+
+    //! \brief This value is added to the raw data
     double offset;
+
+    //! \brief Any prefiltering methods used (usually blank)
     QString prefiltering;
+
+    //! \brief Number of records
     long nr;
+
+    //! \brief Reserved (usually blank)
     QString reserved;
+
+    //! \brief Pointer to the signals sample data
     qint16 * data;
+
+    //! \brief a non-EDF extra used internally to count the signal data
     int pos;
 };
 
+/*! \class EDFParser
+    \author Mark Watkins <jedimark64_at_users.sourceforge.net>
+    \brief Parse an EDF+ data file into a list of EDFSignal's
+    \note More information on the EDF+ file format can be obtained from http://edfplus.info
+    */
 class EDFParser
 {
 public:
-    EDFParser(QString filename);
+    //! \brief Constructs an EDFParser object, opening the filename if one supplied
+    EDFParser(QString filename="");
+
     ~EDFParser();
+
+    //! \brief Open the EDF+ file, and read it's header
     bool Open(QString name);
 
+    //! \brief Read si bytes of 8 bit data from the EDF+ data stream
     QString Read(int si);
+
+    //! \brief Read 16 bit word of data from the EDF+ data stream
     qint16 Read16();
 
+    //! \brief Vector containing the list of EDFSignals contained in this edf file
     QVector<EDFSignal *> edfsignals;
+
+    //! \brief An by-name indexed into the EDFSignal data
     QHash<QString,EDFSignal *> lookup;
+
+    //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
     EDFSignal * lookupSignal(ChannelID);
 
+    //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }
+
+    //! \brief Returns the number of data records contained per signal.
     long GetNumDataRecords() { return num_data_records; }
+
+    //! \brief Returns the duration represented by this EDF file (in milliseconds)
     qint64 GetDuration() { return dur_data_record; }
+
+    //! \brief Returns the patientid field from the EDF header
     QString GetPatient() { return patientident; }
 
+    //! \brief Parse the EDF+ file into the list of EDFSignals.. Must be call Open(..) first.
     bool Parse();
     char *buffer;
+
+    //! \brief  The EDF+ files header structure, used as a place holder while processing the text data.
     EDFHeader header;
+
     QString filename;
     long filesize;
     long datasize;
@@ -99,27 +166,50 @@ public:
     QString reserved44;
 };
 
+/*! \class ResmedLoader
+    \brief Importer for ResMed S9 Data
+    */
 class ResmedLoader : public MachineLoader
 {
 public:
     ResmedLoader();
     virtual ~ResmedLoader();
+
+    //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
     virtual int Open(QString & path,Profile *profile);
 
+    //! \brief Returns the version number of this ResMed loader
     virtual int Version() { return resmed_data_version; }
+
+    //! \brief Returns the Machine class name of this loader. ("ResMed")
     virtual const QString & ClassName() { return resmed_class_name; }
+
+    //! \brief Converts EDFSignal data to time delta packed EventList, and adds to Session
     EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0,bool square=false);
 
+    //! \brief Create Machine record, and index it by serial number
     Machine *CreateMachine(QString serial,Profile *profile);
 
+    //! \brief Register the ResmedLoader with the list of other machine loaders
     static void Register();
 protected:
     QHash<QString,Machine *> ResmedList;
-    bool LoadEVE(Session *sess,EDFParser &edf);
-    bool LoadBRP(Session *sess,EDFParser &edf);
-    bool LoadSAD(Session *sess,EDFParser &edf);
-    bool LoadPLD(Session *sess,EDFParser &edf);
 
+    //! \brief Parse the EVE Event annotation data, and save to Session * sess
+    //! This contains all Hypopnea, Obstructive Apnea, Central and Apnea codes
+    bool LoadEVE(Session *sess,EDFParser &edf);
+
+    //! \brief Parse the BRP High Resolution data, and save to Session * sess
+    //! This contains Flow Rate, Mask Pressure, and Resp. Event  data
+    bool LoadBRP(Session *sess,EDFParser &edf);
+
+    //! \brief Parse the SAD Pulse oximetry attachment data, and save to Session * sess
+    //! This contains Pulse Rate and SpO2 Oxygen saturation data
+    bool LoadSAD(Session *sess,EDFParser &edf);
+
+    //! \brief Parse the PRD low resolution data, and save to Session * sess
+    //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
+    bool LoadPLD(Session *sess,EDFParser &edf);
 };
 
 #endif // RESMED_LOADER_H

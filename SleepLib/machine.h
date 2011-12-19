@@ -41,12 +41,17 @@ class SaveThread:public QThread
     Q_OBJECT
 public:
     SaveThread(Machine *m,QString p) { machine=m; path=p; }
+
+    //! \brief Static millisecond sleep function.. Can be used from anywhere
     static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+
+    //! \brief Start Save processing thread running
     virtual void run();
 protected:
     Machine *machine;
     QString path;
 signals:
+    //! \brief Signal sent to update the Progress Bar
     void UpdateProgress(int i);
 };
 
@@ -177,6 +182,8 @@ public:
 protected:
 };
 
+// This should probably move somewhere else
+//! \fn timezoneOffset();
 //! \brief Calculate the timezone Offset in milliseconds between system timezone and UTC
 qint64 timezoneOffset();
 

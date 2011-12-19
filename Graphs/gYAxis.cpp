@@ -124,8 +124,8 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
 
 
-gYAxis::gYAxis(ChannelID code,QColor col)
-:Layer(code)
+gYAxis::gYAxis(QColor col)
+:Layer("")
 {
     m_line_color=col;
     m_text_color=col;
@@ -249,7 +249,7 @@ bool gYAxis::mouseMoveEvent(QMouseEvent * event)
 }
 
 gYAxisTime::gYAxisTime(QColor col):
-    gYAxis("",col)
+    gYAxis(col)
 {
     show_12hr=true;
 }

@@ -8,6 +8,8 @@
 #define GXAXIS_H
 #include "gGraphView.h"
 
+/*! \class gXAxis
+    \brief Draws the XTicker timescales underneath graphs */
 class gXAxis:public Layer
 {
     public:

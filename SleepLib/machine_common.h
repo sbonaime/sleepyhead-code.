@@ -21,7 +21,10 @@ typedef long SessionID;
 typedef float EventDataType;
 typedef qint16 EventStoreType;
 
+//! \brief Exception class for out of Bounds error.. Unused.
 class BoundsError {};
+
+//! \brief Exception class for to trap old database versions.
 class OldDBVersion {};
 
 const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don't touch!
@@ -29,16 +32,29 @@ const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don'
 //const int max_number_event_fields=10;
 
 
+/*! \enum SummaryType
+    \brief Calculation method to select from dealing with summary information
+  */
 enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_CPH, ST_SPH, ST_FIRST, ST_LAST, ST_HOURS, ST_SESSIONS, ST_SETMIN, ST_SETAVG, ST_SETMAX, ST_SETWAVG, ST_SETSUM };
 
+/*! \enum MachineType
+    \brief Generalized type of a machine
+  */
 enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL };
 //void InitMapsWithoutAwesomeInitializerLists();
 
 
+/*! \enum CPAPMode
+    \brief CPAP Machines mode of operation
+  */
 enum CPAPMode//:short
 {
     MODE_UNKNOWN=0,MODE_CPAP,MODE_APAP,MODE_BIPAP,MODE_ASV
 };
+
+/*! \enum PRTypes
+    \brief Pressure Relief Types, used by CPAP machines
+  */
 enum PRTypes//:short
 {
     PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
@@ -49,10 +65,14 @@ enum PRTypes//:short
 //extern map<PRTypes,QString> PressureReliefNames;
 //extern map<CPAPMode,QString> CPAPModeNames;
 
-// These are types supported by wxVariant class. To retain compatability, add to the end of this list only..
+/*! \enum MCDataType
+    \brief Data Types stored by Profile/Preferences objects, etc..
+    */
+
 enum MCDataType
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
+// This all needs replacing with actual integer codes.. There will likely be a big speedup when this happens again.
 const QString CPAP_IPAP="IPAP";
 const QString CPAP_IPAPLo="IPAPLo";
 const QString CPAP_IPAPHi="IPAPHi";

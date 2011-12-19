@@ -12,6 +12,9 @@ License: GPL
 #include "profiles.h"
 #include "machine.h"
 
+/*! \class MachineLoader
+    \brief Base class to derive a new Machine importer from
+    */
 class MachineLoader
 {
 public:
@@ -21,8 +24,13 @@ public:
 
     //virtual Machine * CreateMachine() {};
 
-    virtual int Open(QString &,Profile *)=0;   // Scans for new content
+    //! \brief Override this to scan path and detect new machine data
+    virtual int Open(QString & path,Profile *)=0;   // Scans for new content
+
+    //! \brief Override to returns the Version number of this MachineLoader
     virtual int Version()=0;
+
+    //! \brief Override to returns the class name of this MachineLoader
     virtual const QString & ClassName()=0;
 
 
@@ -47,12 +55,14 @@ public:
     virtual bool SaveWaveform(Machine * m, QString & filename);*/
 
 protected:
+    //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
     QString m_class;
     MachineType m_type;
     Profile * m_profile;
 };
 
+// Put in machine loader class as static??
 void RegisterLoader(MachineLoader *loader);
 void DestroyLoaders();
 QList<MachineLoader *> GetLoaders();

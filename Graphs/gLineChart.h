@@ -13,21 +13,41 @@
 #include "gGraphView.h"
 //#include "graphlayer.h"
 
+/*! \class AHIChart
+    \brief Another graph calculating the AHI/hour, this one looks at all the sessions for a day. Currently Unused.
+    */
 class AHIChart:public Layer
 {
 public:
+    //! \brief Constructs an AHIChart object, with QColor col for the line plots.
     AHIChart(const QColor col=QColor("black"));
     ~AHIChart();
+
+    //! \brief Draws the precalculated data to the Vertex buffers
     virtual void paint(gGraph & w,int left, int top, int width, int height);
+
+    //! \brief AHI/hr Calculations are done for this day here.
+    //! This also uses the sliding window method
     virtual void SetDay(Day *d);
+
+    //! \brief Returns the minimum AHI/hr value caculated
     virtual EventDataType Miny() { return m_miny; }
+
+    //! \brief Returns the maximum AHI/hr value caculated
     virtual EventDataType Maxy() { return m_maxy; }
+
+    //! \brief Returns true if no data was available
     virtual bool isEmpty() { return m_data.size()==0; }
 
 protected:
+    //! \brief Contains the plot data (Y-axis) generated for this day
     QVector<EventDataType> m_data;
+
+    //! \brief Contains the time codes (X-axis) generated for this day
     QVector<quint64> m_time;
-    EventDataType m_miny,m_maxy;
+
+    EventDataType m_miny;
+    EventDataType m_maxy;
     QColor m_color;
     GLShortBuffer * lines;
 };
@@ -57,7 +77,7 @@ class gLineChart:public Layer
         bool GetSquarePlot() { return m_square_plot; }
 
         //! \brief Set this if you want this layer to draw it's empty data message
-        //! \note They don't show anymore due to the changes in gGraphView. Should modify isEmpty if this still gets to live
+        //! They don't show anymore due to the changes in gGraphView. Should modify isEmpty if this still gets to live
         void ReportEmpty(bool b) { m_report_empty=b; }
 
         //! \brief Returns whether or not to show the empty text message

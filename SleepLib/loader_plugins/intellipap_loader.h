@@ -22,6 +22,9 @@ const int intellipap_data_version=1;
 //
 //********************************************************************************************
 
+/*! \class Intellipap
+    \brief Intellipap customized machine object
+    */
 class Intellipap:public CPAP
 {
 public:
@@ -35,24 +38,32 @@ const int intellipap_load_buffer_size=1024*1024;
 
 const QString intellipap_class_name="Intellipap";
 
+/*! \class IntellipapLoader
+    \brief Loader for DeVilbiss Intellipap Auto data
+    This is only relatively recent addition and still needs more work
+    */
 class IntellipapLoader : public MachineLoader
 {
 public:
     IntellipapLoader();
     virtual ~IntellipapLoader();
+    //! \brief Scans path for Intellipap data signature, and Loads any new data
     virtual int Open(QString & path,Profile *profile);
+
+    //! \brief Returns SleepLib database version of this IntelliPap loader
     virtual int Version() { return intellipap_data_version; }
+
+    //! \brief Returns the machine class name of this IntelliPap, "Intellipap"
     virtual const QString & ClassName() { return intellipap_class_name; }
+
+    //! \brief Creates a machine object, indexed by serial number
     Machine *CreateMachine(QString serial,Profile *profile);
+
+    //! \brief Registers this MachineLoader with the master list, so Intellipap data can load
     static void Register();
 protected:
     QString last;
     QHash<QString,Machine *> MachList;
-    /*int OpenMachine(Machine *m,QString path,Profile *profile);
-    bool ParseProperties(Machine *m,QString filename);
-    bool OpenSummary(Session *session,QString filename);
-    bool OpenEvents(Session *session,QString filename);
-    bool OpenWaveforms(Session *session,QString filename);*/
 
     unsigned char * m_buffer;
 };

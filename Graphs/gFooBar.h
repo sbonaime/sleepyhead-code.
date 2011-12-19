@@ -9,6 +9,9 @@
 
 #include "gGraphView.h"
 
+/*! \class gShadowArea
+    \brief Displays a Shadow for all graph areas not highlighted (used in Event Flags)
+    */
 class gShadowArea:public Layer
 {
     public:
@@ -22,6 +25,10 @@ class gShadowArea:public Layer
         GLShortBuffer *lines;
 };
 
+/*! \class gFooBar
+    \brief Was a kind of scrollbar thingy that used to be used for representing the overall graph areas.
+    Currently Unused and empty.
+    */
 class gFooBar:public Layer
 {
     public:

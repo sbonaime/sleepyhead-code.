@@ -14,6 +14,11 @@ namespace Ui {
     class ExportCSV;
 }
 
+
+/*! \class ExportCSV
+    \brief Dialog for exporting SleepLib data in CSV Format
+    This module still needs a lot of work
+    */
 class ExportCSV : public QDialog
 {
     Q_OBJECT

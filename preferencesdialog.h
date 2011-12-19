@@ -30,11 +30,14 @@ public:
     MySortFilterProxyModel(QObject *parent = 0);
 
 protected:
+    //! \brief Simply extends filterAcceptRow to scan children as well
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 
 };
 
-//! \note MaksProfile in still a work in progress
+/*! \struct MaskProfile
+    \brief This in still a work in progress, and may be used in Unintentional leaks calculations.
+    */
 struct MaskProfile {
     QString name;
     EventDataType pflow[5][2];
@@ -53,9 +56,10 @@ public:
     explicit PreferencesDialog(QWidget *parent, Profile * _profile);
     ~PreferencesDialog();
 
-    /*! \fn Save()
-        \brief Save the current preferences, called when Ok button is clicked on */
+    //! \brief Save the current preferences, called when Ok button is clicked on
     void Save();
+
+    //! \brief Updates the date text of the last time updates where checked
     void RefreshLastChecked();
 
 private slots:
@@ -83,7 +87,9 @@ private slots:
     void on_maskTypeCombo_activated(int index);
 
 private:
+    //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();
+
     Ui::PreferencesDialog *ui;
     Profile * profile;
     QHash<int,QColor> m_new_colors;
@@ -92,7 +98,6 @@ private:
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
     QHash<QString,Preference> general;
-
 };
 
 

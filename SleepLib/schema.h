@@ -41,7 +41,9 @@ enum ScopeType {
 class Channel;
 extern Channel EmptyChannel;
 
-// this is really a channel definition.
+/*! \class Channel
+    \brief Contains information about a SleepLib data Channel (aka signals)
+    */
 class Channel
 {
 public:
@@ -81,19 +83,29 @@ protected:
     int m_link;
 };
 
+/*! \class ChannelList
+    \brief A list containing a group of Channel objects, and XML storage and retrieval capability
+    */
 class ChannelList
 {
 public:
     ChannelList();
     virtual ~ChannelList();
+
+    //! \brief Loads Channel list from XML file specified by filename
     bool Load(QString filename);
+
+    //! \brief Stores Channel list to XML file specified by filename
     bool Save(QString filename);
-    Channel & operator[](int i) {
-        if (channels.contains(i))
-            return *channels[i];
+
+    //! \brief Looks up Channel in this List with the index idx, returns EmptyChannel if not found
+    Channel & operator[](int idx) {
+        if (channels.contains(idx))
+            return *channels[idx];
         else
             return EmptyChannel;
     }
+    //! \brief Looks up Channel from this list by name, returns Empty Channel if not found.
     Channel & operator[](QString name) {
         if (names.contains(name))
             return *names[name];
@@ -101,17 +113,24 @@ public:
             return EmptyChannel;
     }
 
+    //! \brief Channel List indexed by integer ID
     QHash<int,Channel *> channels;
+
+    //! \brief Channel List index by name
     QHash<QString,Channel *> names;
+
+    //! \brief Channel List indexed by group
     QHash<QString,QHash<QString,Channel *> > groups;
     QString m_doctype;
 };
 extern ChannelList channel;
 
-enum LayerType {
+/*enum LayerType {
     UnspecifiedLayer, Waveform, Flag, Overlay, Group
 };
 
+
+// ?????
 class Layer
 {
 public:
@@ -196,7 +215,7 @@ public:
     Graph *addGraph(Graph *graph) { m_graphs.push_back(graph); return graph; }
 protected:
     QVector<Graph *>m_graphs;
-};
+}; */
 
 void init();
 

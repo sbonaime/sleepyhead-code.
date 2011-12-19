@@ -56,12 +56,10 @@ SOURCES += main.cpp\
     Graphs/gFlagsLine.cpp \
     Graphs/glcommon.cpp \
     Graphs/gSegmentChart.cpp \
-    Graphs/gSessionTime.cpp \
     qextserialport/qextserialport.cpp \
     preferencesdialog.cpp \
     Graphs/gGraphView.cpp \
     Graphs/gStatsLine.cpp \
-    report.cpp \
     Graphs/gSummaryChart.cpp \
     SleepLib/schema.cpp \
     profileselect.cpp \
@@ -126,7 +124,6 @@ HEADERS  += \
     Graphs/gFlagsLine.h \
     Graphs/glcommon.h \
     Graphs/gSegmentChart.h\
-    Graphs/gSessionTime.h \
     SleepLib/loader_plugins/resmed_loader.h \
     qextserialport/qextserialport_global.h \
     qextserialport/qextserialport.h \
@@ -134,7 +131,6 @@ HEADERS  += \
     preferencesdialog.h \
     Graphs/gGraphView.h \
     Graphs/gStatsLine.h \
-    report.h \
     Graphs/gSummaryChart.h \
     SleepLib/schema.h \
     profileselect.h \
@@ -179,7 +175,6 @@ RESOURCES += \
 OTHER_FILES += \
     docs/index.html \
     docs/usage.html \
-    docs/template_overview.sht \
     docs/schema.xml \
     docs/graphs.xml \
     docs/channels.xml \

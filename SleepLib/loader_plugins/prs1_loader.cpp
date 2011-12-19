@@ -106,6 +106,15 @@ PRS1::~PRS1()
 }
 
 
+/*! \struct WaveHeaderList
+    \brief Used in PRS1 Waveform Parsing */
+struct WaveHeaderList {
+    quint16 interleave;
+    quint8  sample_format;
+    WaveHeaderList(quint16 i,quint8 f){ interleave=i; sample_format=f; }
+};
+
+
 PRS1Loader::PRS1Loader()
 {
     //genCRCTable();
@@ -420,19 +429,18 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     return cnt;
 }
 
+//struct PRS1SummaryR5 {
+//    quint8 unknown1;
+//    quint8 unknown2;
+//    quint8 unknown3;
+//    quint8 pressure_min;
+//    quint8 pressure_max;
+//    quint8 unknown;
 
-struct PRS1SummaryR5 {
-    quint8 unknown1;
-    quint8 unknown2;
-    quint8 unknown3;
-    quint8 pressure_min;
-    quint8 pressure_max;
-    quint8 unknown;
-
-    quint32 flags;
+//    quint32 flags;
 
 
-};// __attribute__((packed));
+//};// __attribute__((packed));
 
 bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version)
 {
@@ -1413,6 +1421,7 @@ bool PRS1Loader::OpenEvents(Session *session,QString filename)
     } while(1);
     return true;
 } */
+
 
 bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 {

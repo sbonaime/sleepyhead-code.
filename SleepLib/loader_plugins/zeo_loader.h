@@ -14,6 +14,9 @@ const QString zeo_class_name="CMS50";
 const int zeo_data_version=1;
 
 
+/*! \class ZEOLoader
+    \brief Unfinished stub for loading ZEO Personal Sleep Coach data
+*/
 class ZEOLoader : public MachineLoader
 {
     public:
@@ -22,8 +25,8 @@ class ZEOLoader : public MachineLoader
         virtual int Open(QString & path,Profile *profile);
         static void Register();
 
-        virtual int Version() { return zeo_data_version; };
-        virtual const QString & ClassName() { return zeo_class_name; };
+        virtual int Version() { return zeo_data_version; }
+        virtual const QString & ClassName() { return zeo_class_name; }
 
 
         Machine *CreateMachine(Profile *profile);

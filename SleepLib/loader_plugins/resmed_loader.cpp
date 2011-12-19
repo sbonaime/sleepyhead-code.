@@ -196,6 +196,9 @@ bool EDFParser::Open(QString name)
     filesize=f.size();
     datasize=filesize-EDFHeaderSize;
     if (datasize<0) return false;
+
+    //Urk.. This needs fixing for VC++, as it doesn't have packed attribute type..
+
     f.read((char *)&header,EDFHeaderSize);
     //qDebug() << "Opening " << name;
     buffer=new char [datasize];

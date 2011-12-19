@@ -9,6 +9,10 @@
 
 #include "gGraphView.h"
 
+
+/*! \class gYSpacer
+    \brief A dummy vertical spacer object
+   */
 class gYSpacer:public Layer
 {
     public:
@@ -23,16 +27,29 @@ class gYSpacer:public Layer
 
 };
 
+/*! \class gXGrid
+    \brief Draws the horizintal major/minor grids over graphs
+   */
 class gXGrid:public Layer
 {
 public:
+    //! \brief Constructs an gXGrid object with default settings, and col for line colour.
     gXGrid(QColor col=QColor("black"));
     virtual ~gXGrid();
+
+    //! \brief Draw the horizontal lines by adding the to the Vertex GLbuffers
     virtual void paint(gGraph & w,int left,int top, int width, int height);
 
+    //! \brief set the visibility status of Major lines
     void setShowMinorLines(bool b) { m_show_minor_lines=b; }
+
+    //! \brief set the visibility status of Minor lines
     void setShowMajorLines(bool b) { m_show_major_lines=b; }
+
+    //! \brief Returns the visibility status of minor lines
     bool showMinorLines() { return m_show_minor_lines; }
+
+    //! \brief Returns the visibility status of Major lines
     bool showMajorLines() { return m_show_major_lines; }
 protected:
     bool m_show_major_lines;
@@ -41,29 +58,51 @@ protected:
     QColor m_minor_color;
 };
 
+/*! \class gYAxis
+   \brief Draws the YAxis tick markers, and numeric labels
+   */
 class gYAxis:public Layer
 {
     public:
-        gYAxis(ChannelID code="",QColor col=QColor("black"));
+        //! \brief Construct a gYAxis object, with QColor col for tickers & text
+        gYAxis(QColor col=QColor("black"));
         virtual ~gYAxis();
-        virtual void paint(gGraph & w,int left,int top, int width, int height);
-        void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
-        void SetShowMajorLines(bool b) { m_show_major_lines=b; }
-        bool ShowMinorLines() { return m_show_minor_lines; }
-        bool ShowMajorLines() { return m_show_major_lines; }
-        void SetShowMinorTicks(bool b) { m_show_minor_ticks=b; }
-        void SetShowMajorTicks(bool b) { m_show_major_ticks=b; }
-        bool ShowMinorTicks() { return m_show_minor_ticks; }
-        bool ShowMajorTicks() { return m_show_major_ticks; }
-        virtual const QString Format(EventDataType v, int dp);
-        static const int Margin=60; // Left margin space
 
-        void SetScale(float f) { m_yaxis_scale=f; } // Scale yaxis ticker values (only what's displayed)
+        //! \brief Draw the horizontal tickers display
+        virtual void paint(gGraph & w,int left,int top, int width, int height);
+
+//        void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
+//        void SetShowMajorLines(bool b) { m_show_major_lines=b; }
+//        bool ShowMinorLines() { return m_show_minor_lines; }
+//        bool ShowMajorLines() { return m_show_major_lines; }
+
+        //! \brief Sets the visibility status of minor ticks
+        void SetShowMinorTicks(bool b) { m_show_minor_ticks=b; }
+
+        //! \brief Sets the visibility status of Major ticks
+        void SetShowMajorTicks(bool b) { m_show_major_ticks=b; }
+
+        //! \brief Returns the visibility status of Minor ticks
+        bool ShowMinorTicks() { return m_show_minor_ticks; }
+
+        //! \brief Returns the visibility status of Major ticks
+        bool ShowMajorTicks() { return m_show_major_ticks; }
+
+        //! \brief Formats the ticker value.. Override to implement other types
+        virtual const QString Format(EventDataType v, int dp);
+
+        //! \brief Left Margin space in pixels
+        static const int Margin=60;
+
+        //! \brief Set the scale of the Y axis values.. Values can be multiplied by this to convert formats
+        void SetScale(float f) { m_yaxis_scale=f; }
+
+        //! \brief Returns the scale of the Y axis values.. Values can be multiplied by this to convert formats
         float Scale() { return m_yaxis_scale; }
 
     protected:
-        bool m_show_major_lines;
-        bool m_show_minor_lines;
+        //bool m_show_major_lines;
+        //bool m_show_minor_lines;
         bool m_show_minor_ticks;
         bool m_show_major_ticks;
         float m_yaxis_scale;
@@ -75,13 +114,20 @@ class gYAxis:public Layer
 
 };
 
+/*! \class gYAxisTime
+   \brief Draws the YAxis tick markers, and labels in time format
+   */
 class gYAxisTime:public gYAxis
 {
 public:
+    //! \brief Construct a gYAxisTime object, with QColor col for tickers & times
     gYAxisTime(QColor col=Qt::black);
     virtual ~gYAxisTime();
 protected:
+    //! \brief Overrides gYAxis Format to display Time format
     virtual const QString Format(EventDataType v, int dp);
+
+    //! \brief Whether to format as 12 or 24 hour times
     bool show_12hr;
 };
 

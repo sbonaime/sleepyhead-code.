@@ -20,7 +20,6 @@
 #include "Graphs/gXAxis.h"
 #include "Graphs/gLineChart.h"
 #include "Graphs/gYAxis.h"
-#include "Graphs/gSessionTime.h"
 
 #include "mainwindow.h"
 extern MainWindow * mainwin;

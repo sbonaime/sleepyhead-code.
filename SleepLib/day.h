@@ -12,6 +12,9 @@
 #include "SleepLib/event.h"
 #include "SleepLib/session.h"
 
+/*! \class OneTypePerDay
+    \brief An Exception class to catch multiple machine records per day
+    */
 class OneTypePerDay
 {
 };

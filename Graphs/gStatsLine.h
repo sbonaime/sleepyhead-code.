@@ -4,6 +4,9 @@
 #include "SleepLib/machine.h"
 #include "gGraphView.h"
 
+/*! \class gStatsLine
+    \brief Show a rendered stats area in place of a graph. This is currently unused
+    */
 class gStatsLine : public Layer
 {
 public:

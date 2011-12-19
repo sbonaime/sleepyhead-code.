@@ -253,7 +253,7 @@ public:
     //! \brief Draw all this layers custom GLBuffers (ie. the actual OpenGL Vertices)
     virtual void drawGLBuf(float linesize);
 
-    //! \note not sure why I needed the reference counting stuff.
+    //! \brief not sure why I needed the reference counting stuff.
     short m_refcount;
     void addref() { m_refcount++; }
     bool unref() { m_refcount--; if (m_refcount<=0) return true; return false; }
@@ -439,7 +439,7 @@ public:
     //! \brief Set the height element. (relative to the total of all heights)
     void setHeight(float height) { m_height=height; }
 
-    // Can't remember what these are for..
+    //! \brief Can't remember what these are for..
     int minHeight() { return m_min_height; }
     void setMinHeight(int height) { m_min_height=height; }
 
@@ -449,9 +449,10 @@ public:
     //! \brief Set whether or not to render the vertical graph title
     void showTitle(bool b);
 
-    //! \brief Returns printScaleX, used for DPI scaling
+    //! \brief Returns printScaleX, used for DPI scaling in report printing
     float printScaleX();
-    //! \brief Returns printScaleY, used for DPI scaling..
+
+    //! \brief Returns printScaleY, used for DPI scaling in report printing
     float printScaleY();
 
     //! \brief Returns true if none of the included layers have data attached
@@ -459,6 +460,7 @@ public:
 
     //! \brief Add Layer l to graph object, allowing you to specify position,  margin sizes, order, movability status and offsets
     void AddLayer(Layer * l,LayerPosition position=LayerCenter, short pixelsX=0, short pixelsY=0, short order=0, bool movable=false, short x=0, short y=0);
+
 
     void qglColor(QColor col);
 
