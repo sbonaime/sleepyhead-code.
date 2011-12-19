@@ -1655,12 +1655,12 @@ QPixmap gGraph::renderPixmap(int w, int h, float scale)
     QFont fb=*mediumfont;
     QFont fc=*bigfont;
 
-    sg->setPrintScaleX(scale);
-    sg->setPrintScaleY(scale);
+    sg->setPrintScaleX(3);
+    sg->setPrintScaleY(3);
 
-    fa.setPointSize(fa.pointSize()*scale);
-    fb.setPointSize(fb.pointSize()*scale);
-    fc.setPointSize(fc.pointSize()*scale);
+    fa.setPixelSize(30);
+    fb.setPointSize(35);
+    fc.setPointSize(80);
 
     defaultfont=&fa;
     mediumfont=&fb;

@@ -77,12 +77,12 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         divmax=10;
         fitmode=0;
     } else if (xx>600000) {    // Minutes
-        fd="j0:00";
+        fd=" j0:00";
         dividx=10;
         divmax=27;
         fitmode=1;
     } else if (xx>5000) {      // Seconds
-        fd="j0:00:00";
+        fd=" j0:00:00";
         dividx=16;
         divmax=27;
         fitmode=2;

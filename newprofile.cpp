@@ -233,7 +233,9 @@ void NewProfile::edit(const QString name)
     skipWelcomeScreen();
     Profile *profile=Profiles::Get(name);
     if (!profile) {
-        Profiles::Create(name);
+        profile=Profiles::Create(name);
+        (*profile)["FirstName"]="";
+        (*profile)["LastName"]="";
     }
     ui->userNameEdit->setText(name);
     ui->userNameEdit->setReadOnly(true);
