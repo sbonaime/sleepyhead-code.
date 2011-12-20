@@ -844,8 +844,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             cpapinfo+="\n\n";
 
             painter.setFont(report_font);
-            bounds=painter.boundingRect(QRectF((virt_width/2)-(virt_width/6),top,virt_width/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
-            painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignLeft));
+            //bounds=painter.boundingRect(QRectF((virt_width/2)-(virt_width/6),top,virt_width/2,0),cpapinfo,QTextOption(Qt::AlignLeft));
+            bounds=painter.boundingRect(QRectF(0,top,virt_width,0),cpapinfo,QTextOption(Qt::AlignHCenter));
+            painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignHCenter));
 
             int ttop=bounds.height();
 
