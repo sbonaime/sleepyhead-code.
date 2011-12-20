@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1617,9 +1617,9 @@ this application to be unstable with this feature enabled.</string>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="lessBoringEmptyGraphPages">
+            <widget class="QCheckBox" name="animationsAndTransitionsCheckbox">
              <property name="text">
-              <string>Less Boring Empty Graph Pages</string>
+              <string>Animation &amp;&amp; Transitions</string>
              </property>
             </widget>
            </item>

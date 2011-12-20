@@ -2184,7 +2184,7 @@ void gGraphView::renderSomethingFun()
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(35.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+    gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -2408,6 +2408,7 @@ bool gGraphView::renderGraphs()
 }
 void gGraphView::fadeOut()
 {
+    if (!PROFILE.ExistsAndTrue("AnimationsAndTransitions")) return;
     //if (m_fadingOut) {
 //        return;
 //    }
@@ -2440,6 +2441,10 @@ void gGraphView::fadeOut()
 void gGraphView::fadeIn(bool dir)
 {
     m_tooltip->cancel();
+    if (!PROFILE.ExistsAndTrue("AnimationsAndTransitions")) {
+        updateGL();
+        return;
+    }
 
     if (m_fadingIn) {
         m_fadingIn=false;
@@ -2469,7 +2474,7 @@ void gGraphView::paintGL()
         redrawtimer->stop();
     }
 
-    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
+    bool something_fun=PROFILE.ExistsAndTrue("AnimationsAndTransitions");
     if (width()<=0) return;
     if (height()<=0) return;
 

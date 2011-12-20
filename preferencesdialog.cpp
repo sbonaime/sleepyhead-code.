@@ -171,7 +171,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Spinbox,tr("Graph Height"),tr("Default Graph Height"),160);
     general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_LineEdit,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
     general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),true);
-    general["EmptyGraphFun"]=Preference(p_profile,"EmptyGraphFun",PT_Checkbox,tr("Less Boring Empty Graph Pages"),tr("Make empty graph pages more attractive."),false);
+    general["AnimationsAndTransitions"]=Preference(p_profile,"AnimationsAndTransitions",PT_Checkbox,tr("Animations and Transitions"),tr("Make empty graph pages, and switching days more attractive."),false);
     general["ShowCompliance"]=Preference(p_profile,"ShowCompliance",PT_Checkbox,tr("Show Compliance Information"),tr("Allow compliance information to be shown."),true);
     general["ComplianceHours"]=Preference(p_profile,"ComplianceHours",PT_Spinbox,tr("Compliance Hours"),tr("Regard days over this combined session length as compliant."),4.0);
 
@@ -201,7 +201,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
-    ui->lessBoringEmptyGraphPages->setChecked(general["EmptyGraphFun"].value().toBool());
+    ui->animationsAndTransitionsCheckbox->setChecked(general["AnimationsAndTransitions"].value().toBool());
     ui->complianceGroupbox->setChecked(general["ShowCompliance"].value().toBool());
     ui->complianceHours->setValue(general["ComplianceHours"].value().toDouble());
 
@@ -332,7 +332,7 @@ void PreferencesDialog::Save()
     general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
     general["MaskDescription"].setValue(ui->maskDescription->text());
     general["HighResPrinting"].setValue(ui->highResolutionPrinting->isChecked());
-    general["EmptyGraphFun"].setValue(ui->lessBoringEmptyGraphPages->isChecked());
+    general["AnimationsAndTransitions"].setValue(ui->animationsAndTransitionsCheckbox->isChecked());
 
     general["ShowCompliance"].setValue(ui->complianceGroupbox->isChecked());
     general["ComplianceHours"].setValue(ui->complianceHours->value());

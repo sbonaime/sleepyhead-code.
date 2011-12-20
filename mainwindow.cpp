@@ -135,6 +135,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("OxiDiscardThreshold")) PROFILE["OxiDiscardThreshold"]=10;
     if (!PROFILE.Exists("ComplianceHours")) PROFILE["ComplianceHours"]=4;
     if (!PROFILE.Exists("ShowCompliance")) PROFILE["ShowCompliance"]=true;
+    if (!PROFILE.Exists("AnimationsAndTransitions")) PROFILE["AnimationsAndTransitions"]=true;
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
     ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());
