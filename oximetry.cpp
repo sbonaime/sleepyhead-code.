@@ -887,6 +887,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     ui->saveButton->setEnabled(false);
     GraphView->LoadSettings("Oximetry");
+    GraphView->setCubeImage(images["oximeter"]);
 
     QLocale locale=QLocale::system();
     QString shortformat=locale.dateFormat(QLocale::ShortFormat);

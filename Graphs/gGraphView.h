@@ -35,6 +35,8 @@ extern QFont * defaultfont;
 extern QFont * mediumfont;
 extern QFont * bigfont;
 
+extern QHash<QString, QImage *> images;
+
 /*! \brief Gets the width and height parameters for supplied text
     \param QString text - The text string in question
     \param int & width
@@ -796,6 +798,12 @@ public:
     //! \brief Sets the message displayed when there are no graphs to draw
     void setEmptyText(QString s) { m_emptytext=s; }
 
+    void setCubeImage(QImage *);
+
+    // Cube fun
+    QVector<QImage *> cubeimg;
+    GLuint cubetex;
+
 #ifdef ENABLE_THREADED_DRAWING
     QMutex text_mutex;
     QMutex gl_mutex;
@@ -927,9 +935,7 @@ protected:
 
     QTime m_animationStarted;
 
-    // Cube fun
-    QVector<QImage *> images;
-    QVector<GLuint> texid;
+    //QVector<GLuint> texid;
 signals:
 
 

@@ -37,6 +37,8 @@ bool evil_intel_graphics_chip=false;
 extern QLabel * qstatus2;
 const int mouse_movement_threshold=6;
 
+QHash<QString, QImage *> images;
+
 // Must be called from a thread inside the application.
 void InitGraphs()
 {
@@ -81,6 +83,16 @@ void InitGraphs()
         mediumfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
 
+        images["mask"]=new QImage(":/icons/mask.png");
+        images["oximeter"]=new QImage(":/icons/cubeoximeter.png");
+        images["smiley"]=new QImage(":/icons/smileyface.png");
+        images["sad"]=new QImage(":/icons/sadface.png");
+        images["brick"]=new QImage(":/icons/brick.png");
+        //images["warning"]=new QImage(":/icons/warning.png");
+        //images["bug"]=new QImage(":/icons/bug.png");
+        images["sheep"]=new QImage(":/icons/sheep.png");
+        images["nodata"]=new QImage(":/icons/nodata.png");
+
         _graph_init=true;
     }
 }
@@ -90,6 +102,9 @@ void DoneGraphs()
         delete defaultfont;
         delete bigfont;
         delete mediumfont;
+        for (QHash<QString,QImage *>::iterator i=images.begin();i!=images.end();i++) {
+            delete i.value();
+        }
         _graph_init=false;
     }
 }
@@ -1827,23 +1842,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     //redrawtimer->setInterval(80);
     //redrawtimer->start();
     connect(redrawtimer,SIGNAL(timeout()),SLOT(updateGL()));
-    QImage *image=new QImage(":/icons/oximeter.png");
-    images.push_back(image);
 
-    image=new QImage(":/docs/sheep.png");
-    images.push_back(image);
-
-    image=new QImage(":/icons/sdcard.png");
-    images.push_back(image);
-
-    image=new QImage(":/icons/preferences.png");
-    images.push_back(image);
-
-    image=new QImage(":/icons/overview.png");
-    images.push_back(image);
-
-    image=new QImage(":/icons/edit-find.png");
-    images.push_back(image);
+    //cubeimg.push_back(images["brick"]);
+    //cubeimg.push_back(images[""]);
 
     m_fadingOut=false;
     m_fadingIn=false;
@@ -1875,9 +1876,6 @@ gGraphView::~gGraphView()
     disconnect(timer,0,0,0);
     timer->stop();
     delete timer;
-    for (int i=0;i<images.size();i++) {
-        delete images[i];
-    }
 }
 void gGraphView::DrawTextQue()
 {
@@ -2154,10 +2152,13 @@ void gGraphView::initializeGL()
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 
-    texid.resize(images.size());
-    for(int i=0;i<images.size();i++) {
-        texid[i]=bindTexture(*images[i]);
+    if (cubeimg.size()>0) {
+        cubetex=bindTexture(*cubeimg[0]);
     }
+//    texid.resize(images.size());
+//    for(int i=0;i<images.size();i++) {
+//        texid[i]=bindTexture(*images[i]);
+//    }
 
     glBindTexture(GL_TEXTURE_2D,0);
    // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
@@ -2176,6 +2177,7 @@ void gGraphView::resizeGL(int w, int h)
 
 void gGraphView::renderSomethingFun()
 {
+    if (cubeimg.size()==0) return;
 //    glPushMatrix();
     float w=width();
     float h=height();
@@ -2204,7 +2206,7 @@ void gGraphView::renderSomethingFun()
     glEnable(GL_CULL_FACE);
     glDisable(GL_COLOR_MATERIAL);
 
-    int imgcount=6;
+    //int imgcount=cubeimg.size();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2215,9 +2217,10 @@ void gGraphView::renderSomethingFun()
 
     int i=0;
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    cubetex=bindTexture(*cubeimg[0]);
+    //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
     i++;
-    glColor4f(255,255,255,255);
+    glColor4f(1,1,1,1);
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
@@ -2226,7 +2229,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
     glEnd();
     // Back Face
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //bindTexture(*cubeimg[i % imgcount]);
+    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
@@ -2235,7 +2239,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
     glEnd();
     // Top Face
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //bindTexture(*cubeimg[i % imgcount]);
+//    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
@@ -2244,7 +2249,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
     glEnd();
     // Bottom Face
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //bindTexture(*cubeimg[i % imgcount]);
+    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Top Right Of The Texture and Quad
@@ -2253,7 +2259,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
     glEnd();
     // Right face
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //bindTexture(*cubeimg[i % imgcount]);
+//    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
@@ -2262,7 +2269,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
     glEnd();
     // Left Face
-    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //bindTexture(*cubeimg[i % imgcount]);
+    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
@@ -2434,7 +2442,11 @@ void gGraphView::fadeIn(bool dir)
     m_tooltip->cancel();
 
     if (m_fadingIn) {
-        previous_day_snapshot=current_day_snapshot;
+        m_fadingIn=false;
+        m_inAnimation=false;
+        updateGL();
+        return;
+       // previous_day_snapshot=current_day_snapshot;
     }
     m_inAnimation=false;
     current_day_snapshot=renderPixmap(width(),height(),false);
@@ -2466,7 +2478,7 @@ void gGraphView::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     bool numgraphs=true;
-    const int animTimeout=200;
+    const int animTimeout=500;
     float phase=0;
 
     int elapsed=0;
@@ -2515,6 +2527,7 @@ void gGraphView::paintGL()
                 glEnable(GL_BLEND);
 
                 glColor4f(1.0,1.0,1.0,aphase);
+//                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
                 bindTexture(previous_day_snapshot);
                 glBegin(GL_QUADS);
@@ -2525,7 +2538,10 @@ void gGraphView::paintGL()
                 glEnd();
 
                 glColor4f(1.0,1.0,1.0,phase);
+  //              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+                //glAlphaFunc(GL_GREATER,0.9);
+                //glEnable(GL_ALPHA_TEST);
                 bindTexture(current_day_snapshot);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0.0f, 1.0f); glVertex2f(0,0);
@@ -2534,6 +2550,7 @@ void gGraphView::paintGL()
                 glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
 
+                //glDisable(GL_ALPHA_TEST);
                 glDisable(GL_BLEND);
                 glBindTexture(GL_TEXTURE_2D,0);
             }
@@ -2545,16 +2562,20 @@ void gGraphView::paintGL()
         numgraphs=renderGraphs();
 
         if (!numgraphs) { // No graphs drawn?
-
-            if (something_fun && this->isVisible()) // Do something fun instead
-                renderSomethingFun();
-
-            // Then display the empty text message
-            QColor col=Qt::black;
             int x,y;
             GetTextExtent(m_emptytext,x,y,bigfont);
-            AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+            int tp;
+            if (something_fun && this->isVisible()) {// Do something fun instead
+                renderSomethingFun();
+                tp=height()-(y/2);
+            } else {
+                tp=height() / 2 + y / 2;
+            }
+                // Then display the empty text message
+            QColor col=Qt::black;
+            AddTextQue(m_emptytext,(width()/2)-x/2,tp,0.0,col,bigfont);
             DrawTextQue();
+
         }
     }
 
@@ -2576,12 +2597,21 @@ void gGraphView::paintGL()
 
     if (this->isVisible()) {
         if (m_limbo || m_inAnimation || (something_fun && !numgraphs)) {
-            redrawtimer->setInterval(25);
+            redrawtimer->setInterval(15);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();
         }
     }
 }
+
+void gGraphView::setCubeImage(QImage *img)
+{
+    cubeimg.clear();
+    cubeimg.push_back(img);
+    cubetex=bindTexture(*img);
+    glBindTexture(GL_TEXTURE_2D,0);
+}
+
 
 // For manual scrolling
 void gGraphView::setOffsetY(int offsetY)

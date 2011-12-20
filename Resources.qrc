@@ -27,5 +27,12 @@
         <file>icons/arrow-end.png</file>
         <file>icons/arrow-left.png</file>
         <file>icons/arrow-right.png</file>
+        <file>icons/smileyface.png</file>
+        <file>icons/sadface.png</file>
+        <file>icons/mask.png</file>
+        <file>icons/brick.png</file>
+        <file>icons/sheep.png</file>
+        <file>icons/nodata.png</file>
+        <file>icons/cubeoximeter.png</file>
     </qresource>
 </RCC>

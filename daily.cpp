@@ -647,8 +647,11 @@ void Daily::Load(QDate date)
     PRTypes pr;
     QString a;
     bool isBrick=false;
+
+    GraphView->setCubeImage(images["nodata"]);
     if (cpap) {
         if (GraphView->isEmpty()) {
+            GraphView->setCubeImage(images["brick"]);
             GraphView->setEmptyText(tr("Brick Machine :("));
             isBrick=true;
         } else {
