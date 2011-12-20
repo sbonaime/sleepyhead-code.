@@ -2497,33 +2497,41 @@ void gGraphView::paintGL()
               //  bindTexture(previous_day_snapshot);
             } else if (m_fadingIn) {
                 int offset,offset2;
-                if (m_fadedir) { // forwards
-                    offset2=-width();
-                    offset=0;
+                float aphase;
+                aphase=1.0-phase;
+                /*if (m_fadedir) { // forwards
+                    //offset2=-width();
+                    //offset=0;
+                    aphase=phase;
                     phase=1.0-phase;
                 } else { // backwards
-                    phase=phase;
-                    offset=-width();
-                    offset2=0;//-width();
-                }
+                    aphase=phase;
+                    phase=phase
+                    //offset=-width();
+                    //offset2=0;//-width();
+                }*/
+                offset=0; offset2=0;
+
                 glEnable(GL_BLEND);
 
-                glColor4f(255,255,255,255);
+                glColor4f(1.0,1.0,1.0,aphase);
 
                 bindTexture(previous_day_snapshot);
                 glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 1.0f); glVertex2f(width()*phase+offset2,0);
-                glTexCoord2f(1.0f, 1.0f); glVertex2f(width()+width()*phase+offset2,0);
-                glTexCoord2f(1.0f, 0.0f); glVertex2f(width()+width()*phase+offset2,height());
-                glTexCoord2f(0.0f, 0.0f); glVertex2f(width()*phase+offset2,height());
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(0,0);
+                glTexCoord2f(1.0f, 1.0f); glVertex2f(width(),0);
+                glTexCoord2f(1.0f, 0.0f); glVertex2f(width(),height());
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
+
+                glColor4f(1.0,1.0,1.0,phase);
 
                 bindTexture(current_day_snapshot);
                 glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 1.0f); glVertex2f(width()*phase+offset,0);
-                glTexCoord2f(1.0f, 1.0f); glVertex2f(width()+width()*phase+offset,0);
-                glTexCoord2f(1.0f, 0.0f); glVertex2f(width()+width()*phase+offset,height());
-                glTexCoord2f(0.0f, 0.0f); glVertex2f(width()*phase+offset,height());
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(0,0);
+                glTexCoord2f(1.0f, 1.0f); glVertex2f(width(),0);
+                glTexCoord2f(1.0f, 0.0f); glVertex2f(width(),height());
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
 
                 glDisable(GL_BLEND);
