@@ -904,6 +904,9 @@ protected:
 
     qint64 m_minx,m_maxx;
     float print_scaleX,print_scaleY;
+
+    QVector<QImage *> images;
+    QVector<GLuint> texid;
 signals:
 
 

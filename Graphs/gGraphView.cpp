@@ -1824,7 +1824,26 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     //redrawtimer->setInterval(80);
     //redrawtimer->start();
     connect(redrawtimer,SIGNAL(timeout()),SLOT(repaint()));
+    QImage *image=new QImage(":/icons/oximeter.png");
+    images.push_back(image);
+
+    image=new QImage(":/docs/sheep.png");
+    images.push_back(image);
+
+    image=new QImage(":/icons/sdcard.png");
+    images.push_back(image);
+
+    image=new QImage(":/icons/preferences.png");
+    images.push_back(image);
+
+    image=new QImage(":/icons/overview.png");
+    images.push_back(image);
+
+    image=new QImage(":/icons/edit-find.png");
+    images.push_back(image);
+
 }
+
 gGraphView::~gGraphView()
 {
 #ifdef ENABLE_THREADED_DRAWING
@@ -1849,6 +1868,9 @@ gGraphView::~gGraphView()
     disconnect(timer,0,0,0);
     timer->stop();
     delete timer;
+    for (int i=0;i<images.size();i++) {
+        delete images[i];
+    }
 }
 void gGraphView::DrawTextQue()
 {
@@ -2124,6 +2146,14 @@ void gGraphView::initializeGL()
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
+
+    texid.resize(images.size());
+    for(int i=0;i<images.size();i++) {
+        texid[i]=bindTexture(*images[i]);
+    }
+
+    glBindTexture(GL_TEXTURE_2D,0);
+   // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 }
 
 void gGraphView::resizeGL(int w, int h)
@@ -2139,7 +2169,7 @@ void gGraphView::resizeGL(int w, int h)
 
 void gGraphView::renderSomethingFun()
 {
-    //glPushMatrix();
+//    glPushMatrix();
     float w=width();
     float h=height();
     glViewport(0, 0, w, h);
@@ -2150,7 +2180,7 @@ void gGraphView::renderSomethingFun()
     glLoadIdentity();
 
     glShadeModel(GL_SMOOTH);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClearColor(1.0f, 0.4f, 0.2f, 0.5f);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -2162,47 +2192,86 @@ void gGraphView::renderSomethingFun()
 
     glLoadIdentity();
 
-    glTranslatef(0.0f, 0.0f,-7.0f);
-    glRotatef(rotqube,0.0f,1.0f,0.0f);
-    glRotatef(rotqube,1.0f,1.0f,1.0f);
+
+    //glAlphaFunc(GL_GREATER,0.1);
+    glEnable(GL_ALPHA_TEST);
+    glEnable(GL_CULL_FACE);
+    //glDisable(GL_COLOR_MATERIAL);
+
+    int imgcount=6;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glTranslatef(0.0f, 0.0f,-7.0f);
+    glRotatef(rotqube,0.0f,1.0f,0.0f);
+    glRotatef(rotqube,1.0f,1.0f,1.0f);
+
+    int i=0;
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
     glBegin(GL_QUADS);
-      float alpha=0.08;
-      glColor4f(0.0f,1.0f,0.0f,alpha);	// Color Blue
-      glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Top)
-      glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Top)
-      glVertex3f(-1.0f, 1.0f, 1.0f);	// Bottom Left Of The Quad (Top)
-      glVertex3f( 1.0f, 1.0f, 1.0f);	// Bottom Right Of The Quad (Top)
-      glColor4f(1.0f,0.5f,0.0f,alpha);	// Color Orange
-      glVertex3f( 1.0f,-1.0f, 1.0f);	// Top Right Of The Quad (Bottom)
-      glVertex3f(-1.0f,-1.0f, 1.0f);	// Top Left Of The Quad (Bottom)
-      glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Bottom)
-      glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Bottom)
-      glColor4f(1.0f,0.0f,0.0f,alpha);	// Color Red
-      glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Front)
-      glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Front)
-      glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Front)
-      glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Front)
-      glColor4f(1.0f,1.0f,0.0f,alpha);	// Color Yellow
-      glVertex3f( 1.0f,-1.0f,-1.0f);	// Top Right Of The Quad (Back)
-      glVertex3f(-1.0f,-1.0f,-1.0f);	// Top Left Of The Quad (Back)
-      glVertex3f(-1.0f, 1.0f,-1.0f);	// Bottom Left Of The Quad (Back)
-      glVertex3f( 1.0f, 1.0f,-1.0f);	// Bottom Right Of The Quad (Back)
-      glColor4f(0.0f,0.0f,1.0f,alpha);	// Color Blue
-      glVertex3f(-1.0f, 1.0f, 1.0f);	// Top Right Of The Quad (Left)
-      glVertex3f(-1.0f, 1.0f,-1.0f);	// Top Left Of The Quad (Left)
-      glVertex3f(-1.0f,-1.0f,-1.0f);	// Bottom Left Of The Quad (Left)
-      glVertex3f(-1.0f,-1.0f, 1.0f);	// Bottom Right Of The Quad (Left)
-      glColor4f(1.0f,0.0f,1.0f,alpha);	// Color Violet
-      glVertex3f( 1.0f, 1.0f,-1.0f);	// Top Right Of The Quad (Right)
-      glVertex3f( 1.0f, 1.0f, 1.0f);	// Top Left Of The Quad (Right)
-      glVertex3f( 1.0f,-1.0f, 1.0f);	// Bottom Left Of The Quad (Right)
-      glVertex3f( 1.0f,-1.0f,-1.0f);	// Bottom Right Of The Quad (Right)
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
     glEnd();
+    // Back Face
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
+    glBegin(GL_QUADS);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
+    glEnd();
+    // Top Face
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+    glEnd();
+    // Bottom Face
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
+    glBegin(GL_QUADS);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+    glEnd();
+    // Right face
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
+    glBegin(GL_QUADS);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+    glEnd();
+    // Left Face
+    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    i++;
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+    glEnd();
+
     glDisable(GL_BLEND);
+    //glBindTexture(GL_TEXTURE_2D, texid[0]);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glDisable(GL_ALPHA_TEST);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_CULL_FACE);
+
+    glDisable(GL_DEPTH_TEST);
 
     rotqube +=0.9f;
 
@@ -2214,7 +2283,8 @@ void gGraphView::renderSomethingFun()
     glOrtho(0, width(), height(), 0, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
+
+  //  glPopMatrix();
 }
 
 void gGraphView::paintGL()
@@ -2326,6 +2396,9 @@ void gGraphView::paintGL()
         int x,y;
         GetTextExtent(m_emptytext,x,y,bigfont);
         AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+
+        if (something_fun && this->isVisible())
+            renderSomethingFun();
     }
 
 
@@ -2360,7 +2433,7 @@ void gGraphView::paintGL()
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
     if (something_fun && !numgraphs && this->isVisible()) {
-        renderSomethingFun();
+    //    renderSomethingFun();
 
         redrawtimer->setInterval(25);
         redrawtimer->setSingleShot(true);
