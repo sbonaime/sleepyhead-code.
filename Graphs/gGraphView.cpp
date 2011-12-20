@@ -1842,6 +1842,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     image=new QImage(":/icons/edit-find.png");
     images.push_back(image);
 
+    m_fadingOut=false;
+    m_fadingIn=false;
+    m_inAnimation=false;
 }
 
 gGraphView::~gGraphView()
@@ -2179,9 +2182,9 @@ void gGraphView::renderSomethingFun()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glShadeModel(GL_SMOOTH);
-    glClearColor(1.0f, 0.4f, 0.2f, 0.5f);
-    glClearDepth(1.0f);
+    /*glShadeModel(GL_SMOOTH);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClearDepth(1.0f); */
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -2192,11 +2195,10 @@ void gGraphView::renderSomethingFun()
 
     glLoadIdentity();
 
-
-    //glAlphaFunc(GL_GREATER,0.1);
+    glAlphaFunc(GL_GREATER,0.1);
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_CULL_FACE);
-    //glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_COLOR_MATERIAL);
 
     int imgcount=6;
 
@@ -2211,6 +2213,8 @@ void gGraphView::renderSomethingFun()
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
     i++;
+    glColor4f(255,255,255,255);
+
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
     glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
@@ -2264,7 +2268,6 @@ void gGraphView::renderSomethingFun()
     glEnd();
 
     glDisable(GL_BLEND);
-    //glBindTexture(GL_TEXTURE_2D, texid[0]);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glDisable(GL_ALPHA_TEST);
@@ -2287,37 +2290,19 @@ void gGraphView::renderSomethingFun()
   //  glPopMatrix();
 }
 
-void gGraphView::paintGL()
+bool gGraphView::renderGraphs()
 {
-    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
-    if (something_fun && redrawtimer->isActive()) {
-
-        redrawtimer->stop();
-    }
-
-    if (width()<=0) return;
-    if (height()<=0) return;
-    QTime time;
-    time.start();
-
-    glClearColor(255,255,255,255);
-    //glClearDepth(1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-    /*glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_QUADS);
-    glColor4f(1.0,1.0,1.0,1.0); // Gradient start
-    glVertex2f(0, height());
-    glVertex2f(0, 0);
-
-    //glColor4f(0.9,0.9,0.9,1.0); // Gradient End
-    glVertex2f(width(), 0);
-    glVertex2f(width(), height());
-
-    glEnd();
-    glDisable(GL_BLEND); */
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glBegin(GL_QUADS);
+//    glColor4f(1.0,1.0,1.0,1.0); // Gradient start
+//    glVertex2f(0, height());
+//    glVertex2f(0, 0);
+//    glColor4f(0.9,0.9,0.9,1.0); // Gradient End
+//    glVertex2f(width(), 0);
+//    glVertex2f(width(), height());
+//    glEnd();
+//    glDisable(GL_BLEND);
 
     float px=titleWidth-m_offsetX;
     float py=-m_offsetY;
@@ -2392,22 +2377,7 @@ void gGraphView::paintGL()
 #endif
     //int elapsed=time.elapsed();
     QColor col=Qt::black;
-    if (!numgraphs) {
-        int x,y;
-        GetTextExtent(m_emptytext,x,y,bigfont);
-        AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
 
-        if (something_fun && this->isVisible())
-            renderSomethingFun();
-    }
-
-
-    //((QGLContext*)context())->makeCurrent();
-
-    //float linesize=lines->size();
-    //if (print_scaleY>1) {
-//        lines->setSize(3);
-//    }
     stippled->draw();
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
@@ -2416,8 +2386,98 @@ void gGraphView::paintGL()
     lines->draw();
     quads->draw();
 //    lines->setSize(linesize);
+
     DrawTextQue();
     m_tooltip->paint();
+    //glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_DEPTH_TEST);
+
+    return numgraphs>0;
+}
+void gGraphView::fadeOut()
+{
+    if (m_inAnimation) m_inAnimation=false;
+    previous_day_snapshot=renderPixmap(width(),height(),false);
+    m_fadingOut=true;
+    m_inAnimation=true;
+    m_animationStarted.start();
+   // updateGL();
+}
+void gGraphView::fadeIn()
+{
+//    m_fadingOut=false;
+//    m_fadingIn=true;
+//    m_inAnimation=true;
+//    m_animationStarted.start();
+    //clone graphs to shapshot graphview object, render, and then fade in, before switching back to normal mode
+
+}
+
+void gGraphView::paintGL()
+{
+    QTime time;
+    time.start();
+
+    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
+    if (redrawtimer->isActive()) {
+        redrawtimer->stop();
+    }
+    if (width()<=0) return;
+    if (height()<=0) return;
+
+    glClearColor(255,255,255,255);
+    //glClearDepth(1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    bool numgraphs=true;
+    const int animTimeout=400;
+    if (m_inAnimation) {
+        int elapsed=m_animationStarted.elapsed();
+        float p=(float)elapsed / float(animTimeout); //percentage of way through animation timeslot
+        if (p>1.0) p=1.0;
+
+        p=1.0-p;
+
+        if (elapsed > animTimeout) {
+            m_inAnimation=false;  // end animation
+        } else {
+            if (m_fadingOut) {
+                GLuint tex=bindTexture(previous_day_snapshot);
+                glEnable(GL_BLEND);
+                glBegin(GL_QUADS);
+                float middle=(float)height() / 2.0;
+                glColor4f(255,255,255,255);
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(0,middle-(middle*p));
+                glTexCoord2f(1.0f, 1.0f); glVertex2f((float)width(),middle-(middle*p));
+                glTexCoord2f(1.0f, 0.0f); glVertex2f((float)width(),middle+(middle*p));
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(0,middle+(middle*p));
+                glEnd();
+                glBindTexture(GL_TEXTURE_2D,0);
+                glDisable(GL_BLEND);
+            }
+        }
+    }
+
+
+    if (!m_inAnimation) {
+        // Not in animation sequence, draw graphs like normal
+        numgraphs=renderGraphs();
+
+        if (!numgraphs) { // No graphs drawn?
+
+            if (something_fun && this->isVisible()) // Do something fun instead
+                renderSomethingFun();
+
+            // Then display the empty text message
+            QColor col=Qt::black;
+            int x,y;
+            GetTextExtent(m_emptytext,x,y,bigfont);
+            AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
+            DrawTextQue();
+        }
+    }
+
+    // Show FPS and draw time
     if (m_showsplitter && PROFILE["ShowDebug"].toBool()) {
         QString ss;
         int ela=time.elapsed();
@@ -2430,20 +2490,16 @@ void gGraphView::paintGL()
         AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
         DrawTextQue();
     }
-    //glDisable(GL_TEXTURE_2D);
-    //glDisable(GL_DEPTH_TEST);
-    if (something_fun && !numgraphs && this->isVisible()) {
-    //    renderSomethingFun();
-
-        redrawtimer->setInterval(25);
-        redrawtimer->setSingleShot(true);
-        redrawtimer->start();
-    }
 
     swapBuffers(); // Dump to screen.
 
-
-    //qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
+    if (this->isVisible()) {
+        if (m_inAnimation || (something_fun && !numgraphs)) {
+            redrawtimer->setInterval(25);
+            redrawtimer->setSingleShot(true);
+            redrawtimer->start();
+        }
+    }
 }
 
 // For manual scrolling

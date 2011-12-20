@@ -376,6 +376,7 @@ void Daily::ReloadGraphs()
 {
     QDate d;
     if (previous_date.isValid()) {
+        GraphView->fadeOut();
         d=previous_date;
         Unload(d);
     } //else
@@ -386,6 +387,7 @@ void Daily::ReloadGraphs()
     on_calendar_currentPageChanged(d.year(),d.month());
     ui->calendar->setSelectedDate(d);
     Load(d);
+    GraphView->fadeIn();
 }
 void Daily::on_calendar_currentPageChanged(int year, int month)
 {
@@ -525,6 +527,7 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
+    GraphView->fadeOut();
     if (previous_date.isValid())
         Unload(previous_date);
 
@@ -543,6 +546,7 @@ void Daily::on_calendar_selectionChanged()
         ui->ouncesSpinBox->setVisible(true);
         ui->ouncesSpinBox->setSuffix("oz");
     }
+    GraphView->fadeIn();
 }
 void Daily::ResetGraphLayout()
 {

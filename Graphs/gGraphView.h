@@ -748,6 +748,12 @@ public:
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
 
+    //! \brief Start the animation sequence changing/reloading day data. (fade out)
+    void fadeOut();
+
+    //! \brief Start the animation sequence showing new Day's data. (fade in)
+    void fadeIn();
+
     gGraph *m_selected_graph;
     gToolTip * m_tooltip;
     QTimer * timer;
@@ -829,6 +835,9 @@ protected:
     //! \brief The heart of the OpenGL drawing code
     virtual void paintGL();
 
+    //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
+    bool renderGraphs();
+
     //! \brief Resize the OpenGL ViewPort prior to redrawing
     virtual void resizeGL(int width, int height);
 
@@ -905,6 +914,15 @@ protected:
     qint64 m_minx,m_maxx;
     float print_scaleX,print_scaleY;
 
+    QPixmap previous_day_snapshot;
+    QPixmap current_day_snapshot;
+    bool m_fadingOut;
+    bool m_fadingIn;
+    bool m_inAnimation;
+
+    QTime m_animationStarted;
+
+    // Cube fun
     QVector<QImage *> images;
     QVector<GLuint> texid;
 signals:
