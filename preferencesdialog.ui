@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1556,6 +1556,13 @@ this application to be unstable with this feature enabled.</string>
             <widget class="QCheckBox" name="useSquareWavePlots">
              <property name="text">
               <string>Square Wave Plots</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="lessBoringEmptyGraphPages">
+             <property name="text">
+              <string>Less Boring Empty Graph Pages</string>
              </property>
             </widget>
            </item>

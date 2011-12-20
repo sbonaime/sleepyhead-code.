@@ -86,13 +86,13 @@ unix:!macx:LIBS        += -lX11 -lz -lGLU
 
 macx {
   SOURCES          += qextserialport/qextserialenumerator_osx.cpp
-  LIBS             += -framework IOKit -framework CoreFoundation -lz -lGLU
+  LIBS             += -framework IOKit -framework CoreFoundation -lz
 }
 
 win32 {
   SOURCES          += qextserialport/win_qextserialport.cpp qextserialport/qextserialenumerator_win.cpp
   DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
-  LIBS             += -lsetupapi -lGLU
+  LIBS             += -lsetupapi
 
 
 }

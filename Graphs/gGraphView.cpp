@@ -2217,9 +2217,9 @@ void gGraphView::renderSomethingFun()
 
 void gGraphView::paintGL()
 {
-    bool something_fun=PREF.ExistsAndTrue("SomeFun");
-
+    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
     if (something_fun && redrawtimer->isActive()) {
+
         redrawtimer->stop();
     }
 
@@ -2232,8 +2232,6 @@ void gGraphView::paintGL()
     //glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (something_fun)
-        renderSomethingFun();
 
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2324,10 +2322,8 @@ void gGraphView::paintGL()
     QColor col=Qt::black;
     if (!numgraphs) {
         int x,y;
-        if (m_emptytext!="fun") {
-            GetTextExtent(m_emptytext,x,y,bigfont);
-            AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
-        } else renderSomethingFun();
+        GetTextExtent(m_emptytext,x,y,bigfont);
+        AddTextQue(m_emptytext,(width()/2)-x/2,(height()/2)+y/2,0.0,col,bigfont);
     }
 
 
@@ -2361,13 +2357,16 @@ void gGraphView::paintGL()
     }
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
-    swapBuffers(); // Dump to screen.
+    if (something_fun && !numgraphs && this->isVisible()) {
+        renderSomethingFun();
 
-    if (something_fun && this->isVisible()) {
         redrawtimer->setInterval(25);
         redrawtimer->setSingleShot(true);
         redrawtimer->start();
     }
+
+    swapBuffers(); // Dump to screen.
+
 
     //qDebug() << "Graph Prep,Draw" << el << "," << time.elapsed()-el << "ms x" << thr;
 }

@@ -60,7 +60,6 @@ void MainWindow::Log(QString s)
     strlock.unlock();
 
     //loglock.unlock();
-
 }
 
 
@@ -165,7 +164,6 @@ MainWindow::MainWindow(QWidget *parent) :
         systray=NULL;
         systraymenu=NULL;
     }
-
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()

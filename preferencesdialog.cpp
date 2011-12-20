@@ -171,6 +171,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,tr("Graph Height"),tr("Default Graph Height"),160);
     general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
     general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),QString());
+    general["EmptyGraphFun"]=Preference(p_profile,"EmptyGraphFun",PT_Checkbox,tr("Less Boring Empty Graph Pages"),tr("Make empty graph pages more attractive."),QString());
 
     if (!(p_profile)->Exists("MaskStartDate")) {
         (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
@@ -198,6 +199,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
+    ui->lessBoringEmptyGraphPages->setChecked(general["EmptyGraphFun"].value().toBool());
 #ifdef Q_WS_MAC
     general["HighResPrinting"].setValue(true);
     ui->highResolutionPrinting->setChecked(true);
@@ -325,6 +327,7 @@ void PreferencesDialog::Save()
     general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
     general["MaskDescription"].setValue(ui->maskDescription->text());
     general["HighResPrinting"].setValue(ui->highResolutionPrinting->isChecked());
+    general["EmptyGraphFun"].setValue(ui->lessBoringEmptyGraphPages->isChecked());
 
     (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
     (*profile)["GraphHeight"]=ui->graphHeight->value();
