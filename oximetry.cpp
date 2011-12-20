@@ -453,7 +453,7 @@ void CMS50Serial::import_process()
     bool first=true;
     while (i<(size-3)) {
         a=data.at(i++); // low bits are supposedly the high bits of the heart rate
-        pl=(data.at(i++) & 0x7f) | ((a & 3) << 7);
+        pl=((data.at(i++) & 0x7f) | ((a & 1) << 7)) & 0xff;
         o2=data.at(i++);
         if (pl!=0) {
             if (lastpl!=pl) {
