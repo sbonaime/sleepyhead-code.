@@ -752,7 +752,10 @@ public:
     void fadeOut();
 
     //! \brief Start the animation sequence showing new Day's data. (fade in)
-    void fadeIn();
+    void fadeIn(bool dir=false);
+
+    //! \brief Call UpdateGL unless animation is in progress
+    void redraw();
 
     gGraph *m_selected_graph;
     gToolTip * m_tooltip;
@@ -805,7 +808,6 @@ public:
 
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day * day);
-
 
     GLShortBuffer * lines, * backlines, *quads, * stippled;
 
@@ -918,7 +920,10 @@ protected:
     QPixmap current_day_snapshot;
     bool m_fadingOut;
     bool m_fadingIn;
+    bool m_limbo;
+    bool m_fadedir;
     bool m_inAnimation;
+    bool m_blockUpdates;
 
     QTime m_animationStarted;
 

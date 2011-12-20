@@ -376,7 +376,6 @@ void Daily::ReloadGraphs()
 {
     QDate d;
     if (previous_date.isValid()) {
-        GraphView->fadeOut();
         d=previous_date;
         Unload(d);
     } //else
@@ -387,7 +386,6 @@ void Daily::ReloadGraphs()
     on_calendar_currentPageChanged(d.year(),d.month());
     ui->calendar->setSelectedDate(d);
     Load(d);
-    GraphView->fadeIn();
 }
 void Daily::on_calendar_currentPageChanged(int year, int month)
 {
@@ -527,12 +525,15 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
-    GraphView->fadeOut();
-    if (previous_date.isValid())
-        Unload(previous_date);
 
+    if (previous_date.isValid()) {
+        GraphView->fadeOut();
+        Unload(previous_date);
+    }
+    bool fadedir=previous_date < ui->calendar->selectedDate();
     ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
+    GraphView->fadeIn(fadedir);
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
@@ -546,7 +547,6 @@ void Daily::on_calendar_selectionChanged()
         ui->ouncesSpinBox->setVisible(true);
         ui->ouncesSpinBox->setSuffix("oz");
     }
-    GraphView->fadeIn();
 }
 void Daily::ResetGraphLayout()
 {
@@ -562,7 +562,7 @@ void Daily::graphtogglebutton_toggled(bool b)
         (*GraphView)[i]->setVisible(GraphToggles[title]->isChecked());
     }
     GraphView->updateScale();
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 void Daily::Load(QDate date)
 {
@@ -617,9 +617,7 @@ void Daily::Load(QDate date)
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
     snapGV->setDay(cpap);
-
-
-    GraphView->ResetBounds();
+    GraphView->ResetBounds(false);
     //snapGV->ResetBounds();
     //GraphView->ResetBounds(1);
 
@@ -633,8 +631,8 @@ void Daily::Load(QDate date)
    //     GraphView->show();
         scrollbar->show();
     }
-    GraphView->updateGL();
-    snapGV->updateGL();
+    //GraphView->redraw();
+    //snapGV->redraw();
 
     //RedrawGraphs();
 
@@ -1225,7 +1223,7 @@ void Daily::UpdateOXIGraphs(Day *day)
 
 void Daily::RedrawGraphs()
 {
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 
 void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
@@ -1360,7 +1358,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     st=it->data(Qt::UserRole).toLongLong(&ok);
     et=it->data(Qt::UserRole+1).toLongLong(&ok);
     GraphView->SetXBounds(st,et);
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 
 void Daily::on_addBookmarkButton_clicked()

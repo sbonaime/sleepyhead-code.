@@ -657,7 +657,7 @@ void CMS50Serial::ReadyRead()
                             if (c & 0x80) break;
                         }
                         mainwin->getOximetry()->graphView()->setEmptyText("Please Wait, Importing...");
-                        mainwin->getOximetry()->graphView()->updateGL();
+                        mainwin->getOximetry()->graphView()->redraw();
 
                         data.clear();
                         for (z=i;z<size;z++) {
@@ -706,11 +706,11 @@ void CMS50Serial::ReadyRead()
         int i=imptime.elapsed();
 
         //mainwin->getOximetry()->graphView()->setEmptyText("fun");
-        //mainwin->getOximetry()->graphView()->updateGL();
+        //mainwin->getOximetry()->graphView()->redraw();
 
         if (i>1000) {
             //mainwin->getOximetry()->graphView()->setEmptyText("fun");
-            //mainwin->getOximetry()->graphView()->updateGL();
+            //mainwin->getOximetry()->graphView()->redraw();
             imptime.start();
             failcnt++;
             QString a;
@@ -719,13 +719,13 @@ void CMS50Serial::ReadyRead()
                 m_mode=SO_WAIT;
                 emit(importAborted());
                 mainwin->getOximetry()->graphView()->setEmptyText("Import Failed");
-                mainwin->getOximetry()->graphView()->updateGL();
+                mainwin->getOximetry()->graphView()->redraw();
                 return;
             } else {
                 a="Waiting";
                 for (int i=0;i<failcnt;i++) a+=".";
                 mainwin->getOximetry()->graphView()->setEmptyText(a);
-                mainwin->getOximetry()->graphView()->updateGL();
+                mainwin->getOximetry()->graphView()->redraw();
                 requestData(); // retransmit the data request code
             }
         }
@@ -880,7 +880,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
     //go->SetDay(day);
 
     GraphView->setEmptyText(tr("No Oximetry Data"));
-    GraphView->updateGL();
+    GraphView->redraw();
 
     on_RefreshPortsButton_clicked();
     ui->RunButton->setChecked(false);
@@ -964,7 +964,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
 }
 void Oximetry::RedrawGraphs()
 {
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 void Oximetry::on_SerialPortsCombo_activated(const QString &arg1)
 {
@@ -1013,7 +1013,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
             }
         } // else it's already saved.
         GraphView->setEmptyText(tr("Please Wait"));
-        GraphView->updateGL();
+        GraphView->redraw();
 
         PLETHY->setRecMinY(0);
         PLETHY->setRecMaxY(128);
@@ -1120,7 +1120,7 @@ void Oximetry::data_changed()
     }
 
     GraphView->updateScale();
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 
 
@@ -1159,7 +1159,7 @@ void Oximetry::oximeter_running_check()
         ui->RunButton->setChecked(false);
         ui->saveButton->setEnabled(false);
         GraphView->setEmptyText(tr("Check Oximeter is Ready"));
-        GraphView->updateGL();
+        GraphView->redraw();
 
     }
 }
@@ -1174,7 +1174,7 @@ void Oximetry::on_ImportButton_clicked()
     day->getSessions().clear();
     GraphView->setDay(day);
     GraphView->setEmptyText("Make Sure Oximeter Is Ready");
-    GraphView->updateGL();
+    GraphView->redraw();
 
     if (!oximeter->startImport()) {
         mainwin->Notify(tr("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on."));
@@ -1303,7 +1303,7 @@ void Oximetry::on_saveButton_clicked()
         mainwin->getDaily()->ReloadGraphs();
         mainwin->getOverview()->ReloadGraphs();
         GraphView->setEmptyText("No Oximetry Data");
-        GraphView->updateGL();
+        GraphView->redraw();
     }
 }
 void Oximetry::update_progress(float f)
@@ -1396,7 +1396,7 @@ bool Oximetry::openSPOFile(QString filename)
 bool Oximetry::openSPORFile(QString filename)
 {
     //GraphView->setEmptyText("Please Wait");
-    //GraphView->updateGL();
+    //GraphView->redraw();
     QFile f(filename);
     if (!f.open(QFile::ReadOnly)) return false;
 
@@ -1613,7 +1613,7 @@ void Oximetry::updateGraphs()
         if (qstatus2) qstatus2->setText(QString().sprintf("%02i:%02i:%02i",h,m,s));
     }
     GraphView->updateScale();
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 
 void Oximetry::on_resetTimeButton_clicked() //revert to original session time

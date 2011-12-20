@@ -710,7 +710,7 @@ void gToolTip::paint()     //actually paints it.
 void gToolTip::timerDone()
 {
     m_visible=false;
-    m_graphview->updateGL();
+    m_graphview->redraw();
 }
 
 Layer::Layer(ChannelID code)
@@ -1183,7 +1183,10 @@ void gGraph::AddLayer(Layer * l,LayerPosition position, short width, short heigh
     l->addref();
     m_layers.push_back(l);
 }
-void gGraph::redraw() { m_graphview->updateGL(); }
+void gGraph::redraw()
+{
+    m_graphview->redraw();
+}
 void gGraph::timedRedraw(int ms)
 {
     m_graphview->timedRedraw(ms);
@@ -1233,7 +1236,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (qstatus2) {
                 qstatus2->setText(str);
             }
-            //m_graphview->updateGL();
+            //m_graphview->redraw();
             //nolayer=false;
             doredraw=true;
         } else if (event->buttons() & Qt::RightButton) {
@@ -1295,7 +1298,7 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             if (m_layers[i]->mouseMoveEvent(event)) doredraw=true;
         }
         if (doredraw)
-            m_graphview->updateGL();
+            m_graphview->redraw();
     //}
     //if (x>left+m_marginleft && x<m_lastbounds.width()-(right+m_marginright) && y>top+m_margintop && y<m_lastbounds.height()-(bottom+m_marginbottom)) { // main area
 //        x-=left+m_marginleft;
@@ -1385,7 +1388,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             }
 
             return;
-        } else m_graphview->updateGL();
+        } else m_graphview->redraw();
     }
 
     if ((m_graphview->horizTravel()<mouse_movement_threshold) && (x>left && x<w+left && y>top && y<h)) {
@@ -1442,7 +1445,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
             m_lastx23=x;
         }
     }
-    //m_graphview->updateGL();
+    //m_graphview->redraw();
 }
 
 
@@ -1708,7 +1711,7 @@ void gGraph::SetXBounds(qint64 minx, qint64 maxx)
     max_x=maxx;
 
     //repaint();
-    //m_graphview->updateGL();
+    //m_graphview->redraw();
 }
 int gGraph::flipY(int y)
 {
@@ -1823,7 +1826,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     redrawtimer=new QTimer(this);
     //redrawtimer->setInterval(80);
     //redrawtimer->start();
-    connect(redrawtimer,SIGNAL(timeout()),SLOT(repaint()));
+    connect(redrawtimer,SIGNAL(timeout()),SLOT(updateGL()));
     QImage *image=new QImage(":/icons/oximeter.png");
     images.push_back(image);
 
@@ -1845,6 +1848,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_fadingOut=false;
     m_fadingIn=false;
     m_inAnimation=false;
+    m_limbo=false;
 }
 
 gGraphView::~gGraphView()
@@ -2014,7 +2018,7 @@ void gGraphView::scrollbarValueChanged(int val)
     //qDebug() << "Scrollbar Changed" << val;
     if (m_offsetY!=val) {
         m_offsetY=val;
-        updateGL(); // do this on a timer?
+        redraw(); // do this on a timer?
     }
 }
 void gGraphView::ResetBounds(bool refresh) //short group)
@@ -2091,7 +2095,7 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
         qstatus2->setText(str);
     }
 
-    if (refresh) updateGL();
+    if (refresh) redraw();
 }
 void gGraphView::updateScale()
 {
@@ -2396,20 +2400,51 @@ bool gGraphView::renderGraphs()
 }
 void gGraphView::fadeOut()
 {
-    if (m_inAnimation) m_inAnimation=false;
-    previous_day_snapshot=renderPixmap(width(),height(),false);
-    m_fadingOut=true;
-    m_inAnimation=true;
-    m_animationStarted.start();
-   // updateGL();
-}
-void gGraphView::fadeIn()
-{
-//    m_fadingOut=false;
-//    m_fadingIn=true;
-//    m_inAnimation=true;
-//    m_animationStarted.start();
+    //if (m_fadingOut) {
+//        return;
+//    }
+    //if (m_inAnimation) {
+//        m_inAnimation=false;
+  //  }
     //clone graphs to shapshot graphview object, render, and then fade in, before switching back to normal mode
+    /*gGraphView *sg=mainwin->snapshotGraph();
+    sg->trashGraphs();
+    sg->setFixedSize(width(),height());
+    sg->m_graphs=m_graphs;
+    sg->showSplitter(); */
+
+    //bool restart=false;
+    //if (!m_inAnimation)
+      //  restart=true;
+
+    bool b=m_inAnimation;
+    m_inAnimation=false;
+
+    previous_day_snapshot=renderPixmap(width(),height(),false);
+    m_inAnimation=b;
+    //m_fadingOut=true;
+    //m_fadingIn=false;
+    //m_inAnimation=true;
+    //m_limbo=false;
+    //m_animationStarted.start();
+  //  updateGL();
+}
+void gGraphView::fadeIn(bool dir)
+{
+    m_tooltip->cancel();
+
+    if (m_fadingIn) {
+        previous_day_snapshot=current_day_snapshot;
+    }
+    m_inAnimation=false;
+    current_day_snapshot=renderPixmap(width(),height(),false);
+    m_inAnimation=true;
+
+    m_animationStarted.start();
+    m_fadingIn=true;
+    m_limbo=false;
+    m_fadedir=dir;
+    updateGL();
 
 }
 
@@ -2418,10 +2453,11 @@ void gGraphView::paintGL()
     QTime time;
     time.start();
 
-    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
     if (redrawtimer->isActive()) {
         redrawtimer->stop();
     }
+
+    bool something_fun=PROFILE.ExistsAndTrue("EmptyGraphFun");
     if (width()<=0) return;
     if (height()<=0) return;
 
@@ -2430,36 +2466,73 @@ void gGraphView::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     bool numgraphs=true;
-    const int animTimeout=400;
-    if (m_inAnimation) {
-        int elapsed=m_animationStarted.elapsed();
-        float p=(float)elapsed / float(animTimeout); //percentage of way through animation timeslot
-        if (p>1.0) p=1.0;
+    const int animTimeout=200;
+    float phase=0;
 
-        p=1.0-p;
+    int elapsed=0;
+    if (m_inAnimation || m_fadingIn) {
+        elapsed=m_animationStarted.elapsed();
 
         if (elapsed > animTimeout) {
-            m_inAnimation=false;  // end animation
-        } else {
             if (m_fadingOut) {
-                GLuint tex=bindTexture(previous_day_snapshot);
+                m_fadingOut=false;
+                m_animationStarted.start();
+                elapsed=0;
+                m_limbo=true;
+            } else if (m_fadingIn) {
+                m_fadingIn=false;
+                m_inAnimation=false;  // end animation
+                m_limbo=false;
+                m_fadingOut=false;
+            }
+//
+        } else {
+            phase=float(elapsed) / float(animTimeout); //percentage of way through animation timeslot
+            if (phase>1.0) phase=1.0;
+            if (phase<0) phase=0;
+        }
+
+        if (m_inAnimation) {
+            if (m_fadingOut) {
+              //  bindTexture(previous_day_snapshot);
+            } else if (m_fadingIn) {
+                int offset,offset2;
+                if (m_fadedir) { // forwards
+                    offset2=-width();
+                    offset=0;
+                    phase=1.0-phase;
+                } else { // backwards
+                    phase=phase;
+                    offset=-width();
+                    offset2=0;//-width();
+                }
                 glEnable(GL_BLEND);
-                glBegin(GL_QUADS);
-                float middle=(float)height() / 2.0;
+
                 glColor4f(255,255,255,255);
-                glTexCoord2f(0.0f, 1.0f); glVertex2f(0,middle-(middle*p));
-                glTexCoord2f(1.0f, 1.0f); glVertex2f((float)width(),middle-(middle*p));
-                glTexCoord2f(1.0f, 0.0f); glVertex2f((float)width(),middle+(middle*p));
-                glTexCoord2f(0.0f, 0.0f); glVertex2f(0,middle+(middle*p));
+
+                bindTexture(previous_day_snapshot);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(width()*phase+offset2,0);
+                glTexCoord2f(1.0f, 1.0f); glVertex2f(width()+width()*phase+offset2,0);
+                glTexCoord2f(1.0f, 0.0f); glVertex2f(width()+width()*phase+offset2,height());
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(width()*phase+offset2,height());
                 glEnd();
-                glBindTexture(GL_TEXTURE_2D,0);
+
+                bindTexture(current_day_snapshot);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0.0f, 1.0f); glVertex2f(width()*phase+offset,0);
+                glTexCoord2f(1.0f, 1.0f); glVertex2f(width()+width()*phase+offset,0);
+                glTexCoord2f(1.0f, 0.0f); glVertex2f(width()+width()*phase+offset,height());
+                glTexCoord2f(0.0f, 0.0f); glVertex2f(width()*phase+offset,height());
+                glEnd();
+
                 glDisable(GL_BLEND);
+                glBindTexture(GL_TEXTURE_2D,0);
             }
         }
     }
 
-
-    if (!m_inAnimation) {
+    if (!m_inAnimation || (!m_fadingIn)) {
         // Not in animation sequence, draw graphs like normal
         numgraphs=renderGraphs();
 
@@ -2494,7 +2567,7 @@ void gGraphView::paintGL()
     swapBuffers(); // Dump to screen.
 
     if (this->isVisible()) {
-        if (m_inAnimation || (something_fun && !numgraphs)) {
+        if (m_limbo || m_inAnimation || (something_fun && !numgraphs)) {
             redrawtimer->setInterval(25);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();
@@ -2507,7 +2580,7 @@ void gGraphView::setOffsetY(int offsetY)
 {
     if (m_offsetY!=offsetY) {
         m_offsetY=offsetY;
-        updateGL(); //issue full redraw..
+        redraw(); //issue full redraw..
     }
 }
 
@@ -2516,7 +2589,7 @@ void gGraphView::setOffsetX(int offsetX)
 {
     if (m_offsetX!=offsetX) {
         m_offsetX=offsetX;
-        updateGL(); //issue redraw
+        redraw(); //issue redraw
     }
 }
 
@@ -2535,7 +2608,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             m_sizer_point.setX(x);
             m_sizer_point.setY(y);
             updateScrollBar();
-            updateGL();
+            redraw();
         }
         return;
     }
@@ -2558,7 +2631,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     m_graphs[i]=p;
                     if (!empty) {
                         m_sizer_point.setY(yy-graphSpacer-m_graphs[m_graph_index]->height()*m_scaleY);
-                        updateGL();
+                        redraw();
                     }
                     m_graph_index--;
                 }
@@ -2575,7 +2648,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                 m_graphs[i]=p;
                 if (!empty) {
                     m_sizer_point.setY(yy+graphSpacer+m_graphs[m_graph_index]->height()*m_scaleY);
-                    updateGL();
+                    redraw();
                 }
                 m_graph_index++;
                 if (!empty) break;
@@ -2626,7 +2699,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                                             ChannelID code=fg->visibleLayers()[i]->code();
                                             QString ttip=schema::channel[code].description();
                                             m_tooltip->display(ttip,x,y-20,800);
-                                            updateGL();
+                                            redraw();
                                             //qDebug() << code << ttip;
                                         }
                                     }
@@ -2637,7 +2710,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                         } else {
                             if (!m_graphs[i]->units().isEmpty()) {
                                 m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
-                                updateGL();
+                                redraw();
                             }
                         }
                     }
@@ -2881,7 +2954,7 @@ void gGraphView::setDay(Day * day)
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->setDay(day);
     }
-    ResetBounds();
+    ResetBounds(false);
 }
 bool gGraphView::isEmpty()
 {
@@ -2897,7 +2970,7 @@ bool gGraphView::isEmpty()
 
 void gGraphView::refreshTimeout()
 {
-    updateGL();
+    redraw();
 }
 void gGraphView::timedRedraw(int ms)
 {
@@ -2913,7 +2986,7 @@ void gGraphView::resetLayout()
         m_graphs[i]->setHeight(default_height);
     }
     updateScale();
-    updateGL();
+    redraw();
 }
 void gGraphView::deselect()
 {
@@ -3035,4 +3108,9 @@ int gGraphView::visibleGraphs()
         if (m_graphs[i]->visible() && !m_graphs[i]->isEmpty()) cnt++;
     }
     return cnt;
+}
+void gGraphView::redraw()
+{
+    if (!m_inAnimation)
+        updateGL();
 }

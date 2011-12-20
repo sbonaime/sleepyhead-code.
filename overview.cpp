@@ -258,7 +258,7 @@ void Overview::ReloadGraphs()
 
 void Overview::RedrawGraphs()
 {
-    GraphView->updateGL();
+    GraphView->redraw();
 }
 
 void Overview::UpdateCalendarDay(QDateEdit * dateedit,QDate date)
