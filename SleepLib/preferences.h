@@ -121,7 +121,7 @@ protected:
     QString p_path;
 };
 
-enum PrefType { PT_Checkbox, PT_Integer, PT_Number, PT_Date, PT_Time, PT_DateTime, PT_LineEdit, PT_TextEdit, PT_Dropdown };
+enum PrefType { PT_Checkbox, PT_Spinbox, PT_Integer, PT_Number, PT_Date, PT_Time, PT_DateTime, PT_LineEdit, PT_TextEdit, PT_Dropdown };
 
 /*! \class Preference
     \brief Holds a single preference

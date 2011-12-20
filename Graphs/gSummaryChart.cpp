@@ -340,6 +340,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
         lastY[i]=top+height-1-h;
     }
+    float compliance_hours=0;
+    if (PROFILE.ExistsAndTrue("ShowCompliance")) {
+        compliance_hours=PROFILE["ComplianceHours"].toDouble();
+    }
 
     Day * day;
     EventDataType hours;
@@ -366,7 +370,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 int j;
                 QHash<int,QHash<short,EventDataType> >::iterator times=m_times.find(zd);
                 QColor col=m_colors[0];
-                //if (hours<4) col=QColor("#f03030");
+                //if (hours<compliance_hours) col=QColor("#f03030");
 
                 if (zd==hl_day) {
                     col=QColor("gold");
@@ -416,9 +420,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                     QColor col=m_colors[j];
                     if (m_type[j]==ST_HOURS) {
-                        if (tmp<4) {
-                            col=QColor("#f04040");
-                        }
+                        if (tmp<compliance_hours) col=QColor("#f04040");
                     }
 
                     if (zd==hl_day) {

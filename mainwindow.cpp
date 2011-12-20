@@ -103,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // This next section is a mess..
     // Preferences & Profile variables really need to initialize somewhere else
+    // The General object in PreferencesDialog kinda defines where I want to go with the profile default stuff
 
     if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=false;
     ui->actionDebug->setChecked(PROFILE["ShowDebug"].toBool());
@@ -132,6 +133,8 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!PROFILE.Exists("PulseChangeDuration")) PROFILE["PulseChangeDuration"]=8;
     if (!PROFILE.Exists("GraphHeight")) PROFILE["GraphHeight"]=180;
     if (!PROFILE.Exists("OxiDiscardThreshold")) PROFILE["OxiDiscardThreshold"]=10;
+    if (!PROFILE.Exists("ComplianceHours")) PROFILE["ComplianceHours"]=4;
+    if (!PROFILE.Exists("ShowCompliance")) PROFILE["ShowCompliance"]=true;
 
     //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
     ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());

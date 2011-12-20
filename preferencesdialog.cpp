@@ -168,10 +168,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,tr("Skip Empty Days"),tr("Skip over calendar days that don't have any data"),true);
     general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,tr("Enable Multithreading"),tr("Try to use extra processor cores where possible"),false);
     general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,tr("Cache Session Data"),tr("Keep session data in memory to improve load speed revisiting the date."),false);
-    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Checkbox,tr("Graph Height"),tr("Default Graph Height"),160);
-    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_Checkbox,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
-    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),QString());
-    general["EmptyGraphFun"]=Preference(p_profile,"EmptyGraphFun",PT_Checkbox,tr("Less Boring Empty Graph Pages"),tr("Make empty graph pages more attractive."),QString());
+    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Spinbox,tr("Graph Height"),tr("Default Graph Height"),160);
+    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_LineEdit,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
+    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),true);
+    general["EmptyGraphFun"]=Preference(p_profile,"EmptyGraphFun",PT_Checkbox,tr("Less Boring Empty Graph Pages"),tr("Make empty graph pages more attractive."),false);
+    general["ShowCompliance"]=Preference(p_profile,"ShowCompliance",PT_Checkbox,tr("Show Compliance Information"),tr("Allow compliance information to be shown."),true);
+    general["ComplianceHours"]=Preference(p_profile,"ComplianceHours",PT_Spinbox,tr("Compliance Hours"),tr("Regard days over this combined session length as compliant."),4.0);
 
     if (!(p_profile)->Exists("MaskStartDate")) {
         (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
@@ -200,6 +202,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
     ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
     ui->lessBoringEmptyGraphPages->setChecked(general["EmptyGraphFun"].value().toBool());
+    ui->complianceGroupbox->setChecked(general["ShowCompliance"].value().toBool());
+    ui->complianceHours->setValue(general["ComplianceHours"].value().toDouble());
+
 #ifdef Q_WS_MAC
     general["HighResPrinting"].setValue(true);
     ui->highResolutionPrinting->setChecked(true);
@@ -328,6 +333,9 @@ void PreferencesDialog::Save()
     general["MaskDescription"].setValue(ui->maskDescription->text());
     general["HighResPrinting"].setValue(ui->highResolutionPrinting->isChecked());
     general["EmptyGraphFun"].setValue(ui->lessBoringEmptyGraphPages->isChecked());
+
+    general["ShowCompliance"].setValue(ui->complianceGroupbox->isChecked());
+    general["ComplianceHours"].setValue(ui->complianceHours->value());
 
     (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
     (*profile)["GraphHeight"]=ui->graphHeight->value();
