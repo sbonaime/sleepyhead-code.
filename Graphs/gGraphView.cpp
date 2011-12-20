@@ -297,7 +297,8 @@ void GLShortBuffer::draw()
         }
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
             if (m_stippled) {
-                glLineStipple(1, 0xAAAA);
+                glLineStipple(1, 0xcccc);
+                glEnable(GL_BLEND);
                 glEnable(GL_LINE_STIPPLE);
             } else {
                 glLineStipple(1, 0xFFFF);
@@ -341,6 +342,7 @@ void GLShortBuffer::draw()
             glPolygonMode(GL_BACK,GL_FILL);
         }
         if (m_stippled) {
+            glDisable(GL_BLEND);
             glDisable(GL_LINE_STIPPLE);
             glLineStipple(1, 0xFFFF);
         }
@@ -2333,8 +2335,8 @@ void gGraphView::paintGL()
     //if (print_scaleY>1) {
 //        lines->setSize(3);
 //    }
-    backlines->draw();
     stippled->draw();
+    backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->drawGLBuf();
     }
