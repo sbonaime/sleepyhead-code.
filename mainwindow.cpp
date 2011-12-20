@@ -688,10 +688,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
 #ifdef Q_WS_MAC
     PROFILE["HighResPrinting"]=true; // forced on
-    bool force_antialiasing=true;
-#else
-    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
+//    bool force_antialiasing=true;
+//#else
 #endif
+    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
 
     if (PROFILE.ExistsAndTrue("HighResPrinting")) {
         printer=new QPrinter(QPrinter::HighResolution);
@@ -829,18 +829,17 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             //if (!highres)
 //                fscale=1;
 
+            getDaily()->eventBreakdownPie()->showTitle(false);
+            getDaily()->eventBreakdownPie()->setMargins(0,0,0,0);
+            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,1);
+            painter.drawPixmap(virt_width-piesize,bounds.height()/2,piesize,piesize,ebp);
+            getDaily()->eventBreakdownPie()->showTitle(true);
+
             QString stats;
             painter.setFont(medium_font);
             stats=tr("AHI\t%1\n").arg(ahi,0,'f',2);
             QRectF bounds=painter.boundingRect(QRectF(0,0,virt_width,0),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
-
-            getDaily()->eventBreakdownPie()->showTitle(false);
-            getDaily()->eventBreakdownPie()->setMargins(0,0,0,0);
-            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,1);
-            painter.drawPixmap(virt_width-piesize,bounds.height(),piesize,piesize,ebp);
-            getDaily()->eventBreakdownPie()->showTitle(true);
-
 
             cpapinfo+="\n\n";
 
