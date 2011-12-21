@@ -551,7 +551,7 @@ void GLFloatBuffer::draw()
 {
     if (m_cnt<=0) return;
 
-    bool antialias=m_forceantialias || (PROFILE["UseAntiAliasing"].toBool() && m_antialias);
+    bool antialias=m_forceantialias || (PROFILE.appearance->antiAliasing() && m_antialias);
     float size=m_size;
     if (antialias) {
         glEnable(GL_BLEND);
@@ -1698,10 +1698,9 @@ QPixmap gGraph::renderPixmap(int w, int h, float scale)
     sg->setFixedSize(w,h);
 
     float tmp=m_height;
-    m_height=h; //PROFILE["GraphHeight"].toInt();//*sg->printScaleY();
+    m_height=h;
     sg->trashGraphs();
     sg->addGraph(this);
-    //sg->updateScale();
 
     sg->setScaleY(1.0);
 
@@ -2032,7 +2031,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
         if (!m2 || m_graphs[i]->max_x>m2) m2=m_graphs[i]->max_x;
     }
 
-    if (PROFILE["LinkGroups"].toBool()) {
+    if (PROFILE.general->linkGroups()) {
         for (int i=0;i<m_graphs.size();i++) {
             m_graphs[i]->SetMinX(m1);
             m_graphs[i]->SetMaxX(m2);
@@ -2069,7 +2068,7 @@ void gGraphView::GetXBounds(qint64 & st,qint64 & et)
 void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
 {
     for (int i=0;i<m_graphs.size();i++) {
-        if (PROFILE["LinkGroups"].toBool()|| (m_graphs[i]->group()==group)) {
+        if (PROFILE.general->linkGroups() || (m_graphs[i]->group()==group)) {
             m_graphs[i]->SetXBounds(minx,maxx);
         }
     }
@@ -2326,7 +2325,7 @@ bool gGraphView::renderGraphs()
 
     // Tempory hack using this pref..
 //#ifdef ENABLED_THREADED_DRAWING
-    /*if ((*profile)["EnableMultithreading"].toBool()) { // && (m_idealthreads>1)) {
+    /*if (profile->session->multithreading()) { // && (m_idealthreads>1)) {
         threaded=true;
         for (int i=0;i<m_idealthreads;i++) {
             if (!m_threads[i]->isRunning())
@@ -2593,7 +2592,7 @@ void gGraphView::paintGL()
     }
 
     // Show FPS and draw time
-    if (m_showsplitter && PROFILE["ShowDebug"].toBool()) {
+    if (m_showsplitter && PROFILE.general->showDebug()) {
         QString ss;
         int ela=time.elapsed();
         ss="Debug Mode "+QString::number(ela)+"ms ("+QString::number(1000.0/float(ela),'f',1)+"fps)";
@@ -3032,7 +3031,7 @@ void gGraphView::timedRedraw(int ms)
 }
 void gGraphView::resetLayout()
 {
-    int default_height=PROFILE["GraphHeight"].toInt();
+    int default_height=PROFILE.appearance->graphHeight();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->setHeight(default_height);
     }

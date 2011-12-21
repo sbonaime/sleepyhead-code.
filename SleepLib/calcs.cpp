@@ -233,7 +233,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
             if (!SearchApnea(session,time)) {
                 if (!uf) {
                     uf=new EventList(EVL_Event,1,0,0,0,0,true);
-                    session->eventlist["UserFlag1"].push_back(uf);
+                    session->eventlist[CPAP_UserFlag1].push_back(uf);
                 }
                 uf->AddEvent(time,len/1000L,1);
             }
@@ -512,16 +512,10 @@ int calcPulseChange(Session *session)
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
     bool ok;
-    qint64 window=PROFILE["PulseChangeDuration"].toDouble(&ok);
-    if (!ok) {
-        PROFILE["PulseChangeDuration"]=8;
-        window=8000;
-    } else window*=1000;
-    change=PROFILE["PulseChangeBPM"].toDouble(&ok);
-    if (!ok) {
-        PROFILE["PulseChangeBPM"]=5;
-        change=5;
-    }
+    qint64 window=PROFILE.oxi->pulseChangeDuration();
+    window*=1000;
+
+    change=PROFILE.oxi->pulseChangeBPM();
 
     EventList *pc=new EventList(EVL_Event,1,0,0,0,0,true);
     pc->setFirst(session->first(OXI_Pulse));
@@ -586,16 +580,9 @@ int calcSPO2Drop(Session *session)
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
     bool ok;
-    qint64 window=PROFILE["SPO2DropDuration"].toDouble(&ok);
-    if (!ok) {
-        PROFILE["SPO2DropDuration"]=10;
-        window=10000;
-    } else window*=1000;
-    change=PROFILE["SPO2DropPercentage"].toDouble(&ok);
-    if (!ok) {
-        PROFILE["SPO2DropPercentage"]=3;
-        change=3;
-    }
+    qint64 window=PROFILE.oxi->spO2DropDuration();
+    window*=1000;
+    change=PROFILE.oxi->spO2DropPercentage();
 
     EventList *pc=new EventList(EVL_Event,1,0,0,0,0,true);
     qint64 lastt;

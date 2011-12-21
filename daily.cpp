@@ -88,7 +88,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(GraphView,1);
     layout->addWidget(scrollbar,0);
 
-    int default_height=PROFILE["GraphHeight"].toInt();
+    int default_height=PROFILE.appearance->graphHeight();
     SF=new gGraph(GraphView,tr("Event Flags"),tr("Event Flags"),default_height);
     FRW=new gGraph(GraphView,tr("Flow Rate"),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
     AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
@@ -106,8 +106,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TE=new gGraph(GraphView,tr("Te"),schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
     TI=new gGraph(GraphView,tr("Ti"),schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
     TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
-    //INTPULSE=new gGraph(GraphView,"R-Pulse",schema::channel[CPAP_Te].units(),default_height);
-    //INTSPO2=new gGraph(GraphView,"R-SPO2",default_height);
 
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
     PULSE=new gGraph(GraphView,tr("Pulse"),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
@@ -149,8 +147,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),tr("FL"))));
     fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),tr("RE"))));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),tr("VS"))));
-    fg->AddLayer((new gFlagsLine("UserFlag1",QColor("yellow"),tr("UF1"))));
-    fg->AddLayer((new gFlagsLine("UserFlag2",QColor("green"),tr("UF2"))));
+    fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
+    fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
     //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
     //fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
     SF->setBlockZoom(true);
@@ -181,8 +179,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),tr("OA")))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),tr("CA")))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag1",QColor("yellow"),tr("U1"),FT_Bar)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag2",QColor("orange"),tr("U2"),FT_Bar)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),tr("O2"))));
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),tr("PC"),FT_Dot)));
 
@@ -209,7 +207,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1); */
 
 
-    bool square=PROFILE["SquareWavePlots"].toBool();
+    bool square=PROFILE.appearance->squareWavePlots();
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::darkRed,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
@@ -282,8 +280,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     connect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
 
-    if (!PROFILE.Exists("EventViewSize")) PROFILE["EventViewSize"]=4;
-    int ews=PROFILE["EventViewSize"].toInt();
+    int ews=PROFILE.general->eventWindowSize();
     ui->evViewSlider->setValue(ews);
     ui->evViewLCD->display(ews);
 
@@ -306,15 +303,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
 
-    if (unitSystem()==US_Archiac) {
-        ui->weightSpinBox->setSuffix(tr("lb"));
+    if (PROFILE.general->unitSystem()==US_Archiac) {
+        ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
-        ui->ouncesSpinBox->setSuffix(tr("oz"));
+        ui->ouncesSpinBox->setSuffix(STR_UNIT_OUNCE);
     } else {
         ui->ouncesSpinBox->setVisible(false);
         ui->weightSpinBox->setDecimals(3);
-        ui->weightSpinBox->setSuffix(tr("Kg"));
+        ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
 }
 
@@ -540,15 +537,15 @@ void Daily::on_calendar_selectionChanged()
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
-    if (unitSystem()==US_Archiac) {
-        ui->weightSpinBox->setSuffix(tr("lb"));
+    if (PROFILE.general->unitSystem()==US_Archiac) {
+        ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
-        ui->ouncesSpinBox->setSuffix(tr("oz"));
+        ui->ouncesSpinBox->setSuffix(STR_UNIT_OUNCE);
     } else {
         ui->ouncesSpinBox->setVisible(false);
         ui->weightSpinBox->setDecimals(3);
-        ui->weightSpinBox->setSuffix(tr("Kg"));
+        ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
 }
 void Daily::ResetGraphLayout()
@@ -575,7 +572,7 @@ void Daily::Load(QDate date)
     Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
    // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
 
-    if (!PROFILE["MemoryHog"].toBool()) {
+    if (!PROFILE.session->cacheSessions()) {
         if (lastcpapday && (lastcpapday!=cpap)) {
             for (QVector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
                 (*s)->TrashEvents();
@@ -647,7 +644,6 @@ void Daily::Load(QDate date)
     QString epr,modestr;
     //float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
-    PRTypes pr;
     QString a;
     bool isBrick=false;
 
@@ -686,7 +682,7 @@ void Daily::Load(QDate date)
         if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
             submodel=" <br/>"+cpap->machine->properties["SubModel"];
         html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
-        if (PROFILE.Exists("ShowSerialNumbers") && PROFILE["ShowSerialNumbers"].toBool()) {
+        if (PROFILE.session->showSerialNumbers()) {
             html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
         }
         CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
@@ -754,7 +750,7 @@ void Daily::Load(QDate date)
             // as it only relates to text drawing, which the Pie chart does not do
             // ^^ Scratch that.. pie now includes text..
 
-            if (PROFILE["EnableGraphSnapshots"].toBool()) {  // AHI Pie Chart
+            if (PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
                 if (ahi+rei+fli>0) {
                     html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
                     //G_AHI->setFixedSize(gwwidth,120);
@@ -791,7 +787,7 @@ void Daily::Load(QDate date)
 
                     ChannelID code=chans[i];
                     if (cpap && cpap->channelHasData(code)) {
-                        //if (code==CPAP_LeakTotal) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
+                        //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                         QString tooltip=schema::channel[code].description();
                         if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
                         html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
@@ -965,13 +961,13 @@ void Daily::Load(QDate date)
         if (journal->settings.contains(Journal_Weight)) {
             double kg=journal->settings[Journal_Weight].toDouble(&ok);
 
-            if (unitSystem()==US_Metric) {
+            if (PROFILE.general->unitSystem()==US_Metric) {
                 ui->weightSpinBox->setDecimals(3);
                 ui->weightSpinBox->blockSignals(true);
                 ui->weightSpinBox->setValue(kg);
                 ui->weightSpinBox->blockSignals(false);
                 ui->ouncesSpinBox->setVisible(false);
-                ui->weightSpinBox->setSuffix(tr("Kg"));
+                ui->weightSpinBox->setSuffix(STR_UNIT_KG);
             } else {
                 float ounces=(kg*1000.0)/ounce_convert;
                 int pounds=ounces/16.0;
@@ -985,12 +981,12 @@ void Daily::Load(QDate date)
                 ui->ouncesSpinBox->blockSignals(false);
                 ui->weightSpinBox->blockSignals(false);
 
-                ui->weightSpinBox->setSuffix(tr("lb"));
+                ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
                 ui->weightSpinBox->setDecimals(0);
                 ui->ouncesSpinBox->setVisible(true);
-                ui->ouncesSpinBox->setSuffix(tr("oz"));
+                ui->ouncesSpinBox->setSuffix(STR_UNIT_OUNCE);
             }
-            double height=PROFILE["Height"].toDouble(&ok)/100.0;
+            double height=PROFILE.user->height()/100.0;
             if (height>0 && kg>0) {
                 double bmi=kg/(height*height);
                 ui->BMI->setVisible(true);
@@ -1038,7 +1034,7 @@ void Daily::Load(QDate date)
 void Daily::UnitsChanged()
 {
     double kg;
-    if (unitSystem(true)==US_Metric) {
+    if (PROFILE.general->unitSystem()==US_Metric) {
         kg=ui->weightSpinBox->value();
         float ounces=(kg*1000.0)/ounce_convert;
         int pounds=ounces/16;
@@ -1047,16 +1043,16 @@ void Daily::UnitsChanged()
         ui->ouncesSpinBox->setValue(oz);
 
         ui->weightSpinBox->setDecimals(0);
-        ui->weightSpinBox->setSuffix("lb");
+        ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
         ui->ouncesSpinBox->setVisible(true);
-        ui->ouncesSpinBox->setSuffix("oz");
+        ui->ouncesSpinBox->setSuffix(STR_UNIT_OUNCE);
     } else {
         kg=(ui->weightSpinBox->value()*(ounce_convert*16.0))+(ui->ouncesSpinBox->value()*ounce_convert);
         kg/=1000.0;
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setValue(kg);
         ui->ouncesSpinBox->setVisible(false);
-        ui->weightSpinBox->setSuffix("Kg");
+        ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
 }
 
@@ -1239,7 +1235,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     QDateTime d;
     if (!item->text(1).isEmpty()) {
         d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        int winsize=PROFILE["EventViewSize"].toInt()*60;
+        int winsize=PROFILE.general->eventWindowSize()*60;
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
@@ -1331,9 +1327,9 @@ void Daily::on_todayButton_clicked()
 void Daily::on_evViewSlider_valueChanged(int value)
 {
     ui->evViewLCD->display(value);
-    PROFILE["EventViewSize"]=value;
+    PROFILE.general->setEventWindowSize(value);
 
-    int winsize=PROFILE["EventViewSize"].toInt()*60;
+    int winsize=value*60;
 
     gGraph *g=GraphView->findGraph("Event Flags");
     if (!g) return;
@@ -1451,15 +1447,14 @@ void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
 }
 void Daily::on_weightSpinBox_valueChanged(double arg1)
 {
-    bool ok;
-    double height=PROFILE["Height"].toDouble(&ok)/100.0;
+    double height=PROFILE.user->height()/100.0;
     Session *journal=GetJournalSession(previous_date);
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
 
     double kg;
-    if (unitSystem()==US_Archiac) {
+    if (PROFILE.general->unitSystem()==US_Archiac) {
             kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
     } else {
             kg=arg1;
@@ -1485,12 +1480,11 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
 }
 void Daily::on_ouncesSpinBox_valueChanged(int arg1)
 {
-    bool ok;
     Session *journal=GetJournalSession(previous_date);
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
-    double height=PROFILE["Height"].toDouble(&ok)/100.0;
+    double height=PROFILE.user->height()/100.0;
     double kg=(ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert);
     journal->settings[Journal_Weight]=kg;
 

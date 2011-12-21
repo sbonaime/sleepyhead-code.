@@ -16,6 +16,7 @@
 
 extern MainWindow *mainwin;
 
+
 NewProfile::NewProfile(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewProfile)
@@ -38,7 +39,7 @@ NewProfile::NewProfile(QWidget *parent) :
     m_passwordHashed=false;
     ui->heightEdit2->setVisible(false);
     ui->heightEdit->setDecimals(2);
-    ui->heightEdit->setSuffix(tr("cm"));
+    ui->heightEdit->setSuffix(STR_UNIT_CM);
 
     { // process countries list
     QFile f(":/docs/countries.txt");
@@ -88,7 +89,7 @@ void NewProfile::on_nextButton_clicked()
     switch(index) {
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
-            QMessageBox::information(this,tr("Error"),tr("Empty Username"),QMessageBox::Ok);
+            QMessageBox::information(this,STR_MESSAGE_ERROR,tr("Empty Username"),QMessageBox::Ok);
             return;
         }
         if (ui->genderCombo->currentIndex()==0) {
@@ -96,7 +97,7 @@ void NewProfile::on_nextButton_clicked()
         }
         if (ui->passwordGroupBox->isChecked()) {
             if (ui->passwordEdit1->text()!=ui->passwordEdit2->text()) {
-                QMessageBox::information(this,tr("Error"),tr("Passwords don't match"),QMessageBox::Ok);
+                QMessageBox::information(this,STR_MESSAGE_ERROR,tr("Passwords don't match"),QMessageBox::Ok);
                 return;
             }
             if (ui->passwordEdit1->text().isEmpty())
@@ -124,57 +125,60 @@ void NewProfile::on_nextButton_clicked()
                 profile=Profiles::Create(ui->userNameEdit->text());
             }
             Profile &prof=*profile;
-            prof["FirstName"]=ui->firstNameEdit->text();
-            prof["LastName"]=ui->lastNameEdit->text();
-            prof["DOB"]=ui->dobEdit->date();
-            prof["EmailAddress"]=ui->emailEdit->text();
-            prof["Phone"]=ui->phoneEdit->text();
-            prof["Address"]=ui->addressEdit->toPlainText();
+            profile->user->setFirstName(ui->firstNameEdit->text());
+            profile->user->setLastName(ui->lastNameEdit->text());
+            profile->user->setDOB(ui->dobEdit->date());
+            profile->user->setEmail(ui->emailEdit->text());
+            profile->user->setPhone(ui->phoneEdit->text());
+            profile->user->setAddress(ui->addressEdit->toPlainText());
             if (ui->passwordGroupBox->isChecked()) {
                 if (!m_passwordHashed) {
-                    QByteArray ba=ui->passwordEdit1->text().toUtf8();
-                    prof["Password"]=QString(QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex());
+                    profile->user->setPassword(ui->passwordEdit1->text().toUtf8());
                 }
             } else {
-                prof.Erase("Password");
-            }
-            //prof["Password"]="";
-            if (ui->genderCombo->currentIndex()==1) {
-                prof["Gender"]=tr("Male");
-            } else if (ui->genderCombo->currentIndex()==2) {
-                prof["Gender"]=tr("Female");
-            }
-            prof["DateDiagnosed"]=ui->dateDiagnosedEdit->date();
-            prof["UntreatedAHI"]=ui->untreatedAHIEdit->value();
-            prof["CPAPPrescribedMode"]=ui->cpapModeCombo->currentIndex();
-            prof["CPAPPrescribedMinPressure"]=ui->minPressureEdit->value();
-            prof["CPAPPrescribedMaxPressure"]=ui->minPressureEdit->value();
-            prof["CPAPNotes"]=ui->cpapNotes->toPlainText();
-            prof["DoctorName"]=ui->doctorNameEdit->text();
-            prof["DoctorPractice"]=ui->doctorPracticeEdit->text();
-            prof["DoctorAddress"]=ui->doctorAddressEdit->toPlainText();
-            prof["DoctorPhone"]=ui->doctorPhoneEdit->text();
-            prof["DoctorEmail"]=ui->doctorEmailEdit->text();
-            prof["DoctorPatientID"]=ui->doctorPatientIDEdit->text();
-            prof["Language"]=ui->languageCombo->currentText();
-            prof["TimeZone"]=ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString();
-            prof["Country"]=ui->countryCombo->currentText();
-            prof["DST"]=ui->DSTcheckbox->isChecked();
-            if (prof["Units"].toString()!=ui->heightCombo->currentText()) {
 
-                prof["Units"]=ui->heightCombo->currentText();
+                prof.Erase(UI_STR_Password);
+            }
+
+            profile->user->setGender((Gender)ui->genderCombo->currentIndex());
+
+            profile->cpap->setDateDiagnosed(ui->dateDiagnosedEdit->date());
+            profile->cpap->setUntreatedAHI(ui->untreatedAHIEdit->value());
+            profile->cpap->setMode((CPAPMode)ui->cpapModeCombo->currentIndex());
+            profile->cpap->setMinPressure(ui->minPressureEdit->value());
+            profile->cpap->setMaxPressure(ui->maxPressureEdit->value());
+            profile->cpap->setNotes(ui->cpapNotes->toPlainText());
+            profile->doctor->setName(ui->doctorNameEdit->text());
+            profile->doctor->setPracticeName(ui->doctorPracticeEdit->text());
+            profile->doctor->setAddress(ui->doctorAddressEdit->toPlainText());
+            profile->doctor->setPhone(ui->doctorPhoneEdit->text());
+            profile->doctor->setEmail(ui->doctorEmailEdit->text());
+            profile->doctor->setPatiendID(ui->doctorPatientIDEdit->text());
+            profile->user->setLanguage(ui->languageCombo->currentText());
+            profile->user->setTimeZone(ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString());
+            profile->user->setCountry(ui->countryCombo->currentText());
+            profile->user->setDaylightSaving(ui->DSTcheckbox->isChecked());
+            UnitSystem us;
+            if (ui->heightCombo->currentIndex()==0) us=US_Metric;
+            else if (ui->heightCombo->currentIndex()==1) us=US_Archiac;
+            else us=US_Metric;
+
+            if (profile->general->unitSystem() != us) {
+                profile->general->setUnitSystem(us);
                 if (mainwin && mainwin->getDaily()) mainwin->getDaily()->UnitsChanged();
             }
+
             double v=0;
-            if (ui->heightCombo->currentIndex()==1) {
+            if (us==US_Archiac) {
                 // convert to metric
                 v=(ui->heightEdit->value()*30.48);
                 v+=ui->heightEdit2->value()*2.54;
             } else {
                 v=ui->heightEdit->value();
             }
-            prof["Height"]=v;
+            profile->user->setHeight(v);
 
+            //profile->user->setUserName(ui->userNameEdit->text());??
             PREF["Profile"]=ui->userNameEdit->text();
 
 
@@ -234,60 +238,58 @@ void NewProfile::edit(const QString name)
     Profile *profile=Profiles::Get(name);
     if (!profile) {
         profile=Profiles::Create(name);
-        (*profile)["FirstName"]="";
-        (*profile)["LastName"]="";
     }
     ui->userNameEdit->setText(name);
     ui->userNameEdit->setReadOnly(true);
-    ui->firstNameEdit->setText((*profile)["FirstName"].toString());
-    ui->lastNameEdit->setText((*profile)["LastName"].toString());
-    if (profile->Exists("Password")) {
+    ui->firstNameEdit->setText(profile->user->firstName());
+    ui->lastNameEdit->setText(profile->user->lastName());
+    if (profile->Exists(UI_STR_Password)) {
         // leave the password box blank..
-        ui->passwordEdit1->setText("");
-        ui->passwordEdit2->setText("");
+        QString a="******";
+        ui->passwordEdit1->setText(a);
+        ui->passwordEdit2->setText(a);
         ui->passwordGroupBox->setChecked(true);
         m_passwordHashed=true;
     }
-    ui->dobEdit->setDate((*profile)["DOB"].toDate());
-    if (profile->Get("Gender").toLower()=="male") {
+    ui->dobEdit->setDate(profile->user->DOB());
+    if (profile->user->gender()==Male) {
         ui->genderCombo->setCurrentIndex(1);
-    } else if (profile->Get("Gender").toLower()=="female") {
+    } else if (profile->user->gender()==Female) {
         ui->genderCombo->setCurrentIndex(2);
     } else ui->genderCombo->setCurrentIndex(0);
-    ui->heightEdit->setValue((*profile)["Height"].toDouble());
-    ui->addressEdit->setText(profile->Get("Address"));
-    ui->emailEdit->setText(profile->Get("EmailAddress"));
-    ui->phoneEdit->setText(profile->Get("Phone"));
-    ui->dateDiagnosedEdit->setDate((*profile)["DateDiagnosed"].toDate());
+    ui->heightEdit->setValue(profile->user->height());
+    ui->addressEdit->setText(profile->user->address());
+    ui->emailEdit->setText(profile->user->email());
+    ui->phoneEdit->setText(profile->user->phone());
+    ui->dateDiagnosedEdit->setDate(profile->cpap->dateDiagnosed());
     ui->cpapNotes->clear();
-    ui->cpapNotes->appendPlainText(profile->Get("CPAPNotes"));
-    ui->minPressureEdit->setValue((*profile)["CPAPPrescribedMinPressure"].toDouble());
-    ui->maxPressureEdit->setValue((*profile)["CPAPPrescribedMaxPressure"].toDouble());
-    ui->untreatedAHIEdit->setValue((*profile)["UntreatedAHI"].toDouble());
-    ui->cpapModeCombo->setCurrentIndex((*profile)["CPAPPrescribedMode"].toInt());
+    ui->cpapNotes->appendPlainText(profile->cpap->notes());
+    ui->minPressureEdit->setValue(profile->cpap->minPressure());
+    ui->maxPressureEdit->setValue(profile->cpap->maxPressure());
+    ui->untreatedAHIEdit->setValue(profile->cpap->untreatedAHI());
+    ui->cpapModeCombo->setCurrentIndex((int)profile->cpap->mode());
 
-    ui->doctorNameEdit->setText(profile->Get("DoctorName"));
-    ui->doctorPracticeEdit->setText(profile->Get("DoctorPractice"));
-    ui->doctorPhoneEdit->setText(profile->Get("DoctorPhone"));
-    ui->doctorEmailEdit->setText(profile->Get("DoctorEmail"));
-    ui->doctorAddressEdit->setText(profile->Get("DoctorAddress"));
-    ui->doctorPatientIDEdit->setText(profile->Get("DoctorPatientID"));
+    ui->doctorNameEdit->setText(profile->doctor->name());
+    ui->doctorPracticeEdit->setText(profile->doctor->practiceName());
+    ui->doctorPhoneEdit->setText(profile->doctor->phone());
+    ui->doctorEmailEdit->setText(profile->doctor->email());
+    ui->doctorAddressEdit->setText(profile->doctor->address());
+    ui->doctorPatientIDEdit->setText(profile->doctor->patiendID());
 
-    ui->DSTcheckbox->setChecked((*profile)["DST"].toBool());
-    int i=ui->timezoneCombo->findData(profile->Get("TimeZone"));
+    ui->DSTcheckbox->setChecked(profile->user->daylightSaving());
+    int i=ui->timezoneCombo->findData(profile->user->timeZone());
     ui->timezoneCombo->setCurrentIndex(i);
-    i=ui->countryCombo->findText(profile->Get("Country"));
+    i=ui->countryCombo->findText(profile->user->country());
     ui->countryCombo->setCurrentIndex(i);
 
-    i=ui->heightCombo->findText(profile->Get("Units"));
+    UnitSystem us=profile->general->unitSystem();
+    i=(int)us - 1;
     if (i<0) i=0;
     ui->heightCombo->setCurrentIndex(i);
 
-    bool ok;
-    double v=(*profile)["Height"].toDouble(&ok);
-    if (!ok) v=0;
+    double v=profile->user->height();
 
-    if (i==1)  { // evil non-metric
+    if (us==US_Archiac)  { // evil non-metric
         int ti=v/2.54;
         int feet=ti / 12;
         int inches=ti % 12;
@@ -296,13 +298,13 @@ void NewProfile::edit(const QString name)
         ui->heightEdit2->setVisible(true);
         ui->heightEdit->setDecimals(0);
         ui->heightEdit2->setDecimals(0);
-        ui->heightEdit->setSuffix(tr("ft")); // foot
-        ui->heightEdit2->setSuffix(tr("\"")); // inches
+        ui->heightEdit->setSuffix(STR_UNIT_FOOT); // foot
+        ui->heightEdit2->setSuffix(STR_UNIT_INCH); // inches
     } else { // good wholesome metric
         ui->heightEdit->setValue(v);
         ui->heightEdit2->setVisible(false);
         ui->heightEdit->setDecimals(2);
-        ui->heightEdit->setSuffix(tr("cm"));
+        ui->heightEdit->setSuffix(STR_UNIT_CM);
     }
 }
 
@@ -323,16 +325,16 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         //metric
         ui->heightEdit2->setVisible(false);
         ui->heightEdit->setDecimals(2);
-        ui->heightEdit->setSuffix(tr("cm"));
+        ui->heightEdit->setSuffix(STR_UNIT_CM);
         double v=ui->heightEdit->value()*30.48;
         v+=ui->heightEdit2->value()*2.54;
         ui->heightEdit->setValue(v);
     } else {        //evil
         ui->heightEdit->setDecimals(0);
         ui->heightEdit2->setDecimals(0);
-        ui->heightEdit->setSuffix(tr("ft"));
+        ui->heightEdit->setSuffix(STR_UNIT_FOOT);
         ui->heightEdit2->setVisible(true);
-        ui->heightEdit2->setSuffix(tr("\""));
+        ui->heightEdit2->setSuffix(STR_UNIT_INCH);
         int v=ui->heightEdit->value()/2.54;
         int feet=v / 12;
         int inches=v % 12;

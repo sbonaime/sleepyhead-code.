@@ -100,45 +100,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(qprogress,1);
     ui->statusbar->addPermanentWidget(qstatus2,0);
 
+    ui->actionDebug->setChecked(PROFILE.general->showDebug());
 
-    // This next section is a mess..
-    // Preferences & Profile variables really need to initialize somewhere else
-    // The General object in PreferencesDialog kinda defines where I want to go with the profile default stuff
-
-    if (!PROFILE.Exists("ShowDebug")) PROFILE["ShowDebug"]=false;
-    ui->actionDebug->setChecked(PROFILE["ShowDebug"].toBool());
-
-    if (!PROFILE["ShowDebug"].toBool()) {
+    if (!PROFILE.general->showDebug()) {
         ui->logText->hide();
     }
 
-    // This speeds up the second part of importing craploads.. later it will speed up the first part too.
-    if (!PROFILE.Exists("EnableMultithreading")) PROFILE["EnableMultithreading"]=QThread::idealThreadCount()>1;
-
-    if (!PROFILE.Exists("MemoryHog")) PROFILE["MemoryHog"]=false;
-    if (!PROFILE.Exists("EnableGraphSnapshots")) PROFILE["EnableGraphSnapshots"]=true;
-    if (!PROFILE.Exists("SquareWavePlots")) PROFILE["SquareWavePlots"]=false;
-    if (!PROFILE.Exists("EnableOximetry")) PROFILE["EnableOximetry"]=false;
-    if (!PROFILE.Exists("LinkGroups")) PROFILE["LinkGroups"]=false;
-    if (!PROFILE.Exists("AlwaysShowOverlayBars")) PROFILE["AlwaysShowOverlayBars"]=0;
-    if (!PROFILE.Exists("UseAntiAliasing")) PROFILE["UseAntiAliasing"]=false;
-    if (!PROFILE.Exists("IntentionalLeak")) PROFILE["IntentionalLeak"]=(double)0.0;
-    if (!PROFILE.Exists("IgnoreShorterSessions")) PROFILE["IgnoreShorterSessions"]=0;
-    if (!PROFILE.Exists("CombineCloserSessions")) PROFILE["CombineCloserSessions"]=0;
-    if (!PROFILE.Exists("DaySplitTime")) PROFILE["DaySplitTime"]=QTime(12,0,0,0);
-    if (!PROFILE.Exists("EventWindowSize")) PROFILE["EventWindowSize"]=4;
-    if (!PROFILE.Exists("SPO2DropPercentage")) PROFILE["PulseChangeDuration"]=4;
-    if (!PROFILE.Exists("SPO2DropDuration")) PROFILE["PulseChangeDuration"]=5;
-    if (!PROFILE.Exists("PulseChangeBPM")) PROFILE["PulseChangeDuration"]=5;
-    if (!PROFILE.Exists("PulseChangeDuration")) PROFILE["PulseChangeDuration"]=8;
-    if (!PROFILE.Exists("GraphHeight")) PROFILE["GraphHeight"]=180;
-    if (!PROFILE.Exists("OxiDiscardThreshold")) PROFILE["OxiDiscardThreshold"]=10;
-    if (!PROFILE.Exists("ComplianceHours")) PROFILE["ComplianceHours"]=4;
-    if (!PROFILE.Exists("ShowCompliance")) PROFILE["ShowCompliance"]=true;
-    if (!PROFILE.Exists("AnimationsAndTransitions")) PROFILE["AnimationsAndTransitions"]=true;
-
-    //ui->actionUse_AntiAliasing->setChecked(PROFILE["UseAntiAliasing"].toBool());
-    ui->action_Link_Graph_Groups->setChecked(PROFILE["LinkGroups"].toBool());
+    ui->action_Link_Graph_Groups->setChecked(PROFILE.general->linkGroups());
 
     first_load=true;
 
@@ -160,10 +128,10 @@ MainWindow::MainWindow(QWidget *parent) :
         QAction *a=systraymenu->addAction("SleepyHead v"+VersionString());
         a->setEnabled(false);
         systraymenu->addSeparator();
-        systraymenu->addAction("About",this,SLOT(on_action_About_triggered()));
-        systraymenu->addAction("Check for Updates",this,SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addAction("&About",this,SLOT(on_action_About_triggered()));
+        systraymenu->addAction("Check for &Updates",this,SLOT(on_actionCheck_for_Updates_triggered()));
         systraymenu->addSeparator();
-        systraymenu->addAction("Exit",this,SLOT(close()));
+        systraymenu->addAction("E&xit",this,SLOT(close()));
     } else { // if not available, the messages will popup in the taskbar
         systray=NULL;
         systraymenu=NULL;
@@ -231,7 +199,7 @@ void MainWindow::Startup()
 
     overview=new Overview(ui->tabWidget,daily->graphView());
     ui->tabWidget->insertTab(2,overview,tr("Overview"));
-    if (PROFILE["EnableOximetry"].toBool()) {
+    if (PROFILE.oxi->oximetryEnabled()) {
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
         ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
     }
@@ -574,16 +542,16 @@ void MainWindow::updatestatusBarMessage (const QString & text)
 void MainWindow::on_actionPrint_Report_triggered()
 {
     if (ui->tabWidget->currentWidget()==overview) {
-        PrintReport(overview->graphView(),"Overview");
+        PrintReport(overview->graphView(),tr("Overview"));
     } else if (ui->tabWidget->currentWidget()==daily) {
-        PrintReport(daily->graphView(),"Daily",daily->getDate());
+        PrintReport(daily->graphView(),tr("Daily"),daily->getDate());
     } else if (ui->tabWidget->currentWidget()==oximetry) {
         if (oximetry)
-            PrintReport(oximetry->graphView(),"Oximetry");
+            PrintReport(oximetry->graphView(),tr("Oximetry"));
     } else {
         //QPrinter printer();
         //ui->webView->print(printer)
-        QMessageBox::information(this,"Not supported Yet","Sorry, printing from this page is not supported yet",QMessageBox::Ok);
+        QMessageBox::information(this,tr("Not supported Yet"),tr("Sorry, printing from this page is not supported yet"),QMessageBox::Ok);
     }
 }
 
@@ -597,7 +565,7 @@ void MainWindow::on_action_Edit_Profile_triggered()
 
 void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
 {
-    PROFILE["LinkGroups"]=arg1;
+    PROFILE.general->setLinkGroups(arg1);
     if (daily) daily->RedrawGraphs();
 }
 

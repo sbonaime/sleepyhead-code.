@@ -16,6 +16,7 @@ License: GPL
 #include "machine.h"
 #include "machine_loader.h"
 #include "preferences.h"
+#include "common.h"
 
 class Machine;
 
@@ -29,7 +30,7 @@ class UserSettings;
 class OxiSettings;
 class CPAPSettings;
 class AppearanceSettings;
-class ImportSettings;
+class SessionSettings;
 
 
 
@@ -109,8 +110,8 @@ public:
     OxiSettings *oxi;
     DoctorInfo *doctor;
     AppearanceSettings *appearance;
-    UserSettings *settings;
-    ImportSettings *import;
+    UserSettings *general;
+    SessionSettings *session;
 
 
 protected:
@@ -132,6 +133,7 @@ extern Profile * p_profile;
 
 extern const char * DI_STR_Name;
 extern const char * DI_STR_Phone;
+extern const char * DI_STR_Email;
 extern const char * DI_STR_Practice;
 extern const char * DI_STR_Address;
 extern const char * DI_STR_PatientID;
@@ -143,6 +145,7 @@ public:
     {
         if (!m_profile->contains(DI_STR_Name)) (*m_profile)[DI_STR_Name]=QString();
         if (!m_profile->contains(DI_STR_Phone)) (*m_profile)[DI_STR_Phone]=QString();
+        if (!m_profile->contains(DI_STR_Email)) (*m_profile)[DI_STR_Email]=QString();
         if (!m_profile->contains(DI_STR_Practice)) (*m_profile)[DI_STR_Practice]=QString();
         if (!m_profile->contains(DI_STR_Address)) (*m_profile)[DI_STR_Address]=QString();
         if (!m_profile->contains(DI_STR_PatientID)) (*m_profile)[DI_STR_PatientID]=QString();
@@ -152,12 +155,14 @@ public:
 
     const QString name() { return (*m_profile)[DI_STR_Name].toString(); }
     const QString phone() { return (*m_profile)[DI_STR_Phone].toString(); }
+    const QString email() { return (*m_profile)[DI_STR_Email].toString(); }
     const QString practiceName() { return (*m_profile)[DI_STR_Practice].toString(); }
     const QString address() { return (*m_profile)[DI_STR_Address].toString(); }
     const QString patiendID() { return (*m_profile)[DI_STR_PatientID].toString(); }
 
     void setName(QString name) { (*m_profile)[DI_STR_Name]=name; }
     void setPhone(QString phone) { (*m_profile)[DI_STR_Phone]=phone; }
+    void setEmail(QString phone) { (*m_profile)[DI_STR_Email]=phone; }
     void setPracticeName(QString practice) { (*m_profile)[DI_STR_Practice]=practice; }
     void setAddress(QString address) { (*m_profile)[DI_STR_Address]=address; }
     void setPatiendID(QString pid) { (*m_profile)[DI_STR_PatientID]=pid; }
@@ -377,23 +382,27 @@ extern const char * IS_STR_CacheSessions;
 extern const char * IS_STR_CombineCloseSessions;
 extern const char * IS_STR_IgnoreShorterSessions;
 extern const char * IS_STR_Multithreading;
+extern const char * IS_STR_TrashDayCache;
+extern const char * IS_STR_ShowSerialNumbers;
 
 /*! \class ImportSettings
     \brief Profile Options relating to the Import process
     */
-class ImportSettings
+class SessionSettings
 {
 public:
     //! \brief Create ImportSettings object given Profile *p, and initialize the defaults
-    ImportSettings(Profile *p) :m_profile(p)
+    SessionSettings(Profile *p) :m_profile(p)
     {
         if (m_profile->contains(IS_STR_DaySplitTime)) (*m_profile)[IS_STR_DaySplitTime]=QTime(12,0,0);
         if (m_profile->contains(IS_STR_CacheSessions)) (*m_profile)[IS_STR_CacheSessions]=false;
         if (m_profile->contains(IS_STR_CombineCloseSessions)) (*m_profile)[IS_STR_CombineCloseSessions]=240;
         if (m_profile->contains(IS_STR_IgnoreShorterSessions)) (*m_profile)[IS_STR_IgnoreShorterSessions]=5;
         if (m_profile->contains(IS_STR_Multithreading)) (*m_profile)[IS_STR_Multithreading]=QThread::idealThreadCount() > 1;
+        if (m_profile->contains(IS_STR_TrashDayCache)) (*m_profile)[IS_STR_TrashDayCache]=false; // can't remember..
+        if (m_profile->contains(IS_STR_ShowSerialNumbers)) (*m_profile)[IS_STR_ShowSerialNumbers]=false;
     }
-    ~ImportSettings() {}
+    ~SessionSettings() {}
 
     void setProfile(Profile *p) { m_profile=p; }
 
@@ -402,12 +411,16 @@ public:
     double combineCloseSessions() { return (*m_profile)[IS_STR_CombineCloseSessions].toDouble(); }
     double ignoreShortSessions() { return (*m_profile)[IS_STR_IgnoreShorterSessions].toDouble(); }
     bool multithreading() { return (*m_profile)[IS_STR_Multithreading].toBool(); }
+    bool trashDayCache() { return (*m_profile)[IS_STR_TrashDayCache].toBool(); }
+    bool showSerialNumbers() { return (*m_profile)[IS_STR_ShowSerialNumbers].toBool(); }
 
     void setDaySplitTime(QTime time) { (*m_profile)[IS_STR_DaySplitTime]=time; }
     void setCacheSessions(bool c) { (*m_profile)[IS_STR_CacheSessions]=c; }
     void setCombineCloseSessions(double val) { (*m_profile)[IS_STR_CombineCloseSessions]=val; }
     void setIgnoreShortSessions(double val) { (*m_profile)[IS_STR_IgnoreShorterSessions]=val; }
     void setMultithreading(bool enabled) { (*m_profile)[IS_STR_Multithreading]=enabled; }
+    void setTrashDayCache(bool trash) { (*m_profile)[IS_STR_TrashDayCache]=trash; }
+    void setShowSerialNumbers(bool trash) { (*m_profile)[IS_STR_ShowSerialNumbers]=trash; }
 
     Profile *m_profile;
 };
@@ -479,7 +492,6 @@ extern const char * US_STR_UnitSystem;
 extern const char * US_STR_EventWindowSize;
 extern const char * US_STR_SkipEmptyDays;
 extern const char * US_STR_RebuildCache;
-extern const char * US_STR_TrashDayCache;
 extern const char * US_STR_ShowDebug;
 extern const char * US_STR_LinkGroups;
 
@@ -496,7 +508,6 @@ public:
         if (m_profile->contains(US_STR_EventWindowSize)) (*m_profile)[US_STR_EventWindowSize]=4.0;
         if (m_profile->contains(US_STR_SkipEmptyDays)) (*m_profile)[US_STR_SkipEmptyDays]=true;
         if (m_profile->contains(US_STR_RebuildCache)) (*m_profile)[US_STR_RebuildCache]=false; // can't remember..
-        if (m_profile->contains(US_STR_TrashDayCache)) (*m_profile)[US_STR_TrashDayCache]=false; // can't remember..
         if (m_profile->contains(US_STR_ShowDebug)) (*m_profile)[US_STR_ShowDebug]=false;
         if (m_profile->contains(US_STR_LinkGroups)) (*m_profile)[US_STR_LinkGroups]=true; // can't remember..
     }
@@ -508,7 +519,6 @@ public:
     double eventWindowSize() { return (*m_profile)[US_STR_EventWindowSize].toDouble(); }
     bool skipEmptyDays() { return (*m_profile)[US_STR_SkipEmptyDays].toBool(); }
     bool rebuildCache() { return (*m_profile)[US_STR_RebuildCache].toBool(); }
-    bool trashDayCache() { return (*m_profile)[US_STR_TrashDayCache].toBool(); }
     bool showDebug() { return (*m_profile)[US_STR_ShowDebug].toBool(); }
     bool linkGroups() { return (*m_profile)[US_STR_LinkGroups].toBool(); }
 
@@ -516,7 +526,6 @@ public:
     void setEventWindowSize(double size) { (*m_profile)[US_STR_EventWindowSize]=size; }
     void setSkipEmptyDays(bool skip) { (*m_profile)[US_STR_SkipEmptyDays]=skip; }
     void setRebuildCache(bool rebuild) { (*m_profile)[US_STR_RebuildCache]=rebuild; }
-    void setTrashDayCache(bool trash) { (*m_profile)[US_STR_TrashDayCache]=trash; }
     void setShowDebug(bool b) { (*m_profile)[US_STR_ShowDebug]=b; }
     void setLinkGroups(bool link) { (*m_profile)[US_STR_LinkGroups]=link; }
 

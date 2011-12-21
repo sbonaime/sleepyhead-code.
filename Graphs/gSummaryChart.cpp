@@ -121,7 +121,8 @@ void SummaryChart::SetDay(Day * nullday)
             for (int j=0;j<m_codes.size();j++) { // for each code slice
                 code=m_codes[j];
                 //m_values[dn][0]=0;
-                if (code==CPAP_Leak) suboffset=PROFILE["IntentionalLeak"].toDouble(); else suboffset=0;
+                //if (code==CPAP_Leak) suboffset=PROFILE.cpap->IntentionalLeak(); else
+                suboffset=0;
                 type=m_type[j];
                 for (int i=0;i<d.value().size();i++) { // for each machine object for this day
                     day=d.value()[i];
@@ -338,8 +339,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         lastY[i]=top+height-1-h;
     }
     float compliance_hours=0;
-    if (PROFILE.ExistsAndTrue("ShowCompliance")) {
-        compliance_hours=PROFILE["ComplianceHours"].toDouble();
+    if (PROFILE.cpap->showComplianceInfo()) {
+        compliance_hours=PROFILE.cpap->complianceHours();
     }
 
     int incompliant=0;
@@ -558,7 +559,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
     }*/
     a+="Days="+QString::number(total_days,'f',0);
-    if (PROFILE.ExistsAndTrue("ShowCompliance")) {
+    if (PROFILE.cpap->showComplianceInfo()) {
         if (ishours && incompliant>0) {
             a+=" Low Usage Days="+QString::number(incompliant,'f',0)+" (%"+QString::number((1.0/daynum)*(total_days-incompliant)*100.0,'f',2)+" compliant, defined as >"+QString::number(compliance_hours,'f',1)+" hours)";
         }
@@ -703,7 +704,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                         //if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                             schema::Channel & chan=schema::channel[m_codes[i]];
                             if (m_codes[i]==Journal_Weight) {
-                                val=weightString(d.value()[i+1],unitSystem());
+                                val=weightString(d.value()[i+1],PROFILE.general->unitSystem());
                             } else
                                 val=QString::number(d.value()[i+1],'f',2);
                             z+="\r\n"+chan.label()+" "+a+"="+val;

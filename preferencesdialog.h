@@ -39,6 +39,7 @@ protected:
     \brief This in still a work in progress, and may be used in Unintentional leaks calculations.
     */
 struct MaskProfile {
+    MaskType type;
     QString name;
     EventDataType pflow[5][2];
 };
@@ -97,7 +98,6 @@ private:
     QStringListModel *importModel;
     MySortFilterProxyModel *graphFilterModel;
     QStandardItemModel *graphModel;
-    QHash<QString,Preference> general;
 };
 
 

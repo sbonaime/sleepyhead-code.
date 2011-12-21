@@ -108,7 +108,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
     SPO2=createGraph(tr("SpO2"),tr("Oxygen Saturation\n(%)"));
 
-    WEIGHT=createGraph(tr("Weight"),tr("Weight\n(kg)"),YT_Weight);
+    WEIGHT=createGraph(tr("Weight"),tr("Weight"),YT_Weight);
     BMI=createGraph(tr("BMI"),tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
 
@@ -234,7 +234,7 @@ Overview::~Overview()
 }
 gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
 {
-    int default_height=PROFILE["GraphHeight"].toInt();
+    int default_height=PROFILE.appearance->graphHeight();
     gGraph *g=new gGraph(GraphView,name,units,default_height,0);
 
     gYAxis *yt;
@@ -243,7 +243,7 @@ gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
         yt=new gYAxisTime(true); // Time scale
         break;
     case YT_Weight:
-        yt=new gYAxisWeight(unitSystem());
+        yt=new gYAxisWeight(PROFILE.general->unitSystem());
         break;
     default:
         yt=new gYAxis(); // Plain numeric scale
@@ -263,8 +263,8 @@ void Overview::ReloadGraphs()
     ui->dateStart->setDate(p_profile->FirstDay());
     ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
-    if (PROFILE.ExistsAndTrue("RebuildCache")) {
-        PROFILE["RebuildCache"]=false;
+    if (PROFILE.general->rebuildCache()) {
+        PROFILE.general->setRebuildCache(false);
         mainwin->Notify(tr("Cache rebuild complete"));
     }
 }

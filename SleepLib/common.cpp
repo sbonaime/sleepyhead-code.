@@ -21,24 +21,6 @@ qint64 timezoneOffset() {
     return _TZ_offset;
 }
 
-
-UnitSystem unitSystem(bool reset)
-{
-    static bool cached=false;
-    static UnitSystem us=US_Undefined;
-    if (!reset && cached) return us;
-
-    if (!p_profile) return US_Undefined;
-    if (PROFILE["Units"].toString()=="metric")
-        us=US_Metric;
-    else if (PROFILE["Units"].toString()=="archiac")
-        us=US_Archiac;
-    else return US_Undefined;
-
-    cached=true;
-    return us;
-}
-
 QString weightString(float kg, UnitSystem us)
 {
     if (us==US_Metric) {

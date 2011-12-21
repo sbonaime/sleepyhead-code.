@@ -22,11 +22,11 @@ extern QFont * bigfont;
 extern MainWindow * mainwin;
 
 MaskProfile masks[]={
-    {QObject::tr("Unspecified"),{{4,25},{8,25},{12,25},{16,25},{20,25}}},
-    {QObject::tr("Nasal Pillows"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {QObject::tr("Hybrid F/F Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {QObject::tr("Nasal Interface"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
-    {QObject::tr("Full-Face Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {Mask_Unknown,QObject::tr("Unspecified"),{{4,25},{8,25},{12,25},{16,25},{20,25}}},
+    {Mask_NasalPillows,QObject::tr("Nasal Pillows"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {Mask_Hybrid,QObject::tr("Hybrid F/F Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {Mask_StandardNasal,QObject::tr("Nasal Interface"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
+    {Mask_FullFace,QObject::tr("Full-Face Mask"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
 };
 const int num_masks=sizeof(masks)/sizeof(MaskProfile);
 
@@ -47,7 +47,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->customEventGroupbox->setEnabled(false);
 
     QString masktype=tr("Nasal Pillows");
-    //masktype=PROFILE["MaskType"].toString();
+    //masktype=PROFILEMaskType
     for (int i=0;i<num_masks;i++) {
         ui->maskTypeCombo->addItem(masks[i].name);
 
@@ -104,34 +104,24 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     bool  ok;
     double v;
-    v=(*profile)["SPO2DropPercentage"].toDouble(&ok);
-    if (!ok) v=3;
-    ui->spo2Drop->setValue(v);
-    v=(*profile)["SPO2DropDuration"].toDouble(&ok);
-    if (!ok) v=10;
-    ui->spo2DropTime->setValue(v);
-    v=(*profile)["PulseChangeBPM"].toDouble(&ok);
-    if (!ok) v=8;
-    ui->pulseChange->setValue(v);
-    v=(*profile)["PulseChangeDuration"].toDouble(&ok);
-    if (!ok) v=5;
-    ui->pulseChangeTime->setValue(v);
-    v=(*profile)["OxiDiscardThreshold"].toDouble(&ok);
-    if (!ok) v=10;
-    ui->oxiDiscardThreshold->setValue(v);
+    ui->spo2Drop->setValue(profile->oxi->spO2DropPercentage());
+    ui->spo2DropTime->setValue(profile->oxi->spO2DropDuration());
+    ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
+    ui->pulseChangeTime->setValue(profile->oxi->pulseChangeDuration());
+    ui->oxiDiscardThreshold->setValue(profile->oxi->oxiDiscardThreshold());
 
-    QTime t=(*profile)["DaySplitTime"].toTime();
-    ui->timeEdit->setTime(t);
-    int val;
-
-    val=(*profile)["CombineCloserSessions"].toInt();
+    ui->timeEdit->setTime(profile->session->daySplitTime());
+    int val=profile->session->combineCloseSessions();
     ui->combineSlider->setValue(val);
     if (val>0) {
         ui->combineLCD->display(val);
     } else ui->combineLCD->display(tr("OFF"));
 
-    val=(*profile)["IgnoreShorterSessions"].toInt();
+    val=profile->session->ignoreShortSessions();
     ui->IgnoreSlider->setValue(val);
+    if (val>0) {
+        ui->IgnoreLCD->display(val);
+    } else ui->IgnoreLCD->display(tr("OFF"));
 
     ui->applicationFont->setCurrentFont(QApplication::font());
     //ui->applicationFont->setFont(QApplication::font());
@@ -157,63 +147,37 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->bigFontBold->setChecked(bigfont->weight()==QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
-    //if (!(*profile).Exists("SkipEmptyDays")) (*profile)["SkipEmptyDays"]=true;
-    //ui->skipEmptyDays->setChecked((*profile)["SkipEmptyDays"].toBool());
+    ui->startedUsingMask->setDate(profile->cpap->maskStartDate());
 
-    general.clear();
-    general["UseAntiAliasing"]=Preference(p_profile,"UseAntiAliasing",PT_Checkbox,tr("Use Anti-Aliasing"),tr("Enable Graphical smoothing. Doesn't always look pretty."),false);
-    general["SquareWavePlots"]=Preference(p_profile,"SquareWavePlots",PT_Checkbox,tr("Square Wave Plots"),tr("Try to use Square Wave plots where possible"),true);
-    general["EnableGraphSnapshots"]=Preference(p_profile,"EnableGraphSnapshots",PT_Checkbox,tr("Event Breakdown Piechart"),tr("Shows Event Breakdown in Daily view. This may cause problems on older computers."),true);
-    general["SkipLoginScreen"]=Preference(p_pref,"SkipLoginScreen",PT_Checkbox,tr("Skip Login Screen"),tr("Bypass the login screen at startup"),false);
-    general["SkipEmptyDays"]=Preference(p_profile,"SkipEmptyDays",PT_Checkbox,tr("Skip Empty Days"),tr("Skip over calendar days that don't have any data"),true);
-    general["EnableMultithreading"]=Preference(p_profile,"EnableMultithreading",PT_Checkbox,tr("Enable Multithreading"),tr("Try to use extra processor cores where possible"),false);
-    general["MemoryHog"]=Preference(p_profile,"MemoryHog",PT_Checkbox,tr("Cache Session Data"),tr("Keep session data in memory to improve load speed revisiting the date."),false);
-    general["GraphHeight"]=Preference(p_profile,"GraphHeight",PT_Spinbox,tr("Graph Height"),tr("Default Graph Height"),160);
-    general["MaskDescription"]=Preference(p_profile,"MaskDescription",PT_LineEdit,tr("Mask Description"),tr("Whatever you want to record about your mask."),QString());
-    general["HighResPrinting"]=Preference(p_profile,"HighResPrinting",PT_Checkbox,tr("High Resolution Printing"),tr("Use much slower but better quality high resolution printing."),true);
-    general["AnimationsAndTransitions"]=Preference(p_profile,"AnimationsAndTransitions",PT_Checkbox,tr("Animations and Transitions"),tr("Make empty graph pages, and switching days more attractive."),false);
-    general["ShowCompliance"]=Preference(p_profile,"ShowCompliance",PT_Checkbox,tr("Show Compliance Information"),tr("Allow compliance information to be shown."),true);
-    general["ComplianceHours"]=Preference(p_profile,"ComplianceHours",PT_Spinbox,tr("Compliance Hours"),tr("Regard days over this combined session length as compliant."),4.0);
+    ui->leakModeCombo->setCurrentIndex(profile->cpap->leakMode());
 
-    if (!(p_profile)->Exists("MaskStartDate")) {
-        (PROFILE["MaskStartDate"]=PROFILE.FirstDay());
-    }
-    ui->startedUsingMask->setDate((*profile)["MaskStartDate"].toDate());
-
-    if (!(p_profile)->Exists("ShowLeaksMode")) {
-        PROFILE["ShowLeaksMode"]=0;
-    }
-    ui->leakModeCombo->setCurrentIndex((*profile)["ShowLeaksMode"].toInt());
-    if (!(p_profile)->Exists("MaskType")) {
-        PROFILE["MaskType"]=0;
-    }
-    int mt=(*profile)["MaskType"].toInt();
+    int mt=(int)profile->cpap->maskType();
     ui->maskTypeCombo->setCurrentIndex(mt);
     on_maskTypeCombo_activated(mt);
 
 
-    ui->maskDescription->setText(general["MaskDescription"].value().toString());
+    ui->maskDescription->setText(profile->cpap->maskDescription());
+    ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
+    ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
+    ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
+    ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
 
-    ui->useAntiAliasing->setChecked(general["UseAntiAliasing"].value().toBool());
-    ui->useSquareWavePlots->setChecked(general["SquareWavePlots"].value().toBool());
-    ui->enableGraphSnapshots->setChecked(general["EnableGraphSnapshots"].value().toBool());
-    ui->skipLoginScreen->setChecked(general["SkipLoginScreen"].value().toBool());
-    ui->skipEmptyDays->setChecked(general["SkipEmptyDays"].value().toBool());
-    ui->enableMultithreading->setChecked(general["EnableMultithreading"].value().toBool());
-    ui->cacheSessionData->setChecked(general["MemoryHog"].value().toBool());
-    ui->animationsAndTransitionsCheckbox->setChecked(general["AnimationsAndTransitions"].value().toBool());
-    ui->complianceGroupbox->setChecked(general["ShowCompliance"].value().toBool());
-    ui->complianceHours->setValue(general["ComplianceHours"].value().toDouble());
+    ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
+    ui->enableMultithreading->setChecked(profile->session->multithreading());
+    ui->cacheSessionData->setChecked(profile->session->cacheSessions());
+    ui->animationsAndTransitionsCheckbox->setChecked(profile->appearance->animations());
+    ui->complianceGroupbox->setChecked(profile->cpap->showComplianceInfo());
+    ui->complianceHours->setValue(profile->cpap->complianceHours());
 
 #ifdef Q_WS_MAC
-    general["HighResPrinting"].setValue(true);
+    profile->appearance->setHighResPrinting(true);
     ui->highResolutionPrinting->setChecked(true);
     ui->highResolutionPrinting->setEnabled(false);
 #else
-    ui->highResolutionPrinting->setChecked(general["HighResPrinting"].value().toBool());
+    ui->highResolutionPrinting->setChecked(profile->appearance->highResPrinting());
 #endif
 
-    ui->graphHeight->setValue(general["GraphHeight"].value().toInt());
+    ui->graphHeight->setValue(profile->appearance->graphHeight());
 
     if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
     ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
@@ -224,20 +188,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
         RefreshLastChecked();
     } else ui->updateLastChecked->setText("Never");
 
-    if (val>0) {
-        ui->IgnoreLCD->display(val);
-    } else ui->IgnoreLCD->display(tr("OFF"));
 
-    ui->overlayFlagsCombo->setCurrentIndex((*profile)["AlwaysShowOverlayBars"].toInt());
+    ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
 
-    //ui->memoryHogCheckbox->setChecked((*profile)["MemoryHog"].toBool());
-
-    //ui->intentionalLeakEdit->setValue((*profile)["IntentionalLeak"].toDouble());
-    //ui->useMultithreading->setChecked((*profile)["EnableMultithreading"].toBool());
-
-    ui->oximetryGroupBox->setChecked((*profile)["EnableOximetry"].toBool());
-    ui->oximetrySync->setChecked((*profile)["SyncOximetry"].toBool());
-    int ot=ui->oximetryType->findText((*profile)["OximeterType"].toString(),Qt::MatchExactly);
+    ui->oximetryGroupBox->setChecked(profile->oxi->oximetryEnabled());
+    ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
+    int ot=ui->oximetryType->findText(profile->oxi->oximeterType(),Qt::MatchExactly);
     if (ot<0) ot=0;
     ui->oximetryType->setCurrentIndex(ot);
 
@@ -320,81 +276,67 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
-    general["UseAntiAliasing"].setValue(ui->useAntiAliasing->isChecked());
-    if (ui->useSquareWavePlots->isChecked()!=general["SquareWavePlots"].value().toBool()) {
-        general["SquareWavePlots"].setValue(ui->useSquareWavePlots->isChecked());
+    profile->appearance->setAnimations(ui->useAntiAliasing->isChecked());
+    if (ui->useSquareWavePlots->isChecked()!=profile->appearance->squareWavePlots()) {
+        profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
         needs_restart=true;
     }
-    general["EnableGraphSnapshots"].setValue(ui->enableGraphSnapshots->isChecked());
-    general["SkipLoginScreen"].setValue(ui->skipLoginScreen->isChecked());
-    general["SkipEmptyDays"].setValue(ui->skipEmptyDays->isChecked());
-    general["EnableMultithreading"].setValue(ui->enableMultithreading->isChecked());
-    general["MemoryHog"].setValue(ui->cacheSessionData->isChecked());
-    general["MaskDescription"].setValue(ui->maskDescription->text());
-    general["HighResPrinting"].setValue(ui->highResolutionPrinting->isChecked());
-    general["AnimationsAndTransitions"].setValue(ui->animationsAndTransitionsCheckbox->isChecked());
+    profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
+    profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
+    profile->session->setMultithreading(ui->enableMultithreading->isChecked());
+    profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
+    profile->cpap->setMaskDescription(ui->maskDescription->text());
+    profile->appearance->setHighResPrinting(ui->highResolutionPrinting->isChecked());
+    profile->appearance->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
 
-    general["ShowCompliance"].setValue(ui->complianceGroupbox->isChecked());
-    general["ComplianceHours"].setValue(ui->complianceHours->value());
+    profile->cpap->setShowComplianceInfo(ui->complianceGroupbox->isChecked());
+    profile->cpap->setComplianceHours(ui->complianceHours->value());
 
-    (*profile)["MaskStartDate"]=ui->startedUsingMask->date();
-    (*profile)["GraphHeight"]=ui->graphHeight->value();
+    profile->cpap->setMaskStartDate(ui->startedUsingMask->date());
+    profile->appearance->setGraphHeight(ui->graphHeight->value());
 
-    if (((*profile)["DaySplitTime"].toTime()!=ui->timeEdit->time()) ||
-    ((*profile)["CombineCloserSessions"].toInt()!=ui->combineSlider->value()) ||
-    ((*profile)["IgnoreShorterSessions"].toInt()!=ui->IgnoreSlider->value())) {
-        PROFILE["TrashDayCache"]=true;
+    if ((profile->session->daySplitTime()!=ui->timeEdit->time()) ||
+    (profile->session->combineCloseSessions()!=ui->combineSlider->value()) ||
+    (profile->session->ignoreShortSessions()!=ui->IgnoreSlider->value())) {
+        profile->session->setTrashDayCache(true);
         needs_restart=true;
-    } else PROFILE["TrashDayCache"]=false;
+    } else profile->session->setTrashDayCache(false);
 
-    (*profile)["CombineCloserSessions"]=ui->combineSlider->value();
-    (*profile)["IgnoreShorterSessions"]=ui->IgnoreSlider->value();
-    (*profile)["DaySplitTime"]=ui->timeEdit->time();
+    profile->session->setCombineCloseSessions(ui->combineSlider->value());
+    profile->session->setIgnoreShortSessions(ui->IgnoreSlider->value());
+    profile->session->setDaySplitTime(ui->timeEdit->time());
 
-    (*profile)["AlwaysShowOverlayBars"]=ui->overlayFlagsCombo->currentIndex();
-    (*profile)["ShowLeaksMode"]=ui->leakModeCombo->currentIndex();
-    (*profile)["MaskType"]=ui->maskTypeCombo->currentIndex();
-    //(*profile)["UseAntiAliasing"]=ui->genOpWidget->item(0)->checkState()==Qt::Checked;
-    //(*profile)["MemoryHog"]=ui->memoryHogCheckbox->isChecked();
-    //(*profile)["EnableGraphSnapshots"]=ui->genOpWidget->item(2)->checkState()==Qt::Checked;
+    profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
+    profile->cpap->setLeakMode(ui->leakModeCombo->currentIndex());
+    profile->cpap->setMaskType((MaskType)ui->maskTypeCombo->currentIndex());
 
-
-    //(*profile)["IntentionalLeak"]=ui->intentionalLeakEdit->value();
-    //(*profile)["EnableMultithreading"]=ui->useMultithreading->isChecked();
-    (*profile)["EnableOximetry"]=ui->oximetryGroupBox->isChecked();
-    (*profile)["SyncOximetry"]=ui->oximetrySync->isChecked();
+    profile->oxi->setOximetryEnabled(ui->oximetryGroupBox->isChecked());
+    profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
     int oxigrp=ui->oximetrySync->isChecked() ? 0 : 1;
     gGraphView *gv=mainwin->getDaily()->graphView();
-    gGraph *g=gv->findGraph("Pulse");
+    gGraph *g=gv->findGraph(tr("Pulse"));
     if (g) {
         g->setGroup(oxigrp);
     }
-    g=gv->findGraph("SpO2");
+    g=gv->findGraph(tr("SpO2"));
     if (g) {
         g->setGroup(oxigrp);
     }
-    g=gv->findGraph("Plethy");
+    g=gv->findGraph(tr("Plethy"));
     if (g) {
         g->setGroup(oxigrp);
     }
 
-    (*profile)["OximeterType"]=ui->oximetryType->currentText();
+    profile->oxi->setOximeterType(ui->oximetryType->currentText());
 
-    (*profile)["SPO2DropPercentage"]=ui->spo2Drop->value();
-    (*profile)["SPO2DropDuration"]=ui->spo2DropTime->value();
-    (*profile)["PulseChangeBPM"]=ui->pulseChange->value();
-    (*profile)["PulseChangeDuration"]=ui->pulseChangeTime->value();
-    (*profile)["OxiDiscardThreshold"]=ui->oxiDiscardThreshold->value();
+    profile->oxi->setSpO2DropPercentage(ui->spo2Drop->value());
+    profile->oxi->setSpO2DropDuration(ui->spo2DropTime->value());
+    profile->oxi->setPulseChangeBPM(ui->pulseChange->value());
+    profile->oxi->setPulseChangeDuration(ui->pulseChangeTime->value());
+    profile->oxi->setOxiDiscardThreshold(ui->oxiDiscardThreshold->value());
 
-    //PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
+    PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
 
-    //ui->genOpWidget->item(1)->checkState()==Qt::Checked ? true : false;
-    //if ((ui->genOpWidget->item(1)->checkState()==Qt::Checked) != (*profile)["SquareWavePlots"].toBool()) {
-    //needs_restart=true;
-    //}
-    //(*profile)["SquareWavePlots"]=ui->genOpWidget->item(1)->checkState()==Qt::Checked;
-
-    //(*profile)["SkipEmptyDays"]=ui->skipEmptyDays->isChecked();
     PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
     PREF["Updates_CheckFrequency"]=ui->updateCheckEvery->value();
 
