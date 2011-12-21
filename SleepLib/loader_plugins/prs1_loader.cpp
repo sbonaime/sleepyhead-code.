@@ -552,7 +552,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
         return false;
     Session *session=new_sessions[sequence];
 
-    QString Codes[]={
+    ChannelID Codes[]={
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
         CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
         PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F, PRS1_10,
@@ -590,7 +590,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             pos+=2;
             t+=qint64(delta)*1000L;
         }
-        QString cpapcode=Codes[(int)code];
+        ChannelID cpapcode=Codes[(int)code];
         //EventDataType PS;
         tt=t;
         cnt++;
@@ -736,7 +736,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             Code[20]->AddEvent(t,data[2]=buffer[pos++]); // Snore
             if (data[2]>0) {
                 if (!Code[21]) {
-                    if (!(Code[21]=session->AddEventList("VSnore",EVL_Event)))
+                    if (!(Code[21]=session->AddEventList(CPAP_VSnore,EVL_Event)))
                         return false;
                 }
                 Code[21]->AddEvent(t,0); //data[2]); // VSnore
@@ -1496,7 +1496,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 
     //QString FlowRate=CPAP_FlowRate;
     //QString MaskPressure="MaskPressure";
-    QString wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
+    ChannelID wc[2]={CPAP_FlowRate,CPAP_MaskPressure};
     do {
         timestamp=m_buffer[pos+0xb] | m_buffer[pos+0xc] << 8 | m_buffer[pos+0xd] << 16 | m_buffer[pos+0x0e] << 24;
         register unsigned char sum8=0;

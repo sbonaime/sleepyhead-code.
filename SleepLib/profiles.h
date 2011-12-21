@@ -276,14 +276,14 @@ public:
     //! \brief Create OxiSettings object given Profile *p, and initialize the defaults
     OxiSettings(Profile *p) :m_profile(p)
     {
-        if (m_profile->contains(OS_STR_EnableOximetry)) (*m_profile)[OS_STR_EnableOximetry]=false;
-        if (m_profile->contains(OS_STR_SyncOximetry)) (*m_profile)[OS_STR_SyncOximetry]=true;
-        if (m_profile->contains(OS_STR_OximeterType)) (*m_profile)[OS_STR_OximeterType]="CMS50";
-        if (m_profile->contains(OS_STR_OxiDiscardThreshold)) (*m_profile)[OS_STR_OxiDiscardThreshold]=0.0;
-        if (m_profile->contains(OS_STR_SPO2DropDuration)) (*m_profile)[OS_STR_SPO2DropDuration]=8.0;
-        if (m_profile->contains(OS_STR_SPO2DropPercentage)) (*m_profile)[OS_STR_SPO2DropPercentage]=3.0;
-        if (m_profile->contains(OS_STR_PulseChangeDuration)) (*m_profile)[OS_STR_PulseChangeDuration]=8.0;
-        if (m_profile->contains(OS_STR_PulseChangeBPM)) (*m_profile)[OS_STR_PulseChangeBPM]=5.0;
+        if (!m_profile->contains(OS_STR_EnableOximetry)) (*m_profile)[OS_STR_EnableOximetry]=false;
+        if (!m_profile->contains(OS_STR_SyncOximetry)) (*m_profile)[OS_STR_SyncOximetry]=true;
+        if (!m_profile->contains(OS_STR_OximeterType)) (*m_profile)[OS_STR_OximeterType]="CMS50";
+        if (!m_profile->contains(OS_STR_OxiDiscardThreshold)) (*m_profile)[OS_STR_OxiDiscardThreshold]=0.0;
+        if (!m_profile->contains(OS_STR_SPO2DropDuration)) (*m_profile)[OS_STR_SPO2DropDuration]=8.0;
+        if (!m_profile->contains(OS_STR_SPO2DropPercentage)) (*m_profile)[OS_STR_SPO2DropPercentage]=3.0;
+        if (!m_profile->contains(OS_STR_PulseChangeDuration)) (*m_profile)[OS_STR_PulseChangeDuration]=8.0;
+        if (!m_profile->contains(OS_STR_PulseChangeBPM)) (*m_profile)[OS_STR_PulseChangeBPM]=5.0;
     }
     ~OxiSettings() {}
 
@@ -332,19 +332,19 @@ public:
     //! \brief Create CPAPSettings object given Profile *p, and initialize the defaults
     CPAPSettings(Profile *p) :m_profile(p)
     {
-        if (m_profile->contains(CS_STR_ComplianceHours)) (*m_profile)[CS_STR_ComplianceHours]=4;
-        if (m_profile->contains(CS_STR_ShowCompliance)) (*m_profile)[CS_STR_ShowCompliance]=true;
-        if (m_profile->contains(CS_STR_ShowLeaksMode)) (*m_profile)[CS_STR_ShowLeaksMode]=0;
+        if (!m_profile->contains(CS_STR_ComplianceHours)) (*m_profile)[CS_STR_ComplianceHours]=4;
+        if (!m_profile->contains(CS_STR_ShowCompliance)) (*m_profile)[CS_STR_ShowCompliance]=true;
+        if (!m_profile->contains(CS_STR_ShowLeaksMode)) (*m_profile)[CS_STR_ShowLeaksMode]=0;
         // TODO: Check if this date is initiliazed yet
-        if (m_profile->contains(CS_STR_MaskStartDate)) (*m_profile)[CS_STR_MaskStartDate]=m_profile->FirstDay();
-        if (m_profile->contains(CS_STR_MaskDescription)) (*m_profile)[CS_STR_MaskDescription]=QString();
-        if (m_profile->contains(CS_STR_MaskType)) (*m_profile)[CS_STR_MaskType]=Mask_Unknown;
-        if (m_profile->contains(CS_STR_PrescribedMode)) (*m_profile)[CS_STR_PrescribedMode]=MODE_UNKNOWN;
-        if (m_profile->contains(CS_STR_PrescribedMinPressure)) (*m_profile)[CS_STR_PrescribedMinPressure]=0.0;
-        if (m_profile->contains(CS_STR_PrescribedMaxPressure)) (*m_profile)[CS_STR_PrescribedMaxPressure]=0.0;
-        if (m_profile->contains(CS_STR_UntreatedAHI)) (*m_profile)[CS_STR_UntreatedAHI]=0.0;
-        if (m_profile->contains(CS_STR_Notes)) (*m_profile)[CS_STR_Notes]=QString();
-        if (m_profile->contains(CS_STR_DateDiagnosed)) (*m_profile)[CS_STR_DateDiagnosed]=PROFILE.FirstDay();
+        if (!m_profile->contains(CS_STR_MaskStartDate)) (*m_profile)[CS_STR_MaskStartDate]=QDate();
+        if (!m_profile->contains(CS_STR_MaskDescription)) (*m_profile)[CS_STR_MaskDescription]=QString();
+        if (!m_profile->contains(CS_STR_MaskType)) (*m_profile)[CS_STR_MaskType]=Mask_Unknown;
+        if (!m_profile->contains(CS_STR_PrescribedMode)) (*m_profile)[CS_STR_PrescribedMode]=MODE_UNKNOWN;
+        if (!m_profile->contains(CS_STR_PrescribedMinPressure)) (*m_profile)[CS_STR_PrescribedMinPressure]=0.0;
+        if (!m_profile->contains(CS_STR_PrescribedMaxPressure)) (*m_profile)[CS_STR_PrescribedMaxPressure]=0.0;
+        if (!m_profile->contains(CS_STR_UntreatedAHI)) (*m_profile)[CS_STR_UntreatedAHI]=0.0;
+        if (!m_profile->contains(CS_STR_Notes)) (*m_profile)[CS_STR_Notes]=QString();
+        if (!m_profile->contains(CS_STR_DateDiagnosed)) (*m_profile)[CS_STR_DateDiagnosed]=QDate();
     }
 
     ~CPAPSettings() {}
@@ -397,13 +397,13 @@ public:
     //! \brief Create ImportSettings object given Profile *p, and initialize the defaults
     SessionSettings(Profile *p) :m_profile(p)
     {
-        if (m_profile->contains(IS_STR_DaySplitTime)) (*m_profile)[IS_STR_DaySplitTime]=QTime(12,0,0);
-        if (m_profile->contains(IS_STR_CacheSessions)) (*m_profile)[IS_STR_CacheSessions]=false;
-        if (m_profile->contains(IS_STR_CombineCloseSessions)) (*m_profile)[IS_STR_CombineCloseSessions]=240;
-        if (m_profile->contains(IS_STR_IgnoreShorterSessions)) (*m_profile)[IS_STR_IgnoreShorterSessions]=5;
-        if (m_profile->contains(IS_STR_Multithreading)) (*m_profile)[IS_STR_Multithreading]=QThread::idealThreadCount() > 1;
-        if (m_profile->contains(IS_STR_TrashDayCache)) (*m_profile)[IS_STR_TrashDayCache]=false; // can't remember..
-        if (m_profile->contains(IS_STR_ShowSerialNumbers)) (*m_profile)[IS_STR_ShowSerialNumbers]=false;
+        if (!m_profile->contains(IS_STR_DaySplitTime)) (*m_profile)[IS_STR_DaySplitTime]=QTime(12,0,0);
+        if (!m_profile->contains(IS_STR_CacheSessions)) (*m_profile)[IS_STR_CacheSessions]=false;
+        if (!m_profile->contains(IS_STR_CombineCloseSessions)) (*m_profile)[IS_STR_CombineCloseSessions]=240;
+        if (!m_profile->contains(IS_STR_IgnoreShorterSessions)) (*m_profile)[IS_STR_IgnoreShorterSessions]=5;
+        if (!m_profile->contains(IS_STR_Multithreading)) (*m_profile)[IS_STR_Multithreading]=QThread::idealThreadCount() > 1;
+        if (!m_profile->contains(IS_STR_TrashDayCache)) (*m_profile)[IS_STR_TrashDayCache]=false; // can't remember..
+        if (!m_profile->contains(IS_STR_ShowSerialNumbers)) (*m_profile)[IS_STR_ShowSerialNumbers]=false;
     }
     ~SessionSettings() {}
 
@@ -445,13 +445,13 @@ public:
     //! \brief Create AppearanceSettings object given Profile *p, and initialize the defaults
     AppearanceSettings(Profile *p) :m_profile(p)
     {
-        if (m_profile->contains(AS_STR_GraphHeight)) (*m_profile)[AS_STR_GraphHeight]=180.0;
-        if (m_profile->contains(AS_STR_AntiAliasing)) (*m_profile)[AS_STR_AntiAliasing]=false; // i think it's ugly
-        if (m_profile->contains(AS_STR_HighResPrinting)) (*m_profile)[AS_STR_HighResPrinting]=true;
-        if (m_profile->contains(AS_STR_GraphSnapshots)) (*m_profile)[AS_STR_GraphSnapshots]=true;
-        if (m_profile->contains(AS_STR_Animations)) (*m_profile)[AS_STR_Animations]=true;
-        if (m_profile->contains(AS_STR_SquareWave)) (*m_profile)[AS_STR_SquareWave]=false;
-        if (m_profile->contains(AS_STR_OverlayType)) (*m_profile)[AS_STR_OverlayType]=ODT_Bars;
+        if (!m_profile->contains(AS_STR_GraphHeight)) (*m_profile)[AS_STR_GraphHeight]=180.0;
+        if (!m_profile->contains(AS_STR_AntiAliasing)) (*m_profile)[AS_STR_AntiAliasing]=false; // i think it's ugly
+        if (!m_profile->contains(AS_STR_HighResPrinting)) (*m_profile)[AS_STR_HighResPrinting]=true;
+        if (!m_profile->contains(AS_STR_GraphSnapshots)) (*m_profile)[AS_STR_GraphSnapshots]=true;
+        if (!m_profile->contains(AS_STR_Animations)) (*m_profile)[AS_STR_Animations]=true;
+        if (!m_profile->contains(AS_STR_SquareWave)) (*m_profile)[AS_STR_SquareWave]=false;
+        if (!m_profile->contains(AS_STR_OverlayType)) (*m_profile)[AS_STR_OverlayType]=ODT_Bars;
     }
     ~AppearanceSettings() {}
 
@@ -507,12 +507,12 @@ public:
     //! \brief Create UserSettings object given Profile *p, and initialize the defaults
     UserSettings(Profile *p) :m_profile(p)
     {
-        if (m_profile->contains(US_STR_UnitSystem)) (*m_profile)[US_STR_UnitSystem]=US_Metric;
-        if (m_profile->contains(US_STR_EventWindowSize)) (*m_profile)[US_STR_EventWindowSize]=4.0;
-        if (m_profile->contains(US_STR_SkipEmptyDays)) (*m_profile)[US_STR_SkipEmptyDays]=true;
-        if (m_profile->contains(US_STR_RebuildCache)) (*m_profile)[US_STR_RebuildCache]=false; // can't remember..
-        if (m_profile->contains(US_STR_ShowDebug)) (*m_profile)[US_STR_ShowDebug]=false;
-        if (m_profile->contains(US_STR_LinkGroups)) (*m_profile)[US_STR_LinkGroups]=true; // can't remember..
+        if (!m_profile->contains(US_STR_UnitSystem)) (*m_profile)[US_STR_UnitSystem]=US_Metric;
+        if (!m_profile->contains(US_STR_EventWindowSize)) (*m_profile)[US_STR_EventWindowSize]=4.0;
+        if (!m_profile->contains(US_STR_SkipEmptyDays)) (*m_profile)[US_STR_SkipEmptyDays]=true;
+        if (!m_profile->contains(US_STR_RebuildCache)) (*m_profile)[US_STR_RebuildCache]=false; // can't remember..
+        if (!m_profile->contains(US_STR_ShowDebug)) (*m_profile)[US_STR_ShowDebug]=false;
+        if (!m_profile->contains(US_STR_LinkGroups)) (*m_profile)[US_STR_LinkGroups]=true; // can't remember..
     }
     ~UserSettings() {}
 

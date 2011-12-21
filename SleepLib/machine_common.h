@@ -15,7 +15,7 @@
 #include <QDebug>
 using namespace std;
 
-typedef QString ChannelID;
+typedef quint32 ChannelID;
 typedef long MachineID;
 typedef long SessionID;
 typedef float EventDataType;
@@ -76,92 +76,26 @@ enum PRTypes//:short
 enum MCDataType
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
-// This all needs replacing with actual integer codes.. There will likely be a big speedup when this happens again.
-const ChannelID CPAP_IPAP="IPAP";
-const ChannelID CPAP_IPAPLo="IPAPLo";
-const ChannelID CPAP_IPAPHi="IPAPHi";
-const ChannelID CPAP_EPAP="EPAP";
-const ChannelID CPAP_Pressure="Pressure";
-const ChannelID CPAP_PS="PS";
-const ChannelID CPAP_Mode="PAPMode";
-const ChannelID CPAP_BrokenSummary="BrokenSummary";
-const ChannelID CPAP_PressureMin="PressureMin";
-const ChannelID CPAP_PressureMax="PressureMax";
-const ChannelID CPAP_RampTime="RampTime";
-const ChannelID CPAP_RampPressure="RampPressure";
-const ChannelID CPAP_Obstructive="Obstructive";
-const ChannelID CPAP_Hypopnea="Hypopnea";
-const ChannelID CPAP_ClearAirway="ClearAirway";
-const ChannelID CPAP_Apnea="Apnea";
-const ChannelID CPAP_CSR="CSR";
-const ChannelID CPAP_LeakFlag="LeakFlag";
-const ChannelID CPAP_ExP="ExP";
-const ChannelID CPAP_NRI="NRI";
-const ChannelID CPAP_VSnore="VSnore";
-const ChannelID CPAP_VSnore2="VSnore2";
-const ChannelID CPAP_RERA="RERA";
-const ChannelID CPAP_PressurePulse="PressurePulse";
-const ChannelID CPAP_FlowLimit="FlowLimit";
-const ChannelID CPAP_FlowRate="FlowRate";
-const ChannelID CPAP_MaskPressure="MaskPressure";
-const ChannelID CPAP_MaskPressureHi="MaskPressureHi";
-const ChannelID CPAP_RespEvent="RespEvent";
-const ChannelID CPAP_Snore="Snore";
-const ChannelID CPAP_MinuteVent="MinuteVent";
-const ChannelID CPAP_RespRate="RespRate";
-const ChannelID CPAP_TidalVolume="TidalVolume";
-const ChannelID CPAP_PTB="PTB";
-const ChannelID CPAP_Leak="Leak";
-const ChannelID CPAP_LeakMedian="LeakMedian";
-const ChannelID CPAP_LeakTotal="LeakTotal";
-const ChannelID CPAP_MaxLeak="MaxLeak";
-const ChannelID CPAP_FLG="FLG";
-const ChannelID CPAP_IE="IE";
-const ChannelID CPAP_Te="Te";
-const ChannelID CPAP_Ti="Ti";
-const ChannelID CPAP_TgMV="TgMV";
-const ChannelID RMS9_E01="RMS9_E01";
-const ChannelID RMS9_E02="RMS9_E02";
-const ChannelID RMS9_EPR="EPR";
-const ChannelID RMS9_EPRSet="EPRSet";
-const ChannelID PRS1_00="PRS1_00";
-const ChannelID PRS1_01="PRS1_01";
-const ChannelID PRS1_08="PRS1_08";
-const ChannelID PRS1_0A="PRS1_0A";
-const ChannelID PRS1_0B="PRS1_0B";
-const ChannelID PRS1_0C="PRS1_0C";
-const ChannelID PRS1_0E="PRS1_0E";
-const ChannelID PRS1_0F="PRS1_0F";
-const ChannelID PRS1_10="PRS1_10";
-const ChannelID PRS1_12="PRS1_12";
-const ChannelID PRS1_FlexMode="FlexMode";
-const ChannelID PRS1_FlexSet="FlexSet";
-const ChannelID PRS1_HumidStatus="HumidStat";
-const ChannelID PRS1_HumidSetting="HumidSet";
-const ChannelID PRS1_SysLock="SysLock";
-const ChannelID PRS1_SysOneResistStat="SysOneResistStat";
-const ChannelID PRS1_SysOneResistSet="SysOneResistSet";
-const ChannelID PRS1_HoseDiam="HoseDiam";
-const ChannelID PRS1_AutoOn="AutoOn";
-const ChannelID PRS1_AutoOff="AutoOff";
-const ChannelID PRS1_MaskAlert="MaskAlert";
-const ChannelID PRS1_ShowAHI="ShowAHI";
-const ChannelID CPAP_UserFlag1="UserFlag1";
-const ChannelID CPAP_UserFlag2="UserFlag2";
 
-const ChannelID OXI_Pulse="Pulse";
-const ChannelID OXI_SPO2="SPO2";
-const ChannelID OXI_PulseChange="PulseChange";
-const ChannelID OXI_SPO2Drop="SPO2Drop";
-const ChannelID OXI_Plethy="Plethy";
+extern ChannelID NoChannel;
+extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_Pressure, CPAP_PS, CPAP_Mode, CPAP_AHI,
+CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive, CPAP_Hypopnea,
+CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_VSnore, CPAP_VSnore2,
+CPAP_RERA, CPAP_PressurePulse, CPAP_FlowLimit, CPAP_FlowRate, CPAP_MaskPressure, CPAP_MaskPressureHi,
+CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
+CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
+CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform;
 
-const ChannelID CPAP_AHI="AHI";
-const ChannelID Journal_Notes="Journal";
-const ChannelID Journal_Weight="Weight";
-const ChannelID Journal_BMI="BMI";
-const ChannelID Journal_ZombieMeter="ZombieMeter";
-const ChannelID Bookmark_Start="BookmarkStart";
-const ChannelID Bookmark_End="BookmarkEnd";
-const ChannelID Bookmark_Notes="BookmarkNotes";
+extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
+extern ChannelID INTP_SmartFlex;
+extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10, PRS1_12,
+PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, PRS1_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
+PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
+
+extern ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
+
+extern ChannelID Journal_Notes, Journal_Weight, Journal_BMI, Journal_ZombieMeter, Bookmark_Start, Bookmark_End, Bookmark_Notes;
+
+
 
 #endif // MACHINE_COMMON_H

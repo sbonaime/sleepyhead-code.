@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         if (args[i]=="-l") force_login_screen=true;
         if (args[i]=="-p") {
 #ifdef Q_WS_WIN32
-            Sleep(1);
+            Sleep(1000);
 #else
             sleep(1);
 #endif
@@ -172,6 +172,7 @@ int main(int argc, char *argv[])
 
     p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
 
+    qDebug() << "Selected Profile" << p_profile->user->userName();
     //if (!PREF.Exists(STR_GEN_Profile)) PREF[STR_GEN_Profile]=getUserName();
 
     //int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");

@@ -119,10 +119,11 @@ void NewProfile::on_nextButton_clicked()
         ui->stackedWidget->setCurrentIndex(index);
     } else {
         // Finish button clicked.
+        QString username=ui->userNameEdit->text();
         if (QMessageBox::question(this,tr("Profile Changes"),tr("Accept and save this information?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-            Profile *profile=Profiles::Get(ui->userNameEdit->text());
+            Profile *profile=Profiles::Get(username);
             if (!profile) { // No profile, create one.
-                profile=Profiles::Create(ui->userNameEdit->text());
+                profile=Profiles::Create(username);
             }
             Profile &prof=*profile;
             profile->user->setFirstName(ui->firstNameEdit->text());
@@ -178,8 +179,8 @@ void NewProfile::on_nextButton_clicked()
             }
             profile->user->setHeight(v);
 
-            //profile->user->setUserName(ui->userNameEdit->text());??
-            PREF[STR_GEN_Profile]=ui->userNameEdit->text();
+            //profile->user->setUserName(username);
+            PREF[STR_GEN_Profile]=username;
 
 
             this->accept();

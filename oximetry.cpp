@@ -323,7 +323,7 @@ void SerialOximeter::compactAll()
     qint64 tminx=0,tmaxx=0,minx,maxx;
     EventDataType min,max;
     for (i=session->eventlist.begin();i!=session->eventlist.end();i++) {
-        const QString & code=i.key();
+        const ChannelID & code=i.key();
         min=999,max=0;
         minx=maxx=0;
         for (int j=0;j<i.value().size();j++) {

@@ -141,7 +141,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         bool fndbetter=false;
         for (QList<schema::Channel *>::iterator l=ch.m_links.begin();l!=ch.m_links.end();l++) {
             schema::Channel *c=*l;
-            ci=(*m_day)[svi]->eventlist.find(c->name());
+            ci=(*m_day)[svi]->eventlist.find(c->id());
             if (ci!=(*m_day)[svi]->eventlist.end()) {
                 fndbetter=true;
                 break;
@@ -451,7 +451,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
 
 AHIChart::AHIChart(const QColor col)
-:Layer("ZZZ"),m_color(col)
+:Layer(NoChannel),m_color(col)
 {
     m_miny=m_maxy=0;
     addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));

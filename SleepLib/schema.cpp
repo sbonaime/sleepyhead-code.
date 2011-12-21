@@ -9,6 +9,8 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
+#include <QMessageBox>
+#include <QApplication>
 #include "schema.h"
 
 
@@ -50,7 +52,97 @@ void init()
     DataTypes["datetime"]=DATETIME;
     DataTypes["time"]=TIME;
 
-    schema::channel.Load(":/docs/channels.xml");
+    if (!schema::channel.Load(":/docs/channels.xml")) {
+        QMessageBox::critical(0,"Ugh!","Couldn't parse Channels.xml, this build is seriously borked, no choice but to abort!!",QMessageBox::Ok);
+        QApplication::exit(-1);
+    }
+
+    NoChannel=0;
+    CPAP_IPAP=schema::channel["IPAP"].id();
+    CPAP_IPAPLo=schema::channel["IPAPLo"].id();
+    CPAP_IPAPHi=schema::channel["IPAPHi"].id();
+    CPAP_EPAP=schema::channel["EPAP"].id();
+    CPAP_Pressure=schema::channel["Pressure"].id();
+    CPAP_PS=schema::channel["PS"].id();
+    CPAP_Mode=schema::channel["PAPMode"].id();
+    CPAP_BrokenSummary=schema::channel["BrokenSummary"].id();
+    CPAP_PressureMin=schema::channel["PressureMin"].id();
+    CPAP_PressureMax=schema::channel["PressureMax"].id();
+    CPAP_RampTime=schema::channel["RampTime"].id();
+    CPAP_RampPressure=schema::channel["RampPressure"].id();
+    CPAP_Obstructive=schema::channel["Obstructive"].id();
+    CPAP_Hypopnea=schema::channel["Hypopnea"].id();
+    CPAP_ClearAirway=schema::channel["ClearAirway"].id();
+    CPAP_Apnea=schema::channel["Apnea"].id();
+    CPAP_CSR=schema::channel["CSR"].id();
+    CPAP_LeakFlag=schema::channel["LeakFlag"].id();
+    CPAP_ExP=schema::channel["ExP"].id();
+    CPAP_NRI=schema::channel["NRI"].id();
+    CPAP_VSnore=schema::channel["VSnore"].id();
+    CPAP_VSnore2=schema::channel["VSnore2"].id();
+    CPAP_RERA=schema::channel["RERA"].id();
+    CPAP_PressurePulse=schema::channel["PressurePulse"].id();
+    CPAP_FlowLimit=schema::channel["FlowLimit"].id();
+    CPAP_FlowRate=schema::channel["FlowRate"].id();
+    CPAP_MaskPressure=schema::channel["MaskPressure"].id();
+    CPAP_MaskPressureHi=schema::channel["MaskPressureHi"].id();
+    CPAP_RespEvent=schema::channel["RespEvent"].id();
+    CPAP_Snore=schema::channel["Snore"].id();
+    CPAP_MinuteVent=schema::channel["MinuteVent"].id();
+    CPAP_RespRate=schema::channel["RespRate"].id();
+    CPAP_TidalVolume=schema::channel["TidalVolume"].id();
+    CPAP_PTB=schema::channel["PTB"].id();
+    CPAP_Leak=schema::channel["Leak"].id();
+    CPAP_LeakMedian=schema::channel["LeakMedian"].id();
+    CPAP_LeakTotal=schema::channel["LeakTotal"].id();
+    CPAP_MaxLeak=schema::channel["MaxLeak"].id();
+    CPAP_FLG=schema::channel["FLG"].id();
+    CPAP_IE=schema::channel["IE"].id();
+    CPAP_Te=schema::channel["Te"].id();
+    CPAP_Ti=schema::channel["Ti"].id();
+    CPAP_TgMV=schema::channel["TgMV"].id();
+    CPAP_UserFlag1=schema::channel["UserFlag1"].id();
+    CPAP_UserFlag2=schema::channel["UserFlag2"].id();
+    RMS9_E01=schema::channel["RMS9_E01"].id();
+    RMS9_E02=schema::channel["RMS9_E02"].id();
+    RMS9_EPR=schema::channel["EPR"].id();
+    RMS9_EPRSet=schema::channel["EPRSet"].id();
+    RMS9_SetPressure=schema::channel["SetPressure"].id();
+    PRS1_00=schema::channel["PRS1_00"].id();
+    PRS1_01=schema::channel["PRS1_01"].id();
+    PRS1_08=schema::channel["PRS1_08"].id();
+    PRS1_0A=schema::channel["PRS1_0A"].id();
+    PRS1_0B=schema::channel["PRS1_0B"].id();
+    PRS1_0C=schema::channel["PRS1_0C"].id();
+    PRS1_0E=schema::channel["PRS1_0E"].id();
+    PRS1_0F=schema::channel["PRS1_0F"].id();
+    PRS1_10=schema::channel["PRS1_10"].id();
+    PRS1_12=schema::channel["PRS1_12"].id();
+    PRS1_FlexMode=schema::channel["FlexMode"].id();
+    PRS1_FlexSet=schema::channel["FlexSet"].id();
+    PRS1_HumidStatus=schema::channel["HumidStat"].id();
+    PRS1_HumidSetting=schema::channel["HumidSet"].id();
+    PRS1_SysLock=schema::channel["SysLock"].id();
+    PRS1_SysOneResistStat=schema::channel["SysOneResistStat"].id();
+    PRS1_SysOneResistSet=schema::channel["SysOneResistSet"].id();
+    PRS1_HoseDiam=schema::channel["HoseDiam"].id();
+    PRS1_AutoOn=schema::channel["AutoOn"].id();
+    PRS1_AutoOff=schema::channel["AutoOff"].id();
+    PRS1_MaskAlert=schema::channel["MaskAlert"].id();
+    PRS1_ShowAHI=schema::channel["ShowAHI"].id();
+    OXI_Pulse=schema::channel["Pulse"].id();
+    OXI_SPO2=schema::channel["SPO2"].id();
+    OXI_PulseChange=schema::channel["PulseChange"].id();
+    OXI_SPO2Drop=schema::channel["SPO2Drop"].id();
+    OXI_Plethy=schema::channel["Plethy"].id();
+    CPAP_AHI=schema::channel["AHI"].id();
+    Journal_Notes=schema::channel["Journal"].id();
+    Journal_Weight=schema::channel["Weight"].id();
+    Journal_BMI=schema::channel["BMI"].id();
+    Journal_ZombieMeter=schema::channel["ZombieMeter"].id();
+    Bookmark_Start=schema::channel["BookmarkStart"].id();
+    Bookmark_End=schema::channel["BookmarkEnd"].id();
+    Bookmark_Notes=schema::channel["BookmarkNotes"].id();
 
 }
 
@@ -78,7 +170,7 @@ ChannelList::ChannelList()
 }
 ChannelList::~ChannelList()
 {
-    for (QHash<int,Channel *>::iterator i=channels.begin();i!=channels.end();i++) {
+    for (QHash<ChannelID,Channel *>::iterator i=channels.begin();i!=channels.end();i++) {
         delete i.value();
     }
 }

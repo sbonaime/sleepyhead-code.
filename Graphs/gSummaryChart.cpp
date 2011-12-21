@@ -12,7 +12,7 @@
 
 extern QLabel * qstatus2;
 SummaryChart::SummaryChart(QString label,GraphType type)
-:Layer(""),m_label(label),m_graphtype(type)
+:Layer(NoChannel),m_label(label),m_graphtype(type)
 {
     //QColor color=Qt::black;
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));

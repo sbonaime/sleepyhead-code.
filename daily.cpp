@@ -381,7 +381,7 @@ void Daily::ReloadGraphs()
     }
     on_calendar_currentPageChanged(d.year(),d.month());
     ui->calendar->setSelectedDate(d);
-    Load(d);
+    //Load(d);
 }
 void Daily::on_calendar_currentPageChanged(int year, int month)
 {
@@ -720,27 +720,27 @@ void Daily::Load(QDate date)
             } else cs="2 width='50%'>";
             html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
             "<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-            "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+CPAP_Hypopnea+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+            "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+QString::number(CPAP_Hypopnea)+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-                html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+CPAP_Apnea+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+                html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+QString::number(CPAP_Apnea)+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
             }
-            html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+CPAP_Obstructive+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+CPAP_ClearAirway+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
+            html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+QString::number(CPAP_Obstructive)+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
+            "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+QString::number(CPAP_ClearAirway)+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
             "</table></td>";
 
             if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_RERA+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_FlowLimit+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
-                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-                        "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_CSR+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_RERA)+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_FlowLimit)+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
+                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+                        "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_CSR)+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
                 "</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-                "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_NRI+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_Leak+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
-                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_ExP+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_NRI)+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_Leak)+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
+                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_ExP)+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
                 "</table></td>";
 
             }
@@ -790,7 +790,7 @@ void Daily::Load(QDate date)
                         //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                         QString tooltip=schema::channel[code].description();
                         if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                        html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
+                        html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
                         html+="</td><td>"+a.sprintf("%.2f",cpap->Min(code)-suboffset);
                         html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
                         html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
@@ -800,7 +800,7 @@ void Daily::Load(QDate date)
                     if (oxi && oxi->channelHasData(code)) {
                         QString tooltip=schema::channel[code].description();
                         if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                        html+="<tr><td align=left><a href='graph="+code+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
+                        html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
                         html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
                         html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
                         html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
@@ -892,7 +892,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
+                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 tooltip=cpap->machine->GetClass()+" "+tr("CPAP")+" "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
                 // tooltip needs to lookup language.. :-/
 
@@ -911,7 +911,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find("BrokenWaveform");
+                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 tooltip=oxi->machine->GetClass()+" "+tr("Oximeter")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
 
 

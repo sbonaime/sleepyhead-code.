@@ -10,13 +10,13 @@
 #include "SleepLib/profiles.h"
 
 gYSpacer::gYSpacer(int spacer)
-    :Layer("")
+    :Layer(NoChannel)
 {
     Q_UNUSED(spacer)
 }
 
 gXGrid::gXGrid(QColor col)
-    :Layer("")
+    :Layer(NoChannel)
 {
     Q_UNUSED(col)
 
@@ -125,7 +125,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
 
 gYAxis::gYAxis(QColor col)
-:Layer("")
+:Layer(NoChannel)
 {
     m_line_color=col;
     m_text_color=col;

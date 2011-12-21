@@ -436,7 +436,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
                 if (mode==0) {
                     sess->settings[CPAP_Mode]=MODE_CPAP;
-                    sig=stredf.lookupSignal("Set Pressure"); // ?? What's meant by Set Pressure?
+                    sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
@@ -879,9 +879,9 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus");
-    resmed_codes["Set Pressure"].push_back("Eingest. Druck");
-    resmed_codes["Set Pressure"].push_back("Set Pressure"); // Prescription
-    resmed_codes["Set Pressure"].push_back("Pres. prescrite");
+    resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
+    resmed_codes[RMS9_SetPressure].push_back("Set Pressure"); // Prescription
+    resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
     resmed_codes[RMS9_EPR].push_back("EPR");
     resmed_codes[RMS9_EPRSet].push_back("EPR Level");
     resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");

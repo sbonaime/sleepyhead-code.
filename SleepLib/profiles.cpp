@@ -469,7 +469,7 @@ Profile *Create(QString name)
     prof->user->setUserName(name);
     //prof->Set("Realname",realname);
     //if (!password.isEmpty()) prof.user->setPassword(password);
-    prof->Set(STR_GEN_DataFolder,"{home}/Profiles/{Username}");
+    prof->Set(STR_GEN_DataFolder,QString("{home}/Profiles/{")+QString(UI_STR_UserName)+QString("}"));
 
     Machine *m=new Machine(prof,0);
     m->SetClass("Journal");

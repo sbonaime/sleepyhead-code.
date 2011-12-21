@@ -22,8 +22,8 @@ const quint16 filetype_data=1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version=6;
-const quint16 events_version=7;
+const quint16 summary_version=7;
+const quint16 events_version=8;
 
 Session::Session(Machine * m,SessionID session)
 {
@@ -177,18 +177,19 @@ bool Session::LoadSummary(QString filename)
     quint32 t32;
     quint16 t16;
 
-    QHash<ChannelID,MCDataType> mctype;
-    QVector<ChannelID> mcorder;
+    //QHash<ChannelID,MCDataType> mctype;
+    //QVector<ChannelID> mcorder;
     in >> t32;
     if (t32!=magic) {
         qDebug() << "Wrong magic number in " << filename;
         return false;
     }
 
-    in >> t16;      // DB Version
-    if (t16!=summary_version) {
-        throw OldDBVersion();
-        //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
+    quint16 version;
+    in >> version;      // DB Version
+    if (version<6) {
+        //throw OldDBVersion();
+        qWarning() << "Old dbversion "<< version << "summary file.. Sorry, you need to purge and reimport";
         return false;
     }
 
@@ -212,28 +213,102 @@ bool Session::LoadSummary(QString filename)
     in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
 
-    in >> settings;
-    in >> m_cnt;
-    in >> m_sum;
-    in >> m_avg;
-    in >> m_wavg;
-    in >> m_90p;
-    in >> m_min;
-    in >> m_max;
-    in >> m_cph;
-    in >> m_sph;
-    in >> m_firstchan;
-    in >> m_lastchan;
+    if (version<7) {
+        QHash<QString,QVariant> v1;
+        in >> v1;
+        settings.clear();
+        ChannelID code;
+        for (QHash<QString,QVariant>::iterator i=v1.begin();i!=v1.end();i++) {
+            code=schema::channel[i.key()].id();
+            settings[code]=i.value();
+        }
+        QHash<QString,int> zcnt;
+        in >> zcnt;
+        for (QHash<QString,int>::iterator i=zcnt.begin();i!=zcnt.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_cnt[code]=i.value();
+        }
+        QHash<QString,double> zsum;
+        in >> zsum;
+        for (QHash<QString,double>::iterator i=zsum.begin();i!=zsum.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_cnt[code]=i.value();
+        }
+        QHash<QString,EventDataType> ztmp;
+        in >> ztmp; // avg
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_avg[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // wavg
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_wavg[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // 90p
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_90p[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // min
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_min[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // max
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_max[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // cph
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_cph[code]=i.value();
+        }
+        ztmp.clear();
+        in >> ztmp; // sph
+        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_sph[code]=i.value();
+        }
+        QHash<QString,quint64> ztim;
+        in >> ztim; //firstchan
+        for (QHash<QString,quint64>::iterator i=ztim.begin();i!=ztim.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_firstchan[code]=i.value();
+        }
+        ztim.clear();
+        in >> ztim; // lastchan
+        for (QHash<QString,quint64>::iterator i=ztim.begin();i!=ztim.end();i++) {
+            code=schema::channel[i.key()].id();
+            m_lastchan[code]=i.value();
+        }
+        //SetChanged(true);
+    } else {
+        in >> settings;
+        in >> m_cnt;
+        in >> m_sum;
+        in >> m_avg;
+        in >> m_wavg;
+        in >> m_90p;
+        in >> m_min;
+        in >> m_max;
+        in >> m_cph;
+        in >> m_sph;
+        in >> m_firstchan;
+        in >> m_lastchan;
+    }
 
-    /*qint16 sumsize;
-    in >> sumsize;  // Summary size (number of Machine Code lists)
-
-    for (int i=0; i<sumsize; i++) {
-        in >> t16;      // Machine Code
-        ChannelID mc=(ChannelID)t16;
-        in >> settings[mc];
-    } */
-
+    if (version<summary_version) {
+        qDebug() << "Upgrading Summary file to version" << summary_version;
+        UpdateSummaries();
+        StoreSummary(filename);
+    }
     return true;
 }
 
@@ -335,7 +410,8 @@ bool Session::LoadEvents(QString filename)
     in >> version;      // File Version
 
     if (version<6) {    // prior to version 6 is too old to deal with
-        throw OldDBVersion();
+        qDebug() << "Old File Version";
+        //throw OldDBVersion();
         //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
         return false;
     }
@@ -370,7 +446,13 @@ bool Session::LoadEvents(QString filename)
     QVector<qint16> sizevec;
     QString dim;
     for (int i=0;i<mcsize;i++) {
-        in >> code;
+        if (version<8) {
+            QString txt;
+            in >> txt;
+            code=schema::channel[txt].id();
+        } else {
+            in >> code;
+        }
         mcorder.push_back(code);
         in >> size2;
         sizevec.push_back(size2);

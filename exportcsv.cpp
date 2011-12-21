@@ -135,7 +135,7 @@ void ExportCSV::on_exportButton_clicked()
     const QString sep=",";
     const QString newline="\n";
 
-    QStringList countlist,avglist,p90list;
+    QList<ChannelID> countlist,avglist,p90list;
     countlist.append(CPAP_Hypopnea);
     countlist.append(CPAP_Obstructive);
     countlist.append(CPAP_Apnea);
@@ -239,14 +239,14 @@ void ExportCSV::on_exportButton_clicked()
                     file.write(data.toAscii());
                 }
             } else if (ui->rb1_details->isChecked()) {
-                QStringList all=countlist;
+                QList<ChannelID> all=countlist;
                 all.append(avglist);
                 for (int i=0;i<day->size();i++) {
                     Session *sess=(*day)[i];
                     sess->OpenEvents();
                     QHash<ChannelID,QVector<EventList *> >::iterator fnd;
                     for (int j=0;j<all.size();j++) {
-                        QString key=all.at(j);
+                        ChannelID key=all.at(j);
                         fnd=sess->eventlist.find(key);
                         if (fnd!=sess->eventlist.end()) {
                             //header="DateTime"+sep+"Session"+sep+"Event"+sep+"Data/Duration";
@@ -255,7 +255,7 @@ void ExportCSV::on_exportButton_clicked()
                                 for (quint32 q=0;q<ev->count();q++) {
                                     data=QDateTime::fromTime_t(ev->time(q)/1000L).toString(Qt::ISODate);
                                     data+=sep+QString::number(sess->session());
-                                    data+=sep+key;
+                                    data+=sep+schema::channel[key].name();
                                     data+=sep+QString::number(ev->data(q),'f',2);
                                     data+=newline;
                                     file.write(data.toAscii());

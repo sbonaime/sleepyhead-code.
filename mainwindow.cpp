@@ -637,7 +637,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
-    QString username=PROFILE.Get("_{Username}_");
+    QString username=PROFILE.Get(QString("_{")+QString(UI_STR_UserName)+"}_");
 
     bool print_bookmarks=false;
     if (name==STR_TR_Daily) {
@@ -981,14 +981,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 {
-    QVector<QString> valid;
+    QVector<ChannelID> valid;
     valid.push_back(OXI_Pulse);
     valid.push_back(OXI_SPO2);
     valid.push_back(OXI_Plethy);
     //valid.push_back(OXI_PulseChange); // Delete these and recalculate..
     //valid.push_back(OXI_SPO2Drop);
 
-    QVector<QString> invalid;
+    QVector<ChannelID> invalid;
 
     QList<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
 

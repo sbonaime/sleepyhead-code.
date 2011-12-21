@@ -147,16 +147,16 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SPO2->AddLayer(spo2);
 
     uc=new SummaryChart(STR_UNIT_Hours,GT_BAR);
-    uc->addSlice("",QColor("green"),ST_HOURS,true);
+    uc->addSlice(NoChannel,QColor("green"),ST_HOURS,true);
     UC->AddLayer(uc);
 
     us=new SummaryChart(STR_UNIT_Hours,GT_SESSIONS);
-    us->addSlice("",QColor("dark blue"),ST_HOURS,true);
-    us->addSlice("",QColor("blue"),ST_SESSIONS,true);
+    us->addSlice(NoChannel,QColor("dark blue"),ST_HOURS,true);
+    us->addSlice(NoChannel,QColor("blue"),ST_SESSIONS,true);
     US->AddLayer(us);
 
     ses=new SummaryChart(tr("Sessions"),GT_LINE);
-    ses->addSlice("",QColor("blue"),ST_SESSIONS,true);
+    ses->addSlice(NoChannel,QColor("blue"),ST_SESSIONS,true);
     SES->AddLayer(ses);
 
     bc=new SummaryChart(tr("AHI"),GT_BAR);
@@ -167,11 +167,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI->AddLayer(bc);
 
     set=new SummaryChart("",GT_LINE);
-    //set->addSlice("SysOneResistSet",QColor("grey"),ST_SETAVG);
+    //set->addSlice(PRS1_SysOneResistSet,QColor("grey"),ST_SETAVG);
     set->addSlice(PRS1_HumidSetting,QColor("blue"),ST_SETWAVG,true);
     set->addSlice(PRS1_FlexSet,QColor("red"),ST_SETWAVG,true);
-    set->addSlice("EPR",QColor("green"),ST_SETWAVG,true);
-    set->addSlice("SmartFlex",QColor("purple"),ST_SETWAVG,true);
+    set->addSlice(RMS9_EPR,QColor("green"),ST_SETWAVG,true);
+    set->addSlice(INTP_SmartFlex,QColor("purple"),ST_SETWAVG,true);
     SET->setRecMinY(0);
     SET->setRecMaxY(5);
     SET->AddLayer(set);

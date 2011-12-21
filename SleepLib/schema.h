@@ -99,7 +99,7 @@ public:
     bool Save(QString filename);
 
     //! \brief Looks up Channel in this List with the index idx, returns EmptyChannel if not found
-    Channel & operator[](int idx) {
+    Channel & operator[](ChannelID idx) {
         if (channels.contains(idx))
             return *channels[idx];
         else
@@ -114,7 +114,7 @@ public:
     }
 
     //! \brief Channel List indexed by integer ID
-    QHash<int,Channel *> channels;
+    QHash<ChannelID,Channel *> channels;
 
     //! \brief Channel List index by name
     QHash<QString,Channel *> names;

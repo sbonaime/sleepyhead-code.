@@ -216,7 +216,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
             goodb.push_back(time);
         }
     }
-    for (int i=0;i<breaths_max.size();i++)  {
+    for (int i=0;i<breaths_min.size();i++)  {
         min=breaths_min[i];
         time=breaths_min_peak[i];
         if (min < avgmin*0.2) {

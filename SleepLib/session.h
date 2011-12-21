@@ -199,7 +199,7 @@ public:
     EventDataType percentile(ChannelID id,EventDataType percentile);
 
     //! \brief Returns true if the channel has events loaded, or a record of a count for when they are not
-    bool channelExists(QString name);// { return (schema::channel.names.contains(name));}
+    bool channelExists(ChannelID name);
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
