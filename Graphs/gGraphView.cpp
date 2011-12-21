@@ -2532,15 +2532,14 @@ void gGraphView::paintGL()
                 offset=0; offset2=0;
 
                 glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-                glDisable(GL_ALPHA_TEST);
+                //glDisable(GL_ALPHA_TEST);
                 //glAlphaFunc(GL_GREATER,0.0);
-                glColor4f(1.0,1.0,1.0,aphase);
-//                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+                glColor4f(aphase,aphase,aphase,aphase);
 
                 bindTexture(previous_day_snapshot);
-                //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0.0f, 1.0f); glVertex2f(0,0);
                 glTexCoord2f(1.0f, 1.0f); glVertex2f(width(),0);
@@ -2548,7 +2547,7 @@ void gGraphView::paintGL()
                 glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
 
-                glColor4f(1.0,1.0,1.0,phase);
+                glColor4f(phase,phase,phase,phase);
   //              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
                 bindTexture(current_day_snapshot);
@@ -2559,8 +2558,9 @@ void gGraphView::paintGL()
                 glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
 
-                glDisable(GL_ALPHA_TEST);
+                //glDisable(GL_ALPHA_TEST);
                 glDisable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 glBindTexture(GL_TEXTURE_2D,0);
             }
         }
