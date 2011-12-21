@@ -2457,6 +2457,10 @@ void gGraphView::fadeIn(bool dir)
     }
     m_inAnimation=false;
     current_day_snapshot=renderPixmap(width(),height(),false);
+    qDebug() << current_day_snapshot.depth() << "bit image depth";
+    if (current_day_snapshot.hasAlpha()){
+        qDebug() << "Snapshots are not storing alpha channel needed for texture blending";
+    }
     m_inAnimation=true;
 
     m_animationStarted.start();
