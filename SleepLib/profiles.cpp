@@ -32,7 +32,14 @@ Profile::Profile()
     p_name="Profile";
     p_path=PREF.Get("{home}/Profiles");
     machlist.clear();
-    //m_first=m_last=
+
+    doctor=new DoctorInfo(this);
+    user=new UserInfo(this);
+    cpap=new CPAPSettings(this);
+    oxi=new OxiSettings(this);
+    appearance=new AppearanceSettings(this);
+    import=new ImportSettings(this);
+    settings=new UserSettings(this);
 }
 Profile::Profile(QString path)
 :Preferences(),is_first_day(true)
@@ -45,7 +52,14 @@ Profile::Profile(QString path)
     if (!p_path.endsWith("/")) p_path+="/";
     p_filename=p_path+p_name+xmlext;
     machlist.clear();
-    //m_first=m_last=NULL;
+
+    doctor=new DoctorInfo(this);
+    user=new UserInfo(this);
+    cpap=new CPAPSettings(this);
+    oxi=new OxiSettings(this);
+    appearance=new AppearanceSettings(this);
+    import=new ImportSettings(this);
+    settings=new UserSettings(this);
 }
 bool Profile::Save(QString filename)
 {
@@ -95,6 +109,13 @@ bool Profile::Save(QString filename)
 
 Profile::~Profile()
 {
+    delete user;
+    delete doctor;
+    delete cpap;
+    delete oxi;
+    delete appearance;
+    delete import;
+    delete settings;
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         delete i.value();
     }
@@ -521,3 +542,67 @@ void Scan()
 
 } // namespace Profiles
 
+const char * DI_STR_Name="DoctorName";
+const char * DI_STR_Phone="DoctorPhone";
+const char * DI_STR_Practice="DoctorPractice";
+const char * DI_STR_Address="DoctorAddress";
+const char * DI_STR_PatientID="DoctorPatientID";
+
+const char * UI_STR_DOB="DOB";
+const char * UI_STR_FirstName="FirstName";
+const char * UI_STR_LastName="LastName";
+const char * UI_STR_UserName="UserName";
+const char * UI_STR_Password="Password";
+const char * UI_STR_Address="Address";
+const char * UI_STR_Phone="Phone";
+const char * UI_STR_EmailAddress="EmailAddress";
+const char * UI_STR_Country="Country";
+const char * UI_STR_Height="Height";
+const char * UI_STR_Gender="Gender";
+const char * UI_STR_TimeZone="TimeZone";
+const char * UI_STR_Language="Language";
+const char * UI_STR_DST="DST";
+
+const char * OS_STR_EnableOximetry="EnableOximetry";
+const char * OS_STR_SyncOximetry="SyncOximetry";
+const char * OS_STR_OximeterType="OximeterType";
+const char * OS_STR_OxiDiscardThreshold="OxiDiscardThreshold";
+const char * OS_STR_SPO2DropDuration="SPO2DropDuration";
+const char * OS_STR_SPO2DropPercentage="SPO2DropPercentage";
+const char * OS_STR_PulseChangeDuration="PulseChangeDuration";
+const char * OS_STR_PulseChangeBPM="PulseChangeBPM";
+
+const char * CS_STR_ComplianceHours="ComplianceHours";
+const char * CS_STR_ShowCompliance="ShowCompliance";
+const char * CS_STR_ShowLeaksMode="ShowLeaksMode";
+const char * CS_STR_MaskStartDate="MaskStartDate";
+const char * CS_STR_MaskDescription="MaskDescription";
+const char * CS_STR_MaskType="MaskType";
+const char * CS_STR_PrescribedMode="CPAPPrescribedMode";
+const char * CS_STR_PrescribedMinPressure="CPAPPrescribedMinPressure";
+const char * CS_STR_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
+const char * CS_STR_UntreatedAHI="UntreatedAHI";
+const char * CS_STR_Notes="CPAPNotes";
+const char * CS_STR_DateDiagnosed="DateDiagnosed";
+
+const char * IS_STR_DaySplitTime="DaySplitTime";
+const char * IS_STR_CacheSessions="MemoryHog";
+const char * IS_STR_CombineCloseSessions="CombineCloserSessions";
+const char * IS_STR_IgnoreShorterSessions="IgnoreShorterSessions";
+const char * IS_STR_Multithreading="EnableMultithreading";
+
+const char * AS_STR_GraphHeight="GraphHeight";
+const char * AS_STR_AntiAliasing="UseAntiAliasing";
+const char * AS_STR_HighResPrinting="HighResPrinting";
+const char * AS_STR_GraphSnapshots="EnableGraphSnapshots";
+const char * AS_STR_Animations="AnimationsAndTransitions";
+const char * AS_STR_SquareWave="SquareWavePlots";
+const char * AS_STR_OverlayType="OverlayType";
+
+const char * US_STR_UnitSystem="UnitSystem";
+const char * US_STR_EventWindowSize="EventWindowSize";
+const char * US_STR_SkipEmptyDays="SkipEmptyDays";
+const char * US_STR_RebuildCache="RebuildCache";
+const char * US_STR_TrashDayCache="TrashDayCache";
+const char * US_STR_ShowDebug="ShowDebug";
+const char * US_STR_LinkGroups="LinkGroups";

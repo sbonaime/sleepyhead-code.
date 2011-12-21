@@ -243,9 +243,7 @@ gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
         yt=new gYAxisTime(true); // Time scale
         break;
     case YT_Weight:
-        if (PROFILE["Units"].toString()=="metric") {
-            yt=new gYAxisWeight(US_Metric);
-        } else yt=new gYAxisWeight(US_Archiac);
+        yt=new gYAxisWeight(unitSystem());
         break;
     default:
         yt=new gYAxis(); // Plain numeric scale

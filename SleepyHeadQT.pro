@@ -155,7 +155,8 @@ HEADERS  += \
     quazip/JlCompress.h \
     quazip/ioapi.h \
     quazip/crypt.h \
-    UpdaterWindow.h
+    UpdaterWindow.h \
+    SleepLib/common.h
 
 
 FORMS    += \

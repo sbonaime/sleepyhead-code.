@@ -47,11 +47,6 @@ enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_C
 enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL };
 //void InitMapsWithoutAwesomeInitializerLists();
 
-enum UnitSystem { US_Metric, US_Archiac };
-const float ounce_convert=28.3495231;
-const float pound_convert=ounce_convert*16;
-
-QString weightString(EventDataType kg, UnitSystem us);
 
 /*! \enum CPAPMode
     \brief CPAP Machines mode of operation
@@ -151,7 +146,8 @@ const ChannelID PRS1_AutoOn="AutoOn";
 const ChannelID PRS1_AutoOff="AutoOff";
 const ChannelID PRS1_MaskAlert="MaskAlert";
 const ChannelID PRS1_ShowAHI="ShowAHI";
-
+const ChannelID CPAP_UserFlag1="UserFlag1";
+const ChannelID CPAP_UserFlag2="UserFlag2";
 
 const ChannelID OXI_Pulse="Pulse";
 const ChannelID OXI_SPO2="SPO2";

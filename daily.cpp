@@ -89,30 +89,30 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(scrollbar,0);
 
     int default_height=PROFILE["GraphHeight"].toInt();
-    SF=new gGraph(GraphView,"Event Flags","Event Flags",default_height);
-    FRW=new gGraph(GraphView,schema::channel[CPAP_FlowRate].label(),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
-    AHI=new gGraph(GraphView,schema::channel[CPAP_AHI].label(),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
-    MP=new gGraph(GraphView,schema::channel[CPAP_MaskPressure].label(),schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
-    PRD=new gGraph(GraphView,schema::channel[CPAP_Pressure].label(),schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
-    LEAK=new gGraph(GraphView,schema::channel[CPAP_Leak].label(),schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
-    SNORE=new gGraph(GraphView,schema::channel[CPAP_Snore].label(),schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
-    RR=new gGraph(GraphView,schema::channel[CPAP_RespRate].label(),schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
-    TV=new gGraph(GraphView,schema::channel[CPAP_TidalVolume].label(),schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
-    MV=new gGraph(GraphView,schema::channel[CPAP_MinuteVent].label(),schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
-    FLG=new gGraph(GraphView,schema::channel[CPAP_FLG].label(),schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
-    PTB=new gGraph(GraphView,schema::channel[CPAP_PTB].label(),schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
-    RE=new gGraph(GraphView,schema::channel[CPAP_RespEvent].label(),schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
-    IE=new gGraph(GraphView,schema::channel[CPAP_IE].label(),schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
-    TE=new gGraph(GraphView,schema::channel[CPAP_Te].label(),schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
-    TI=new gGraph(GraphView,schema::channel[CPAP_Ti].label(),schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
-    TgMV=new gGraph(GraphView,schema::channel[CPAP_TgMV].label(),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
+    SF=new gGraph(GraphView,tr("Event Flags"),tr("Event Flags"),default_height);
+    FRW=new gGraph(GraphView,tr("Flow Rate"),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
+    AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+    MP=new gGraph(GraphView,tr("Mask Pressure"),schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
+    PRD=new gGraph(GraphView,tr("Pressure"),schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
+    LEAK=new gGraph(GraphView,tr("Leak"),schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
+    SNORE=new gGraph(GraphView,tr("Snore"),schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
+    RR=new gGraph(GraphView,tr("Resp. Rate"),schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
+    TV=new gGraph(GraphView,tr("Tidal Volume"),schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
+    MV=new gGraph(GraphView,tr("Minute Vent."),schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
+    FLG=new gGraph(GraphView,tr("Flow Limitation"),schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
+    PTB=new gGraph(GraphView,tr("Pat. Trig. Breath"),schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
+    RE=new gGraph(GraphView,tr("Resp. Event"),schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
+    IE=new gGraph(GraphView,tr("IE"),schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
+    TE=new gGraph(GraphView,tr("Te"),schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
+    TI=new gGraph(GraphView,tr("Ti"),schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
+    TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
     //INTPULSE=new gGraph(GraphView,"R-Pulse",schema::channel[CPAP_Te].units(),default_height);
     //INTSPO2=new gGraph(GraphView,"R-SPO2",default_height);
 
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
-    PULSE=new gGraph(GraphView,schema::channel[OXI_Pulse].label(),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    SPO2=new gGraph(GraphView,schema::channel[OXI_SPO2].label(),schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    PLETHY=new gGraph(GraphView,schema::channel[OXI_Plethy].label(),schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
+    PULSE=new gGraph(GraphView,tr("Pulse"),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
+    SPO2=new gGraph(GraphView,tr("SpO2"),schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
+    PLETHY=new gGraph(GraphView,tr("Plethy"),schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -123,14 +123,14 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     //TAP->setMargins(0,0,0,0);
 
 
-    GAHI=new gGraph(snapGV,"Breakdown","events",172);
+    GAHI=new gGraph(snapGV,tr("Breakdown"),tr("events"),172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
-    evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),"H");
-    evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),"A");
-    evseg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),"OA");
-    evseg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),"CA");
-    evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),"RE");
-    evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),"FL");
+    evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),tr("H"));
+    evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),tr("A"));
+    evseg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),tr("OA"));
+    evseg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),tr("CA"));
+    evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),tr("RE"));
+    evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),tr("FL"));
 
     GAHI->AddLayer(AddCPAP(evseg));
     GAHI->setMargins(0,0,0,0);
@@ -138,21 +138,21 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),"PB",false,FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),"CA",false)));
-    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),"OA",true)));
-    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),"A")));
-    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),"H",true)));
-    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),"E",false)));
-    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),"L",false)));
-    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),"NRI",false)));
-    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),"FL")));
-    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),"RE")));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),"VS")));
-    fg->AddLayer((new gFlagsLine("UserFlag1",QColor("yellow"),"UF1")));
-    fg->AddLayer((new gFlagsLine("UserFlag2",QColor("green"),"UF2")));
-    //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),"U0B")));
-    //fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),"VS2")));
+    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),tr("PB"),false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),tr("CA"),false)));
+    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),tr("OA"),true)));
+    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),tr("A"))));
+    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),tr("H"),true)));
+    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),tr("E"),false)));
+    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),tr("L"),false)));
+    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),tr("NRI"),false)));
+    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),tr("FL"))));
+    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),tr("RE"))));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),tr("VS"))));
+    fg->AddLayer((new gFlagsLine("UserFlag1",QColor("yellow"),tr("UF1"))));
+    fg->AddLayer((new gFlagsLine("UserFlag2",QColor("green"),tr("UF2"))));
+    //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
+    //fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
@@ -162,29 +162,29 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
-    gLineOverlaySummary *los=new gLineOverlaySummary("Selection AHI",5,-4);
+    gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),"CSR",FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),tr("CSR"),FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),"H"))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),"PR",FT_Dot)));
-    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),"P",FT_Dot)));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),tr("H")))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),tr("PR"),FT_Dot)));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),tr("P"),FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),"RE")));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),"A"))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),"VS")));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),"FL")));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),"OA"))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),"CA"))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag1",QColor("yellow"),"U1",FT_Bar)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag2",QColor("orange"),"U2",FT_Bar)));
-    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),"O2")));
-    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),"PC",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE"))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),tr("A")))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),tr("VS"))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),tr("OA")))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),tr("CA")))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag1",QColor("yellow"),tr("U1"),FT_Bar)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar("UserFlag2",QColor("orange"),tr("U2"),FT_Bar)));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),tr("O2"))));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),tr("PC"),FT_Dot)));
 
     FRW->AddLayer(AddCPAP(los));
 
@@ -239,8 +239,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
 
-    PULSE->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),"PD",FT_Span)));
-    SPO2->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),"O2",FT_Span)));
+    PULSE->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),tr("PD"),FT_Span)));
+    SPO2->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),tr("O2"),FT_Span)));
 
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
@@ -294,7 +294,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         QPushButton *btn=new QPushButton(title,this);
         btn->setCheckable(true);
         btn->setChecked((*GraphView)[i]->visible());
-        btn->setToolTip("Show/Hide "+title);
+        btn->setToolTip(tr("Show/Hide %1").arg(title));
         GraphToggles[title]=btn;
         btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
         ui->graphToggleArea->addWidget(btn);
@@ -305,15 +305,16 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
-    if (PROFILE["Units"].toString()=="metric") {
-        ui->ouncesSpinBox->setVisible(false);
-        ui->weightSpinBox->setDecimals(3);
-        ui->weightSpinBox->setSuffix("Kg");
-    } else {
-        ui->weightSpinBox->setSuffix("lb");
+
+    if (unitSystem()==US_Archiac) {
+        ui->weightSpinBox->setSuffix(tr("lb"));
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
-        ui->ouncesSpinBox->setSuffix("oz");
+        ui->ouncesSpinBox->setSuffix(tr("oz"));
+    } else {
+        ui->ouncesSpinBox->setVisible(false);
+        ui->weightSpinBox->setDecimals(3);
+        ui->weightSpinBox->setSuffix(tr("Kg"));
     }
 }
 
@@ -423,7 +424,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_ClearAirway)
                 && (code!=CPAP_CSR)
                 && (code!=CPAP_RERA)
-                && (code!="UserFlag1")
+                && (code!=CPAP_UserFlag1)
+                && (code!=CPAP_UserFlag2)
                 && (code!=CPAP_NRI)
                 && (code!=CPAP_LeakFlag)
                 && (code!=CPAP_ExP)
@@ -436,9 +438,12 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 total_events+=cnt;
                 QString st=schema::channel[code].description();
                 if (st.isEmpty())  {
-                    st="Fixme "+code;
+                    st="Fixme %1"+code;
                 }
-                st+=" ("+QString::number(cnt)+" event"+((cnt>1)?"s":"")+")";
+                st+=" ";
+                if (cnt==1) st+=tr("%1 event").arg(cnt);
+                else st+=tr("%1 events").arg(cnt);
+
                 QStringList l(st);
                 l.append("");
                 mcroot[code]=mcr=new QTreeWidgetItem(root,l);
@@ -535,15 +540,15 @@ void Daily::on_calendar_selectionChanged()
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
-    if (PROFILE["Units"].toString()=="metric") {
-        ui->ouncesSpinBox->setVisible(false);
-        ui->weightSpinBox->setDecimals(3);
-        ui->weightSpinBox->setSuffix("Kg");
-    } else {
-        ui->weightSpinBox->setSuffix("lb");
+    if (unitSystem()==US_Archiac) {
+        ui->weightSpinBox->setSuffix(tr("lb"));
         ui->weightSpinBox->setDecimals(0);
         ui->ouncesSpinBox->setVisible(true);
-        ui->ouncesSpinBox->setSuffix("oz");
+        ui->ouncesSpinBox->setSuffix(tr("oz"));
+    } else {
+        ui->ouncesSpinBox->setVisible(false);
+        ui->weightSpinBox->setDecimals(3);
+        ui->weightSpinBox->setSuffix(tr("Kg"));
     }
 }
 void Daily::ResetGraphLayout()
@@ -959,13 +964,14 @@ void Daily::Load(QDate date)
 
         if (journal->settings.contains(Journal_Weight)) {
             double kg=journal->settings[Journal_Weight].toDouble(&ok);
-            if (PROFILE["Units"].toString()=="metric") {
+
+            if (unitSystem()==US_Metric) {
                 ui->weightSpinBox->setDecimals(3);
                 ui->weightSpinBox->blockSignals(true);
                 ui->weightSpinBox->setValue(kg);
                 ui->weightSpinBox->blockSignals(false);
                 ui->ouncesSpinBox->setVisible(false);
-                ui->weightSpinBox->setSuffix("Kg");
+                ui->weightSpinBox->setSuffix(tr("Kg"));
             } else {
                 float ounces=(kg*1000.0)/ounce_convert;
                 int pounds=ounces/16.0;
@@ -979,10 +985,10 @@ void Daily::Load(QDate date)
                 ui->ouncesSpinBox->blockSignals(false);
                 ui->weightSpinBox->blockSignals(false);
 
-                ui->weightSpinBox->setSuffix("lb");
+                ui->weightSpinBox->setSuffix(tr("lb"));
                 ui->weightSpinBox->setDecimals(0);
                 ui->ouncesSpinBox->setVisible(true);
-                ui->ouncesSpinBox->setSuffix("oz");
+                ui->ouncesSpinBox->setSuffix(tr("oz"));
             }
             double height=PROFILE["Height"].toDouble(&ok)/100.0;
             if (height>0 && kg>0) {
@@ -1032,7 +1038,7 @@ void Daily::Load(QDate date)
 void Daily::UnitsChanged()
 {
     double kg;
-    if (PROFILE["Units"].toString()!="metric") {
+    if (unitSystem(true)==US_Metric) {
         kg=ui->weightSpinBox->value();
         float ounces=(kg*1000.0)/ounce_convert;
         int pounds=ounces/16;
@@ -1237,7 +1243,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
-        gGraph *g=GraphView->findGraph("Event Flags");
+        gGraph *g=GraphView->findGraph(tr("Event Flags"));
         if (!g) return;
         if (st<g->rmin_x) {
             st=g->rmin_x;
@@ -1453,10 +1459,10 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
     }
 
     double kg;
-    if (PROFILE["Units"].toString()=="metric")
-        kg=arg1;
-    else {
-        kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
+    if (unitSystem()==US_Archiac) {
+            kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
+    } else {
+            kg=arg1;
     }
     journal->settings[Journal_Weight]=kg;
     gGraphView *gv=mainwin->getOverview()->graphView();

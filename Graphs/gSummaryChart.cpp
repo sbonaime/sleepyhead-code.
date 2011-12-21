@@ -617,9 +617,6 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
     mx=mx+l_offset;//-86400000L;
     int zd=mx/86400000L;
 
-    UnitSystem us;
-    PROFILE["Units"]=="metric" ? us=US_Metric : US_Archiac;
-
     Day * day;
     //if (hl_day!=zd)   // This line is an optimization
 
@@ -706,7 +703,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                         //if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                             schema::Channel & chan=schema::channel[m_codes[i]];
                             if (m_codes[i]==Journal_Weight) {
-                                val=weightString(d.value()[i+1],us);
+                                val=weightString(d.value()[i+1],unitSystem());
                             } else
                                 val=QString::number(d.value()[i+1],'f',2);
                             z+="\r\n"+chan.label()+" "+a+"="+val;

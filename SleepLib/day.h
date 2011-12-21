@@ -7,6 +7,7 @@
 #ifndef DAY_H
 #define DAY_H
 
+#include "SleepLib/common.h"
 #include "SleepLib/machine_common.h"
 #include "SleepLib/machine.h"
 #include "SleepLib/event.h"
