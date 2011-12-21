@@ -21,6 +21,8 @@ namespace Ui {
 
 class Report;
 
+enum YTickerType { YT_Number, YT_Time, YT_Weight };
+
 /*! \class Overview
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
     \brief Overview tab, showing overall summary data
@@ -48,7 +50,7 @@ public:
     /*! \brief Create an overview graph, adding it to the overview gGraphView object
         \param QString name  The title of the graph
         \param QString units The units of measurements to show in the popup */
-    gGraph * createGraph(QString name,QString units="");
+    gGraph * createGraph(QString name,QString units="",YTickerType yttype=YT_Number);
 
     gGraph *AHI, *AHIHR, *UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI;
     SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi, *ahihr;

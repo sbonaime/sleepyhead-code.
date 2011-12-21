@@ -472,6 +472,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         }
     }
 
+
     if (m) {
         m->Save();
     }

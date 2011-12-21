@@ -93,14 +93,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     AHI=createGraph("AHI","Apnea\nHypopnea\nIndex");
     UC=createGraph("Usage","Usage\n(hours)");
 
-    int default_height=PROFILE["GraphHeight"].toInt();
-    US=new gGraph(GraphView,"Session Times","Session Times\n(hours)",default_height,0);
-    US->AddLayer(new gYAxisTime(),LayerLeft,gYAxis::Margin);
-    gXAxis *x=new gXAxis();
-    x->setUtcFix(true);
-    US->AddLayer(x,LayerBottom,0,gXAxis::Margin);
-    US->AddLayer(new gXGrid());
 
+    US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);
     PR=createGraph(tr("Pressure"),tr("Pressure\n(cmH2O)"));
     SET=createGraph(tr("Settings"),("Settings"));
     LK=createGraph(tr("Leaks"),tr("Leak Rate\n(L/min)"));
@@ -113,7 +107,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SES=createGraph(tr("Sessions"),tr("Sessions\n(count)"));
     PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
     SPO2=createGraph(tr("SpO2"),tr("Oxygen Saturation\n(%)"));
-    WEIGHT=createGraph(tr("Weight"),tr("Weight\n(kg)"));
+    WEIGHT=createGraph(tr("Weight"),tr("Weight\n(kg)"),YT_Weight);
     BMI=createGraph(tr("BMI"),tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
 
@@ -237,11 +231,25 @@ Overview::~Overview()
     disconnect(this,SLOT(dateEnd_currentPageChanged(int,int)));
     delete ui;
 }
-gGraph * Overview::createGraph(QString name,QString units)
+gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
 {
     int default_height=PROFILE["GraphHeight"].toInt();
     gGraph *g=new gGraph(GraphView,name,units,default_height,0);
-    g->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+
+    gYAxis *yt;
+    switch (yttype) {
+    case YT_Time:
+        yt=new gYAxisTime(true); // Time scale
+        break;
+    case YT_Weight:
+        yt=new gYAxisWeight(US_Archiac); // Weight scale, which adjusts for UnitSystem
+        break;
+    default:
+        yt=new gYAxis(); // Plain numeric scale
+        break;
+    }
+
+    g->AddLayer(yt,LayerLeft,gYAxis::Margin);
     gXAxis *x=new gXAxis();
     x->setUtcFix(true);
     g->AddLayer(x,LayerBottom,0,gXAxis::Margin);

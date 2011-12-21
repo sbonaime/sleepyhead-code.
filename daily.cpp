@@ -38,8 +38,6 @@
 extern MainWindow * mainwin;
 
 const int min_height=150;
-const float ounce_convert=28.3495231;
-const float pound_convert=ounce_convert*16;
 
 Daily::Daily(QWidget *parent,gGraphView * shared)
     :QWidget(parent), ui(new Ui::Daily)

@@ -121,8 +121,8 @@ class gYAxisTime:public gYAxis
 {
 public:
     //! \brief Construct a gYAxisTime object, with QColor col for tickers & times
-    gYAxisTime(QColor col=Qt::black);
-    virtual ~gYAxisTime();
+    gYAxisTime(bool hr12=true, QColor col=Qt::black) : gYAxis(col), show_12hr(hr12) {}
+    virtual ~gYAxisTime() {}
 protected:
     //! \brief Overrides gYAxis Format to display Time format
     virtual const QString Format(EventDataType v, int dp);
@@ -130,5 +130,28 @@ protected:
     //! \brief Whether to format as 12 or 24 hour times
     bool show_12hr;
 };
+
+
+/*! \class gYAxisWeight
+   \brief Draws the YAxis tick markers, and labels in weight format
+   */
+class gYAxisWeight:public gYAxis
+{
+public:
+    //! \brief Construct a gYAxisWeight object, with QColor col for tickers & weight values
+    gYAxisWeight(UnitSystem us=US_Metric, QColor col=Qt::black) :gYAxis(col), m_unitsystem(us) {}
+    virtual ~gYAxisWeight() {}
+
+    //! \brief Returns the current UnitSystem displayed (eg, US_Metric (the rest of the world), US_Archiac (American) )
+    UnitSystem unitSystem() { return m_unitsystem; }
+
+    //! \brief Set the unit system displayed by this YTicker
+    void setUnitSystem(UnitSystem us) { m_unitsystem=us; }
+protected:
+    //! \brief Overrides gYAxis Format to display Time format
+    virtual const QString Format(EventDataType v, int dp);
+    UnitSystem m_unitsystem;
+};
+
 
 #endif // GYAXIS_H

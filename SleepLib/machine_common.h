@@ -43,6 +43,10 @@ enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_90P, ST_MIN, ST_MAX, ST_C
 enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL };
 //void InitMapsWithoutAwesomeInitializerLists();
 
+enum UnitSystem { US_Metric, US_Archiac };
+const float ounce_convert=28.3495231;
+const float pound_convert=ounce_convert*16;
+
 
 /*! \enum CPAPMode
     \brief CPAP Machines mode of operation

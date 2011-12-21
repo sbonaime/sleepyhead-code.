@@ -248,15 +248,6 @@ bool gYAxis::mouseMoveEvent(QMouseEvent * event)
     return false;
 }
 
-gYAxisTime::gYAxisTime(QColor col):
-    gYAxis(col)
-{
-    show_12hr=true;
-}
-
-gYAxisTime::~gYAxisTime()
-{
-}
 
 const QString gYAxisTime::Format(EventDataType v, int dp)
 {
@@ -276,4 +267,16 @@ const QString gYAxisTime::Format(EventDataType v, int dp)
     }
     if (dp>2) return QString().sprintf("%02i:%02i:%02i%s",h,m,s,pm);
     return QString().sprintf("%i:%02i%s",h,m,pm);
+}
+
+const QString gYAxisWeight::Format(EventDataType v, int dp)
+{
+    if (m_unitsystem==US_Metric) {
+        return QString("%1kg").arg(v,0,'f',2);
+    } else if (m_unitsystem==US_Archiac) {
+        int oz=v / (float)ounce_convert;
+        int lb=oz / 16;
+        oz = oz % 16;
+        return QString("%1lb %2oz").arg(lb).arg(oz);
+    }
 }
