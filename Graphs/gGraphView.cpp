@@ -2440,9 +2440,11 @@ void gGraphView::fadeOut()
 }
 void gGraphView::fadeIn(bool dir)
 {
+    static bool firstdraw=true;
     m_tooltip->cancel();
-    if (!PROFILE.ExistsAndTrue("AnimationsAndTransitions")) {
+    if (firstdraw || !PROFILE.ExistsAndTrue("AnimationsAndTransitions")) {
         updateGL();
+        firstdraw=false;
         return;
     }
 

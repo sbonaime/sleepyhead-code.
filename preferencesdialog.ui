@@ -1619,7 +1619,7 @@ this application to be unstable with this feature enabled.</string>
            <item>
             <widget class="QCheckBox" name="animationsAndTransitionsCheckbox">
              <property name="text">
-              <string>Animation &amp;&amp; Transitions</string>
+              <string>Animations &amp;&amp; Transitions</string>
              </property>
             </widget>
            </item>

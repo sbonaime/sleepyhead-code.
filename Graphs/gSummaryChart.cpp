@@ -345,6 +345,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         compliance_hours=PROFILE["ComplianceHours"].toDouble();
     }
 
+    int incompliant=0;
     Day * day;
     EventDataType hours;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
@@ -420,7 +421,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                     QColor col=m_colors[j];
                     if (m_type[j]==ST_HOURS) {
-                        if (tmp<compliance_hours) col=QColor("#f04040");
+                        if (tmp<compliance_hours) {
+                            col=QColor("#f04040");
+                            incompliant++;
+                        }
                     }
 
                     if (zd==hl_day) {
@@ -472,7 +476,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             }
             lastdaygood=true;
             if (Q>maxx+extra) break;
-        } else lastdaygood=false;
+        } else {
+            if (Q<maxx+extra)
+                incompliant++;
+            lastdaygood=false;
+        }
         px+=barw;
         daynum++;
         //lastQ=Q;
@@ -486,6 +494,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     QString a,b;
     int x,y;
 
+    bool ishours=false;
     for (int j=0;j<m_codes.size();j++) {
         if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
@@ -519,6 +528,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             int h=f;
             int m=int(f*60) % 60;
             val.sprintf("%02i:%02i",h,m);
+            ishours=true;
         } else {
             val=QString::number(f,'f',2);
         }
@@ -551,10 +561,16 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         }
     }*/
     a+="Days="+QString::number(total_days,'f',0);
+    if (PROFILE.ExistsAndTrue("ShowCompliance")) {
+        if (ishours && incompliant>0) {
+            a+=" Low Usage Days="+QString::number(incompliant,'f',0)+" (%"+QString::number((1.0/daynum)*(total_days-incompliant)*100.0,'f',2)+" compliant, defined as >"+QString::number(compliance_hours,'f',1)+" hours)";
+        }
+    }
+
+
     GetTextExtent(a,x,y);
     px-=30+x;
     //w.renderText(a,px+24,py+5);
-
     w.renderText(a,left,py+1);
 }
 
