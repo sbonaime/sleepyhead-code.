@@ -222,7 +222,7 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     bool found=false;
     QList<Machine *>::iterator i;
     for (i=ml.begin(); i!=ml.end(); i++) {
-        if (((*i)->GetClass()==resmed_class_name) && ((*i)->properties["Serial"]==serial)) {
+        if (((*i)->GetClass()==resmed_class_name) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             ResmedList[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
             break;
@@ -237,11 +237,11 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     ResmedList[serial]=m;
     profile->AddMachine(m);
 
-    m->properties["Serial"]=serial;
-    m->properties["Brand"]="ResMed";
+    m->properties[STR_PROP_Serial]=serial;
+    m->properties[STR_PROP_Brand]=STR_MACH_ResMed;
     QString a;
     a.sprintf("%i",resmed_data_version);
-    m->properties["DataVersion"]=a;
+    m->properties[STR_PROP_DataVersion]=a;
 
     return m;
 
@@ -375,12 +375,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                             qDebug() << "edf Serial number doesn't match STR.edf!";
                         }
                     } else if (i.key()=="PNA") {
-                        //m->properties["Model"]=""; //i.value();
+                        //m->properties[STR_PROP_Model]=""; //i.value();
                     } else if (i.key()=="PCD") {
                         bool ok;
                         int j=i.value().toInt(&ok);
                         if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
-                            m->properties["Model"]=RMS9ModelMap[j];
+                            m->properties[STR_PROP_Model]=RMS9ModelMap[j];
                         }
                     } else {
                         m->properties[i.key()]=i.value();
@@ -424,19 +424,19 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 } else mode=0;
 
                 // AutoSV machines don't have both fields
-                sig=stredf.lookupSignal("EPR");
+                sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
                     sess->settings[RMS9_EPR]=sig->data[dn];
                 }
 
-                sig=stredf.lookupSignal("EPRLevel");
+                sig=stredf.lookupSignal(RMS9_EPRSet);
                 if (sig)  {
                     sess->settings[RMS9_EPRSet]=sig->data[dn];
                 }
 
                 if (mode==0) {
                     sess->settings[CPAP_Mode]=MODE_CPAP;
-                    sig=stredf.lookupSignal("Set Pressure");
+                    sig=stredf.lookupSignal("Set Pressure"); // ?? What's meant by Set Pressure?
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
@@ -453,13 +453,13 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         sess->settings[CPAP_Mode]=MODE_APAP;
 
                     }
-                    sig=stredf.lookupSignal("Min Pressure");
+                    sig=stredf.lookupSignal(CPAP_PressureMin);
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
                         sess->setMin(CPAP_Pressure,pressure);
                     }
-                    sig=stredf.lookupSignal("Max Pressure");
+                    sig=stredf.lookupSignal(CPAP_PressureMax);
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMax]=pressure;
@@ -882,10 +882,10 @@ void ResInitModelMap()
     resmed_codes["Set Pressure"].push_back("Eingest. Druck");
     resmed_codes["Set Pressure"].push_back("Set Pressure"); // Prescription
     resmed_codes["Set Pressure"].push_back("Pres. prescrite");
-    resmed_codes["EPR"].push_back("EPR");
-    resmed_codes["EPRLevel"].push_back("EPR Level");
-    resmed_codes["EPRLevel"].push_back("EPR-Stufe");
-    resmed_codes["EPRLevel"].push_back("Niveau EPR");
+    resmed_codes[RMS9_EPR].push_back("EPR");
+    resmed_codes[RMS9_EPRSet].push_back("EPR Level");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");
+    resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
     resmed_codes[CPAP_PressureMax].push_back("Pression max.");

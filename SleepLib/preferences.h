@@ -58,7 +58,7 @@ public:
     }
 
     //! \brief Returns true if preference 'name' exists
-    bool Exists(QString name) {
+    bool contains(QString name) {
         return (p_preferences.contains(name));
     }
 

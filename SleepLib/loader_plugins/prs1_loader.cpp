@@ -96,8 +96,8 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
     m_class=prs1_class_name;
-    properties["Brand"]="Philips Respironics";
-    properties["Model"]="System One";
+    properties[STR_PROP_Brand]="Philips Respironics";
+    properties[STR_PROP_Model]="System One";
 
 }
 PRS1::~PRS1()
@@ -137,7 +137,7 @@ Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
     bool found=false;
     QList<Machine *>::iterator i;
     for (i=ml.begin(); i!=ml.end(); i++) {
-        if (((*i)->GetClass()=="PRS1") && ((*i)->properties["Serial"]==serial)) {
+        if (((*i)->GetClass()==STR_MACH_PRS1) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             PRS1List[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
             break;
@@ -151,7 +151,7 @@ Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
     PRS1List[serial]=m;
     profile->AddMachine(m);
 
-    m->properties["Serial"]=serial;
+    m->properties[STR_PROP_Serial]=serial;
     return m;
 }
 bool isdigit(QChar c)
@@ -250,10 +250,10 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
     int i=pt.toInt(&ok,16);
     if (ok) {
         if (ModelMap.find(i)!=ModelMap.end()) {
-            m->properties["SubModel"]=ModelMap[i];
+            m->properties[STR_PROP_SubModel]=ModelMap[i];
         }
     }
-    if (prop["SerialNumber"]!=m->properties["Serial"]) {
+    if (prop["SerialNumber"]!=m->properties[STR_PROP_Serial]) {
         qDebug() << "Serial Number in PRS1 properties.txt doesn't match directory structure";
     } else prop.erase(prop.find("SerialNumber")); // already got it stored.
 
@@ -421,7 +421,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
     }
 
-    m->properties["DataVersion"]=QString().sprintf("%i",prs1_data_version);
+    m->properties[STR_PROP_DataVersion]=QString().sprintf("%i",prs1_data_version);
     m->properties["LastImported"]=QDateTime::currentDateTime().toString(Qt::ISODate);
     m->Save(); // Save any new sessions to disk in our format
     if (qprogress) qprogress->setValue(100);

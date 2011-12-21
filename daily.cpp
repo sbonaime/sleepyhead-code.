@@ -89,7 +89,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(scrollbar,0);
 
     int default_height=PROFILE.appearance->graphHeight();
-    SF=new gGraph(GraphView,tr("Event Flags"),tr("Event Flags"),default_height);
+    SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
     FRW=new gGraph(GraphView,tr("Flow Rate"),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
     AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
     MP=new gGraph(GraphView,tr("Mask Pressure"),schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
@@ -114,7 +114,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
-//    TAP=new gGraph(GraphView,"Time@Pressure","cmH2O",100);
+//    TAP=new gGraph(GraphView,"Time@Pressure",STR_UNIT_CMH2O,100);
 //    TAP->showTitle(false);
 //    gTAPGraph * tap=new gTAPGraph(CPAP_Pressure,GST_Line);
 //    TAP->AddLayer(AddCPAP(tap));
@@ -679,26 +679,26 @@ void Daily::Load(QDate date)
         QString submodel; //=tr("Unknown Model");
 
         //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
-        if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
-            submodel=" <br/>"+cpap->machine->properties["SubModel"];
-        html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties["Brand"]+"</b> <br>"+cpap->machine->properties["Model"]+" "+cpap->machine->properties["ModelNumber"]+submodel+"</td></tr>\n";
+        if (cpap->machine->properties.find(STR_PROP_SubModel)!=cpap->machine->properties.end())
+            submodel=" <br/>"+cpap->machine->properties[STR_PROP_SubModel];
+        html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties[STR_PROP_Brand]+"</b> <br>"+cpap->machine->properties[STR_PROP_Model]+" "+cpap->machine->properties[STR_PROP_ModelNumber]+submodel+"</td></tr>\n";
         if (PROFILE.session->showSerialNumbers()) {
-            html+="<tr><td colspan=4 align=center>"+cpap->machine->properties["Serial"]+"</td></tr>\n";
+            html+="<tr><td colspan=4 align=center>"+cpap->machine->properties[STR_PROP_Serial]+"</td></tr>\n";
         }
         CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
         html+="<tr><td colspan=4 align=center>Mode: ";
 
         EventDataType min=cpap->settings_min(CPAP_PressureMin);
         EventDataType max=cpap->settings_max(CPAP_PressureMax);
-        if (mode==MODE_CPAP) html+=tr("CPAP")+" "+QString::number(min)+tr("cmH2O");
-        else if (mode==MODE_APAP) html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+tr("cmH2O");
+        if (mode==MODE_CPAP) html+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
+        else if (mode==MODE_APAP) html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
         else if (mode==MODE_BIPAP) html+=tr("Bi-Level");
         else if (mode==MODE_ASV) html+=tr("ASV");
         else html+=tr("Unknown");
         html+="</td></tr>\n";
 
 
-        html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+tr("Hours")+"</b></td></tr>";
+        html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
         int tt=qint64(cpap->total_time())/1000L;
         QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
         QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
@@ -715,27 +715,27 @@ void Daily::Load(QDate date)
 
         QString cs;
         if (!isBrick) {
-            if (cpap->machine->GetClass()=="ResMed") {
+            if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 cs="4 width='100%' align=center>";
             } else cs="2 width='50%'>";
             html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
             "<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
             "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+CPAP_Hypopnea+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
-            if (cpap->machine->GetClass()=="ResMed") {
+            if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+CPAP_Apnea+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
             }
             html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+CPAP_Obstructive+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
             "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+CPAP_ClearAirway+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
             "</table></td>";
 
-            if (cpap->machine->GetClass()=="PRS1") {
+            if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
                     "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_RERA+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
                 "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_FlowLimit+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
                 "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+CPAP_VSnore+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
                         "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+CPAP_CSR+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
                 "</table></td>";
-            } else if (cpap->machine->GetClass()=="Intellipap") {
+            } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
                 "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+CPAP_NRI+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
                 "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+CPAP_Leak+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
@@ -858,7 +858,7 @@ void Daily::Load(QDate date)
                 html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
             } */
         html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-        if (cpap->machine->GetClass()=="PRS1") {
+        if (cpap->machine->GetClass()==STR_MACH_PRS1) {
             int i=cpap->settings_max(PRS1_FlexMode);
             int j=cpap->settings_max(PRS1_FlexSet);
             QString flexstr=(i>1) ? schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j) : "None";
@@ -866,11 +866,11 @@ void Daily::Load(QDate date)
             html+="<tr><td colspan=4>"+tr("Pressure Relief:")+" "+flexstr+"</td></tr>";
 
             i=cpap->settings_max(PRS1_HumidSetting);
-            QString humid=(i==0) ? tr("Off") : "x"+QString::number(i);
+            QString humid=(i==0) ? STR_GEN_Off : "x"+QString::number(i);
             html+="<tr><td colspan=4>"+tr("Humidifier Setting:")+" "+humid+"</td></tr>";
-        } else if (cpap->machine->GetClass()=="ResMed") {
-            int epr=cpap->settings_max("EPR");
-            int epr2=cpap->settings_max("EPRSet");
+        } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
+            int epr=cpap->settings_max(RMS9_EPR);
+            int epr2=cpap->settings_max(RMS9_EPRSet);
             html+="<tr><td colspan=4>"+tr("EPR Setting:")+" "+QString::number(epr)+" / "+QString::number(epr2)+"</td></tr>";
             //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
 
@@ -1174,7 +1174,7 @@ Session * Daily::CreateJournalSession(QDate date)
     if (!m) {
         m=new Machine(p_profile,0);
         m->SetClass("Journal");
-        m->properties["Brand"]="Virtual";
+        m->properties[STR_PROP_Brand]="Virtual";
         m->SetType(MT_JOURNAL);
         PROFILE.AddMachine(m);
     }
@@ -1239,7 +1239,7 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 
         double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
         double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
-        gGraph *g=GraphView->findGraph(tr("Event Flags"));
+        gGraph *g=GraphView->findGraph(STR_TR_EventFlags);
         if (!g) return;
         if (st<g->rmin_x) {
             st=g->rmin_x;
@@ -1331,7 +1331,7 @@ void Daily::on_evViewSlider_valueChanged(int value)
 
     int winsize=value*60;
 
-    gGraph *g=GraphView->findGraph("Event Flags");
+    gGraph *g=GraphView->findGraph(STR_TR_EventFlags);
     if (!g) return;
     qint64 st=g->min_x;
     qint64 et=g->max_x;
@@ -1463,7 +1463,7 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
     gGraphView *gv=mainwin->getOverview()->graphView();
     gGraph *g;
     if (gv) {
-        g=gv->findGraph(tr("Weight"));
+        g=gv->findGraph(STR_TR_Weight);
         if (g) g->setDay(NULL);
     }
     if ((height>0) && (kg>0)) {
@@ -1472,7 +1472,7 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
         ui->BMI->setVisible(true);
         journal->settings[Journal_BMI]=bmi;
         if (gv) {
-            g=gv->findGraph(tr("BMI"));
+            g=gv->findGraph(STR_TR_BMI);
             if (g) g->setDay(NULL);
         }
     }
@@ -1491,7 +1491,7 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
 
     gGraph *g;
     if (mainwin->getOverview()) {
-        g=mainwin->getOverview()->graphView()->findGraph(tr("Weight"));
+        g=mainwin->getOverview()->graphView()->findGraph(STR_TR_Weight);
         if (g) g->setDay(NULL);
     }
 
@@ -1502,7 +1502,7 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
 
         journal->settings[Journal_BMI]=bmi;
         if (mainwin->getOverview()) {
-            g=mainwin->getOverview()->graphView()->findGraph(tr("BMI"));
+            g=mainwin->getOverview()->graphView()->findGraph(STR_TR_BMI);
             if (g) g->setDay(NULL);
         }
     }

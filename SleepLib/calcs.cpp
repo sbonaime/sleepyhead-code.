@@ -345,7 +345,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
 int calcRespRate(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
-    if (session->machine()->GetClass()!="PRS1") return 0;
+    if (session->machine()->GetClass()!=STR_MACH_PRS1) return 0;
     if (!session->eventlist.contains(CPAP_FlowRate))
         return 0; //need flow waveform
 
@@ -511,7 +511,6 @@ int calcPulseChange(Session *session)
 
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
-    bool ok;
     qint64 window=PROFILE.oxi->pulseChangeDuration();
     window*=1000;
 
@@ -579,7 +578,6 @@ int calcSPO2Drop(Session *session)
 
     EventDataType val,val2,change,tmp;
     qint64 time,time2;
-    bool ok;
     qint64 window=PROFILE.oxi->spO2DropDuration();
     window*=1000;
     change=PROFILE.oxi->spO2DropPercentage();

@@ -108,8 +108,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
     SPO2=createGraph(tr("SpO2"),tr("Oxygen Saturation\n(%)"));
 
-    WEIGHT=createGraph(tr("Weight"),tr("Weight"),YT_Weight);
-    BMI=createGraph(tr("BMI"),tr("Body\nMass\nIndex"));
+    WEIGHT=createGraph(STR_TR_Weight,STR_TR_Weight,YT_Weight);
+    BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
 
     ahihr=new SummaryChart(tr("AHI/Hr"),GT_LINE);
@@ -117,12 +117,12 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ahihr->addSlice(CPAP_AHI,QColor("orange"),ST_WAVG,false);
     AHIHR->AddLayer(ahihr);
 
-    weight=new SummaryChart(tr("Weight"),GT_LINE);
+    weight=new SummaryChart(STR_TR_Weight,GT_LINE);
     weight->setMachineType(MT_JOURNAL);
     weight->addSlice(Journal_Weight,QColor("black"),ST_SETAVG,true);
     WEIGHT->AddLayer(weight);
 
-    bmi=new SummaryChart(tr("BMI"),GT_LINE);
+    bmi=new SummaryChart(STR_TR_BMI,GT_LINE);
     bmi->setMachineType(MT_JOURNAL);
     bmi->addSlice(Journal_BMI,QColor("dark blue"),ST_SETAVG,true);
     BMI->AddLayer(bmi);
@@ -146,11 +146,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     spo2->addSlice(OXI_SPO2,QColor("blue"),ST_MIN,true);
     SPO2->AddLayer(spo2);
 
-    uc=new SummaryChart(tr("Hours"),GT_BAR);
+    uc=new SummaryChart(STR_UNIT_Hours,GT_BAR);
     uc->addSlice("",QColor("green"),ST_HOURS,true);
     UC->AddLayer(uc);
 
-    us=new SummaryChart(tr("Hours"),GT_SESSIONS);
+    us=new SummaryChart(STR_UNIT_Hours,GT_SESSIONS);
     us->addSlice("",QColor("dark blue"),ST_HOURS,true);
     us->addSlice("",QColor("blue"),ST_SESSIONS,true);
     US->AddLayer(us);
@@ -201,7 +201,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ptb->addSlice(CPAP_PTB,QColor("orange"),ST_WAVG,true);
     PTB->AddLayer(ptb);
 
-    pr=new SummaryChart(tr("cmH2O"),GT_LINE);
+    pr=new SummaryChart(STR_UNIT_CMH2O,GT_LINE);
     //PR->setRecMinY(4.0);
     //PR->setRecMaxY(12.0);
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
@@ -350,7 +350,7 @@ void Overview::on_toolButton_clicked()
 
 void Overview::on_printButton_clicked()
 {
-    mainwin->PrintReport(GraphView,tr("Overview")); // Must be translated the same as PrintReport checks.
+    mainwin->PrintReport(GraphView,STR_TR_Overview); // Must be translated the same as PrintReport checks.
 }
 
 void Overview::ResetGraphLayout()

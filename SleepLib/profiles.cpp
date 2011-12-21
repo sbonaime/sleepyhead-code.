@@ -29,7 +29,7 @@ Profile * p_profile;
 Profile::Profile()
 :Preferences(),is_first_day(true)
 {
-    p_name="Profile";
+    p_name=STR_GEN_Profile;
     p_path=PREF.Get("{home}/Profiles");
     machlist.clear();
 
@@ -45,10 +45,10 @@ Profile::Profile(QString path)
 :Preferences(),is_first_day(true)
 {
     const QString xmlext=".xml";
-    p_name="Profile";
+    p_name=STR_GEN_Profile;
     if (path.isEmpty()) p_path=GetAppRoot();
     else p_path=path;
-    (*this)["DataFolder"]=p_path;
+    (*this)[STR_GEN_DataFolder]=p_path;
     if (!p_path.endsWith("/")) p_path+="/";
     p_filename=p_path+p_name+xmlext;
     machlist.clear();
@@ -123,7 +123,7 @@ Profile::~Profile()
 void Profile::DataFormatError(Machine *m)
 {
     QString msg=QObject::tr("Software changes have been made that require the reimporting of the following machines data:\n\n");
-    msg=msg+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["Serial"];
+    msg=msg+m->properties[STR_PROP_Brand]+" "+m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_Serial];
     msg=msg+QObject::tr("\n\nThis is still only alpha software and these changes are sometimes necessary.\n\n");
     msg=msg+QObject::tr("I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.\n\n");
     msg=msg+QObject::tr("Would you like me to purge this data this for you so you can run the new version?");
@@ -132,7 +132,7 @@ void Profile::DataFormatError(Machine *m)
 
         if (!m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
 
-            QMessageBox::critical(NULL,QObject::tr("Purge Failed"),QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")+PREF["DataFolder"].toString(),QMessageBox::Ok);
+            QMessageBox::critical(NULL,QObject::tr("Purge Failed"),QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")+PREF[STR_GEN_DataFolder].toString(),QMessageBox::Ok);
             exit(-1);
         }
     } else {
@@ -175,17 +175,17 @@ void Profile::LoadMachineData()
         if (loader) {
             long v=loader->Version();
             long cv=0;
-            if (m->properties.find("DataVersion")==m->properties.end()) {
-                m->properties["DataVersion"]="0";
+            if (m->properties.find(STR_PROP_DataVersion)==m->properties.end()) {
+                m->properties[STR_PROP_DataVersion]="0";
             }
             bool ok;
-            cv=m->properties["DataVersion"].toLong(&ok);
+            cv=m->properties[STR_PROP_DataVersion].toLong(&ok);
             if (!ok || cv<v) {
                 DataFormatError(m);
                 // It may exit above and not return here..
                 QString s;
                 s.sprintf("%li",v);
-                m->properties["DataVersion"]=s; // Dont need to nag again if they are too lazy.
+                m->properties[STR_PROP_DataVersion]=s; // Dont need to nag again if they are too lazy.
             } else {
                 try {
                     m->Load();
@@ -466,14 +466,14 @@ Profile *Create(QString name)
     Profile *prof=new Profile(path);
     prof->Open();
     profiles[name]=prof;
-    prof->Set("Username",name);
+    prof->user->setUserName(name);
     //prof->Set("Realname",realname);
-    //if (!password.isEmpty()) prof->Set("Password",SHA1(password));
-    prof->Set("DataFolder","{home}/Profiles/{Username}");
+    //if (!password.isEmpty()) prof.user->setPassword(password);
+    prof->Set(STR_GEN_DataFolder,"{home}/Profiles/{Username}");
 
     Machine *m=new Machine(prof,0);
     m->SetClass("Journal");
-    m->properties["Brand"]="Virtual";
+    m->properties[STR_PROP_Brand]="Virtual";
     m->SetType(MT_JOURNAL);
     prof->AddMachine(m);
 

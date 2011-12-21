@@ -39,7 +39,7 @@ public:
 const int max_load_buffer_size=1024*1024;
 
 
-const QString prs1_class_name="PRS1";
+const QString prs1_class_name=STR_MACH_PRS1;
 
 /*! \class PRS1Loader
     \brief Philips Respironics System One Loader Module

@@ -322,11 +322,11 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
 
     Machine *m=new Oximeter(profile,0);
     m->SetClass(cms50_class_name);
-    m->properties["Brand"]="Contec";
-    m->properties["Model"]="CMS50X";
+    m->properties[STR_PROP_Brand]="Contec";
+    m->properties[STR_PROP_Model]="CMS50X";
     QString a;
     a.sprintf("%i",cms50_data_version);
-    m->properties["DataVersion"]=a;
+    m->properties[STR_PROP_DataVersion]=a;
     profile->AddMachine(m);
 
     return m;

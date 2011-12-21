@@ -33,7 +33,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         name=p.key();
         QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
-        if (PREF.Exists("Profile") && (name==PREF["Profile"].toString())) {
+        if (PREF.contains(STR_GEN_Profile) && (name==PREF[STR_GEN_Profile].toString())) {
             sel=i;
         }
         item->setData(p.key());
@@ -53,7 +53,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     /*PREF["SkipLogin"]=false;
     if ((i==1) && PREF["SkipLogin"].toBool()) {
         if (!Profiles::profiles.contains(name))
-            PREF["Profile"]=name;
+            PREF[STR_GEN_Profile]=name;
         QTimer::singleShot(0,this,SLOT(earlyExit()));
         hide();
     } */
@@ -79,7 +79,7 @@ void ProfileSelect::editProfile()
     Profile *profile=Profiles::Get(name);
     if (!profile) return;
     bool reallyEdit=false;
-    if (profile->Exists("Password")) {
+    if (profile->user->hasPassword()) {
         QDialog dialog(this,Qt::Dialog);
         QLineEdit *e=new QLineEdit(&dialog);
         e->setEchoMode(QLineEdit::Password);
@@ -93,16 +93,15 @@ void ProfileSelect::editProfile()
         do {
             e->setText("");
             if (dialog.exec()!=QDialog::Accepted) break;
-            QByteArray ba=e->text().toUtf8();
             tries++;
-            if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
+            if (profile->user->checkPassword(e->text())) {
                 reallyEdit=true;
                 break;
             } else {
                 if (tries<3) {
-                    QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
+                    QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("Incorrect Password"),QMessageBox::Ok);
                 } else {
-                    QMessageBox::warning(this,tr("Error"),tr("You entered the password wrong too many times."),QMessageBox::Ok);
+                    QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("You entered the password wrong too many times."),QMessageBox::Ok);
                     reject();
                 }
             }
@@ -128,7 +127,7 @@ void ProfileSelect::deleteProfile()
                     QMessageBox::warning(this,tr("WTH???"),tr("If you can read this you need to delete this profile directory manually (It's under Your Documents folder -> SleepApp -> Profiles -> [profile_name])"),QMessageBox::Ok);
                     return;
                 }
-                if (profile->Exists("Password")) {
+                if (profile->user->hasPassword()) {
                     QDialog dialog(this,Qt::Dialog);
                     QLineEdit *e=new QLineEdit(&dialog);
                     e->setEchoMode(QLineEdit::Password);
@@ -142,16 +141,15 @@ void ProfileSelect::deleteProfile()
                     do {
                         e->setText("");
                         if (dialog.exec()!=QDialog::Accepted) break;
-                        QByteArray ba=e->text().toUtf8();
                         tries++;
-                        if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
+                        if (profile->user->checkPassword(e->text())) {
                             reallydelete=true;
                             break;
                         } else {
                             if (tries<3) {
-                                QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
+                                QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("Incorrect Password"),QMessageBox::Ok);
                             } else {
-                                QMessageBox::warning(this,tr("Error"),tr("Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.\n\nSigned: Nasty Programmer"),QMessageBox::Ok);
+                                QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.\n\nSigned: Nasty Programmer"),QMessageBox::Ok);
                             }
                         }
                     } while (tries<3);
@@ -198,9 +196,9 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     QString name=index.data().toString();
     Profile *profile=Profiles::profiles[name];
     if (!profile) return;
-    if (!profile->Exists("Password")) {
+    if (!profile->user->hasPassword()) {
         m_selectedProfile=name;
-        PREF["Profile"]=name;
+        PREF[STR_GEN_Profile]=name;
         accept();
         return;
     } else {
@@ -215,18 +213,17 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
             dialog.setLayout(lay);
             lay->addWidget(e);
             dialog.exec();
-            QByteArray ba=e->text().toUtf8();
-            if (QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()==(*profile)["Password"]) {
+            if (profile->user->checkPassword(e->text())) {
                 m_selectedProfile=name;
-                PREF["Profile"]=name;
+                PREF[STR_GEN_Profile]=name;
                 accept();
                 return;
             }
             tries++;
             if (tries<3) {
-                QMessageBox::warning(this,tr("Error"),tr("Incorrect Password"),QMessageBox::Ok);
+                QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("Incorrect Password"),QMessageBox::Ok);
             } else {
-                QMessageBox::warning(this,tr("Error"),tr("You entered an Incorrect Password too many times. Exiting!"),QMessageBox::Ok);
+                QMessageBox::warning(this,STR_MESSAGE_ERROR,tr("You entered an Incorrect Password too many times. Exiting!"),QMessageBox::Ok);
             }
         } while (tries<3);
     }

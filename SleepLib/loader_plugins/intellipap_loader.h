@@ -36,7 +36,7 @@ public:
 const int intellipap_load_buffer_size=1024*1024;
 
 
-const QString intellipap_class_name="Intellipap";
+const QString intellipap_class_name=STR_MACH_Intellipap;
 
 /*! \class IntellipapLoader
     \brief Loader for DeVilbiss Intellipap Auto data

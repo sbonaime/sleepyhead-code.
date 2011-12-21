@@ -44,19 +44,19 @@ void InitGraphs()
 {
     if (!_graph_init) {
 
-        if (!PREF.Exists("Fonts_Graph_Name")) {
+        if (!PREF.contains("Fonts_Graph_Name")) {
             PREF["Fonts_Graph_Name"]="Sans Serif";
             PREF["Fonts_Graph_Size"]=10;
             PREF["Fonts_Graph_Bold"]=false;
             PREF["Fonts_Graph_Italic"]=false;
         }
-        if (!PREF.Exists("Fonts_Title_Name")) {
+        if (!PREF.contains("Fonts_Title_Name")) {
             PREF["Fonts_Title_Name"]="Serif";
             PREF["Fonts_Title_Size"]=11;
             PREF["Fonts_Title_Bold"]=true;
             PREF["Fonts_Title_Italic"]=false;
         }
-        if (!PREF.Exists("Fonts_Big_Name")) {
+        if (!PREF.contains("Fonts_Big_Name")) {
             PREF["Fonts_Big_Name"]="Serif";
             PREF["Fonts_Big_Size"]=35;
             PREF["Fonts_Big_Bold"]=false;
@@ -2518,7 +2518,7 @@ void gGraphView::paintGL()
             if (m_fadingOut) {
               //  bindTexture(previous_day_snapshot);
             } else if (m_fadingIn) {
-                int offset,offset2;
+                //int offset,offset2;
                 float aphase;
                 aphase=1.0-phase;
                 /*if (m_fadedir) { // forwards
@@ -2532,7 +2532,7 @@ void gGraphView::paintGL()
                     //offset=-width();
                     //offset2=0;//-width();
                 }*/
-                offset=0; offset2=0;
+                //offset=0; offset2=0;
 
                 glEnable(GL_BLEND);
 
@@ -2733,7 +2733,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                     m_graphs[i]->mouseMoveEvent(&e);
                     if (!m_button_down && (x<=titleWidth+(gYAxis::Margin-5))) {
                         //qDebug() << "Hovering over" << m_graphs[i]->title();
-                        if (m_graphsbytitle["Event Flags"]==m_graphs[i]) {
+                        if (m_graphsbytitle[STR_TR_EventFlags]==m_graphs[i]) {
                             QVector<Layer *> & layers=m_graphs[i]->layers();
                             gFlagsGroup *fg;
                             for (int i=0;i<layers.size();i++) {

@@ -24,7 +24,7 @@ const int resmed_data_version=5;
 //
 //********************************************************************************************
 
-const QString resmed_class_name="ResMed";
+const QString resmed_class_name=STR_MACH_ResMed;
 
 /*! \struct EDFHeader
     \brief  Represents the EDF+ header structure, used as a place holder while processing the text data.

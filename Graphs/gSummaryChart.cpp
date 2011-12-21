@@ -504,7 +504,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_MAX:  b="Max"; break;
                 case ST_CPH:  b=""; break;
                 case ST_SPH:  b="%"; break;
-                case ST_HOURS: b="Hours"; break;
+                case ST_HOURS: b=STR_UNIT_Hours; break;
                 case ST_SESSIONS: b="Sessions"; break;
 
                 default:
@@ -692,7 +692,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                             case ST_MAX:  a="Max"; break;
                             case ST_CPH:  a=""; break;
                             case ST_SPH:  a="%"; break;
-                            case ST_HOURS: a="Hours"; break;
+                            case ST_HOURS: a=STR_UNIT_Hours; break;
                             case ST_SESSIONS: a="Sessions"; break;
                             default:
                                 break;

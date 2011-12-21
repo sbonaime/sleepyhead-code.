@@ -21,8 +21,8 @@ Intellipap::Intellipap(Profile *p,MachineID id)
     :CPAP(p,id)
 {
     m_class=intellipap_class_name;
-    properties["Brand"]="DeVilbiss";
-    properties["Model"]="Intellipap";
+    properties[STR_PROP_Brand]="DeVilbiss";
+    properties[STR_PROP_Model]=STR_MACH_Intellipap;
 }
 
 Intellipap::~Intellipap()
@@ -67,8 +67,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     QTextStream tstream(&f);
 
     QHash<QString,QString> lookup;
-    lookup["Sn"]="Serial";
-    lookup["Mn"]="Model";
+    lookup["Sn"]=STR_PROP_Serial;
+    lookup["Mn"]=STR_PROP_Model;
     lookup["Mo"]="PAPMode"; // 0=cpap, 1=auto
     //lookup["Pn"]="Pn";
     lookup["Pu"]="MaxPressure";
@@ -125,8 +125,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     }
 
     Machine *mach=NULL;
-    if (set1.contains("Serial")) {
-        mach=CreateMachine(set1["Serial"],profile);
+    if (set1.contains(STR_PROP_Serial)) {
+        mach=CreateMachine(set1[STR_PROP_Serial],profile);
     }
     if (!mach) {
         qDebug() << "Couldn't get Intellipap machine record";
@@ -332,7 +332,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             }*/
         }
     }
-    mach->properties["DataVersion"]=QString().sprintf("%i",intellipap_data_version);
+    mach->properties[STR_PROP_DataVersion]=QString().sprintf("%i",intellipap_data_version);
 
     mach->Save();
 
@@ -355,7 +355,7 @@ Machine *IntellipapLoader::CreateMachine(QString serial,Profile *profile)
     bool found=false;
     QList<Machine *>::iterator i;
     for (i=ml.begin(); i!=ml.end(); i++) {
-        if (((*i)->GetClass()==intellipap_class_name) && ((*i)->properties["Serial"]==serial)) {
+        if (((*i)->GetClass()==intellipap_class_name) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             MachList[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
             break;
@@ -368,7 +368,7 @@ Machine *IntellipapLoader::CreateMachine(QString serial,Profile *profile)
     MachList[serial]=m;
     profile->AddMachine(m);
 
-    m->properties["Serial"]=serial;
+    m->properties[STR_PROP_Serial]=serial;
     return m;
 }
 

@@ -242,6 +242,9 @@ public:
     void setLanguage(QString language) { (*m_profile)[UI_STR_Language]=language; }
     void setDaylightSaving(bool ds) { (*m_profile)[UI_STR_DST]=ds; }
 
+    bool hasPassword() {
+        return !((*m_profile)[UI_STR_Password].toString().isEmpty());
+    }
     bool checkPassword(QString password) {
         QByteArray ba=password.toUtf8();
         return ((*m_profile)[UI_STR_Password].toString()==QString(QCryptographicHash::hash(ba,QCryptographicHash::Sha1).toHex()));

@@ -73,11 +73,11 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
 
     Machine *m=new SleepStage(profile,0);
     m->SetClass(zeo_class_name);
-    m->properties["Brand"]="ZEO";
-    m->properties["Model"]="Personal Sleep Coach";
+    m->properties[STR_PROP_Brand]="ZEO";
+    m->properties[STR_PROP_Model]="Personal Sleep Coach";
     QString s;
     s.sprintf("%i",zeo_data_version);
-    m->properties["DataVersion"]=s;
+    m->properties[STR_PROP_DataVersion]=s;
 
     profile->AddMachine(m);
 

@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString version=VersionString();
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF["Profile"].toString()));
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     ui->tabWidget->setCurrentIndex(0);
 
     overview=NULL;
@@ -195,13 +195,13 @@ void MainWindow::Startup()
     SnapshotGraph->hide();
 
     daily=new Daily(ui->tabWidget,NULL);
-    ui->tabWidget->insertTab(1,daily,tr("Daily"));
+    ui->tabWidget->insertTab(1,daily,STR_TR_Daily);
 
     overview=new Overview(ui->tabWidget,daily->graphView());
-    ui->tabWidget->insertTab(2,overview,tr("Overview"));
+    ui->tabWidget->insertTab(2,overview,STR_TR_Overview);
     if (PROFILE.oxi->oximetryEnabled()) {
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
-        ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+        ui->tabWidget->insertTab(3,oximetry,STR_TR_Oximetry);
     }
 
 
@@ -374,7 +374,7 @@ void MainWindow::on_dailyButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(daily);
     daily->RedrawGraphs();
-    qstatus2->setText("Daily");
+    qstatus2->setText(STR_TR_Daily);
 }
 void MainWindow::JumpDaily()
 {
@@ -384,7 +384,7 @@ void MainWindow::JumpDaily()
 void MainWindow::on_overviewButton_clicked()
 {
     ui->tabWidget->setCurrentWidget(overview);
-    qstatus2->setText("Overview");
+    qstatus2->setText(STR_TR_Overview);
 }
 
 void MainWindow::on_webView_loadFinished(bool arg1)
@@ -435,7 +435,7 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
-    PROFILE["ShowDebug"]=checked;
+    PROFILE.general->setShowDebug(checked);
     if (checked) {
         ui->logText->show();
     } else {
@@ -476,17 +476,17 @@ void MainWindow::on_oximetryButton_clicked()
 {
     bool first=false;
     if (!oximetry) {
-        if (!PROFILE.Exists("EnableOximetry") || !PROFILE["EnableOximetry"].toBool()) {
+        if (!PROFILE.oxi->oximetryEnabled()) {
             if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
-            PROFILE["EnableOximetry"]=true;
+            PROFILE.oxi->setOximetryEnabled(true);
         }
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
-        ui->tabWidget->insertTab(3,oximetry,tr("Oximetry"));
+        ui->tabWidget->insertTab(3,oximetry,STR_TR_Oximetry);
         first=true;
     }
     ui->tabWidget->setCurrentWidget(oximetry);
     if (!first) oximetry->RedrawGraphs();
-    qstatus2->setText("Oximetry");
+    qstatus2->setText(STR_TR_Oximetry);
 }
 
 void MainWindow::CheckForUpdates()
@@ -542,12 +542,12 @@ void MainWindow::updatestatusBarMessage (const QString & text)
 void MainWindow::on_actionPrint_Report_triggered()
 {
     if (ui->tabWidget->currentWidget()==overview) {
-        PrintReport(overview->graphView(),tr("Overview"));
+        PrintReport(overview->graphView(),STR_TR_Overview);
     } else if (ui->tabWidget->currentWidget()==daily) {
-        PrintReport(daily->graphView(),tr("Daily"),daily->getDate());
+        PrintReport(daily->graphView(),STR_TR_Daily,daily->getDate());
     } else if (ui->tabWidget->currentWidget()==oximetry) {
         if (oximetry)
-            PrintReport(oximetry->graphView(),tr("Oximetry"));
+            PrintReport(oximetry->graphView(),STR_TR_Oximetry);
     } else {
         //QPrinter printer();
         //ui->webView->print(printer)
@@ -558,7 +558,7 @@ void MainWindow::on_actionPrint_Report_triggered()
 void MainWindow::on_action_Edit_Profile_triggered()
 {
     NewProfile newprof(this);
-    newprof.edit(PREF["Profile"].toString());
+    newprof.edit(PREF[STR_GEN_Profile].toString());
     newprof.exec();
 
 }
@@ -603,7 +603,7 @@ EventList *packEventList(EventList *ev)
     EventList *nev=new EventList(EVL_Event);
 
     EventDataType val,lastval=0;
-    qint64 time,lasttime=0,lasttime2=0;
+    qint64 time,lasttime=0;//,lasttime2=0;
 
     lastval=ev->data(0);
     lasttime=ev->time(0);
@@ -614,7 +614,7 @@ EventList *packEventList(EventList *ev)
         time=ev->time(i);
         if (val!=lastval) {
             nev->AddEvent(time,val);
-            lasttime2=time;
+            //lasttime2=time;
         }
         lastval=val;
         lasttime=time;
@@ -640,7 +640,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     QString username=PROFILE.Get("_{Username}_");
 
     bool print_bookmarks=false;
-    if (name=="Daily") {
+    if (name==STR_TR_Daily) {
         QVariantList book_start;
         journal=getDaily()->GetJournalSession(getDaily()->getDate());
         if (journal && journal->settings.contains(Bookmark_Start)) {
@@ -655,28 +655,28 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     QPrinter * printer;
 
-    bool highres;
-    bool aa_setting=PROFILE.ExistsAndTrue("UseAntiAliasing");
+    //bool highres;
+    bool aa_setting=PROFILE.appearance->antiAliasing();
 
 #ifdef Q_WS_MAC
-    PROFILE["HighResPrinting"]=true; // forced on
+    PROFILE.appearance->setHighResPrinting(true); // forced on
 //    bool force_antialiasing=true;
 //#else
 #endif
-    bool force_antialiasing=PROFILE.ExistsAndTrue("UseAntiAliasing");
+    bool force_antialiasing=aa_setting;
 
-    if (PROFILE.ExistsAndTrue("HighResPrinting")) {
+    if (PROFILE.appearance->highResPrinting()) {
         printer=new QPrinter(QPrinter::HighResolution);
-        highres=true;
+        //highres=true;
     } else {
         printer=new QPrinter(QPrinter::ScreenResolution);
-        highres=false;
+        //highres=false;
     }
 
 #ifdef Q_WS_X11
     printer->setPrinterName("Print to File (PDF)");
     printer->setOutputFormat(QPrinter::PdfFormat);
-    QString filename=PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf");//QFileDialog::getSaveFileName(this,"Select filename to save PDF report to",,"PDF Files (*.pdf)");
+    QString filename=PREF.Get("{home}/"+name+username+date.toString(Qt::ISODate)+".pdf");
 
     printer->setOutputFileName(filename);
 #endif
@@ -740,12 +740,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     painter.setFont(report_font);
 
     int maxy=0;
-    if (!PROFILE["FirstName"].toString().isEmpty()) {
-        QString userinfo=tr("Name:\t %1, %2\n").arg(PROFILE["LastName"].toString()).arg(PROFILE["FirstName"].toString());
-        userinfo+=tr("DOB:\t%1\n").arg(PROFILE["DOB"].toString());
-        userinfo+=tr("Phone:\t%1\n").arg(PROFILE["Phone"].toString());
-        userinfo+=tr("Email:\t%1\n").arg(PROFILE["EmailAddress"].toString());
-        if (!PROFILE["Address"].toString().isEmpty()) userinfo+=tr("\nAddress:\n%1").arg(PROFILE["Address"].toString());
+    if (!PROFILE.user->firstName().isEmpty()) {
+        QString userinfo=tr("Name:\t %1, %2\n").arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName());
+        userinfo+=tr("DOB:\t%1\n").arg(PROFILE.user->DOB().toString(Qt::SystemLocaleShortDate));
+        userinfo+=tr("Phone:\t%1\n").arg(PROFILE.user->phone());
+        userinfo+=tr("Email:\t%1\n").arg(PROFILE.user->email());
+        if (!PROFILE.user->address().isEmpty()) userinfo+=tr("\nAddress:\n%1").arg(PROFILE.user->address());
 
         QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
@@ -753,7 +753,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     }
 
     int graph_slots=0;
-    if (name==tr("Daily")) {
+    if (name==STR_TR_Daily) {
         Day *cpap=PROFILE.GetDay(date,MT_CPAP);
         QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         if (cpap) {
@@ -769,9 +769,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             cpapinfo+=tr("Wake-up: ")+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
             QString submodel;
             cpapinfo+=tr("Machine: ");
-            if (cpap->machine->properties.find("SubModel")!=cpap->machine->properties.end())
-                submodel="\n"+cpap->machine->properties["SubModel"];
-            cpapinfo+=cpap->machine->properties["Brand"]+" "+cpap->machine->properties["Model"]+submodel;
+            if (cpap->machine->properties.find(STR_PROP_SubModel)!=cpap->machine->properties.end())
+                submodel="\n"+cpap->machine->properties[STR_PROP_SubModel];
+            cpapinfo+=cpap->machine->properties[STR_PROP_Brand]+" "+cpap->machine->properties[STR_PROP_Model]+submodel;
             CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
             cpapinfo+=tr("\nMode: ");
 
@@ -823,13 +823,13 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             int ttop=bounds.height();
 
             stats=tr("AI=%1 HI=%2 CAI=%3 ").arg(oai,0,'f',2).arg(hi,0,'f',2).arg(cai,0,'f',2);
-            if (cpap->machine->GetClass()=="PRS1") {
+            if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 stats+=tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4\%")
                         .arg(rei,0,'f',2).arg(vsi,0,'f',2)
                         .arg(fli,0,'f',2).arg(csr,0,'f',2);
-            } else if (cpap->machine->GetClass()=="ResMed") {
+            } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 stats+=tr("UAI=%1 ").arg(uai,0,'f',2);
-            } else if (cpap->machine->GetClass()=="Intellipap") {
+            } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 stats+=tr("NRI=%1 LKI=%2 EPI=%3").arg(nri,0,'f',2).arg(lki,0,'f',2).arg(exp,0,'f',2);
             }
             bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignCenter));
@@ -844,7 +844,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         }
 
         graph_slots=2;
-    } else if (name==tr("Overview")) {
+    } else if (name==STR_TR_Overview) {
         QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
         QString ovinfo=tr("Reporting from %1 to %2").arg(first.date().toString(Qt::SystemLocaleShortDate)).arg(last.date().toString(Qt::SystemLocaleShortDate));
@@ -853,7 +853,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
         if (bounds.height()>maxy) maxy=bounds.height();
         graph_slots=1;
-    } else if (name==tr("Oximetry")) {
+    } else if (name==STR_TR_Oximetry) {
         QString ovinfo=tr("Reporting data goes here");
         QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),ovinfo,QTextOption(Qt::AlignCenter));
         painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
@@ -952,7 +952,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             top+=normal_height;
         } else top+=normal_height/2;
 
-        PROFILE["UseAntiAliasing"]=force_antialiasing;
+        PROFILE.appearance->setAntiAliasing(force_antialiasing);
         int tmb=g->m_marginbottom;
         g->m_marginbottom=0;
 
@@ -961,7 +961,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         //g->showTitle(true);
 
         g->m_marginbottom=tmb;
-        PROFILE["UseAntiAliasing"]=aa_setting;
+        PROFILE.appearance->setAntiAliasing(aa_setting);
 
         painter.drawPixmap(0,top,virt_width,full_graph_height-normal_height,pm);
         top+=full_graph_height;
@@ -992,9 +992,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
     QList<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
 
-    bool ok;
-    int discard_threshold=PROFILE["OxiDiscardThreshold"].toInt(&ok);
-    if (!ok) discard_threshold=10;
+    int discard_threshold=PROFILE.oxi->oxiDiscardThreshold();
     Machine *m;
     for (int z=0;z<machines.size();z++) {
         m=machines.at(z);
@@ -1114,7 +1112,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     Machine *m;
     if (day) {
         m=day->machine;
-        QString path=PROFILE.Get("DataFolder")+QDir::separator()+m->hexid()+QDir::separator();
+        QString path=PROFILE.Get(STR_GEN_DataFolder)+QDir::separator()+m->hexid()+QDir::separator();
 
         QVector<Session *>::iterator s;
 
@@ -1152,7 +1150,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
             qDebug() << "Gah!! no machine to purge";
             return;
         }
-        if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties["Brand"]+" "+m->properties["Model"]+" "+m->properties["ModelNumber"]+" ("+m->properties["Serial"]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties[STR_PROP_Brand]+" "+m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_ModelNumber]+" ("+m->properties[STR_PROP_Serial]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             m->Purge(3478216);
             RestartApplication();
         }

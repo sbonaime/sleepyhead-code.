@@ -117,24 +117,24 @@ int main(int argc, char *argv[])
     if (force_login_screen) skip_login=false;
 
     QDateTime lastchecked, today=QDateTime::currentDateTime();
-    if (!PREF.Exists("Updates_AutoCheck")) {
-        PREF["Updates_AutoCheck"]=true;
-        PREF["Updates_CheckFrequency"]=7;
+    if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) {
+        PREF[STR_GEN_UpdatesAutoCheck]=true;
+        PREF[STR_GEN_UpdateCheckFrequency]=7;
     }
     bool check_updates=false;
-    if (PREF["Updates_AutoCheck"].toBool()) {
-        int update_frequency=PREF["Updates_CheckFrequency"].toInt();
+    if (PREF[STR_GEN_UpdatesAutoCheck].toBool()) {
+        int update_frequency=PREF[STR_GEN_UpdateCheckFrequency].toInt();
         int days=1000;
         // p_pref ->Get
-        lastchecked=PREF["Updates_LastChecked"].toDateTime();
-        if (PREF.Exists("Updates_LastChecked")) {
+        lastchecked=PREF[STR_GEN_UpdatesLastChecked].toDateTime();
+        if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
             days=lastchecked.secsTo(today);
             days/=86400;
         };
         if (days>update_frequency) {
             //QMessageBox::information(NULL,"Check for updates","Placeholder. Would automatically check for updates here.",QMessageBox::Ok);
             check_updates=true;
-            //PREF["Updates_LastChecked"]=today;
+            //PREF[STR_GEN_UpdatesLastChecked]=today;
         }
     }
 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 
         // Show New User wizard..
     } else {
-        if (PREF.Exists("VersionString")) {
+        if (PREF.contains("VersionString")) {
             QString V=PREF["VersionString"].toString();
             if (VersionString()>V) {
                 release_notes();
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
             if (profsel.result()==ProfileSelect::Rejected) {
                 exit(1);
             }
-            p_profile=Profiles::Get(PREF["Profile"].toString());
+            p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
         } else p_profile=NULL;
         if (!p_profile) {
             if (profsel.exec()==ProfileSelect::Rejected) {
@@ -170,9 +170,9 @@ int main(int argc, char *argv[])
     }
     PREF["VersionString"]=VersionString();
 
-    p_profile=Profiles::Get(PREF["Profile"].toString());
+    p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
 
-    //if (!PREF.Exists("Profile")) PREF["Profile"]=getUserName();
+    //if (!PREF.Exists(STR_GEN_Profile)) PREF[STR_GEN_Profile]=getUserName();
 
     //int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
    /* QFontDatabase fdb;
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
         qDebug() << "Loaded Font: " << (*i);
     } */
 
-    if (!PREF.Exists("Fonts_Application_Name")) {
+    if (!PREF.contains("Fonts_Application_Name")) {
         PREF["Fonts_Application_Name"]="Sans Serif";
         PREF["Fonts_Application_Size"]=10;
         PREF["Fonts_Application_Bold"]=false;

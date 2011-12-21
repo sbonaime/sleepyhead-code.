@@ -171,7 +171,7 @@ bool Machine::Purge(int secret)
 
 
     // It would be joyous if this function screwed up..
-    QString path=profile->Get("DataFolder")+"/"+hexid();
+    QString path=profile->Get(STR_GEN_DataFolder)+"/"+hexid();
 
     QDir dir(path);
 
@@ -216,7 +216,7 @@ const quint32 channel_version=1;
 
 bool Machine::Load()
 {
-    QString path=profile->Get("DataFolder")+"/"+hexid();
+    QString path=profile->Get(STR_GEN_DataFolder)+"/"+hexid();
 
     QDir dir(path);
     qDebug() << "Loading " << path;
@@ -272,7 +272,7 @@ bool Machine::Load()
 }
 bool Machine::SaveSession(Session *sess)
 {
-    QString path=profile->Get("DataFolder")+"/"+hexid();
+    QString path=profile->Get(STR_GEN_DataFolder)+"/"+hexid();
     if (sess->IsChanged()) sess->Store(path);
     return true;
 }
@@ -282,7 +282,7 @@ bool Machine::Save()
     //int size;
     int cnt=0;
 
-    QString path=profile->Get("DataFolder")+"/"+hexid();
+    QString path=profile->Get(STR_GEN_DataFolder)+"/"+hexid();
     QDir dir(path);
     if (!dir.exists()) {
         dir.mkdir(path);

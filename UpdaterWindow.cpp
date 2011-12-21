@@ -123,7 +123,7 @@ void UpdaterWindow::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
         ui->tableWidget->item(current_row,2)->setText(QString::number(bytesTotal/1048576.0,'f',3)+"MB");
     }
     //ui->progressBar->setValue(f);
-    int elapsed=dltime.elapsed();
+   // int elapsed=dltime.elapsed();
 }
 
 void UpdaterWindow::requestFile()
@@ -473,7 +473,7 @@ void UpdaterWindow::upgradeNext()
             ui->downloadTitle->setText(tr("Update Complete!"));
             ui->FinishedButton->setVisible(true);
             ui->downloadLabel->setText(tr("Updates Complete. SleepyHead needs to restart now, click Finished to do so."));
-            PREF["Updates_LastChecked"]=QDateTime::currentDateTime();
+            PREF[STR_GEN_UpdatesLastChecked]=QDateTime::currentDateTime();
         } else {
             ui->downloadTitle->setText(tr("Update Failed :("));
             success=false;

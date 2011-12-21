@@ -102,8 +102,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
     //ui->timeZoneCombo->setCurrentIndex(i);
 
-    bool  ok;
-    double v;
     ui->spo2Drop->setValue(profile->oxi->spO2DropPercentage());
     ui->spo2DropTime->setValue(profile->oxi->spO2DropDuration());
     ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
@@ -115,13 +113,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->combineSlider->setValue(val);
     if (val>0) {
         ui->combineLCD->display(val);
-    } else ui->combineLCD->display(tr("OFF"));
+    } else ui->combineLCD->display(STR_GEN_Off);
 
     val=profile->session->ignoreShortSessions();
     ui->IgnoreSlider->setValue(val);
     if (val>0) {
         ui->IgnoreLCD->display(val);
-    } else ui->IgnoreLCD->display(tr("OFF"));
+    } else ui->IgnoreLCD->display(STR_GEN_Off);
 
     ui->applicationFont->setCurrentFont(QApplication::font());
     //ui->applicationFont->setFont(QApplication::font());
@@ -179,12 +177,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     ui->graphHeight->setValue(profile->appearance->graphHeight());
 
-    if (!PREF.Exists("Updates_AutoCheck")) PREF["Updates_AutoCheck"]=true;
-    ui->automaticallyCheckUpdates->setChecked(PREF["Updates_AutoCheck"].toBool());
+    if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) PREF[STR_GEN_UpdatesAutoCheck]=true;
+    ui->automaticallyCheckUpdates->setChecked(PREF[STR_GEN_UpdatesAutoCheck].toBool());
 
-    if (!PREF.Exists("Updates_CheckFrequency")) PREF["Updates_CheckFrequency"]=3;
-    ui->updateCheckEvery->setValue(PREF["Updates_CheckFrequency"].toInt());
-    if (PREF.Exists("Updates_LastChecked")) {
+    if (!PREF.contains(STR_GEN_UpdateCheckFrequency)) PREF[STR_GEN_UpdateCheckFrequency]=3;
+    ui->updateCheckEvery->setValue(PREF[STR_GEN_UpdateCheckFrequency].toInt());
+    if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
         RefreshLastChecked();
     } else ui->updateLastChecked->setText("Never");
 
@@ -335,10 +333,10 @@ void PreferencesDialog::Save()
     profile->oxi->setPulseChangeDuration(ui->pulseChangeTime->value());
     profile->oxi->setOxiDiscardThreshold(ui->oxiDiscardThreshold->value());
 
-    PREF["SkipLoginScreen"]=ui->skipLoginScreen->isChecked();
+    PREF[STR_GEN_SkipLogin]=ui->skipLoginScreen->isChecked();
 
-    PREF["Updates_AutoCheck"]=ui->automaticallyCheckUpdates->isChecked();
-    PREF["Updates_CheckFrequency"]=ui->updateCheckEvery->value();
+    PREF[STR_GEN_UpdatesAutoCheck]=ui->automaticallyCheckUpdates->isChecked();
+    PREF[STR_GEN_UpdateCheckFrequency]=ui->updateCheckEvery->value();
 
     PREF["Fonts_Application_Name"]=ui->applicationFont->currentText();
     PREF["Fonts_Application_Size"]=ui->applicationFontSize->value();
@@ -418,27 +416,25 @@ void PreferencesDialog::on_combineSlider_valueChanged(int position)
 {
     if (position>0) {
         ui->combineLCD->display(position);
-    } else ui->combineLCD->display(tr("OFF"));
+    } else ui->combineLCD->display(STR_GEN_Off);
 }
 
 void PreferencesDialog::on_IgnoreSlider_valueChanged(int position)
 {
     if (position>0) {
         ui->IgnoreLCD->display(position);
-    } else ui->IgnoreLCD->display(tr("OFF"));
+    } else ui->IgnoreLCD->display(STR_GEN_Off);
 }
 
 #include "mainwindow.h"
 extern MainWindow * mainwin;
 void PreferencesDialog::RefreshLastChecked()
 {
-    ui->updateLastChecked->setText(PREF["Updates_LastChecked"].toDateTime().toString(Qt::SystemLocaleLongDate));
+    ui->updateLastChecked->setText(PREF[STR_GEN_UpdatesLastChecked].toDateTime().toString(Qt::SystemLocaleLongDate));
 }
 
 void PreferencesDialog::on_checkForUpdatesButton_clicked()
 {
-    //mainwin->statusBar()->showMessage("Checking for Updates");
-    //ui->updateLastChecked->setText("Checking for Updates");
     mainwin->CheckForUpdates();
 }
 
@@ -595,7 +591,7 @@ void PreferencesDialog::resetGraphModel()
         it->setData(i,Qt::UserRole+2);
         items.push_back(it);
 
-        if (title!=tr("Event Flags")) { // ouchie.. Translations will cause problems here..
+        if (title!=STR_TR_EventFlags) {
 
             it=new QStandardItem(QString::number((*gv)[i]->rec_miny,'f',1));
             it->setEditable(true);

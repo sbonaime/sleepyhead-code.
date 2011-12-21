@@ -179,7 +179,7 @@ void NewProfile::on_nextButton_clicked()
             profile->user->setHeight(v);
 
             //profile->user->setUserName(ui->userNameEdit->text());??
-            PREF["Profile"]=ui->userNameEdit->text();
+            PREF[STR_GEN_Profile]=ui->userNameEdit->text();
 
 
             this->accept();
@@ -243,7 +243,7 @@ void NewProfile::edit(const QString name)
     ui->userNameEdit->setReadOnly(true);
     ui->firstNameEdit->setText(profile->user->firstName());
     ui->lastNameEdit->setText(profile->user->lastName());
-    if (profile->Exists(UI_STR_Password)) {
+    if (profile->contains(UI_STR_Password)) {
         // leave the password box blank..
         QString a="******";
         ui->passwordEdit1->setText(a);
