@@ -30,6 +30,10 @@ class OldDBVersion {};
 const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don't touch!
 
 //const int max_number_event_fields=10;
+// This should probably move somewhere else
+//! \fn timezoneOffset();
+//! \brief Calculate the timezone Offset in milliseconds between system timezone and UTC
+qint64 timezoneOffset();
 
 
 /*! \enum SummaryType
@@ -47,6 +51,7 @@ enum UnitSystem { US_Metric, US_Archiac };
 const float ounce_convert=28.3495231;
 const float pound_convert=ounce_convert*16;
 
+QString weightString(EventDataType kg, UnitSystem us);
 
 /*! \enum CPAPMode
     \brief CPAP Machines mode of operation
@@ -77,74 +82,90 @@ enum MCDataType
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
 // This all needs replacing with actual integer codes.. There will likely be a big speedup when this happens again.
-const QString CPAP_IPAP="IPAP";
-const QString CPAP_IPAPLo="IPAPLo";
-const QString CPAP_IPAPHi="IPAPHi";
-const QString CPAP_EPAP="EPAP";
-const QString CPAP_Pressure="Pressure";
-const QString CPAP_PS="PS";
-const QString CPAP_Mode="PAPMode";
-const QString CPAP_BrokenSummary="BrokenSummary";
-const QString CPAP_PressureMin="PressureMin";
-const QString CPAP_PressureMax="PressureMax";
-const QString CPAP_RampTime="RampTime";
-const QString CPAP_RampPressure="RampPressure";
-const QString CPAP_Obstructive="Obstructive";
-const QString CPAP_Hypopnea="Hypopnea";
-const QString CPAP_ClearAirway="ClearAirway";
-const QString CPAP_Apnea="Apnea";
-const QString CPAP_CSR="CSR";
-const QString CPAP_LeakFlag="LeakFlag";
-const QString CPAP_ExP="ExP";
-const QString CPAP_NRI="NRI";
-const QString CPAP_VSnore="VSnore";
-const QString CPAP_VSnore2="VSnore2";
-const QString CPAP_RERA="RERA";
-const QString CPAP_PressurePulse="PressurePulse";
-const QString CPAP_FlowLimit="FlowLimit";
-const QString CPAP_FlowRate="FlowRate";
-const QString CPAP_MaskPressure="MaskPressure";
-const QString CPAP_MaskPressureHi="MaskPressureHi";
-const QString CPAP_RespEvent="RespEvent";
-const QString CPAP_Snore="Snore";
-const QString CPAP_MinuteVent="MinuteVent";
-const QString CPAP_RespRate="RespRate";
-const QString CPAP_TidalVolume="TidalVolume";
-const QString CPAP_PTB="PTB";
-const QString CPAP_Leak="Leak";
-const QString CPAP_LeakMedian="LeakMedian";
-const QString CPAP_LeakTotal="LeakTotal";
-const QString CPAP_MaxLeak="MaxLeak";
-const QString CPAP_FLG="FLG";
-const QString CPAP_IE="IE";
-const QString CPAP_Te="Te";
-const QString CPAP_Ti="Ti";
-const QString CPAP_TgMV="TgMV";
-const QString RMS9_E01="RMS9_E01";
-const QString RMS9_E02="RMS9_E02";
-const QString PRS1_00="PRS1_00";
-const QString PRS1_01="PRS1_01";
-const QString PRS1_08="PRS1_08";
-const QString PRS1_0A="PRS1_0A";
-const QString PRS1_0B="PRS1_0B";
-const QString PRS1_0C="PRS1_0C";
-const QString PRS1_0E="PRS1_0E";
-const QString PRS1_0F="PRS1_0F";
-const QString PRS1_10="PRS1_10";
-const QString PRS1_12="PRS1_12";
-const QString PRS1_FlexMode="FlexMode";
-const QString PRS1_FlexSet="FlexSet";
-const QString PRS1_HumidStatus="HumidStat";
-const QString PRS1_HumidSetting="HumidSet";
+const ChannelID CPAP_IPAP="IPAP";
+const ChannelID CPAP_IPAPLo="IPAPLo";
+const ChannelID CPAP_IPAPHi="IPAPHi";
+const ChannelID CPAP_EPAP="EPAP";
+const ChannelID CPAP_Pressure="Pressure";
+const ChannelID CPAP_PS="PS";
+const ChannelID CPAP_Mode="PAPMode";
+const ChannelID CPAP_BrokenSummary="BrokenSummary";
+const ChannelID CPAP_PressureMin="PressureMin";
+const ChannelID CPAP_PressureMax="PressureMax";
+const ChannelID CPAP_RampTime="RampTime";
+const ChannelID CPAP_RampPressure="RampPressure";
+const ChannelID CPAP_Obstructive="Obstructive";
+const ChannelID CPAP_Hypopnea="Hypopnea";
+const ChannelID CPAP_ClearAirway="ClearAirway";
+const ChannelID CPAP_Apnea="Apnea";
+const ChannelID CPAP_CSR="CSR";
+const ChannelID CPAP_LeakFlag="LeakFlag";
+const ChannelID CPAP_ExP="ExP";
+const ChannelID CPAP_NRI="NRI";
+const ChannelID CPAP_VSnore="VSnore";
+const ChannelID CPAP_VSnore2="VSnore2";
+const ChannelID CPAP_RERA="RERA";
+const ChannelID CPAP_PressurePulse="PressurePulse";
+const ChannelID CPAP_FlowLimit="FlowLimit";
+const ChannelID CPAP_FlowRate="FlowRate";
+const ChannelID CPAP_MaskPressure="MaskPressure";
+const ChannelID CPAP_MaskPressureHi="MaskPressureHi";
+const ChannelID CPAP_RespEvent="RespEvent";
+const ChannelID CPAP_Snore="Snore";
+const ChannelID CPAP_MinuteVent="MinuteVent";
+const ChannelID CPAP_RespRate="RespRate";
+const ChannelID CPAP_TidalVolume="TidalVolume";
+const ChannelID CPAP_PTB="PTB";
+const ChannelID CPAP_Leak="Leak";
+const ChannelID CPAP_LeakMedian="LeakMedian";
+const ChannelID CPAP_LeakTotal="LeakTotal";
+const ChannelID CPAP_MaxLeak="MaxLeak";
+const ChannelID CPAP_FLG="FLG";
+const ChannelID CPAP_IE="IE";
+const ChannelID CPAP_Te="Te";
+const ChannelID CPAP_Ti="Ti";
+const ChannelID CPAP_TgMV="TgMV";
+const ChannelID RMS9_E01="RMS9_E01";
+const ChannelID RMS9_E02="RMS9_E02";
+const ChannelID RMS9_EPR="EPR";
+const ChannelID RMS9_EPRSet="EPRSet";
+const ChannelID PRS1_00="PRS1_00";
+const ChannelID PRS1_01="PRS1_01";
+const ChannelID PRS1_08="PRS1_08";
+const ChannelID PRS1_0A="PRS1_0A";
+const ChannelID PRS1_0B="PRS1_0B";
+const ChannelID PRS1_0C="PRS1_0C";
+const ChannelID PRS1_0E="PRS1_0E";
+const ChannelID PRS1_0F="PRS1_0F";
+const ChannelID PRS1_10="PRS1_10";
+const ChannelID PRS1_12="PRS1_12";
+const ChannelID PRS1_FlexMode="FlexMode";
+const ChannelID PRS1_FlexSet="FlexSet";
+const ChannelID PRS1_HumidStatus="HumidStat";
+const ChannelID PRS1_HumidSetting="HumidSet";
+const ChannelID PRS1_SysLock="SysLock";
+const ChannelID PRS1_SysOneResistStat="SysOneResistStat";
+const ChannelID PRS1_SysOneResistSet="SysOneResistSet";
+const ChannelID PRS1_HoseDiam="HoseDiam";
+const ChannelID PRS1_AutoOn="AutoOn";
+const ChannelID PRS1_AutoOff="AutoOff";
+const ChannelID PRS1_MaskAlert="MaskAlert";
+const ChannelID PRS1_ShowAHI="ShowAHI";
 
-const QString OXI_Pulse="Pulse";
-const QString OXI_SPO2="SPO2";
-const QString OXI_PulseChange="PulseChange";
-const QString OXI_SPO2Drop="SPO2Drop";
-const QString OXI_Plethy="Plethy";
 
-const QString CPAP_AHI="AHI";
-const QString Journal_Notes="Journal";
+const ChannelID OXI_Pulse="Pulse";
+const ChannelID OXI_SPO2="SPO2";
+const ChannelID OXI_PulseChange="PulseChange";
+const ChannelID OXI_SPO2Drop="SPO2Drop";
+const ChannelID OXI_Plethy="Plethy";
 
+const ChannelID CPAP_AHI="AHI";
+const ChannelID Journal_Notes="Journal";
+const ChannelID Journal_Weight="Weight";
+const ChannelID Journal_BMI="BMI";
+const ChannelID Journal_ZombieMeter="ZombieMeter";
+const ChannelID Bookmark_Start="BookmarkStart";
+const ChannelID Bookmark_End="BookmarkEnd";
+const ChannelID Bookmark_Notes="BookmarkNotes";
 
 #endif // MACHINE_COMMON_H

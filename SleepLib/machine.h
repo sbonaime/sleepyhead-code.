@@ -182,10 +182,6 @@ public:
 protected:
 };
 
-// This should probably move somewhere else
-//! \fn timezoneOffset();
-//! \brief Calculate the timezone Offset in milliseconds between system timezone and UTC
-qint64 timezoneOffset();
 
 #endif // MACHINE_H
 

@@ -20,21 +20,6 @@
 
 extern QProgressBar * qprogress;
 
-
-qint64 timezoneOffset() {
-    static bool ok=false;
-    static qint64 _TZ_offset=0;
-
-    if (ok) return _TZ_offset;
-    QDateTime d1=QDateTime::currentDateTime();
-    QDateTime d2=d1;
-    d1.setTimeSpec(Qt::UTC);
-    _TZ_offset=d2.secsTo(d1);
-    _TZ_offset*=1000L;
-    return _TZ_offset;
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Machine Base-Class implmementation
 //////////////////////////////////////////////////////////////////////////////////////////

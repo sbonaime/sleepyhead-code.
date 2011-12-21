@@ -493,9 +493,6 @@ int calcLeaks(Session *session)
             if (idx>=med.size()) idx--;
             median=tmp-med[idx];
             if (median<0) median=0;
-            if (median>9999) {
-                int i=5;
-            }
             leak->AddEvent(ti,median);
 
             rpos=rpos % rbsize;
@@ -606,10 +603,10 @@ int calcSPO2Drop(Session *session)
     int li=0;
 
     // Fix me.. Time scale varies.
-    const unsigned ringsize=30;
-    EventDataType ring[ringsize]={0};
-    qint64 rtime[ringsize]={0};
-    int rp=0;
+    //const unsigned ringsize=30;
+    //EventDataType ring[ringsize]={0};
+    //qint64 rtime[ringsize]={0};
+    //int rp=0;
     int min;
     int cnt=0;
     tmp=0;

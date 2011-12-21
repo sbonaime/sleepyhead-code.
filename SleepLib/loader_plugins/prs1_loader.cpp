@@ -482,13 +482,13 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->settings[PRS1_FlexSet]=(int)(data[offset+0x08] & 3);
     session->settings[PRS1_HumidSetting]=(int)data[offset+0x09]&0x0f;
     session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
-    session->settings["SysLock"]=(data[offset+0x0a]&0x80)==0x80;
-    session->settings["SysOneResistStat"]=(data[offset+0x0a]&0x40)==0x40;
-    session->settings["SysOneResistSet"]=(int)data[offset+0x0a]&7;
-    session->settings["HoseDiam"]=((data[offset+0x0a]&0x08)?"15mm":"22mm");
-    session->settings["AutoOff"]=(data[offset+0x0c]&0x10)==0x10;
-    session->settings["MaskAlert"]=(data[offset+0x0c]&0x08)==0x08;
-    session->settings["ShowAHI"]=(data[offset+0x0c]&0x04)==0x04;
+    session->settings[PRS1_SysLock]=(data[offset+0x0a]&0x80)==0x80;
+    session->settings[PRS1_SysOneResistStat]=(data[offset+0x0a]&0x40)==0x40;
+    session->settings[PRS1_SysOneResistSet]=(int)data[offset+0x0a]&7;
+    session->settings[PRS1_HoseDiam]=((data[offset+0x0a]&0x08)?"15mm":"22mm");
+    session->settings[PRS1_AutoOff]=(data[offset+0x0c]&0x10)==0x10;
+    session->settings[PRS1_MaskAlert]=(data[offset+0x0c]&0x08)==0x08;
+    session->settings[PRS1_ShowAHI]=(data[offset+0x0c]&0x04)==0x04;
 
 
     unsigned duration;

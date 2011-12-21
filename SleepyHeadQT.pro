@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     quazip/quaadler32.cpp \
     quazip/qioapi.cpp \
     quazip/JlCompress.cpp \
-    UpdaterWindow.cpp
+    UpdaterWindow.cpp \
+    SleepLib/common.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp

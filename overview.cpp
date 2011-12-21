@@ -107,6 +107,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SES=createGraph(tr("Sessions"),tr("Sessions\n(count)"));
     PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
     SPO2=createGraph(tr("SpO2"),tr("Oxygen Saturation\n(%)"));
+
     WEIGHT=createGraph(tr("Weight"),tr("Weight\n(kg)"),YT_Weight);
     BMI=createGraph(tr("BMI"),tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
@@ -118,17 +119,17 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     weight=new SummaryChart(tr("Weight"),GT_LINE);
     weight->setMachineType(MT_JOURNAL);
-    weight->addSlice("Weight",QColor("black"),ST_SETAVG,true);
+    weight->addSlice(Journal_Weight,QColor("black"),ST_SETAVG,true);
     WEIGHT->AddLayer(weight);
 
     bmi=new SummaryChart(tr("BMI"),GT_LINE);
     bmi->setMachineType(MT_JOURNAL);
-    bmi->addSlice("BMI",QColor("dark blue"),ST_SETAVG,true);
+    bmi->addSlice(Journal_BMI,QColor("dark blue"),ST_SETAVG,true);
     BMI->AddLayer(bmi);
 
     zombie=new SummaryChart(tr("Zombie Meter"),GT_LINE);
     zombie->setMachineType(MT_JOURNAL);
-    zombie->addSlice("ZombieMeter",QColor("dark red"),ST_SETAVG,true);
+    zombie->addSlice(Journal_ZombieMeter,QColor("dark red"),ST_SETAVG,true);
     ZOMBIE->AddLayer(zombie);
 
     pulse=new SummaryChart(tr("Pulse Rate"),GT_LINE);
@@ -242,7 +243,9 @@ gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
         yt=new gYAxisTime(true); // Time scale
         break;
     case YT_Weight:
-        yt=new gYAxisWeight(US_Archiac); // Weight scale, which adjusts for UnitSystem
+        if (PROFILE["Units"].toString()=="metric") {
+            yt=new gYAxisWeight(US_Metric);
+        } else yt=new gYAxisWeight(US_Archiac);
         break;
     default:
         yt=new gYAxis(); // Plain numeric scale

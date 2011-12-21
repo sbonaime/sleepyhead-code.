@@ -957,8 +957,8 @@ void Daily::Load(QDate date)
         if (journal->settings.contains(Journal_Notes))
             ui->JournalNotes->setHtml(journal->settings[Journal_Notes].toString());
 
-        if (journal->settings.contains("Weight")) {
-            double kg=journal->settings["Weight"].toDouble(&ok);
+        if (journal->settings.contains(Journal_Weight)) {
+            double kg=journal->settings[Journal_Weight].toDouble(&ok);
             if (PROFILE["Units"].toString()=="metric") {
                 ui->weightSpinBox->setDecimals(3);
                 ui->weightSpinBox->blockSignals(true);
@@ -993,16 +993,16 @@ void Daily::Load(QDate date)
             }
         }
 
-        if (journal->settings.contains("ZombieMeter")) {
+        if (journal->settings.contains(Journal_ZombieMeter)) {
             ui->ZombieMeter->blockSignals(true);
-            ui->ZombieMeter->setValue(journal->settings["ZombieMeter"].toDouble(&ok));
+            ui->ZombieMeter->setValue(journal->settings[Journal_ZombieMeter].toDouble(&ok));
             ui->ZombieMeter->blockSignals(false);
         }
 
-        if (journal->settings.contains("BookmarkStart")) {
-            QVariantList start=journal->settings["BookmarkStart"].toList();
-            QVariantList end=journal->settings["BookmarkEnd"].toList();
-            QStringList notes=journal->settings["BookmarkNotes"].toStringList();
+        if (journal->settings.contains(Bookmark_Start)) {
+            QVariantList start=journal->settings[Bookmark_Start].toList();
+            QVariantList end=journal->settings[Bookmark_End].toList();
+            QStringList notes=journal->settings[Bookmark_Notes].toStringList();
 
             ui->bookmarkTable->blockSignals(true);
 
@@ -1402,9 +1402,9 @@ void Daily::update_Bookmarks()
         journal=CreateJournalSession(previous_date);
     }
 
-    journal->settings["BookmarkStart"]=start;
-    journal->settings["BookmarkEnd"]=end;
-    journal->settings["BookmarkNotes"]=notes;
+    journal->settings[Bookmark_Start]=start;
+    journal->settings[Bookmark_End]=end;
+    journal->settings[Bookmark_Notes]=notes;
     journal->SetChanged(true);
     BookmarksChanged=true;
 }
@@ -1427,7 +1427,7 @@ void Daily::on_ZombieMeter_valueChanged(int action)
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
-    journal->settings["ZombieMeter"]=ui->ZombieMeter->value();
+    journal->settings[Journal_ZombieMeter]=ui->ZombieMeter->value();
     journal->SetChanged(true);
 
     gGraph *g;
@@ -1458,20 +1458,20 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
     else {
         kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
     }
-    journal->settings["Weight"]=kg;
+    journal->settings[Journal_Weight]=kg;
     gGraphView *gv=mainwin->getOverview()->graphView();
     gGraph *g;
     if (gv) {
-        g=gv->findGraph("Weight");
+        g=gv->findGraph(tr("Weight"));
         if (g) g->setDay(NULL);
     }
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
         ui->BMI->display(bmi);
         ui->BMI->setVisible(true);
-        journal->settings["BMI"]=bmi;
+        journal->settings[Journal_BMI]=bmi;
         if (gv) {
-            g=gv->findGraph("BMI");
+            g=gv->findGraph(tr("BMI"));
             if (g) g->setDay(NULL);
         }
     }
@@ -1486,12 +1486,12 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
     }
     double height=PROFILE["Height"].toDouble(&ok)/100.0;
     double kg=(ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert);
-    journal->settings["Weight"]=kg;
+    journal->settings[Journal_Weight]=kg;
 
 
     gGraph *g;
     if (mainwin->getOverview()) {
-        g=mainwin->getOverview()->graphView()->findGraph("Weight");
+        g=mainwin->getOverview()->graphView()->findGraph(tr("Weight"));
         if (g) g->setDay(NULL);
     }
 
@@ -1500,9 +1500,9 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
         ui->BMI->display(bmi);
         ui->BMI->setVisible(true);
 
-        journal->settings["BMI"]=bmi;
+        journal->settings[Journal_BMI]=bmi;
         if (mainwin->getOverview()) {
-            g=mainwin->getOverview()->graphView()->findGraph("BMI");
+            g=mainwin->getOverview()->graphView()->findGraph(tr("BMI"));
             if (g) g->setDay(NULL);
         }
     }

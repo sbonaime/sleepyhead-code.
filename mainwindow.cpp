@@ -665,7 +665,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     int visgraphs=gv->visibleGraphs();
     if (visgraphs==0) {
-        Notify("There are no graphs visible to print");
+        Notify(tr("There are no graphs visible to print"));
         return;
     }
 
@@ -675,10 +675,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     if (name=="Daily") {
         QVariantList book_start;
         journal=getDaily()->GetJournalSession(getDaily()->getDate());
-        if (journal && journal->settings.contains("BookmarkStart")) {
-            book_start=journal->settings["BookmarkStart"].toList();
+        if (journal && journal->settings.contains(Bookmark_Start)) {
+            book_start=journal->settings[Bookmark_Start].toList();
             if (book_start.size()>0) {
-                if (QMessageBox::question(this,"Bookmarks","Would you like to show bookmarked areas in this report?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+                if (QMessageBox::question(this,tr("Bookmarks"),tr("Would you like to show bookmarked areas in this report?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
                     print_bookmarks=true;
                 }
             }
@@ -913,10 +913,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             graphs.push_back(g);
             labels.push_back(tr("Current Selection"));
             if (journal) {
-                if (journal->settings.contains("BookmarkStart")) {
-                    QVariantList st1=journal->settings["BookmarkStart"].toList();
-                    QVariantList et1=journal->settings["BookmarkEnd"].toList();
-                    QStringList notes=journal->settings["BookmarkNotes"].toStringList();
+                if (journal->settings.contains(Bookmark_Start)) {
+                    QVariantList st1=journal->settings[Bookmark_Start].toList();
+                    QVariantList et1=journal->settings[Bookmark_End].toList();
+                    QStringList notes=journal->settings[Bookmark_Notes].toStringList();
                     for (int i=0;i<notes.size();i++) {
                         labels.push_back(notes.at(i));
                         start.push_back(st1.at(i).toLongLong());

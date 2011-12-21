@@ -426,12 +426,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal("EPR");
                 if (sig) {
-                    sess->settings["EPR"]=sig->data[dn];
+                    sess->settings[RMS9_EPR]=sig->data[dn];
                 }
 
                 sig=stredf.lookupSignal("EPRLevel");
                 if (sig)  {
-                    sess->settings["EPRSet"]=sig->data[dn];
+                    sess->settings[RMS9_EPRSet]=sig->data[dn];
                 }
 
                 if (mode==0) {
