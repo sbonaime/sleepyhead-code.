@@ -2485,7 +2485,7 @@ void gGraphView::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     bool numgraphs=true;
-    const int animTimeout=500;
+    const int animTimeout=800;
     float phase=0;
 
     int elapsed=0;
@@ -2533,8 +2533,8 @@ void gGraphView::paintGL()
 
                 glEnable(GL_BLEND);
 
-                //glDisable(GL_ALPHA_TEST);
-                //glAlphaFunc(GL_GREATER,0.0);
+                glDisable(GL_ALPHA_TEST);
+                glAlphaFunc(GL_GREATER,0.0);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
                 glColor4f(aphase,aphase,aphase,aphase);
 
@@ -2558,7 +2558,7 @@ void gGraphView::paintGL()
                 glTexCoord2f(0.0f, 0.0f); glVertex2f(0,height());
                 glEnd();
 
-                //glDisable(GL_ALPHA_TEST);
+                glDisable(GL_ALPHA_TEST);
                 glDisable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 glBindTexture(GL_TEXTURE_2D,0);
