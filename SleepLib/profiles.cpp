@@ -615,3 +615,131 @@ const char * US_STR_SkipEmptyDays="SkipEmptyDays";
 const char * US_STR_RebuildCache="RebuildCache";
 const char * US_STR_ShowDebug="ShowDebug";
 const char * US_STR_LinkGroups="LinkGroups";
+
+EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double val=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            val+=day->count(code);
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    return val;
+}
+double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double val=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            val+=day->sum(code);
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    return val;
+}
+EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double val=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            val+=day->hours();
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    return val;
+}
+EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double val=0;
+    int cnt=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            val+=day->sum(code);
+            cnt++;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (!cnt) return 0;
+    return val/float(cnt);
+}
+EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid())
+        start=LastDay(mt);
+    if (!end.isValid())
+        end=LastDay(mt);
+    QDate date=start;
+
+    double val=0,tmp,tmph,hours=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            tmph=day->hours();
+            tmp=day->wavg(code);
+            val+=tmp*tmph;
+            hours+=tmph;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (!hours) return 0;
+    val=val/hours;
+    return val;
+}
+EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+
+    QDate date=start;
+
+    //double val=0,tmp,hours=0;
+    do {
+        date=date.addDays(1);
+    } while (date<end);
+    return 0;
+}
+
+QDate Profile::FirstDay(MachineType mt)
+{
+    if ((mt==MT_UNKNOWN) || (!m_last.isValid()) || (!m_first.isValid()))
+        return m_first;
+
+    QDate d=m_first;
+    do {
+        if (GetDay(d,mt)!=NULL) return d;
+        d=d.addDays(1);
+    } while (d<=m_last);
+    return m_last;
+}
+QDate Profile::LastDay(MachineType mt)
+{
+    if ((mt==MT_UNKNOWN) || (!m_last.isValid()) || (!m_first.isValid()))
+        return m_last;
+    QDate d=m_last;
+    do {
+        if (GetDay(d,mt)!=NULL) return d;
+        d=d.addDays(-1);
+    } while (d>=m_first);
+    return m_first;
+}

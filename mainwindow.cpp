@@ -209,6 +209,8 @@ void MainWindow::Startup()
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
     qstatus->setText("");
+    on_homeButton_clicked();
+
 }
 
 void MainWindow::on_action_Import_Data_triggered()
@@ -342,11 +344,115 @@ void MainWindow::on_action_Fullscreen_triggered()
         this->showNormal();
 }
 
+QString htmlHeader()
+{
+    return QString("<html><head>"
+"</head>"
+"<style type='text/css'>"
+"<!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
+"p,a,td,body { font-size: 14px }"
+"a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
+"a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
+"</style>"
+"</head>"
+"<body leftmargin=0 topmargin=0 rightmargin=0>"
+"<h2><img src='qrc:/docs/sheep.png' width=100px height=100px>SleepyHead v"+VersionString+" "+ReleaseStatus+"</h2>"
+"<p><i>This page is being redesigned to be more useful... Please send me your ideas on what you'd like to see here :)</i></p>"
+"<p>The plan is to get the content happening first, then make the layout pretty...</p><hr/>");
+}
+QString htmlFooter()
+{
+    return QString("</body></html>");
+}
+
 void MainWindow::on_homeButton_clicked()
 {
-    QString file="qrc:/docs/index.html";
-    QUrl url(file);
-    ui->webView->setUrl(url);
+    QString html=htmlHeader();
+
+    QDate lastcpap=p_profile->LastDay(MT_CPAP);
+    QDate firstcpap=p_profile->FirstDay(MT_CPAP);
+    QDate cpapweek=lastcpap.addDays(-7);
+    QDate cpapmonth=lastcpap.addDays(-30);
+    QDate cpap6month=lastcpap.addMonths(-6);
+    QDate cpapyear=lastcpap.addYears(-12);
+    if (cpapweek<firstcpap) cpapweek=firstcpap;
+    if (cpapmonth<firstcpap) cpapmonth=firstcpap;
+    if (cpap6month<firstcpap) cpap6month=firstcpap;
+    if (cpapyear<firstcpap) cpapyear=firstcpap;
+
+    int cpapweekdays=cpapweek.daysTo(lastcpap);
+    int cpapmonthdays=cpapmonth.daysTo(lastcpap);
+    int cpapyeardays=cpapyear.daysTo(lastcpap);
+    int cpap6monthdays=cpap6month.daysTo(lastcpap);
+
+    html+=QString("<b>Summary Information as of %1</b>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
+    html+=QString("<table cellpadding=2 cellspacing=0 border=1>"
+    "<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
+    .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
+
+    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+    .arg(tr("AHI"))
+    .arg((p_profile->calcCount(CPAP_Obstructive)
+          +p_profile->calcCount(CPAP_Hypopnea)
+          +p_profile->calcCount(CPAP_ClearAirway)
+          +p_profile->calcCount(CPAP_Apnea))
+         /p_profile->calcHours(),0,'f',2)
+    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapweek,lastcpap)
+          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapweek,lastcpap)
+          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapweek,lastcpap)
+          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapweek,lastcpap))
+         /p_profile->calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',2)
+    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapmonth,lastcpap)
+          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapmonth,lastcpap)
+          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapmonth,lastcpap)
+          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapmonth,lastcpap))
+         /p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',2)
+    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpap6month,lastcpap)
+          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpap6month,lastcpap)
+          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpap6month,lastcpap)
+          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpap6month,lastcpap))
+         /p_profile->calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',2)
+    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapyear,lastcpap)
+          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapyear,lastcpap)
+          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapyear,lastcpap)
+          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapyear,lastcpap))
+         /p_profile->calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',2);
+    html+="<tr><td colspan=6>Note, these are different to overview calcs.. Overview shows a simple average AHI, this shows combined counts divide by combined hours</td></tr>";
+
+    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+    .arg(tr("Usage (Average)"))
+    .arg(p_profile->calcHours(MT_CPAP),0,'f',2)
+    .arg(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays),0,'f',2)
+    .arg(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays),0,'f',2)
+    .arg(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays),0,'f',2)
+    .arg(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays),0,'f',2);
+
+    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+    .arg(tr("Average Pressure"))
+    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP))
+    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+    html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
+
+
+    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+    .arg(tr("Average Leaks"))
+    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP))
+    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+    html+="<tr><td colspan=6>What about median leak values? 90% Leaks?</td></tr>";
+
+
+    html+="</table>";
+    html+=htmlFooter();
+    ui->webView->setHtml(html);
+//    QString file="qrc:/docs/index.html";
+//    QUrl url(file);
+//    ui->webView->setUrl(url);
 }
 
 void MainWindow::on_backButton_clicked()

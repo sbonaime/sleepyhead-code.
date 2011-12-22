@@ -96,12 +96,19 @@ public:
     //! \brief Returns true if this profile stores this variable identified by key
     bool contains(QString key) { return p_preferences.contains(key); }
 
+    EventDataType calcCount(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    double calcSum(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcHours(MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcAvg(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcWavg(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcPercentile(ChannelID code, EventDataType percent, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+
     virtual void ExtraLoad(QDomElement & root);
     virtual QDomElement ExtraSave(QDomDocument & doc);
 
     QMap<QDate,QList<Day *> > daylist;
-    const QDate & FirstDay() { return m_first; }
-    const QDate & LastDay() { return m_last; }
+    QDate FirstDay(MachineType mt=MT_UNKNOWN);
+    QDate LastDay(MachineType mt=MT_UNKNOWN);
 
     QString dataFolder() { return (*this).Get("{DataFolder}"); }
 
@@ -351,6 +358,7 @@ public:
 
     void setProfile(Profile *p) { m_profile=p; }
 
+    //Getters
     double complianceHours() { return (*m_profile)[CS_STR_ComplianceHours].toDouble(); }
     bool showComplianceInfo() { return (*m_profile)[CS_STR_ShowCompliance].toBool(); }
     int leakMode() { return (*m_profile)[CS_STR_ShowLeaksMode].toInt(); }
@@ -364,6 +372,7 @@ public:
     const QString notes() { return (*m_profile)[CS_STR_Notes].toString(); }
     QDate dateDiagnosed() { return (*m_profile)[CS_STR_DateDiagnosed].toDate(); }
 
+    //Setters
     void setMode(CPAPMode mode) { (*m_profile)[CS_STR_PrescribedMode]=(int)mode; }
     void setMinPressure(double pressure) { (*m_profile)[CS_STR_PrescribedMinPressure]=pressure; }
     void setMaxPressure(double pressure) { (*m_profile)[CS_STR_PrescribedMaxPressure]=pressure; }
