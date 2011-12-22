@@ -369,6 +369,8 @@ Machine *IntellipapLoader::CreateMachine(QString serial,Profile *profile)
     profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial]=serial;
+    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+
     return m;
 }
 

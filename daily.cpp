@@ -286,6 +286,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     GraphView->LoadSettings("Daily");
 
+    emptyToggleArea=new QLabel("No data available for this day",this);
+    ui->graphToggleArea->addWidget(emptyToggleArea,1,Qt::AlignCenter);
+    emptyToggleArea->setVisible(false);
     for (int i=0;i<GraphView->size();i++) {
         QString title=(*GraphView)[i]->title();
         QPushButton *btn=new QPushButton(title,this);
@@ -616,6 +619,8 @@ void Daily::Load(QDate date)
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
+
+
     snapGV->setDay(cpap);
     GraphView->ResetBounds(false);
     //snapGV->ResetBounds();
@@ -633,13 +638,18 @@ void Daily::Load(QDate date)
     }
     //GraphView->redraw();
     //snapGV->redraw();
-
-    //RedrawGraphs();
-
+    int graphsAvailable=0;
     for (int i=0;i<GraphView->size();i++) {
         QString title=(*GraphView)[i]->title();
-        GraphToggles[title]->setVisible(!(*GraphView)[i]->isEmpty());
+        bool empty=(*GraphView)[i]->isEmpty();
+        if (!empty) graphsAvailable++;
+        GraphToggles[title]->setVisible(!empty);
     }
+    emptyToggleArea->setVisible(graphsAvailable==0);
+
+    //ui->graphVisibilityToggleArea->setVisible(graphsAvailable>0);
+
+    //RedrawGraphs();
 
     QString epr,modestr;
     //float iap90,eap90;
@@ -652,10 +662,16 @@ void Daily::Load(QDate date)
         if (GraphView->isEmpty()) {
             GraphView->setCubeImage(images["brick"]);
             GraphView->setEmptyText(tr("Brick Machine :("));
+
             isBrick=true;
         } else {
-            GraphView->setEmptyText(tr("No Data"));
+            if (graphsAvailable==0) {
+                GraphView->setEmptyText(tr("No Data"));
+            } else {
+                GraphView->setEmptyText(tr("Graphs Switched Off"));
+            }
         }
+
         mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
 
         modestr=schema::channel[CPAP_Mode].m_options[mode];

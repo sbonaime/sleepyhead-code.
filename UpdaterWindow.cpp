@@ -189,8 +189,9 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
                 break;
             } else release=NULL;
         }
-        if (!release || (VersionString() > release->version)) {
+        if (!release || (VersionString > release->version)) {
             mainwin->Notify(tr("No updates were found for your platform."),tr("SleepyHead Updates"),5000);
+            PREF[STR_GEN_UpdatesLastChecked]=QDateTime::currentDateTime();
             close();
             return;
         }
@@ -220,7 +221,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
         if (upq && (upq->version > QT_VERSION_STR)) {
             updates.push_back(upq);
         }
-        if (upd && upd->version > VersionString()) {
+        if (upd && upd->version > VersionString) {
             updates.push_back(upd);
         }
 
@@ -231,13 +232,13 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             html+=" "+tr("platform notes")+"</b><p>"+release->notes[platform]+"</p></html>";
             ui->webView->setHtml(html);
             QString info;
-            if (VersionString()< release->version) {
+            if (VersionString < release->version) {
                 ui->Title->setText("<font size=+1>"+tr("A new version of SleepyHead is available!")+"</font>");
-                info=tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").arg(latestapp).arg(VersionString());
+                info=tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").arg(latestapp).arg(VersionString);
                 ui->notesTabWidget->setCurrentIndex(0);
             } else {
                 ui->Title->setText("<font size=+1>"+tr("An update for SleepyHead is available.")+"</font>");
-                info=tr("Version <b>%1</b> is available. You're currently running v%1").arg(latestapp).arg(VersionString());
+                info=tr("Version <b>%1</b> is available. You're currently running v%1").arg(latestapp).arg(VersionString);
                 ui->notesTabWidget->setCurrentIndex(1);
             }
             ui->versionInfo->setText(info);
@@ -245,7 +246,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
             QString notes;
             for (int i=0;i<release->updates[platform].size();i++) {
                 update=&release->updates[platform][i];
-                if ((update->type=="application") && (update->version > VersionString())) {
+                if ((update->type=="application") && (update->version > VersionString)) {
                     notes+="<b>"+tr("SleepyHead v%1 build notes").arg(update->version)+"</b><br/>"+update->notes.trimmed()+"<br/><br/>";
                 } else if ((update->type=="qtlibs") && (update->version > QT_VERSION_STR)) {
                     notes+="<b>"+tr("Update to QtLibs (v%1)").arg(update->version)+"</b><br/>"+update->notes.trimmed();

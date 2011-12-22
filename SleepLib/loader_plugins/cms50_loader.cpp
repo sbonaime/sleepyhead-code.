@@ -328,6 +328,7 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     a.sprintf("%i",cms50_data_version);
     m->properties[STR_PROP_DataVersion]=a;
     profile->AddMachine(m);
+    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+m->hexid()+"/";
 
     return m;
 }

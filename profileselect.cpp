@@ -124,7 +124,7 @@ void ProfileSelect::deleteProfile()
                 bool reallydelete=false;
                 Profile *profile=Profiles::profiles[name];
                 if (!profile) {
-                    QMessageBox::warning(this,tr("WTH???"),tr("If you can read this you need to delete this profile directory manually (It's under Your Documents folder -> SleepApp -> Profiles -> [profile_name])"),QMessageBox::Ok);
+                    QMessageBox::warning(this,tr("WTH???"),tr("If you can read this you need to delete this profile directory manually (It's under %1)").arg(GetAppRoot()+"/Profiles/"+PROFILE.user->userName()),QMessageBox::Ok);
                     return;
                 }
                 if (profile->user->hasPassword()) {
@@ -156,7 +156,7 @@ void ProfileSelect::deleteProfile()
                 } else reallydelete=true;
 
                 if (reallydelete) {
-                    QMessageBox::information(this,tr("Whoops."),tr("After all that nagging, I haven't got around to writing this code yet.. For now you can delete the directory in SleepApp -> Profiles -> [profile_name]"),QMessageBox::Ok);
+                    QMessageBox::information(this,tr("Whoops."),tr("After all that nagging, I haven't got around to writing this code yet.. For now you can delete the directory in %1").arg(GetAppRoot()+"/Profiles/"+PROFILE.user->userName()),QMessageBox::Ok);
                     qDebug() << "delete" << name;
                 }
             }

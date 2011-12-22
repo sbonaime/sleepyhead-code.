@@ -39,6 +39,7 @@ const QString STR_PROP_ModelNumber="ModelNumber";
 const QString STR_PROP_SubModel="SubModel";
 const QString STR_PROP_Serial="Serial";
 const QString STR_PROP_DataVersion="DataVersion";
+const QString STR_PROP_Path="Path";
 
 const QString STR_MACH_ResMed="ResMed";
 const QString STR_MACH_PRS1="PRS1";

@@ -242,6 +242,7 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     QString a;
     a.sprintf("%i",resmed_data_version);
     m->properties[STR_PROP_DataVersion]=a;
+    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
 
     return m;
 

@@ -270,6 +270,7 @@ private:
     gGraphView *GraphView,*snapGV;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
+    QLabel *emptyToggleArea;
     bool ZombieMeterMoved;
     bool BookmarksChanged;
 };

@@ -283,11 +283,10 @@ QDomElement Profile::ExtraSave(QDomDocument & doc)
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         QDomElement me=doc.createElement("Machine");
         Machine *m=i.value();
-        //QString t=wxT("0x")+m->hexid();
         me.setAttribute("id",(int)m->id());
         me.setAttribute("type",(int)m->GetType());
         me.setAttribute("class",m->GetClass());
-        i.value()->properties["path"]="{DataFolder}/"+m->hexid();
+        if (!m->properties.contains(STR_PROP_Path)) m->properties[STR_PROP_Path]="{DataFolder}/"+m->GetClass()+"_"+m->hexid();
 
         for (QHash<QString,QString>::iterator j=i.value()->properties.begin(); j!=i.value()->properties.end(); j++) {
             QDomElement mp=doc.createElement(j.key());
@@ -474,6 +473,7 @@ Profile *Create(QString name)
     Machine *m=new Machine(prof,0);
     m->SetClass("Journal");
     m->properties[STR_PROP_Brand]="Virtual";
+    m->properties[STR_PROP_Path]="{DataFolder}/"+m->GetClass()+"_"+m->hexid();
     m->SetType(MT_JOURNAL);
     prof->AddMachine(m);
 

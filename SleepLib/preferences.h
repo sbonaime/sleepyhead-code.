@@ -19,7 +19,7 @@ License: GPL
 
 
 const QString AppName="SleepyHead"; // Outer tag of XML files
-const QString AppRoot="SleepApp";    // The Folder Name
+const QString AppRoot="SleepyHeadData";    // The Folder Name
 
 extern const QString & GetAppRoot(); //returns app root path plus trailing path separator.
 

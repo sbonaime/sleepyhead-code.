@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     logtime.start();
     ui->setupUi(this);
 
-    QString version=VersionString();
+    QString version=VersionString;
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     ui->tabWidget->setCurrentIndex(0);
@@ -125,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent) :
         systray->show();
         systraymenu=new QMenu(this);
         systray->setContextMenu(systraymenu);
-        QAction *a=systraymenu->addAction("SleepyHead v"+VersionString());
+        QAction *a=systraymenu->addAction("SleepyHead v"+VersionString);
         a->setEnabled(false);
         systraymenu->addSeparator();
         systraymenu->addAction("&About",this,SLOT(on_action_About_triggered()));
@@ -181,7 +181,7 @@ void MainWindow::Notify(QString s,QString title,int ms)
 
 void MainWindow::Startup()
 {
-    qDebug() << PREF["AppName"].toString().toAscii()+" v"+VersionString().toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << PREF["AppName"].toString().toAscii()+" v"+VersionString.toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -421,12 +421,12 @@ void MainWindow::on_action_About_triggered()
     QString gitrev=QString(GIT_REVISION);
     if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev;
 
-     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3</h2>Build Date: %4 %5<br/>%6<hr>"
+     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3 (%7)</h2>Build Date: %4 %5<br/>%6<hr>"
 "Copyright &copy;2011 Mark Watkins (jedimark) <br> \n"
 "<a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>"
 "This software is released under the GNU Public License <br>"
 "<i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays."
-                    "</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(__DATE__).arg(__TIME__).arg(gitrev);
+                    "</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus);
     QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
     msgbox.setTextFormat(Qt::RichText);
     msgbox.setText(msg);
@@ -927,7 +927,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
         }
         if (first) {
-            QString footer=tr("SleepyHead v%1 - http://sleepyhead.sourceforge.net").arg(VersionString());
+            QString footer=tr("SleepyHead v%1 - http://sleepyhead.sourceforge.net").arg(VersionString);
 
             QRectF bounds=painter.boundingRect(QRectF(0,virt_height,virt_width,normal_height),footer,QTextOption(Qt::AlignHCenter));
             painter.drawText(bounds,footer,QTextOption(Qt::AlignHCenter));
@@ -1112,7 +1112,7 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     Machine *m;
     if (day) {
         m=day->machine;
-        QString path=PROFILE.Get(STR_GEN_DataFolder)+QDir::separator()+m->hexid()+QDir::separator();
+        QString path=PROFILE.Get("{"+STR_GEN_DataFolder+"}/")+m->GetClass()+"_"+m->hexid()+"/";
 
         QVector<Session *>::iterator s;
 

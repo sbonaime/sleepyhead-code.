@@ -730,7 +730,7 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QScrollArea" name="scrollArea">
+      <widget class="QScrollArea" name="graphVisibilityToggleArea">
        <property name="maximumSize">
         <size>
          <width>16777215</width>

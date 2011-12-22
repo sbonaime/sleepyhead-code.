@@ -80,6 +80,7 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
     m->properties[STR_PROP_DataVersion]=s;
 
     profile->AddMachine(m);
+    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+m->hexid()+"/";
 
     return m;
 }
