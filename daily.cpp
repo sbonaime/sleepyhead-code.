@@ -656,7 +656,9 @@ void Daily::Load(QDate date)
     CPAPMode mode=MODE_UNKNOWN;
     QString a;
     bool isBrick=false;
-
+    if (graphsAvailable==0) {
+        GraphView->setEmptyText(tr("No Data"));
+    }
     GraphView->setCubeImage(images["nodata"]);
     if (cpap) {
         if (GraphView->isEmpty()) {
@@ -665,9 +667,7 @@ void Daily::Load(QDate date)
 
             isBrick=true;
         } else {
-            if (graphsAvailable==0) {
-                GraphView->setEmptyText(tr("No Data"));
-            } else {
+            if (graphsAvailable>0) {
                 GraphView->setEmptyText(tr("Graphs Switched Off"));
             }
         }
