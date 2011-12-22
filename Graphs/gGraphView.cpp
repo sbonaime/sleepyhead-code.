@@ -772,7 +772,7 @@ void Layer::drawGLBuf(float linesize)
 
 void Layer::SetDay(Day * d)
 {
-    if (d && m_code) {
+    if (d) {
         m_day=d;
         m_minx=d->first(m_code);
         m_maxx=d->last(m_code);
@@ -2488,7 +2488,7 @@ void gGraphView::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     bool numgraphs=true;
-    const int animTimeout=800;
+    const int animTimeout=400;
     float phase=0;
 
     int elapsed=0;
