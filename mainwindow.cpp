@@ -358,11 +358,52 @@ QString htmlHeader()
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<h2><img src='qrc:/docs/sheep.png' width=100px height=100px>SleepyHead v"+VersionString+" "+ReleaseStatus+"</h2>"
 "<p><i>This page is being redesigned to be more useful... Please send me your ideas on what you'd like to see here :)</i></p>"
-"<p>The plan is to get the content happening first, then make the layout pretty...</p><hr/>");
+"<p>The plan is to get the content happening first, then make the layout pretty...</p>"
+"<p>Percentile calcs aren't done, as they require ALL data in memory, or very slow calcs, loading and unloading the data.. I really don't want to be forced to have to do either of those. There is simply too much variance to cache this data. :(</br>"
+"If an average of the daily percentile values were useful, maybe.. ? </p>"
+"<hr/>");
 }
 QString htmlFooter()
 {
     return QString("</body></html>");
+}
+
+EventDataType calcAHI(QDate start, QDate end)
+{
+    EventDataType val=(p_profile->calcCount(CPAP_Obstructive,MT_CPAP,start,end)
+              +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,start,end)
+              +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,start,end)
+              +p_profile->calcCount(CPAP_Apnea,MT_CPAP,start,end))
+             /p_profile->calcHours(MT_CPAP,start,end);
+
+    return val;
+}
+
+struct RXChange
+{
+    RXChange() {}
+    RXChange(const RXChange & copy) {
+        first=copy.first;
+        last=copy.last;
+        days=copy.days;
+        ahi=copy.ahi;
+        mode=copy.mode;
+        min=copy.min;
+        max=copy.min;
+        p90=copy.p90;
+    }
+    QDate first;
+    QDate last;
+    int days;
+    EventDataType ahi;
+    CPAPMode mode;
+    EventDataType min;
+    EventDataType max;
+    EventDataType p90;
+};
+
+bool operator<(const RXChange & comp1, const RXChange & comp2) {
+    return comp1.ahi < comp2.ahi;
 }
 
 void MainWindow::on_homeButton_clicked()
@@ -384,70 +425,167 @@ void MainWindow::on_homeButton_clicked()
     int cpapmonthdays=cpapmonth.daysTo(lastcpap);
     int cpapyeardays=cpapyear.daysTo(lastcpap);
     int cpap6monthdays=cpap6month.daysTo(lastcpap);
+    QList<Machine *> mach=PROFILE.GetMachines(MT_CPAP);
 
-    html+=QString("<b>Summary Information as of %1</b>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
-    html+=QString("<table cellpadding=2 cellspacing=0 border=1>"
-    "<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
-    .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
+    int days=firstcpap.daysTo(lastcpap);
+    if (days==0) {
+        html+="<p>No Machine Data Imported</p>";
+    } else {
+        html+=QString("<p>%1 day%2 of CPAP Data</p>").arg(days).arg(days>1 ? "s" : "");
 
-    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-    .arg(tr("AHI"))
-    .arg((p_profile->calcCount(CPAP_Obstructive)
-          +p_profile->calcCount(CPAP_Hypopnea)
-          +p_profile->calcCount(CPAP_ClearAirway)
-          +p_profile->calcCount(CPAP_Apnea))
-         /p_profile->calcHours(),0,'f',2)
-    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapweek,lastcpap)
-          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapweek,lastcpap)
-          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapweek,lastcpap)
-          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapweek,lastcpap))
-         /p_profile->calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',2)
-    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapmonth,lastcpap)
-          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapmonth,lastcpap)
-          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapmonth,lastcpap)
-          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapmonth,lastcpap))
-         /p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',2)
-    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpap6month,lastcpap)
-          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpap6month,lastcpap)
-          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpap6month,lastcpap)
-          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpap6month,lastcpap))
-         /p_profile->calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',2)
-    .arg((p_profile->calcCount(CPAP_Obstructive,MT_CPAP,cpapyear,lastcpap)
-          +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,cpapyear,lastcpap)
-          +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,cpapyear,lastcpap)
-          +p_profile->calcCount(CPAP_Apnea,MT_CPAP,cpapyear,lastcpap))
-         /p_profile->calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',2);
-    html+="<tr><td colspan=6>Note, these are different to overview calcs.. Overview shows a simple average AHI, this shows combined counts divide by combined hours</td></tr>";
+        html+=QString("<b>Summary Information as of %1</b>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
+        html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=100%>"
+        "<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
+        .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
 
-    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-    .arg(tr("Usage (Average)"))
-    .arg(p_profile->calcHours(MT_CPAP),0,'f',2)
-    .arg(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays),0,'f',2)
-    .arg(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays),0,'f',2)
-    .arg(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays),0,'f',2)
-    .arg(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays),0,'f',2);
+        html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+        .arg(tr("AHI"))
+        .arg(calcAHI(lastcpap,lastcpap),0,'f',2)
+        .arg(calcAHI(cpapweek,lastcpap),0,'f',2)
+        .arg(calcAHI(cpapmonth,lastcpap),0,'f',2)
+        .arg(calcAHI(cpap6month,lastcpap),0,'f',2)
+        .arg(calcAHI(cpapyear,lastcpap),0,'f',2);
+        html+="<tr><td colspan=6>Note, these are different to overview calcs.. Overview shows a simple average AHI, this shows combined counts divide by combined hours</td></tr>";
 
-    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-    .arg(tr("Average Pressure"))
-    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP))
-    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
-    html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
+        html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+        .arg(tr("Usage (Average)"))
+        .arg(p_profile->calcHours(MT_CPAP),0,'f',2)
+        .arg(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays),0,'f',2)
+        .arg(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays),0,'f',2)
+        .arg(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays),0,'f',2)
+        .arg(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays),0,'f',2);
+
+        html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+        .arg(tr("Average Pressure"))
+        .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP))
+        .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+        html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
 
-    html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-    .arg(tr("Average Leaks"))
-    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP))
-    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-    .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
-    html+="<tr><td colspan=6>What about median leak values? 90% Leaks?</td></tr>";
+        html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+        .arg(tr("Average Leaks"))
+        .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP))
+        .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+        .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+        html+="<tr><td colspan=6>What about median leak values? 90% Leaks?</td></tr>";
 
 
-    html+="</table>";
+        html+="</table>";
+        html+=QString("<br/><b>Changes to Prescription Settings</b>");
+        html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=100%>");
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</b></td><td><b>%8</b></td></tr>")
+                      .arg(tr("First"))
+                      .arg(tr("Last"))
+                      .arg(tr("Days"))
+                      .arg(tr("AHI"))
+                      .arg(tr("Mode"))
+                      .arg(tr("Min Pressure"))
+                      .arg(tr("Max Pressure"))
+                      .arg(tr("90% Pressure"));
+
+        QDate first,last=lastcpap;
+        CPAPMode mode,cmode=MODE_UNKNOWN;
+        EventDataType cmin=0,cmax=0,min,max;
+        QDate date=lastcpap;
+        Day * day;
+        bool lastchanged;
+        int cnt=0;
+        QList<RXChange> rxchange;
+
+        do {
+            day=PROFILE.GetDay(date,MT_CPAP);
+            lastchanged=false;
+            if (day) {
+                mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
+                min=day->settings_min(CPAP_PressureMin);
+                if (mode==MODE_CPAP) {
+                    max=day->settings_max(CPAP_PressureMin);
+                } else max=day->settings_max(CPAP_PressureMax);
+
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax))  {
+                    if (cmode!=MODE_UNKNOWN) {
+                        first=date.addDays(1);
+                        RXChange rx;
+                        rx.first=first;
+                        rx.last=last;
+                        rx.days=first.daysTo(last)+1;
+                        rx.ahi=calcAHI(first,last);
+                        rx.mode=cmode;
+                        rx.min=cmin;
+                        rx.max=cmax;
+                        rx.p90=0;
+                        rxchange.push_back(rx);
+                    }
+                    cmode=mode;
+                    cmin=min;
+                    cmax=max;
+                    last=date;
+                    lastchanged=true;
+                }
+
+            }
+            date=date.addDays(-1);
+        } while (date>=firstcpap);
+        if (!lastchanged) {
+            last=date.addDays(1);
+            first=firstcpap;
+            RXChange rx;
+            rx.first=first;
+            rx.last=last;
+            rx.days=first.daysTo(last)+1;
+            rx.ahi=calcAHI(first,last);
+            rx.mode=mode;
+            rx.min=min;
+            rx.max=max;
+            rx.p90=0;
+            rxchange.push_back(rx);
+        }
+        qSort(rxchange);
+        for (int i=0;i<rxchange.size();i++) {
+            RXChange rx=rxchange.at(i);
+            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td></tr>")
+                    .arg(rx.first.toString(Qt::SystemLocaleShortDate))
+                    .arg(rx.last.toString(Qt::SystemLocaleShortDate))
+                    .arg(rx.days)
+                    .arg(rx.ahi,0,'f',2)
+                    .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
+                    .arg(rx.min)
+                    .arg(rx.max)
+                    .arg(rx.p90);
+        }
+
+        html+="</table>";
+
+    }
+    if (mach.size()>0) {
+
+        html+=QString("<br/><b>Machine Information</b>");
+        html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=100%>");
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
+                      .arg(tr("Brand"))
+                      .arg(tr("Model"))
+                      .arg(tr("Serial"))
+                      .arg(tr("First Use"))
+                      .arg(tr("Last Use"));
+        Machine *m;
+        for (int i=0;i<mach.size();i++) {
+            m=mach.at(i);
+            QString mn=m->properties[STR_PROP_ModelNumber];
+            //if (mn.isEmpty())
+            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                    .arg(m->properties[STR_PROP_Brand])
+                    .arg(m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_SubModel]+ (mn.isEmpty() ? "" : QString(" (")+mn+QString(")")))
+                    .arg(m->properties[STR_PROP_Serial])
+                    .arg(m->FirstDay().toString(Qt::SystemLocaleShortDate))
+                    .arg(m->LastDay().toString(Qt::SystemLocaleShortDate));
+        }
+        html+="</table>";
+    }
     html+=htmlFooter();
     ui->webView->setHtml(html);
 //    QString file="qrc:/docs/index.html";
