@@ -2609,7 +2609,7 @@ void gGraphView::paintGL()
 
     if (this->isVisible()) {
         if (m_limbo || m_inAnimation || (something_fun && !numgraphs)) {
-            redrawtimer->setInterval(15);
+            redrawtimer->setInterval(50);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();
         } else {

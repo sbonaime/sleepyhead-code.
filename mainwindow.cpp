@@ -478,6 +478,15 @@ void MainWindow::on_homeButton_clicked()
 {
     ui->webView->setUrl(QUrl("qrc:/docs/index.html"));
 }
+
+QString formatTime(float time)
+{
+    int hours=time;
+    int seconds=time*3600.0;
+    int minutes=(seconds / 60) % 60;
+    seconds %= 60;
+    return QString().sprintf("%02i:%02i",hours,minutes); //,seconds);
+}
 void MainWindow::on_summaryButton_clicked()
 {
     QString html=htmlHeader();
@@ -539,11 +548,11 @@ void MainWindow::on_summaryButton_clicked()
 
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("Usage (Average)"))
-            .arg(p_profile->calcHours(MT_CPAP),0,'f',3)
-            .arg(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays),0,'f',3)
-            .arg(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays),0,'f',3)
-            .arg(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays),0,'f',3)
-            .arg(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays),0,'f',3);
+            .arg(formatTime(p_profile->calcHours(MT_CPAP)))
+            .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays)))
+            .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays)))
+            .arg(formatTime(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays)))
+            .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays)));
 
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("Average Pressure"))
