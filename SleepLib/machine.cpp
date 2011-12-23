@@ -263,6 +263,7 @@ bool Machine::Load()
 
         if (sess->LoadSummary(s.value()[0])) {
              sess->SetEventFile(s.value()[1]);
+             sess->OpenEvents();
              AddSession(sess,profile);
         } else {
             qWarning() << "Error unpacking summary data";

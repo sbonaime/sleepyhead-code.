@@ -85,7 +85,7 @@ public:
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
 
     //! \brief Returns a list of all machines of type t
-    QList<Machine *> GetMachines(MachineType t);
+    QList<Machine *> GetMachines(MachineType t=MT_UNKNOWN);
 
     //! \brief Returns the machine of type t used on date, NULL if none..
     Machine * GetMachine(MachineType t,QDate date);
@@ -96,12 +96,18 @@ public:
     //! \brief Returns true if this profile stores this variable identified by key
     bool contains(QString key) { return p_preferences.contains(key); }
 
+    int countDays(MachineType mt=MT_UNKNOWN, QDate start=QDate(), QDate end=QDate());
     EventDataType calcCount(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     double calcSum(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcHours(MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcAvg(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcWavg(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcMin(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcMax(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcPercentile(ChannelID code, EventDataType percent, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+
+    EventDataType calcSettingsMin(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
+    EventDataType calcSettingsMax(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
 
     virtual void ExtraLoad(QDomElement & root);
     virtual QDomElement ExtraSave(QDomDocument & doc);

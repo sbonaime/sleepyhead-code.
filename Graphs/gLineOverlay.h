@@ -31,11 +31,14 @@ class gLineOverlayBar:public Layer
 
         //! \brief returns a count of all flags drawn during render. (for gLineOverlaySummary)
         int count() { return m_count; }
+        double sum() { return m_sum; }
+        FlagType flagtype() { return m_flt; }
     protected:
         QColor m_flag_color;
         QString m_label;
         FlagType m_flt;
         int m_count;
+        double m_sum;
 
         GLShortBuffer *points,*quads, *lines;
 };

@@ -600,6 +600,7 @@ void CMS50Serial::ReadyRead()
         }
     }
     lastbytesize=size;
+    bool fixtime=false;
 
     while (i<bytes.size()) {
         if (import_mode) {
@@ -620,16 +621,16 @@ void CMS50Serial::ReadyRead()
                             // otherwise pick the first session of the last days data..
                             Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
                             QDateTime d;
-
+                            fixtime=true;
                             if (day) {
                                 int ti=day->first()/1000L;
 
                                 d=QDateTime::fromTime_t(ti);
                                 qDebug() << "Guessing session starting from CPAP data" << d;
                             } else {
-                                qDebug() << "Can't guess start time, defaulting to 6pm yesterday" << d;
+                                qDebug() << "Can't guess start time, defaulting to ending at 7:30am this morning" << d;
                                 d=QDateTime::currentDateTime();
-                                d.setTime(QTime(18,0,0));
+                                d.setTime(QTime(7,30,0));
                                 //d.addDays(-1);
                             }
                             f2time.push_back(d);
@@ -647,6 +648,16 @@ void CMS50Serial::ReadyRead()
                             datasize=(((unsigned char)bytes.at(i) & 0x3f) << 14) | (((unsigned char)bytes.at(i+1)&0x7f) << 7) | ((unsigned char)bytes.at(i+2) & 0x7f);
                             received_bytes=0;
                             qDebug() << "Data Size=" << datasize << "??";
+                            if (fixtime) {
+                                QDateTime time;
+                                for (int i=0;i<f2time.size();i++) {
+                                    time=f2time.at(i);
+                                    time.addSecs(-(datasize/3));
+                                    break;
+                                }
+                                f2time.clear();
+                                f2time.push_back(time);
+                            }
                             done_import=false;
 
                             i+=3;

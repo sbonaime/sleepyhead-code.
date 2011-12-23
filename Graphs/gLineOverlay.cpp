@@ -53,11 +53,13 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
 
     m_count=0;
+    m_sum=0;
     m_flag_color=schema::channel[m_code].defaultColor();
 
     if (m_flt==FT_Span) {
         m_flag_color.setAlpha(128);
     }
+    EventStoreType raw;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;
@@ -67,8 +69,9 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
 
         for (quint32 i=0;i<el.count();i++) {
             X=el.time(i);
+            raw=el.data(i);
             if (m_flt==FT_Span) {
-                Y=X-(qint64(el.raw(i))*1000.0L); // duration
+                Y=X-(qint64(raw)*1000.0L); // duration
 
                 if (X < w.min_x) continue;
                 if (Y > w.max_x) break;
@@ -80,6 +83,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
             //x1=w.x2p(X);
             x1=double(width)/double(xx)*double(X-w.min_x)+left;
             m_count++;
+            m_sum+=raw;
             if (m_flt==FT_Span) {
                 //x2=w.x2p(Y);
                 x2=double(width)/double(xx)*double(Y-w.min_x)+left;
@@ -149,8 +153,12 @@ void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int hei
     Q_UNUSED(width);
     Q_UNUSED(height);
     float cnt=0;
+    double sum=0;
+    bool isSpan=false;
     for (int i=0;i<m_overlays.size();i++) {
         cnt+=m_overlays[i]->count();
+        sum+=m_overlays[i]->sum();
+        if (m_overlays[i]->flagtype()==FT_Span) isSpan=true;
     }
 
     double val,first,last;
@@ -187,5 +195,14 @@ void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int hei
 
 
     QString a="Event Count="+QString::number(cnt)+" Selection Time="+QString().sprintf("%02i:%02i:%02i",h,m,s)+" "+m_text+"="+QString::number(val,'f',2);
+
+    if (isSpan) {
+        float sph;
+        if (!time) sph=0; else {
+            sph=(100.0/float(time))*(sum/3600.0);
+            if (sph>100) sph=100;
+        }
+        a+=QString(" (\%%1 in events)").arg(sph,0,'f',2);
+    }
     w.renderText(a,left+m_x,top+m_y);
 }

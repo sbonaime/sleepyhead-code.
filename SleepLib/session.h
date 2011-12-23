@@ -204,6 +204,8 @@ public:
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }
 
+    bool eventsLoaded() { return s_events_loaded; }
+
     //! \brief Sets the event file linked to the summary (during load, for ondemand loading)
     void SetEventFile(QString & filename) { s_eventfile=filename; }
 

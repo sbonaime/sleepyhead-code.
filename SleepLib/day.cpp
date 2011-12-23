@@ -489,6 +489,18 @@ bool Day::settingExists(ChannelID id)
     }
     return false;
 }
+bool Day::eventsLoaded()
+{
+    bool r=false;
+    for (int i=0;i<sessions.size();i++) {
+        if (sessions[i]->eventsLoaded()) {
+            r=true;
+            break;
+        }
+    }
+    return r;
+}
+
 bool Day::channelExists(ChannelID id)
 {
     bool r=false;
@@ -522,5 +534,12 @@ void Day::OpenEvents()
     for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->OpenEvents();
     }
+}
+void Day::CloseEvents()
+{
+    QVector<Session *>::iterator s;
 
+    for (s=sessions.begin();s!=sessions.end();s++) {
+        (*s)->TrashEvents();
+    }
 }

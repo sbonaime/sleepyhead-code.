@@ -237,8 +237,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
 
-    PULSE->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),tr("PD"),FT_Span)));
-    SPO2->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),tr("O2"),FT_Span)));
+    gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),tr("PD"),FT_Span))));
+    PULSE->AddLayer(AddOXI(los1));
+    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),tr("O2"),FT_Span))));
+    SPO2->AddLayer(AddOXI(los2));
 
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
@@ -656,10 +660,15 @@ void Daily::Load(QDate date)
     CPAPMode mode=MODE_UNKNOWN;
     QString a;
     bool isBrick=false;
-    if (graphsAvailable==0) {
+
+    if (graphsAvailable>0) {
+            GraphView->setCubeImage(images["sheep"]);
+            GraphView->setEmptyText(tr("Graphs Switched Off"));
+    } else {
+        GraphView->setCubeImage(images["nodata"]);
         GraphView->setEmptyText(tr("No Data"));
     }
-    GraphView->setCubeImage(images["nodata"]);
+
     if (cpap) {
         if (GraphView->isEmpty()) {
             GraphView->setCubeImage(images["brick"]);
@@ -667,9 +676,7 @@ void Daily::Load(QDate date)
 
             isBrick=true;
         } else {
-            if (graphsAvailable>0) {
-                GraphView->setEmptyText(tr("Graphs Switched Off"));
-            }
+
         }
 
         mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
@@ -783,7 +790,26 @@ void Daily::Load(QDate date)
                 }
             }
 
-            html+="</table>";
+
+        } else { // machine is a brick
+            html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
+            html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
+            html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
+            html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
+        }
+        html+="</table>";
+
+    } // if (!CPAP)
+    if (!cpap && oxi) {
+        html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+        html+="<tr><td colspan=4 align=center><b>"+oxi->machine->properties[STR_PROP_Brand]+"</b> <br>"+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
+        html+="<tr><td colspan=4 align=center>&nbsp;</td></tr>";
+        html+=QString("<tr><td colspan=4 align=center>SpO2 Baseline Used: %1\%</td></tr>").arg(oxi->settings_wavg(OXI_SPO2Drop));
+        html+=QString("<tr><td colspan=4 align=center>SpO2 Desaturations: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0));
+        html+=QString("<tr><td colspan=4 align=center>Pulse Change events: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0));
+        html+="</table>";
+    }
+    if ((cpap && !isBrick) || oxi) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             if (cpap || oxi) {
                 html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
@@ -824,12 +850,7 @@ void Daily::Load(QDate date)
                         html+="</td><tr>";
                     }
                 }
-            }
-        } else {
-            html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-            html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
-            html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
-            html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
+
         }
     } else {
         html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
@@ -892,15 +913,22 @@ void Daily::Load(QDate date)
 
         }
         html+="</table><hr height=2>";
+    }
 
+    {
         //}
         html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
+        if (cpap || oxi)
+            html+=QString("<tr><td align=left><b>%1</b></td><td align=center><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td></tr>")
+                    .arg(tr("SessionID"))
+                    .arg(tr("Date"))
+                    .arg(tr("Start"))
+                    .arg(tr("End"));
         if (cpap) {
-            html+="<tr><td align=left><b>"+tr("SessionID")+"</b></td><td align=center><b>"+tr("Date")+"</b></td><td align=center><b>"+tr("Start")+"</b></td><td align=center><b>"+tr("End")+"</b></td></tr>";
-            html+="<tr><td align=left colspan=4><i>"+tr("CPAP Sessions")+"</i></td></tr>";
+            html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("CPAP Sessions"));
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -919,7 +947,7 @@ void Daily::Load(QDate date)
             //if (oxi) html+="<tr><td colspan=4><hr></td></tr>";
         }
         if (oxi) {
-            html+="<tr><td align=left colspan=4><i>"+tr("Oximetry Sessions")+"</i></td></tr>";
+            html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("Oximetry Sessions"));
             for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -1039,12 +1067,10 @@ void Daily::Load(QDate date)
                 ui->bookmarkTable->setItem(i,1,tw);
                 tw->setData(Qt::UserRole,st);
                 tw->setData(Qt::UserRole+1,et);
-            }
+            } // for (int i
             ui->bookmarkTable->blockSignals(false);
-
-        }
-    }
-
+        } // if (journal->settings.contains(Bookmark_Start))
+    } // if (journal)
 }
 
 void Daily::UnitsChanged()

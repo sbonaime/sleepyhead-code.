@@ -88,7 +88,7 @@ public:
     void compactToWaveform(EventList *el);
 
     //! \brief Packs EventList to time delta format, also pruning zeros.
-    void compactToEvent(EventList *el);
+    static void compactToEvent(EventList *el);
 
     //! \brief Packs SPO2 & Pulse to Events, and Plethy to Waveform EventList types.
     void compactAll();

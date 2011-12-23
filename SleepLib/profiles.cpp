@@ -380,7 +380,8 @@ QList<Machine *> Profile::GetMachines(MachineType t)
             qWarning() << "Profile::GetMachines() i->second == NULL";
             continue;
         }
-        if (i.value()->GetType()==t) {
+        MachineType mt=i.value()->GetType();
+        if ((t==MT_UNKNOWN) || (mt==t)) {
             vec.push_back(i.value());
         }
     }
@@ -472,7 +473,9 @@ Profile *Create(QString name)
 
     Machine *m=new Machine(prof,0);
     m->SetClass("Journal");
-    m->properties[STR_PROP_Brand]="Virtual";
+    m->properties[STR_PROP_Brand]="Journal";
+    m->properties[STR_PROP_Model]="Journal Data Machine Object";
+    m->properties[STR_PROP_Serial]=m->hexid();
     m->properties[STR_PROP_Path]="{DataFolder}/"+m->GetClass()+"_"+m->hexid();
     m->SetType(MT_JOURNAL);
     prof->AddMachine(m);
@@ -616,6 +619,23 @@ const char * US_STR_RebuildCache="RebuildCache";
 const char * US_STR_ShowDebug="ShowDebug";
 const char * US_STR_LinkGroups="LinkGroups";
 
+int Profile::countDays(MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+    int days=0;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            if ((mt==MT_UNKNOWN) || (day->machine->GetType()==mt)) days++;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    return days;
+
+}
+
 EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) start=LastDay(mt);
@@ -706,6 +726,78 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
     val=val/hours;
     return val;
 }
+EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double min=99999999,tmp;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            tmp=day->Min(code);
+            if (min>tmp) min=tmp;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (min>=99999999) min=0;
+    return min;
+}
+EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double max=-99999999,tmp;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            tmp=day->Max(code);
+            if (max<tmp) max=tmp;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (max<=-99999999) max=0;
+    return max;
+}
+EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double min=99999999,tmp;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            tmp=day->settings_min(code);
+            if (min>tmp) min=tmp;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (min>=99999999) min=0;
+    return min;
+}
+EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate start, QDate end)
+{
+    if (!start.isValid()) start=LastDay(mt);
+    if (!end.isValid()) end=LastDay(mt);
+    QDate date=start;
+
+    double max=-99999999,tmp;
+    do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            tmp=day->settings_max(code);
+            if (max<tmp) max=tmp;
+        }
+        date=date.addDays(1);
+    } while (date<end);
+    if (max<=-99999999) max=0;
+    return max;
+}
 EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) start=LastDay(mt);
@@ -713,11 +805,38 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     QDate date=start;
 
+    // This is one messy function.. It requires all data to be loaded.. :(
+
+    QVector<EventDataType> array;
     //double val=0,tmp,hours=0;
     do {
+        Day * day=GetDay(date,mt);
+        if (day) {
+            bool open=day->eventsLoaded();
+            if (!open)
+                day->OpenEvents();
+            for (int i=0;i<day->size();i++) {
+                for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+                    QHash<ChannelID,QVector<EventList *> >::iterator el=(*s)->eventlist.find(code);
+                    if (el==(*s)->eventlist.end()) continue;
+                    for (int j=0;j<el.value().size();j++) {
+                        EventList & e=*el.value()[j];
+                        for (unsigned k=0;k<e.count();k++) {
+                            array.push_back(e.data(k));
+                        }
+                    }
+                }
+            }
+
+            //if (!open)
+                //day->CloseEvents();
+        }
         date=date.addDays(1);
     } while (date<end);
-    return 0;
+    qSort(array);
+    int idx=array.size()*percent;
+    if (idx>array.size()-1) idx=array.size()-1;
+    return array[idx];
 }
 
 QDate Profile::FirstDay(MachineType mt)

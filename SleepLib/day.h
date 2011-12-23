@@ -136,11 +136,17 @@ public:
     //! \brief Loads all Events files for this Days Sessions
     void OpenEvents();
 
+    //! \brief Closes all Events files for this Days Sessions
+    void CloseEvents();
+
     //! \brief Returns this days sessions list
     QVector<Session *> & getSessions() { return sessions; }
 
     //! \brief Returns true if this Day contains loaded Event Data for this channel.
     bool channelExists(ChannelID id);
+
+    //! \brief Returns true if session events are loaded
+    bool eventsLoaded();
 
     //! \brief Returns true if this Day contains loaded Event Data or a cached count for this channel
     bool channelHasData(ChannelID id);

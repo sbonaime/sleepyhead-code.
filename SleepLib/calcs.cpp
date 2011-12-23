@@ -596,20 +596,28 @@ int calcSPO2Drop(Session *session)
     int cnt=0;
     tmp=0;
 
-    // Calculate baseline from first 15 minutes of data, hopefully meaning they are still awake..
     qint64 start=0;
+
+    // Calculate median baseline
+    QList<EventDataType> med;
     for (int e=0;e<it.value().size();e++) {
         EventList & el=*(it.value()[e]);
         for (unsigned i=0;i<el.count();i++) {
             val=el.data(i);
             time=el.time(i);
+            if (val>0) med.push_back(val);
             if (!start) start=time;
-            if (time > start+900000) break;// 15 minutes
+            if (time > start+3600000) break; // just look at the first hour
             tmp+=val;
             cnt++;
         }
     }
-    EventDataType baseline=round(tmp/EventDataType(cnt));
+    qSort(med);
+    int midx=float(med.size())*0.90;
+    if (midx>med.size()-1) midx=med.size()-1;
+    EventDataType baseline=med[midx];
+    session->settings[OXI_SPO2Drop]=baseline;
+    //EventDataType baseline=round(tmp/EventDataType(cnt));
     EventDataType current;
     qDebug() << "Calculated baseline" << baseline;
 
