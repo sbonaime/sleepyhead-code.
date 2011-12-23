@@ -238,6 +238,8 @@ private slots:
     //! \brief Destroy ALL the CPAP data for the currently selected machine, so it can be freshly imported again
     void on_actionAll_Data_for_current_CPAP_machine_triggered();
 
+    void on_summaryButton_clicked();
+
 private:
 
     Ui::MainWindow *ui;

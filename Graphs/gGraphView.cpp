@@ -2612,6 +2612,8 @@ void gGraphView::paintGL()
             redrawtimer->setInterval(15);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();
+        } else {
+            int i=5;
         }
     }
 }

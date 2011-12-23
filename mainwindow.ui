@@ -221,6 +221,13 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QToolButton" name="summaryButton">
+                  <property name="text">
+                   <string>Summary</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QComboBox" name="urlBar">
                   <property name="editable">
                    <bool>true</bool>

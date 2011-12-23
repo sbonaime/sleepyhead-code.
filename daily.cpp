@@ -290,7 +290,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     GraphView->LoadSettings("Daily");
 
-    emptyToggleArea=new QLabel("No data available for this day",this);
+    emptyToggleArea=new QLabel(this);
+    emptyToggleArea->setText("This may take a while...");
     ui->graphToggleArea->addWidget(emptyToggleArea,1,Qt::AlignCenter);
     emptyToggleArea->setVisible(false);
     for (int i=0;i<GraphView->size();i++) {
@@ -299,13 +300,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         btn->setCheckable(true);
         btn->setChecked((*GraphView)[i]->visible());
         btn->setToolTip(tr("Show/Hide %1").arg(title));
+        btn->setVisible(false);
         GraphToggles[title]=btn;
         btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
         ui->graphToggleArea->addWidget(btn);
         connect(btn,SIGNAL(toggled(bool)),this,SLOT(graphtogglebutton_toggled(bool)));
     }
     ui->graphToggleArea->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
-
+    ui->graphVisibilityToggleArea->setVisible(false);
+    ui->splitter->setVisible(false);
 
     // TODO: Add preference to hide do this for Widget Haters..
     //ui->calNavWidget->hide();
@@ -320,6 +323,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
+    GraphView->setCubeImage(images["sheep"]);
+    GraphView->setEmptyText(tr("Loading Data..."));
 }
 
 Daily::~Daily()
@@ -377,6 +382,7 @@ void Daily::Link_clicked(const QUrl &url)
 
 void Daily::ReloadGraphs()
 {
+    ui->splitter->setVisible(true);
     QDate d;
     if (previous_date.isValid()) {
         d=previous_date;
@@ -661,12 +667,15 @@ void Daily::Load(QDate date)
     QString a;
     bool isBrick=false;
 
+    ui->graphVisibilityToggleArea->setVisible(true);
+
     if (graphsAvailable>0) {
             GraphView->setCubeImage(images["sheep"]);
             GraphView->setEmptyText(tr("Graphs Switched Off"));
     } else {
         GraphView->setCubeImage(images["nodata"]);
         GraphView->setEmptyText(tr("No Data"));
+        emptyToggleArea->setText("No data available for this day");
     }
 
     if (cpap) {
@@ -804,9 +813,9 @@ void Daily::Load(QDate date)
         html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
         html+="<tr><td colspan=4 align=center><b>"+oxi->machine->properties[STR_PROP_Brand]+"</b> <br>"+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
         html+="<tr><td colspan=4 align=center>&nbsp;</td></tr>";
-        html+=QString("<tr><td colspan=4 align=center>SpO2 Baseline Used: %1\%</td></tr>").arg(oxi->settings_wavg(OXI_SPO2Drop));
         html+=QString("<tr><td colspan=4 align=center>SpO2 Desaturations: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0));
         html+=QString("<tr><td colspan=4 align=center>Pulse Change events: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0));
+        html+=QString("<tr><td colspan=4 align=center>SpO2 Baseline Used: %1\%</td></tr>").arg(oxi->settings_wavg(OXI_SPO2Drop));
         html+="</table>";
     }
     if ((cpap && !isBrick) || oxi) {

@@ -256,8 +256,11 @@ bool Machine::Load()
     int cnt=0;
     for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
         cnt++;
-        if ((cnt % 10)==0)
+        if ((cnt % 10)==0) {
             if (qprogress) qprogress->setValue((float(cnt)/float(size)*100.0));
+
+        }
+        QApplication::processEvents();
 
         Session *sess=new Session(this,s.key());
 
