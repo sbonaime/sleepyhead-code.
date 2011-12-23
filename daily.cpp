@@ -684,8 +684,6 @@ void Daily::Load(QDate date)
             GraphView->setEmptyText(tr("Brick Machine :("));
 
             isBrick=true;
-        } else {
-
         }
 
         mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);

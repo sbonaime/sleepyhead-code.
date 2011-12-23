@@ -584,75 +584,75 @@ void MainWindow::on_summaryButton_clicked()
         if (oximeters.size()>0) {
             QDate lastoxi=p_profile->LastDay(MT_OXIMETER);
             QDate firstoxi=p_profile->FirstDay(MT_OXIMETER);
-            html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
             int days=PROFILE.countDays(MT_OXIMETER,firstcpap,lastcpap);
-            if (!days) {
-                html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("No Oximetry data available."));
-            } else if (days==1) {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 day of Oximetry Data, on %2.")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)));
-            } else {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 days of Oximetry Data, between %2 and %3")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)).arg(lastoxi.toString(Qt::SystemLocaleShortDate)));
-            }
+            if (days>0) {
+                html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
+                if (days==1) {
+                    html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 day of Oximetry Data, on %2.")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)));
+                } else {
+                    html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 days of Oximetry Data, between %2 and %3")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)).arg(lastoxi.toString(Qt::SystemLocaleShortDate)));
+                }
 
-            html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
-                .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
-            QDate oxiweek=lastcpap.addDays(-7);
-            QDate oximonth=lastcpap.addDays(-30);
-            QDate oxi6month=lastcpap.addMonths(-6);
-            QDate oxiyear=lastcpap.addYears(-12);
-            if (oxiweek<firstoxi) oxiweek=firstoxi;
-            if (oximonth<firstoxi) oximonth=firstoxi;
-            if (oxi6month<firstoxi) oxi6month=firstoxi;
-            if (oxiyear<firstoxi) oxiyear=firstoxi;
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Average SpO2"))
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Minimum SpO2"))
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("SpO2 Events / Hour"))
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2\%</td><td>%3\%</td><td>%4\%</td><td>%5\%</td><td>%6\%</td></tr>")
-                .arg(tr("% of time in SpO2 Events"))
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/3600.0,0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Average Pulse Rate"))
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Minimum Pulse Rate"))
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
-            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Maximum Pulse Rate"))
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
+                    .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
+                QDate oxiweek=lastcpap.addDays(-7);
+                QDate oximonth=lastcpap.addDays(-30);
+                QDate oxi6month=lastcpap.addMonths(-6);
+                QDate oxiyear=lastcpap.addYears(-12);
+                if (oxiweek<firstoxi) oxiweek=firstoxi;
+                if (oximonth<firstoxi) oximonth=firstoxi;
+                if (oxi6month<firstoxi) oxi6month=firstoxi;
+                if (oxiyear<firstoxi) oxiyear=firstoxi;
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("Average SpO2"))
+                    .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("Minimum SpO2"))
+                    .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("SpO2 Events / Hour"))
+                    .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2\%</td><td>%3\%</td><td>%4\%</td><td>%5\%</td><td>%6\%</td></tr>")
+                    .arg(tr("% of time in SpO2 Events"))
+                    .arg(100.0/p_profile->calcHours(MT_OXIMETER)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER)/3600.0,0,'f',3)
+                    .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/3600.0,0,'f',3)
+                    .arg(100.0/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/3600.0,0,'f',3)
+                    .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/3600.0,0,'f',3)
+                    .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/3600.0,0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("Average Pulse Rate"))
+                    .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("Minimum Pulse Rate"))
+                    .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                    .arg(tr("Maximum Pulse Rate"))
+                    .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER),0,'f',3)
+                    .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                    .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+            }
         }
 
         html+="</table>";
