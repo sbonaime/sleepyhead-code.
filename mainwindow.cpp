@@ -740,7 +740,6 @@ void MainWindow::on_summaryButton_clicked()
             //RXsort=RX_first;
             //qSort(rxchange);
 
-            cpapmode=MODE_CPAP;
             html+="<div align=center>";
             html+=QString("<br/><b>Changes to Prescription Settings</b>");
             html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
