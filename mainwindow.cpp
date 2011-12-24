@@ -1317,14 +1317,19 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
             float exp=cpap->count(CPAP_ExP)/cpap->hours();
 
-            int piesize=(2048.0/8.0)*1.5;   // 1.5" in size
+            int piesize=(2048.0/8.0)*1.4;   // 1.5" in size
             //float fscale=font_scale;
             //if (!highres)
 //                fscale=1;
 
             getDaily()->eventBreakdownPie()->showTitle(false);
             getDaily()->eventBreakdownPie()->setMargins(0,0,0,0);
-            QPixmap ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,1);
+            QPixmap ebp;
+            if (ahi>0) {
+                ebp=getDaily()->eventBreakdownPie()->renderPixmap(piesize,piesize,1);
+            } else {
+                ebp=QPixmap::fromImage(*images["smiley"]);
+            }
             painter.drawPixmap(virt_width-piesize,bounds.height()/2,piesize,piesize,ebp);
             getDaily()->eventBreakdownPie()->showTitle(true);
 
