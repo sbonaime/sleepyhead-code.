@@ -136,6 +136,7 @@ void init()
     OXI_SPO2Drop=schema::channel["SPO2Drop"].id();
     OXI_Plethy=schema::channel["Plethy"].id();
     CPAP_AHI=schema::channel["AHI"].id();
+    CPAP_RDI=schema::channel["RDI"].id();
     Journal_Notes=schema::channel["Journal"].id();
     Journal_Weight=schema::channel["Weight"].id();
     Journal_BMI=schema::channel["BMI"].id();

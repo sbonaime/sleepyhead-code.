@@ -38,7 +38,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>7</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1232,6 +1232,13 @@ this application to be unstable with this feature enabled.</string>
            <widget class="QCheckBox" name="highResolutionPrinting">
             <property name="text">
              <string>High Resolution Printing (Slow)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="AddRERAtoAHI">
+            <property name="text">
+             <string>Use RDI instead of  AHI (PRS1 only)</string>
             </property>
            </widget>
           </item>

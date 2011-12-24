@@ -421,7 +421,7 @@ CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_
 CPAP_RERA, CPAP_PressurePulse, CPAP_FlowLimit, CPAP_FlowRate, CPAP_MaskPressure, CPAP_MaskPressureHi,
 CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
 CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
-CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform;
+CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI;
 
 ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 ChannelID INTP_SmartFlex;

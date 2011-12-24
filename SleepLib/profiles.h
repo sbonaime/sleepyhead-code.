@@ -512,6 +512,7 @@ extern const char * US_STR_SkipEmptyDays;
 extern const char * US_STR_RebuildCache;
 extern const char * US_STR_ShowDebug;
 extern const char * US_STR_LinkGroups;
+extern const char * US_STR_CalculateRDI;
 
 /*! \class UserSettings
     \brief Profile Options relating to General User Settings
@@ -528,6 +529,7 @@ public:
         if (!m_profile->contains(US_STR_RebuildCache)) (*m_profile)[US_STR_RebuildCache]=false; // can't remember..
         if (!m_profile->contains(US_STR_ShowDebug)) (*m_profile)[US_STR_ShowDebug]=false;
         if (!m_profile->contains(US_STR_LinkGroups)) (*m_profile)[US_STR_LinkGroups]=true; // can't remember..
+        if (!m_profile->contains(US_STR_CalculateRDI)) (*m_profile)[US_STR_CalculateRDI]=false;
     }
     ~UserSettings() {}
 
@@ -539,6 +541,7 @@ public:
     bool rebuildCache() { return (*m_profile)[US_STR_RebuildCache].toBool(); }
     bool showDebug() { return (*m_profile)[US_STR_ShowDebug].toBool(); }
     bool linkGroups() { return (*m_profile)[US_STR_LinkGroups].toBool(); }
+    bool calculateRDI() { return (*m_profile)[US_STR_CalculateRDI].toBool(); }
 
     void setUnitSystem(UnitSystem us) { (*m_profile)[US_STR_UnitSystem]=(int)us; }
     void setEventWindowSize(double size) { (*m_profile)[US_STR_EventWindowSize]=size; }
@@ -546,6 +549,8 @@ public:
     void setRebuildCache(bool rebuild) { (*m_profile)[US_STR_RebuildCache]=rebuild; }
     void setShowDebug(bool b) { (*m_profile)[US_STR_ShowDebug]=b; }
     void setLinkGroups(bool link) { (*m_profile)[US_STR_LinkGroups]=link; }
+    void setCalculateRDI(bool rdi) { (*m_profile)[US_STR_CalculateRDI]=rdi; }
+
 
     Profile *m_profile;
 };

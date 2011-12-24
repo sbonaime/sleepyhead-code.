@@ -359,11 +359,11 @@ QString htmlHeader()
 "</style>"
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
+"<div align=center>"
 "<h2><img src='qrc:/docs/sheep.png' width=100px height=100px>SleepyHead v"+VersionString+" "+ReleaseStatus+"</h2>"
 "<p><i>This page is being redesigned to be more useful... Please send me your ideas on what you'd like to see here :)</i></p>"
 "<p>The plan is to get the content happening first, then make the layout pretty...</p>"
-"<p>Percentile calcs aren't done, as they require ALL data in memory, or very slow calcs, loading and unloading the data.. I really don't want to be forced to have to do either of those. There is simply too much variance to cache this data. :(</br>"
-"If an average of the daily percentile values were useful, maybe.. ? </p>"
+"</div>"
 "<hr/>");
 }
 QString htmlFooter()
@@ -376,8 +376,10 @@ EventDataType calcAHI(QDate start, QDate end)
     EventDataType val=(p_profile->calcCount(CPAP_Obstructive,MT_CPAP,start,end)
               +p_profile->calcCount(CPAP_Hypopnea,MT_CPAP,start,end)
               +p_profile->calcCount(CPAP_ClearAirway,MT_CPAP,start,end)
-              +p_profile->calcCount(CPAP_Apnea,MT_CPAP,start,end))
-             /p_profile->calcHours(MT_CPAP,start,end);
+              +p_profile->calcCount(CPAP_Apnea,MT_CPAP,start,end));
+    if (PROFILE.general->calculateRDI())
+        val+=p_profile->calcCount(CPAP_RERA,MT_CPAP,start,end);
+    val/=p_profile->calcHours(MT_CPAP,start,end);
 
     return val;
 }
@@ -393,7 +395,8 @@ struct RXChange
         mode=copy.mode;
         min=copy.min;
         max=copy.max;
-        p90=copy.p90;
+        per1=copy.per1;
+        per2=copy.per2;
         highlight=copy.highlight;
         weighted=copy.weighted;
     }
@@ -404,12 +407,13 @@ struct RXChange
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
-    EventDataType p90;
+    EventDataType per1;
+    EventDataType per2;
     EventDataType weighted;
     short highlight;
 };
 
-enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_p90, RX_weighted };
+enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_per1, RX_per2, RX_weighted };
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
 
@@ -423,7 +427,8 @@ bool operator<(const RXChange & comp1, const RXChange & comp2) {
         case RX_mode: return comp1.mode < comp2.mode;
         case RX_min:  return comp1.min < comp2.min;
         case RX_max:  return comp1.max < comp2.max;
-        case RX_p90:  return comp1.p90 < comp2.p90;
+        case RX_per1:  return comp1.per1 < comp2.per1;
+        case RX_per2:  return comp1.per2 < comp2.per2;
         case RX_weighted:  return comp1.weighted < comp2.weighted;
         };
     } else {
@@ -435,7 +440,8 @@ bool operator<(const RXChange & comp1, const RXChange & comp2) {
         case RX_mode: return comp1.mode > comp2.mode;
         case RX_min:  return comp1.min > comp2.min;
         case RX_max:  return comp1.max > comp2.max;
-        case RX_p90:  return comp1.p90 > comp2.p90;
+        case RX_per1:  return comp1.per1 > comp2.per1;
+        case RX_per2:  return comp1.per2 > comp2.per2;
         case RX_weighted:  return comp1.weighted > comp2.weighted;
         };
     }
@@ -451,7 +457,8 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode < comp2->mode;
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
-        case RX_p90:  return comp1->p90 < comp2->p90;
+        case RX_per1:  return comp1->per1 < comp2->per1;
+        case RX_per2:  return comp1->per2 < comp2->per2;
         case RX_weighted:  return comp1->weighted < comp2->weighted;
         };
     } else {
@@ -463,7 +470,8 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode > comp2->mode;
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
-        case RX_p90:  return comp1->p90 > comp2->p90;
+        case RX_per1:  return comp1->per1 > comp2->per1;
+        case RX_per2:  return comp1->per2 > comp2->per2;
         case RX_weighted:  return comp1->weighted > comp2->weighted;
         };
     }
@@ -516,11 +524,19 @@ void MainWindow::on_summaryButton_clicked()
     int cpapdays=PROFILE.countDays(MT_CPAP,firstcpap,lastcpap);
     CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
+    float percentile=0.95;
+
+    QString ahitxt;
+    if (PROFILE.general->calculateRDI()) {
+        ahitxt=tr("RDI");
+    } else {
+        ahitxt=tr("AHI");
+    }
     if (cpapdays==0)  {
         html+="<p>No Machine Data Imported</p>";
     } else {
         html+="<div align=center>";
-        html+=QString("<p><b>Summary Information as of %1</b></p>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
+        html+=QString("<p><b>Key Statistics as of %1</b></p>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
 
         if (cpap_machines.size()>0) {
@@ -537,22 +553,22 @@ void MainWindow::on_summaryButton_clicked()
             html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
                 .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-            .arg(tr("AHI"))
+            .arg(ahitxt)
             .arg(calcAHI(lastcpap,lastcpap),0,'f',3)
             .arg(calcAHI(cpapweek,lastcpap),0,'f',3)
             .arg(calcAHI(cpapmonth,lastcpap),0,'f',3)
             .arg(calcAHI(cpap6month,lastcpap),0,'f',3)
             .arg(calcAHI(cpapyear,lastcpap),0,'f',3);
-            html+="<tr><td colspan=6>Note, these are different to overview calcs.. Overview shows a simple average AHI, this shows combined counts divide by combined hours</td></tr>";
 
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-            .arg(tr("Usage (Average)"))
+            .arg(tr("Hours per Night"))
             .arg(formatTime(p_profile->calcHours(MT_CPAP)))
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapweek,lastcpap)/float(cpapweekdays)))
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapmonth,lastcpap)/float(cpapmonthdays)))
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays)))
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays)));
 
+            if (cpapmode<MODE_BIPAP) {
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("Average Pressure"))
             .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP),0,'f',3)
@@ -563,12 +579,42 @@ void MainWindow::on_summaryButton_clicked()
 
             if (cpapmode>MODE_CPAP) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("90% Pressure"))
-                .arg(p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(tr("95% Pressure"))
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            }
+            } else {
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Min EPAP"))
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("95% EPAP"))
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Max IPAP"))
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("95% IPAP"))
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             }
             //html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
@@ -588,6 +634,7 @@ void MainWindow::on_summaryButton_clicked()
             .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpap6month,lastcpap),0,'f',3)
             .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             html+="<tr><td colspan=6>What about median leak values? 90% Leaks?</td></tr>";
+            html+="<tr><td colspan=6>Note, AHI calcs here are different to overview calcs.. Overview shows a average of the dialy AHI's, this shows combined counts divide by combined hours</td></tr>";
         }
         if (oximeters.size()>0) {
             QDate lastoxi=p_profile->LastDay(MT_OXIMETER);
@@ -698,7 +745,13 @@ void MainWindow::on_summaryButton_clicked()
                             rx.mode=cmode;
                             rx.min=cmin;
                             rx.max=cmax;
-                            rx.p90=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
+                            if (mode<MODE_BIPAP) {
+                                rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
+                                rx.per2=0;
+                            } else {
+                                rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
+                                rx.per2=p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,first,last);
+                            }
                             rx.weighted=float(rx.days)/float(cpapdays)*rx.ahi;
                             rxchange.push_back(rx);
                         }
@@ -724,7 +777,13 @@ void MainWindow::on_summaryButton_clicked()
                 rx.mode=mode;
                 rx.min=min;
                 rx.max=max;
-                rx.p90=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
+                if (mode<MODE_BIPAP) {
+                    rx.per1=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
+                    rx.per2=0;
+                } else {
+                    rx.per1=p_profile->calcPercentile(CPAP_EPAP,0.9,MT_CPAP,first,last);
+                    rx.per2=p_profile->calcPercentile(CPAP_IPAP,0.9,MT_CPAP,first,last);
+                }
                 rx.weighted=float(rx.days)/float(cpapdays);
                 //rx.weighted=float(days)*rx.ahi;
                 rxchange.push_back(rx);
@@ -752,9 +811,12 @@ void MainWindow::on_summaryButton_clicked()
             html+=QString("<br/><b>Changes to Prescription Settings</b>");
             html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
             QString extratxt;
-            if (cpapmode>MODE_CPAP) {
+            if (cpapmode>=MODE_BIPAP) {
+                extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td>")
+                    .arg(tr("EPAP")).arg(tr("EPAP")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
+            } else if (cpapmode>MODE_CPAP) {
                 extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td>")
-                    .arg(tr("Min Pressure")).arg(tr("Max Pressure")).arg(tr("90% Pressure"));
+                    .arg(tr("Min Pressure")).arg(tr("Max Pressure")).arg(tr("%1% Pressure").arg(percentile*100.0));
             } else {
                 extratxt=QString("<td><b>%1</b></td>")
                     .arg(tr("Pressure"));
@@ -763,7 +825,7 @@ void MainWindow::on_summaryButton_clicked()
                       .arg(tr("First"))
                       .arg(tr("Last"))
                       .arg(tr("Days"))
-                      .arg(tr("AHI"))
+                      .arg(ahitxt)
                       .arg(tr("Mode"))
                       .arg(extratxt);
 
@@ -779,16 +841,18 @@ void MainWindow::on_summaryButton_clicked()
                 } else if (rx.highlight==4) {
                     color=" bgcolor='#ffc0c0'";
                 } else color="";
-                if (cpapmode>MODE_CPAP)
-                    extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max).arg(rx.p90);
-                else extratxt="";
+                if (cpapmode>=MODE_BIPAP) {
+                    extratxt=QString("<td>%1</td><td>%2</td><td>%3</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
+                } else if (cpapmode>MODE_CPAP) {
+                    extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
+                } else extratxt="";
                 html+=QString("<tr"+color+"><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td>%7</tr>")
                         .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                         .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                         .arg(rx.days)
                         .arg(rx.ahi,0,'f',2)
                         .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
-                        .arg(rx.min)
+                        .arg(rx.min,0,'f',2)
                         .arg(extratxt);
             }
             html+="</table>";
@@ -1238,7 +1302,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             else if (mode==MODE_BIPAP) cpapinfo+=tr("Bi-Level %1-%2cmH2O").arg(min).arg(max);
             else if (mode==MODE_ASV) cpapinfo+=tr("ASV");
 
-            float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
+            float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
+            if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
+            ahi/=cpap->hours();
             float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
             float uai=cpap->count(CPAP_Apnea)/cpap->hours();
             float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
@@ -1264,7 +1330,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
             QString stats;
             painter.setFont(medium_font);
-            stats=tr("AHI\t%1\n").arg(ahi,0,'f',2);
+            if (PROFILE.general->calculateRDI())
+                stats=tr("RDI\t%1\n").arg(ahi,0,'f',2);
+            else
+                stats=tr("AHI\t%1\n").arg(ahi,0,'f',2);
             QRectF bounds=painter.boundingRect(QRectF(0,0,virt_width,0),stats,QTextOption(Qt::AlignRight));
             painter.drawText(bounds,stats,QTextOption(Qt::AlignRight));
 
@@ -1340,7 +1409,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             }
         }
     } else {
-        if (g=gv->findGraph(tr("Event Flags"))) {
+        if ((g=gv->findGraph(tr("Event Flags")))!=NULL) {
             if ((!g->isEmpty()) && (g->visible())) {
                 start.push_back(st);
                 start.push_back(et);

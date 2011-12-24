@@ -90,8 +90,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // TODO: Automate graph creation process
 
     // The following code (to the closing marker) is crap --->
-    AHI=createGraph("AHI","Apnea\nHypopnea\nIndex");
-    UC=createGraph("Usage","Usage\n(hours)");
+    if (PROFILE.general->calculateRDI())
+        AHI=createGraph(tr("RDI"),"Respiratory\nDisturbance\nIndex");
+    else
+        AHI=createGraph(tr("AHI"),tr("Apnea\nHypopnea\nIndex"));
+    UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
 
     US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);
@@ -159,11 +162,17 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ses->addSlice(NoChannel,QColor("blue"),ST_SESSIONS,true);
     SES->AddLayer(ses);
 
-    bc=new SummaryChart(tr("AHI"),GT_BAR);
+    if (PROFILE.general->calculateRDI())
+        bc=new SummaryChart(tr("RDI"),GT_BAR);
+    else
+        bc=new SummaryChart(tr("AHI"),GT_BAR);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH,false);
     bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH,false);
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH,false);
     bc->addSlice(CPAP_ClearAirway,QColor("purple"),ST_CPH,false);
+    if (PROFILE.general->calculateRDI()) {
+        bc->addSlice(CPAP_RERA,QColor("gold"),ST_CPH,false);
+    }
     AHI->AddLayer(bc);
 
     set=new SummaryChart("",GT_LINE);
@@ -208,8 +217,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN,true);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX,true);
     pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
-    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_MIN,true);
-    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_MAX,true);
+    pr->addSlice(CPAP_EPAP,QColor("green"),ST_MIN,true);
+    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_90P,true);
+
+    pr->addSlice(CPAP_IPAP,QColor("blue"),ST_MAX,true);
+    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_90P,true);
     PR->AddLayer(pr);
 
     lk=new SummaryChart(tr("Avg Leak"),GT_LINE);

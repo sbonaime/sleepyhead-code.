@@ -3,7 +3,7 @@
 Metric units please.. A conversion system will deal with the other measurement systems
 English only.. A different translation table will be used..
 It's only details & label that will be translated. name is used internally.
-One id code per item
+Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 -->
 <channels language="en" version="1.0">
  <group name="CPAP">
@@ -16,13 +16,13 @@ One id code per item
   <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" unit="events/hour" color="dark grey"/>
   <channel id="0x1006" class="data" name="RERA" details="Resp. Effort Related Arousal" unit="events/hour" label="RERA" color="gold"/>
   <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="events/hour" color="red"/>
-  <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore 2" label="VS2" unit="events/hour" color="orange"/>
+  <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore #2" label="VS2" unit="events/hour" color="orange"/>
   <channel id="0x1009" class="data" name="PressurePulse" details="Pressure Pulse" label="PP" unit="events/hour" color="dark red"/>
   <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="events/hour" color="dark blue"/>
   <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="events/hour" color="orange"/>
   <channel id="0x100c" class="data" name="ExP" details="Exhale Puff" label="EP" unit="events/hour" color="dark magenta"/>
-  <channel id="0x101e" class="data" name="UserFlag1" details="User Flag 1" label="UF1" unit="events/hour" color="dark cyan"/>
-  <channel id="0x101f" class="data" name="UserFlag2" details="User Flag 2" label="UF2" unit="events/hour" color="dark cyan"/>
+  <channel id="0x101e" class="data" name="UserFlag1" details="User Flag #1" label="UF1" unit="events/hour" color="dark cyan"/>
+  <channel id="0x101f" class="data" name="UserFlag2" details="User Flag #2" label="UF2" unit="events/hour" color="dark cyan"/>
 
   <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="PMin" color="black"/>
   <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="PMax" color="black"/>
@@ -54,6 +54,7 @@ One id code per item
   <channel id="0x1116" class="data" name="AHI" details="Apnea/Hypopnea Index" label="AHI/Hr" unit="events/hr" color="dark red"/>
   <channel id="0x1117" class="data" name="LeakTotal" details="Total Leak Rate" label="Total Leaks" unit="L/min" color="dark green"/>
   <channel id="0x1118" class="data" name="LeakMedian" details="Median Leak Rate" label="Median Leaks" unit="L/min" color="dark green"/>
+  <channel id="0x1119" class="data" name="RDI" details="Respiratory Disturbance Index" label="RDI" unit="events/hr" color="dark red"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="?" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="?" color="black"/>

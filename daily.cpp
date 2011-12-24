@@ -91,7 +91,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     int default_height=PROFILE.appearance->graphHeight();
     SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
     FRW=new gGraph(GraphView,tr("Flow Rate"),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
-    AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+
+
+    if (PROFILE.general->calculateRDI()) {
+        AHI=new gGraph(GraphView,tr("RDI"),schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
+    } else AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+
     MP=new gGraph(GraphView,tr("Mask Pressure"),schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
     PRD=new gGraph(GraphView,tr("Pressure"),schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
     LEAK=new gGraph(GraphView,tr("Leak"),schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
@@ -150,7 +155,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
     fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
     //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
-    //fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
@@ -173,7 +178,11 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE"))));
+    if (PROFILE.general->calculateRDI())
+        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE")))));
+    else
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE"))));
+
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),tr("A")))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),tr("VS"))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
@@ -214,9 +223,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::darkRed,square)));
     PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
 
-    AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
+    if (PROFILE.general->calculateRDI()) {
+        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
+    } else {
+        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
+    }
 
-    //AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_LeakTotal,Qt::darkYellow,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
     LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
@@ -250,17 +262,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     PTB->setForceMaxY(100);
     SPO2->setForceMaxY(100);
-    //FRW->setRecMinY(-120);
-    //FRW->setRecMaxY(0);
 
-    /*SPO2->setRecMaxY(100);
-    SPO2->setRecMinY(75);
-    PULSE->setRecMinY(40);
-
-    LEAK->setRecMinY(0);
-    LEAK->setRecMaxY(80);
-    PRD->setRecMinY(4.0);
-    PRD->setRecMaxY(15.0); */
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
         graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -273,7 +275,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
-    //Qt::DayOfWeek dow=QLocale::system().firstDayOfWeek();
     Qt::DayOfWeek dow=firstDayOfWeekFromLocale();
 
     ui->calendar->setFirstDayOfWeek(dow);
@@ -356,7 +357,7 @@ void Daily::Link_clicked(const QUrl &url)
         }
         return;
     } else if (code=="event")  {
-        QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[data].description(),Qt::MatchContains);
+        QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[sid].description(),Qt::MatchContains);
         if (list.size()>0) {
             ui->treeWidget->collapseAll();
             ui->treeWidget->expandItem(list.at(0));
@@ -364,7 +365,7 @@ void Daily::Link_clicked(const QUrl &url)
             ui->treeWidget->setCurrentItem(wi);
             ui->tabWidget->setCurrentIndex(1);
         } else {
-            mainwin->Notify(tr("No %1 events are recorded this day").arg(schema::channel[data].description()),"",1500);
+            mainwin->Notify(tr("No %1 events are recorded this day").arg(schema::channel[sid].description()),"",1500);
         }
     } else if (code=="graph") {
         qDebug() << "Select graph " << data;
@@ -441,6 +442,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_ExP)
                 && (code!=CPAP_FlowLimit)
                 && (code!=CPAP_PressurePulse)
+                && (code!=CPAP_VSnore2)
                 && (code!=CPAP_VSnore)) continue;
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -690,14 +692,15 @@ void Daily::Load(QDate date)
 
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
-        float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea))/cpap->hours();
+        float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
+        if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
+        ahi/=cpap->hours();
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
         float uai=cpap->count(CPAP_Apnea)/cpap->hours();
         float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
         float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/cpap->hours();
         float cai=cpap->count(CPAP_ClearAirway)/cpap->hours();
         float rei=cpap->count(CPAP_RERA)/cpap->hours();
-        float vsi=cpap->count(CPAP_VSnore)/cpap->hours();
         float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
         float nri=cpap->count(CPAP_NRI)/cpap->hours();
         float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
@@ -748,9 +751,14 @@ void Daily::Load(QDate date)
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 cs="4 width='100%' align=center>";
             } else cs="2 width='50%'>";
-            html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-            "<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n"
-            "<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+QString::number(CPAP_Hypopnea)+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+            html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
+
+            if (PROFILE.general->calculateRDI()) {
+                html+="<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_RDI].description()+"'>"+tr("RDI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
+            } else {
+                html+="<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
+            }
+            html+="<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+QString::number(CPAP_Hypopnea)+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+QString::number(CPAP_Apnea)+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
             }
@@ -760,16 +768,21 @@ void Daily::Load(QDate date)
 
             if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_RERA)+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_FlowLimit)+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n"
-                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
-                        "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_CSR)+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
+                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_RERA)+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n";
+                if (mode>MODE_CPAP) {
+                    html+="<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_FlowLimit)+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n";
+                    html+="<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore)/cpap->hours())+"</td></tr>\n";
+                } else {
+                    html+="<tr bgcolor='#404040'><td colspan=2>&nbsp;</td></tr>";
+                    html+="<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore2)+"'title=' "+schema::channel[CPAP_VSnore2].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore2)/cpap->hours())+"</td></tr>\n";
+                }
+                html+="<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_CSR)+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
                 "</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
                 "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_NRI)+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
                 "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_Leak)+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
-                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",vsi)+"</td></tr>\n"
+                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore)/cpap->hours())+"</td></tr>\n"
                 "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_ExP)+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
                 "</table></td>";
 

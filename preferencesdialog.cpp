@@ -107,6 +107,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->pulseChange->setValue(profile->oxi->pulseChangeBPM());
     ui->pulseChangeTime->setValue(profile->oxi->pulseChangeDuration());
     ui->oxiDiscardThreshold->setValue(profile->oxi->oxiDiscardThreshold());
+    ui->AddRERAtoAHI->setChecked(profile->general->calculateRDI());
 
     ui->timeEdit->setTime(profile->session->daySplitTime());
     int val=profile->session->combineCloseSessions();
@@ -299,6 +300,11 @@ void PreferencesDialog::Save()
         profile->session->setTrashDayCache(true);
         needs_restart=true;
     } else profile->session->setTrashDayCache(false);
+
+    if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
+        profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
+        needs_restart=true;
+    }
 
     profile->session->setCombineCloseSessions(ui->combineSlider->value());
     profile->session->setIgnoreShortSessions(ui->IgnoreSlider->value());

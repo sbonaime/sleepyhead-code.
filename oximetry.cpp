@@ -1027,6 +1027,10 @@ void Oximetry::on_RunButton_toggled(bool checked)
         GraphView->setEmptyText(tr("Please Wait"));
         GraphView->redraw();
 
+        PLETHY->setVisible(true);
+        SPO2->setVisible(true);
+        PULSE->setVisible(true);
+
         PLETHY->setRecMinY(0);
         PLETHY->setRecMaxY(128);
         PULSE->setRecMinY(60);
@@ -1183,6 +1187,7 @@ void Oximetry::on_ImportButton_clicked()
     connect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
     connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
 
+    PLETHY->setVisible(false);
     day->getSessions().clear();
     GraphView->setDay(day);
     GraphView->setEmptyText("Make Sure Oximeter Is Ready");

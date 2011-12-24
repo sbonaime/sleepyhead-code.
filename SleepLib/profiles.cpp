@@ -239,7 +239,11 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     QList<Day *> & dl=daylist[date];
     for (QList<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
-            throw OneTypePerDay();
+            if (QMessageBox::question(NULL,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+                throw OneTypePerDay();
+            }
+            daylist[date].erase(a);
+            break;
         }
     }
     daylist[date].push_back(day);
@@ -543,6 +547,7 @@ const char * US_STR_SkipEmptyDays="SkipEmptyDays";
 const char * US_STR_RebuildCache="RebuildCache";
 const char * US_STR_ShowDebug="ShowDebug";
 const char * US_STR_LinkGroups="LinkGroups";
+const char * US_STR_CalculateRDI="CalculateRDI";
 
 int Profile::countDays(MachineType mt, QDate start, QDate end)
 {
@@ -791,11 +796,37 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 //        }
 //    }
 
-    if (array.size()==0) return 0;
+    /*if (array.size()==0) return 0;
     qSort(array);
+
+
     int idx=array.size()*percent;
     if (idx>array.size()-1) idx=array.size()-1;
-    return array[idx];
+    return array[idx]; */
+
+
+    int size=array.size();
+    if (!size)
+        return 0;
+    size--;
+    qSort(array);
+    int p=EventDataType(size)*percent;
+    float p2=EventDataType(size)*percent;
+    float diff=p2-p;
+    EventDataType val=array[p];
+    if (diff>0) {
+        int s=p+1;
+        if (s>size-1) s=size-1;
+        EventDataType v2=array[s];
+        EventDataType v3=v2-val;
+        if (v3>0) {
+            val+=v3*diff;
+        }
+
+    }
+
+    return val;
+
 }
 
 QDate Profile::FirstDay(MachineType mt)

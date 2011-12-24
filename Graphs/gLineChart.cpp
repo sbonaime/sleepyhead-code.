@@ -576,12 +576,15 @@ void AHIChart::SetDay(Day *d)
             if (sess->eventlist.contains(CPAP_NRI))
                 el[4]=sess->eventlist[CPAP_NRI][0];
             else el[4]=NULL;
-            /*if (sess->eventlist.contains(CPAP_ExP))
-                el[5]=sess->eventlist[CPAP_ExP][0];
-            else el[5]=NULL;*/
-
+            int znt=5;
+            if (PROFILE.general->calculateRDI()) {
+                if (sess->eventlist.contains(CPAP_RERA)) {// What about ExP??
+                    el[5]=sess->eventlist[CPAP_RERA][0];
+                    znt++;
+                } else el[5]=NULL;
+            }
             qint64 t;
-            for (int i=0;i<5;i++) {
+            for (int i=0;i<znt;i++) {
                 if (!el[i]) continue;
                 for (quint32 j=0;j<el[i]->count();j++) {
                     t=el[i]->time(j);
