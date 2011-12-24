@@ -38,7 +38,14 @@ class SummaryChart:public Layer
         virtual bool isEmpty() { return m_empty; }
 
         //! \brief Adds a layer to the summaryChart (When in Bar mode, it becomes culminative, eg, the AHI chart)
-        void addSlice(ChannelID code, QColor color, SummaryType type, bool ignore_zeros) { m_codes.push_back(code); m_colors.push_back(color); m_type.push_back(type); m_zeros.push_back(ignore_zeros); }
+        void addSlice(ChannelID code, QColor color, SummaryType type, bool ignore_zeros=false, EventDataType tval=0.00f)
+        {
+            m_codes.push_back(code);
+            m_colors.push_back(color);
+            m_type.push_back(type);
+            m_zeros.push_back(ignore_zeros);
+            m_typeval.push_back(tval);
+        }
 
         //! \brief Deselect highlighting (the gold bar)
         virtual void deselect() {
@@ -58,6 +65,7 @@ class SummaryChart:public Layer
         QVector<bool> m_goodcodes;
         QVector<bool> m_zeros;
         QVector<SummaryType> m_type;
+        QVector<EventDataType> m_typeval;
         QHash<int,QHash<short,EventDataType> > m_values;
         QHash<int,QHash<short,EventDataType> > m_times;
         QHash<int,EventDataType> m_hours;

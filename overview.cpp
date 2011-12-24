@@ -216,7 +216,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
     pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN,true);
     pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX,true);
-    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
+    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
+    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
     pr->addSlice(CPAP_EPAP,QColor("green"),ST_MIN,true);
     pr->addSlice(CPAP_EPAP,QColor("light green"),ST_90P,true);
 
@@ -225,7 +226,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PR->AddLayer(pr);
 
     lk=new SummaryChart(tr("Avg Leak"),GT_LINE);
-    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_90P,false);
+    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_PERC,false,0.8);
     lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG,false);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));

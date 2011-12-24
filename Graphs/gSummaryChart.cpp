@@ -124,6 +124,7 @@ void SummaryChart::SetDay(Day * nullday)
                 //if (code==CPAP_Leak) suboffset=PROFILE.cpap->IntentionalLeak(); else
                 suboffset=0;
                 type=m_type[j];
+                EventDataType typeval=m_typeval[j];
                 for (int i=0;i<d.value().size();i++) { // for each machine object for this day
                     day=d.value()[i];
                     if (day->machine_type()!=m_machinetype) continue;
@@ -142,6 +143,7 @@ void SummaryChart::SetDay(Day * nullday)
                             case ST_SUM: tmp=day->sum(code); break;
                             case ST_WAVG: tmp=day->wavg(code); break;
                             case ST_90P: tmp=day->p90(code); break;
+                            case ST_PERC: tmp=day->percentile(code,typeval); break;
                             case ST_MIN: tmp=day->Min(code); break;
                             case ST_MAX: tmp=day->Max(code); break;
                             case ST_CNT: tmp=day->count(code); break;
@@ -496,10 +498,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     for (int j=0;j<m_codes.size();j++) {
         if (!m_goodcodes[j]) continue;
         ChannelID code=m_codes[j];
+        EventDataType tval=m_typeval[j];
         switch(m_type[j]) {
                 case ST_WAVG: b="Avg"; break;
                 case ST_AVG:  b="Avg"; break;
                 case ST_90P:  b="90%"; break;
+                case ST_PERC: b=QString("%1%").arg(tval*100.0,0,'f',0); break;
                 case ST_MIN:  b="Min"; break;
                 case ST_MAX:  b="Max"; break;
                 case ST_CPH:  b=""; break;
@@ -684,10 +688,12 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                 QString a;
                 for (int i=0;i<m_type.size();i++) {
                     if (!m_goodcodes[i]) continue;
+                    EventDataType tval=m_typeval[i];
                     switch(m_type[i]) {
                             case ST_WAVG: a="W-avg"; break;
                             case ST_AVG:  a="Avg"; break;
                             case ST_90P:  a="90%"; break;
+                            case ST_PERC: a=QString("%1%").arg(tval*100.0,0,'f',0); break;
                             case ST_MIN:  a="Min"; break;
                             case ST_MAX:  a="Max"; break;
                             case ST_CPH:  a=""; break;

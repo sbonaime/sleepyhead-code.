@@ -320,6 +320,9 @@ bool Day::hasData(ChannelID code, SummaryType type)
         case ST_90P:
             has=sess->m_90p.contains(code);
             break;
+        case ST_PERC:
+            has=sess->m_valuesummary.contains(code);
+            break;
         case ST_MIN:
             has=sess->m_min.contains(code);
             break;
