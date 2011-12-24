@@ -1396,17 +1396,14 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     gGraph *g;
     if (!print_bookmarks) {
         for (int i=0;i<gv->size();i++) {
-            bool normal=true;
             gGraph *g=(*gv)[i];
             if (g->isEmpty()) continue;
             if (!g->visible()) continue;
-            if (print_bookmarks) {
-                normal=false;
-                start.push_back(st);
-                end.push_back(et);
-                graphs.push_back(g);
-                labels.push_back(tr("Current Selection"));
-            }
+            start.push_back(st);
+            end.push_back(et);
+            graphs.push_back(g);
+            labels.push_back("");
+            //labels.push_back(tr("Current Selection"));
         }
     } else {
         if ((g=gv->findGraph(tr("Event Flags")))!=NULL) {
