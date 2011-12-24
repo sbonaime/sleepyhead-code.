@@ -246,7 +246,7 @@ void NewProfile::edit(const QString name)
     ui->userNameEdit->setReadOnly(true);
     ui->firstNameEdit->setText(profile->user->firstName());
     ui->lastNameEdit->setText(profile->user->lastName());
-    if (profile->contains(UI_STR_Password)) {
+    if (profile->contains(UI_STR_Password) && !profile->p_preferences[UI_STR_Password].toString().isEmpty()) {
         // leave the password box blank..
         QString a="******";
         ui->passwordEdit1->setText(a);
