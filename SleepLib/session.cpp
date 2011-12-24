@@ -22,7 +22,7 @@ const quint16 filetype_data=1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version=7;
+const quint16 summary_version=9;
 const quint16 events_version=8;
 
 Session::Session(Machine * m,SessionID session)
@@ -145,7 +145,9 @@ bool Session::StoreSummary(QString filename)
     out << m_firstchan;
     out << m_lastchan;
 
-
+    out << m_valuesummary;
+    out << m_timesummary;
+    out << m_gain;
 
     // First output the Machine Code and type for each summary record
 /*    for (QHash<ChannelID,QVariant>::iterator i=settings.begin(); i!=settings.end(); i++) {
@@ -302,9 +304,20 @@ bool Session::LoadSummary(QString filename)
         in >> m_sph;
         in >> m_firstchan;
         in >> m_lastchan;
+
+        if (version >= 8) {
+            in >> m_valuesummary;
+            in >> m_timesummary;
+            if (version >= 9) {
+                in >> m_gain;
+            }
+        }
+
+
     }
 
     if (version<summary_version) {
+
         qDebug() << "Upgrading Summary file to version" << summary_version;
         UpdateSummaries();
         StoreSummary(filename);
@@ -532,6 +545,46 @@ bool Session::LoadEvents(QString filename)
     return true;
 }
 
+void Session::updateCountSummary(ChannelID code)
+{
+    QHash<ChannelID,QVector<EventList *> >::iterator ev=eventlist.find(code);
+    if (ev==eventlist.end()) return;
+
+    QHash<EventStoreType, EventStoreType> valsum;
+    QHash<EventStoreType, quint32> timesum;
+    QHash<EventStoreType, EventStoreType>::iterator vsi;
+    QHash<EventStoreType, quint32>::iterator tsi;
+
+    EventDataType raw,lastraw=0;
+    qint64 time,lasttime=0;
+    qint32 len;
+    for (int i=0;i<ev.value().size();i++) {
+        EventList & e=*(ev.value()[i]);
+        if (e.type()==EVL_Waveform) continue;
+
+        for (unsigned j=0;j<e.count();j++) {
+            raw=e.raw(j);
+            vsi=valsum.find(raw);
+            if (vsi==valsum.end()) valsum[raw]=1;
+            else vsi.value()++;
+
+            time=e.time(j);
+            if (lasttime>0) {
+                len=(time-lasttime) / 1000;
+                tsi=timesum.find(lastraw);
+                if (tsi==timesum.end()) timesum[raw]=len;
+                else tsi.value()+=len;
+            }
+            lastraw=raw;
+            lasttime=time;
+        }
+    }
+    if (valsum.size()==0) return;
+
+    m_valuesummary[code]=valsum;
+    m_timesummary[code]=timesum;
+}
+
 void Session::UpdateSummaries()
 {
     calcAHIGraph(this);
@@ -547,6 +600,12 @@ void Session::UpdateSummaries()
         id=c.key();
         if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
+            if (c.value().size()>0) {
+                EventList * el=c.value()[0];
+                EventDataType gain=el->gain();
+                m_gain[id]=gain;
+            } else m_gain[id]=0;
+            updateCountSummary(id);
             Min(id);
             Max(id);
             count(id);

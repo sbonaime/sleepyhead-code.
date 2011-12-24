@@ -63,46 +63,6 @@ Profile::Profile(QString path)
 }
 bool Profile::Save(QString filename)
 {
-    if (p_profile==this) {
-        QString cachefile=Get("{DataFolder}")+QDir::separator()+"cache.day";
-        QFile f(cachefile);
-        if (ExistsAndTrue("TrashDayCache"))  {
-            if (f.exists()) {
-                f.remove();
-            }
-        } else {
-            QMap<QDate,QList<Day *> >::iterator di;
-            QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
-
-            QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > >::iterator ci;
-            for (di=daylist.begin();di!=daylist.end();di++) {
-                QDate date=di.key();
-                for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
-                    Day *day=*d;
-                    MachineID mach=day->machine->id();
-                    QHash<ChannelID, EventDataType>::iterator i;
-
-                    for (i=day->m_p90.begin();i!=day->m_p90.end();i++) {
-                        cache[mach][date][i.key()]=day->m_p90[i.key()];
-                    }
-                }
-            }
-            if (f.open(QFile::WriteOnly)) {
-                QDataStream out(&f);
-                out.setVersion(QDataStream::Qt_4_6);
-                out.setByteOrder(QDataStream::LittleEndian);
-                quint16 size=cache.size();
-                out << size;
-                for (ci=cache.begin();ci!=cache.end();ci++) {
-                    quint32 mid=ci.key();
-                    out << mid;
-                    out << ci.value();
-                }
-                f.close();
-            }
-        }
-        (*this)["TrashDayCache"]=false;
-    }
     return Preferences::Save(filename);
 }
 
@@ -145,29 +105,6 @@ void Profile::LoadMachineData()
 {
     QHash<MachineID,QMap<QDate,QHash<ChannelID, EventDataType> > > cache;
 
-    QString filename=Get("{DataFolder}")+QDir::separator()+"cache.day";
-    QFile f(filename);
-    if (f.exists(filename) && (f.open(QFile::ReadOnly))) {
-        QDataStream in(&f);
-        in.setVersion(QDataStream::Qt_4_6);
-        in.setByteOrder(QDataStream::LittleEndian);
-
-        quint16 size;
-        quint32 mid;
-        in >> size;
-        for (int i=0;i<size;i++) {
-            in >> mid;
-            in >> cache[mid];
-        }
-        PROFILE.general->setRebuildCache(false);
-    } else {
-        if (mainwin) {
-            mainwin->Notify(QObject::tr("Caching session data, this may take a little while."));
-            PROFILE.general->setRebuildCache(true);
-
-            QApplication::processEvents();
-        }
-    }
     for (QHash<MachineID,Machine *>::iterator i=machlist.begin(); i!=machlist.end(); i++) {
         Machine *m=i.value();
 
@@ -197,18 +134,6 @@ void Profile::LoadMachineData()
             m->Load();
         }
     }
-    for (QMap<QDate,QList<Day *> >::iterator di=daylist.begin();di!=daylist.end();di++) {
-        for (QList<Day *>::iterator d=di.value().begin();d!=di.value().end();d++) {
-            Day *day=*d;
-            MachineID mid=day->machine->id();
-            if (cache.contains(mid)) {
-                if (cache[mid].contains(di.key())) {
-                    day->m_p90=cache[mid][di.key()];
-                }
-            }
-        }
-    }
-    // Load Day Cache here..
 }
 
 /**
@@ -798,6 +723,14 @@ EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate sta
     if (max<=-99999999) max=0;
     return max;
 }
+
+struct CountSummary {
+    CountSummary(EventStoreType v) :val(v), count(0), time(0) {}
+    EventStoreType val;
+    EventStoreType count;
+    quint32 time;
+};
+
 EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) start=LastDay(mt);
@@ -807,32 +740,58 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     // This is one messy function.. It requires all data to be loaded.. :(
 
+    QHash<EventStoreType,EventStoreType> summary;
+    QHash<EventStoreType,EventStoreType>::iterator sumi;
     QVector<EventDataType> array;
+
+    QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
+    float gain;
+    bool setgain=false;
     //double val=0,tmp,hours=0;
     do {
         Day * day=GetDay(date,mt);
         if (day) {
-            bool open=day->eventsLoaded();
-            if (!open)
-                day->OpenEvents();
             for (int i=0;i<day->size();i++) {
                 for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
-                    QHash<ChannelID,QVector<EventList *> >::iterator el=(*s)->eventlist.find(code);
+                    Session *sess=*s;
+                    gain=sess->m_gain[code];
+                    if (!gain) gain=1;
+                    setgain=true;
+                    vsi=sess->m_valuesummary.find(code);
+                    if (vsi==sess->m_valuesummary.end()) continue;
+
+                    QHash<EventStoreType, EventStoreType> & vsum=vsi.value();
+
+                    for (QHash<EventStoreType, EventStoreType>::iterator k=vsum.begin();k!=vsum.end();k++) {
+                        for (int z=0;z<k.value();z++) {
+                            array.push_back(float(k.key())*gain);
+                        }
+                        /*sumi=summary.find(k.key());
+                        if (sumi==summary.end()) summary[k.key()]=k.value();
+                        else {
+                            sumi.value()+=k.value();
+                        }*/
+                    }
+                    /*QHash<ChannelID,QVector<EventList *> >::iterator el=(*s)->eventlist.find(code);
                     if (el==(*s)->eventlist.end()) continue;
                     for (int j=0;j<el.value().size();j++) {
                         EventList & e=*el.value()[j];
                         for (unsigned k=0;k<e.count();k++) {
                             array.push_back(e.data(k));
                         }
-                    }
+                    }*/
                 }
             }
-
-            //if (!open)
-                //day->CloseEvents();
         }
         date=date.addDays(1);
     } while (date<end);
+//    for (QHash<EventStoreType, EventStoreType>::iterator k=summary.begin();k!=summary.end();k++) {
+//        for (int i=0;i<k.value();i++)  {
+//            array.push_back(k.key());
+//        }
+//    }
+
+    if (array.size()==0) return 0;
     qSort(array);
     int idx=array.size()*percent;
     if (idx>array.size()-1) idx=array.size()-1;

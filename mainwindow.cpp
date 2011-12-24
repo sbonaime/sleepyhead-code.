@@ -512,14 +512,13 @@ void MainWindow::on_summaryButton_clicked()
     mach.append(cpap_machines);
     mach.append(oximeters);
 
+
     int cpapdays=PROFILE.countDays(MT_CPAP,firstcpap,lastcpap);
     CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
-    if (mach.size()==0) {
+    if (cpapdays==0)  {
         html+="<p>No Machine Data Imported</p>";
     } else {
-
-
         html+="<div align=center>";
         html+=QString("<p><b>Summary Information as of %1</b></p>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");

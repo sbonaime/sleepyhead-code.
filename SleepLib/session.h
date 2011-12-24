@@ -142,6 +142,11 @@ public:
     QHash<ChannelID,quint64> m_firstchan;
     QHash<ChannelID,quint64> m_lastchan;
 
+    QHash<ChannelID,QHash<EventStoreType, EventStoreType> > m_valuesummary;
+    QHash<ChannelID,QHash<EventStoreType, quint32> > m_timesummary;
+    QHash<ChannelID,EventDataType> m_gain;
+
+    void updateCountSummary(ChannelID code);
 
     // UpdateSummaries may recalculate all these, but it may be faster setting upfront
     void setCount(ChannelID id,int val) { m_cnt[id]=val; }

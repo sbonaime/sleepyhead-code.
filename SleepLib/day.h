@@ -71,13 +71,6 @@ public:
     //! \brief Returns if the cache contains SummaryType information about the requested code
     bool hasData(ChannelID code, SummaryType type);
 
-    //! \brief Cache for holding slow calculated 90th Percentile for this day
-    QHash<ChannelID, EventDataType> m_p90;
-
-    //EventDataType percentile(ChannelID mc,double percent);
-
-    // Note, the following convert to doubles without considering the consequences fully.?
-
     //! \brief Returns the Average of all Sessions setting 'code' for this day
     EventDataType settings_avg(ChannelID code);
 
