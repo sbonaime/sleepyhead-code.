@@ -1217,7 +1217,17 @@ void MainWindow::on_actionPrint_Report_triggered()
 #ifdef Q_WS_X11
         printer.setPrinterName("Print to File (PDF)");
         printer.setOutputFormat(QPrinter::PdfFormat);
-        QString filename=PREF.Get("{home}/Summary_"+PROFILE.user->userName()+"_"+QDate::currentDate().toString(Qt::ISODate)+".pdf");
+        QString name;
+        QString datestr;
+        if (ui->tabWidget->currentWidget()==ui->summaryTab) {
+            name="Summary";
+            datestr=QDate::currentDate().toString(Qt::ISODate);
+        } else if (ui->tabWidget->currentWidget()==ui->helpTab) {
+            name="Help";
+            datestr=QDateTime::currentDateTime().toString(Qt::ISODate);
+        } else name="Unknown";
+
+        QString filename=PREF.Get("{home}/"+name+"_"+PROFILE.user->userName()+"_"+datestr+".pdf");
 
         printer.setOutputFileName(filename);
 #endif
@@ -1229,7 +1239,13 @@ void MainWindow::on_actionPrint_Report_triggered()
 
         QPrintDialog pdlg(&printer,this);
         if (pdlg.exec()==QPrintDialog::Accepted) {
-            ui->summaryView->print(&printer);
+
+            if (ui->tabWidget->currentWidget()==ui->summaryTab) {
+                ui->summaryView->print(&printer);
+            } else if (ui->tabWidget->currentWidget()==ui->helpTab) {
+                ui->webView->print(&printer);
+            }
+
         }
         //QMessageBox::information(this,tr("Not supported Yet"),tr("Sorry, printing from this page is not supported yet"),QMessageBox::Ok);
     }
