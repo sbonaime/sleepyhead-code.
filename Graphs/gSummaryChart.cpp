@@ -220,7 +220,7 @@ void SummaryChart::SetDay(Day * nullday)
         m_miny=0;
     }
    // m_minx=qint64(QDateTime(PROFILE.FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    m_maxx=qint64(QDateTime(PROFILE.LastDay().addDays(1),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
+    m_maxx=qint64(QDateTime(PROFILE.LastDay(),QTime(23,59,0),Qt::UTC).toTime_t())*1000L;
 
 }
 
@@ -477,7 +477,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             lastdaygood=true;
             if (Q>maxx+extra) break;
         } else {
-            if (Q<maxx+extra)
+            if (Q<maxx)
                 incompliant++;
             lastdaygood=false;
         }

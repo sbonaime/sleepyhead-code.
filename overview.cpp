@@ -356,16 +356,16 @@ void Overview::dateEnd_currentPageChanged(int year, int month)
 
 void Overview::on_dateEnd_dateChanged(const QDate &date)
 {
-    qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    qint64 d2=qint64(QDateTime(date,QTime(23,59,59),Qt::UTC).toTime_t())*1000L;
+    qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
+    qint64 d2=qint64(QDateTime(date,QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
 
 }
 
 void Overview::on_dateStart_dateChanged(const QDate &date)
 {
-    qint64 d1=qint64(QDateTime(date,QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,59,59),Qt::UTC).toTime_t())*1000L;
+    qint64 d1=qint64(QDateTime(date,QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
+    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
 
 }
@@ -373,7 +373,7 @@ void Overview::on_dateStart_dateChanged(const QDate &date)
 void Overview::on_toolButton_clicked()
 {
     qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
-    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
+    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,00,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
 }
 
