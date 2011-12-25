@@ -244,6 +244,10 @@ private slots:
 
 
 
+    void on_summaryButton_2_clicked();
+
+    void on_action_Sidebar_Toggle_toggled(bool arg1);
+
 private:
 
     Ui::MainWindow *ui;

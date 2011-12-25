@@ -34,5 +34,7 @@
         <file>icons/sheep.png</file>
         <file>icons/nodata.png</file>
         <file>icons/cubeoximeter.png</file>
+        <file>icons/trophy.png</file>
+        <file>icons/bookmark.png</file>
     </qresource>
 </RCC>

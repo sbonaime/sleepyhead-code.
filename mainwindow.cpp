@@ -1830,3 +1830,14 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 {
     qDebug() << "Keypress:" << event->key();
 }
+
+void MainWindow::on_summaryButton_2_clicked()
+{
+    ui->tabWidget->setCurrentWidget(ui->welcome);
+    on_summaryButton_clicked();
+}
+
+void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
+{
+    ui->toolBox->setVisible(visible);
+}
