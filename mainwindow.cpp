@@ -1213,9 +1213,25 @@ void MainWindow::on_actionPrint_Report_triggered()
         if (oximetry)
             PrintReport(oximetry->graphView(),STR_TR_Oximetry);
     } else {
-        //QPrinter printer();
-        //ui->webView->print(printer)
-        QMessageBox::information(this,tr("Not supported Yet"),tr("Sorry, printing from this page is not supported yet"),QMessageBox::Ok);
+        QPrinter printer;
+#ifdef Q_WS_X11
+        printer.setPrinterName("Print to File (PDF)");
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        QString filename=PREF.Get("{home}/Summary_"+PROFILE.user->userName()+"_"+QDate::currentDate().toString(Qt::ISODate)+".pdf");
+
+        printer.setOutputFileName(filename);
+#endif
+        printer.setPrintRange(QPrinter::AllPages);
+        printer.setOrientation(QPrinter::Portrait);
+        printer.setFullPage(false); // This has nothing to do with scaling
+        printer.setNumCopies(1);
+        printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
+
+        QPrintDialog pdlg(&printer,this);
+        if (pdlg.exec()==QPrintDialog::Accepted) {
+            ui->summaryView->print(&printer);
+        }
+        //QMessageBox::information(this,tr("Not supported Yet"),tr("Sorry, printing from this page is not supported yet"),QMessageBox::Ok);
     }
 }
 
