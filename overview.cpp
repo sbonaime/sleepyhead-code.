@@ -292,14 +292,10 @@ void Overview::ResetGraphs()
 {
     QDate start=ui->dateStart->date();
     QDate end=ui->dateEnd->date();
-    //ui->dateStart->setDate(p_profile->FirstDay());
-    //ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
     if (start.isValid() && end.isValid()) {
         setRange(start,end);
     }
-
-    //on_rangeCombo_activated(ui->rangeCombo->currentIndex());
 }
 
 void Overview::RedrawGraphs()
@@ -376,8 +372,8 @@ void Overview::on_dateStart_dateChanged(const QDate &date)
 
 void Overview::on_toolButton_clicked()
 {
-    qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
-    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,59,59),Qt::UTC).toTime_t())*1000L;
+    qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
+    qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
 }
 
