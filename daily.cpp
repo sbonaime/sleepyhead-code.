@@ -113,9 +113,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
 
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
-    PULSE=new gGraph(GraphView,tr("Pulse"),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    SPO2=new gGraph(GraphView,tr("SpO2"),schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    PLETHY=new gGraph(GraphView,tr("Plethy"),schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
+    PULSE=new gGraph(GraphView,STR_TR_PulseRate,schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
+    SPO2=new gGraph(GraphView,STR_TR_SpO2,schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
+    PLETHY=new gGraph(GraphView,STR_TR_Plethy,schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -412,19 +412,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     tree->clear();
     if (!day) return;
 
-    //return;
     tree->setColumnCount(1); // 1 visible common.. (1 hidden)
 
-    QTreeWidgetItem *root=NULL;//new QTreeWidgetItem((QTreeWidget *)0,QStringList("Stuff"));
+    QTreeWidgetItem *root=NULL;
     QHash<ChannelID,QTreeWidgetItem *> mcroot;
     QHash<ChannelID,int> mccnt;
     int total_events=0;
-
     for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
 
         QHash<ChannelID,QVector<EventList *> >::iterator m;
-
-        //QTreeWidgetItem * sroot;
 
         for (m=(*s)->eventlist.begin();m!=(*s)->eventlist.end();m++) {
             ChannelID code=m.key();
@@ -467,15 +463,17 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 for (quint32 o=0;o<m.value()[z]->count();o++) {
                     qint64 t=m.value()[z]->time(o);
 
-                    if (code==CPAP_CSR) {
+                    if (code==CPAP_CSR) { // center it in the middle of span
                         t-=float(m.value()[z]->raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
                     QDateTime d=QDateTime::fromTime_t(t/1000);
-                    QString s=QString("#%1: %2 (%3)").arg((int)++mccnt[code],(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
+                    QString s=QString("#%1: %2 (%3)").arg((int)(++mccnt[code]),(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
-                    a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
-                    mcr->addChild(new QTreeWidgetItem(a));
+                    QTreeWidgetItem *item=new QTreeWidgetItem(a);
+                    item->setData(0,Qt::UserRole,t);
+                    //a.append(d.toString("yyyy-MM-dd HH:mm:ss"));
+                    mcr->addChild(item);
                 }
             }
         }
@@ -566,8 +564,6 @@ void Daily::on_calendar_selectionChanged()
 void Daily::ResetGraphLayout()
 {
     GraphView->resetLayout();
-    //splitter->setSizes(splitter_sizes);
-
 }
 void Daily::graphtogglebutton_toggled(bool b)
 {
@@ -596,18 +592,17 @@ void Daily::Load(QDate date)
     }
 
     if (cpap && oxi) {
-        qint64 len=qAbs(cpap->first() - oxi->first());
-        if (len>30000) {
-            GraphView->findGraph(tr("Pulse Rate"))->setGroup(1);
-            GraphView->findGraph(tr("SpO2"))->setGroup(1);
-            GraphView->findGraph(tr("Plethy"))->setGroup(1);
+        int gr;
+
+        if (qAbs(cpap->first() - oxi->first())>30000) {
             mainwin->Notify(tr("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked."),"",3000);
-        } else {
-            //mainwin->Notify(tr("Oximetry & CPAP graphs are linked for this day"),"",2000);
-            GraphView->findGraph(tr("Pulse Rate"))->setGroup(0);
-            GraphView->findGraph(tr("SpO2"))->setGroup(0);
-            GraphView->findGraph(tr("Plethy"))->setGroup(0);
-        }
+            gr=1;
+        } else
+            gr=0;
+
+        GraphView->findGraph(STR_TR_PulseRate)->setGroup(gr);
+        GraphView->findGraph(STR_TR_SpO2)->setGroup(gr);
+        GraphView->findGraph(STR_TR_Plethy)->setGroup(gr);
     }
     lastcpapday=cpap;
 
@@ -787,6 +782,7 @@ void Daily::Load(QDate date)
                 "</table></td>";
 
             }
+            html+="</tr>";
 
 
             // Note, this may not be a problem since Qt bug 13622 was discovered
@@ -794,12 +790,16 @@ void Daily::Load(QDate date)
             // ^^ Scratch that.. pie now includes text..
 
             if (PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
-                if (ahi+rei+fli>0) {
-                    html+="</tr>\n"; //<tr><td colspan=4 align=center><i>"+tr("Event Breakdown")+"</i></td></tr>\n";
+                if (oai+hi+cai+uai+rei+fli>0) {
+                    html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+                    html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
+                    html+="<tr><td colspan=5 align=center><hr/></td></tr>";
                     //G_AHI->setFixedSize(gwwidth,120);
                     //mainwin->snapshotGraph()->setPrintScaleX(1);
                     //mainwin->snapshotGraph()->setPrintScaleY(1);
-                    QPixmap pixmap=snapGV->renderPixmap(172,172);
+                    GAHI->setShowTitle(false);
+                    //snapGV->setFixedSize(150,150);
+                    QPixmap pixmap=GAHI->renderPixmap(150,150,false);
                     QByteArray byteArray;
                     QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                     buffer.open(QIODevice::WriteOnly);
@@ -820,133 +820,106 @@ void Daily::Load(QDate date)
         html+="</table>";
 
     } // if (!CPAP)
-    if (!cpap && oxi) {
-        html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-        html+="<tr><td colspan=4 align=center><b>"+oxi->machine->properties[STR_PROP_Brand]+"</b> <br>"+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
-        html+="<tr><td colspan=4 align=center>&nbsp;</td></tr>";
-        html+=QString("<tr><td colspan=4 align=center>SpO2 Desaturations: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0));
-        html+=QString("<tr><td colspan=4 align=center>Pulse Change events: %1 (%2)\%</td></tr>").arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0));
-        html+=QString("<tr><td colspan=4 align=center>SpO2 Baseline Used: %1\%</td></tr>").arg(oxi->settings_wavg(OXI_SPO2Drop));
-        html+="</table>";
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+
+    if (oxi) {
+        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
+        html+="<tr><td colspan=5 align=center><hr/></td></tr>";
+        html+="<tr><td colspan=5 align=center>"+oxi->machine->properties[STR_PROP_Brand]+" "+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
+        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0));
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0));
+        html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop));
     }
     if ((cpap && !isBrick) || oxi) {
-            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-            if (cpap || oxi) {
-                html+="<tr height='2'><td colspan=5 height='2'><hr></td></tr>\n";
+        html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 
-                //html+=("<tr><td colspan=4 align=center>&nbsp;</td></tr>\n");
+        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Statistics"));
+        html+="<tr height='2'><td colspan=5><hr></td></tr>\n";
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
+                .arg(tr("Channel"))
+                .arg(tr("Min"))
+                .arg(tr("Avg"))
+                .arg(tr("90%"))
+                .arg(tr("Max"));
+        ChannelID chans[]={
+            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
+            CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
+            CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
+            CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
+        };
+        int numchans=sizeof(chans)/sizeof(ChannelID);
+        int suboffset=0;
+        for (int i=0;i<numchans;i++) {
 
-                html+=("<tr><td> </td><td><b>Min</b></td><td><b>Avg</b></td><td><b>90%</b></td><td><b>Max</b></td></tr>");
-                ChannelID chans[]={
-                    CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
-                    CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
-                    CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
-                    CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
-                };
-                int numchans=sizeof(chans)/sizeof(ChannelID);
-                int suboffset=0;
-                for (int i=0;i<numchans;i++) {
-
-                    ChannelID code=chans[i];
-                    if (cpap && cpap->channelHasData(code)) {
-                        //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
-                        QString tooltip=schema::channel[code].description();
-                        if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                        html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->Min(code)-suboffset);
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->wavg(code)-suboffset);
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->p90(code)-suboffset);
-                        html+="</td><td>"+a.sprintf("%.2f",cpap->Max(code)-suboffset);
-                        html+="</td><tr>";
-                    }
-                    if (oxi && oxi->channelHasData(code)) {
-                        QString tooltip=schema::channel[code].description();
-                        if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                        html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
-                        html+="</td><td>"+a.sprintf("%.2f",oxi->Max(code));
-                        html+="</td><tr>";
-                    }
-                }
-
+            ChannelID code=chans[i];
+            if (cpap && cpap->channelHasData(code)) {
+                //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
+                QString tooltip=schema::channel[code].description();
+                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                    .arg(QString("<a href='graph=%1' title='%2'>%3</a>")
+                        .arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
+                    .arg(cpap->Min(code),0,'f',2)
+                    .arg(cpap->wavg(code),0,'f',2)
+                    .arg(cpap->p90(code),0,'f',2)
+                    .arg(cpap->Max(code),0,'f',2);
+            }
+            if (oxi && oxi->channelHasData(code)) {
+                QString tooltip=schema::channel[code].description();
+                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
+                html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->Max(code));
+                html+="</td><tr>";
+            }
         }
     } else {
         html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
-    html+="</table><hr height=2/>";
 
     if (cpap) {
-
-      //  if ((*profile)["EnableGraphSnapshots"].toBool()) {
-            /*if (cpap->channelExists(CPAP_Pressure)) {
-                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@Pressure")+("</i></td></tr>\n");
-                //TAP->setFixedSize(gwwidth,30);
-                QPixmap pixmap=TAP->renderPixmap(200,30);
-                QByteArray byteArray;
-                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "PNG");
-                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            }
-
-            if (cpap->channelExists(CPAP_EPAP)) {
-                //html+="<tr height='2'><td colspan=4 height='2'><hr></td></tr>\n";
-                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@EPAP")+("</i></td></tr>\n");
-                TAP_EAP->setFixedSize(gwwidth,30);
-                QPixmap pixmap=TAP_EAP->renderPixmap(gwwidth,30,false);
-                QByteArray byteArray;
-                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "PNG");
-                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            }
-            if (cpap->channelExists(CPAP_IPAP)) {
-                html+=("<tr><td colspan=4 align=center><i>")+tr("Time@IPAP")+("</i></td></tr>\n");
-                TAP_IAP->setFixedSize(gwwidth,30);
-                QPixmap pixmap=TAP_IAP->renderPixmap(gwwidth,30,false);
-                QByteArray byteArray;
-                QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "PNG");
-                html+="<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
-            } */
-        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+="<tr><td colspan=5>&nbsp;</td></tr>";
+//        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
+        html+="<tr><td colspan=5><hr height=2></td></tr>";
         if (cpap->machine->GetClass()==STR_MACH_PRS1) {
             int i=cpap->settings_max(PRS1_FlexMode);
             int j=cpap->settings_max(PRS1_FlexSet);
             QString flexstr=(i>1) ? schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j) : "None";
 
-            html+="<tr><td colspan=4>"+tr("Pressure Relief:")+" "+flexstr+"</td></tr>";
-
-            i=cpap->settings_max(PRS1_HumidSetting);
-            QString humid=(i==0) ? STR_GEN_Off : "x"+QString::number(i);
-            html+="<tr><td colspan=4>"+tr("Humidifier Setting:")+" "+humid+"</td></tr>";
+            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Flex"))
+                    .arg(flexstr);
+            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
+                    .arg(cpap->settings_max(PRS1_HumidSetting) ? STR_GEN_Off : "x"+QString::number(i));
         } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
             int epr=cpap->settings_max(RMS9_EPR);
             int epr2=cpap->settings_max(RMS9_EPRSet);
-            html+="<tr><td colspan=4>"+tr("EPR Setting:")+" "+QString::number(epr)+" / "+QString::number(epr2)+"</td></tr>";
-            //epr=schema::channel[PRS1_FlexSet].optionString(pr)+QString(" x%1").arg((int)cpap->settings_max(PRS1_FlexSet));
+            html+=QString("<tr>%1</td><td colspan=4>%2 / %3</td></tr>")
+                    .arg(tr("EPR")).arg(epr).arg(epr2);
 
         }
-        html+="</table><hr height=2>";
     }
+    html+="</table>";
 
-    {
-        //}
+    if (cpap || oxi) {
         html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+="<tr><td colspan=4 align=center>&nbsp;</td></tr>";
+        html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Session Information"));
+        html+="<tr><td colspan=4 align=center><hr height=2/></td></tr>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
-        if (cpap || oxi)
-            html+=QString("<tr><td align=left><b>%1</b></td><td align=center><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td></tr>")
-                    .arg(tr("SessionID"))
-                    .arg(tr("Date"))
-                    .arg(tr("Start"))
-                    .arg(tr("End"));
+        html+=QString("<tr><td align=left><b>%1</b></td><td align=center><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td></tr>")
+            .arg(tr("SessionID"))
+            .arg(tr("Date"))
+            .arg(tr("Start"))
+            .arg(tr("End"));
         if (cpap) {
             html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("CPAP Sessions"));
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
@@ -984,10 +957,10 @@ void Daily::Load(QDate date)
                 html+=tmp;
             }
         }
-        html+="</table>";
         if (corrupted_waveform) {
-            html+="<hr><div align=center><i>"+tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.")+"</i></div>";
+            html+=QString("<tr><td colspan=4 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
         }
+        html+="</table>";
     }
     html+="</body></html>";
 
@@ -1241,12 +1214,18 @@ Session * Daily::CreateJournalSession(QDate date)
         PROFILE.AddMachine(m);
     }
     Session *sess=new Session(m,0);
-    QDateTime dt(date,QTime(17,0));
-    //dt.setDate(date);
-    //dt.setTime(QTime(17,0)); //5pm to make sure it goes in the right day
-    sess->set_first(qint64(dt.toTime_t())*1000L);
-    dt=dt.addSecs(3600);
-    sess->set_last(qint64(dt.toTime_t())*1000L);
+    qint64 st,et;
+    Day *cday=PROFILE.GetDay(date,MT_CPAP);
+    if (cday) {
+        st=cday->first();
+        et=cday->last();
+    } else {
+        QDateTime dt(date,QTime(20,0));
+        st=qint64(dt.toTime_t())*1000L;
+        et=st+3600000;
+    }
+    sess->set_first(st);
+    sess->set_last(et);
     sess->SetChanged(true);
     m->AddSession(sess,p_profile);
     return sess;
@@ -1295,21 +1274,23 @@ void Daily::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(column);
     QDateTime d;
-    if (!item->text(1).isEmpty()) {
-        d=d.fromString(item->text(1),"yyyy-MM-dd HH:mm:ss");
-        int winsize=PROFILE.general->eventWindowSize()*60;
+    if (!item->data(0,Qt::UserRole).isNull()) {
+        qint64 winsize=qint64(PROFILE.general->eventWindowSize())*60000L;
+        qint64 t=item->data(0,Qt::UserRole).toLongLong();
 
-        double st=qint64((d.addSecs(-(winsize/2))).toTime_t())*1000L;
-        double et=qint64((d.addSecs(winsize/2)).toTime_t())*1000L;
+        double st=t-(winsize/2);
+        double et=t+(winsize/2);
+
+
         gGraph *g=GraphView->findGraph(STR_TR_EventFlags);
         if (!g) return;
         if (st<g->rmin_x) {
             st=g->rmin_x;
-            et=st+winsize*1000;
+            et=st+winsize;
         }
         if (et>g->rmax_x) {
             et=g->rmax_x;
-            st=et-winsize*1000;
+            st=et-winsize;
         }
         GraphView->SetXBounds(st,et);
     }

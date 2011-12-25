@@ -247,6 +247,12 @@ void SerialOximeter::addSpO2(qint64 time, EventDataType o2)
 
 void SerialOximeter::addPlethy(qint64 time, EventDataType pleth)
 {
+    if (!plethy) {
+        plethy=new EventList(EVL_Event);
+        session->eventlist[OXI_Plethy].push_back(plethy);
+        session->setFirst(OXI_Plethy,lasttime);
+        plethy->setFirst(lasttime);
+    }
     plethy->AddEvent(time,pleth);
     session->setCount(OXI_Plethy,plethy->count()); // update the cache
     session->setMin(OXI_Plethy,plethy->Min());
@@ -375,18 +381,15 @@ Session *SerialOximeter::createSession(QDateTime date)
     session->set_first(lasttime);
     pulse=new EventList(EVL_Event);
     spo2=new EventList(EVL_Event);
-    plethy=new EventList(EVL_Event);
+    plethy=NULL;
     session->eventlist[OXI_Pulse].push_back(pulse);
     session->eventlist[OXI_SPO2].push_back(spo2);
-    session->eventlist[OXI_Plethy].push_back(plethy);
 
     session->setFirst(OXI_Pulse,lasttime);
     session->setFirst(OXI_SPO2,lasttime);
-    session->setFirst(OXI_Plethy,lasttime);
 
     pulse->setFirst(lasttime);
     spo2->setFirst(lasttime);
-    plethy->setFirst(lasttime);
 
     m_callbacks=0;
 

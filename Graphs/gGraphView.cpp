@@ -1019,10 +1019,6 @@ bool gGraph::isEmpty()
     return empty;
 }
 
-void gGraph::showTitle(bool b)
-{
-    m_showTitle=b;
-}
 
 float gGraph::printScaleX() { return m_graphview->printScaleX(); }
 float gGraph::printScaleY() { return m_graphview->printScaleY(); }
@@ -1073,8 +1069,8 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     int fw,font_height;
     GetTextExtent("Wg@",fw,font_height);
-    m_margintop=font_height+(8*printScaleY());
-    m_marginbottom=5;
+    if (m_margintop>0) m_margintop=font_height+(8*printScaleY());
+    //m_marginbottom=5;
 
     //glColor4f(0,0,0,1);
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
@@ -1664,7 +1660,7 @@ short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScale
 short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
 short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
-QPixmap gGraph::renderPixmap(int w, int h, float scale)
+QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 {
 
     gGraphView *sg=mainwin->snapshotGraph();
@@ -1678,13 +1674,17 @@ QPixmap gGraph::renderPixmap(int w, int h, float scale)
     QFont fb=*mediumfont;
     QFont fc=*bigfont;
 
-    sg->setPrintScaleX(3);
-    sg->setPrintScaleY(3);
 
-    fa.setPixelSize(30);
-    fb.setPointSize(35);
-    fc.setPointSize(80);
-
+    if (printing) {
+        fa.setPixelSize(30);
+        fb.setPixelSize(35);
+        fc.setPixelSize(80);
+        sg->setPrintScaleX(3);
+        sg->setPrintScaleY(3);
+    } else {
+        sg->setPrintScaleX(1);
+        sg->setPrintScaleY(1);
+    }
     defaultfont=&fa;
     mediumfont=&fb;
     bigfont=&fc;
@@ -2315,7 +2315,7 @@ bool gGraphView::renderGraphs()
 //    glEnd();
 //    glDisable(GL_BLEND);
 
-    float px=titleWidth-m_offsetX;
+    float px=m_offsetX;
     float py=-m_offsetY;
     int numgraphs=0;
     float h,w;
@@ -2347,7 +2347,9 @@ bool gGraphView::renderGraphs()
 
         if ((py + h + graphSpacer) >= 0) {
             w=width();
-            queGraph(m_graphs[i],px,py,width()-titleWidth,h);
+            int tw=(m_graphs[i]->showTitle() ? titleWidth : 0);
+
+            queGraph(m_graphs[i],px+tw,py,width()-tw,h);
 
             if (m_showsplitter) {
                 // draw the splitter handle
@@ -2456,10 +2458,10 @@ void gGraphView::fadeIn(bool dir)
     }
     m_inAnimation=false;
     current_day_snapshot=renderPixmap(width(),height(),false);
-    qDebug() << current_day_snapshot.depth() << "bit image depth";
-    if (current_day_snapshot.hasAlpha()){
-        qDebug() << "Snapshots are not storing alpha channel needed for texture blending";
-    }
+//    qDebug() << current_day_snapshot.depth() << "bit image depth";
+//    if (current_day_snapshot.hasAlpha()){
+//        qDebug() << "Snapshots are not storing alpha channel needed for texture blending";
+//    }
     m_inAnimation=true;
 
     m_animationStarted.start();
@@ -2940,6 +2942,21 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
     if (event->key()==Qt::Key_Tab) {
         event->ignore();
         return;
+    }
+    if (event->key()==Qt::Key_PageUp) {
+            m_offsetY-=PROFILE.appearance->graphHeight()*3*m_scaleY;
+            m_scrollbar->setValue(m_offsetY);
+            m_offsetY=m_scrollbar->value();
+            updateGL();
+            return;
+    } else if (event->key()==Qt::Key_PageDown) {
+            m_offsetY+=PROFILE.appearance->graphHeight()*3*m_scaleY; //PROFILE.appearance->graphHeight();
+            if (m_offsetY<0) m_offsetY=0;
+            m_scrollbar->setValue(m_offsetY);
+            m_offsetY=m_scrollbar->value();
+            updateGL();
+            return;
+    //        redraw();
     }
     gGraph *g=NULL;
     int group=0;

@@ -318,15 +318,15 @@ void PreferencesDialog::Save()
     profile->oxi->setSyncOximetry(ui->oximetrySync->isChecked());
     int oxigrp=ui->oximetrySync->isChecked() ? 0 : 1;
     gGraphView *gv=mainwin->getDaily()->graphView();
-    gGraph *g=gv->findGraph(tr("Pulse"));
+    gGraph *g=gv->findGraph(STR_TR_PulseRate);
     if (g) {
         g->setGroup(oxigrp);
     }
-    g=gv->findGraph(tr("SpO2"));
+    g=gv->findGraph(STR_TR_SpO2);
     if (g) {
         g->setGroup(oxigrp);
     }
-    g=gv->findGraph(tr("Plethy"));
+    g=gv->findGraph(STR_TR_Plethy);
     if (g) {
         g->setGroup(oxigrp);
     }

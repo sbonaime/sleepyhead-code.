@@ -240,7 +240,7 @@ private:
         */
     void UpdateCalendarDay(QDate date);
     /*! \fn UpdateEventsTree(QDate date)
-        \brief Refreshes the Events tree from the supplied Day object.
+        \brief Populates the Events tree from the supplied Day object.
         \param QTreeWidget * tree
         \param Day *
         */

@@ -427,7 +427,7 @@ public:
         Note if width or height is more than the OpenGL system allows, it could result in a crash
         Keeping them under 2048 is a reasonably safe value.
         */
-    QPixmap renderPixmap(int width, int height, float fontscale=1.0);
+    QPixmap renderPixmap(int width, int height, bool printing=false);
 
     //! \brief Set Graph visibility status
     void setVisible(bool b) { m_visible=b; }
@@ -441,15 +441,17 @@ public:
     //! \brief Set the height element. (relative to the total of all heights)
     void setHeight(float height) { m_height=height; }
 
-    //! \brief Can't remember what these are for..
     int minHeight() { return m_min_height; }
     void setMinHeight(int height) { m_min_height=height; }
 
     int maxHeight() { return m_max_height; }
     void setMaxHeight(int height) { m_max_height=height; }
 
+    //! \brief Returns true if the vertical graph title is shown
+    bool showTitle() { return m_showTitle; }
+
     //! \brief Set whether or not to render the vertical graph title
-    void showTitle(bool b);
+    void setShowTitle(bool b) { m_showTitle=b; }
 
     //! \brief Returns printScaleX, used for DPI scaling in report printing
     float printScaleX();

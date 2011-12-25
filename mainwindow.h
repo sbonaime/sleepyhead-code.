@@ -125,6 +125,8 @@ public:
         \param QDate date
         */
     void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
+protected:
+    virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
     /*! \fn void on_action_Import_Data_triggered();
@@ -239,6 +241,8 @@ private slots:
     void on_actionAll_Data_for_current_CPAP_machine_triggered();
 
     void on_summaryButton_clicked();
+
+
 
 private:
 

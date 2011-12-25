@@ -109,7 +109,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     PTB=createGraph(tr("Pat. Trig. Br."),tr("Patient\nTriggered\nBreaths\n(%)"));
     SES=createGraph(tr("Sessions"),tr("Sessions\n(count)"));
     PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
-    SPO2=createGraph(tr("SpO2"),tr("Oxygen Saturation\n(%)"));
+    SPO2=createGraph(STR_TR_SpO2,tr("Oxygen Saturation\n(%)"));
 
     WEIGHT=createGraph(STR_TR_Weight,STR_TR_Weight,YT_Weight);
     BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
@@ -142,7 +142,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pulse->addSlice(OXI_Pulse,QColor("orange"),ST_MAX,true);
     PULSE->AddLayer(pulse);
 
-    spo2=new SummaryChart(tr("SpO2"),GT_LINE);
+    spo2=new SummaryChart(STR_TR_SpO2,GT_LINE);
     spo2->setMachineType(MT_OXIMETER);
     spo2->addSlice(OXI_SPO2,QColor("cyan"),ST_WAVG,true);
     spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_90P,true);
@@ -213,16 +213,24 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     pr=new SummaryChart(STR_UNIT_CMH2O,GT_LINE);
     //PR->setRecMinY(4.0);
     //PR->setRecMaxY(12.0);
-    pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
-    pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN,true);
-    pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX,true);
-    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
-    pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
-    pr->addSlice(CPAP_EPAP,QColor("green"),ST_MIN,true);
-    pr->addSlice(CPAP_EPAP,QColor("light green"),ST_90P,true);
 
-    pr->addSlice(CPAP_IPAP,QColor("blue"),ST_MAX,true);
-    pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_90P,true);
+    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
+
+    if (mode>=MODE_BIPAP) {
+        pr->addSlice(CPAP_EPAP,QColor("green"),ST_MIN,true);
+        pr->addSlice(CPAP_EPAP,QColor("light green"),ST_90P,true);
+
+        pr->addSlice(CPAP_IPAP,QColor("blue"),ST_MAX,true);
+        pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_90P,true);
+    } else if (mode>MODE_CPAP) {
+        pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
+        pr->addSlice(CPAP_Pressure,QColor("orange"),ST_MIN,true);
+        pr->addSlice(CPAP_Pressure,QColor("red"),ST_MAX,true);
+    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
+        pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
+    } else {
+        pr->addSlice(CPAP_PressureMin,QColor("grey"),ST_SETWAVG,true);
+    }
     PR->AddLayer(pr);
 
     lk=new SummaryChart(tr("Avg Leak"),GT_LINE);

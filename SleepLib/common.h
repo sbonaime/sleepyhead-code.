@@ -50,6 +50,10 @@ const QString STR_MACH_ZEO="Zeo";
 
 const QString STR_TR_BMI=QObject::tr("BMI");
 const QString STR_TR_Weight=QObject::tr("Weight");
+const QString STR_TR_PulseRate=QObject::tr("Pulse Rate");
+const QString STR_TR_SpO2=QObject::tr("SpO2");
+const QString STR_TR_Plethy=QObject::tr("Plethy");
+const QString STR_TR_FlowRate=QObject::tr("Flow Rate");
 
 const QString STR_TR_Daily=QObject::tr("Daily");
 const QString STR_TR_Overview=QObject::tr("Overview");
