@@ -562,6 +562,7 @@ void Session::updateCountSummary(ChannelID code)
         EventList & e=*(ev.value()[i]);
         if (e.type()==EVL_Waveform) continue;
 
+
         for (unsigned j=0;j<e.count();j++) {
             raw=e.raw(j);
             vsi=valsum.find(raw);
@@ -569,12 +570,15 @@ void Session::updateCountSummary(ChannelID code)
             else vsi.value()++;
 
             time=e.time(j);
+
             if (lasttime>0) {
                 len=(time-lasttime) / 1000;
-                tsi=timesum.find(lastraw);
-                if (tsi==timesum.end()) timesum[raw]=len;
-                else tsi.value()+=len;
-            }
+            } else len=0;
+
+            tsi=timesum.find(lastraw);
+            if (tsi==timesum.end()) timesum[raw]=len;
+            else tsi.value()+=len;
+
             lastraw=raw;
             lasttime=time;
         }
@@ -587,15 +591,14 @@ void Session::updateCountSummary(ChannelID code)
 
 void Session::UpdateSummaries()
 {
+    ChannelID id;
+    QHash<ChannelID,QVector<EventList *> >::iterator c;
     calcAHIGraph(this);
     calcRespRate(this);
     calcLeaks(this);
-
     calcSPO2Drop(this);
     calcPulseChange(this);
 
-    ChannelID id;
-    QHash<ChannelID,QVector<EventList *> >::iterator c;
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
         if (schema::channel[id].type()==schema::DATA) {
@@ -620,6 +623,7 @@ void Session::UpdateSummaries()
             first(id);
         }
     }
+
     if (channelExists(CPAP_Obstructive)) {
         setCph(CPAP_AHI,cph(CPAP_Obstructive)+cph(CPAP_Hypopnea)+cph(CPAP_ClearAirway));
         setSph(CPAP_AHI,sph(CPAP_Obstructive)+sph(CPAP_Hypopnea)+sph(CPAP_ClearAirway));

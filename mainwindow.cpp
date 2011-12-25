@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // Start with the Welcome Tab
-    ui->tabWidget->setCurrentWidget(daily);
+    ui->tabWidget->setCurrentWidget(ui->welcome); // setting this to daily shows the cube during loading..
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {

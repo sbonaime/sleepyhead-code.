@@ -385,6 +385,22 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 //////////////////////////////////////////////////////////////////
                 first=true;
                 double start=el.first();
+                if (siz==2) {
+                    time=start+tim[0];
+                    data=dat[0]*gain;
+                    data-=subtract_offset;
+                    lastpy=yst-((data - miny) * ymult);   // Same for Y scale with precomputed gain
+                    lastpx=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                    if (lastpx<xst-1) lastpx=xst-1;
+
+                    EventDataType data2=(dat[1]*gain)-subtract_offset;
+                    qint64 time2=start+tim[1];
+                    py=yst-((data2 - miny) * ymult);
+                    px=xst+((time2 - minx) * xmult);
+                    if (px>xst+width) px=xst+width;
+
+                    lines->add(lastpx,lastpy,px,py);
+                } else
                 for (int i=0;i<siz;i++) {
 
                     time=start+tim[i];

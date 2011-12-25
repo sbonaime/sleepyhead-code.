@@ -1,19 +1,27 @@
-SleepyHead QT port v0.8 branch
+SleepyHead QT port v0.9 branch
 
-CPAP & Sleep machine tracking softwre
+SleepyHead is cross platform, opensource sleep tracking program for reviewing CPAP and Oximetry data, 
+which are devices used in the treatment of Sleep Disorders like Obstructive Sleep Apnea.
 
 To Build:
 
 qmake
 make
 
+You may need to add a -spec option to qmake to suit your platform. 
+Adding -j3 speeds up the make command on a dual core or greater system.
+
+
 Author: Mark Watkins <jedimark@users.sourceforge.net>
-Copyright (C) 2011
+Copyright (C)2011 Mark Watkins
 
 Licence Stuff
 -------------
 This software is released under the GNU Public License, at a GPL version of my choosing at a later date. 
 
-Exceptions:
+Exceptions and 3rd Party Libraries:
 Incorporates QextSerialPort. Insert New BSD license here? (Apparently PD.. need to verify)
+http://code.google.com/p/qextserialport/
 
+It uses QuaZip, by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package..
+http://sourceforge.net/projects/quazip/
