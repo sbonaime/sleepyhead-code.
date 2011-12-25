@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>668</width>
-    <height>393</height>
+    <width>611</width>
+    <height>392</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -164,16 +164,6 @@
        <widget class="QPushButton" name="printDailyButton">
         <property name="text">
          <string>Print &amp;Daily Reports</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="printButton">
-        <property name="toolTip">
-         <string>Send a Report to your Printer</string>
-        </property>
-        <property name="text">
-         <string>&amp;Print Overview</string>
         </property>
        </widget>
       </item>

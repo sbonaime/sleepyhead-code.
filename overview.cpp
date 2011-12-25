@@ -283,11 +283,23 @@ gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
 
 void Overview::ReloadGraphs()
 {
-    ui->dateStart->setDate(p_profile->FirstDay());
-    ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
 
     on_rangeCombo_activated(ui->rangeCombo->currentIndex());
+}
+
+void Overview::ResetGraphs()
+{
+    QDate start=ui->dateStart->date();
+    QDate end=ui->dateEnd->date();
+    //ui->dateStart->setDate(p_profile->FirstDay());
+    //ui->dateEnd->setDate(p_profile->LastDay());
+    GraphView->setDay(NULL);
+    if (start.isValid() && end.isValid()) {
+        setRange(start,end);
+    }
+
+    //on_rangeCombo_activated(ui->rangeCombo->currentIndex());
 }
 
 void Overview::RedrawGraphs()
@@ -369,10 +381,10 @@ void Overview::on_toolButton_clicked()
     GraphView->SetXBounds(d1,d2);
 }
 
-void Overview::on_printButton_clicked()
-{
-    mainwin->PrintReport(GraphView,STR_TR_Overview); // Must be translated the same as PrintReport checks.
-}
+//void Overview::on_printButton_clicked()
+//{
+//    mainwin->PrintReport(GraphView,STR_TR_Overview); // Must be translated the same as PrintReport checks.
+//}
 
 void Overview::ResetGraphLayout()
 {
@@ -416,7 +428,6 @@ void Overview::on_rangeCombo_activated(int index)
 {
     QDate end=PROFILE.LastDay();
     QDate start;
-    ui->dateEnd->setDate(end);
     if (index==0) {
         start=end.addDays(-6);
     } else if (index==1) {
@@ -433,6 +444,15 @@ void Overview::on_rangeCombo_activated(int index)
         start=end.addYears(-1).addDays(1);
     }
     if (start<PROFILE.FirstDay()) start=PROFILE.FirstDay();
+    setRange(start,end);
+}
+void Overview::setRange(QDate start, QDate end)
+{
+    ui->dateEnd->blockSignals(true);
+    ui->dateStart->blockSignals(true);
     ui->dateStart->setDate(start);
+    ui->dateEnd->setDate(end);
+    ui->dateEnd->blockSignals(false);
+    ui->dateStart->blockSignals(false);
     this->on_toolButton_clicked();
 }

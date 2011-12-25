@@ -140,7 +140,12 @@ MainWindow::MainWindow(QWidget *parent) :
         systray=NULL;
         systraymenu=NULL;
     }
+    ui->toolBox->setCurrentIndex(0);
     daily->graphView()->redraw();
+
+    ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    //connect(ui->recordsBox,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
+
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -712,6 +717,8 @@ void MainWindow::on_summaryButton_clicked()
     html+="</table>";
     html+="</div>";
 
+    QDate bestAHIdate, worstAHIdate;
+    EventDataType bestAHI=999.0, worstAHI=0;
     if (cpapdays>0) {
         QDate first,last=lastcpap;
         CPAPMode mode,cmode=MODE_UNKNOWN;
@@ -723,8 +730,21 @@ void MainWindow::on_summaryButton_clicked()
         QVector<RXChange> rxchange;
         do {
             day=PROFILE.GetDay(date,MT_CPAP);
+
             lastchanged=false;
             if (day) {
+                EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
+                if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
+                ahi/=day->hours();
+                if (ahi > worstAHI) {
+                    worstAHI=ahi;
+                    worstAHIdate=date;
+                }
+                if (ahi < bestAHI) {
+                    bestAHI=ahi;
+                    bestAHIdate=date;
+                }
+
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
                 min=day->settings_min(CPAP_PressureMin);
                 if (mode==MODE_CPAP) {
@@ -797,7 +817,92 @@ void MainWindow::on_summaryButton_clicked()
         RXsort=RX_ahi;
         qSort(tmpRX.begin(),tmpRX.end(),RXSort);
         tmpRX[0]->highlight=4; // worst
-        tmpRX[tmpRX.size()-1]->highlight=1; //best
+        int ls=tmpRX.size()-1;
+        tmpRX[ls]->highlight=1; //best
+
+        QString recbox="<html><head><style type='text/css'>"
+            "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
+            "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
+            "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
+            "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
+            "</style></head><body>";
+        recbox+="<table width=100% cellpadding=2 cellspacing=0>";
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg("Best&nbsp;AHI").arg(bestAHI,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(bestAHIdate.toString(Qt::SystemLocaleShortDate));
+        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg("Worst&nbsp;AHI").arg(worstAHI,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(worstAHIdate.toString(Qt::SystemLocaleShortDate));
+        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+        QString minstr,maxstr,modestr;
+
+
+        {
+        CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->first);
+
+        if (mode<MODE_APAP) { // is CPAP?
+            minstr="Pressure";
+            maxstr="";
+            modestr=tr("CPAP");
+        } else if (mode<MODE_BIPAP) { // is AUTO?
+            minstr="Min";
+            maxstr="Max";
+            modestr=tr("APAP");
+        } else { // BIPAP or greater
+            minstr="EPAP";
+            maxstr="IPAP";
+            modestr=tr("Bi-Level/ASV");
+        }
+
+        recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
+                .arg(tmpRX[ls]->first.toString(Qt::ISODate))
+                .arg(tmpRX[ls]->last.toString(Qt::ISODate))
+                .arg(tr("Best RX Setting"));
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("AHI")).arg(tmpRX[ls]->ahi,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
+        recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
+        if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
+        recbox+="</td></tr>";
+
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate));
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate));
+        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+
+        mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->first);
+        if (mode<MODE_APAP) { // is CPAP?
+            minstr="Pressure";
+            maxstr="";
+            modestr=tr("CPAP");
+        } else if (mode<MODE_BIPAP) { // is AUTO?
+            minstr="Min";
+            maxstr="Max";
+            modestr=tr("APAP");
+        } else { // BIPAP or greater
+            minstr="EPAP";
+            maxstr="IPAP";
+            modestr=tr("Bi-Level/ASV");
+        }
+
+        recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
+                .arg(tmpRX[0]->first.toString(Qt::ISODate))
+                .arg(tmpRX[0]->last.toString(Qt::ISODate))
+                .arg(tr("Worst RX Setting"));
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("AHI")).arg(tmpRX[0]->ahi,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
+        recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
+        if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
+        recbox+="</td></tr>";
+
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate));
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[0]->last.toString(Qt::SystemLocaleShortDate));
+        }
+        recbox+=QString("</table>");
+        recbox+="</body></html>";
+        ui->recordsBox->setHtml(recbox);
+
+//        ui->recordsBox->append("<a href='overview'><b>Best RX Setting</b></a>");
+//        ui->recordsBox->append("Start: "+tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate)+"<br/>End: "+tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate)+"\n\n");
+//        ui->recordsBox->append("<a href='overview'><b>Worst RX Setting</b></a>");
+//        ui->recordsBox->append("Start: "+tmpRX[0]->first.toString(Qt::SystemLocaleShortDate)+"<br/>End: "+tmpRX[0]->last.toString(Qt::SystemLocaleShortDate)+"\n\n");
 
         //show the second best and worst..
         //if (tmpRX.size()>4) {
@@ -1840,4 +1945,25 @@ void MainWindow::on_summaryButton_2_clicked()
 void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 {
     ui->toolBox->setVisible(visible);
+}
+
+void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
+{
+    QString link=linkurl.toString().section("=",0,0).toLower();
+    QString datestr=linkurl.toString().section("=",1).toLower();
+    qDebug() << linkurl.toString() << link << datestr;
+    if (link=="daily") {
+        QDate date=QDate::fromString(datestr,Qt::ISODate);
+        daily->LoadDate(date);
+        ui->tabWidget->setCurrentWidget(daily);
+    } else if (link=="overview") {
+        QString date1=datestr.section(",",0,0);
+        QString date2=datestr.section(",",1);
+
+        QDate d1=QDate::fromString(date1,Qt::ISODate);
+        QDate d2=QDate::fromString(date2,Qt::ISODate);
+        overview->setRange(d1,d2);
+        ui->tabWidget->setCurrentWidget(overview);
+    }
+
 }

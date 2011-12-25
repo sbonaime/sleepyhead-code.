@@ -1120,7 +1120,8 @@ void Daily::Unload(QDate date)
             }
         }
         if (journal->IsChanged()) {
-            mainwin->getOverview()->ReloadGraphs();
+
+            mainwin->getOverview()->ResetGraphs();
         }
         Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);

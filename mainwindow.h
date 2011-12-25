@@ -248,6 +248,8 @@ private slots:
 
     void on_action_Sidebar_Toggle_toggled(bool arg1);
 
+    void on_recordsBox_linkClicked(const QUrl &arg1);
+
 private:
 
     Ui::MainWindow *ui;

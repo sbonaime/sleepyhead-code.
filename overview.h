@@ -41,11 +41,17 @@ public:
     //! \brief Recalculates Overview chart info
     void ReloadGraphs();
 
+    //! \brief Recalculates Overview chart info, but keeps the date set
+    void ResetGraphs();
+
     //! \brief Reset graphs to uniform heights
     void ResetGraphLayout();
 
     //! \brief Calls updateGL to redraw the overview charts
     void RedrawGraphs();
+
+    //! \brief Sets the currently selected date range of the overview display
+    void setRange(QDate start, QDate end);
 
     /*! \brief Create an overview graph, adding it to the overview gGraphView object
         \param QString name  The title of the graph
@@ -59,8 +65,8 @@ public:
     QVector<SummaryChart *> OverviewCharts;
 
 public slots:
-    //! \brief Print button down the bottom, does the same as File->Print
-    void on_printButton_clicked();
+    // ! \brief Print button down the bottom, does the same as File->Print
+    //void on_printButton_clicked();
 
 private slots:
 /*    void on_drStart_dateChanged(const QDate &date);
