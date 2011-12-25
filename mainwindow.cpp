@@ -158,6 +158,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //"border-top-left-radius: 8px;"
     //"border-top-right-radius: 8px;"
 
+    QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>Loading...</h1></td></tr></table></body></HTML>";
+    ui->summaryView->setHtml(loadingtxt);
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -532,6 +534,13 @@ void MainWindow::on_summaryButton_clicked()
     mach.append(oximeters);
 
 
+    if (mach.size()==0) {
+        html+="<table cellpadding=2 cellspacing=0 border=0 width=100% height=70%>";
+        html+="<tr><td align=center><h1>Please Import Some Data</h1><br/><i>SleepyHead is pretty much useless without it.</i></td></tr></table>";
+        html+=htmlFooter();
+        ui->summaryView->setHtml(html);
+        return;
+    }
     int cpapdays=PROFILE.countDays(MT_CPAP,firstcpap,lastcpap);
     CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
@@ -546,7 +555,7 @@ void MainWindow::on_summaryButton_clicked()
     html+="<div align=center>";
     html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
     if (cpapdays==0)  {
-        //html+="<tr><td colspan=6>No Machine Data Imported</td></tr>";
+        html+="<tr><td colspan=6 align=center>No CPAP Machine Data Imported</td></tr>";
     } else {
         html+=QString("<tr><td colspan=6><b>CPAP Statistics as of %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
 

@@ -325,7 +325,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
     GraphView->setCubeImage(images["sheep"]);
-    GraphView->setEmptyText(tr("Loading Data..."));
+    GraphView->setEmptyText(tr("No Data"));
 }
 
 Daily::~Daily()

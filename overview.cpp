@@ -72,7 +72,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     GraphView=new gGraphView(ui->graphArea,m_shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    GraphView->setEmptyText("Import some data!");
+    GraphView->setEmptyText("No Data");
     GraphView->setCubeImage(images["nodata"]);
 
     // Create the custom scrollbar and attach to GraphView
