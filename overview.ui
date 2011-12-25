@@ -54,6 +54,52 @@
        <number>0</number>
       </property>
       <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Range:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="rangeCombo">
+        <item>
+         <property name="text">
+          <string>Last Week</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last Two Weeks</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last Month</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last Two Months</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last Three Months</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last 6 Months</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Last Year</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Start:</string>
@@ -115,12 +161,19 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="printDailyButton">
+        <property name="text">
+         <string>Print &amp;Daily Reports</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="printButton">
         <property name="toolTip">
          <string>Send a Report to your Printer</string>
         </property>
         <property name="text">
-         <string>&amp;Print</string>
+         <string>&amp;Print Overview</string>
         </property>
        </widget>
       </item>

@@ -11,6 +11,7 @@
 #include <QDateTimeEdit>
 #include <QCalendarWidget>
 #include <QFileDialog>
+#include <QMessageBox>
 //#include <QProgressBar>
 
 #include "SleepLib/profiles.h"
@@ -245,6 +246,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // <--- The code to the previous marker is crap
 
     GraphView->LoadSettings("Overview"); //no trans
+    ui->rangeCombo->setCurrentIndex(6);
 }
 Overview::~Overview()
 {
@@ -284,10 +286,8 @@ void Overview::ReloadGraphs()
     ui->dateStart->setDate(p_profile->FirstDay());
     ui->dateEnd->setDate(p_profile->LastDay());
     GraphView->setDay(NULL);
-    if (PROFILE.general->rebuildCache()) {
-        PROFILE.general->setRebuildCache(false);
-        mainwin->Notify(tr("Cache rebuild complete"));
-    }
+
+    on_rangeCombo_activated(ui->rangeCombo->currentIndex());
 }
 
 void Overview::RedrawGraphs()
@@ -379,3 +379,60 @@ void Overview::ResetGraphLayout()
     GraphView->resetLayout();
 }
 
+
+void Overview::on_printDailyButton_clicked()
+{
+    qint64 st,et;
+    GraphView->GetXBounds(st,et);
+
+    QDate s1=QDateTime::fromTime_t(st/1000L).date();
+    QDate s2=QDateTime::fromTime_t(et/1000L).date();
+
+    int len=PROFILE.countDays(MT_UNKNOWN,s1,s2);
+    if (len>7) {
+        if (QMessageBox::question(this, "Woah!", "Do you really want to print "+QString::number(len)+" days worth of Daily reports,\n from "+s1.toString(Qt::SystemLocaleShortDate)+" to "+s2.toString(Qt::SystemLocaleShortDate)+"?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            return;
+        }
+        if (len>14) {
+            int weeks=len/7;
+            if (QMessageBox::question(this, "Hold Up!", "We are talking about over "+QString::number(weeks)+" weeks of information.\n\nThis will likely take a very long time, and a heck of a lot of paper if your not printing to a PDF file.\n\nAre you really sure?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+                return;
+            }
+            if (len>31) {
+                if (QMessageBox::question(this, "Are you serious!!??", "We are talking about printing a lot of information.\n\nIf your not printing to a PDF file, you must really hate trees.\n\nAre you really REALLY sure?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+                    return;
+                }
+            }
+        }
+
+        mainwin->Notify("I'm not going to nag you any more, but it would probably help if I implemented this feature.. ;)");
+
+
+    } else mainwin->Notify("If this was implemented yet, You'd be able to print multiple daily reports right now.");
+
+}
+
+void Overview::on_rangeCombo_activated(int index)
+{
+    QDate end=PROFILE.LastDay();
+    QDate start;
+    ui->dateEnd->setDate(end);
+    if (index==0) {
+        start=end.addDays(-6);
+    } else if (index==1) {
+        start=end.addDays(-13);
+    } else if (index==2) {
+        start=end.addMonths(-1).addDays(1);
+    } else if (index==3) {
+        start=end.addMonths(-2).addDays(1);
+    } else if (index==4) {
+        start=end.addMonths(-3).addDays(1);
+    } else if (index==5) {
+        start=end.addMonths(-6).addDays(1);
+    } else if (index==6) {
+        start=end.addYears(-1).addDays(1);
+    }
+    if (start<PROFILE.FirstDay()) start=PROFILE.FirstDay();
+    ui->dateStart->setDate(start);
+    this->on_toolButton_clicked();
+}
