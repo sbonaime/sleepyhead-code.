@@ -823,10 +823,11 @@ void MainWindow::on_summaryButton_clicked()
             rxchange.push_back(rx);
         }
 
+        int rxthresh=5;
         QVector<RXChange *> tmpRX;
         for (int i=0;i<rxchange.size();i++) {
             RXChange & rx=rxchange[i];
-            if (rx.days>5)
+            if (rx.days>rxthresh)
                 tmpRX.push_back(&rx);
         }
         RXsort=RX_ahi;
@@ -975,7 +976,7 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(extratxt);
         }
         html+="</table>";
-        html+="<i>The above has a threshold which excludes day counts less than it from the best/worst highlighting</i><br/>";
+        html+=QString("<i>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</i><br/>").arg(rxthresh);
         html+="</div>";
 
     }
