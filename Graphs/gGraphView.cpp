@@ -2490,7 +2490,7 @@ void gGraphView::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     bool numgraphs=true;
-    const int animTimeout=400;
+    const int animTimeout=200;
     float phase=0;
 
     int elapsed=0;
