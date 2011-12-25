@@ -120,8 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->insertTab(1,daily,STR_TR_Daily);
 
 
-    // Start with the Welcome Tab
-    ui->tabWidget->setCurrentWidget(ui->welcome); // setting this to daily shows the cube during loading..
+    // Start with the Summary Tab
+    ui->tabWidget->setCurrentWidget(ui->summaryTab); // setting this to daily shows the cube during loading..
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
@@ -224,7 +224,7 @@ void MainWindow::Startup()
     }
 
 
-    ui->tabWidget->setCurrentWidget(ui->welcome);
+    ui->tabWidget->setCurrentWidget(ui->summaryTab);
     if (daily) daily->ReloadGraphs();
     if (overview) overview->ReloadGraphs();
     qprogress->hide();
@@ -349,11 +349,6 @@ QMenu * MainWindow::CreateMenu(QString title)
     QMenu *menu=new QMenu(title,ui->menubar);
     ui->menubar->insertMenu(ui->menu_Help->menuAction(),menu);
     return menu;
-}
-
-void MainWindow::on_actionView_Welcome_triggered()
-{
-    ui->tabWidget->setCurrentWidget(ui->welcome);
 }
 
 void MainWindow::on_action_Fullscreen_triggered()
@@ -1004,7 +999,7 @@ void MainWindow::on_summaryButton_clicked()
         html+="</div>";
     }
     html+=htmlFooter();
-    ui->webView->setHtml(html);
+    ui->summaryView->setHtml(html);
 //    QString file="qrc:/docs/index.html";
 //    QUrl url(file);
 //    ui->webView->setUrl(url);
@@ -1250,13 +1245,13 @@ void MainWindow::on_actionExp_ort_triggered()
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
     ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide"));
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_action_Frequently_Asked_Questions_triggered()
 {
     ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
@@ -1950,7 +1945,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 
 void MainWindow::on_summaryButton_2_clicked()
 {
-    ui->tabWidget->setCurrentWidget(ui->welcome);
+    ui->tabWidget->setCurrentWidget(ui->summaryTab);
     on_summaryButton_clicked();
 }
 
@@ -1978,4 +1973,14 @@ void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
         ui->tabWidget->setCurrentWidget(overview);
     }
 
+}
+
+void MainWindow::on_helpButton_clicked()
+{
+    ui->tabWidget->setCurrentWidget(ui->helpTab);
+}
+
+void MainWindow::on_actionView_S_ummary_triggered()
+{
+    ui->tabWidget->setCurrentWidget(ui->summaryTab);
 }

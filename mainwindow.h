@@ -135,9 +135,6 @@ private slots:
         */
     void on_action_Import_Data_triggered();
 
-    //! \brief Selects the welcome page when it's clicked on
-    void on_actionView_Welcome_triggered();
-
     //! \brief Toggle Fullscreen (currently F11)
     void on_action_Fullscreen_triggered();
 
@@ -249,6 +246,10 @@ private slots:
     void on_action_Sidebar_Toggle_toggled(bool arg1);
 
     void on_recordsBox_linkClicked(const QUrl &arg1);
+
+    void on_helpButton_clicked();
+
+    void on_actionView_S_ummary_triggered();
 
 private:
 

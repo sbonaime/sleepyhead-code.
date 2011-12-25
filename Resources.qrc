@@ -36,5 +36,6 @@
         <file>icons/cubeoximeter.png</file>
         <file>icons/trophy.png</file>
         <file>icons/bookmark.png</file>
+        <file>icons/help.png</file>
     </qresource>
 </RCC>
