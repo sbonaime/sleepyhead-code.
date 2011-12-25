@@ -557,17 +557,17 @@ void MainWindow::on_summaryButton_clicked()
     if (cpapdays==0)  {
         html+="<tr><td colspan=6 align=center>No CPAP Machine Data Imported</td></tr>";
     } else {
-        html+=QString("<tr><td colspan=6><b>CPAP Statistics as of %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
+        html+=QString("<tr><td colspan=6 align=center><b>CPAP Statistics as of %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
 
         if (cpap_machines.size()>0) {
-           // html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("CPAP Summary"));
+           // html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("CPAP Summary"));
 
             if (!cpapdays) {
-                html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("No CPAP data available."));
+                html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("No CPAP data available."));
             } else if (cpapdays==1) {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 day of CPAP Data, on %2.")).arg(cpapdays).arg(firstcpap.toString(Qt::SystemLocaleShortDate)));
+                html+=QString("<tr><td colspan=6 align=center>%1</td></tr>").arg(QString(tr("%1 day of CPAP Data, on %2.")).arg(cpapdays).arg(firstcpap.toString(Qt::SystemLocaleShortDate)));
             } else {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 days of CPAP Data, between %2 and %3")).arg(cpapdays).arg(firstcpap.toString(Qt::SystemLocaleShortDate)).arg(lastcpap.toString(Qt::SystemLocaleShortDate)));
+                html+=QString("<tr><td colspan=6 align=center>%1</td></tr>").arg(QString(tr("%1 days of CPAP Data, between %2 and %3")).arg(cpapdays).arg(firstcpap.toString(Qt::SystemLocaleShortDate)).arg(lastcpap.toString(Qt::SystemLocaleShortDate)));
             }
 
             html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
@@ -660,11 +660,11 @@ void MainWindow::on_summaryButton_clicked()
         QDate firstoxi=p_profile->FirstDay(MT_OXIMETER);
         int days=PROFILE.countDays(MT_OXIMETER,firstoxi,lastoxi);
         if (days>0) {
-            html+=QString("<tr><td colspan=6><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
+            html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
             if (days==1) {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 day of Oximetry Data, on %2.")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)));
+                html+=QString("<tr><td colspan=6 align=center>%1</td></tr>").arg(QString(tr("%1 day of Oximetry Data, on %2.")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)));
             } else {
-                html+=QString("<tr><td colspan=6>%1</td></tr>").arg(QString(tr("%1 days of Oximetry Data, between %2 and %3")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)).arg(lastoxi.toString(Qt::SystemLocaleShortDate)));
+                html+=QString("<tr><td colspan=6 align=center>%1</td></tr>").arg(QString(tr("%1 days of Oximetry Data, between %2 and %3")).arg(days).arg(firstoxi.toString(Qt::SystemLocaleShortDate)).arg(lastoxi.toString(Qt::SystemLocaleShortDate)));
             }
 
             html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
