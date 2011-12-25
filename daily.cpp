@@ -548,6 +548,7 @@ void Daily::on_calendar_selectionChanged()
     ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
     //GraphView->fadeIn(fadedir);
+    GraphView->redraw();
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
