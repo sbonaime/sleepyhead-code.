@@ -372,6 +372,11 @@
          </disabled>
         </palette>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Box</enum>
        </property>
@@ -385,7 +390,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -396,7 +401,7 @@
           <x>0</x>
           <y>0</y>
           <width>143</width>
-          <height>513</height>
+          <height>519</height>
          </rect>
         </property>
         <property name="palette">
@@ -509,6 +514,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Summary</string>
            </property>
@@ -543,6 +553,11 @@
              <width>0</width>
              <height>0</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Daily</string>
@@ -678,7 +693,6 @@
           </spacer>
          </item>
         </layout>
-        <zorder>splitter</zorder>
         <zorder>dailyButton</zorder>
         <zorder>overviewButton</zorder>
         <zorder>verticalSpacer</zorder>
@@ -692,7 +706,7 @@
           <x>0</x>
           <y>0</y>
           <width>158</width>
-          <height>319</height>
+          <height>313</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -751,11 +765,24 @@
              </disabled>
             </palette>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
           </widget>
          </item>
         </layout>
        </widget>
        <widget class="QWidget" name="page_3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>158</width>
+          <height>313</height>
+         </rect>
+        </property>
         <property name="mouseTracking">
          <bool>true</bool>
         </property>
@@ -811,6 +838,11 @@
               </colorrole>
              </disabled>
             </palette>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
            </property>
            <property name="url">
             <url>

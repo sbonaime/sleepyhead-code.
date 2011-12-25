@@ -144,7 +144,19 @@ MainWindow::MainWindow(QWidget *parent) :
     daily->graphView()->redraw();
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    //connect(ui->recordsBox,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
+    ui->toolBox->setStyleSheet(
+                               "QToolBox::tab {"
+                               "background: #6789ab;"
+                               "color: lightGray;}"
+                               "QToolBox { icon-size: 32px; }"
+                               "QToolBox::tab:selected {"
+                               "font: bold;"
+                               "background: #9090ee;"
+                               "color: white; }"
+                               );
+    //"font-weight: bold; "
+    //"border-top-left-radius: 8px;"
+    //"border-top-right-radius: 8px;"
 
 }
 extern MainWindow *mainwin;
