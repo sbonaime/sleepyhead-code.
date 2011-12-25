@@ -538,15 +538,16 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
+    this->setCursor(Qt::BusyCursor);
 
     if (previous_date.isValid()) {
-        GraphView->fadeOut();
+       // GraphView->fadeOut();
         Unload(previous_date);
     }
     bool fadedir=previous_date < ui->calendar->selectedDate();
     ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
-    GraphView->fadeIn(fadedir);
+    //GraphView->fadeIn(fadedir);
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
     ui->calendar->setFocus(Qt::ActiveWindowFocusReason);
 
@@ -560,6 +561,7 @@ void Daily::on_calendar_selectionChanged()
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
+    this->setCursor(Qt::ArrowCursor);
 }
 void Daily::ResetGraphLayout()
 {

@@ -340,6 +340,7 @@ void MainWindow::on_action_Import_Data_triggered()
             }
             file.close();
         }
+        on_summaryButton_clicked();
     } else {
         mainwin->Notify("Import Problem\n\nCouldn't find any new Machine Data at the locations given");
     }
@@ -372,9 +373,7 @@ QString htmlHeader()
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
-"<tr><td><img src='qrc:/docs/sheep.png' width=100px height=100px><td valign=center align=center><h1>SleepyHead v"+VersionString+" "+ReleaseStatus+"</h1></td></tr></table>"
-"<p><i>This page is being redesigned to be more useful... Please send me your ideas on what you'd like to see here :)</i></p>"
-"<p>The plan is to get the content happening first, then make the layout pretty...</p>"
+"<tr><td><img src='qrc:/docs/sheep.png' width=100px height=100px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
 "</div>"
 "<hr/>");
 }
