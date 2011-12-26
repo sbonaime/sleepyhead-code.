@@ -903,7 +903,7 @@ void Daily::Load(QDate date)
 
             html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Flex"))
                     .arg(flexstr);
-            int humid=cpap->settings_max(PRS1_HumidSetting);
+            int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
             html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
                     .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
         } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {

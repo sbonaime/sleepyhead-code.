@@ -405,7 +405,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -535,7 +535,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Summary</string>
+            <string>Statistics</string>
            </property>
            <property name="icon">
             <iconset resource="Resources.qrc">
