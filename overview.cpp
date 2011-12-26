@@ -180,7 +180,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //set->addSlice(PRS1_SysOneResistSet,QColor("grey"),ST_SETAVG);
     set->addSlice(PRS1_HumidSetting,QColor("blue"),ST_SETWAVG,true);
     set->addSlice(PRS1_FlexSet,QColor("red"),ST_SETWAVG,true);
-    set->addSlice(RMS9_EPR,QColor("green"),ST_SETWAVG,true);
+    set->addSlice(RMS9_EPRSet,QColor("green"),ST_SETWAVG,true);
     set->addSlice(INTP_SmartFlex,QColor("purple"),ST_SETWAVG,true);
     SET->setRecMinY(0);
     SET->setRecMaxY(5);
@@ -230,6 +230,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
         pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
     } else {
+
         pr->addSlice(CPAP_PressureMin,QColor("grey"),ST_SETWAVG,true);
     }
     PR->AddLayer(pr);

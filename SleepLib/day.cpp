@@ -113,20 +113,21 @@ EventDataType Day::settings_avg(ChannelID code)
 }
 EventDataType Day::settings_wavg(ChannelID code)
 {
-    double s0=0,s1=0,s2=0;
+    double s0=0,s1=0,s2=0,tmp;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
 
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
             s0=sess.hours();
-            s1+=i.value().toDouble()*s0;
+            tmp=i.value().toDouble();
+            s1+=tmp*s0;
             s2+=s0;
         }
     }
     if (s2==0) return 0;
-    return (s1/s2);
-
+    tmp=(s1/s2);
+    return tmp;
 }
 EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 {

@@ -103,8 +103,13 @@ public:
         \brief Returns the current snapshotGraph object used by the report printing system */
     gGraphView *snapshotGraph() { return SnapshotGraph; }
 
+    //! \brief Returns the Daily Tab object
     Daily *getDaily() { return daily; }
+
+    //! \brief Returns the Overview Tab object
     Overview *getOverview() { return overview; }
+
+    //! \brief Returns the Oximetry Tab object
     Oximetry *getOximetry() { return oximetry; }
 
     /*! \fn void RestartApplication(bool force_login=false);
@@ -239,9 +244,8 @@ private slots:
     //! \brief Destroy ALL the CPAP data for the currently selected machine, so it can be freshly imported again
     void on_actionAll_Data_for_current_CPAP_machine_triggered();
 
+    //! \brief Populates the statistics with information.
     void on_summaryButton_clicked();
-
-
 
     void on_summaryButton_2_clicked();
 
@@ -261,6 +265,7 @@ private slots:
 
     void on_webView_statusBarMessage(const QString &text);
 
+    //! \brief Display Help WebView Link in statusbar.
     void LinkHovered(const QString & link, const QString & title, const QString & textContent);
 private:
 

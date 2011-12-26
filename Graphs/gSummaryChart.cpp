@@ -169,6 +169,10 @@ void SummaryChart::SetDay(Day * nullday)
                         m_goodcodes[j]=true;
                         fnd=true;
                         break;
+                    } else {
+                        if (code==CPAP_PressureMin) {
+                            int i=5;
+                        }
                     }
                 }
             }

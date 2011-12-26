@@ -533,6 +533,9 @@ void Daily::UpdateCalendarDay(QDate date)
 void Daily::LoadDate(QDate date)
 {
     ui->calendar->blockSignals(true);
+    if (date.month()!=previous_date.month()) {
+        on_calendar_currentPageChanged(date.year(),date.month());
+    }
     ui->calendar->setSelectedDate(date);
     ui->calendar->blockSignals(false);
     on_calendar_selectionChanged();
@@ -900,8 +903,9 @@ void Daily::Load(QDate date)
 
             html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Flex"))
                     .arg(flexstr);
+            int humid=cpap->settings_max(PRS1_HumidSetting);
             html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
-                    .arg(cpap->settings_max(PRS1_HumidSetting)==0 ? STR_GEN_Off : "x"+QString::number(i));
+                    .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
         } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
             int epr=cpap->settings_max(RMS9_EPR);
             int epr2=cpap->settings_max(RMS9_EPRSet);

@@ -25,6 +25,7 @@ extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;
 QHash<ChannelID, QVector<QString> > resmed_codes;
 
+// Looks up foreign language Signal names that match this channelID
 EDFSignal * EDFParser::lookupSignal(ChannelID ch)
 {
     QHash<ChannelID, QVector<QString> >::iterator ci;
@@ -177,7 +178,7 @@ bool EDFParser::Parse()
             memcpy((char *)&sig.data[sig.pos],(char *)&buffer[pos],sig.nr*2);
             sig.pos+=sig.nr;
             pos+=sig.nr*2;
-            // big endian will screw up without this..
+            // big endian will probably screw up without this..
             /*for (int j=0;j<sig.nr;j++) {
                 qint16 t=Read16();
                 sig.data[sig.pos++]=t;
@@ -329,9 +330,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         rest=filename.section(".",0,0);
         datestr=filename.section("_",0,1);
+        // Take the filename's date, and convert it to epoch to form the sessionID.
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
         sessionid=date.toTime_t();
-        // Resmed bugs up on the session filenames.. 1 second either way
+
+        // Resmed bugs up on the session filenames.. 1 or 2 seconds either way
+        // Moral of the story, when writing firmware and saving in batches, use the same datetimes.
         if (sessfiles.find(sessionid)==sessfiles.end()) {
             if (sessfiles.find(sessionid+2)!=sessfiles.end()) sessionid+=2;
             else if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
@@ -377,7 +381,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         }
                     } else if (i.key()=="PNA") {
                         //m->properties[STR_PROP_Model]=""; //i.value();
-                    } else if (i.key()=="PCD") {
+                    } else if (i.key()=="PCD") { // Product Code..
                         bool ok;
                         int j=i.value().toInt(&ok);
                         if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
@@ -405,7 +409,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 //}
             }
         }
-        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*33.0));
+        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*66.0));
         QApplication::processEvents();
 
         EDFSignal *sig;
@@ -441,11 +445,6 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
-                        //sess->setWavg(CPAP_Pressure,pressure);
-                        //sess->setAvg(CPAP_Pressure,pressure);
-                        //sess->set90p(CPAP_Pressure,pressure);
-                        //sess->setMax(CPAP_Pressure,pressure);
-                        //sess->setMin(CPAP_Pressure,pressure);
                     }
                 } else {
                     if (mode>5) {
@@ -469,6 +468,32 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 }
 
             }
+
+
+            // The following only happens when the STR.edf file is not up to date..
+            // This will only happen when the user fails to back up their SDcard properly.
+            // Basically takes a guess.
+            if (!sess->settings.contains(CPAP_Mode)) {
+                //The following is a lame assumption if 50th percentile == max, then it's CPAP
+                EventDataType p50=sess->percentile(CPAP_Pressure,0.50);
+                EventDataType max=sess->Max(CPAP_Pressure);
+                if (max==p50) {
+                    sess->settings[CPAP_Mode]=MODE_CPAP;
+                    sess->settings[CPAP_PressureMin]=p50;
+                } else {
+                    // It's not cpap, so just take the highest setting for this machines history.
+                    // This may fail if the missing str data is at the beginning of a fresh import.
+                    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,sess->machine()->FirstDay(),sess->machine()->LastDay());
+                    if (mode<MODE_APAP) mode=MODE_APAP;
+                    sess->settings[CPAP_Mode]=mode;
+                    // Assuming 10th percentile should cover for ramp/warmup
+                    sess->settings[CPAP_PressureMin]=sess->percentile(CPAP_Pressure,0.10);
+                    sess->settings[CPAP_PressureMax]=sess->Max(CPAP_Pressure);
+                }
+            }
+            //Rather than take a dodgy guess, EPR settings can take a hit, and this data can simply be missed..
+
+            // Add the session to the machine & profile objects
             m->AddSession(sess,profile); // Adding earlier than I really like here..
         }
     }

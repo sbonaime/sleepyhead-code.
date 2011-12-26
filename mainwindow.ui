@@ -78,7 +78,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -91,7 +91,7 @@
         </property>
         <widget class="QWidget" name="summaryTab">
          <attribute name="title">
-          <string>&amp;Summary</string>
+          <string>&amp;Statistics</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <property name="spacing">
@@ -405,7 +405,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -414,7 +414,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-211</y>
+          <y>0</y>
           <width>143</width>
           <height>524</height>
          </rect>
@@ -518,7 +518,7 @@
           <normaloff>:/docs/sheep.png</normaloff>:/docs/sheep.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>Navigation</string>
+         <string>&amp;Navigation</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -762,7 +762,7 @@
           <normaloff>:/icons/bookmark.png</normaloff>:/icons/bookmark.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>Favourites</string>
+         <string>&amp;Bookmarks</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="spacing">
@@ -836,7 +836,7 @@
           <normaloff>:/icons/trophy.png</normaloff>:/icons/trophy.png</iconset>
         </attribute>
         <attribute name="label">
-         <string>Records</string>
+         <string>&amp;Records</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <property name="spacing">

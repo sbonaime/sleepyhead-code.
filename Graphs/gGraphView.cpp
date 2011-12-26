@@ -1230,7 +1230,9 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
             double w2=m_lastbounds.width()-right-left; //-(right+m_marginright)-(m_marginleft+left);
             if (m_blockzoom) {
                 xmult=(rmax_x-rmin_x)/w2;
-            } else xmult=(max_x-min_x)/w2;
+            } else {
+                xmult=(max_x-min_x)/w2;
+            }
             qint64 a=double(a2-a1)*xmult;
             float d=double(a)/86400000.0;
             int h=a/3600000;
@@ -2050,7 +2052,11 @@ void gGraphView::ResetBounds(bool refresh) //short group)
     int ms(xx % 1000);
     QString str;
     if (d>1) {
-        str.sprintf("%1.0f days",ceil(double(xx)/86400000.0));
+        /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
+        QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
+        d=PROFILE.countDays(MT_CPAP,d1,d2); */
+
+        str.sprintf("%1.0f days",ceil(d));
     } else {
         str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
     }

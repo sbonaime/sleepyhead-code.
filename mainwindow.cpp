@@ -742,14 +742,14 @@ void MainWindow::on_summaryButton_clicked()
         EventDataType cmin=0,cmax=0,min,max;
         QDate date=lastcpap;
         Day * day;
-        bool lastchanged;
+        bool lastchanged=false;
         int cnt=0;
         QVector<RXChange> rxchange;
         do {
             day=PROFILE.GetDay(date,MT_CPAP);
 
-            lastchanged=false;
             if (day) {
+                lastchanged=false;
 
                 EventDataType hours=day->hours();
 
@@ -766,6 +766,7 @@ void MainWindow::on_summaryButton_clicked()
                         bestAHIdate=date;
                     }
                 }
+
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
                 min=day->settings_min(CPAP_PressureMin);
                 if (mode==MODE_CPAP) {
@@ -836,11 +837,6 @@ void MainWindow::on_summaryButton_clicked()
             if (rx.days>rxthresh)
                 tmpRX.push_back(&rx);
         }
-        RXsort=RX_ahi;
-        qSort(tmpRX.begin(),tmpRX.end(),RXSort);
-        tmpRX[0]->highlight=4; // worst
-        int ls=tmpRX.size()-1;
-        tmpRX[ls]->highlight=1; //best
 
         QString recbox="<html><head><style type='text/css'>"
             "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
@@ -855,84 +851,77 @@ void MainWindow::on_summaryButton_clicked()
         recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg(tr("Worst&nbsp;%1").arg(ahitxt)).arg(worstAHI,0,'f',2);
         recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(worstAHIdate.toString(Qt::SystemLocaleShortDate));
         recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
-        QString minstr,maxstr,modestr;
 
 
-        {
-        CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->first);
+        if (tmpRX.size()>0) {
+            RXsort=RX_ahi;
+            QString minstr,maxstr,modestr;
+            qSort(tmpRX.begin(),tmpRX.end(),RXSort);
+            tmpRX[0]->highlight=4; // worst
+            int ls=tmpRX.size()-1;
+            tmpRX[ls]->highlight=1; //best
+            CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->first);
 
-        if (mode<MODE_APAP) { // is CPAP?
-            minstr="Pressure";
-            maxstr="";
-            modestr=tr("CPAP");
-        } else if (mode<MODE_BIPAP) { // is AUTO?
-            minstr="Min";
-            maxstr="Max";
-            modestr=tr("APAP");
-        } else { // BIPAP or greater
-            minstr="EPAP";
-            maxstr="IPAP";
-            modestr=tr("Bi-Level/ASV");
+            if (mode<MODE_APAP) { // is CPAP?
+                minstr="Pressure";
+                maxstr="";
+                modestr=tr("CPAP");
+            } else if (mode<MODE_BIPAP) { // is AUTO?
+                minstr="Min";
+                maxstr="Max";
+                modestr=tr("APAP");
+            } else { // BIPAP or greater
+                minstr="EPAP";
+                maxstr="IPAP";
+                modestr=tr("Bi-Level/ASV");
+            }
+
+            recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
+                    .arg(tmpRX[ls]->first.toString(Qt::ISODate))
+                    .arg(tmpRX[ls]->last.toString(Qt::ISODate))
+                    .arg(tr("Best RX Setting"));
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',2);
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
+            recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
+            if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
+            recbox+="</td></tr>";
+
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate));
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate));
+            recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+
+            mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->first);
+            if (mode<MODE_APAP) { // is CPAP?
+                minstr="Pressure";
+                maxstr="";
+                modestr=tr("CPAP");
+            } else if (mode<MODE_BIPAP) { // is AUTO?
+                minstr="Min";
+                maxstr="Max";
+                modestr=tr("APAP");
+            } else { // BIPAP or greater
+                minstr="EPAP";
+                maxstr="IPAP";
+                modestr=tr("Bi-Level/ASV");
+            }
+
+            recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
+                    .arg(tmpRX[0]->first.toString(Qt::ISODate))
+                    .arg(tmpRX[0]->last.toString(Qt::ISODate))
+                    .arg(tr("Worst RX Setting"));
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',2);
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
+            recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
+            if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
+            recbox+="</td></tr>";
+
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate));
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[0]->last.toString(Qt::SystemLocaleShortDate));
         }
-
-        recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
-                .arg(tmpRX[ls]->first.toString(Qt::ISODate))
-                .arg(tmpRX[ls]->last.toString(Qt::ISODate))
-                .arg(tr("Best RX Setting"));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',2);
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
-        recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
-        if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
-        recbox+="</td></tr>";
-
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate));
-        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
-
-        mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->first);
-        if (mode<MODE_APAP) { // is CPAP?
-            minstr="Pressure";
-            maxstr="";
-            modestr=tr("CPAP");
-        } else if (mode<MODE_BIPAP) { // is AUTO?
-            minstr="Min";
-            maxstr="Max";
-            modestr=tr("APAP");
-        } else { // BIPAP or greater
-            minstr="EPAP";
-            maxstr="IPAP";
-            modestr=tr("Bi-Level/ASV");
-        }
-
-        recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
-                .arg(tmpRX[0]->first.toString(Qt::ISODate))
-                .arg(tmpRX[0]->last.toString(Qt::ISODate))
-                .arg(tr("Worst RX Setting"));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',2);
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
-        recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
-        if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
-        recbox+="</td></tr>";
-
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[0]->last.toString(Qt::SystemLocaleShortDate));
-        }
-        recbox+=QString("</table>");
+        recbox+="</table>";
         recbox+="</body></html>";
         ui->recordsBox->setHtml(recbox);
 
-//        ui->recordsBox->append("<a href='overview'><b>Best RX Setting</b></a>");
-//        ui->recordsBox->append("Start: "+tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate)+"<br/>End: "+tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate)+"\n\n");
-//        ui->recordsBox->append("<a href='overview'><b>Worst RX Setting</b></a>");
-//        ui->recordsBox->append("Start: "+tmpRX[0]->first.toString(Qt::SystemLocaleShortDate)+"<br/>End: "+tmpRX[0]->last.toString(Qt::SystemLocaleShortDate)+"\n\n");
-
-        //show the second best and worst..
-        //if (tmpRX.size()>4) {
-        //                tmpRX[1]->highlight=3; // worst
-        //                tmpRX[tmpRX.size()-2]->highlight=2; //best
-        //            }
-        //RXsort=RX_first;
-        //qSort(rxchange);
         html+="<div align=center>";
         html+=QString("<br/><b>Changes to Prescription Settings</b>");
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
@@ -1026,6 +1015,8 @@ void MainWindow::updateFavourites()
     ui->favouritesList->clear();
 
     QDate date=PROFILE.LastDay();
+    if (!date.isValid())
+        return;
 
     do {
         Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
@@ -1038,6 +1029,13 @@ void MainWindow::updateFavourites()
                     QStringList notes=sess->settings[Bookmark_Notes].toStringList();
                     if (notes.size()>0) {
                         QListWidgetItem *item=new QListWidgetItem(date.toString());
+                        /*QString tooltip;
+                        for (int i=0;i<notes.size();i++) {
+                            QDate d=start[i].toDate();
+                            tooltip+=d.toString(Qt::SystemLocaleShortDate)+":"+notes[i];
+                            if (i<notes.size()-1) tooltip+="\n";
+                        }
+                        item->setToolTip(tooltip);*/
                         item->setData(Qt::UserRole,date);
                         ui->favouritesList->addItem(item);
                     }
