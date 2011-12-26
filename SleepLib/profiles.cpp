@@ -561,7 +561,7 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
             if ((mt==MT_UNKNOWN) || (day->machine->GetType()==mt)) days++;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     return days;
 
 }
