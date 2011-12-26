@@ -11,6 +11,7 @@
 #include <QProgressBar>
 #include <QWebHistory>
 #include <QNetworkRequest>
+#include <QDesktopServices>
 #include <QNetworkReply>
 #include <QTimer>
 #include <QSettings>
@@ -144,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent) :
     daily->graphView()->redraw();
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
     ui->toolBox->setStyleSheet(
                                "QToolBox::tab {"
                                "background: #6789ab;"
@@ -748,18 +750,21 @@ void MainWindow::on_summaryButton_clicked()
 
             lastchanged=false;
             if (day) {
-                EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
-                if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
-                ahi/=day->hours();
-                if (ahi > worstAHI) {
-                    worstAHI=ahi;
-                    worstAHIdate=date;
-                }
-                if (ahi < bestAHI) {
-                    bestAHI=ahi;
-                    bestAHIdate=date;
-                }
+                EventDataType hours=day->hours();
 
+                if (hours>PROFILE.cpap->complianceHours()) {
+                    EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
+                    if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
+                    ahi/=day->hours();
+                    if (ahi > worstAHI) {
+                        worstAHI=ahi;
+                        worstAHIdate=date;
+                    }
+                    if (ahi < bestAHI) {
+                        bestAHI=ahi;
+                        bestAHIdate=date;
+                    }
+                }
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
                 min=day->settings_min(CPAP_PressureMin);
                 if (mode==MODE_CPAP) {
@@ -2024,4 +2029,16 @@ void MainWindow::on_helpButton_clicked()
 void MainWindow::on_actionView_S_ummary_triggered()
 {
     ui->tabWidget->setCurrentWidget(ui->summaryTab);
+}
+
+void MainWindow::on_webView_linkClicked(const QUrl &url)
+{
+    QString s=url.toString();
+    qDebug() << "Link Clicked" << url;
+    if (s.toLower().startsWith("https:")) {
+        QDesktopServices().openUrl(url);
+
+    } else {
+        ui->webView->setUrl(url);
+    }
 }

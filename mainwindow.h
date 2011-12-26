@@ -251,6 +251,8 @@ private slots:
 
     void on_actionView_S_ummary_triggered();
 
+    void on_webView_linkClicked(const QUrl &arg1);
+
 private:
 
     Ui::MainWindow *ui;
