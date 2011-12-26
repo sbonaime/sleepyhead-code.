@@ -765,6 +765,9 @@ public:
     gToolTip * m_tooltip;
     QTimer * timer;
 
+    //! \brief Show the current selection time in the statusbar area
+    void selectionTime();
+
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
     void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont);
 

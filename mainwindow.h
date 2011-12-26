@@ -267,6 +267,8 @@ private slots:
 
     //! \brief Display Help WebView Link in statusbar.
     void LinkHovered(const QString & link, const QString & title, const QString & textContent);
+    void on_tabWidget_currentChanged(int index);
+
 private:
 
     Ui::MainWindow *ui;

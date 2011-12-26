@@ -2020,6 +2020,29 @@ void gGraphView::scrollbarValueChanged(int val)
         redraw(); // do this on a timer?
     }
 }
+void gGraphView::selectionTime()
+{
+    qint64 xx=m_maxx - m_minx;
+    double d=xx/86400000L;
+    int h=xx/3600000L;
+    int m=(xx/60000) % 60;
+    int s=(xx/1000) % 60;
+    int ms(xx % 1000);
+    QString str;
+    if (d>1) {
+        /*QDate d1=QDateTime::fromTime_t(m_minx/1000).toUTC().date();
+        QDate d2=QDateTime::fromTime_t(m_maxx/1000).toUTC().date();
+        d=PROFILE.countDays(MT_CPAP,d1,d2); */
+
+        str.sprintf("%1.0f days",ceil(d));
+    } else {
+        str.sprintf("%02i:%02i:%02i:%03i",h,m,s,ms);
+    }
+    if (qstatus2) {
+        qstatus2->setText(str);
+    }
+
+}
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)

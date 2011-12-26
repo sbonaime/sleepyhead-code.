@@ -162,6 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>Loading...</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
+    on_tabWidget_currentChanged(0);
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -2109,4 +2110,22 @@ void MainWindow::LinkHovered(const QString & link, const QString & title, const 
     Q_UNUSED(title);
     Q_UNUSED(textContent);
     ui->statusbar->showMessage(link);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    Q_UNUSED(index);
+    QWidget *widget=ui->tabWidget->currentWidget();
+    if ((widget==ui->summaryTab) || (widget==ui->helpTab)) {
+        qstatus2->setVisible(false);
+    } else if (widget==daily) {
+        qstatus2->setVisible(true);
+        daily->graphView()->selectionTime();
+    } else if (widget==overview) {
+        qstatus2->setVisible(true);
+        overview->graphView()->selectionTime();
+    } else if (widget==oximetry) {
+        qstatus2->setVisible(true);
+        oximetry->graphView()->selectionTime();
+    }
 }
