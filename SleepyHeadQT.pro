@@ -183,7 +183,8 @@ OTHER_FILES += \
     docs/release_notes.html \
     docs/startup_tips.txt \
     docs/countries.txt \
-    docs/tz.txt
+    docs/tz.txt \
+    LICENSE.txt
 
 
 

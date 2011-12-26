@@ -37,5 +37,6 @@
         <file>icons/trophy.png</file>
         <file>icons/bookmark.png</file>
         <file>icons/help.png</file>
+        <file>LICENSE.txt</file>
     </qresource>
 </RCC>

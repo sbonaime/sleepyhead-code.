@@ -259,6 +259,9 @@ private slots:
 
     void on_favouritesList_itemClicked(QListWidgetItem *item);
 
+    void on_webView_statusBarMessage(const QString &text);
+
+    void LinkHovered(const QString & link, const QString & title, const QString & textContent);
 private:
 
     Ui::MainWindow *ui;

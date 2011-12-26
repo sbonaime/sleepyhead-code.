@@ -1100,10 +1100,13 @@ void MainWindow::on_webView_loadFinished(bool arg1)
     }
     ui->backButton->setEnabled(ui->webView->history()->canGoBack());
     ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
+
+    connect(ui->webView->page(),SIGNAL(linkHovered(QString,QString,QString)),this,SLOT(LinkHovered(QString,QString,QString)));
 }
 
 void MainWindow::on_webView_loadStarted()
 {
+    disconnect(ui->webView->page(),SIGNAL(linkHovered(QString,QString,QString)),this,SLOT(LinkHovered(QString,QString,QString)));
     if (!first_load) {
         qstatus->setText(tr("Loading"));
         qprogress->reset();
@@ -2096,4 +2099,16 @@ void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
             daily->graphView()->redraw();
         }
     }
+}
+
+void MainWindow::on_webView_statusBarMessage(const QString &text)
+{
+    ui->statusbar->showMessage(text);
+}
+
+void MainWindow::LinkHovered(const QString & link, const QString & title, const QString & textContent)
+{
+    Q_UNUSED(title);
+    Q_UNUSED(textContent);
+    ui->statusbar->showMessage(link);
 }
