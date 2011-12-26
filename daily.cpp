@@ -532,8 +532,10 @@ void Daily::UpdateCalendarDay(QDate date)
 }
 void Daily::LoadDate(QDate date)
 {
+    ui->calendar->blockSignals(true);
     ui->calendar->setSelectedDate(date);
-   // on_calendar_selectionChanged();
+    ui->calendar->blockSignals(false);
+    on_calendar_selectionChanged();
 }
 
 void Daily::on_calendar_selectionChanged()

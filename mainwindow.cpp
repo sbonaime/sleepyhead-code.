@@ -1022,6 +1022,7 @@ void MainWindow::on_summaryButton_clicked()
 }
 void MainWindow::updateFavourites()
 {
+    ui->favouritesList->blockSignals(true);
     ui->favouritesList->clear();
 
     QDate date=PROFILE.LastDay();
@@ -1046,6 +1047,7 @@ void MainWindow::updateFavourites()
 
         date=date.addDays(-1);
     } while (date>=PROFILE.FirstDay());
+    ui->favouritesList->blockSignals(false);
 }
 
 void MainWindow::on_backButton_clicked()
@@ -2080,5 +2082,18 @@ void MainWindow::on_favouritesList_itemSelectionChanged()
     if (date.isValid()) {
         daily->LoadDate(date);
         ui->tabWidget->setCurrentWidget(daily);
+    }
+}
+
+void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
+{
+    if (!item) return;
+    QDate date=item->data(Qt::UserRole).toDate();
+    if (date.isValid()) {
+        if (date==daily->getDate()) {
+            ui->tabWidget->setCurrentWidget(daily);
+            daily->graphView()->ResetBounds();
+            daily->graphView()->redraw();
+        }
     }
 }

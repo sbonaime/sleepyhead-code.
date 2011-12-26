@@ -257,6 +257,8 @@ private slots:
 
     void on_favouritesList_itemSelectionChanged();
 
+    void on_favouritesList_itemClicked(QListWidgetItem *item);
+
 private:
 
     Ui::MainWindow *ui;
