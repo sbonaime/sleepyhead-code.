@@ -750,6 +750,7 @@ void MainWindow::on_summaryButton_clicked()
 
             lastchanged=false;
             if (day) {
+
                 EventDataType hours=day->hours();
 
                 if (hours>PROFILE.cpap->complianceHours()) {
@@ -1012,11 +1013,39 @@ void MainWindow::on_summaryButton_clicked()
         html+="</table>";
         html+="</div>";
     }
+    updateFavourites();
     html+=htmlFooter();
     ui->summaryView->setHtml(html);
 //    QString file="qrc:/docs/index.html";
 //    QUrl url(file);
 //    ui->webView->setUrl(url);
+}
+void MainWindow::updateFavourites()
+{
+    ui->favouritesList->clear();
+
+    QDate date=PROFILE.LastDay();
+
+    do {
+        Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
+        if (journal) {
+            if (journal->size()>0) {
+                Session *sess=(*journal)[0];
+                if (sess->settings.contains(Bookmark_Start)) {
+                    QVariantList start=sess->settings[Bookmark_Start].toList();
+                    QVariantList end=sess->settings[Bookmark_End].toList();
+                    QStringList notes=sess->settings[Bookmark_Notes].toStringList();
+                    if (notes.size()>0) {
+                        QListWidgetItem *item=new QListWidgetItem(date.toString());
+                        item->setData(Qt::UserRole,date);
+                        ui->favouritesList->addItem(item);
+                    }
+                }
+            }
+        }
+
+        date=date.addDays(-1);
+    } while (date>=PROFILE.FirstDay());
 }
 
 void MainWindow::on_backButton_clicked()
@@ -2040,5 +2069,16 @@ void MainWindow::on_webView_linkClicked(const QUrl &url)
 
     } else {
         ui->webView->setUrl(url);
+    }
+}
+
+void MainWindow::on_favouritesList_itemSelectionChanged()
+{
+    QListWidgetItem *item=ui->favouritesList->currentItem();
+    if (!item) return;
+    QDate date=item->data(Qt::UserRole).toDate();
+    if (date.isValid()) {
+        daily->LoadDate(date);
+        ui->tabWidget->setCurrentWidget(daily);
     }
 }

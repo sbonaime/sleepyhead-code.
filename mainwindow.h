@@ -76,6 +76,8 @@ public:
     //! \brief Log message s to Application Debug log
     void Log(QString s);
 
+    //! \brief Update the list of Favourites (Bookmarks) in the right sidebar.
+    void updateFavourites();
 
     //! \brief Create a new menu object in the main menubar.
     QMenu * CreateMenu(QString title);
@@ -252,6 +254,8 @@ private slots:
     void on_actionView_S_ummary_triggered();
 
     void on_webView_linkClicked(const QUrl &arg1);
+
+    void on_favouritesList_itemSelectionChanged();
 
 private:
 

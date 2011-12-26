@@ -533,7 +533,7 @@ void Daily::UpdateCalendarDay(QDate date)
 void Daily::LoadDate(QDate date)
 {
     ui->calendar->setSelectedDate(date);
-    on_calendar_selectionChanged();
+   // on_calendar_selectionChanged();
 }
 
 void Daily::on_calendar_selectionChanged()
@@ -1429,6 +1429,7 @@ void Daily::on_addBookmarkButton_clicked()
 
     ui->bookmarkTable->blockSignals(false);
     update_Bookmarks();
+    mainwin->updateFavourites();
 
     //ui->bookmarkTable->setItem(row,2,new QTableWidgetItem(QString::number(st)));
     //ui->bookmarkTable->setItem(row,3,new QTableWidgetItem(QString::number(et)));
@@ -1456,6 +1457,7 @@ void Daily::update_Bookmarks()
     journal->settings[Bookmark_Notes]=notes;
     journal->SetChanged(true);
     BookmarksChanged=true;
+    mainwin->updateFavourites();
 }
 
 void Daily::on_removeBookmarkButton_clicked()
@@ -1467,6 +1469,7 @@ void Daily::on_removeBookmarkButton_clicked()
         ui->bookmarkTable->blockSignals(false);
         update_Bookmarks();
     }
+    mainwin->updateFavourites();
 }
 void Daily::on_ZombieMeter_valueChanged(int action)
 {
