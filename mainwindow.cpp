@@ -807,7 +807,7 @@ void MainWindow::on_summaryButton_clicked()
         } while (date>=firstcpap);
 
         if (!lastchanged) {
-            last=date.addDays(1);
+           // last=date.addDays(1);
             first=firstcpap;
             int days=PROFILE.countDays(MT_CPAP,first,last);
             RXChange rx;
