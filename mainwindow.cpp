@@ -849,10 +849,10 @@ void MainWindow::on_summaryButton_clicked()
             "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
             "</style></head><body>";
         recbox+="<table width=100% cellpadding=2 cellspacing=0>";
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg("Best&nbsp;AHI").arg(bestAHI,0,'f',2);
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg(tr("Best&nbsp;%1").arg(ahitxt)).arg(bestAHI,0,'f',2);
         recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(bestAHIdate.toString(Qt::SystemLocaleShortDate));
         recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg("Worst&nbsp;AHI").arg(worstAHI,0,'f',2);
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg(tr("Worst&nbsp;%1").arg(ahitxt)).arg(worstAHI,0,'f',2);
         recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(worstAHIdate.toString(Qt::SystemLocaleShortDate));
         recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
         QString minstr,maxstr,modestr;
@@ -879,7 +879,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(tmpRX[ls]->first.toString(Qt::ISODate))
                 .arg(tmpRX[ls]->last.toString(Qt::ISODate))
                 .arg(tr("Best RX Setting"));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("AHI")).arg(tmpRX[ls]->ahi,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',2);
         recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
         recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
         if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
@@ -908,7 +908,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(tmpRX[0]->first.toString(Qt::ISODate))
                 .arg(tmpRX[0]->last.toString(Qt::ISODate))
                 .arg(tr("Worst RX Setting"));
-        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("AHI")).arg(tmpRX[0]->ahi,0,'f',2);
+        recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',2);
         recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
         recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
         if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
