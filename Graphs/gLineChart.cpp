@@ -510,11 +510,12 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             GetTextExtent(text,wid,hi);
             legendx-=wid;
             w.renderText(text,legendx,top-4);
-            int bw=hi;
-            legendx-=hi/2;
+            int bw=GetXHeight();
+            legendx-=bw/2;
 
-            w.quads()->add(legendx-bw,top-4,legendx,top-4,legendx,top-bw,legendx-bw,top-bw,m_line_color);
-            legendx-=hi+hi/2;
+            int tp=top-5-bw/2;
+            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_line_color);
+            legendx-=hi+bw/2;
         }
     }
     if (!total_points) { // No Data?

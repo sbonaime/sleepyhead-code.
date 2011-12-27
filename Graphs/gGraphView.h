@@ -45,6 +45,9 @@ extern QHash<QString, QImage *> images;
     */
 void GetTextExtent(QString text, int & width, int & height, QFont *font=defaultfont);
 
+//! \brief Return the height of the letter x for the selected font.
+int GetXHeight(QFont *font=defaultfont);
+
 class gGraphView;
 class gGraph;
 

@@ -131,6 +131,12 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
 #endif
 }
 
+int GetXHeight(QFont *font)
+{
+    QFontMetrics fm(*font);
+    return fm.xHeight();
+}
+
 GLBuffer::GLBuffer(int max,int type, bool stippled)
     :m_max(max), m_type(type), m_stippled(stippled)
 {
