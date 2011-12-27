@@ -598,23 +598,7 @@ void MainWindow::on_summaryButton_clicked()
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpap6month,lastcpap)/float(cpap6monthdays)))
             .arg(formatTime(p_profile->calcHours(MT_CPAP,cpapyear,lastcpap)/float(cpapyeardays)));
 
-            if (cpapmode<MODE_BIPAP) {
-                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("Average Pressure"))
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
-            } else if (cpapmode>MODE_CPAP) {
-                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("95% Pressure"))
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
-            } else {
+            if (cpapmode>=MODE_BIPAP) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Min EPAP"))
                 .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP),0,'f',3)
@@ -643,6 +627,29 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            } else if (cpapmode>=MODE_APAP) {
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Average Pressure"))
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("95% Pressure"))
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            } else {
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Pressure"))
+                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             }
             //html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
@@ -936,7 +943,7 @@ void MainWindow::on_summaryButton_clicked()
         QString extratxt;
         if (cpapmode>=MODE_BIPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td>")
-                .arg(tr("EPAP")).arg(tr("EPAP")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
+                .arg(tr("EPAP")).arg(tr("IPAP")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
         } else if (cpapmode>MODE_CPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td>")
                 .arg(tr("Min Pressure")).arg(tr("Max Pressure")).arg(tr("%1% Pressure").arg(percentile*100.0));
