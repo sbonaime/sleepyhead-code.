@@ -15,6 +15,8 @@
 
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFlagsLine.h"
+#include "gLineChart.h"
+
 
 extern MainWindow *mainwin;
 
@@ -1662,6 +1664,16 @@ short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScale
 short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
 short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
+Layer * gGraph::getLineChart()
+{
+    gLineChart *lc;
+    for (int i=0;i<m_layers.size();i++) {
+        lc=dynamic_cast<gLineChart *>(m_layers[i]);
+        if (lc) return lc;
+    }
+    return NULL;
+}
+
 QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 {
 
@@ -2020,6 +2032,7 @@ void gGraphView::scrollbarValueChanged(int val)
         redraw(); // do this on a timer?
     }
 }
+
 void gGraphView::selectionTime()
 {
     qint64 xx=m_maxx - m_minx;

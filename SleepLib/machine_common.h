@@ -77,7 +77,7 @@ enum MCDataType
 { MC_bool=0, MC_int, MC_long, MC_float, MC_double, MC_string, MC_datetime };
 
 
-extern ChannelID NoChannel;
+extern ChannelID NoChannel,SESSION_ENABLED;
 extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_Pressure, CPAP_PS, CPAP_Mode, CPAP_AHI,
 CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive, CPAP_Hypopnea,
 CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_VSnore, CPAP_VSnore2,

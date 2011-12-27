@@ -269,6 +269,10 @@ private slots:
     void LinkHovered(const QString & link, const QString & title, const QString & textContent);
     void on_tabWidget_currentChanged(int index);
 
+    void on_summaryView_linkClicked(const QUrl &arg1);
+
+    void on_summaryView_urlChanged(const QUrl &arg1);
+
 private:
 
     Ui::MainWindow *ui;

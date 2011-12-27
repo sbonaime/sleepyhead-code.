@@ -319,6 +319,27 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             //}
             quint64 first=qint64(sid)*1000L;
             quint64 last=qint64(SessionEnd[i])*1000L;
+
+            EventDataType max=sess->Max(CPAP_IPAP);
+            EventDataType min=sess->Min(CPAP_EPAP);
+            EventDataType pres=sess->Min(CPAP_Pressure);
+            if (max==min) {
+                sess->settings[CPAP_Mode]=(int)MODE_CPAP;
+                sess->settings[CPAP_PressureMin]=min;
+                sess->settings[CPAP_PressureMax]=min;
+            } else {
+                sess->settings[CPAP_Mode]=(int)MODE_APAP;
+                sess->settings[CPAP_PressureMin]=min;
+                sess->settings[CPAP_PressureMax]=max;
+            }
+            sess->eventlist.erase(sess->eventlist.find(CPAP_IPAP));
+            sess->eventlist.erase(sess->eventlist.find(CPAP_EPAP));
+            sess->m_min.erase(sess->m_min.find(CPAP_EPAP));
+            sess->m_max.erase(sess->m_max.find(CPAP_EPAP));
+            if (pres<min) {
+                sess->settings[CPAP_RampPressure]=pres;
+            }
+
             //quint64 len=last-first;
             //if (len>0) {
                 //if (!sess->first()) {

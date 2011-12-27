@@ -10,6 +10,7 @@
 #include <QResource>
 #include <QProgressBar>
 #include <QWebHistory>
+#include <QWebFrame>
 #include <QNetworkRequest>
 #include <QDesktopServices>
 #include <QNetworkReply>
@@ -145,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     daily->graphView()->redraw();
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    ui->summaryView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
     ui->toolBox->setStyleSheet(
                                "QToolBox::tab {"
@@ -375,6 +377,11 @@ QString htmlHeader()
 "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
 "a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
 "</style>"
+"<script type='text/javascript'>"
+"function ChangeColor(tableRow, highLight)"
+"{ tableRow.style.backgroundColor = highLight; }"
+"function Go(url) { window.location=url; }"
+"</script>"
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
@@ -949,20 +956,22 @@ void MainWindow::on_summaryButton_clicked()
             RXChange rx=rxchange.at(i);
             QString color;
             if (rx.highlight==1) {
-                color=" bgcolor='#c0ffc0'";
+                color="#c0ffc0";
             } else if (rx.highlight==2) {
-                color=" bgcolor='#e0ffe0'";
+                color="#e0ffe0";
             } else if (rx.highlight==3) {
-                color=" bgcolor='#ffe0e0'";
+                color="#ffe0e0";
             } else if (rx.highlight==4) {
-                color=" bgcolor='#ffc0c0'";
+                color="#ffc0c0";
             } else color="";
             if (cpapmode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
             } else if (cpapmode>MODE_CPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
             } else extratxt="";
-            html+=QString("<tr"+color+"><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td>%7</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='tabwidget.setCurrentIndex(3); print \"%1 %2\";'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td>%9</tr>")
+                    .arg(rx.first.toString(Qt::ISODate))
+                    .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.days)
@@ -1005,6 +1014,8 @@ void MainWindow::on_summaryButton_clicked()
     }
     updateFavourites();
     html+=htmlFooter();
+    QWebFrame *frame=ui->summaryView->page()->currentFrame();
+    frame->addToJavaScriptWindowObject("mainwin",this);
     ui->summaryView->setHtml(html);
 //    QString file="qrc:/docs/index.html";
 //    QUrl url(file);
@@ -2128,4 +2139,16 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         qstatus2->setVisible(true);
         oximetry->graphView()->selectionTime();
     }
+}
+
+void MainWindow::on_summaryView_linkClicked(const QUrl &arg1)
+{
+    qDebug() << arg1;
+    on_recordsBox_linkClicked(arg1);
+}
+
+void MainWindow::on_summaryView_urlChanged(const QUrl &arg1)
+{
+//    qDebug() << arg1;
+//    on_recordsBox_linkClicked(arg1);
 }

@@ -217,11 +217,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 
     bool square=PROFILE.appearance->squareWavePlots();
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_EPAP,Qt::blue,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPLo,Qt::darkRed,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAP,Qt::red,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_IPAPHi,Qt::darkRed,square)));
-    PRD->AddLayer(AddCPAP(new gLineChart(CPAP_Pressure,QColor("dark green"),square)));
+    gLineChart *pc=new gLineChart(CPAP_Pressure,QColor("dark green"),square);
+    PRD->AddLayer(AddCPAP(pc));
+    pc->addPlot(CPAP_EPAP,Qt::blue,square);
+    pc->addPlot(CPAP_IPAPLo,Qt::darkRed,square);
+    pc->addPlot(CPAP_IPAP,Qt::red,square);
+    pc->addPlot(CPAP_IPAPHi,Qt::darkRed,square);
 
     if (PROFILE.general->calculateRDI()) {
         AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
@@ -229,9 +230,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
     }
 
-    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_LeakTotal,Qt::darkYellow,square)));
-    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
-    LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
+    gLineChart *lc=new gLineChart(CPAP_LeakTotal,Qt::darkYellow,square);
+    lc->addPlot(CPAP_Leak,Qt::darkMagenta,square);
+    lc->addPlot(CPAP_MaxLeak,Qt::darkRed,square);
+    LEAK->AddLayer(AddCPAP(lc));
+    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
+    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
     SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
@@ -346,7 +350,22 @@ void Daily::Link_clicked(const QUrl &url)
     QString data=url.toString().section("=",1);
     int sid=data.toInt();
     Day *day=NULL;
-    if (code=="cpap")  {
+    if (code=="togglecpapsession") {
+        day=PROFILE.GetDay(previous_date,MT_CPAP);
+        Session *sess=day->find(sid);
+        if (!sess)
+            return;
+        bool b;
+        if (sess->settings.contains(SESSION_ENABLED)) b=false;
+        else b=!sess->settings[SESSION_ENABLED].toBool();
+        sess->settings[SESSION_ENABLED]=b;
+        sess->SetChanged(true);
+        day->machine->Save();
+        GraphView->ResetBounds();
+
+        // reload day
+        return;
+    } else if (code=="cpap")  {
         day=PROFILE.GetDay(previous_date,MT_CPAP);
     } else if (code=="oxi") {
         day=PROFILE.GetDay(previous_date,MT_OXIMETER);
@@ -924,8 +943,9 @@ void Daily::Load(QDate date)
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
-        html+=QString("<tr><td align=left><b>%1</b></td><td align=center><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td></tr>")
+        html+=QString("<tr><td align=left><b>%1</b></td><td><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td><td align=center><b>%5</b></td></tr>")
             .arg(tr("SessionID"))
+            .arg(tr("Show"))
             .arg(tr("Date"))
             .arg(tr("Start"))
             .arg(tr("End"));
@@ -943,10 +963,20 @@ void Daily::Load(QDate date)
                 // tooltip needs to lookup language.. :-/
 
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=left><a href='cpap=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
-                html+=tmp;
+                Session *sess=*s;
+                if (!sess->settings.contains(SESSION_ENABLED)) {
+                    sess->settings[SESSION_ENABLED]=true;
+                }
+                bool b=sess->settings[SESSION_ENABLED].toBool();
+                html+=QString("<tr><td align=left><a href='cpap=%1' title='%2'>%3</a></td><td><a href='togglecpapsession=%1'><img src='qrc:/icons/toggle-%4-us.svg' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                        .arg((*s)->session())
+                        .arg(tooltip)
+                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg((b ? "on" : "off"))
+                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
+                        .arg(fd.toString("HH:mm"))
+                        .arg(ld.toString("HH:mm"));
             }
-            //if (oxi) html+="<tr><td colspan=4><hr></td></tr>";
         }
         if (oxi) {
             html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("Oximetry Sessions"));
@@ -960,10 +990,23 @@ void Daily::Load(QDate date)
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 tooltip=oxi->machine->GetClass()+" "+tr("Oximeter")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
 
+                Session *sess=*s;
+                if (!sess->settings.contains(SESSION_ENABLED)) {
+                    sess->settings[SESSION_ENABLED]=true;
+                }
+                bool b=sess->settings[SESSION_ENABLED].toBool();
 
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                tmp.sprintf(("<tr><td align=left><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
-                html+=tmp;
+                html+=QString("<tr><td align=left><a href='oxi=%1' title='%2'>%3</a></td><td><a href='toggleoxisession=%1'><img src='qrc:/icons/toggle-%4-us.svg' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                        .arg((*s)->session())
+                        .arg(tooltip)
+                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg((b ? "on" : "off"))
+                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
+                        .arg(fd.toString("HH:mm"))
+                        .arg(ld.toString("HH:mm"));
+                //tmp.sprintf(("<tr><td align=left><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
+                //html+=tmp;
             }
         }
         if (corrupted_waveform) {

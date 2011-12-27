@@ -24,6 +24,13 @@ MachineType Day::machine_type()
 {
     return machine->GetType();
 }
+Session *Day::find(SessionID sessid) {
+    for (int i=0;i<size();i++) {
+        if (sessions[i]->session()==sessid)
+            return sessions[i];
+    }
+    return NULL;
+}
 
 void Day::AddSession(Session *s)
 {

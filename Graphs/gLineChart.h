@@ -98,6 +98,18 @@ class gLineChart:public Layer
         //! \brief Returns Maximum Y-axis value for this layer
         virtual EventDataType Maxy();
 
+        //! \brief Returns true if all subplots contain no data
+        virtual bool isEmpty();
+
+        //! \brief Add Subplot 'code'. Note the first one is added in the constructor.
+        void addPlot(ChannelID code, QColor color, bool square) { m_codes.push_back(code); m_colors.push_back(color); m_enabled[code]=true; m_square.push_back(square); }
+
+        //! \brief Returns true of the subplot 'code' is enabled.
+        bool plotEnabled(ChannelID code) { if ((m_enabled.contains(code)) && m_enabled[code]) return true; else return false; }
+
+        //! \brief Enable or Disable the subplot identified by code.
+        void setPlotEnabled(ChannelID code, bool b) { m_enabled[code]=b; }
+
 protected:
         bool m_report_empty;
         bool m_square_plot;
@@ -114,6 +126,11 @@ protected:
         QPoint m_drawlist[max_drawlist_size];
 
         int subtract_offset;
+
+        QVector<ChannelID> m_codes;
+        QVector<QColor> m_colors;
+        QVector<bool> m_square;
+        QHash<ChannelID,bool> m_enabled;
 };
 
 #endif // GLINECHART_H

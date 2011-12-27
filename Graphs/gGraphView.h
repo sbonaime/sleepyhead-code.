@@ -610,6 +610,7 @@ public:
     GLShortBuffer * stippled();
     short left,right,top,bottom; // dirty magin hacks..
 
+    Layer * getLineChart();
     QRect m_lastbounds;
     QTimer * timer;
 

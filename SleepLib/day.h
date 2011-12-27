@@ -121,6 +121,8 @@ public:
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
     int find(Session * sess) { return sessions.indexOf(sess); }
 
+    Session *find(SessionID sessid);
+
     //! \brief Returns the number of Sessions in this day record
     int size() { return sessions.size(); }
 
