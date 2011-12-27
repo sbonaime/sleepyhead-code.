@@ -928,7 +928,7 @@ void Daily::Load(QDate date)
         } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
             int epr=cpap->settings_max(RMS9_EPR);
             int epr2=cpap->settings_max(RMS9_EPRSet);
-            html+=QString("<tr>%1</td><td colspan=4>%2 / %3</td></tr>")
+            html+=QString("<tr><td>%1</td><td colspan=4>%2 / %3</td></tr>")
                     .arg(tr("EPR")).arg(epr).arg(epr2);
 
         }
