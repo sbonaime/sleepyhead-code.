@@ -194,7 +194,8 @@ void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int hei
     if (time>0) val=cnt/time;
 
 
-    QString a="Event Count="+QString::number(cnt)+" Selection Time="+QString().sprintf("%02i:%02i:%02i",h,m,s)+" "+m_text+"="+QString::number(val,'f',2);
+
+    QString a=QString::number(cnt)+" Events, Duration="+QString().sprintf("%02i:%02i:%02i",h,m,s)+", "+m_text+"="+QString::number(val,'f',2);
 
     if (isSpan) {
         float sph;

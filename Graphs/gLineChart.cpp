@@ -439,7 +439,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     //////////////////////////////////////////////////////////////////
                     first=true;
                     double start=el.first();
-                    if (siz==2) {
+                    /*if (siz==2) {
                         time=start+tim[0];
                         data=dat[0]*gain;
                         data-=subtract_offset;
@@ -454,7 +454,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         if (px>xst+width) px=xst+width;
 
                         lines->add(lastpx,lastpy,px,py,m_line_color);
-                    } else
+                    } else*/
                     for (int i=0;i<siz;i++) {
 
                         time=start+tim[i];
@@ -477,10 +477,20 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         if (firstpx) {
                             firstpx=false;
                         } else {
-                            if (square_plot) {
-                                lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py,m_line_color);
+                            if (py==lastpy) {
+                                if (lastpx<xst) lastpx=xst;
+                                if (px>xst+width) px=xst+width;
+                                if (square_plot) {
+                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py,m_line_color);
+                                } else {
+                                    lines->add(lastpx,lastpy,px,py,m_line_color);
+                                }
                             } else {
-                                lines->add(lastpx,lastpy,px,py,m_line_color);
+                                if (square_plot) {
+                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py,m_line_color);
+                                } else {
+                                    lines->add(lastpx,lastpy,px,py,m_line_color);
+                                }
                             }
 
                             //lines->add(px,py,m_line_color);
@@ -494,7 +504,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         lastpy=py;
                         //if (lastpx>start_px+width) done=true;
                         if (time > maxx) {
-                            //done=true; // Let this iteration finish.. (This point will be in far clipping)
+                            done=true; // Let this iteration finish.. (This point will be in far clipping)
                             break;
                         }
                     }
