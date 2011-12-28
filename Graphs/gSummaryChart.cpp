@@ -18,7 +18,7 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
     addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
-    lines->setSize(2);
+    lines->setSize(2.5);
     lines->forceAntiAlias(false);
     m_empty=true;
     hl_day=-1;
@@ -463,7 +463,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
                         col.setAlpha(128);
                         short px2=px+barw;
-                        short py2=top+height-1-h;
+                        short py2=(top+height-2)-h;
                         py2+=j;
                         if (lastdaygood) {
                             lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
