@@ -84,6 +84,10 @@ public:
     //! \brief Get Day record if data available for date and machine type, else return NULL
     Day * GetDay(QDate date,MachineType type=MT_UNKNOWN);
 
+    //! \brief Get Day record if data available for date and machine type, and has enabled session data, else return NULL
+    Day * GetGoodDay(QDate date,MachineType type);
+
+
     //! \brief Returns a list of all machines of type t
     QList<Machine *> GetMachines(MachineType t=MT_UNKNOWN);
 
@@ -115,6 +119,9 @@ public:
     QMap<QDate,QList<Day *> > daylist;
     QDate FirstDay(MachineType mt=MT_UNKNOWN);
     QDate LastDay(MachineType mt=MT_UNKNOWN);
+
+    QDate FirstGoodDay(MachineType mt=MT_UNKNOWN);
+    QDate LastGoodDay(MachineType mt=MT_UNKNOWN);
 
     QString dataFolder() { return (*this).Get("{DataFolder}"); }
 

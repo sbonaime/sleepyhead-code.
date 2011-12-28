@@ -526,8 +526,8 @@ void MainWindow::on_summaryButton_clicked()
 {
     QString html=htmlHeader();
 
-    QDate lastcpap=p_profile->LastDay(MT_CPAP);
-    QDate firstcpap=p_profile->FirstDay(MT_CPAP);
+    QDate lastcpap=p_profile->LastGoodDay(MT_CPAP);
+    QDate firstcpap=p_profile->FirstGoodDay(MT_CPAP);
     QDate cpapweek=lastcpap.addDays(-7);
     QDate cpapmonth=lastcpap.addDays(-30);
     QDate cpap6month=lastcpap.addMonths(-6);
@@ -706,8 +706,8 @@ void MainWindow::on_summaryButton_clicked()
     }
     int oxisize=oximeters.size();
     if (oxisize>0) {
-        QDate lastoxi=p_profile->LastDay(MT_OXIMETER);
-        QDate firstoxi=p_profile->FirstDay(MT_OXIMETER);
+        QDate lastoxi=p_profile->LastGoodDay(MT_OXIMETER);
+        QDate firstoxi=p_profile->FirstGoodDay(MT_OXIMETER);
         int days=PROFILE.countDays(MT_OXIMETER,firstoxi,lastoxi);
         if (days>0) {
             html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
@@ -803,7 +803,7 @@ void MainWindow::on_summaryButton_clicked()
         int cnt=0;
         QVector<RXChange> rxchange;
         do {
-            day=PROFILE.GetDay(date,MT_CPAP);
+            day=PROFILE.GetGoodDay(date,MT_CPAP);
 
             if (day) {
                 lastchanged=false;
@@ -1077,12 +1077,12 @@ void MainWindow::updateFavourites()
     ui->favouritesList->blockSignals(true);
     ui->favouritesList->clear();
 
-    QDate date=PROFILE.LastDay();
+    QDate date=PROFILE.LastGoodDay();
     if (!date.isValid())
         return;
 
     do {
-        Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
+        Day * journal=PROFILE.GetGoodDay(date,MT_JOURNAL);
         if (journal) {
             if (journal->size()>0) {
                 Session *sess=(*journal)[0];
@@ -1107,7 +1107,7 @@ void MainWindow::updateFavourites()
         }
 
         date=date.addDays(-1);
-    } while (date>=PROFILE.FirstDay());
+    } while (date>=PROFILE.FirstGoodDay());
     ui->favouritesList->blockSignals(false);
 }
 
@@ -1525,8 +1525,8 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     int graph_slots=0;
     if (name==STR_TR_Daily) {
-        cpap=PROFILE.GetDay(date,MT_CPAP);
-        oxi=PROFILE.GetDay(date,MT_OXIMETER);
+        cpap=PROFILE.GetGoodDay(date,MT_CPAP);
+        oxi=PROFILE.GetGoodDay(date,MT_OXIMETER);
         QString cpapinfo=date.toString(Qt::SystemLocaleLongDate)+"\n\n";
         if (cpap) {
             time_t f=cpap->first()/1000L;

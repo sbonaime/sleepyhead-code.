@@ -87,10 +87,10 @@ public:
     EventDataType settings_max(ChannelID code);
 
     //! \brief Returns the first session time of this day
-    qint64 first() { return d_first; }
+    qint64 first();
 
     //! \brief Returns the last session time of this day
-    qint64 last() { return d_last; }
+    qint64 last();
 
     //! \brief Sets the first session time of this day
     void setFirst(qint64 val) { d_first=val; }

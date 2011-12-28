@@ -651,6 +651,7 @@ void AHIChart::SetDay(Day *d)
 
         bool fnd=false;
         for (s=d->begin();s!=d->end();s++) {
+            if (!(*s)->enabled()) continue;
             Session *sess=*s;
             if ((ti<sess->first()) || (f>sess->last())) continue;
 

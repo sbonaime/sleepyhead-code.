@@ -329,8 +329,9 @@ EventDataType Day::Min(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
 
-        if ((!(*s)->m_min.contains(code)) || (!(*s)->enabled()))
+        if (!(*s)->m_min.contains(code))
             continue;
         tmp=(*s)->Min(code);
         if (first) {
@@ -521,4 +522,43 @@ void Day::CloseEvents()
     for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->TrashEvents();
     }
+}
+
+qint64 Day::first()
+{
+    qint64 date=0;
+    qint64 tmp;
+
+    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+        tmp=(*s)->first();
+        if (!tmp) continue;
+        if (!date) {
+            date=tmp;
+        } else {
+            if (tmp<date) date=tmp;
+        }
+    }
+    return date;
+//    return d_first;
+}
+
+//! \brief Returns the last session time of this day
+qint64 Day::last()
+{
+    qint64 date=0;
+    qint64 tmp;
+
+    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+        tmp=(*s)->last();
+        if (!tmp) continue;
+        if (!date) {
+            date=tmp;
+        } else {
+            if (tmp>date) date=tmp;
+        }
+    }
+    return date;
+//    return d_last;
 }
