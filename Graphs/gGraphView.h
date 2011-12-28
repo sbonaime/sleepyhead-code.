@@ -669,6 +669,7 @@ protected:
     GLBuffer * m_quad;
     bool m_enforceMinY,m_enforceMaxY;
     bool m_showTitle;
+    bool m_printing;
 signals:
 
 protected slots:

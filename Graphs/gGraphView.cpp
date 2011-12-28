@@ -987,6 +987,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_enforceMinY=m_enforceMaxY=false;
     rec_miny=rec_maxy=0;
     m_showTitle=true;
+    m_printing=false;
 }
 gGraph::~gGraph()
 {
@@ -1038,7 +1039,9 @@ float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 
 void gGraph::drawGLBuf()
 {
-    float linesize=ceil(m_graphview->printScaleY());
+
+    float linesize=1;
+    if (m_printing) linesize=4; //ceil(m_graphview->printScaleY());
     for (int i=0;i<m_layers.size();i++) {
         m_layers[i]->drawGLBuf(linesize);
     }
@@ -1699,6 +1702,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     QFont fc=*bigfont;
 
 
+    m_printing=printing;
     if (printing) {
         fa.setPixelSize(30);
         fb.setPixelSize(35);
@@ -1738,6 +1742,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     defaultfont=_defaultfont;
     mediumfont=_mediumfont;
     bigfont=_bigfont;
+    m_printing=false;
 
     return pm;
 }
