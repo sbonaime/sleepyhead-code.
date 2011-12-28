@@ -776,6 +776,13 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
                 .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
                 .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+            html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Pulse Change Events / Hour"))
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',3)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',3)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
         }
     }
 
@@ -1905,19 +1912,29 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     for (int z=0;z<machines.size();z++) {
         m=machines.at(z);
         //m->sessionlist.erase(m->sessionlist.find(0));
+
+        // For each Session
         for (QHash<SessionID,Session *>::iterator s=m->sessionlist.begin();s!=m->sessionlist.end();s++) {
             Session *sess=s.value();
             if (!sess) continue;
             sess->OpenEvents();
+
+            // For each EventList contained in session
             invalid.clear();
+            f=0;
+            l=0;
             for (QHash<ChannelID,QVector<EventList *> >::iterator e=sess->eventlist.begin();e!=sess->eventlist.end();e++) {
+
+                // Discard any non data events.
                 if (!valid.contains(e.key())) {
+                    // delete and push aside for later to clean up
                     for (int i=0;i<e.value().size();i++)  {
                         delete e.value()[i];
                     }
                     e.value().clear();
                     invalid.push_back(e.key());
                 } else {
+                    // Valid event
                     QVector<EventList *> newlist;
                     for (int i=0;i<e.value().size();i++)  {
                         if (e.value()[i]->count() > (unsigned)discard_threshold) {
@@ -1929,13 +1946,6 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
                     for (int i=0;i<newlist.size();i++) {
                         packEventList(newlist[i],8);
 
-                        /*EventList *nev=packEventList(newlist[i]);
-                        if (nev->count()!=e.value()[i]->count() ) {
-                            delete newlist[i];
-                            newlist[i]=nev;
-                        } else {
-                            delete nev;
-                        }*/
                         EventList * el=newlist[i];
                         if (!f || f > el->first()) f=el->first();
                         if (!l || l < el->last()) l=el->last();
