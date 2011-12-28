@@ -876,7 +876,7 @@ void Daily::Load(QDate date)
                 .arg(tr("Channel"))
                 .arg(tr("Min"))
                 .arg(tr("Avg"))
-                .arg(tr("%i%").arg(percentile*100,0,'f',0))
+                .arg(tr("%1%").arg(percentile*100,0,'f',0))
                 .arg(tr("Max"));
         ChannelID chans[]={
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
