@@ -1311,6 +1311,11 @@ void Oximetry::on_saveButton_clicked()
         if (m->SessionExists(session->session())) {
             m->sessionlist.erase(m->sessionlist.find(session->session()));
         }
+        QString path=PROFILE.Get(m->properties[STR_PROP_Path])+QString().sprintf("%08x",session->session());
+        QString f1=path+".000";
+        QString f2=path+".001";
+        QFile::remove(f1);
+        QFile::remove(f2);
         // Forgetting to reset the session ID sucks, as it will delete sessions you don't want to delete..
         session->SetSessionID(qint64(session->first())/1000L);
 
