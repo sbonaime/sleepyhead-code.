@@ -54,6 +54,8 @@ EventDataType Day::settings_sum(ChannelID code)
     EventDataType val=0;
     QVector<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
@@ -69,6 +71,8 @@ EventDataType Day::settings_max(ChannelID code)
 
     QVector<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
@@ -86,6 +90,8 @@ EventDataType Day::settings_min(ChannelID code)
 
     QVector<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
@@ -108,6 +114,8 @@ EventDataType Day::settings_avg(ChannelID code)
     int cnt=0;
     QVector<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
@@ -122,6 +130,8 @@ EventDataType Day::settings_wavg(ChannelID code)
 {
     double s0=0,s1=0,s2=0,tmp;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
 
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
@@ -148,6 +158,8 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
     // Don't assume sessions are in order.
     QVector<EventDataType> ar;
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         QHash<ChannelID,QHash<EventStoreType, EventStoreType> > ::iterator ei=sess.m_valuesummary.find(code);
         if (ei==sess.m_valuesummary.end()) continue;
@@ -195,6 +207,8 @@ EventDataType Day::avg(ChannelID code)
 
     // Don't assume sessions are in order.
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         if (sess.m_avg.contains(code)) {
             val+=sess.avg(code);
@@ -212,6 +226,8 @@ EventDataType Day::sum(ChannelID code)
     QVector<Session *>::iterator s;
 
     for (s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         if (sess.m_sum.contains(code)) {
             val+=sess.sum(code);
@@ -225,7 +241,10 @@ EventDataType Day::wavg(ChannelID code)
     double s0=0,s1=0,s2=0;
     qint64 d;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
+
         if (sess.m_wavg.contains(code)) {
             d=sess.length();//.last(code)-sess.first(code);
             s0=double(d)/3600000.0;
@@ -245,6 +264,8 @@ qint64 Day::total_time()
 {
     qint64 d_totaltime=0;
     for (QVector<Session *>::iterator s=begin();s!=end();s++) {
+        if (!(*s)->enabled()) continue;
+
         Session & sess=*(*s);
         d_totaltime+=sess.length();
     }
@@ -273,6 +294,7 @@ qint64 Day::first(ChannelID code)
     qint64 tmp;
 
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
         tmp=(*s)->first(code);
         if (!tmp) continue;
         if (!date) {
@@ -290,6 +312,7 @@ qint64 Day::last(ChannelID code)
     qint64 tmp;
 
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
         tmp=(*s)->last(code);
         if (!tmp) continue;
         if (!date) {
@@ -306,9 +329,9 @@ EventDataType Day::Min(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->m_min.contains(code))
+
+        if ((!(*s)->m_min.contains(code)) || (!(*s)->enabled()))
             continue;
-        //if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
         tmp=(*s)->Min(code);
         if (first) {
             min=tmp;
@@ -324,6 +347,7 @@ bool Day::hasData(ChannelID code, SummaryType type)
 {
     bool has=false;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
         Session *sess=*s;
         switch(type) {
         case ST_90P:
@@ -377,6 +401,8 @@ EventDataType Day::Max(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
         if (!(*s)->m_max.contains(code)) continue;
 //        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
         tmp=(*s)->Max(code);
@@ -394,6 +420,7 @@ EventDataType Day::cph(ChannelID code)
     EventDataType sum=0;
     //EventDataType h=0;
     for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->enabled()) continue;
         if (!sessions[i]->m_cph.contains(code)) continue;
         sum+=sessions[i]->cph(code)*sessions[i]->hours();
         //h+=sessions[i]->hours();
@@ -407,6 +434,7 @@ EventDataType Day::sph(ChannelID code)
     EventDataType sum=0;
     EventDataType h=0;
     for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->enabled()) continue;
         if (!sessions[i]->m_sum.contains(code)) continue;
         sum+=sessions[i]->sum(code)/3600.0;//*sessions[i]->hours();
         //h+=sessions[i]->hours();
@@ -420,6 +448,7 @@ int Day::count(ChannelID code)
 {
     int sum=0;
     for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->enabled()) continue;
         sum+=sessions[i]->count(code);
     }
     return sum;
@@ -427,6 +456,7 @@ int Day::count(ChannelID code)
 bool Day::settingExists(ChannelID id)
 {
     for (int j=0;j<sessions.size();j++) {
+        if (!sessions[j]->enabled()) continue;
         QHash<ChannelID,QVariant>::iterator i=sessions[j]->settings.find(id);
         if (i!=sessions[j]->settings.end()) {
             return true;
@@ -450,6 +480,8 @@ bool Day::channelExists(ChannelID id)
 {
     bool r=false;
     for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->enabled()) continue;
+
         if (sessions[i]->eventlist.contains(id)) {
             r=true;
             break;
@@ -464,6 +496,8 @@ bool Day::channelHasData(ChannelID id)
 {
     bool r=false;
     for (int i=0;i<sessions.size();i++) {
+        if (!sessions[i]->enabled()) continue;
+
         if (sessions[i]->channelExists(id)) {
             r=true;
             break;

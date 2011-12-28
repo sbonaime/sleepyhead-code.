@@ -758,6 +758,8 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
         if (day) {
             for (int i=0;i<day->size();i++) {
                 for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+                    if (!(*s)->enabled()) continue;
+
                     Session *sess=*s;
                     gain=sess->m_gain[code];
                     if (!gain) gain=1;

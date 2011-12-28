@@ -61,6 +61,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     }
     EventStoreType raw;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        if (!(*s)->enabled()) continue;
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;
         if (cei.value().size()==0) continue;
@@ -166,6 +167,7 @@ void gLineOverlaySummary::paint(gGraph & w,int left, int top, int width, int hei
 
     // Calculate the session time.
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        if (!(*s)->enabled())  continue;
         first=(*s)->first();
         last=(*s)->last();
         if (last < w.min_x) continue;

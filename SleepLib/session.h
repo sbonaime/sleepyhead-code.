@@ -64,6 +64,12 @@ public:
         return s_session;
     }
 
+    //! \brief Returns whether or not session is being used.
+    bool enabled();
+
+    //! \brief Sets whether or not session is being used.
+    void setEnabled(bool b);
+
     //! \brief Return the start of this sessions time range (in milliseconds since epoch)
     qint64 first() {
         return s_first;
@@ -245,6 +251,7 @@ protected:
     bool _first_session;
 
     bool s_events_loaded;
+    char s_enabled;
     QString s_eventfile;
 };
 

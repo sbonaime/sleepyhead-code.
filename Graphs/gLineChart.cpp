@@ -189,10 +189,12 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
         codepoints=0;
         for (int svi=0;svi<m_day->size();svi++) {
-            if (!(*m_day)[svi]) {
+            Session *sess=(*m_day)[svi];
+            if (!sess) {
                 qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
                 continue;
             }
+            if (!sess->enabled()) continue;
             schema::Channel ch=schema::channel[code];
             bool fndbetter=false;
             for (QList<schema::Channel *>::iterator l=ch.m_links.begin();l!=ch.m_links.end();l++) {

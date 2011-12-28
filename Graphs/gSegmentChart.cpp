@@ -38,6 +38,8 @@ void gSegmentChart::SetDay(Day *d)
     for (int c=0;c<m_codes.size();c++) {
         m_values[c]=0;
         for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+            if (!(*s)->enabled())  continue;
+
             int cnt=(*s)->count(m_codes[c]);
             m_values[c]+=cnt;
             m_total+=cnt;
@@ -211,6 +213,8 @@ void gTAPGraph::SetDay(Day *d)
     //bool changed;
     EventDataType gain=1,offset=0;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+        if (!(*s)->enabled())  continue;
+
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
         for (int q=0;q<(*s)->eventlist[m_code].size();q++) {
             EventList &el=*(*s)->eventlist[m_code][q];

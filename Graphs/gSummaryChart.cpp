@@ -93,10 +93,13 @@ void SummaryChart::SetDay(Day * nullday)
                 dz2*=86400;  // ft = first sessions time, rounded back to midnight..
 
                 for (int s=0;s<day->size();s++) {
-                    tmp=(*day)[s]->hours();
+                    Session *sess=(*day)[s];
+                    if (!sess->enabled()) continue;
+
+                    tmp=sess->hours();
                     m_values[dn][s]=tmp;
                     total+=tmp;
-                    zt=qint64((*day)[s]->first())/1000L;
+                    zt=qint64(sess->first())/1000L;
                     zt+=tz_offset;
                     tmp2=zt-dn*86400;
 

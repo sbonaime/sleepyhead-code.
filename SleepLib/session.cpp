@@ -35,6 +35,7 @@ Session::Session(Machine * m,SessionID session)
     s_changed=false;
     s_events_loaded=false;
     _first_session=true;
+    s_enabled=-1;
 
     s_first=s_last=0;
     s_eventfile="";
@@ -649,6 +650,25 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
     return false;
 }
 
+bool Session::enabled()
+{
+    if (s_enabled>=0) {
+        return s_enabled;
+    }
+    if (!settings.contains(SESSION_ENABLED)) {
+        settings[SESSION_ENABLED]=s_enabled=true;
+        return true;
+    }
+    s_enabled=settings[SESSION_ENABLED].toBool();
+    return s_enabled;
+}
+
+void Session::setEnabled(bool b)
+{
+    settings[SESSION_ENABLED]=s_enabled=b;
+    SetChanged(true);
+}
+
 
 EventDataType Session::Min(ChannelID id)
 {
@@ -762,6 +782,7 @@ qint64 Session::last(ChannelID id)
 }
 bool Session::channelExists(ChannelID id)
 {
+    if (!enabled()) return false;
     if (s_events_loaded) {
         QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
         if (j==eventlist.end())  // eventlist not loaded.

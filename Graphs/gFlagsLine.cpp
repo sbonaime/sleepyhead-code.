@@ -140,6 +140,8 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     qint64 X,Y;
     m_flag_color=schema::channel[m_code].defaultColor();
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+        if (!(*s)->enabled()) continue;
+
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
 
         EventList & el=*((*s)->eventlist[m_code][0]);

@@ -350,20 +350,30 @@ void Daily::Link_clicked(const QUrl &url)
     QString data=url.toString().section("=",1);
     int sid=data.toInt();
     Day *day=NULL;
-    if (code=="togglecpapsession") {
+    if (code=="togglecpapsession") { // Enable/Disable CPAP session
         day=PROFILE.GetDay(previous_date,MT_CPAP);
         Session *sess=day->find(sid);
         if (!sess)
             return;
-        bool b;
-        if (sess->settings.contains(SESSION_ENABLED)) b=false;
-        else b=!sess->settings[SESSION_ENABLED].toBool();
-        sess->settings[SESSION_ENABLED]=b;
-        sess->SetChanged(true);
-        day->machine->Save();
-        GraphView->ResetBounds();
+        sess->setEnabled(!sess->enabled());
 
-        // reload day
+        // Messy, this rewrites both summary & events.. TODO: Write just the session summary file
+        day->machine->Save();
+
+        // Reload day
+        this->LoadDate(previous_date);
+        return;
+    } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
+        day=PROFILE.GetDay(previous_date,MT_OXIMETER);
+        Session *sess=day->find(sid);
+        if (!sess)
+            return;
+        sess->setEnabled(!sess->enabled());
+        // Messy, this rewrites both summary & events.. TODO: Write just the session summary file
+        day->machine->Save();
+
+        // Reload day
+        this->LoadDate(previous_date);
         return;
     } else if (code=="cpap")  {
         day=PROFILE.GetDay(previous_date,MT_CPAP);
@@ -438,6 +448,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     QHash<ChannelID,int> mccnt;
     int total_events=0;
     for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+        if (!(*s)->enabled()) continue;
 
         QHash<ChannelID,QVector<EventList *> >::iterator m;
 
