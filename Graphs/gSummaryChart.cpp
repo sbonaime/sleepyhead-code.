@@ -51,6 +51,8 @@ void SummaryChart::SetDay(Day * nullday)
     m_minx=0;
     m_maxx=0;
 
+
+
     int dn;
     EventDataType tmp,tmp2,total;
     ChannelID code;
@@ -62,6 +64,10 @@ void SummaryChart::SetDay(Day * nullday)
     m_fday=0;
     qint64 tt,zt;
     m_empty=true;
+    if (m_graphtype==GT_SESSIONS) {
+        if (PROFILE.countDays(MT_CPAP,PROFILE.FirstDay(MT_CPAP), PROFILE.LastDay(MT_CPAP))==0)
+            return;
+    }
     int suboffset;
     SummaryType type;
     for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
