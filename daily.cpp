@@ -861,6 +861,7 @@ void Daily::Load(QDate date)
     } // if (!CPAP)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
+    float percentile=0.95;
     if ((cpap && !isBrick) || oxi) {
         html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 
@@ -870,11 +871,11 @@ void Daily::Load(QDate date)
                 .arg(tr("Channel"))
                 .arg(tr("Min"))
                 .arg(tr("Avg"))
-                .arg(tr("90%"))
+                .arg(tr("%i%").arg(percentile*100,0,'f',0))
                 .arg(tr("Max"));
         ChannelID chans[]={
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
-            CPAP_MinuteVent,CPAP_AHI, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
+            CPAP_MinuteVent, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
             CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
             CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
         };
@@ -892,7 +893,7 @@ void Daily::Load(QDate date)
                         .arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
                     .arg(cpap->Min(code),0,'f',2)
                     .arg(cpap->wavg(code),0,'f',2)
-                    .arg(cpap->p90(code),0,'f',2)
+                    .arg(cpap->percentile(code,percentile),0,'f',2)
                     .arg(cpap->Max(code),0,'f',2);
             }
             if (oxi && oxi->channelHasData(code)) {
@@ -901,7 +902,7 @@ void Daily::Load(QDate date)
                 html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
                 html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->p90(code));
+                html+="</td><td>"+a.sprintf("%.2f",oxi->percentile(code,percentile));
                 html+="</td><td>"+a.sprintf("%.2f",oxi->Max(code));
                 html+="</td><tr>";
             }
