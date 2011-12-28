@@ -15,6 +15,7 @@
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QSpacerItem>
+#include <QWebFrame>
 #include <cmath>
 //#include <QPrinter>
 //#include <QProgressBar>
@@ -362,6 +363,7 @@ void Daily::Link_clicked(const QUrl &url)
 
         // Reload day
         this->LoadDate(previous_date);
+        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical));
         return;
     } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
         day=PROFILE.GetDay(previous_date,MT_OXIMETER);
@@ -374,6 +376,7 @@ void Daily::Link_clicked(const QUrl &url)
 
         // Reload day
         this->LoadDate(previous_date);
+        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical));
         return;
     } else if (code=="cpap")  {
         day=PROFILE.GetDay(previous_date,MT_CPAP);
