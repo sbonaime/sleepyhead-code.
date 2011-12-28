@@ -130,6 +130,9 @@ void SummaryChart::SetDay(Day * nullday)
                     if (day->machine_type()!=m_machinetype) continue;
                     //m_values[dn][j+1]=0;
 
+                    if (code==CPAP_PTB) {
+                        int i=5;
+                    }
                     bool hascode=//day->channelHasData(code) ||
                             type==ST_HOURS ||
                             type==ST_SESSIONS ||
@@ -137,6 +140,9 @@ void SummaryChart::SetDay(Day * nullday)
                             day->hasData(code,type);
 
                     if (hascode) {
+                        if (code==CPAP_PTB) {
+                            int i=5;
+                        }
                         m_days[dn]=day;
                         switch(m_type[j]) {
                             case ST_AVG: tmp=day->avg(code); break;

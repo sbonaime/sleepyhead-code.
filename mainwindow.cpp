@@ -422,6 +422,8 @@ struct RXChange
         per2=copy.per2;
         highlight=copy.highlight;
         weighted=copy.weighted;
+        prelief=copy.prelief;
+        prelset=copy.prelset;
     }
     QDate first;
     QDate last;
@@ -433,6 +435,8 @@ struct RXChange
     EventDataType per1;
     EventDataType per2;
     EventDataType weighted;
+    PRTypes prelief;
+    short prelset;
     short highlight;
 };
 
@@ -533,10 +537,7 @@ void MainWindow::on_summaryButton_clicked()
     if (cpap6month<firstcpap) cpap6month=firstcpap;
     if (cpapyear<firstcpap) cpapyear=firstcpap;
 
-    int cpapweekdays=cpapweek.daysTo(lastcpap);
-    int cpapmonthdays=cpapmonth.daysTo(lastcpap);
-    int cpapyeardays=cpapyear.daysTo(lastcpap);
-    int cpap6monthdays=cpap6month.daysTo(lastcpap);
+
     QList<Machine *> cpap_machines=PROFILE.GetMachines(MT_CPAP);
     QList<Machine *> oximeters=PROFILE.GetMachines(MT_OXIMETER);
     QList<Machine *> mach;
@@ -552,6 +553,11 @@ void MainWindow::on_summaryButton_clicked()
         return;
     }
     int cpapdays=PROFILE.countDays(MT_CPAP,firstcpap,lastcpap);
+    int cpapweekdays=PROFILE.countDays(MT_CPAP,cpapweek,lastcpap);
+    int cpapmonthdays=PROFILE.countDays(MT_CPAP,cpapmonth,lastcpap);
+    int cpapyeardays=PROFILE.countDays(MT_CPAP,cpapyear,lastcpap);
+    int cpap6monthdays=PROFILE.countDays(MT_CPAP,cpap6month,lastcpap);
+
     CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
     float percentile=0.95;
@@ -589,6 +595,28 @@ void MainWindow::on_summaryButton_clicked()
             .arg(calcAHI(cpapmonth,lastcpap),0,'f',3)
             .arg(calcAHI(cpap6month,lastcpap),0,'f',3)
             .arg(calcAHI(cpapyear,lastcpap),0,'f',3);
+
+            if (PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapyear,lastcpap)) {
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("RERA Index"))
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            }
+
+            if (PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapyear,lastcpap)) {
+                html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
+                .arg(tr("Flow Limit Index"))
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            }
+
+
 
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("Hours per Night"))
@@ -654,20 +682,25 @@ void MainWindow::on_summaryButton_clicked()
             //html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
 
+            ChannelID leak;
+            if (p_profile->calcCount(CPAP_LeakTotal,MT_CPAP,cpapyear,lastcpap)>0) {
+                leak=CPAP_LeakTotal;
+            } else leak=CPAP_Leak;
+
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-            .arg(tr("Average Leaks"))
-            .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP),0,'f',3)
-            .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(CPAP_Leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            .arg(tr("Average %1").arg(schema::channel[leak].label()))
+            .arg(p_profile->calcWavg(leak,MT_CPAP),0,'f',3)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-            .arg(tr("Median Leaks"))
-            .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP),0,'f',3)
-            .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(CPAP_Leak,0.5,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            .arg(tr("%1% %2").arg(percentile*100.0f,0,'f',0).arg(schema::channel[leak].label()))
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP),0,'f',3)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             html+="<tr><td colspan=6>Note, AHI calcs here are different to overview calcs.. Overview shows a average of the dialy AHI's, this shows combined counts divide by combined hours</td></tr>";
         }
     }
@@ -755,6 +788,8 @@ void MainWindow::on_summaryButton_clicked()
         QDate first,last=lastcpap;
         CPAPMode mode,cmode=MODE_UNKNOWN;
         EventDataType cmin=0,cmax=0,min,max;
+        PRTypes prelief=PR_UNKNOWN;
+        short prelset=0;
         QDate date=lastcpap;
         Day * day;
         bool lastchanged=false;
@@ -800,6 +835,8 @@ void MainWindow::on_summaryButton_clicked()
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
+                        rx.prelief=prelief;
+                        rx.prelset=prelset;
                         if (mode<MODE_BIPAP) {
                             rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
                             rx.per2=0;

@@ -601,6 +601,9 @@ void Session::UpdateSummaries()
 
     for (c=eventlist.begin();c!=eventlist.end();c++) {
         id=c.key();
+        if (id==CPAP_PTB) {
+            int i=5;
+        }
         if (schema::channel[id].type()==schema::DATA) {
             //sum(id); // avg calculates this and cnt.
             if (c.value().size()>0) {
@@ -652,6 +655,9 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
 
 EventDataType Session::Min(ChannelID id)
 {
+    if (id==CPAP_PTB){
+        int i=5;
+    }
     QHash<ChannelID,EventDataType>::iterator i=m_min.find(id);
     if (i!=m_min.end())
         return i.value();

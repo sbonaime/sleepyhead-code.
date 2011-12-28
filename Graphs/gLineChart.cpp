@@ -60,6 +60,7 @@ void gLineChart::SetDay(Day *d)
         ChannelID code=m_codes[j];
         for (int i=0;i<d->size();i++) {
             Session *sess=d->getSessions()[i];
+            if (!sess->channelExists(code)) continue;
 
             tmp=sess->Min(code);
             if (min > tmp) min=tmp;

@@ -19,7 +19,7 @@ namespace schema {
 
 ChannelList channel;
 Channel EmptyChannel;
-Channel SessionEnabledChannel;
+Channel *SessionEnabledChannel;
 
 QHash<QString,ChanType> ChanTypes;
 QHash<QString,DataType> DataTypes;
@@ -33,8 +33,10 @@ void init()
     schema_initialized=true;
 
     EmptyChannel=Channel(0,DATA,DAY,"Empty","Empty Channel","","");
-    SessionEnabledChannel=Channel(1,DATA,DAY,"Enabled","Session Enabled","","");
+    SessionEnabledChannel=new Channel(1,DATA,DAY,"Enabled","Session Enabled","","");
 
+    channel.channels[1]=SessionEnabledChannel;
+    channel.names["Enabled"]=SessionEnabledChannel;
     SESSION_ENABLED=1;
     ChanTypes["data"]=DATA;
     //Types["waveform"]=WAVEFORM;

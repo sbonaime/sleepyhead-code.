@@ -187,8 +187,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   </channel>
   <channel id="0xe201" class="setting" scope="!session" name="EPR" details="EPR Mode" label="EPR Mode" type="integer">
    <Option id="0" value="Off"/>
-   <Option id="1" value="EPR"/>
-   <Option id="2" value="EPR?"/>
+   <Option id="1" value="Ramp Only"/>
+   <Option id="2" value="Full Time"/>
    <Option id="3" value="EPR?"/>
   </channel>
   <channel id="0xe202" class="setting" scope="!session" name="EPRSet" details="EPR Setting" label="EPR Setting" type="integer">

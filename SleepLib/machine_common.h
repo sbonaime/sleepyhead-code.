@@ -64,6 +64,7 @@ enum PRTypes//:short
     PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
 };
 
+
 //extern map<ChannelID,QString> DefaultMCShortNames;
 //extern map<ChannelID,QString> DefaultMCLongNames;
 //extern map<PRTypes,QString> PressureReliefNames;
