@@ -490,7 +490,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         //lastQ=Q;
     }
 
-    lines->scissor(left,w.flipY(top+height+2),width+1,height+1);
+    lines->scissor(left,w.flipY(top+height+2),width+1,height+2);
 
     // Draw Ledgend
     px=left+width-3;
