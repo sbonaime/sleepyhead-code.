@@ -184,7 +184,8 @@ OTHER_FILES += \
     docs/startup_tips.txt \
     docs/countries.txt \
     docs/tz.txt \
-    LICENSE.txt
+    LICENSE.txt \
+    docs/tooltips.css
 
 
 

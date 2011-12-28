@@ -652,9 +652,8 @@ void Daily::Load(QDate date)
     QString html="<html><head><style type='text/css'>"
     "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
     "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
-    "a:link,a:visited { color: inherit; text-decoration: none; font-weight: normal;}"
-    "a:hover { background-color: inherit; color: inherit; text-decoration:none; font-weight: bold; }"
     "</style>"
+    "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
     "<script language='javascript'><!--"
             "func dosession(sessid) {"
             ""
@@ -793,37 +792,58 @@ void Daily::Load(QDate date)
             html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
 
             if (PROFILE.general->calculateRDI()) {
-                html+="<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_RDI].description()+"'>"+tr("RDI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#F88017").arg("black").arg(tr("RDI")).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
             } else {
-                html+="<tr><td align='right' bgcolor='#F88017'><b><font color='black'><a href='nothing' title='"+schema::channel[CPAP_AHI].description()+"'>"+tr("AHI")+"</a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#F88017").arg("black").arg(tr("AHI")).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
+                //html+="<tr><td align='left' bgcolor='#F88017'><b><font color='black'><a class=info href='#'>"+tr("AHI")+"<span class='classic'>"+schema::channel[CPAP_AHI].description()+"</span></a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
             }
-            html+="<tr><td align='right' bgcolor='#4040ff'><b><font color='white'>&nbsp;<a href='event="+QString::number(CPAP_Hypopnea)+"' title='"+schema::channel[CPAP_Hypopnea].description()+"'>"+tr("Hypopnea")+"</a></font></b></td><td bgcolor='#4040ff'><font color='white'>"+QString().sprintf("%.2f",hi)+"</font></td></tr>\n";
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#4040ff").arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-                html+="<tr><td align='right' bgcolor='#208020'><b>&nbsp;<a href='event="+QString::number(CPAP_Apnea)+"' title='"+schema::channel[CPAP_Apnea].description()+"'>"+tr("Unspecified Apnea")+"</a></b></td><td bgcolor='#208020'>"+QString().sprintf("%.2f",uai)+"</td></tr>\n";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#208020").arg("black")
+                        .arg(tr("Apnea")).arg(schema::channel[CPAP_Apnea].description()).arg(uai,0,'f',2).arg(CPAP_Apnea);
             }
-            html+="<tr><td align='right' bgcolor='#40afbf'><b>&nbsp;<a href='event="+QString::number(CPAP_Obstructive)+"' title='"+schema::channel[CPAP_Obstructive].description()+"'>"+tr("Obstructive")+"</a></b></td><td bgcolor='#40afbf'>"+QString().sprintf("%.2f",oai)+"</td></tr>\n"
-            "<tr><td align='right' bgcolor='#b254cd'><b>&nbsp;<a href='event="+QString::number(CPAP_ClearAirway)+"' title='"+schema::channel[CPAP_ClearAirway].description()+"'>"+tr("Clear Airway")+"</a></b></td><td bgcolor='#b254cd'>"+QString().sprintf("%.2f",cai)+"</td></tr>\n"
-            "</table></td>";
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#40afbf").arg("black").arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
+
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#b254cd").arg("black").arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
+            html+="</table></td>";
 
             if (cpap->machine->GetClass()==STR_MACH_PRS1) {
-                html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>"
-                    "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_RERA)+"' title='"+schema::channel[CPAP_RERA].description()+"'>"+tr("RERA")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",rei)+"</td></tr>\n";
+                html+="<td colspan=2><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#ffff80").arg("black").arg(tr("RERA")).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
                 if (mode>MODE_CPAP) {
-                    html+="<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_FlowLimit)+"' title='"+schema::channel[CPAP_FlowLimit].description()+"'>"+tr("Flow Limit")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",fli)+"</font></td></tr>\n";
-                    html+="<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'title=' "+schema::channel[CPAP_VSnore].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore)/cpap->hours())+"</td></tr>\n";
+                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#404040").arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
+
+                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#ff4040").arg("black").arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
                 } else {
                     html+="<tr bgcolor='#404040'><td colspan=2>&nbsp;</td></tr>";
-                    html+="<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore2)+"'title=' "+schema::channel[CPAP_VSnore2].description()+"'>"+tr("Vsnore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore2)/cpap->hours())+"</td></tr>\n";
+                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#ff4040").arg("black").arg(tr("VSnore2")).arg(schema::channel[CPAP_VSnore2].description()).arg(cpap->count(CPAP_VSnore2)/cpap->hours(),0,'f',2).arg(CPAP_VSnore2);
                 }
-                html+="<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_CSR)+"' title='"+schema::channel[CPAP_CSR].description()+"'>"+tr("PB/CSR")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",csr)+"%</td></tr>\n"
-                "</table></td>";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
+                    .arg("#80ff80").arg("black").arg(tr("PB/CSR")).arg(schema::channel[CPAP_CSR].description()).arg(csr,0,'f',2).arg(CPAP_CSR);
+                html+="</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
-                html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>"
-                "<tr><td align='right' bgcolor='#ffff80'><b>&nbsp;<a href='event="+QString::number(CPAP_NRI)+"'>"+tr("NRI")+"</a></b></td><td width=20% bgcolor='#ffff80'>"+QString().sprintf("%.2f",nri)+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#404040'><b>&nbsp;<font color='white'><a href='event="+QString::number(CPAP_Leak)+"'>"+tr("Leak Idx")+"</a></font></b></td><td bgcolor='#404040'><font color='white'>"+a.sprintf("%.2f",lki)+"</font></td></tr>\n"
-                "<tr><td align='right' bgcolor='#ff4040'><b>&nbsp;<a href='event="+QString::number(CPAP_VSnore)+"'>"+tr("V.Snore")+"</a></b></td><td bgcolor='#ff4040'>"+QString().sprintf("%.2f",cpap->count(CPAP_VSnore)/cpap->hours())+"</td></tr>\n"
-                "<tr><td align='right' bgcolor='#80ff80'><b>&nbsp;<a href='event="+QString::number(CPAP_ExP)+"'>"+tr("Exh.&nbsp;Puff")+"</a></b></td><td bgcolor='#80ff80'>"+QString().sprintf("%.2f",exp)+"</td></tr>\n"
-                "</table></td>";
+                html+="<td colspan=2><table cellspacing=0 cellpadding=2 border=0 width='100%'>";
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
+                  .arg("#ffff80").arg("black").arg(tr("NRI")).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
+                .arg("#404040").arg("black").arg(tr("Leak")).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
+
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#ff4040").arg("black").arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
+                  .arg("#80ff80").arg("black").arg(tr("Exh&nbsp;Puff")).arg(schema::channel[CPAP_ExP].description()).arg(exp,0,'f',2).arg(CPAP_ExP);
+
+                html+="</table></td>";
 
             }
             html+="</tr>";
@@ -894,7 +914,7 @@ void Daily::Load(QDate date)
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
                 html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    .arg(QString("<a href='graph=%1' title='%2'>%3</a>")
+                    .arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+tr("RDI")+"<span class='classic'>"+
                         .arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
                     .arg(cpap->Min(code),0,'f',2)
                     .arg(cpap->wavg(code),0,'f',2)
@@ -904,12 +924,13 @@ void Daily::Load(QDate date)
             if (oxi && oxi->channelHasData(code)) {
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                html+="<tr><td align=left><a href='graph="+QString::number(code)+"' title='"+tooltip+"'>"+schema::channel[code].label()+"</a>";
-                html+="</td><td>"+a.sprintf("%.2f",oxi->Min(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->wavg(code));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->percentile(code,percentile));
-                html+="</td><td>"+a.sprintf("%.2f",oxi->Max(code));
-                html+="</td><tr>";
+                html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                    .arg(QString("<a class=info href='graph=%1'>%2<span>%3</span></a>")
+                        .arg(QString::number(code)).arg(schema::channel[code].label()).arg(tooltip))
+                    .arg(oxi->Min(code),0,'f',2)
+                    .arg(oxi->wavg(code),0,'f',2)
+                    .arg(oxi->percentile(code,percentile),0,'f',2)
+                    .arg(oxi->Max(code),0,'f',2);
             }
         }
     } else {
@@ -928,7 +949,7 @@ void Daily::Load(QDate date)
         html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2);
     }
 
-    if (cpap) {
+    if (cpap && cpap->hasEnabledSessions()) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
 //        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
@@ -963,7 +984,7 @@ void Daily::Load(QDate date)
         QString tooltip;
         html+=QString("<tr><td align=left><b>%1</b></td><td><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td><td align=center><b>%5</b></td></tr>")
             .arg(tr("SessionID"))
-            .arg(tr("Show"))
+            .arg(tr("On"))
             .arg(tr("Date"))
             .arg(tr("Start"))
             .arg(tr("End"));
@@ -977,7 +998,7 @@ void Daily::Load(QDate date)
                 int m=(len/60) % 60;
                 int s1=len % 60;
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
-                tooltip=cpap->machine->GetClass()+" "+tr("CPAP")+" "+QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1);
+                tooltip=cpap->machine->GetClass()+"&nbsp;"+tr("CPAP")+"&nbsp;"+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
                 // tooltip needs to lookup language.. :-/
 
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
@@ -986,7 +1007,7 @@ void Daily::Load(QDate date)
                     sess->settings[SESSION_ENABLED]=true;
                 }
                 bool b=sess->settings[SESSION_ENABLED].toBool();
-                html+=QString("<tr><td align=left><a href='cpap=%1' title='%2'>%3</a></td><td><a href='togglecpapsession=%1'><img src='qrc:/icons/toggle-%4-us.svg' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                html+=QString("<tr><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
                         .arg((*s)->session(),8,10,QChar('0'))
@@ -1015,7 +1036,7 @@ void Daily::Load(QDate date)
                 bool b=sess->settings[SESSION_ENABLED].toBool();
 
                 if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
-                html+=QString("<tr><td align=left><a href='oxi=%1' title='%2'>%3</a></td><td><a href='toggleoxisession=%1'><img src='qrc:/icons/toggle-%4-us.svg' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                html+=QString("<tr><td align=left><a class=info href='oxi=%1'>%3<span>%2</span></a></td><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
                         .arg((*s)->session(),8,10,QChar('0'))
@@ -1030,7 +1051,7 @@ void Daily::Load(QDate date)
         if (corrupted_waveform) {
             html+=QString("<tr><td colspan=4 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
         }
-        html+="</table>";
+        html+="</table><br/>";
     }
     html+="</body></html>";
 

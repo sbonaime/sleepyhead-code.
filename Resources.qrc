@@ -18,8 +18,6 @@
         <file>docs/schema.xml</file>
         <file>docs/channels.xml</file>
         <file>icons/last.png</file>
-        <file>icons/toggle-off-us.svg</file>
-        <file>icons/toggle-on-us.svg</file>
         <file>docs/release_notes.html</file>
         <file>icons/save.png</file>
         <file>docs/countries.txt</file>
@@ -38,5 +36,8 @@
         <file>icons/bookmark.png</file>
         <file>icons/help.png</file>
         <file>LICENSE.txt</file>
+        <file>docs/tooltips.css</file>
+        <file>icons/session-off.png</file>
+        <file>icons/session-on.png</file>
     </qresource>
 </RCC>

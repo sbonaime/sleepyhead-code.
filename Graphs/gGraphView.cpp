@@ -1041,7 +1041,7 @@ void gGraph::drawGLBuf()
 {
 
     float linesize=1;
-    if (m_printing) linesize=4; //ceil(m_graphview->printScaleY());
+    if (m_printing) linesize=5; //ceil(m_graphview->printScaleY());
     for (int i=0;i<m_layers.size();i++) {
         m_layers[i]->drawGLBuf(linesize);
     }
