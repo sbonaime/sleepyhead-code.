@@ -73,6 +73,7 @@ public:
     void setAntiAlias(bool b) { m_antialias=b; }
     void forceAntiAlias(bool b) { m_forceantialias=b; }
     void setColor(QColor col) { m_color=col; }
+    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1=b1; m_blendfunc2=b2; }
 protected:
     int m_max;
     int m_type;     // type (GL_LINES, GL_QUADS, etc)
@@ -86,6 +87,7 @@ protected:
     bool m_forceantialias;
     QMutex mutex;
     bool m_stippled;
+    GLuint m_blendfunc1, m_blendfunc2;
 };
 
 /*! \class GLShortBuffer

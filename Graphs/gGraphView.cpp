@@ -147,6 +147,8 @@ GLBuffer::GLBuffer(int max,int type, bool stippled)
     m_cnt=0;
     m_colcnt=0;
     m_size=1;
+    m_blendfunc1=GL_SRC_ALPHA;
+    m_blendfunc2=GL_ONE_MINUS_SRC_ALPHA;
 }
 GLBuffer::~GLBuffer()
 {
@@ -308,7 +310,9 @@ void GLShortBuffer::draw()
         float size=m_size;
         if (antialias) {
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glBlendFunc(m_blendfunc1,  m_blendfunc2);
+            //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
             if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
                 glEnable(GL_LINE_SMOOTH);
                 glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -563,7 +567,7 @@ void GLFloatBuffer::draw()
     float size=m_size;
     if (antialias) {
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(m_blendfunc1,  m_blendfunc2);
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
             glEnable(GL_LINE_SMOOTH);
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);

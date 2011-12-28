@@ -18,8 +18,10 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
     addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
-    lines->setSize(2.5);
+    lines->setSize(1.5);
+    lines->setBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
     lines->forceAntiAlias(false);
+
     m_empty=true;
     hl_day=-1;
     m_machinetype=MT_CPAP;

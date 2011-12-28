@@ -21,6 +21,7 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
     addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
     lines->setColor(col);
     lines->setAntiAlias(true);
+    lines->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC1_ALPHA);
 }
 gLineChart::~gLineChart()
 {
