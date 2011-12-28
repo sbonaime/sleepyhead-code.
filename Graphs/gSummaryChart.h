@@ -71,7 +71,8 @@ class SummaryChart:public Layer
         QHash<int,EventDataType> m_hours;
         QHash<int,Day *> m_days;
 
-        GLShortBuffer *quads,*lines;
+        GLShortBuffer *quads;
+        GLShortBuffer *lines;
         bool m_empty;
         int m_fday;
         QString m_label;

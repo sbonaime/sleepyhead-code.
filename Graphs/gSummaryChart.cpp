@@ -475,9 +475,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         py2+=j;
                         if (lastdaygood) {
                             lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
-                            lines->add(px,py2,px2,py2,col);
+                            lines->add(px,py2,px2+1,py2,col);
                         } else {
-                            lines->add(x1,py2,x2,py2,col);
+                            lines->add(x1,py2,x2+1,py2,col);
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;
