@@ -362,8 +362,9 @@ void Daily::Link_clicked(const QUrl &url)
         day->machine->Save();
 
         // Reload day
+        int i=ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-ui->webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         this->LoadDate(previous_date);
-        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical));
+        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
         return;
     } else  if (code=="toggleoxisession") { // Enable/Disable Oximetry session
         day=PROFILE.GetDay(previous_date,MT_OXIMETER);
@@ -374,9 +375,10 @@ void Daily::Link_clicked(const QUrl &url)
         // Messy, this rewrites both summary & events.. TODO: Write just the session summary file
         day->machine->Save();
 
+        int i=ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-ui->webView->page()->mainFrame()->scrollBarValue(Qt::Vertical);
         // Reload day
         this->LoadDate(previous_date);
-        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical));
+        ui->webView->page()->mainFrame()->setScrollBarValue(Qt::Vertical, ui->webView->page()->mainFrame()->scrollBarMaximum(Qt::Vertical)-i);
         return;
     } else if (code=="cpap")  {
         day=PROFILE.GetDay(previous_date,MT_CPAP);
