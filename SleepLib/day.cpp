@@ -271,6 +271,18 @@ qint64 Day::total_time()
     }
     return d_totaltime;
 }
+bool Day::hasEnabledSessions()
+{
+    bool b=false;
+    for (QVector<Session *>::iterator s=begin();s!=end();s++) {
+        if ((*s)->enabled()) {
+            b=true;
+            break;
+        }
+    }
+    return b;
+}
+
 /*EventDataType Day::percentile(ChannelID code,double percent)
 {
     double val=0;

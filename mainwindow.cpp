@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                "background: #9090ee;"
                                "color: white; }"
                                );
+
     //"font-weight: bold; "
     //"border-top-left-radius: 8px;"
     //"border-top-right-radius: 8px;"
@@ -1074,15 +1075,15 @@ void MainWindow::on_summaryButton_clicked()
 }
 void MainWindow::updateFavourites()
 {
-    ui->favouritesList->blockSignals(true);
-    ui->favouritesList->clear();
-
-    QDate date=PROFILE.LastGoodDay();
+    QDate date=PROFILE.LastDay(MT_JOURNAL);
     if (!date.isValid())
         return;
 
+    ui->favouritesList->blockSignals(true);
+    ui->favouritesList->clear();
+
     do {
-        Day * journal=PROFILE.GetGoodDay(date,MT_JOURNAL);
+        Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
         if (journal) {
             if (journal->size()>0) {
                 Session *sess=(*journal)[0];
@@ -1107,7 +1108,7 @@ void MainWindow::updateFavourites()
         }
 
         date=date.addDays(-1);
-    } while (date>=PROFILE.FirstGoodDay());
+    } while (date>=PROFILE.FirstDay(MT_JOURNAL));
     ui->favouritesList->blockSignals(false);
 }
 
@@ -2152,7 +2153,7 @@ void MainWindow::on_favouritesList_itemSelectionChanged()
     }
 }
 
-void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
+/*void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
 {
     if (!item) return;
     QDate date=item->data(Qt::UserRole).toDate();
@@ -2163,7 +2164,7 @@ void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
             daily->graphView()->redraw();
         }
     }
-}
+}*/
 
 void MainWindow::on_webView_statusBarMessage(const QString &text)
 {

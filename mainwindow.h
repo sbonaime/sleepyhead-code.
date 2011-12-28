@@ -86,7 +86,7 @@ public:
     void CheckForUpdates();
 
     //! \brief Refresh the statistics page
-    void refreshStatistics() { on_summaryButton_clicked(); updateFavourites(); }
+    void refreshStatistics() { on_summaryButton_clicked(); }
 
 
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
@@ -265,7 +265,7 @@ private slots:
 
     void on_favouritesList_itemSelectionChanged();
 
-    void on_favouritesList_itemClicked(QListWidgetItem *item);
+    //void on_favouritesList_itemClicked(QListWidgetItem *item);
 
     void on_webView_statusBarMessage(const QString &text);
 

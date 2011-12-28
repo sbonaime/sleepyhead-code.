@@ -107,6 +107,9 @@ public:
     //! \brief Returns the total time in milliseconds for this day
     qint64 total_time();
 
+    //! \brief Returns true if this day has enabled sessions
+    bool hasEnabledSessions();
+
     //! \brief Return the total time in decimal hours for this day
     EventDataType hours() { return double(total_time())/3600000.0; }
 

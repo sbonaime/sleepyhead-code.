@@ -404,7 +404,7 @@ void Daily::Link_clicked(const QUrl &url)
     if (day) {
 
         Session *sess=day->machine->sessionlist[sid];
-        if (sess) {
+        if (sess && sess->enabled()) {
             GraphView->SetXBounds(sess->first(),sess->last());
         }
     }
@@ -629,7 +629,7 @@ void Daily::Load(QDate date)
         }
     }
 
-    if (cpap && oxi) {
+    if ((cpap && oxi) && oxi->hasEnabledSessions()) {
         int gr;
 
         if (qAbs(cpap->first() - oxi->first())>30000) {
@@ -911,7 +911,7 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
 
     }
-    if (oxi) {
+    if (oxi && oxi->hasEnabledSessions()) {
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
         html+="<tr><td colspan=5 align=center><hr/></td></tr>";

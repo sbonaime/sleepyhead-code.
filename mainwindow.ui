@@ -405,7 +405,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -737,13 +737,6 @@
           </spacer>
          </item>
         </layout>
-        <zorder>dailyButton</zorder>
-        <zorder>overviewButton</zorder>
-        <zorder>verticalSpacer</zorder>
-        <zorder>oximetryButton</zorder>
-        <zorder>summaryButton_2</zorder>
-        <zorder>importButton</zorder>
-        <zorder>helpButton</zorder>
        </widget>
        <widget class="QWidget" name="page_2">
         <property name="geometry">
@@ -785,12 +778,30 @@
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="AlternateBase">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>170</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </active>
              <inactive>
               <colorrole role="Base">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>170</red>
+                 <green>170</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="AlternateBase">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
                  <green>170</green>
                  <blue>255</blue>
                 </color>
@@ -807,6 +818,15 @@
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="AlternateBase">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>85</red>
+                 <green>170</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </disabled>
             </palette>
            </property>
@@ -814,6 +834,24 @@
             <font>
              <pointsize>10</pointsize>
             </font>
+           </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <property name="selectionRectVisible">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
