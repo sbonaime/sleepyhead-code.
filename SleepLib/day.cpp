@@ -306,9 +306,6 @@ EventDataType Day::Min(ChannelID code)
     EventDataType tmp;
     bool first=true;
     for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
-        if (code==CPAP_PTB) {
-            int i=5;
-        }
         if (!(*s)->m_min.contains(code))
             continue;
         //if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;

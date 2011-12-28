@@ -275,7 +275,7 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
-    profile->appearance->setAnimations(ui->useAntiAliasing->isChecked());
+    profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
     if (ui->useSquareWavePlots->isChecked()!=profile->appearance->squareWavePlots()) {
         profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
         needs_restart=true;
