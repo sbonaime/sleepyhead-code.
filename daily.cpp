@@ -1468,6 +1468,31 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     bool ok;
     st=it->data(Qt::UserRole).toLongLong(&ok);
     et=it->data(Qt::UserRole+1).toLongLong(&ok);
+    qint64 st2,et2,st3,et3;
+    Day * day=PROFILE.GetGoodDay(previous_date,MT_CPAP);
+    if (day) {
+        st2=day->first();
+        et2=day->last();
+    }
+    Day * oxi=PROFILE.GetGoodDay(previous_date,MT_OXIMETER);
+    if (oxi) {
+        st3=oxi->first();
+        et3=oxi->last();
+    }
+    if (oxi && day) {
+        st2=qMin(st2,st3);
+        et2=qMax(et2,et3);
+    } else if (oxi) {
+        st2=st3;
+        et2=et3;
+    } else if (!day) return;
+    if ((et<st2) || (st>et2)) {
+        mainwin->Notify("This bookmarked is in a currently disabled area..");
+        return;
+    }
+
+    if (st<st2) st=st2;
+    if (et>et2) et=et2;
     GraphView->SetXBounds(st,et);
     GraphView->redraw();
 }
