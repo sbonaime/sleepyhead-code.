@@ -85,6 +85,10 @@ public:
     //! \brief Start the automatic update checker process
     void CheckForUpdates();
 
+    //! \brief Refresh the statistics page
+    void refreshStatistics() { on_summaryButton_clicked(); updateFavourites(); }
+
+
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
         \param QString string

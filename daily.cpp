@@ -665,6 +665,7 @@ void Daily::Load(QDate date)
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
 
+    mainwin->refreshStatistics();
 
     snapGV->setDay(cpap);
     GraphView->ResetBounds(false);
