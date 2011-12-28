@@ -1852,8 +1852,10 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     quads=new GLShortBuffer(1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
     stippled=new GLShortBuffer(20000,GL_LINES,true);
-    stippled->setSize(1);
+    stippled->setSize(1.5);
     stippled->forceAntiAlias(false);
+    //lines->setSize(1.5);
+    //backlines->setSize(1.5);
 
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter=true;

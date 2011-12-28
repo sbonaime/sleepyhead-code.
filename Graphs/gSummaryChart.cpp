@@ -18,7 +18,7 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
     addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
-    lines->setSize(2);
+    lines->setSize(1.5);
     lines->setBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
     lines->forceAntiAlias(false);
 
@@ -360,6 +360,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int incompliant=0;
     Day * day;
     EventDataType hours;
+
+    short px2,py2;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         zd=Q/86400000L;
         d=m_values.find(zd);
@@ -470,11 +472,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         py-=h;
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
                         col.setAlpha(128);
-                        short px2=px+barw;
-                        short py2=(top+height-2)-h;
+                        px2=px+barw;
+                        py2=(top+height-2)-h;
                         py2+=j;
                         if (lastdaygood) {
-                            lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
+                            if (lastY[j]!=py2) // vertical line
+                                lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
                             lines->add(px,py2,px2+1,py2,col);
                         } else {
                             lines->add(x1,py2,x2+1,py2,col);
