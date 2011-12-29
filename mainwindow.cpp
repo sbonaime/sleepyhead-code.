@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
-        systray=new QSystemTrayIcon(QIcon(":/docs/sheep.png"),this);
+        systray=new QSystemTrayIcon(QIcon(":/icons/bob-v3.0.png"),this);
         systray->show();
         systraymenu=new QMenu(this);
         systray->setContextMenu(systraymenu);
@@ -386,7 +386,7 @@ QString htmlHeader()
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
-"<tr><td><img src='qrc:/docs/sheep.png' width=100px height=100px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
+"<tr><td><img src='qrc:/icons/bob-v3.0.png' width=100px height=100px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
 "</div>"
 "<hr/>");
 }

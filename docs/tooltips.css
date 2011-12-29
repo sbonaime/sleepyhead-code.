@@ -40,26 +40,6 @@ border-radius: 5px 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
 box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1); -moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
 }
 
-.info3 {
-position:relative;
-}
-.info3 span {
-position:absolute;
-left:-999em;
-}
-.info3:hover span {
-left:0px;
-top:+20px;
-/*padding:5px 10px; */
-padding:1px 1px;
-z-index:24;
-border:2px solid #000;
-background:#ffc;
-color:#000;
-border-radius: 5px 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1); -moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
-}
-
 a:link, a:visited { color: inherit; text-decoration: none; font-weight: normal;}
 a:hover { background-color: inherit; color: blue; text-decoration:none; font-weight: normal; }
 
