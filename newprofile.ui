@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Edit User Profile</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/icons/bob-v3.0.png</normaloff>:/icons/bob-v3.0.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

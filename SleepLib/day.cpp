@@ -515,6 +515,10 @@ bool Day::channelHasData(ChannelID id)
             r=true;
             break;
         }
+        if (sessions[i]->m_valuesummary.contains(id)) {
+            r=true;
+            break;
+        }
     }
     return r;
 }

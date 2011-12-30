@@ -106,6 +106,11 @@ void init()
     CPAP_Te=schema::channel["Te"].id();
     CPAP_Ti=schema::channel["Ti"].id();
     CPAP_TgMV=schema::channel["TgMV"].id();
+
+    CPAP_PresReliefSet=schema::channel["PresRelSet"].id();
+    CPAP_PresReliefMode=schema::channel["PresRelMode"].id();
+    CPAP_PresReliefType=schema::channel["PresRelType"].id();
+
     CPAP_UserFlag1=schema::channel["UserFlag1"].id();
     CPAP_UserFlag2=schema::channel["UserFlag2"].id();
     RMS9_E01=schema::channel["RMS9_E01"].id();
@@ -135,6 +140,8 @@ void init()
     PRS1_AutoOff=schema::channel["AutoOff"].id();
     PRS1_MaskAlert=schema::channel["MaskAlert"].id();
     PRS1_ShowAHI=schema::channel["ShowAHI"].id();
+    INTELLIPAP_Unknown1=schema::channel["IntUnk1"].id();
+    INTELLIPAP_Unknown2=schema::channel["IntUnk2"].id();
     OXI_Pulse=schema::channel["Pulse"].id();
     OXI_SPO2=schema::channel["SPO2"].id();
     OXI_PulseChange=schema::channel["PulseChange"].id();

@@ -22,7 +22,7 @@ const quint16 filetype_data=1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version=9;
+const quint16 summary_version=10;
 const quint16 events_version=8;
 
 Session::Session(Machine * m,SessionID session)
@@ -139,6 +139,8 @@ bool Session::StoreSummary(QString filename)
     out << m_avg;
     out << m_wavg;
     out << m_90p;
+    out << m_95p;
+    out << m_med;
     out << m_min;
     out << m_max;
     out << m_cph;
@@ -299,6 +301,10 @@ bool Session::LoadSummary(QString filename)
         in >> m_avg;
         in >> m_wavg;
         in >> m_90p;
+        if (version >= 10) {
+            in >> m_95p;
+            in >> m_med;
+        }
         in >> m_min;
         in >> m_max;
         in >> m_cph;
@@ -613,22 +619,24 @@ void Session::UpdateSummaries()
             Min(id);
             Max(id);
             count(id);
+            last(id);
+            first(id);
             if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
 
             cph(id);
             sph(id);
             avg(id);
             wavg(id);
-            p90(id);
-            last(id);
-            first(id);
+//            p90(id);
+//            p95(id);
+//            median(id);
         }
     }
 
-    if (channelExists(CPAP_Obstructive)) {
+    /*if (channelExists(CPAP_Obstructive)) {
         setCph(CPAP_AHI,cph(CPAP_Obstructive)+cph(CPAP_Hypopnea)+cph(CPAP_ClearAirway));
         setSph(CPAP_AHI,sph(CPAP_Obstructive)+sph(CPAP_Hypopnea)+sph(CPAP_ClearAirway));
-    }
+    }*/
 
 }
 
@@ -994,6 +1002,41 @@ EventDataType Session::p90(ChannelID id) // 90th Percentile
     m_90p[id]=val;
     return val;
 }
+
+EventDataType Session::p95(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_95p.find(id);
+    if (i!=m_95p.end())
+        return i.value();
+
+    if (!eventlist.contains(id)) {
+        m_95p[id]=0;
+        return 0;
+    }
+
+    EventDataType val=percentile(id,0.95);
+    m_95p[id]=val;
+    return val;
+
+}
+
+EventDataType Session::median(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_med.find(id);
+    if (i!=m_med.end())
+        return i.value();
+
+    if (!eventlist.contains(id)) {
+        m_med[id]=0;
+        return 0;
+    }
+
+    EventDataType val=percentile(id,0.5);
+    m_med[id]=val;
+    return val;
+}
+
+
 bool sortfunction (EventStoreType i,EventStoreType j) { return (i<j); }
 
 EventDataType Session::percentile(ChannelID id,EventDataType percent)

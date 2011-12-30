@@ -380,8 +380,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             //sess->summaryCPAP_Mode]!=MODE_ASV)
             sess->settings[CPAP_Mode]=MODE_BIPAP;
 
-            if (sess->settings[PRS1_FlexMode].toInt()!=PR_NONE) {
-                sess->settings[PRS1_FlexMode]=PR_BIFLEX;
+            if (sess->settings[CPAP_PresReliefType].toInt()!=PR_NONE) {
+                sess->settings[CPAP_PresReliefType]=PR_BIFLEX;
             }
 
             sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
@@ -476,10 +476,13 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     // This is incorrect..
     if (data[offset+0x08] & 0x80) { // Flex Setting
         if (data[offset+0x08] & 0x08) {
-            if (max>0) session->settings[PRS1_FlexMode]=(int)PR_AFLEX;
-            else session->settings[PRS1_FlexMode]=(int)PR_CFLEXPLUS;
-        } else session->settings[PRS1_FlexMode]=(int)PR_CFLEX;
-    } else session->settings[PRS1_FlexMode]=(int)PR_NONE;
+            if (max>0) session->settings[CPAP_PresReliefType]=(int)PR_AFLEX;
+            else session->settings[CPAP_PresReliefType]=(int)PR_CFLEXPLUS;
+        } else session->settings[CPAP_PresReliefType]=(int)PR_CFLEX;
+    } else session->settings[CPAP_PresReliefType]=(int)PR_NONE;
+
+    session->settings[CPAP_PresReliefMode]=(int)PM_FullTime; // only has one mode
+
 
     session->settings[PRS1_FlexSet]=(int)(data[offset+0x08] & 3);
     session->settings[PRS1_HumidSetting]=(int)data[offset+0x09]&0x0f;

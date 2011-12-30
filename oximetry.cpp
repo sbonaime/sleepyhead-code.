@@ -1311,7 +1311,7 @@ void Oximetry::on_saveButton_clicked()
         if (m->SessionExists(session->session())) {
             m->sessionlist.erase(m->sessionlist.find(session->session()));
         }
-        QString path=PROFILE.Get(m->properties[STR_PROP_Path])+QString().sprintf("%08x",session->session());
+        QString path=PROFILE.Get(m->properties[STR_PROP_Path])+QString().sprintf("%08lx",session->session());
         QString f1=path+".000";
         QString f2=path+".001";
         QFile::remove(f1);

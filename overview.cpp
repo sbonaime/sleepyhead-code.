@@ -238,6 +238,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     lk=new SummaryChart(tr("Avg Leak"),GT_LINE);
     lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_PERC,false,0.95);
     lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG,false);
+    lk->addSlice(CPAP_Leak,QColor("grey"),ST_MAX,false);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     //pr->addSlice(CPAP_IPAP,QColor("red"));
     LK->AddLayer(lk);

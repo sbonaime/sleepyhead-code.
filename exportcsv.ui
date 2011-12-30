@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Export as CSV</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="Resources.qrc">
+    <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+  </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="3" column="0">
     <widget class="QLabel" name="label_6">
@@ -269,7 +273,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="Resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>cancelButton</sender>

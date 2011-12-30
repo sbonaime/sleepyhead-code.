@@ -95,15 +95,15 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     //lookup["Se"]="Se"; //05
     //lookup["Si"]="Si"; //05
     //lookup["Mi"]="Mi"; //0
-    //lookup["Uh"]="Uh"; //0000.0
-    //lookup["Up"]="Up"; //0000.0
+    lookup["Uh"]="HoursMeter"; //0000.0
+    lookup["Up"]="ComplianceMeter"; //0000.0
     //lookup["Er"]="ErrorCode"; // E00
     //lookup["El"]="LastErrorCode"; // E00 00/00/0000
     //lookup["Hp"]="Hp"; //1
     //lookup["Hs"]="Hs"; //02
     //lookup["Lu"]="LowUseThreshold"; // defaults to 0 (4 hours)
     lookup["Sf"]="SmartFlex";
-    //lookup["Sm"]="SmartFlexMode";
+    lookup["Sm"]="SmartFlexMode";
     lookup["Ks=s"]="Ks_s";
     lookup["Ks=i"]="Ks_i";
 
@@ -203,8 +203,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             sess->AddEventList(CPAP_EPAP,EVL_Event);
             sess->AddEventList(CPAP_Pressure,EVL_Event);
 
-            sess->AddEventList(CPAP_Te,EVL_Event);
-            sess->AddEventList(CPAP_Ti,EVL_Event);
+            sess->AddEventList(INTELLIPAP_Unknown1,EVL_Event);
+            sess->AddEventList(INTELLIPAP_Unknown2,EVL_Event);
 
             sess->AddEventList(CPAP_LeakTotal,EVL_Event);
             sess->AddEventList(CPAP_MaxLeak,EVL_Event);
@@ -319,6 +319,15 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             //}
             quint64 first=qint64(sid)*1000L;
             quint64 last=qint64(SessionEnd[i])*1000L;
+
+            sess->settings[CPAP_PresReliefType]=(PRTypes)PR_SMARTFLEX;
+            sess->settings[CPAP_PresReliefSet]=set1["SmartFlex"].toInt();
+            int sfm=set1["SmartFlexMode"].toInt();
+            if (sfm==0) {
+                sess->settings[CPAP_PresReliefMode]=PM_FullTime;
+            } else {
+                sess->settings[CPAP_PresReliefMode]=PM_RampOnly;
+            }
 
             EventDataType max=sess->Max(CPAP_IPAP);
             EventDataType min=sess->Min(CPAP_EPAP);

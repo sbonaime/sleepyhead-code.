@@ -62,15 +62,44 @@ Session *Machine::SessionExists(SessionID session)
     }
 }
 
-Day *Machine::AddSession(Session *s,Profile *p)
+// Find date this session belongs in
+QDate Machine::pickDate(qint64 first)
+{
+    QTime split_time=PROFILE.session->daySplitTime();
+    int combine_sessions=PROFILE.session->combineCloseSessions();
+
+    QDateTime d2=QDateTime::fromTime_t(first/1000);
+
+    QDate date=d2.date();
+    QTime time=d2.time();
+
+    int closest_session=0;
+
+    if (time<split_time) {
+        date=date.addDays(-1);
+    } else if (combine_sessions > 0) {
+        QMap<QDate,Day *>::iterator dit=day.find(date.addDays(-1)); // Check Day Before
+        if (dit != day.end()) {
+            QDateTime lt=QDateTime::fromTime_t(dit.value()->last()/1000L);
+            closest_session=lt.secsTo(d2)/60;
+            if (closest_session < combine_sessions) {
+                date=date.addDays(-1);
+            }
+        }
+    }
+
+    return date;
+}
+
+QDate Machine::AddSession(Session *s,Profile *p)
 {
     if (!s) {
         qWarning() << "Empty Session in Machine::AddSession()";
-        return NULL;
+        return QDate();
     }
     if (!p) {
         qWarning() << "Empty Profile in Machine::AddSession()";
-        return NULL;
+        return QDate();
     }
     if (s->session()>highest_sessionid)
         highest_sessionid=s->session();
@@ -91,7 +120,6 @@ Day *Machine::AddSession(Session *s,Profile *p)
     QTime time=d2.time();
 
     QMap<QDate,Day *>::iterator dit,nextday;
-
 
     bool combine_next_day=false;
     int closest_session=0;
@@ -121,7 +149,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
 
     if (session_length<ignore_sessions) {
         //if (!closest_session || (closest_session>=60))
-        return NULL;
+        return QDate();
     }
 
     if (!firstsession) {
@@ -159,7 +187,7 @@ Day *Machine::AddSession(Session *s,Profile *p)
         }
         day.erase(nextday);
     }
-    return dd;
+    return date;
 }
 
 // This functions purpose is murder and mayhem... It deletes all of a machines data.
@@ -421,10 +449,14 @@ CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_
 CPAP_RERA, CPAP_PressurePulse, CPAP_FlowLimit, CPAP_FlowRate, CPAP_MaskPressure, CPAP_MaskPressureHi,
 CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
 CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
-CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI;
+CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
+CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType;
+
 
 ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 ChannelID INTP_SmartFlex;
+ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
+
 ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10, PRS1_12,
 PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, PRS1_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
 PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;

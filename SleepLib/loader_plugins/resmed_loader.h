@@ -210,6 +210,9 @@ protected:
     //! \brief Parse the PRD low resolution data, and save to Session * sess
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
     bool LoadPLD(Session *sess,EDFParser &edf);
+
+    QMap<SessionID,QVector<QString> > sessfiles;
+
 };
 
 #endif // RESMED_LOADER_H

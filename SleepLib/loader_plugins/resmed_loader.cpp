@@ -253,89 +253,255 @@ long event_cnt=0;
 
 int ResmedLoader::Open(QString & path,Profile *profile)
 {
+    const QString datalog="DATALOG";
+    const QString idfile="Identification.";
+    const QString strfile="STR.";
+
+    const QString ext_TGT="tgt";
+    const QString ext_CRC="crc";
+    const QString ext_EDF="edf";
+
+    QString serial;                 // Serial number
+    QString key,value;
+    QString line;
     QString newpath;
+    QString filename;
 
-    QString dirtag="DATALOG";
-    if (path.endsWith(QDir::separator()+dirtag)) {
-        return 0;
-        //newpath=path;
+    QHash<QString,QString> idmap;   // Temporary properties hash
+
+    // Strip off end "/" if any
+    if (path.endsWith("/"))
+        path=path.section("/",0,-2);
+
+    // Strip off DATALOG from path, and set newpath to the path contianing DATALOG
+    if (path.endsWith(datalog)) {
+        newpath=path+"/";
+        path=path.section("/",0,-2);
     } else {
-        newpath=path+QDir::separator()+dirtag;
+        newpath=path+"/"+datalog+"/";
     }
-    if (!QDir().exists(newpath)) return 0;
 
-    QString idfile=path+QDir::separator()+"Identification.tgt";
-    QFile f(idfile);
-    if (!f.exists()) return 0;
-    QHash<QString,QString> idmap;
-    if (f.open(QIODevice::ReadOnly)) {
-        if (!f.isReadable())
-            return 0;
+    // Add separator back
+    path+="/";
 
-        while (!f.atEnd()) {
-            QString line=f.readLine().trimmed();
-            QString key,value;
-            if (!line.isEmpty()) {
-                key=line.section(" ",0,0);
-                value=line.section(" ",1);
-                key=key.section("#",1);
-                idmap[key]=value;
+    // Check DATALOG folder exists and is readable
+    if (!QDir().exists(newpath))
+        return 0;
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Parse Identification.tgt file (containing serial number and machine information)
+    ///////////////////////////////////////////////////////////////////////////////////
+    filename=path+idfile+ext_TGT;
+    QFile f(filename);
+    // Abort if this file is dodgy..
+    if (!f.exists() || !f.open(QIODevice::ReadOnly))
+        return 0;
+
+    // Parse # entries into idmap.
+    while (!f.atEnd()) {
+        line=f.readLine().trimmed();
+        if (!line.isEmpty()) {
+            key=line.section(" ",0,0);
+            value=line.section(" ",1);
+            key=key.section("#",1);
+            if (key=="SRN") {
+                key=STR_PROP_Serial;
+                serial=value;
             }
+            idmap[key]=value;
         }
     }
-    QString strfile=path+QDir::separator()+"STR.edf";
-    EDFParser stredf(strfile);
+    f.close();
 
+    // Abort if no serial number
+    if (serial.isEmpty()) {
+        qDebug() << "S9 Data card has no valid serial number in Indentification.tgt";
+        return 0;
+    }
+
+    // Early check for STR.edf file, so we can early exit before creating faulty machine record.
+    QString strpath=path+strfile+ext_EDF;  // STR.edf file
+    f.setFileName(strpath);
+    if (!f.exists()) {
+        qDebug() << "Missing STR.edf file";
+        return 0;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Create machine object (unless it's already registered)
+    ///////////////////////////////////////////////////////////////////////////////////
+    Machine *m=CreateMachine(serial,profile);
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Parse the idmap into machine objects properties, (overwriting any old values)
+    ///////////////////////////////////////////////////////////////////////////////////
+    for (QHash<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
+        m->properties[i.key()]=i.value();
+
+        if (i.key()=="PCD") { // Lookup Product Code for real model string
+            bool ok;
+            int j=i.value().toInt();
+            if (ok) m->properties[STR_PROP_Model]=RMS9ModelMap[j];
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Open and Parse STR.edf file
+    ///////////////////////////////////////////////////////////////////////////////////
+    EDFParser stredf(strpath);
     if (!stredf.Parse()) {
         qDebug() << "Faulty file" << strfile;
         return 0;
     }
+    if (stredf.serialnumber!=serial) {
+        qDebug() << "Identification.tgt Serial number doesn't match STR.edf!";
+    }
+
+
+    // Creating early as we need the object
+    QDir dir(newpath);
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Create the backup folder for storing a copy of everything in..
+    ///////////////////////////////////////////////////////////////////////////////////
+    QString backup_path=PROFILE.Get(m->properties[STR_PROP_Path])+"Backup/";
+    if (!dir.exists(backup_path)) {
+        if (!dir.mkpath(backup_path+datalog)) {
+            qDebug() << "Could not create S9 backup directory :-/";
+        }
+    }
+
+    // Copy Identification files to backup folder
+    QFile::copy(path+idfile+ext_TGT,backup_path+idfile+ext_TGT);
+    QFile::copy(path+idfile+ext_CRC,backup_path+idfile+ext_CRC);
+
+    // Copy STR files to backup folder
+    QFile::copy(strpath,backup_path+strfile+ext_EDF);
+    QFile::copy(path+strfile+ext_CRC,backup_path+strfile+ext_CRC);
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Process the actual STR.edf data
+    ///////////////////////////////////////////////////////////////////////////////////
 
     qint64 duration=stredf.GetNumDataRecords()*stredf.GetDuration();
     int days=duration/86400000L;
 
-    //QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
-    //QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
-    //QDate dd1=dt1.date();
-    //QDate dd2=dt2.date();
-    for (int s=0;s<stredf.GetNumSignals();s++) {
-        //EDFSignal & es=*stredf.edfsignals[s];
-        long recs=stredf.edfsignals[s]->nr*stredf.GetNumDataRecords();
+    QDateTime dt1=QDateTime::fromTime_t(stredf.startdate/1000L);
+    QDateTime dt2=QDateTime::fromTime_t(stredf.enddate/1000L);
+    QDate dd1=dt1.date();
+    QDate dd2=dt2.date();
 
-        qDebug() << "STREDF:" << stredf.edfsignals[s]->label << recs;
+    for (int s=0;s<stredf.GetNumSignals();s++) {
+        EDFSignal & es=*stredf.edfsignals[s];
+        long recs=es.nr*stredf.GetNumDataRecords();
+        //qDebug() << "STREDF:" << es.label << recs;
     }
 
+    // Process STR.edf and find first and last time for each day
 
-    QDir dir(newpath);
+    QVector<qint8> dayused;
+    dayused.resize(days);
+    QList<SessionID> strfirst;
+    QList<SessionID> strlast;
+    QList<int> strday;
+    QList<bool> dayfoo;
 
-    if ((!dir.exists() || !dir.isReadable()))
-        return 0;
+    QHash<qint16,QList<time_t> > daystarttimes;
+    QHash<qint16,QList<time_t> > dayendtimes;
+    qint16 on,off;
+    qint16 o1[10],o2[10];
+    time_t st,et;
+    time_t time=stredf.startdate/1000L; // == 12pm on first day
+    for (int i=0;i<days;i++) {
+        EDFSignal *maskon=stredf.lookup["Mask On"];
+        EDFSignal *maskoff=stredf.lookup["Mask Off"];
+        int j=i*10;
 
-    qDebug() << "ResmedLoader::Open newpath=" << newpath;
+        // Counts for on and off don't line up, and I'm not sure why
+        // The extra 'off' always seems to start with a 1 at the beginning
+        // A signal it's carried over from the day before perhaps? (noon boundary)
+        int ckon=0,ckoff=0;
+        for (int k=0;k<10;k++) {
+            on=maskon->data[j+k];
+            off=maskoff->data[j+k];
+            o1[k]=on;
+            o2[k]=off;
+            if (on >= 0) ckon++;
+            if (off >= 0) ckoff++;
+        }
+
+        // set to true if day starts with machine running
+        int offset=ckoff-ckon;
+        dayfoo.push_back(offset>0);
+
+        st=0,et=0;
+        time_t l,f;
+
+        // Find the Min & Max times for this day
+        for (int k=0;k<ckon;k++) {
+            on=o1[k];
+            off=o2[k+offset];
+            f=time+on*60;
+            l=time+off*60;
+            daystarttimes[i].push_back(f);
+            dayendtimes[i].push_back(l);
+
+            if (!st || (st > f)) st=f;
+            if (!et || (et < l)) et=l;
+        }
+        strfirst.push_back(st);
+        strlast.push_back(et);
+        strday.push_back(i);
+        dayused[i]=ckon;
+        time+=86400;
+    }
+
+    // reset time to first day
+    time=stredf.startdate/1000;
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Open DATALOG file and build list of session files
+    ///////////////////////////////////////////////////////////////////////////////////
+
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
-    QMap<SessionID,QVector<QString> > sessfiles;
 
     QString ext,rest,datestr;//,s,codestr;
     SessionID sessionid;
     QDateTime date;
-    QString filename;
     int size=flist.size();
+
+    sessfiles.clear();
+
+    // For each file in filelist...
     for (int i=0;i<size;i++) {
         QFileInfo fi=flist.at(i);
         filename=fi.fileName();
-        ext=filename.section(".",1).toLower();
-        if (ext!="edf") continue;
 
+        // Forget about it if it can't be read.
+        if (!fi.isReadable())
+            continue;
+
+        // Check the file extnsion
+        ext=filename.section(".",1).toLower();
+        if (ext!=ext_EDF) continue;
+
+        // Split the filename into components
         rest=filename.section(".",0,0);
         datestr=filename.section("_",0,1);
+
         // Take the filename's date, and convert it to epoch to form the sessionID.
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
+        if (!date.isValid())
+            continue; // Skip file if dates invalid
+
         sessionid=date.toTime_t();
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
         // Resmed bugs up on the session filenames.. 1 or 2 seconds either way
         // Moral of the story, when writing firmware and saving in batches, use the same datetimes.
+        ////////////////////////////////////////////////////////////////////////////////////////////
         if (sessfiles.find(sessionid)==sessfiles.end()) {
             if (sessfiles.find(sessionid+2)!=sessfiles.end()) sessionid+=2;
             else if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
@@ -343,76 +509,265 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             else if (sessfiles.find(sessionid-2)!=sessfiles.end()) sessionid-=2;
         }
 
-        sessfiles[sessionid].push_back(fi.canonicalFilePath());
-        if (qprogress) qprogress->setValue((float(i+1)/float(size)*33.0));
+        // Push current filename to sanitized by-session list
+        sessfiles[sessionid].push_back(rest);
+
+        // Update the progress bar
+        if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
         QApplication::processEvents();
-
     }
-
-    Machine *m=NULL;
 
     QString fn;
     Session *sess;
     int cnt=0;
     size=sessfiles.size();
+
+    QHash<SessionID,int> sessday;
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    // Scan over file list and knock out of dayused list
+    /////////////////////////////////////////////////////////////////////////////
     for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si.key();
-        //qDebug() << "Parsing Session " << sessionid;
-        bool done=false;
-        bool first=true;
-        sess=NULL;
-        for (int i=0;i<si.value().size();++i) {
-            fn=si.value()[i].section("_",-1).toLower();
-            EDFParser edf(si.value()[i]);
-            //qDebug() << "Parsing File " << i << " "  << edf.filesize;
 
+        // Earliest possible day number
+        int edn=((sessionid-time)/86400)-1;
+        if (edn<0) edn=0;
+
+        // Find real day number from str.edf mask on/off data.
+        int dn=-1;
+        for (int j=edn;j<strfirst.size();j++){
+            time_t st=strfirst.at(j);
+            time_t et=strlast.at(j);
+            if (sessionid>=st) {
+                if (sessionid<(et+300)) {
+                    dn=j;
+                    break;
+                }
+            }
+        }
+        if (dn>=0) {
+            dayused[dn]=0;
+        }
+    }
+
+    EDFSignal *sig;
+
+    /////////////////////////////////////////////////////////////////////////////
+    // For all days not in session lists, (to get at days without data records)
+    /////////////////////////////////////////////////////////////////////////////
+    for (int dn=0;dn<days;dn++) {
+        if (!dayused[dn]) continue; // Skip days with loadable data.
+
+        if (!daystarttimes.contains(dn)) continue;
+        int j=0;
+        int scnt=daystarttimes[dn].size();
+
+        sess=NULL;
+        // For each mask on/off segment.
+        for (j;j<scnt;j++) {
+            st=daystarttimes[dn].at(j);
+
+            // Skip if session already exists
+            if (m->SessionExists(st))
+                continue;
+
+            et=dayendtimes[dn].at(j);
+
+            // Create session
+            sess=new Session(m,st);
+            sess->really_set_first(qint64(st)*1000L);
+            sess->really_set_last(qint64(et)*1000L);
+
+            /////////////////////////////////////////////////////////////////////
+            // CPAP Mode
+            /////////////////////////////////////////////////////////////////////
+            int mode;
+            sig=stredf.lookupSignal(CPAP_Mode);
+            if (sig) {
+                mode=sig->data[dn];
+            } else mode=0;
+
+
+            /////////////////////////////////////////////////////////////////////
+            // EPR Settings
+            /////////////////////////////////////////////////////////////////////
+            sess->settings[CPAP_PresReliefType]=PR_EPR;
+
+            // Note: AutoSV machines don't have both fields
+            sig=stredf.lookupSignal(RMS9_EPR);
+            if (sig) {
+                int i=sig->data[dn];
+                sess->settings[CPAP_PresReliefMode]=i;
+            }
+            sig=stredf.lookupSignal(RMS9_EPRSet);
+            if (sig)  {
+                sess->settings[CPAP_PresReliefSet]=sig->data[dn];
+            }
+
+
+            /////////////////////////////////////////////////////////////////////
+            // Set Min & Max pressures depending on CPAP mode
+            /////////////////////////////////////////////////////////////////////
+            if (mode==0) {
+                sess->settings[CPAP_Mode]=MODE_CPAP;
+                sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
+                if (sig) {
+                    EventDataType pressure=sig->data[dn]*sig->gain;
+                    sess->settings[CPAP_PressureMin]=pressure;
+                }
+            } else { // VPAP or Auto
+                if (mode>5) {
+                    sess->settings[CPAP_Mode]=MODE_BIPAP;
+                } else {
+                    sess->settings[CPAP_Mode]=MODE_APAP;
+
+                }
+                sig=stredf.lookupSignal(CPAP_PressureMin);
+                if (sig) {
+                    EventDataType pressure=sig->data[dn]*sig->gain;
+                    sess->settings[CPAP_PressureMin]=pressure;
+                    sess->setMin(CPAP_Pressure,pressure);
+                }
+                sig=stredf.lookupSignal(CPAP_PressureMax);
+                if (sig) {
+                    EventDataType pressure=sig->data[dn]*sig->gain;
+                    sess->settings[CPAP_PressureMax]=pressure;
+                    sess->setMax(CPAP_Pressure,pressure);
+                }
+            }
+
+            sess->SetChanged(true);
+            m->AddSession(sess,profile);
+
+        }
+        // Add the remainder to the last session
+        EventDataType tmp,dur;
+        if (sess) {
+            EventDataType valmed=0,valmax=0,val95=0;
+
+            if (stredf.lookup.contains("Leak Med")) {
+                sig=stredf.lookup["Leak Med"];
+                valmed=sig->data[dn];
+                sess->setMedian(CPAP_Leak,valmed*sig->gain*60.0);
+                sess->m_gain[CPAP_Leak]=sig->gain*60.0;
+                sess->m_valuesummary[CPAP_Leak][valmed]=50;
+            }
+            if (stredf.lookup.contains("Leak 95")) {
+                sig=stredf.lookup["Leak 95"];
+                val95=sig->data[dn];
+                sess->set95p(CPAP_Leak,val95*sig->gain*60.0);
+                sess->m_valuesummary[CPAP_Leak][val95]=45;
+            }
+            if (stredf.lookup.contains("Leak Max")) {
+                sig=stredf.lookup["Leak Max"];
+                valmax=sig->data[dn];
+                sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
+                sess->m_valuesummary[CPAP_Leak][valmax]=5;
+            }
+
+            if (stredf.lookup.contains("Mask Pres Med")) {
+                sig=stredf.lookup["Mask Pres Med"];
+                valmed=sig->data[dn];
+                sess->setMedian(CPAP_Pressure,valmed*sig->gain);
+                sess->m_gain[CPAP_Pressure]=sig->gain;
+                sess->m_valuesummary[CPAP_Pressure][valmed]=50;
+            }
+            if (stredf.lookup.contains("Mask Pres 95")) {
+                sig=stredf.lookup["Mask Pres 95"];
+                val95=sig->data[dn];
+                sess->set95p(CPAP_Pressure,val95*sig->gain);
+                sess->m_valuesummary[CPAP_Pressure][val95]=45;
+            }
+            if (stredf.lookup.contains("Mask Pres Max")) {
+                sig=stredf.lookup["Mask Pres Max"];
+                valmax=sig->data[dn];
+                sess->setMax(CPAP_Pressure,valmax*sig->gain);
+                sess->m_valuesummary[CPAP_Pressure][valmax]=5;
+            }
+
+
+            if (stredf.lookup.contains("Mask Dur")) {
+                sig=stredf.lookup["Mask Dur"];
+                dur=sig->data[dn]*sig->gain;
+            }
+            if (stredf.lookup.contains("OAI")) {
+                sig=stredf.lookup["OAI"];
+                tmp=sig->data[dn]*sig->gain;
+                sess->setCph(CPAP_Obstructive,tmp);
+                sess->setCount(CPAP_Obstructive,tmp*(dur/60.0));
+            }
+            if (stredf.lookup.contains("HI")) {
+                sig=stredf.lookup["HI"];
+                tmp=sig->data[dn]*sig->gain;
+                sess->setCph(CPAP_Hypopnea,tmp);
+                sess->setCount(CPAP_Hypopnea,tmp*(dur/60.0));
+            }
+            if (stredf.lookup.contains("UAI")) {
+                sig=stredf.lookup["UAI"];
+                tmp=sig->data[dn]*sig->gain;
+                sess->setCph(CPAP_Apnea,tmp);
+                sess->setCount(CPAP_Apnea,tmp*(dur/60.0));
+            }
+            if (stredf.lookup.contains("CAI")) {
+                sig=stredf.lookup["CAI"];
+                tmp=sig->data[dn]*sig->gain;
+                sess->setCph(CPAP_ClearAirway,tmp);
+                sess->setCount(CPAP_ClearAirway,tmp*(dur/60.0));
+            }
+
+
+
+        }
+
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    // Scan through new file list and import sessions
+    /////////////////////////////////////////////////////////////////////////////
+    for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+        sessionid=si.key();
+
+        // Skip file if already imported
+        if (m->SessionExists(sessionid))
+            continue;
+
+        // Create the session
+        sess=new Session(m,sessionid);
+
+        // Process EDF File List
+        for (int i=0;i<si.value().size();++i) {
+            QString filename=si.value()[i]+".";
+            QString fullpath=newpath+filename;
+
+            // Copy the EDF file to the backup folder
+            QString backup_file=backup_path+datalog+"/"+filename;
+            QFile().copy(fullpath+ext_EDF, backup_file+ext_EDF);
+            QFile().copy(fullpath+ext_CRC, backup_file+ext_CRC);
+
+            fullpath+=ext_EDF;
+            EDFParser edf(fullpath);
+
+            // Parse the actual file
             if (!edf.Parse())
                 continue;
 
-            if (first) { // First EDF file parsed, check if this data set is already imported
-                m=CreateMachine(edf.serialnumber,profile);
-                for (QHash<QString,QString>::iterator i=idmap.begin();i!=idmap.end();i++) {
-                    if (i.key()=="SRN") {
-                        if (edf.serialnumber!=i.value()) {
-                            qDebug() << "edf Serial number doesn't match Identification.tgt";
-                        }
-                        if (edf.serialnumber!=stredf.serialnumber) {
-                            qDebug() << "edf Serial number doesn't match STR.edf!";
-                        }
-                    } else if (i.key()=="PNA") {
-                        //m->properties[STR_PROP_Model]=""; //i.value();
-                    } else if (i.key()=="PCD") { // Product Code..
-                        bool ok;
-                        int j=i.value().toInt(&ok);
-                        if (RMS9ModelMap.find(j)!=RMS9ModelMap.end()) {
-                            m->properties[STR_PROP_Model]=RMS9ModelMap[j];
-                        }
-                    } else {
-                        m->properties[i.key()]=i.value();
-                    }
-                }
-                if (m->SessionExists(sessionid)) {
-                    done=true;
-                    break;
-                }
-                sess=new Session(m,sessionid);
-                first=false;
+            // Give a warning if doesn't match the machine serial number in Identification.tgt
+            if (edf.serialnumber!=serial) {
+                qDebug() << "edf Serial number doesn't match Identification.tgt";
             }
-            if (!done) {
-                if (fn=="eve.edf") LoadEVE(sess,edf);
-                else if (fn=="pld.edf") LoadPLD(sess,edf);
-                else if (fn=="brp.edf") LoadBRP(sess,edf);
-                else if (fn=="sad.edf") LoadSAD(sess,edf);
 
-                //if (first) {
-                    //first=false;
-                //}
-            }
+            fn=fullpath.section("_",-1).toLower();
+
+            if (fn=="eve.edf") LoadEVE(sess,edf);
+            else if (fn=="pld.edf") LoadPLD(sess,edf);
+            else if (fn=="brp.edf") LoadBRP(sess,edf);
+            else if (fn=="sad.edf") LoadSAD(sess,edf);
         }
-        if (qprogress) qprogress->setValue(33.0+(float(++cnt)/float(size)*66.0));
+        if (qprogress) qprogress->setValue(10.0+(float(++cnt)/float(size)*90.0));
         QApplication::processEvents();
 
-        EDFSignal *sig;
         if (!sess) continue;
         if (!sess->first()) {
             delete sess;
@@ -428,15 +783,19 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     mode=sig->data[dn];
                 } else mode=0;
 
+                sess->settings[CPAP_PresReliefType]=PR_EPR;
+
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
-                    sess->settings[RMS9_EPR]=sig->data[dn];
+                    int i=sig->data[dn];
+                    sess->settings[CPAP_PresReliefMode]=i;
+
                 }
 
                 sig=stredf.lookupSignal(RMS9_EPRSet);
                 if (sig)  {
-                    sess->settings[RMS9_EPRSet]=sig->data[dn];
+                    sess->settings[CPAP_PresReliefSet]=sig->data[dn];
                 }
 
                 if (mode==0) {
@@ -494,7 +853,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             //Rather than take a dodgy guess, EPR settings can take a hit, and this data can simply be missed..
 
             // Add the session to the machine & profile objects
-            m->AddSession(sess,profile); // Adding earlier than I really like here..
+            m->AddSession(sess,profile);
         }
     }
 

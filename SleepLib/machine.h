@@ -95,7 +95,10 @@ public:
     Session * SessionExists(SessionID session);
 
     //! \brief Adds the session to this machine object, and the Master Profile list. (used during load)
-    Day *AddSession(Session *s,Profile *p);
+    QDate AddSession(Session *s,Profile *p);
+
+    //! \brief Find the date this session belongs in, according to profile settings
+    QDate pickDate(qint64 start);
 
     //! \brief Sets the Class of machine (Used to reference the particular loader that created it)
     void SetClass(QString t) { m_class=t; }

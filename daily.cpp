@@ -715,15 +715,17 @@ void Daily::Load(QDate date)
     } else {
         GraphView->setCubeImage(images["nodata"]);
         GraphView->setEmptyText(tr("No Data"));
-        emptyToggleArea->setText("No data available for this day");
+        emptyToggleArea->setText("No graph data available for this day");
     }
 
     if (cpap) {
         if (GraphView->isEmpty()) {
-            GraphView->setCubeImage(images["brick"]);
-            GraphView->setEmptyText(tr("Brick Machine :("));
+            if (cpap->machine->GetClass()!=STR_MACH_ResMed) {
+                GraphView->setCubeImage(images["brick"]);
+                GraphView->setEmptyText(tr("No Graphs :("));
 
-            isBrick=true;
+                isBrick=true;
+            }
         }
 
         mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);

@@ -74,6 +74,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 
   <channel id="0x1165" class="setting" scope="!session" name="SmartFlex" details="SmartFlex" label="SmartFlex" type="integer"/>
   <channel id="0x1166" class="data" name="PRS1_0F" details="Unknown 0F" label="U0F" unit="?" color="dark green"/>
+  <channel id="0x1167" class="data" name="IntUnk1" details="Unknown 1" label="Unknown 1" unit="?" color="dark green"/>
+  <channel id="0x1168" class="data" name="IntUnk2" details="Unknown 2" label="Unknown 2" unit="?" color="dark green"/>
 
   <channel id="0x1200" class="setting" scope="!session" name="PAPMode" details="PAP Mode" label="PAP Mode" type="integer">
    <option id="0" value="CPAP"/>
@@ -81,6 +83,23 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
    <option id="2" value="Bi-Level"/>
    <option id="3" value="ASV"/>
   </channel>
+  <channel id="0x1201" class="setting" scope="!session" name="PresRelType" details="Pressure Relief Type" label="Pres. Relief" type="integer">
+    <Option id="0" value=""/>
+    <Option id="1" value="None"/>
+    <Option id="2" value="C-Flex"/>
+    <Option id="3" value="C-Flex+"/>
+    <Option id="4" value="A-Flex"/>
+    <Option id="5" value="Bi-Flex"/>
+    <Option id="6" value="EPR"/>
+    <Option id="7" value="SmartFlex"/>
+  </channel>
+  <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
+    <Option id="0" value=""/>
+    <Option id="1" value="Ramp"/>
+    <Option id="2" value="Full Time"/>
+  </channel>
+  <channel id="0x1203" class="setting" scope="!session" name="PresResSet" details="Pressure Relief Setting" label="Pres. Rel. Set"/>
+
  </group>
  <group name="OXI">
   <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse Rate" unit="bpm" color="red"/>

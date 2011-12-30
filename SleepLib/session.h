@@ -141,6 +141,8 @@ public:
     QHash<ChannelID,EventDataType> m_avg;
     QHash<ChannelID,EventDataType> m_wavg;
     QHash<ChannelID,EventDataType> m_90p;
+    QHash<ChannelID,EventDataType> m_95p;
+    QHash<ChannelID,EventDataType> m_med;
     QHash<ChannelID,EventDataType> m_min;
     QHash<ChannelID,EventDataType> m_max;
     QHash<ChannelID,EventDataType> m_cph;  // Counts per hour (eg AHI)
@@ -161,7 +163,9 @@ public:
     void setMax(ChannelID id,EventDataType val) { m_max[id]=val; }
     void setAvg(ChannelID id,EventDataType val) { m_avg[id]=val; }
     void setWavg(ChannelID id,EventDataType val) { m_wavg[id]=val; }
+    void setMedian(ChannelID id,EventDataType val) { m_med[id]=val; }
     void set90p(ChannelID id,EventDataType val) { m_90p[id]=val; }
+    void set95p(ChannelID id,EventDataType val) { m_95p[id]=val; }
     void setCph(ChannelID id,EventDataType val) { m_cph[id]=val; }
     void setSph(ChannelID id,EventDataType val) { m_sph[id]=val; }
     void setFirst(ChannelID id,qint64 val) { m_firstchan[id]=val; }
@@ -199,6 +203,12 @@ public:
 
     //! \brief Returns (and caches) the 90th Percentile of all events of type id
     EventDataType p90(ChannelID id);
+
+    //! \brief Returns (and caches) the 95th Percentile of all events of type id
+    EventDataType p95(ChannelID id);
+
+    //! \brief Returns (and caches) the Median (50th Perc) of all events of type id
+    EventDataType median(ChannelID id);
 
     //! \brief Returns (and caches) the Count-Per-Hour of all events of type id
     EventDataType cph(ChannelID id);

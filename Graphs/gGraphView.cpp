@@ -212,13 +212,13 @@ void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x
 GLShortBuffer::GLShortBuffer(int max,int type, bool stippled)
     :GLBuffer(max,type,stippled)
 {
-    buffer=new GLshort [max+8];
-    colors=new GLubyte[max*4+(8*4)];
+    buffer=(GLshort *)calloc(sizeof(GLshort),max+8);
+    colors=(GLubyte *)calloc(sizeof(GLubyte),max*4+(8*4));
 }
 GLShortBuffer::~GLShortBuffer()
 {
-    if (colors) delete [] colors;
-    if (buffer) delete [] buffer;
+    if (colors) free(colors);
+    if (buffer) free(buffer);
 }
 
 void GLShortBuffer::add(GLshort x, GLshort y,QColor & color)
@@ -307,6 +307,7 @@ void GLShortBuffer::draw()
 {
     if (m_cnt>0) {
         bool antialias=m_forceantialias || (PROFILE.ExistsAndTrue("UseAntiAliasing") && m_antialias);
+        if (m_stippled) antialias=true;
         float size=m_size;
         if (antialias) {
             glEnable(GL_BLEND);
@@ -325,7 +326,6 @@ void GLShortBuffer::draw()
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
             if (m_stippled) {
                 glLineStipple(1, 0xcccc);
-                glEnable(GL_BLEND);
                 glEnable(GL_LINE_STIPPLE);
             } else {
                 glLineStipple(1, 0xFFFF);
@@ -342,6 +342,7 @@ void GLShortBuffer::draw()
             glEnable(GL_SCISSOR_TEST);
         }
 
+        glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_SHORT, 0, buffer);
 
         if (m_colcnt>0) {
@@ -350,13 +351,12 @@ void GLShortBuffer::draw()
         } else {
             glColor4ub(m_color.red(),m_color.green(),m_color.blue(),m_color.alpha());
         }
-        glEnableClientState(GL_VERTEX_ARRAY);
         glDrawArrays(m_type, 0, m_cnt >> 1);
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_VERTEX_ARRAY);
+       // glDisableClientState(GL_COLOR_ARRAY);
         if (m_colcnt>0) {
             glDisableClientState(GL_COLOR_ARRAY);
         }
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         //qDebug() << "I Drawed" << m_cnt << "vertices";
         m_cnt=0;
@@ -368,10 +368,11 @@ void GLShortBuffer::draw()
         if (m_type==GL_POLYGON) {
             glPolygonMode(GL_BACK,GL_FILL);
         }
-        if (m_stippled) {
-            glDisable(GL_BLEND);
-            glDisable(GL_LINE_STIPPLE);
-            glLineStipple(1, 0xFFFF);
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            if (m_stippled) {
+                glDisable(GL_LINE_STIPPLE);
+                glLineStipple(1, 0xFFFF);
+            }
         }
 
         if (antialias) {

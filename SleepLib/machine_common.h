@@ -63,6 +63,10 @@ enum PRTypes//:short
 {
     PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX
 };
+enum PRModes//:short
+{
+    PM_UNKNOWN=0,PM_RampOnly,PM_FullTime
+};
 
 
 //extern map<ChannelID,QString> DefaultMCShortNames;
@@ -85,13 +89,16 @@ CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_
 CPAP_RERA, CPAP_PressurePulse, CPAP_FlowLimit, CPAP_FlowRate, CPAP_MaskPressure, CPAP_MaskPressureHi,
 CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
 CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
-CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI;
+CPAP_UserFlag1, CPAP_UserFlag2, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
+CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType;
 
 extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 extern ChannelID INTP_SmartFlex;
 extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10, PRS1_12,
 PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, PRS1_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
 PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
+
+extern ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 
 extern ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
 

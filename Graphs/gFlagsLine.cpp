@@ -75,7 +75,7 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
         if (i & 1) barcol=&col1; else barcol=&col2;
-        quads->add(left,linetop,left,linetop+m_barh,left+width-1,linetop+m_barh,left+width-1,linetop,*barcol);
+        quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, *barcol);
 
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,m_barh);
@@ -84,7 +84,7 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 
     GLShortBuffer *outlines=w.lines();
     QColor blk=Qt::black;
-    outlines->add(left-1, top, left-1, top+height,left-1, top+height, left+width,top+height, blk);
+    outlines->add(left-1, top, left-1, top+height, left-1, top+height, left+width,top+height, blk);
     outlines->add(left+width,top+height, left+width, top, left+width, top, left-1, top, blk);
 
     //lines->add(left-1, top, left-1, top+height);
@@ -137,7 +137,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     float bartop=top+2;
     float bottom=top+height-2;
     bool verts_exceeded=false;
-    qint64 X,Y;
+    qint64 X,X2,L;
     m_flag_color=schema::channel[m_code].defaultColor();
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled()) continue;
@@ -148,17 +148,22 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
         for (quint32 i=0;i<el.count();i++) {
             X=el.time(i);
-            Y=X-(el.data(i)*1000);
-            if (Y < minx) continue;
+            L=el.data(i)*1000;
+            X2=X-L;
+            if (X2 < minx) continue;
             if (X > maxx) break;
             x1=(X - minx) * xmult + left;
             if (m_flt==FT_Bar) {
                 lines->add(x1,bartop,x1,bottom,m_flag_color);
                 if (lines->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
-                x2=(Y-minx)*xmult+left;
+                x2=(X2-minx)*xmult+left;
                 //w1=x2-x1;
-                quads->add(x1,bartop,x1,bottom,x2,bottom,x2,bartop,m_flag_color);
+                /*if (qAbs(x1-x2)<=1) {
+                    x1-=1;
+                    x2+=1;
+                }*/
+                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom,m_flag_color);
                 if (quads->full()) { verts_exceeded=true; break; }
             }
         }
