@@ -904,6 +904,7 @@ QDate Profile::LastGoodDay(MachineType mt)
         return FirstDay();
     QDate d=LastDay(mt);
     QDate f=FirstDay(mt);
+    if (!(d.isValid() && f.isValid())) return QDate();
     do {
         if (GetGoodDay(d,mt)!=NULL) return d;
         d=d.addDays(-1);

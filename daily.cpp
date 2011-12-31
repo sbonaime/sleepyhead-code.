@@ -761,12 +761,34 @@ void Daily::Load(QDate date)
         CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
         html+="<tr><td colspan=4 align=center>Mode: ";
 
-        EventDataType min=cpap->settings_min(CPAP_PressureMin);
-        EventDataType max=cpap->settings_max(CPAP_PressureMax);
-        if (mode==MODE_CPAP) html+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
-        else if (mode==MODE_APAP) html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
-        else if (mode==MODE_BIPAP) html+=tr("Bi-Level");
-        else if (mode==MODE_ASV) html+=tr("ASV");
+        if (mode==MODE_CPAP) {
+            EventDataType min=cpap->settings_min(CPAP_PressureMin);
+            html+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
+        } else if (mode==MODE_APAP) {
+            EventDataType min=cpap->settings_min(CPAP_PressureMin);
+            EventDataType max=cpap->settings_max(CPAP_PressureMax);
+            html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
+        } else if (mode==MODE_BIPAP) {
+            EventDataType epap=cpap->settings_min(CPAP_EPAP);
+            EventDataType ipap=cpap->settings_max(CPAP_IPAP);
+            EventDataType ps=cpap->settings_max(CPAP_PS);
+            html+=tr("Bi-Level")+QString("<br/>EPAP: %1 IPAP: %2 %3<br/> PS: %4")
+                    .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
+        }
+        else if (mode==MODE_ASV) {
+            EventDataType epap=cpap->settings_min(CPAP_EPAP);
+            EventDataType low=cpap->settings_min(CPAP_IPAPLo);
+            EventDataType high=cpap->settings_max(CPAP_IPAPHi);
+            EventDataType psl=cpap->settings_min(CPAP_PSMin);
+            EventDataType psh=cpap->settings_max(CPAP_PSMax);
+            html+=tr("ASV")+QString("<br/>EPAP: %1 IPAP: %2 - %3 %4<br/> PS: %5 / %6")
+                    .arg(epap,0,'f',1)
+                    .arg(low,0,'f',1)
+                    .arg(high,0,'f',1)
+                    .arg(STR_UNIT_CMH2O)
+                    .arg(psl,0,'f',1)
+                    .arg(psh,0,'f',1);
+        }
         else html+=tr("Unknown");
         html+="</td></tr>\n";
 

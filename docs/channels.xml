@@ -55,6 +55,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1117" class="data" name="LeakTotal" details="Total Leak Rate" label="Total Leaks" unit="L/min" color="dark green"/>
   <channel id="0x1118" class="data" name="LeakMedian" details="Median Leak Rate" label="Median Leaks" unit="L/min" color="dark green"/>
   <channel id="0x1119" class="data" name="RDI" details="Respiratory Disturbance Index" label="RDI" unit="events/hr" color="dark red"/>
+  <channel id="0x111a" class="setting" name="PSMin" details="Pressure Support Min" label="PS Min" unit="cmH20" color="dark cyan"/>
+  <channel id="0x111b" class="setting" name="PSMax" details="Pressure Support Max" label="PS Max" unit="cmH20" color="dark magenta"/>
 
   <channel id="0x1150" class="data" name="PRS1_00" details="Unknown 00" label="U00" unit="?" color="black"/>
   <channel id="0x1151" class="data" name="PRS1_01" details="Unknown 01" label="U01" unit="?" color="black"/>
@@ -92,6 +94,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
     <Option id="5" value="Bi-Flex"/>
     <Option id="6" value="EPR"/>
     <Option id="7" value="SmartFlex"/>
+    <Option id="8" value="Easy-Breathe"/>
   </channel>
   <channel id="0x1202" class="setting" scope="!session" name="PresRelMode" details="Pressure Relief Mode" label="Pres. Rel. Mode" type="integer">
     <Option id="0" value=""/>

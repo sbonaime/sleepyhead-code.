@@ -69,6 +69,8 @@ void init()
     CPAP_EPAP=schema::channel["EPAP"].id();
     CPAP_Pressure=schema::channel["Pressure"].id();
     CPAP_PS=schema::channel["PS"].id();
+    CPAP_PSMin=schema::channel["PSMin"].id();
+    CPAP_PSMax=schema::channel["PSMax"].id();
     CPAP_Mode=schema::channel["PAPMode"].id();
     CPAP_BrokenSummary=schema::channel["BrokenSummary"].id();
     CPAP_PressureMin=schema::channel["PressureMin"].id();
