@@ -457,10 +457,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     EventDataType max,min;
 
     min=float(data[0x03])/10.0;
-    session->settings[CPAP_PressureMin]=(double)min;
-    //min=session->settings[CPAP_PressureMin].toDouble();
     max=float(data[0x04])/10.0;
-    session->settings[CPAP_PressureMax]=(double)max;
     int offset=0;
     if (version==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
         offset=4;   // non zero adds 4 extra fields..
@@ -471,7 +468,12 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 
     if (max>0) { // Ignoring bipap until I see some more data.
         session->settings[CPAP_Mode]=(int)MODE_APAP;
-    } else session->settings[CPAP_Mode]=(int)MODE_CPAP;
+        session->settings[CPAP_PressureMin]=(double)min;
+        session->settings[CPAP_PressureMax]=(double)max;
+    } else {
+        session->settings[CPAP_Mode]=(int)MODE_CPAP;
+        session->settings[CPAP_Pressure]=(double)min;
+    }
 
     // This is incorrect..
     if (data[offset+0x08] & 0x80) { // Flex Setting

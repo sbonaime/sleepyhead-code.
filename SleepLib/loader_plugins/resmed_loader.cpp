@@ -621,7 +621,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
                 if (sig) {
                     EventDataType pressure=sig->data[dn]*sig->gain;
-                    sess->settings[CPAP_PressureMin]=pressure;
+                    sess->settings[CPAP_Pressure]=pressure;
                 }
             } else { // VPAP or Auto
                 if (mode>5) {
@@ -685,13 +685,13 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
-                        sess->setMin(CPAP_Pressure,pressure);
+                        //sess->setMin(CPAP_Pressure,pressure);
                     }
                     sig=stredf.lookupSignal(CPAP_PressureMax);
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMax]=pressure;
-                        sess->setMax(CPAP_Pressure,pressure);
+                        //sess->setMax(CPAP_Pressure,pressure);
                     }
 
                 }
@@ -1058,13 +1058,13 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMin]=pressure;
-                        sess->setMin(CPAP_Pressure,pressure);
+                        //sess->setMin(CPAP_Pressure,pressure);
                     }
                     sig=stredf.lookupSignal(CPAP_PressureMax);
                     if (sig) {
                         EventDataType pressure=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PressureMax]=pressure;
-                        sess->setMax(CPAP_Pressure,pressure);
+                        //sess->setMax(CPAP_Pressure,pressure);
                     }
 
                 }

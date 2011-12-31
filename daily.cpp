@@ -762,7 +762,7 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=4 align=center>Mode: ";
 
         if (mode==MODE_CPAP) {
-            EventDataType min=cpap->settings_min(CPAP_PressureMin);
+            EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
             html+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
         } else if (mode==MODE_APAP) {
             EventDataType min=cpap->settings_min(CPAP_PressureMin);
@@ -978,31 +978,32 @@ void Daily::Load(QDate date)
 //        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5><hr height=2></td></tr>";
-        if (cpap->machine->GetClass()==STR_MACH_PRS1) {
-            int i=cpap->settings_max(PRS1_FlexMode);
-            int j=cpap->settings_max(PRS1_FlexSet);
-            QString flexstr=(i>1) ? schema::channel[PRS1_FlexMode].option(i)+" "+schema::channel[PRS1_FlexSet].option(j) : "None";
+            int i=cpap->settings_max(CPAP_PresReliefType);
+            int j=cpap->settings_max(CPAP_PresReliefSet);
+            QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : "None";
 
-            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Flex"))
+            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Pr. Relief"))
                     .arg(flexstr);
-            int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
-            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
+            if (cpap->machine->GetClass()==STR_MACH_PRS1) {
+                int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
+                html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
                     .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
-        } else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
+            }
+        /*} else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
             int epr=cpap->settings_max(RMS9_EPR);
             int epr2=cpap->settings_max(RMS9_EPRSet);
             html+=QString("<tr><td>%1</td><td colspan=4>%2 / %3</td></tr>")
                     .arg(tr("EPR")).arg(epr).arg(epr2);
 
-        }
+        }*/
     }
     html+="</table>";
 
     if (cpap || oxi) {
         html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-        html+="<tr><td colspan=4 align=center>&nbsp;</td></tr>";
+        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
         html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Session Information"));
-        html+="<tr><td colspan=4 align=center><hr height=2/></td></tr>";
+        html+="<tr><td colspan=5><hr/></td></tr>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
@@ -1013,7 +1014,7 @@ void Daily::Load(QDate date)
             .arg(tr("Start"))
             .arg(tr("End"));
         if (cpap) {
-            html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("CPAP Sessions"));
+            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("CPAP Sessions"));
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -1021,11 +1022,11 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 tooltip=cpap->machine->GetClass()+"&nbsp;"+tr("CPAP")+"&nbsp;"+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
                 // tooltip needs to lookup language.. :-/
 
-                if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
+                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
+                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
                 Session *sess=*s;
                 if (!sess->settings.contains(SESSION_ENABLED)) {
                     sess->settings[SESSION_ENABLED]=true;
@@ -1041,8 +1042,9 @@ void Daily::Load(QDate date)
                         .arg(ld.toString("HH:mm"));
             }
         }
+
         if (oxi) {
-            html+=QString("<tr><td align=left colspan=4><i>%1</i></td></tr>").arg(tr("Oximetry Sessions"));
+            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("Oximetry Sessions"));
             for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -1050,7 +1052,6 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 tooltip=oxi->machine->GetClass()+" "+tr("Oximeter")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
 
                 Session *sess=*s;
@@ -1059,7 +1060,8 @@ void Daily::Load(QDate date)
                 }
                 bool b=sess->settings[SESSION_ENABLED].toBool();
 
-                if ((i!=(*s)->settings.end()) && i.value().toBool()) corrupted_waveform=true;
+                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
+                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
                 html+=QString("<tr><td align=left><a class=info href='oxi=%1'>%3<span>%2</span></a></td><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
@@ -1073,7 +1075,7 @@ void Daily::Load(QDate date)
             }
         }
         if (corrupted_waveform) {
-            html+=QString("<tr><td colspan=4 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
+            html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
         }
         html+="</table><br/>";
     }

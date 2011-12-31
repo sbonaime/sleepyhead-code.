@@ -73,6 +73,7 @@ void init()
     CPAP_PSMax=schema::channel["PSMax"].id();
     CPAP_Mode=schema::channel["PAPMode"].id();
     CPAP_BrokenSummary=schema::channel["BrokenSummary"].id();
+    CPAP_BrokenWaveform=schema::channel["BrokenWaveform"].id();
     CPAP_PressureMin=schema::channel["PressureMin"].id();
     CPAP_PressureMax=schema::channel["PressureMax"].id();
     CPAP_RampTime=schema::channel["RampTime"].id();

@@ -231,7 +231,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
         pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
     } else {
 
-        pr->addSlice(CPAP_PressureMin,QColor("grey"),ST_SETWAVG,true);
+        pr->addSlice(CPAP_Pressure,QColor("grey"),ST_SETWAVG,true);
     }
     PR->AddLayer(pr);
 

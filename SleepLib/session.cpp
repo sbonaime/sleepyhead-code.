@@ -615,7 +615,10 @@ void Session::UpdateSummaries()
                 EventDataType gain=el->gain();
                 m_gain[id]=gain;
             } else m_gain[id]=0;
-            updateCountSummary(id);
+
+            if ((id!=CPAP_FlowRate) && (id!=CPAP_MaskPressure))
+                updateCountSummary(id);
+
             Min(id);
             Max(id);
             count(id);

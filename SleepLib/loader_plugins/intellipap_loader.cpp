@@ -252,8 +252,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
 
                 int rr=m_buffer[pos+0xa];
                 sess->eventlist[CPAP_RespRate][0]->AddEvent(time,rr); // Respiratory Rate
-                sess->eventlist[CPAP_Te][0]->AddEvent(time,m_buffer[pos+0xf]); //
-                sess->eventlist[CPAP_Ti][0]->AddEvent(time,m_buffer[pos+0xc]);
+                sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time,m_buffer[pos+0xf]); //
+                sess->eventlist[INTELLIPAP_Unknown1][0]->AddEvent(time,m_buffer[pos+0xc]);
 
                 sess->eventlist[CPAP_Snore][0]->AddEvent(time,m_buffer[pos+0x4]); //4/5??
 
@@ -321,7 +321,8 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             quint64 last=qint64(SessionEnd[i])*1000L;
 
             sess->settings[CPAP_PresReliefType]=(PRTypes)PR_SMARTFLEX;
-            sess->settings[CPAP_PresReliefSet]=set1["SmartFlex"].toInt();
+            int i=set1["SmartFlex"].toInt();
+            sess->settings[CPAP_PresReliefSet]=i;
             int sfm=set1["SmartFlexMode"].toInt();
             if (sfm==0) {
                 sess->settings[CPAP_PresReliefMode]=PM_FullTime;
@@ -334,8 +335,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
             EventDataType pres=sess->Min(CPAP_Pressure);
             if (max==min) {
                 sess->settings[CPAP_Mode]=(int)MODE_CPAP;
-                sess->settings[CPAP_PressureMin]=min;
-                sess->settings[CPAP_PressureMax]=min;
+                sess->settings[CPAP_Pressure]=min;
             } else {
                 sess->settings[CPAP_Mode]=(int)MODE_APAP;
                 sess->settings[CPAP_PressureMin]=min;

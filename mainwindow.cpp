@@ -419,6 +419,8 @@ struct RXChange
         mode=copy.mode;
         min=copy.min;
         max=copy.max;
+        maxhi=copy.maxhi;
+        machine=copy.machine;
         per1=copy.per1;
         per2=copy.per2;
         highlight=copy.highlight;
@@ -433,48 +435,52 @@ struct RXChange
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
+    EventDataType maxhi;
     EventDataType per1;
     EventDataType per2;
     EventDataType weighted;
     PRTypes prelief;
+    Machine * machine;
     short prelset;
     short highlight;
 };
 
-enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_per1, RX_per2, RX_weighted };
+enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_maxhi, RX_per1, RX_per2, RX_weighted };
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
 
-bool operator<(const RXChange & comp1, const RXChange & comp2) {
-    if (RXorder) {
-        switch (RXsort) {
-        case RX_ahi: return comp1.ahi < comp2.ahi;
-        case RX_days: return comp1.days < comp2.days;
-        case RX_first: return comp1.first < comp2.first;
-        case RX_last: return comp1.last < comp2.last;
-        case RX_mode: return comp1.mode < comp2.mode;
-        case RX_min:  return comp1.min < comp2.min;
-        case RX_max:  return comp1.max < comp2.max;
-        case RX_per1:  return comp1.per1 < comp2.per1;
-        case RX_per2:  return comp1.per2 < comp2.per2;
-        case RX_weighted:  return comp1.weighted < comp2.weighted;
-        };
-    } else {
-        switch (RXsort) {
-        case RX_ahi: return comp1.ahi > comp2.ahi;
-        case RX_days: return comp1.days > comp2.days;
-        case RX_first: return comp1.first > comp2.first;
-        case RX_last: return comp1.last > comp2.last;
-        case RX_mode: return comp1.mode > comp2.mode;
-        case RX_min:  return comp1.min > comp2.min;
-        case RX_max:  return comp1.max > comp2.max;
-        case RX_per1:  return comp1.per1 > comp2.per1;
-        case RX_per2:  return comp1.per2 > comp2.per2;
-        case RX_weighted:  return comp1.weighted > comp2.weighted;
-        };
-    }
-    return true;
-}
+//bool operator<(const RXChange & comp1, const RXChange & comp2) {
+//    if (RXorder) {
+//        switch (RXsort) {
+//        case RX_ahi: return comp1.ahi < comp2.ahi;
+//        case RX_days: return comp1.days < comp2.days;
+//        case RX_first: return comp1.first < comp2.first;
+//        case RX_last: return comp1.last < comp2.last;
+//        case RX_mode: return comp1.mode < comp2.mode;
+//        case RX_min:  return comp1.min < comp2.min;
+//        case RX_max:  return comp1.max < comp2.max;
+//        case RX_maxhi: return comp1.maxhi < comp2.maxhi;
+//        case RX_per1:  return comp1.per1 < comp2.per1;
+//        case RX_per2:  return comp1.per2 < comp2.per2;
+//        case RX_weighted:  return comp1.weighted < comp2.weighted;
+//        };
+//    } else {
+//        switch (RXsort) {
+//        case RX_ahi: return comp1.ahi > comp2.ahi;
+//        case RX_days: return comp1.days > comp2.days;
+//        case RX_first: return comp1.first > comp2.first;
+//        case RX_last: return comp1.last > comp2.last;
+//        case RX_mode: return comp1.mode > comp2.mode;
+//        case RX_min:  return comp1.min > comp2.min;
+//        case RX_max:  return comp1.max > comp2.max;
+//        case RX_maxhi: return comp1.maxhi > comp2.maxhi;
+//        case RX_per1:  return comp1.per1 > comp2.per1;
+//        case RX_per2:  return comp1.per2 > comp2.per2;
+//        case RX_weighted:  return comp1.weighted > comp2.weighted;
+//        };
+//    }
+//    return true;
+//}
 bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     if (RXorder) {
         switch (RXsort) {
@@ -485,6 +491,7 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode < comp2->mode;
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
+        case RX_maxhi: return comp1->maxhi < comp2->maxhi;
         case RX_per1:  return comp1->per1 < comp2->per1;
         case RX_per2:  return comp1->per2 < comp2->per2;
         case RX_weighted:  return comp1->weighted < comp2->weighted;
@@ -498,6 +505,7 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode > comp2->mode;
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
+        case RX_maxhi: return comp1->maxhi > comp2->maxhi;
         case RX_per1:  return comp1->per1 > comp2->per1;
         case RX_per2:  return comp1->per2 > comp2->per2;
         case RX_weighted:  return comp1->weighted > comp2->weighted;
@@ -674,11 +682,11 @@ void MainWindow::on_summaryButton_clicked()
             } else {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Pressure"))
-                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_PressureMin,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
             }
             //html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
@@ -795,7 +803,8 @@ void MainWindow::on_summaryButton_clicked()
     if (cpapdays>0) {
         QDate first,last=lastcpap;
         CPAPMode mode,cmode=MODE_UNKNOWN;
-        EventDataType cmin=0,cmax=0,min,max;
+        EventDataType cmin=0,cmax=0,cmaxhi=0, min,max,maxhi;
+        Machine *mach,*lastmach=NULL;
         PRTypes prelief=PR_UNKNOWN;
         short prelset=0;
         QDate date=lastcpap;
@@ -826,12 +835,20 @@ void MainWindow::on_summaryButton_clicked()
                 }
 
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
-                min=day->settings_min(CPAP_PressureMin);
-                if (mode==MODE_CPAP) {
-                    max=day->settings_max(CPAP_PressureMin);
-                } else max=day->settings_max(CPAP_PressureMax);
-
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax))  {
+                if (mode>=MODE_ASV) {
+                    min=day->settings_min(CPAP_EPAP);
+                    max=day->settings_max(CPAP_IPAPLo);
+                    maxhi=day->settings_max(CPAP_IPAPHi);
+                } else if (mode>=MODE_BIPAP) {
+                    min=day->settings_min(CPAP_EPAP);
+                    max=day->settings_max(CPAP_IPAP);
+                } else if (mode>=MODE_APAP) {
+                    min=day->settings_min(CPAP_PressureMin);
+                    max=day->settings_max(CPAP_PressureMax);
+                } else {
+                    min=day->settings_min(CPAP_Pressure);
+                }
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (day->machine!=lastmach))  {
                     if (cmode!=MODE_UNKNOWN) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -843,14 +860,19 @@ void MainWindow::on_summaryButton_clicked()
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
+                        rx.maxhi=cmaxhi;
                         rx.prelief=prelief;
                         rx.prelset=prelset;
+
                         if (mode<MODE_BIPAP) {
                             rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
                             rx.per2=0;
-                        } else {
+                        } else if (mode<MODE_ASV) {
                             rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
                             rx.per2=p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,first,last);
+                        } else {
+                            rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
+                            rx.per2=p_profile->calcPercentile(CPAP_IPAPHi,percentile,MT_CPAP,first,last);
                         }
                         rx.weighted=float(rx.days)/float(cpapdays)*rx.ahi;
                         rxchange.push_back(rx);
@@ -858,7 +880,9 @@ void MainWindow::on_summaryButton_clicked()
                     cmode=mode;
                     cmin=min;
                     cmax=max;
+                    cmaxhi=maxhi;
                     last=date;
+                    lastmach=day->machine;
                     lastchanged=true;
                 }
 
@@ -878,12 +902,16 @@ void MainWindow::on_summaryButton_clicked()
             rx.mode=mode;
             rx.min=min;
             rx.max=max;
+            rx.maxhi=maxhi;
             if (mode<MODE_BIPAP) {
                 rx.per1=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
                 rx.per2=0;
-            } else {
+            } else if (mode<MODE_ASV) {
                 rx.per1=p_profile->calcPercentile(CPAP_EPAP,0.9,MT_CPAP,first,last);
                 rx.per2=p_profile->calcPercentile(CPAP_IPAP,0.9,MT_CPAP,first,last);
+            } else {
+                rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
+                rx.per2=p_profile->calcPercentile(CPAP_IPAPHi,percentile,MT_CPAP,first,last);
             }
             rx.weighted=float(rx.days)/float(cpapdays);
             //rx.weighted=float(days)*rx.ahi;
@@ -915,7 +943,7 @@ void MainWindow::on_summaryButton_clicked()
 
         if (tmpRX.size()>0) {
             RXsort=RX_ahi;
-            QString minstr,maxstr,modestr;
+            QString minstr,maxstr,modestr,maxhistr;
             qSort(tmpRX.begin(),tmpRX.end(),RXSort);
             tmpRX[0]->highlight=4; // worst
             int ls=tmpRX.size()-1;
@@ -930,10 +958,16 @@ void MainWindow::on_summaryButton_clicked()
                 minstr="Min";
                 maxstr="Max";
                 modestr=tr("APAP");
-            } else { // BIPAP or greater
+            } else if (mode<MODE_ASV) { // BIPAP
                 minstr="EPAP";
                 maxstr="IPAP";
-                modestr=tr("Bi-Level/ASV");
+                modestr=tr("Bi-Level");
+            } else {
+                minstr="EPAP";
+                maxstr="IPAPLo";
+                maxhistr="IPAPHi";
+                modestr=tr("ST/ASV");
+
             }
 
             recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
@@ -944,6 +978,7 @@ void MainWindow::on_summaryButton_clicked()
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
             recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
             if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
+            if (!maxhistr.isEmpty()) recbox+=QString(" %1: %2").arg(maxhistr).arg(tmpRX[0]->maxhi,0,'f',1);
             recbox+="</td></tr>";
 
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate));
@@ -959,10 +994,15 @@ void MainWindow::on_summaryButton_clicked()
                 minstr="Min";
                 maxstr="Max";
                 modestr=tr("APAP");
-            } else { // BIPAP or greater
+            } else if (mode<MODE_ASV) { // BIPAP or greater
                 minstr="EPAP";
                 maxstr="IPAP";
                 modestr=tr("Bi-Level/ASV");
+            } else {
+                minstr="EPAP";
+                maxstr="IPAPLo";
+                maxhistr="IPAPHi";
+                modestr=tr("ST/ASV");
             }
 
             recbox+=QString("<tr><td colspan=2><b><a href='overview=%1,%2'>%3</a></b></td></tr>")
@@ -973,6 +1013,7 @@ void MainWindow::on_summaryButton_clicked()
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
             recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
             if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
+            if (!maxhistr.isEmpty()) recbox+=QString(" %1: %2").arg(maxhistr).arg(tmpRX[0]->maxhi,0,'f',1);
             recbox+="</td></tr>";
 
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate));
@@ -986,7 +1027,10 @@ void MainWindow::on_summaryButton_clicked()
         html+=QString("<br/><b>Changes to Prescription Settings</b>");
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
         QString extratxt;
-        if (cpapmode>=MODE_BIPAP) {
+        if (cpapmode>=MODE_ASV) {
+            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>")
+                .arg(tr("EPAP")).arg(tr("IPAPLo")).arg(tr("IPAPHi")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
+        } else if (cpapmode>=MODE_BIPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td>")
                 .arg(tr("EPAP")).arg(tr("IPAP")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
         } else if (cpapmode>MODE_CPAP) {
@@ -1016,7 +1060,10 @@ void MainWindow::on_summaryButton_clicked()
             } else if (rx.highlight==4) {
                 color="#ffc0c0";
             } else color="";
-            if (cpapmode>=MODE_BIPAP) {
+            if(cpapmode>=MODE_ASV) {
+                extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
+                        .arg(rx.max,0,'f',2).arg(rx.maxhi,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
+            } else if (cpapmode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
             } else if (cpapmode>MODE_CPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
@@ -1548,13 +1595,35 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
             cpapinfo+=tr("\nMode: ");
 
-            EventDataType min=cpap->settings_min(CPAP_PressureMin);
-            EventDataType max=cpap->settings_max(CPAP_PressureMax);
-
-            if (mode==MODE_CPAP) cpapinfo+=tr("CPAP %1cmH2O").arg(min);
-            else if (mode==MODE_APAP) cpapinfo+=tr("APAP %1-%2cmH2O").arg(min).arg(max);
-            else if (mode==MODE_BIPAP) cpapinfo+=tr("Bi-Level %1-%2cmH2O").arg(min).arg(max);
-            else if (mode==MODE_ASV) cpapinfo+=tr("ASV");
+            if (mode==MODE_CPAP) {
+                EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
+                cpapinfo+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
+            } else if (mode==MODE_APAP) {
+                EventDataType min=cpap->settings_min(CPAP_PressureMin);
+                EventDataType max=cpap->settings_max(CPAP_PressureMax);
+                cpapinfo+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
+            } else if (mode==MODE_BIPAP) {
+                EventDataType epap=cpap->settings_min(CPAP_EPAP);
+                EventDataType ipap=cpap->settings_max(CPAP_IPAP);
+                EventDataType ps=cpap->settings_max(CPAP_PS);
+                cpapinfo+=tr("Bi-Level")+QString("\nEPAP: %1 IPAP: %2 %3\nPS: %4")
+                        .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
+            }
+            else if (mode==MODE_ASV) {
+                EventDataType epap=cpap->settings_min(CPAP_EPAP);
+                EventDataType low=cpap->settings_min(CPAP_IPAPLo);
+                EventDataType high=cpap->settings_max(CPAP_IPAPHi);
+                EventDataType psl=cpap->settings_min(CPAP_PSMin);
+                EventDataType psh=cpap->settings_max(CPAP_PSMax);
+                cpapinfo+=tr("ASV")+QString("\nEPAP: %1 IPAP: %2 - %3 %4\nPS: %5 / %6")
+                        .arg(epap,0,'f',1)
+                        .arg(low,0,'f',1)
+                        .arg(high,0,'f',1)
+                        .arg(STR_UNIT_CMH2O)
+                        .arg(psl,0,'f',1)
+                        .arg(psh,0,'f',1);
+            }
+            else cpapinfo+=tr("Unknown");
 
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
             if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
