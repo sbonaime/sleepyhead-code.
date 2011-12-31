@@ -307,7 +307,7 @@ void GLShortBuffer::draw()
 {
     if (m_cnt>0) {
         bool antialias=m_forceantialias || (PROFILE.ExistsAndTrue("UseAntiAliasing") && m_antialias);
-        if (m_stippled) antialias=true;
+        if (m_stippled) antialias=false;
         float size=m_size;
         if (antialias) {
             glEnable(GL_BLEND);
@@ -325,7 +325,8 @@ void GLShortBuffer::draw()
         }
         if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
             if (m_stippled) {
-                glLineStipple(1, 0xcccc);
+                glLineStipple(1, 0xffff);
+                size=1;
                 glEnable(GL_LINE_STIPPLE);
             } else {
                 glLineStipple(1, 0xFFFF);

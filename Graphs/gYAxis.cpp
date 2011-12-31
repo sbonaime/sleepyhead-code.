@@ -20,9 +20,9 @@ gXGrid::gXGrid(QColor col)
 {
     Q_UNUSED(col)
 
-    m_major_color=QColor(130,130,130,64);
+    m_major_color=QColor(180,180,180,64);
     //m_major_color=QColor(180,180,180,92);
-    m_minor_color=QColor(200,200,200,64);
+    m_minor_color=QColor(230,230,230,64);
     m_show_major_lines=true;
     m_show_minor_lines=true;
 }
