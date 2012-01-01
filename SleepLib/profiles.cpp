@@ -845,28 +845,34 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     if (idx>array.size()-1) idx=array.size()-1;
     return array[idx]; */
 
-
-    int size=array.size();
-    if (!size)
-        return 0;
-    size--;
-    qSort(array);
-    int p=EventDataType(size)*percent;
-    float p2=EventDataType(size)*percent;
-    float diff=p2-p;
-    val=array[p];
-    if (diff>0) {
-        int s=p+1;
-        if (s>size-1) s=size-1;
-        EventDataType v2=array[s];
-        EventDataType v3=v2-val;
-        if (v3>0) {
-            val+=v3*diff;
-        }
-
-    }
+    QVector<EventDataType>::iterator first=array.begin();
+    QVector<EventDataType>::iterator last=array.end();
+    QVector<EventDataType>::iterator middle = first + int((last-first) * percent);
+    std::nth_element(first,middle,last);
+    val=*middle;
 
     return val;
+//    int size=array.size();
+//    if (!size)
+//        return 0;
+//    size--;
+//    qSort(array);
+//    int p=EventDataType(size)*percent;
+//    float p2=EventDataType(size)*percent;
+//    float diff=p2-p;
+//    val=array[p];
+//    if (diff>0) {
+//        int s=p+1;
+//        if (s>size-1) s=size-1;
+//        EventDataType v2=array[s];
+//        EventDataType v3=v2-val;
+//        if (v3>0) {
+//            val+=v3*diff;
+//        }
+
+//    }
+
+//    return val;
 
 }
 

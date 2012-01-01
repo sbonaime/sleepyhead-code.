@@ -762,20 +762,20 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             if (stredf.lookup.contains("Tid Vol Med")) {
                 sig=stredf.lookup["Tid Vol Med"];
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_TidalVolume,valmed*sig->gain);
-                sess->m_gain[CPAP_TidalVolume]=sig->gain;
+                sess->setMedian(CPAP_TidalVolume,valmed*sig->gain*1000.0);
+                sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
                 sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
             }
             if (stredf.lookup.contains("Tid Vol 95")) {
                 sig=stredf.lookup["Tid Vol 95"];
                 val95=sig->data[dn];
-                sess->set95p(CPAP_TidalVolume,val95*sig->gain);
+                sess->set95p(CPAP_TidalVolume,val95*sig->gain*1000.0);
                 sess->m_valuesummary[CPAP_TidalVolume][val95]=45;
             }
             if (stredf.lookup.contains("Tid Vol Max")) {
                 sig=stredf.lookup["Tid Vol Max"];
                 valmax=sig->data[dn];
-                sess->setMax(CPAP_TidalVolume,valmax*sig->gain);
+                sess->setMax(CPAP_TidalVolume,valmax*sig->gain*1000.0);
                 sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
             }
 

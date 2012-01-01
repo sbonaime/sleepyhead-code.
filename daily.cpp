@@ -934,6 +934,9 @@ void Daily::Load(QDate date)
 
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
+                if (code==CPAP_RespRate) {
+                    int i=5;
+                }
                 //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";

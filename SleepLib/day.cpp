@@ -6,6 +6,7 @@
 
 #include "day.h"
 #include "profiles.h"
+#include <algorithm>
 
 Day::Day(Machine *m)
 :machine(m)
@@ -146,11 +147,15 @@ EventDataType Day::settings_wavg(ChannelID code)
     tmp=(s1/s2);
     return tmp;
 }
+
+
+
+
+
+
 EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 {
     // Cache this calculation
-
-
     //if (percentile>=1) return 0; // probably better to crash and burn.
 
     QVector<Session *>::iterator s;
@@ -174,21 +179,28 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
     if (!size)
         return 0;
     size--;
-    qSort(ar);
-    int p=EventDataType(size)*percentile;
-    float p2=EventDataType(size)*percentile;
-    float diff=p2-p;
-    EventDataType val=ar[p];
-    if (diff>0) {
-        int s=p+1;
-        if (s>size-1) s=size-1;
-        EventDataType v2=ar[s];
-        EventDataType v3=v2-val;
-        if (v3>0) {
-            val+=v3*diff;
-        }
 
-    }
+    QVector<EventDataType>::iterator first=ar.begin();
+    QVector<EventDataType>::iterator last=ar.end();
+    QVector<EventDataType>::iterator middle = first + int((last-first) * percentile);
+    std::nth_element(first,middle,last);
+    EventDataType val=*middle;
+
+//    qSort(ar);
+//    int p=EventDataType(size)*percentile;
+//    float p2=EventDataType(size)*percentile;
+//    float diff=p2-p;
+//    EventDataType val=ar[p];
+//    if (diff>0) {
+//        int s=p+1;
+//        if (s>size-1) s=size-1;
+//        EventDataType v2=ar[s];
+//        EventDataType v3=v2-val;
+//        if (v3>0) {
+//            val+=v3*diff;
+//        }
+
+//    }
 
     return val;
 }

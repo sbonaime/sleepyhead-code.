@@ -567,8 +567,7 @@ void Session::updateCountSummary(ChannelID code)
     qint32 len;
     for (int i=0;i<ev.value().size();i++) {
         EventList & e=*(ev.value()[i]);
-        if (e.type()==EVL_Waveform) continue;
-
+        //if (e.type()==EVL_Waveform) continue;
 
         for (unsigned j=0;j<e.count();j++) {
             raw=e.raw(j);
@@ -614,9 +613,8 @@ void Session::UpdateSummaries()
                 EventList * el=c.value()[0];
                 EventDataType gain=el->gain();
                 m_gain[id]=gain;
-            } else m_gain[id]=0;
-
-            if ((id!=CPAP_FlowRate) && (id!=CPAP_MaskPressure))
+            }
+            if (!((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)))
                 updateCountSummary(id);
 
             Min(id);
