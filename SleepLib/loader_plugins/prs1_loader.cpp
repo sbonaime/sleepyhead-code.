@@ -384,22 +384,18 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
                 sess->settings[CPAP_PresReliefType]=PR_BIFLEX;
             }
 
-            sess->setAvg(CPAP_Pressure,(sess->avg(CPAP_EPAP)+sess->avg(CPAP_IPAP))/2.0);
-            sess->setWavg(CPAP_Pressure,(sess->wavg(CPAP_EPAP)+sess->wavg(CPAP_IPAP))/2.0);
-            sess->setMin(CPAP_Pressure,sess->Min(CPAP_EPAP));
-            sess->setMax(CPAP_Pressure,sess->Max(CPAP_IPAP));
-            sess->set90p(CPAP_Pressure,(sess->p90(CPAP_IPAP)+sess->p90(CPAP_EPAP))/2.0);
-            //sess->p90(CPAP_EPAP);
-            //sess->p90(CPAP_IPAP);
-        } else {
-            //sess->avg(CPAP_Pressure);
-            //sess->wavg(CPAP_Pressure);
-            //sess->p90(CPAP_Pressure);
-            //sess->Min(CPAP_Pressure);
-            //sess->Max(CPAP_Pressure);
-            //sess->cph(CPAP_Pressure);
+            EventDataType min=sess->settings[CPAP_PressureMin].toDouble();
+            EventDataType max=sess->settings[CPAP_PressureMax].toDouble();
+            sess->settings[CPAP_EPAP]=min;
+            sess->settings[CPAP_IPAP]=max;
+            sess->settings[CPAP_PS]=max-min;
+            sess->settings.erase(sess->settings.find(CPAP_PressureMin));
+            sess->settings.erase(sess->settings.find(CPAP_PressureMax));
 
-            if (!sess->settings.contains(CPAP_PressureMin)) {
+
+        } else {
+
+            if (!sess->settings.contains(CPAP_Pressure) && !sess->settings.contains(CPAP_PressureMin)) {
                 sess->settings[CPAP_BrokenSummary]=true;
                 //sess->set_last(sess->first());
                 if (sess->Min(CPAP_Pressure)==sess->Max(CPAP_Pressure)) {
@@ -411,7 +407,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             }
 
         }
-        if (sess->settings[CPAP_Mode]==MODE_CPAP) {
+        if (sess->settings[CPAP_Mode].toInt()==(int)MODE_CPAP) {
             //sess->settings[CPAP_PressureMax]=sess->settings[CPAP_PressureMin];
         }
 
@@ -424,7 +420,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
     }
 
     m->properties[STR_PROP_DataVersion]=QString().sprintf("%i",prs1_data_version);
-    m->properties["LastImported"]=QDateTime::currentDateTime().toString(Qt::ISODate);
+    m->properties[STR_PROP_LastImported]=QDateTime::currentDateTime().toString(Qt::ISODate);
     m->Save(); // Save any new sessions to disk in our format
     if (qprogress) qprogress->setValue(100);
 
@@ -466,13 +462,13 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->settings[CPAP_RampTime]=(int)data[offset+0x06]; // Minutes. Convert to seconds/hours here?
     session->settings[CPAP_RampPressure]=(EventDataType)data[offset+0x07]/10.0;
 
-    if (max>0) { // Ignoring bipap until I see some more data.
+    if (max>0) { // Ignoring bipap until we see some more data during import
         session->settings[CPAP_Mode]=(int)MODE_APAP;
-        session->settings[CPAP_PressureMin]=(double)min;
-        session->settings[CPAP_PressureMax]=(double)max;
+        session->settings[CPAP_PressureMin]=(EventDataType)min;
+        session->settings[CPAP_PressureMax]=(EventDataType)max;
     } else {
         session->settings[CPAP_Mode]=(int)MODE_CPAP;
-        session->settings[CPAP_Pressure]=(double)min;
+        session->settings[CPAP_Pressure]=(EventDataType)min;
     }
 
     // This is incorrect..
@@ -486,7 +482,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->settings[CPAP_PresReliefMode]=(int)PM_FullTime; // only has one mode
 
 
-    session->settings[PRS1_FlexSet]=(int)(data[offset+0x08] & 3);
+    session->settings[CPAP_PresReliefSet]=(int)(data[offset+0x08] & 3);
     session->settings[PRS1_HumidSetting]=(int)data[offset+0x09]&0x0f;
     session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
     session->settings[PRS1_SysLock]=(data[offset+0x0a]&0x80)==0x80;
@@ -508,8 +504,8 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         if (max>0) {
             session->setMin(CPAP_Pressure,min);
             session->setMax(CPAP_Pressure,max);
+            session->setWavg(CPAP_Pressure,min);
         }
-        session->setWavg(CPAP_Pressure,min);
     } else {
         // 0X28 & 0X29 is length on r5
 
@@ -530,12 +526,12 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         p90p=float(data[offset+0x18])/10.0;
         avgp=float(data[offset+0x19])/10.0;
 
-        if (minp>0) session->setMin(CPAP_Pressure,minp); else session->setMin(CPAP_Pressure,min);
-        if (maxp>0) session->setMax(CPAP_Pressure,maxp); else session->setMax(CPAP_Pressure,min);
-        if (avgp>0) session->setWavg(CPAP_Pressure,avgp); else session->setWavg(CPAP_Pressure,min);
-        if (p90p>0) session->set90p(CPAP_Pressure,p90p); else session->set90p(CPAP_Pressure,min);
-
-
+        if (minp>0) session->setMin(CPAP_Pressure,minp);
+        if (maxp>0) session->setMax(CPAP_Pressure,maxp);
+        if (avgp>0) session->setWavg(CPAP_Pressure,avgp);
+        if (p90p>0) {
+            session->set90p(CPAP_Pressure,p90p);
+        }
 
         int oc, cc, hc, rc, fc;
         session->setCount(CPAP_Obstructive,oc=(int)data[offset+0x1C] | (data[offset+0x1D] << 8));
@@ -1153,281 +1149,6 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
     }
     return true;
 }
-
-
-
-
-/*// v2 event parser.
-bool PRS1Loader::Parse002(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos)
-{
-//    ChannelID Codes[]={
-//        PRS1_Unknown00, PRS1_Unknown01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_RERA, CPAP_Obstructive, CPAP_ClearAirway,
-//        PRS1_Unknown08, PRS1_Unknown09, CPAP_Hypopnea, PRS1_Unknown0B, CPAP_FlowLimit, CPAP_VSnore, PRS1_Unknown0E, CPAP_CSR, PRS1_Unknown10,
-//        CPAP_LeakTotal, PRS1_Unknown12
-//    };
-//    int ncodes=sizeof(Codes)/sizeof(ChannelID);
-
-    //QHash<ChannelID,EventList *> Code;
-    EventList * Code[0x20]={NULL};
-
-    EventDataType data[10];
-
-    session->updateFirst(timestamp);
-    //qint64 start=timestamp;
-    qint64 t=timestamp;
-    qint64 tt;
-    int pos=0;
-    while (pos<size) {
-        unsigned char code=buffer[pos++];
-        if (code>0x12) {
-        }
-        delta=0;
-        if (code!=0x12) {
-            delta=buffer[pos+1] << 8 | buffer[pos];
-            pos+=2;
-            t+=qint64(delta)*1000L;
-            tt=t;
-        }
-
-    session->updateLast(t);
-
-    return true;
-}
-
-bool PRS1Loader::Parse002ASV(Session *session,unsigned char *buffer,int size,qint64 timestamp,long fpos)
-{
-}
-
-bool PRS1Loader::OpenSummary(Session *session,QString filename) // Read .001/.000 file
-{
-    int size,seconds,br,htype,version,sequence;
-    qint64 timestamp;
-    unsigned char header[24];
-    unsigned char ext,sum;
-
-    //qDebug() << "Opening PRS1 Summary " << filename;
-    QFile f(filename);
-
-    if (!f.open(QIODevice::ReadOnly))
-          return false;
-
-    if (!f.exists())
-        return false;
-
-    int hl=16;
-
-    br=f.read((char *)header,hl);
-
-    if (header[0]!=PRS1_MAGIC_NUMBER)
-        return false;
-
-    sequence=size=timestamp=seconds=ext=0;
-    sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
-    timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
-    size=(header[2] << 8) | header[1];
-    ext=header[6]; // 0 = compliance only, 1 = has data
-
-    htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
-    version=header[4];
-    sequence=sequence;
-    version=version; // don't need it here?
-
-    htype=htype; // shut the warning up.. this is useless.
-
-    if (ext!=PRS1_SUMMARY_FILE)
-        return false;
-
-    size-=(hl+2);
-
-    // Calculate header checksum and compare to verify header
-    sum=0;
-    for (int i=0; i<hl-1; i++) sum+=header[i];
-    if (sum!=header[hl-1])
-        return false;
-
-    if (size<=19) {
-      //  qDebug() << "Ignoring short session file " << filename;
-        return false;
-    }
-
-    qint64 date=timestamp*1000;
-
-
-    //memset(m_buffer,0,size);
-    unsigned char * buffer=m_buffer;
-    br=f.read((char *)buffer,size);
-    if (br<size) {
-        return false;
-    }
-
-    unsigned char crcbytes[2];
-    if (f.read((char *)crcbytes,2)!=2) {
-        qDebug() << "No ending CRC bytes in" << filename;
-    }
-    quint16 crc=(crcbytes[1] << 8) | crcbytes[0];
-    quint16 c16=CRC16(buffer,size);
-    if (crc!=c16) {
-        qDebug() << "Summary CRC check failed, wanted" << crc << "got" << c16;
-    }
-
-    if ((ext==1) && size<0x30)
-        return true;
-
-    session->set_first(date);
-
-    double max;
-    session->settings[CPAP_PressureMin]=(EventDataType)buffer[0x03]/10.0;
-    session->settings[CPAP_PressureMax]=max=(EventDataType)buffer[0x04]/10.0;
-    int offset=0;
-    if (buffer[0x05]!=0) { // This is a time value for ASV stuff
-        // non zero adds extra fields..
-        offset=4;
-    }
-
-    session->settings[CPAP_RampTime]=(int)buffer[offset+0x06]; // Minutes. Convert to seconds/hours here?
-    session->settings[CPAP_RampPressure]=(EventDataType)buffer[offset+0x07]/10.0;
-
-    if (max>0) { // Ignoring bipap until I see some more data.
-        session->settings[CPAP_Mode]=(int)MODE_APAP;
-    } else session->settings[CPAP_Mode]=(int)MODE_CPAP;
-
-    // This is incorrect..
-    if (buffer[offset+0x08] & 0x80) { // Flex Setting
-        if (buffer[offset+0x08] & 0x08) {
-            if (max>0) session->settings[PRS1_FlexMode]=(int)PR_AFLEX;
-            else session->settings[PRS1_FlexMode]=(int)PR_CFLEXPLUS;
-        } else session->settings[PRS1_FlexMode]=(int)PR_CFLEX;
-    } else session->settings[PRS1_FlexMode]=(int)PR_NONE;
-
-    session->settings["FlexSet"]=(int)buffer[offset+0x08] & 3;
-    session->settings["HumidSet"]=(int)buffer[offset+0x09]&0x0f;
-    session->settings["HumidStat"]=(buffer[offset+0x09]&0x80)==0x80;
-    session->settings["SysLock"]=(buffer[offset+0x0a]&0x80)==0x80;
-    session->settings["SysOneResistStat"]=(buffer[offset+0x0a]&0x40)==0x40;
-    session->settings["SysOneResistSet"]=(int)buffer[offset+0x0a]&7;
-    session->settings["HoseDiam"]=((buffer[offset+0x0a]&0x08)?"15mm":"22mm");
-    session->settings["AutoOff"]=(buffer[offset+0x0c]&0x10)==0x10;
-    session->settings["MaskAlert"]=(buffer[offset+0x0c]&0x08)==0x08;
-    session->settings["ShowAHI"]=(buffer[offset+0x0c]&0x04)==0x04;
-
-    unsigned duration=buffer[offset+0x14] | (buffer[0x15] << 8);
-    //session->settings[CPAP_Duration]=(int)duration;
-    //qDebug() << "ID: " << session->session() << " " << duration;
-    //float hours=float(duration)/3600.0;
-    //session->set_hours(hours);
-    if (!duration)
-        return false;
-
-    session->set_last(date+qint64(duration)*1000L);
-    //session->settings[PRS1_PressureMinAchieved]=buffer[offset+0x16]/10.0;
-    //session->settings[PRS1_PressureMaxAchieved]=buffer[offset+0x17]/10.0;
-    //session->settings[PRS1_PressureAvg]=buffer[offset+0x18]/10.0;
-    //session->settings[PRS1_Pressure90]=buffer[offset+0x19]/10.0;
-
-    if (max==0) {
-      //  session->settings[PRS1_PressureAvg]=session->settings[PRS1_PressureMin];
-    }
-
-
-
-
-//   if (size==0x4d) {
-
-//        session->settings[CPAP_Obstructive]=(int)buffer[offset+0x1C] | (buffer[offset+0x1D] << 8);
-//        session->settings[CPAP_ClearAirway]=(int)buffer[offset+0x20] | (buffer[offset+0x21] << 8);
-//        session->settings[CPAP_Hypopnea]=(int)buffer[offset+0x2A] | (buffer[offset+0x2B] << 8);
-//        session->settings[CPAP_RERA]=(int)buffer[offset+0x2E] | (buffer[offset+0x2F] << 8);
-//        session->settings[CPAP_FlowLimit]=(int)buffer[offset+0x30] | (buffer[offset+0x31] << 8);
-//    }
-    return true;
-}
-
-bool PRS1Loader::OpenEvents(Session *session,QString filename)
-{
-    int size,sequence,seconds,br,version;
-    qint64 timestamp;
-    unsigned char header[24]; // use m_buffer?
-    unsigned char ext,htype;
-
-    QFile f(filename);
-    if (!f.open(QIODevice::ReadOnly))
-        return false;
-
-    int hl=16;
-    int chunk=0;
-
-    // Who'd of thought this chunked.. it does on certain ASV machines..
-
-    long pos=0;
-    do {
-        br=f.read((char *)header,hl);
-
-        if (header[0]!=PRS1_MAGIC_NUMBER) {
-            if (chunk==0)
-                return false;
-            break;
-        }
-        sequence=size=timestamp=seconds=ext=0;
-        sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
-        timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
-        size=(header[2] << 8) | header[1];
-        ext=header[6];
-        htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
-        version=header[4];// == 5
-
-        htype=htype;
-        sequence=sequence;
-        if (ext!=PRS1_EVENT_FILE) { // 2 == Event file
-            if (chunk==0)
-                return false;
-            break; // just end and take what we got..
-        }
-
-        //size|=(header[3]<<16) | (header[4]<<24); // the jury is still out on the 32bitness of one. doesn't matter here anyway.
-
-        size-=(hl+2);
-
-        unsigned char sum=0;
-        for (int i=0; i<hl-1; i++) sum+=header[i];
-        if (sum!=header[hl-1]) {
-            if (chunk==0)
-                return false;
-            break;
-        }
-        pos+=hl;
-
-        unsigned char *buffer=(unsigned char *)m_buffer;
-        br=f.read((char *)buffer,size);
-        if (br<size) {
-            if (chunk==0)
-                return false;
-            break;
-        }
-        unsigned char crcbytes[2];
-        if (f.read((char *)crcbytes,2)!=2) {
-            qDebug() << "No ending CRC bytes in" << filename;
-        }
-        quint16 crc=(crcbytes[1] << 8) | crcbytes[0];
-        quint16 c16=CRC16(buffer,size);
-        if (crc!=c16) {
-            qDebug() << "CRC check failed, wanted" << crc << "got" << c16;
-        }
-
-
-        if (version==0) {
-            if (!Parse002(session,buffer,size,timestamp*1000L,pos)) {
-                qDebug() << "Couldn't Parse chunk" << chunk << "of PRS1 Event File " << filename;
-            }
-        } else if (version==5) {
-            if (!Parse002ASV(session,buffer,size,timestamp*1000L,pos)) {
-                qDebug() << "Couldn't Parse chunk" << chunk << "PRS1 (ASV) Event File " << filename;
-            }
-        }
-        pos+=size+2;
-        chunk++;
-    } while(1);
-    return true;
-} */
 
 
 bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)

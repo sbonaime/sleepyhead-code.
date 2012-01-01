@@ -633,6 +633,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     EventDataType tmp,epap=0,ipap=0;
                     if (stredf.lookup.contains("EPAP")) {
                         sig=stredf.lookup["EPAP"];
+                        //div=50; //1.0/sig->gain;
                         epap=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_EPAP]=epap;
                         sess->setMin(CPAP_EPAP,epap);
@@ -704,7 +705,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_Leak,valmed*sig->gain*60.0);
                 sess->m_gain[CPAP_Leak]=sig->gain*60.0;
-                sess->m_valuesummary[CPAP_Leak][valmed]=50;
+                sess->m_valuesummary[CPAP_Leak][valmed]=51;
             }
             if (stredf.lookup.contains("Leak 95")) {
                 sig=stredf.lookup["Leak 95"];
@@ -716,7 +717,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Leak Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
-                sess->m_valuesummary[CPAP_Leak][valmax]=5;
+                sess->m_valuesummary[CPAP_Leak][valmax]=4;
             }
 
             if (stredf.lookup.contains("Min Vent Med")) {
@@ -724,7 +725,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_MinuteVent,valmed*sig->gain);
                 sess->m_gain[CPAP_MinuteVent]=sig->gain;
-                sess->m_valuesummary[CPAP_MinuteVent][valmed]=50;
+                sess->m_valuesummary[CPAP_MinuteVent][valmed]=51;
             }
             if (stredf.lookup.contains("Min Vent 95")) {
                 sig=stredf.lookup["Min Vent 95"];
@@ -736,14 +737,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Min Vent Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_MinuteVent][valmax]=5;
+                sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
             }
             if (stredf.lookup.contains("RR Med")) {
                 sig=stredf.lookup["RR Med"];
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_RespRate,valmed*sig->gain);
                 sess->m_gain[CPAP_RespRate]=sig->gain;
-                sess->m_valuesummary[CPAP_RespRate][valmed]=50;
+                sess->m_valuesummary[CPAP_RespRate][valmed]=51;
             }
             if (stredf.lookup.contains("RR 95")) {
                 sig=stredf.lookup["RR 95"];
@@ -755,7 +756,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["RR Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_RespRate,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_RespRate][valmax]=5;
+                sess->m_valuesummary[CPAP_RespRate][valmax]=4;
             }
 
             if (stredf.lookup.contains("Tid Vol Med")) {
@@ -763,7 +764,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_TidalVolume,valmed*sig->gain);
                 sess->m_gain[CPAP_TidalVolume]=sig->gain;
-                sess->m_valuesummary[CPAP_TidalVolume][valmed]=50;
+                sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
             }
             if (stredf.lookup.contains("Tid Vol 95")) {
                 sig=stredf.lookup["Tid Vol 95"];
@@ -775,7 +776,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Tid Vol Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_TidalVolume,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_TidalVolume][valmax]=5;
+                sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
             }
 
             if (stredf.lookup.contains("Targ Vent Med")) {
@@ -783,7 +784,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_TgMV,valmed*sig->gain);
                 sess->m_gain[CPAP_TgMV]=sig->gain;
-                sess->m_valuesummary[CPAP_TgMV][valmed]=50;
+                sess->m_valuesummary[CPAP_TgMV][valmed]=51;
             }
             if (stredf.lookup.contains("Targ Vent 95")) {
                 sig=stredf.lookup["Targ Vent 95"];
@@ -795,7 +796,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Targ Vent Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_TgMV,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_TgMV][valmax]=5;
+                sess->m_valuesummary[CPAP_TgMV][valmax]=4;
             }
 
 
@@ -804,7 +805,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_IE,valmed*sig->gain);
                 sess->m_gain[CPAP_IE]=sig->gain;
-                sess->m_valuesummary[CPAP_IE][valmed]=50;
+                sess->m_valuesummary[CPAP_IE][valmed]=51;
             }
             if (stredf.lookup.contains("I:E 95")) {
                 sig=stredf.lookup["I:E 95"];
@@ -816,7 +817,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["I:E Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_IE,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_IE][valmax]=5;
+                sess->m_valuesummary[CPAP_IE][valmax]=4;
             }
 
 
@@ -826,7 +827,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_Pressure,valmed*sig->gain);
                 sess->m_gain[CPAP_Pressure]=sig->gain;
-                sess->m_valuesummary[CPAP_Pressure][valmed]=50;
+                sess->m_valuesummary[CPAP_Pressure][valmed]=51;
             }
             if (stredf.lookup.contains("Mask Pres 95")) {
                 sig=stredf.lookup["Mask Pres 95"];
@@ -838,7 +839,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Mask Pres Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_Pressure,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_Pressure][valmax]=5;
+                sess->m_valuesummary[CPAP_Pressure][valmax]=4;
             }
 
             if (stredf.lookup.contains("Insp Pres Med")) {
@@ -846,7 +847,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_IPAP,valmed*sig->gain);
                 sess->m_gain[CPAP_IPAP]=sig->gain;
-                sess->m_valuesummary[CPAP_IPAP][valmed]=50;
+                sess->m_valuesummary[CPAP_IPAP][valmed]=51;
             }
             if (stredf.lookup.contains("Insp Pres 95")) {
                 sig=stredf.lookup["Insp Pres 95"];
@@ -858,14 +859,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Insp Pres Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_IPAP,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_IPAP][valmax]=5;
+                sess->m_valuesummary[CPAP_IPAP][valmax]=4;
             }
             if (stredf.lookup.contains("Exp Pres Med")) {
                 sig=stredf.lookup["Exp Pres Med"];
                 valmed=sig->data[dn];
                 sess->setMedian(CPAP_EPAP,valmed*sig->gain);
                 sess->m_gain[CPAP_EPAP]=sig->gain;
-                sess->m_valuesummary[CPAP_EPAP][valmed]=50;
+                sess->m_valuesummary[CPAP_EPAP][valmed]=51;
             }
             if (stredf.lookup.contains("Exp Pres 95")) {
                 sig=stredf.lookup["Exp Pres 95"];
@@ -877,7 +878,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sig=stredf.lookup["Exp Pres Max"];
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_EPAP,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_EPAP][valmax]=5;
+                sess->m_valuesummary[CPAP_EPAP][valmax]=4;
             }
 
             if (stredf.lookup.contains("Mask Dur")) {

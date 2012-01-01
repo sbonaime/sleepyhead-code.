@@ -2457,8 +2457,8 @@ bool gGraphView::renderGraphs()
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->drawGLBuf();
     }
-    lines->draw();
     quads->draw();
+    lines->draw();
 //    lines->setSize(linesize);
 
     DrawTextQue();

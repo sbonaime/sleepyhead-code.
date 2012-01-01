@@ -10,7 +10,6 @@
 #include <QDebug>
 #include <QString>
 #include <QObject>
-//#include <tr1/random>
 #include <time.h>
 
 #include "machine.h"
@@ -30,13 +29,9 @@ Machine::Machine(Profile *p,MachineID id)
     profile=p;
     if (!id) {
         srand(time(NULL));
-        //std::tr1::minstd_rand gen;
-        //std::tr1::uniform_int<MachineID> unif(1, 0x7fffffff);
-        //gen.seed((unsigned int) time(NULL));
         MachineID temp;
         do {
             temp = rand();
-            //temp = unif(gen); //unif(gen) << 32 |
         } while (profile->machlist.find(temp)!=profile->machlist.end());
 
         m_id=temp;

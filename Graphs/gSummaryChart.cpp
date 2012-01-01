@@ -52,15 +52,46 @@ void SummaryChart::SetDay(Day * nullday)
     m_maxx=0;
 
 
-
     int dn;
     EventDataType tmp,tmp2,total;
     ChannelID code;
+    if (m_label==STR_TR_Pressure) {
+        CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
+        m_codes.clear();
+        m_colors.clear();
+        m_type.clear();
+        m_zeros.clear();
+        m_typeval.clear();
+
+        if (mode>=MODE_ASV) {
+            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
+
+            addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN,true);
+            addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX,true);
+        } else if (mode>=MODE_BIPAP) {
+            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
+            addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,true,0.95);
+
+            addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
+            addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX,true);
+        } else if (mode>=MODE_APAP) {
+            addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN,true);
+            addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
+            addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
+            addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX,true);
+        } else {
+            addSlice(CPAP_Pressure,QColor("dark green"),ST_SETWAVG,true);
+        }
+
+    }
+
 
     m_goodcodes.resize(m_codes.size());
     for (int i=0;i<m_codes.size();i++) {
         m_goodcodes[i]=false;
     }
+
+
     m_fday=0;
     qint64 tt,zt;
     m_empty=true;
@@ -138,6 +169,7 @@ void SummaryChart::SetDay(Day * nullday)
                 EventDataType typeval=m_typeval[j];
                 for (int i=0;i<d.value().size();i++) { // for each machine object for this day
                     day=d.value()[i];
+                    CPAPMode mode=(CPAPMode)(int)day->settings_max(CPAP_Mode);
                     if (day->machine_type()!=m_machinetype) continue;
                     //m_values[dn][j+1]=0;
 
@@ -147,6 +179,19 @@ void SummaryChart::SetDay(Day * nullday)
                             day->settingExists(code) ||
                             day->hasData(code,type);
 
+                    if (code==CPAP_Pressure) {
+                        if (mode==MODE_CPAP) {
+                            if (type==ST_PERC)
+                                hascode=false;
+                            else if (type==ST_WAVG) {
+                                //hascode=false;
+                                type=ST_SETWAVG;
+                            }
+
+                        } else {
+                            type=m_type[j];
+                        }
+                    }
                     if (hascode) {
                         m_days[dn]=day;
                         switch(m_type[j]) {
@@ -180,10 +225,6 @@ void SummaryChart::SetDay(Day * nullday)
                         m_goodcodes[j]=true;
                         fnd=true;
                         break;
-                    } else {
-                        if (code==CPAP_PressureMin) {
-                            int i=5;
-                        }
                     }
                 }
             }
@@ -196,10 +237,10 @@ void SummaryChart::SetDay(Day * nullday)
                     if (total>m_maxy) m_maxy=total;
                 }
                 //m_empty=false;
-           } else m_hours[dn]=0;
+           }// else m_hours[dn]=0;
         }
     }
-    if (m_graphtype!=GT_SESSIONS)
+   /* if (m_graphtype!=GT_SESSIONS)
     for (int j=0;j<m_codes.size();j++) { // for each code slice
         ChannelID code=m_codes[j];
         if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
@@ -223,7 +264,7 @@ void SummaryChart::SetDay(Day * nullday)
                 break;
            }
         }
-    }
+    } */
     m_empty=true;
     for (int i=0;i<m_goodcodes.size();i++) {
         if (m_goodcodes[i]) {
@@ -330,6 +371,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     int zd=minx/86400000L;
     zd--;
     QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(zd);
+
+    QVector<bool> goodcodes;
+    goodcodes.resize(m_goodcodes.size());
 //    if (d==m_values.end()) {
 //        d=m_values.find(zd--);
  //   }
@@ -343,10 +387,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         } else {
             totalvalues[i]=0;
         }
+        goodcodes[i]=false;
         if (!m_goodcodes[i]) continue;
        // lastvalues[i]=0;
         lastX[i]=px;
-        if (d!=m_values.end()) {
+        if (d!=m_values.end() && d.value().contains(i+1)) {
+
             tmp=d.value()[i+1];
             h=tmp*ymult;
         } else {
@@ -370,9 +416,14 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         d=m_values.find(zd);
 
         qint64 extra=86400000;
-        if (Q<minx) continue;
+        if (Q<minx)
+            goto jumpnext;
+            //continue;
         if (d!=m_values.end()) {
             day=m_days[zd];
+            if (!m_hours.contains(zd))
+                goto jumpnext;
+                //continue;
             hours=m_hours[zd];
 
             int x1=px;
@@ -381,7 +432,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
             if (x1<left) x1=left;
             if (x2>left+width) x2=left+width;
-            if (x2<x1) continue;
+            if (x2<x1)
+                goto jumpnext;
+                //continue;
             ChannelID code;
 
             if (m_graphtype==GT_SESSIONS) {
@@ -419,6 +472,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 total_val+=hours;
                 total_days++;
             } else {
+                if (!d.value().contains(0)) goto jumpnext;
                 total=d.value()[0];
                 //if (total>0) {
                 if (day) {
@@ -428,11 +482,16 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 py=top+height;
 
                 //}
+                bool good;
                 for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
                     short j=g.key();
                     if (!j) continue;
                     j--;
-                    if (!m_goodcodes[j]) continue;
+                    good=m_goodcodes[j];
+                    if (!good)
+                        continue;
+
+                    goodcodes[j]=good;
 
                     tmp=g.value();
 
@@ -477,7 +536,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         col.setAlpha(128);
                         px2=px+barw;
                         py2=(top+height-2)-h;
-                        py2+=j;
+                        //py2+=j;
+
+                        // If more than 1 day between records, skip the vertical crud.
+                        if ((px2-lastX[j])>barw+1) {
+                            lastdaygood=false;
+                        }
                         if (lastdaygood) {
                             if (lastY[j]!=py2) // vertical line
                                 lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
@@ -487,7 +551,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;
-
                         //}
                     }
                 }  // for(QHash<short
@@ -499,6 +562,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 incompliant++;
             lastdaygood=false;
         }
+jumpnext:
         px+=barw;
         daynum++;
         //lastQ=Q;
@@ -514,7 +578,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     bool ishours=false;
     for (int j=0;j<m_codes.size();j++) {
-        if (!m_goodcodes[j]) continue;
+        if (!goodcodes[j]) continue;
+
         ChannelID code=m_codes[j];
         EventDataType tval=m_typeval[j];
         switch(m_type[j]) {
@@ -524,12 +589,15 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 case ST_PERC: b=QString("%1%").arg(tval*100.0,0,'f',0); break;
                 case ST_MIN:  b="Min"; break;
                 case ST_MAX:  b="Max"; break;
+                case ST_SETMIN:  b="Min"; break;
+                case ST_SETMAX:  b="Max"; break;
                 case ST_CPH:  b=""; break;
                 case ST_SPH:  b="%"; break;
                 case ST_HOURS: b=STR_UNIT_Hours; break;
                 case ST_SESSIONS: b="Sessions"; break;
 
                 default:
+                    b="";
                     break;
         }
         a=schema::channel[code].label();
@@ -648,6 +716,9 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
         graph->Trigger(2000);
 
         QHash<int,QHash<short,EventDataType> >::iterator d=m_values.find(hl_day);
+
+        QHash<short,EventDataType> & valhash=d.value();
+
         x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
         int y=event->y()+rtop-15;
         //QDateTime dt1=QDateTime::fromTime_t(hl_day*86400).toLocalTime();
@@ -669,7 +740,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             if (m_graphtype==GT_SESSIONS) {
                 if (m_type[0]==ST_HOURS) {
 
-                    int t=day->hours()*3600.0;
+                    int t=m_hours[zd]*3600.0;
                     int h=t/3600;
                     int m=(t / 60) % 60;
                     //int s=t % 60;
@@ -705,7 +776,10 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
             } else {
                 QString a;
                 for (int i=0;i<m_type.size();i++) {
-                    if (!m_goodcodes[i]) continue;
+                    if (!m_goodcodes[i])
+                        continue;
+                    if (!valhash.contains(i+1))
+                        continue;
                     EventDataType tval=m_typeval[i];
                     switch(m_type[i]) {
                             case ST_WAVG: a="W-avg"; break;
@@ -718,7 +792,10 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                             case ST_SPH:  a="%"; break;
                             case ST_HOURS: a=STR_UNIT_Hours; break;
                             case ST_SESSIONS: a="Sessions"; break;
+                            case ST_SETMIN:  a="Min"; break;
+                            case ST_SETMAX:  a="Max"; break;
                             default:
+                                a="";
                                 break;
                     }
                     if (m_type[i]==ST_SESSIONS) {
@@ -727,10 +804,16 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                     } else {
                         //if (day && (day->channelExists(m_codes[i]) || day->settingExists(m_codes[i]))) {
                             schema::Channel & chan=schema::channel[m_codes[i]];
+                            EventDataType v;
+                            if (valhash.contains(i+1))
+                                v=valhash[i+1];
+                            else v=0;
+
                             if (m_codes[i]==Journal_Weight) {
-                                val=weightString(d.value()[i+1],PROFILE.general->unitSystem());
-                            } else
-                                val=QString::number(d.value()[i+1],'f',2);
+                                val=weightString(v,PROFILE.general->unitSystem());
+                            } else {
+                                val=QString::number(v,'f',2);
+                            }
                             z+="\r\n"+chan.label()+" "+a+"="+val;
                         //}
                     }

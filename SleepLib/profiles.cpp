@@ -581,8 +581,12 @@ const char * US_STR_CalculateRDI="CalculateRDI";
 
 int Profile::countDays(MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastDay(mt);
-    if (!end.isValid()) end=LastDay(mt);
+    if (!start.isValid())
+        return 0;
+    //start=LastDay(mt);
+    if (!end.isValid())
+        return 0;
+    //end=LastDay(mt);
     QDate date=start;
     int days=0;
     do {
@@ -780,15 +784,17 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     QVector<EventDataType> array;
 
     QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
-    float gain;
+    EventDataType val,gain;
     bool setgain=false;
+
     //double val=0,tmp,hours=0;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
             for (int i=0;i<day->size();i++) {
                 for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
-                    if (!(*s)->enabled()) continue;
+                    if (!(*s)->enabled())
+                        continue;
 
                     Session *sess=*s;
                     gain=sess->m_gain[code];
@@ -801,7 +807,10 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
                     for (QHash<EventStoreType, EventStoreType>::iterator k=vsum.begin();k!=vsum.end();k++) {
                         for (int z=0;z<k.value();z++) {
-                            array.push_back(float(k.key())*gain);
+                            val=k.key();
+                            val*=gain;
+
+                            array.push_back(val);
                         }
                         /*sumi=summary.find(k.key());
                         if (sumi==summary.end()) summary[k.key()]=k.value();
@@ -821,7 +830,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
             }
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
 //    for (QHash<EventStoreType, EventStoreType>::iterator k=summary.begin();k!=summary.end();k++) {
 //        for (int i=0;i<k.value();i++)  {
 //            array.push_back(k.key());
@@ -845,7 +854,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     int p=EventDataType(size)*percent;
     float p2=EventDataType(size)*percent;
     float diff=p2-p;
-    EventDataType val=array[p];
+    val=array[p];
     if (diff>0) {
         int s=p+1;
         if (s>size-1) s=size-1;
@@ -892,6 +901,8 @@ QDate Profile::FirstGoodDay(MachineType mt)
 
     QDate d=FirstDay(mt);
     QDate l=LastDay(mt);
+    if (!d.isValid() || !l.isValid())
+        return QDate();
     do {
         if (GetGoodDay(d,mt)!=NULL) return d;
         d=d.addDays(1);

@@ -403,7 +403,12 @@ EventDataType calcAHI(QDate start, QDate end)
               +p_profile->calcCount(CPAP_Apnea,MT_CPAP,start,end));
     if (PROFILE.general->calculateRDI())
         val+=p_profile->calcCount(CPAP_RERA,MT_CPAP,start,end);
-    val/=p_profile->calcHours(MT_CPAP,start,end);
+    EventDataType hours=p_profile->calcHours(MT_CPAP,start,end);
+
+    if (hours>0)
+        val/=hours;
+    else
+        val=0;
 
     return val;
 }
@@ -449,38 +454,6 @@ enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, R
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
 
-//bool operator<(const RXChange & comp1, const RXChange & comp2) {
-//    if (RXorder) {
-//        switch (RXsort) {
-//        case RX_ahi: return comp1.ahi < comp2.ahi;
-//        case RX_days: return comp1.days < comp2.days;
-//        case RX_first: return comp1.first < comp2.first;
-//        case RX_last: return comp1.last < comp2.last;
-//        case RX_mode: return comp1.mode < comp2.mode;
-//        case RX_min:  return comp1.min < comp2.min;
-//        case RX_max:  return comp1.max < comp2.max;
-//        case RX_maxhi: return comp1.maxhi < comp2.maxhi;
-//        case RX_per1:  return comp1.per1 < comp2.per1;
-//        case RX_per2:  return comp1.per2 < comp2.per2;
-//        case RX_weighted:  return comp1.weighted < comp2.weighted;
-//        };
-//    } else {
-//        switch (RXsort) {
-//        case RX_ahi: return comp1.ahi > comp2.ahi;
-//        case RX_days: return comp1.days > comp2.days;
-//        case RX_first: return comp1.first > comp2.first;
-//        case RX_last: return comp1.last > comp2.last;
-//        case RX_mode: return comp1.mode > comp2.mode;
-//        case RX_min:  return comp1.min > comp2.min;
-//        case RX_max:  return comp1.max > comp2.max;
-//        case RX_maxhi: return comp1.maxhi > comp2.maxhi;
-//        case RX_per1:  return comp1.per1 > comp2.per1;
-//        case RX_per2:  return comp1.per2 > comp2.per2;
-//        case RX_weighted:  return comp1.weighted > comp2.weighted;
-//        };
-//    }
-//    return true;
-//}
 bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     if (RXorder) {
         switch (RXsort) {
@@ -805,8 +778,8 @@ void MainWindow::on_summaryButton_clicked()
         CPAPMode mode,cmode=MODE_UNKNOWN;
         EventDataType cmin=0,cmax=0,cmaxhi=0, min,max,maxhi;
         Machine *mach,*lastmach=NULL;
-        PRTypes prelief=PR_UNKNOWN;
-        short prelset=0;
+        PRTypes lastpr, prelief=PR_UNKNOWN;
+        short prelset, lastprelset=-1;
         QDate date=lastcpap;
         Day * day;
         bool lastchanged=false;
@@ -833,7 +806,8 @@ void MainWindow::on_summaryButton_clicked()
                         bestAHIdate=date;
                     }
                 }
-
+                prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
+                prelset=round(day->settings_wavg(CPAP_PresReliefSet));
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
                 if (mode>=MODE_ASV) {
                     min=day->settings_min(CPAP_EPAP);
@@ -848,7 +822,7 @@ void MainWindow::on_summaryButton_clicked()
                 } else {
                     min=day->settings_min(CPAP_Pressure);
                 }
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (day->machine!=lastmach))  {
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (day->machine!=lastmach) || (prelief!=lastpr))  {
                     if (cmode!=MODE_UNKNOWN) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -861,8 +835,8 @@ void MainWindow::on_summaryButton_clicked()
                         rx.min=cmin;
                         rx.max=cmax;
                         rx.maxhi=cmaxhi;
-                        rx.prelief=prelief;
-                        rx.prelset=prelset;
+                        rx.prelief=lastpr;
+                        rx.prelset=lastprelset;
 
                         if (mode<MODE_BIPAP) {
                             rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
@@ -881,6 +855,8 @@ void MainWindow::on_summaryButton_clicked()
                     cmin=min;
                     cmax=max;
                     cmaxhi=maxhi;
+                    lastpr=prelief;
+                    lastprelset=prelset;
                     last=date;
                     lastmach=day->machine;
                     lastchanged=true;
@@ -890,6 +866,7 @@ void MainWindow::on_summaryButton_clicked()
             date=date.addDays(-1);
         } while (date>=firstcpap);
 
+        lastchanged=false;
         if (!lastchanged) {
            // last=date.addDays(1);
             first=firstcpap;
@@ -903,6 +880,8 @@ void MainWindow::on_summaryButton_clicked()
             rx.min=min;
             rx.max=max;
             rx.maxhi=maxhi;
+            rx.prelief=prelief;
+            rx.prelset=prelset;
             if (mode<MODE_BIPAP) {
                 rx.per1=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
                 rx.per2=0;
@@ -1040,12 +1019,13 @@ void MainWindow::on_summaryButton_clicked()
             extratxt=QString("<td><b>%1</b></td>")
                 .arg(tr("Pressure"));
         }
-        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>%6</tr>")
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td>%7</tr>")
                   .arg(tr("First"))
                   .arg(tr("Last"))
                   .arg(tr("Days"))
                   .arg(ahitxt)
                   .arg(tr("Mode"))
+                  .arg(tr("Pr. Rel."))
                   .arg(extratxt);
 
         for (int i=0;i<rxchange.size();i++) {
@@ -1068,7 +1048,12 @@ void MainWindow::on_summaryButton_clicked()
             } else if (cpapmode>MODE_CPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
             } else extratxt="";
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='tabwidget.setCurrentIndex(3); print \"%1 %2\";'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td>%9</tr>")
+            QString presrel;
+            if (rx.prelset>0) {
+                presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
+                presrel+=QString(" x%1").arg(rx.prelset);
+            } else presrel="None";
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='tabwidget.setCurrentIndex(3); print \"%1 %2\";'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
@@ -1076,6 +1061,7 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(rx.days)
                     .arg(rx.ahi,0,'f',2)
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
+                    .arg(presrel)
                     .arg(rx.min,0,'f',2)
                     .arg(extratxt);
         }

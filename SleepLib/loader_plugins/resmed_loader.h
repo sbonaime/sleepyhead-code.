@@ -64,22 +64,22 @@ public:
     QString physical_dimension;
 
     //! \brief The minimum limits of the ungained data
-    double  physical_minimum;
+    EventDataType physical_minimum;
 
     //! \brief The maximum limits of the ungained data
-    double physical_maximum;
+    EventDataType physical_maximum;
 
     //! \brief The minimum limits of the data with gain and offset applied
-    double digital_minimum;
+    EventDataType digital_minimum;
 
     //! \brief The maximum limits of the data with gain and offset applied
-    double digital_maximum;
+    EventDataType digital_maximum;
 
     //! \brief Raw integer data is multiplied by this value
-    double gain;
+    EventDataType gain;
 
     //! \brief This value is added to the raw data
-    double offset;
+    EventDataType offset;
 
     //! \brief Any prefiltering methods used (usually blank)
     QString prefiltering;

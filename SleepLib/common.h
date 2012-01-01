@@ -40,6 +40,7 @@ const QString STR_PROP_SubModel="SubModel";
 const QString STR_PROP_Serial="Serial";
 const QString STR_PROP_DataVersion="DataVersion";
 const QString STR_PROP_Path="Path";
+const QString STR_PROP_LastImported="LastImported";
 
 const QString STR_MACH_ResMed="ResMed";
 const QString STR_MACH_PRS1="PRS1";
@@ -54,6 +55,7 @@ const QString STR_TR_PulseRate=QObject::tr("Pulse Rate");
 const QString STR_TR_SpO2=QObject::tr("SpO2");
 const QString STR_TR_Plethy=QObject::tr("Plethy");
 const QString STR_TR_FlowRate=QObject::tr("Flow Rate");
+const QString STR_TR_Pressure=QObject::tr("Pressure");
 
 const QString STR_TR_Daily=QObject::tr("Daily");
 const QString STR_TR_Overview=QObject::tr("Overview");
