@@ -178,14 +178,14 @@ public:
     const QString email() { return (*m_profile)[DI_STR_Email].toString(); }
     const QString practiceName() { return (*m_profile)[DI_STR_Practice].toString(); }
     const QString address() { return (*m_profile)[DI_STR_Address].toString(); }
-    const QString patiendID() { return (*m_profile)[DI_STR_PatientID].toString(); }
+    const QString patientID() { return (*m_profile)[DI_STR_PatientID].toString(); }
 
     void setName(QString name) { (*m_profile)[DI_STR_Name]=name; }
     void setPhone(QString phone) { (*m_profile)[DI_STR_Phone]=phone; }
     void setEmail(QString phone) { (*m_profile)[DI_STR_Email]=phone; }
     void setPracticeName(QString practice) { (*m_profile)[DI_STR_Practice]=practice; }
     void setAddress(QString address) { (*m_profile)[DI_STR_Address]=address; }
-    void setPatiendID(QString pid) { (*m_profile)[DI_STR_PatientID]=pid; }
+    void setPatientID(QString pid) { (*m_profile)[DI_STR_PatientID]=pid; }
 
     Profile *m_profile;
 };

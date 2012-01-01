@@ -156,7 +156,7 @@ void NewProfile::on_nextButton_clicked()
             profile->doctor->setAddress(ui->doctorAddressEdit->toPlainText());
             profile->doctor->setPhone(ui->doctorPhoneEdit->text());
             profile->doctor->setEmail(ui->doctorEmailEdit->text());
-            profile->doctor->setPatiendID(ui->doctorPatientIDEdit->text());
+            profile->doctor->setPatientID(ui->doctorPatientIDEdit->text());
             profile->user->setLanguage(ui->languageCombo->currentText());
             profile->user->setTimeZone(ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString());
             profile->user->setCountry(ui->countryCombo->currentText());
@@ -277,7 +277,7 @@ void NewProfile::edit(const QString name)
     ui->doctorPhoneEdit->setText(profile->doctor->phone());
     ui->doctorEmailEdit->setText(profile->doctor->email());
     ui->doctorAddressEdit->setText(profile->doctor->address());
-    ui->doctorPatientIDEdit->setText(profile->doctor->patiendID());
+    ui->doctorPatientIDEdit->setText(profile->doctor->patientID());
 
     ui->DSTcheckbox->setChecked(profile->user->daylightSaving());
     int i=ui->timezoneCombo->findData(profile->user->timeZone());

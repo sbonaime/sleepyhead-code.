@@ -1547,6 +1547,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     if (!PROFILE.user->firstName().isEmpty()) {
         QString userinfo=tr("Name:\t %1, %2\n").arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName());
         userinfo+=tr("DOB:\t%1\n").arg(PROFILE.user->DOB().toString(Qt::SystemLocaleShortDate));
+        if (!PROFILE.doctor->patientID().isEmpty()) userinfo+=tr("Patient ID:\t%1\n").arg(PROFILE.doctor->patientID());
         userinfo+=tr("Phone:\t%1\n").arg(PROFILE.user->phone());
         userinfo+=tr("Email:\t%1\n").arg(PROFILE.user->email());
         if (!PROFILE.user->address().isEmpty()) userinfo+=tr("\nAddress:\n%1").arg(PROFILE.user->address());
@@ -1695,7 +1696,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                     QTextDocument doc;
                     doc.setHtml(journal->settings[Journal_Notes].toString());
                     stats=doc.toPlainText();
-                    //doc.drawContents(&painter);
+                    //doc.drawContents(&painter); // doesn't work as intended..
 
                     bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignHCenter));
                     painter.drawText(bounds,stats,QTextOption(Qt::AlignHCenter));
