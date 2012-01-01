@@ -1671,9 +1671,45 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 stats+=tr("NRI=%1 LKI=%2 EPI=%3").arg(nri,0,'f',2).arg(lki,0,'f',2).arg(exp,0,'f',2);
             }
-            bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignCenter));
-            painter.drawText(bounds,stats,QTextOption(Qt::AlignCenter));
+            bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignHCenter));
+            painter.drawText(bounds,stats,QTextOption(Qt::AlignHCenter));
             ttop+=bounds.height();
+
+            if (journal) {
+                stats="";
+                if (journal->settings.contains(Journal_Weight))
+                    stats+=tr("Weight %1 ").arg(weightString(journal->settings[Journal_Weight].toDouble()));
+                if (journal->settings.contains(Journal_BMI))
+                    stats+=tr("BMI %1 ").arg(journal->settings[Journal_BMI].toDouble(),0,'f',2);
+                if (journal->settings.contains(Journal_ZombieMeter))
+                    stats+=tr("Zombie %1/10 ").arg(journal->settings[Journal_ZombieMeter].toDouble(),0,'f',0);
+
+                if (!stats.isEmpty()) {
+                    bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignHCenter));
+
+                    painter.drawText(bounds,stats,QTextOption(Qt::AlignHCenter));
+                    ttop+=bounds.height();
+                }
+                ttop+=normal_height;
+                if (journal->settings.contains(Journal_Notes)) {
+                    QTextDocument doc;
+                    doc.setHtml(journal->settings[Journal_Notes].toString());
+                    stats=doc.toPlainText();
+                    //doc.drawContents(&painter);
+
+                    bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignHCenter));
+                    painter.drawText(bounds,stats,QTextOption(Qt::AlignHCenter));
+                    bounds.setLeft(virt_width/4);
+                    bounds.setRight(virt_width-(virt_width/4));
+
+                    QPen pen(Qt::black);
+                    pen.setWidth(4);
+                    painter.setPen(pen);
+                    painter.drawRect(bounds);
+                    ttop+=bounds.height()+normal_height;
+                }
+            }
+
 
             if (ttop>maxy) maxy=ttop;
         } else {
@@ -1681,26 +1717,24 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             painter.drawText(bounds,cpapinfo,QTextOption(Qt::AlignCenter));
             if (maxy+bounds.height()>maxy) maxy=maxy+bounds.height();
         }
-
-        graph_slots=2;
     } else if (name==STR_TR_Overview) {
         QDateTime first=QDateTime::fromTime_t((*gv)[0]->min_x/1000L);
         QDateTime last=QDateTime::fromTime_t((*gv)[0]->max_x/1000L);
         QString ovinfo=tr("Reporting from %1 to %2").arg(first.date().toString(Qt::SystemLocaleShortDate)).arg(last.date().toString(Qt::SystemLocaleShortDate));
-        QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),ovinfo,QTextOption(Qt::AlignCenter));
-        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
+        QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),ovinfo,QTextOption(Qt::AlignHCenter));
+        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignHCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
-        graph_slots=1;
     } else if (name==STR_TR_Oximetry) {
         QString ovinfo=tr("Reporting data goes here");
-        QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),ovinfo,QTextOption(Qt::AlignCenter));
-        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignCenter));
+        QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),ovinfo,QTextOption(Qt::AlignHCenter));
+        painter.drawText(bounds,ovinfo,QTextOption(Qt::AlignHCenter));
 
         if (bounds.height()>maxy) maxy=bounds.height();
-        graph_slots=1;
     }
     top+=maxy;
+
+    graph_slots=graphs_per_page-((virt_height-top)/(full_graph_height+normal_height));
 
     bool first=true;
     QStringList labels;
@@ -1862,9 +1896,10 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (!label.isEmpty()) {
             //label+=":";
             top+=normal_height/3;
-            QRectF pagebnds=QRectF(0,top,virt_width,normal_height);
-            painter.drawText(pagebnds,label,QTextOption(Qt::AlignHCenter | Qt::AlignTop));
-            top+=normal_height;
+            QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),label,QTextOption(Qt::AlignHCenter));
+            //QRectF pagebnds=QRectF(0,top,virt_width,normal_height);
+            painter.drawText(bounds,label,QTextOption(Qt::AlignHCenter));
+            top+=bounds.height();
         } else top+=normal_height/2;
 
         PROFILE.appearance->setAntiAliasing(force_antialiasing);

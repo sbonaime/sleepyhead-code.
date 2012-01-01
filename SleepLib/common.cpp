@@ -23,6 +23,9 @@ qint64 timezoneOffset() {
 
 QString weightString(float kg, UnitSystem us)
 {
+    if (us==US_Undefined)
+        us=PROFILE.general->unitSystem();
+
     if (us==US_Metric) {
         return QString("%1kg").arg(kg,0,'f',2);
     } else if (us==US_Archiac) {
