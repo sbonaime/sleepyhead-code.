@@ -539,7 +539,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         } // if (bar
                         py-=h;
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
-                        col.setAlpha(128);
+                        //col.setAlpha(128);
                         GLuint col1=col.rgba();
                         GLuint col2=m_colors[j].rgba();
                         px2=px+barw;

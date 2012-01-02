@@ -68,7 +68,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
 
     QHash<QString,QString> lookup;
     lookup["Sn"]=STR_PROP_Serial;
-    lookup["Mn"]=STR_PROP_Model;
+    lookup["Mn"]=STR_PROP_ModelNumber;
     lookup["Mo"]="PAPMode"; // 0=cpap, 1=auto
     //lookup["Pn"]="Pn";
     lookup["Pu"]="MaxPressure";

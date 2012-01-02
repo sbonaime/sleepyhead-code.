@@ -101,7 +101,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
     <Option id="1" value="Ramp"/>
     <Option id="2" value="Full Time"/>
   </channel>
-  <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pres. Rel. Set" type="integer"/>
+  <channel id="0x1203" class="setting" scope="!session" name="PresRelSet" details="Pressure Relief Setting" label="Pressure Relief" type="integer"/>
 
  </group>
  <group name="OXI">
