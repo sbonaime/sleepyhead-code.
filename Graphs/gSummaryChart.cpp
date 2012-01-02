@@ -67,6 +67,9 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
 
             addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN,true);
+            addSlice(CPAP_IPAP,QColor("cyan"),ST_PERC,true,0.5);
+            addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,true,0.95);
+            //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
             addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX,true);
         } else if (mode>=MODE_BIPAP) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
@@ -546,9 +549,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         if (lastdaygood) {
                             if (lastY[j]!=py2) // vertical line
                                 lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
-                            lines->add(px,py2,px2+1,py2,col);
+                            lines->add(px-1,py2,px2+1,py2,col);
                         } else {
-                            lines->add(x1,py2,x2+1,py2,col);
+                            lines->add(x1-1,py2,x2+1,py2,col);
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;

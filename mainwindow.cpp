@@ -108,6 +108,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
+#ifdef Q_WS_MAC
+    PROFILE.appearance->setAntiAliasing(false);
+#endif
     ui->action_Link_Graph_Groups->setChecked(PROFILE.general->linkGroups());
 
     first_load=true;

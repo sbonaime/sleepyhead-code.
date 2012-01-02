@@ -156,7 +156,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
 
     ui->maskDescription->setText(profile->cpap->maskDescription());
+#ifdef Q_WS_MAC
+    ui->useAntiAliasing->setChecked(false);
+    ui->useAntiAliasing->setDisabled(true);
+#else
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
+#endif
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
     ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
     ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
@@ -275,7 +280,11 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
+#ifdef Q_WS_MAC
+    profile->appearance->setAntiAliasing(false);
+#else
     profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
+#endif
     if (ui->useSquareWavePlots->isChecked()!=profile->appearance->squareWavePlots()) {
         profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
         needs_restart=true;
