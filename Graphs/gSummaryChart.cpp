@@ -19,7 +19,7 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
     lines->setSize(1.5);
-    lines->setBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+    lines->setBlendFunc(GL_ONE, GL_ONE);
     lines->forceAntiAlias(false);
 
     m_empty=true;
