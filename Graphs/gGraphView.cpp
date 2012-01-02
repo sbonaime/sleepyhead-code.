@@ -309,10 +309,14 @@ void GLShortBuffer::draw()
         bool antialias=m_forceantialias || (PROFILE.ExistsAndTrue("UseAntiAliasing") && m_antialias);
         if (m_stippled) antialias=false;
         float size=m_size;
-        if (antialias) {
-            glEnable(GL_BLEND);
 
-            glBlendFunc(m_blendfunc1,  m_blendfunc2);
+        if (antialias) {
+            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+                glEnable(GL_ALPHA_TEST);
+            } else {
+                glEnable(GL_BLEND);
+                glBlendFunc(m_blendfunc1,  m_blendfunc2);
+            }
             //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
             if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
                 glEnable(GL_LINE_SMOOTH);
@@ -382,7 +386,11 @@ void GLShortBuffer::draw()
             } else if (m_type==GL_POLYGON) {
                 glDisable(GL_POLYGON_SMOOTH);
             }
-            glDisable(GL_BLEND);
+            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+                glDisable(GL_ALPHA_TEST);
+            } else {
+                glDisable(GL_BLEND);
+            }
         }
     }
 }
