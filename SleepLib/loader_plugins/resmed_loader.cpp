@@ -604,12 +604,11 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             // Note: AutoSV machines don't have both fields
             sig=stredf.lookupSignal(RMS9_EPR);
             if (sig) {
-                int i=sig->data[dn];
-                sess->settings[CPAP_PresReliefMode]=i;
+                sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
             }
             sig=stredf.lookupSignal(RMS9_EPRSet);
             if (sig)  {
-                sess->settings[CPAP_PresReliefSet]=sig->data[dn];
+                sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
             }
 
 
@@ -981,14 +980,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
-                    int i=sig->data[dn];
-                    sess->settings[CPAP_PresReliefMode]=i;
-
+                    sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
                 }
 
                 sig=stredf.lookupSignal(RMS9_EPRSet);
                 if (sig)  {
-                    sess->settings[CPAP_PresReliefSet]=sig->data[dn];
+                    sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
                 }
 
 

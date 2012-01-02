@@ -72,6 +72,7 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
             addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,true,0.95);
 
+            addSlice(CPAP_IPAP,QColor("light cyan"),ST_WAVG,true);
             addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
             addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX,true);
         } else if (mode>=MODE_APAP) {
