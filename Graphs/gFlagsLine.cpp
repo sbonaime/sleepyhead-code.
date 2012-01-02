@@ -14,8 +14,8 @@ gFlagsGroup::gFlagsGroup()
 {
     //static QColor col=Qt::black;
 
-    addGLBuf(quads=new GLShortBuffer(512,GL_QUADS));
-    addGLBuf(lines=new GLShortBuffer(20,GL_LINE_LOOP));
+    addVertexBuffer(quads=new gVertexBuffer(512,GL_QUADS));
+    addVertexBuffer(lines=new gVertexBuffer(20,GL_LINE_LOOP));
     quads->setAntiAlias(true);
     lines->setAntiAlias(false);
     m_barh=0;
@@ -75,17 +75,19 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
         if (i & 1) barcol=&col1; else barcol=&col2;
-        quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, *barcol);
+        quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, barcol->rgba());
 
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,m_barh);
         linetop+=m_barh;
     }
 
-    GLShortBuffer *outlines=w.lines();
+    gVertexBuffer *outlines=w.lines();
     QColor blk=Qt::black;
-    outlines->add(left-1, top, left-1, top+height, left-1, top+height, left+width,top+height, blk);
-    outlines->add(left+width,top+height, left+width, top, left+width, top, left-1, top, blk);
+    outlines->add(left-1, top, left-1, top+height, blk.rgba());
+    outlines->add(left-1, top+height, left+width,top+height, blk.rgba());
+    outlines->add(left+width,top+height, left+width, top,blk.rgba());
+    outlines->add(left+width, top, left-1, top, blk.rgba());
 
     //lines->add(left-1, top, left-1, top+height);
     //lines->add(left+width, top+height, left+width, top);
@@ -94,7 +96,7 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
 {
-    addGLBuf(quads=new GLShortBuffer(2048,GL_QUADS));
+    addVertexBuffer(quads=new gVertexBuffer(2048,GL_QUADS));
     //addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
     quads->setAntiAlias(true);
     //lines->setAntiAlias(true);
@@ -138,7 +140,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     float bottom=top+height-2;
     bool verts_exceeded=false;
     qint64 X,X2,L;
-    m_flag_color=schema::channel[m_code].defaultColor();
+    lines->setColor(schema::channel[m_code].defaultColor().rgba());
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled()) continue;
 
@@ -154,7 +156,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
             if (X > maxx) break;
             x1=(X - minx) * xmult + left;
             if (m_flt==FT_Bar) {
-                lines->add(x1,bartop,x1,bottom,m_flag_color);
+                lines->add(x1,bartop,x1,bottom);
                 if (lines->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Span) {
                 x2=(X2-minx)*xmult+left;
@@ -163,7 +165,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
                     x1-=1;
                     x2+=1;
                 }*/
-                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom,m_flag_color);
+                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom,m_flag_color.rgba());
                 if (quads->full()) { verts_exceeded=true; break; }
             }
         }

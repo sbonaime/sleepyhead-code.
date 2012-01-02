@@ -275,8 +275,6 @@ private slots:
 
     void on_summaryView_linkClicked(const QUrl &arg1);
 
-    void on_summaryView_urlChanged(const QUrl &arg1);
-
 private:
 
     Ui::MainWindow *ui;

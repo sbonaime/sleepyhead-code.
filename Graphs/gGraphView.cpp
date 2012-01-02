@@ -137,6 +137,243 @@ int GetXHeight(QFont *font)
     return fm.xHeight();
 }
 
+inline quint32 swaporder(quint32 color)
+{
+  return ((color & 0xFF00FF00) |
+         ((color & 0xFF0000) >> 16)|
+         ((color & 0xFF) << 16));
+}
+
+gVertexBuffer::gVertexBuffer(int max,int type)
+:m_max(max), m_type(type), m_cnt(0), m_size(1), m_scissor(false), m_stippled(false), m_stipple(0xffff)
+{
+    buffer=(gVertex *)calloc(max,sizeof(gVertex));
+    m_blendfunc1=GL_SRC_ALPHA;
+    m_blendfunc2=GL_ONE_MINUS_SRC_ALPHA;
+    m_antialias=m_forceantialias=false;
+}
+gVertexBuffer::~gVertexBuffer()
+{
+    free(buffer);
+}
+void gVertexBuffer::setColor(QColor col)
+{
+    m_color=swaporder(col.rgba());
+}
+
+void gVertexBuffer::draw()
+{
+    bool antialias=m_forceantialias || (PROFILE.appearance->antiAliasing() && m_antialias);
+    if (m_stippled) antialias=false;
+    float size=m_size;
+
+    if (antialias) {
+        glEnable(GL_BLEND);
+        glBlendFunc(m_blendfunc1,  m_blendfunc2);
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            glEnable(GL_LINE_SMOOTH);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+            size+=0.5;
+        } else if (m_type==GL_POLYGON) {
+            glEnable(GL_POLYGON_SMOOTH);
+            glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+        }
+    }
+    if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+        if (m_stippled) {
+            glLineStipple(1, m_stipple);
+            //size=1;
+            glEnable(GL_LINE_STIPPLE);
+        } else {
+            //glLineStipple(1, 0xFFFF);
+        }
+        glLineWidth(size);
+
+    } else if (m_type==GL_POINTS) {
+        glPointSize(size);
+    } else if (m_type==GL_POLYGON) {
+        glPolygonMode(GL_BACK,GL_FILL);
+    }
+    if (m_scissor) {
+        glScissor(s_x,s_y,s_width,s_height);
+        glEnable(GL_SCISSOR_TEST);
+    }
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_SHORT, 8, (GLvoid *)buffer);
+    glColorPointer(4, GL_UNSIGNED_BYTE, 8, ((char *)buffer)+4);
+
+    glDrawArrays(m_type, 0, m_cnt);
+
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    m_cnt=0;
+    if (m_scissor) {
+        glDisable(GL_SCISSOR_TEST);
+        m_scissor=false;
+    }
+    if (m_type==GL_POLYGON) {
+        glPolygonMode(GL_BACK,GL_FILL);
+    }
+    if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+        if (m_stippled) {
+            glDisable(GL_LINE_STIPPLE);
+            glLineStipple(1, 0xFFFF);
+        }
+    }
+
+    if (antialias) {
+        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
+            glDisable(GL_LINE_SMOOTH);
+        } else if (m_type==GL_POLYGON) {
+            glDisable(GL_POLYGON_SMOOTH);
+        }
+        glDisable(GL_BLEND);
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1, RGBA color)
+{
+    if (m_cnt<m_max) {
+        gVertex & v=buffer[m_cnt];
+
+        v.color=swaporder(color);
+        v.x=x1;
+        v.y=y1;
+
+        m_cnt++;
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, RGBA color)
+{
+    if (m_cnt < (m_max-1)) {
+        gVertex * v=&buffer[m_cnt];
+
+        v->x=x1;
+        v->y=y1;
+        v->color=swaporder(color);
+
+        v++;
+        v->x=x2;
+        v->y=y2;
+        v->color=swaporder(color);
+
+        m_cnt+=2;
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color)
+{
+    if (m_cnt < (m_max-3)) {
+        gVertex *v=&buffer[m_cnt];
+
+        v->color=swaporder(color);
+        v->x=x1;
+        v->y=y1;
+        v++;
+
+        v->color=swaporder(color);
+        v->x=x2;
+        v->y=y2;
+
+        v++;
+        v->color=swaporder(color);
+        v->x=x3;
+        v->y=y3;
+
+        v++;
+        v->color=swaporder(color);
+        v->x=x4;
+        v->y=y4;
+
+        m_cnt+=4;
+    }
+}
+
+void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color1, RGBA color2)
+{
+    if (m_cnt < (m_max-3)) {
+        gVertex *v=&buffer[m_cnt];
+
+        v->color=swaporder(color1);
+        v->x=x1;
+        v->y=y1;
+        v++;
+
+        v->color=swaporder(color1);
+        v->x=x2;
+        v->y=y2;
+
+        v++;
+        v->color=swaporder(color2);
+        v->x=x3;
+        v->y=y3;
+
+        v++;
+        v->color=swaporder(color2);
+        v->x=x4;
+        v->y=y4;
+
+        m_cnt+=4;
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1)
+{
+    if (m_cnt<m_max) {
+        gVertex & v=buffer[m_cnt];
+
+        v.color=m_color;
+        v.x=x1;
+        v.y=y1;
+
+        m_cnt++;
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
+{
+    if (m_cnt < (m_max-1)) {
+        gVertex * v=&buffer[m_cnt];
+
+        v->x=x1;
+        v->y=y1;
+        v->color=m_color;
+
+        v++;
+        v->x=x2;
+        v->y=y2;
+        v->color=m_color;
+
+        m_cnt+=2;
+    }
+}
+void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4)
+{
+    if (m_cnt < (m_max-3)) {
+        gVertex *v=&buffer[m_cnt];
+
+        v->color=m_color;
+        v->x=x1;
+        v->y=y1;
+        v++;
+
+        v->color=m_color;
+        v->x=x2;
+        v->y=y2;
+
+        v++;
+        v->color=m_color;
+        v->x=x3;
+        v->y=y3;
+
+        v++;
+        v->color=m_color;
+        v->x=x4;
+        v->y=y4;
+
+        m_cnt+=4;
+    }
+}
+
+
 GLBuffer::GLBuffer(int max,int type, bool stippled)
     :m_max(max), m_type(type), m_stippled(stippled)
 {
@@ -152,247 +389,6 @@ GLBuffer::GLBuffer(int max,int type, bool stippled)
 }
 GLBuffer::~GLBuffer()
 {
-}
-///////
-
-void GLShortBuffer::add(GLshort x, GLshort y)
-{
-    if (m_cnt<m_max+2) {
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.lock();
-#endif
-        buffer[m_cnt++]=x;
-        buffer[m_cnt++]=y;
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.unlock();
-#endif
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
-{
-    if (m_cnt<m_max+4) {
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.lock();
-#endif
-        buffer[m_cnt++]=x1;
-        buffer[m_cnt++]=y1;
-        buffer[m_cnt++]=x2;
-        buffer[m_cnt++]=y2;
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.unlock();
-#endif
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4)
-{
-    if (m_cnt<m_max+8) {
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.lock();
-#endif
-        buffer[m_cnt++]=x1;
-        buffer[m_cnt++]=y1;
-        buffer[m_cnt++]=x2;
-        buffer[m_cnt++]=y2;
-        buffer[m_cnt++]=x3;
-        buffer[m_cnt++]=y3;
-        buffer[m_cnt++]=x4;
-        buffer[m_cnt++]=y4;
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.unlock();
-#endif
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-
-GLShortBuffer::GLShortBuffer(int max,int type, bool stippled)
-    :GLBuffer(max,type,stippled)
-{
-    buffer=(GLshort *)calloc(sizeof(GLshort),max+8);
-    colors=(GLubyte *)calloc(sizeof(GLubyte),max*4+(8*4));
-}
-GLShortBuffer::~GLShortBuffer()
-{
-    if (colors) free(colors);
-    if (buffer) free(buffer);
-}
-
-void GLShortBuffer::add(GLshort x, GLshort y,QColor & color)
-{
-    if (m_cnt<m_max+2) {
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.lock();
-#endif
-        buffer[m_cnt++]=x;
-        buffer[m_cnt++]=y;
-        colors[m_colcnt++]=color.red();
-        colors[m_colcnt++]=color.green();
-        colors[m_colcnt++]=color.blue();
-        colors[m_colcnt++]=color.alpha();
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.unlock();
-#endif
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,QColor & color)
-{
-    if (m_cnt<m_max+4) {
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.lock();
-#endif
-        buffer[m_cnt++]=x1;
-        buffer[m_cnt++]=y1;
-        buffer[m_cnt++]=x2;
-        buffer[m_cnt++]=y2;
-        colors[m_colcnt++]=color.red();
-        colors[m_colcnt++]=color.green();
-        colors[m_colcnt++]=color.blue();
-        colors[m_colcnt++]=color.alpha();
-        colors[m_colcnt++]=color.red();
-        colors[m_colcnt++]=color.green();
-        colors[m_colcnt++]=color.blue();
-        colors[m_colcnt++]=color.alpha();
-#ifdef ENABLE_THREADED_DRAWING
-        mutex.unlock();
-#endif
-    } else {
-        qDebug() << "GLBuffer overflow";
-    }
-}
-void GLShortBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,GLshort x3, GLshort y3, GLshort x4, GLshort y4,QColor & color) // add with vertex colors
-{
-if (m_cnt<m_max+8) {
-#ifdef ENABLE_THREADED_DRAWING
-    mutex.lock();
-#endif
-    buffer[m_cnt++]=x1;
-    buffer[m_cnt++]=y1;
-    buffer[m_cnt++]=x2;
-    buffer[m_cnt++]=y2;
-    buffer[m_cnt++]=x3;
-    buffer[m_cnt++]=y3;
-    buffer[m_cnt++]=x4;
-    buffer[m_cnt++]=y4;
-    colors[m_colcnt++]=color.red();
-    colors[m_colcnt++]=color.green();
-    colors[m_colcnt++]=color.blue();
-    colors[m_colcnt++]=color.alpha();
-    colors[m_colcnt++]=color.red();
-    colors[m_colcnt++]=color.green();
-    colors[m_colcnt++]=color.blue();
-    colors[m_colcnt++]=color.alpha();
-
-    colors[m_colcnt++]=color.red();
-    colors[m_colcnt++]=color.green();
-    colors[m_colcnt++]=color.blue();
-    colors[m_colcnt++]=color.alpha();
-    colors[m_colcnt++]=color.red();
-    colors[m_colcnt++]=color.green();
-    colors[m_colcnt++]=color.blue();
-    colors[m_colcnt++]=color.alpha();
-#ifdef ENABLE_THREADED_DRAWING
-    mutex.unlock();
-#endif
-} else {
-    qDebug() << "GLBuffer overflow";
-}
-}
-void GLShortBuffer::draw()
-{
-    if (m_cnt>0) {
-        bool antialias=m_forceantialias || (PROFILE.ExistsAndTrue("UseAntiAliasing") && m_antialias);
-        if (m_stippled) antialias=false;
-        float size=m_size;
-
-        if (antialias) {
-            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-                glEnable(GL_ALPHA_TEST);
-            } else {
-                glEnable(GL_BLEND);
-                glBlendFunc(m_blendfunc1,  m_blendfunc2);
-            }
-            //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
-            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-                glEnable(GL_LINE_SMOOTH);
-                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-                size+=0.5;
-            } else if (m_type==GL_POLYGON) {
-                glEnable(GL_POLYGON_SMOOTH);
-                glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-            }
-        }
-        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-            if (m_stippled) {
-                glLineStipple(1, 0xffff);
-                size=1;
-                glEnable(GL_LINE_STIPPLE);
-            } else {
-                glLineStipple(1, 0xFFFF);
-            }
-            glLineWidth(size);
-
-        } else if (m_type==GL_POINTS) {
-            glPointSize(size);
-        } else if (m_type==GL_POLYGON) {
-            glPolygonMode(GL_BACK,GL_FILL);
-        }
-        if (m_scissor) {
-            glScissor(s1,s2,s3,s4);
-            glEnable(GL_SCISSOR_TEST);
-        }
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_SHORT, 0, buffer);
-
-        if (m_colcnt>0) {
-            glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-            glEnableClientState(GL_COLOR_ARRAY);
-        } else {
-            glColor4ub(m_color.red(),m_color.green(),m_color.blue(),m_color.alpha());
-        }
-        glDrawArrays(m_type, 0, m_cnt >> 1);
-       // glDisableClientState(GL_COLOR_ARRAY);
-        if (m_colcnt>0) {
-            glDisableClientState(GL_COLOR_ARRAY);
-        }
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        //qDebug() << "I Drawed" << m_cnt << "vertices";
-        m_cnt=0;
-        m_colcnt=0;
-        if (m_scissor) {
-            glDisable(GL_SCISSOR_TEST);
-            m_scissor=false;
-        }
-        if (m_type==GL_POLYGON) {
-            glPolygonMode(GL_BACK,GL_FILL);
-        }
-        if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-            if (m_stippled) {
-                glDisable(GL_LINE_STIPPLE);
-                glLineStipple(1, 0xFFFF);
-            }
-        }
-
-        if (antialias) {
-            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-                glDisable(GL_LINE_SMOOTH);
-            } else if (m_type==GL_POLYGON) {
-                glDisable(GL_POLYGON_SMOOTH);
-            }
-            if (m_type==GL_LINES || m_type==GL_LINE_LOOP) {
-                glDisable(GL_ALPHA_TEST);
-            } else {
-                glDisable(GL_BLEND);
-            }
-        }
-    }
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -778,6 +774,17 @@ void Layer::drawGLBuf(float linesize)
     float size;
     if (!m_visible) return;
     GLBuffer *buf;
+    gVertexBuffer *vb;
+    for (int i=0;i<mv_buffers.size();i++) {
+        vb=mv_buffers[i];
+        size=vb->size();
+        type=vb->type();
+        if ((linesize>size) && ((type==GL_LINES) || (type==GL_LINE_LOOP))) {
+            vb->setSize(linesize);
+        }
+        vb->draw();
+        vb->setSize(size);
+    }
     for (int i=0;i<mgl_buffers.size();i++) {
         buf=mgl_buffers[i];
         size=buf->size();
@@ -991,7 +998,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
-    m_quad=new GLShortBuffer(64,GL_QUADS);
+    m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
     m_enforceMinY=m_enforceMaxY=false;
@@ -1172,8 +1179,8 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     if (m_selection.width()>0 && m_selecting_area) {
         QColor col(128,128,255,128);
-        quads()->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top,col);
-        quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-bottom, originX+m_selection.x(),originY+height-bottom,col);
+        quads()->add(originX+m_selection.x(),originY+top, originX+m_selection.x()+m_selection.width(),originY+top,col.rgba());
+        quads()->add(originX+m_selection.x()+m_selection.width(),originY+height-bottom, originX+m_selection.x(),originY+height-bottom,col.rgba());
     }
 }
 void gGraphView::queGraph(gGraph * g,int left, int top, int width, int height)
@@ -1666,22 +1673,25 @@ void gGraph::SetMaxY(EventDataType v)
 {
     rmax_y=max_y=v;
 }
-GLShortBuffer * gGraph::lines()
+gVertexBuffer * gGraph::lines()
 {
     return m_graphview->lines;
 }
-GLShortBuffer * gGraph::backlines()
+gVertexBuffer * gGraph::backlines()
 {
     return m_graphview->backlines;
 }
-GLShortBuffer * gGraph::quads()
+gVertexBuffer * gGraph::quads()
 {
     return m_graphview->quads;
 }
-GLShortBuffer * gGraph::stippled()
-{
-    return m_graphview->stippled;
-}
+//GLShortBuffer * gGraph::stippled()
+//{
+//    return m_graphview->stippled;
+//}
+//gVertexBuffer * gGraph::vlines()
+//{ return m_graphview->vlines; } // testing new vertexbuffer
+
 short gGraph::marginLeft() { return m_marginleft; }//*m_graphview->printScaleX(); }
 short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScaleX(); }
 short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
@@ -1862,13 +1872,16 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
         //gt->start();
     }*/
 
-    lines=new GLShortBuffer(100000,GL_LINES); // big fat shared line list
-    backlines=new GLShortBuffer(10000,GL_LINES); // big fat shared line list
-    quads=new GLShortBuffer(1024,GL_QUADS); // big fat shared line list
+    lines=new gVertexBuffer(100000,GL_LINES); // big fat shared line list
+    backlines=new gVertexBuffer(10000,GL_LINES); // big fat shared line list
+    quads=new gVertexBuffer(1024,GL_QUADS); // big fat shared line list
     quads->forceAntiAlias(true);
-    stippled=new GLShortBuffer(20000,GL_LINES,true);
-    stippled->setSize(1.5);
-    stippled->forceAntiAlias(false);
+    frontlines=new gVertexBuffer(20000,GL_LINES);
+
+    //vlines=new gVertexBuffer(20000,GL_LINES);
+
+    //stippled->setSize(1.5);
+    //stippled->forceAntiAlias(false);
     //lines->setSize(1.5);
     //backlines->setSize(1.5);
 
@@ -1905,7 +1918,9 @@ gGraphView::~gGraphView()
     }
     delete m_tooltip;
     m_graphs.clear();
-    delete stippled;
+    //delete vlines;
+    //delete stippled;
+    delete frontlines;
     delete lines;
     delete backlines;
     delete quads;
@@ -2423,11 +2438,11 @@ bool gGraphView::renderGraphs()
             if (m_showsplitter) {
                 // draw the splitter handle
                 QColor ca=QColor(128,128,128,255);
-                backlines->add(0, py+h, w, py+h, ca);
+                backlines->add(0, py+h, w, py+h, ca.rgba());
                 ca=QColor(192,192,192,255);
-                backlines->add(0, py+h+1, w, py+h+1, ca);
+                backlines->add(0, py+h+1, w, py+h+1, ca.rgba());
                 ca=QColor(90,90,90,255);
-                backlines->add(0, py+h+2, w, py+h+2, ca);
+                backlines->add(0, py+h+2, w, py+h+2, ca.rgba());
             }
 
         }
@@ -2458,9 +2473,8 @@ bool gGraphView::renderGraphs()
     }
 #endif
     //int elapsed=time.elapsed();
-    QColor col=Qt::black;
+    //QColor col=Qt::black;
 
-    stippled->draw();
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->drawGLBuf();
@@ -2670,7 +2684,7 @@ void gGraphView::paintGL()
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;
-        quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col);
+        quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col.rgba());
         quads->draw();
         AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
         DrawTextQue();

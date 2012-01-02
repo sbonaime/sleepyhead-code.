@@ -12,6 +12,7 @@ License: GPL
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
+#include <algorithm>
 
 #include "preferences.h"
 #include "profiles.h"

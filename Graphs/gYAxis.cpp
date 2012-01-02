@@ -31,7 +31,7 @@ gXGrid::~gXGrid()
 }
 void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
-    GLShortBuffer * stippled, * lines;
+    gVertexBuffer * stippled, * lines;
 
     int x,y;
 
@@ -91,13 +91,13 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
     }
 
 
-    stippled=w.stippled();
+    stippled=w.backlines();
     lines=w.backlines();
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         h=top+height-ty;
         if (m_show_major_lines && (i > miny)) {
-            stippled->add(left,h,left+width,h,m_major_color);
+            stippled->add(left,h,left+width,h,m_major_color.rgba());
         }
         double z=(min_ytick/4)*ymult;
         double g=h;
@@ -109,7 +109,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 //                break;
   //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                stippled->add(left,g,left+width,g,m_minor_color);
+                stippled->add(left,g,left+width,g,m_minor_color.rgba());
             }
             if (stippled->full()) {
                 break;
@@ -200,7 +200,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     }
     lines=w.backlines();
 
-
+    GLuint line_color=m_line_color.rgba();
     for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
         ty=(i - miny) * ymult;
         if (dy<5) {
@@ -216,14 +216,14 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (h<top) continue;
         w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
 
-        lines->add(left+width-4,h,left+width,h,m_line_color);
+        lines->add(left+width-4,h,left+width,h,line_color);
 
         double z=(min_ytick/4)*ymult;
         double g=h;
         for (int i=0;i<3;i++) {
             g+=z;
             if (g>top+height) break;
-            lines->add(left+width-3,g,left+width,g,m_line_color);
+            lines->add(left+width-3,g,left+width,g,line_color);
             if (lines->full()) {
                 qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
                 break;

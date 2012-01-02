@@ -135,8 +135,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         aligned_start+=step;
     }
 
-    QColor linecol=Qt::black;
-    GLShortBuffer *lines=w.backlines();
+    gVertexBuffer *lines=w.backlines();
+    lines->setColor(Qt::black);
 
 
     //int utcoff=m_utcfix ? tz_hours : 0;
@@ -163,13 +163,13 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
     for (int i=0;i<num_minor_ticks;i++) {
         py-=step_pixels;
         if (py<start_px) continue;
-        lines->add(py,top,py,mintop,linecol);
+        lines->add(py,top,py,mintop);
     }
 
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=(i-minx)*xmult;
         px+=left;
-        lines->add(px,top,px,majtop,linecol);
+        lines->add(px,top,px,majtop);
         qint64 j=i;
         if (!m_utcfix) j+=tz_offset;
         int ms=j % 1000;
@@ -206,7 +206,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         for (int j=1;j<num_minor_ticks;j++) {
             py+=step_pixels;
             if (py>=left+width) break;
-            lines->add(py,top,py,mintop,linecol);
+            lines->add(py,top,py,mintop);
         }
 
         if (lines->full()) {

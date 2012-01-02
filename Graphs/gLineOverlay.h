@@ -40,7 +40,8 @@ class gLineOverlayBar:public Layer
         int m_count;
         double m_sum;
 
-        GLShortBuffer *points,*quads, *lines;
+        gVertexBuffer *quads;
+        gVertexBuffer *points;
 };
 
 /*! \class gLineOverlaySummary

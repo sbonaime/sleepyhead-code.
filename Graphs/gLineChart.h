@@ -49,7 +49,7 @@ protected:
     EventDataType m_miny;
     EventDataType m_maxy;
     QColor m_color;
-    GLShortBuffer * lines;
+    gVertexBuffer * lines;
 };
 
 /*! \class gLineChart
@@ -116,8 +116,9 @@ protected:
         bool m_disable_accel;
         QColor m_line_color;
 
-        GLShortBuffer * lines;
-        GLShortBuffer * outlines;
+        gVertexBuffer * lines;
+        //GLShortBuffer * lines;
+        //GLShortBuffer * outlines;
 
         //! \brief Used by accelerated waveform plots. Must be >= Screen Resolution (or at least graph width)
         static const int max_drawlist_size=10000;

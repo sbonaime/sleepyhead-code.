@@ -18,15 +18,13 @@ gLineChart::gLineChart(ChannelID code,QColor col,bool square_plot, bool disable_
     addPlot(code,col,square_plot);
     m_line_color=col;
     m_report_empty=false;
-    addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
+    addVertexBuffer(lines=new gVertexBuffer(100000,GL_LINES));
     lines->setColor(col);
     lines->setAntiAlias(true);
     lines->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 gLineChart::~gLineChart()
 {
-    //delete lines;
-    //delete outlines;
 }
 
 bool gLineChart::isEmpty()
@@ -162,8 +160,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int minz,maxz;
 
     // Draw bounding box
-    GLShortBuffer *outlines=w.lines();
-    QColor blk=Qt::black;
+    gVertexBuffer *outlines=w.lines();
+    GLuint blk=QColor(Qt::black).rgba();
     outlines->add(left, top, left, top+height, blk);
     outlines->add(left, top+height, left+width,top+height, blk);
     outlines->add(left+width,top+height, left+width, top, blk);
@@ -183,9 +181,12 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int legendx=left+width;
 
     int codepoints;
+    //GLuint color;
     for (int gi=0;gi<m_codes.size();gi++) {
         ChannelID code=m_codes[gi];
-        m_line_color=m_colors[gi];
+        //m_line_color=m_colors[gi];
+        lines->setColor(m_colors[gi]);
+        //color=m_line_color.rgba();
 
         codepoints=0;
         for (int svi=0;svi<m_day->size();svi++) {
@@ -393,7 +394,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                            // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
                             ax1=m_drawlist[i].x();
                             ay1=m_drawlist[i].y();
-                            lines->add(xst+i,yst-ax1,xst+i,yst-ay1,m_line_color);
+                            lines->add(xst+i,yst-ax1,xst+i,yst-ay1);
 
                             if (lines->full()) break;
                         }
@@ -422,7 +423,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                                 firstpx=false;
                                 continue;
                             }
-                            lines->add(lastpx,lastpy,px,py,m_line_color);
+                            lines->add(lastpx,lastpy,px,py);
 
                             if (lines->full()) {
                                 done=true;
@@ -457,7 +458,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         px=xst+((time2 - minx) * xmult);
                         if (px>xst+width) px=xst+width;
 
-                        lines->add(lastpx,lastpy,px,py,m_line_color);
+                        lines->add(lastpx,lastpy,px,py);
                     } else*/
                     for (int i=0;i<siz;i++) {
 
@@ -485,15 +486,15 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                                 if (lastpx<xst) lastpx=xst;
                                 if (px>xst+width) px=xst+width;
                                 if (square_plot) {
-                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py,m_line_color);
+                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
                                 } else {
-                                    lines->add(lastpx,lastpy,px,py,m_line_color);
+                                    lines->add(lastpx,lastpy,px,py);
                                 }
                             } else {
                                 if (square_plot) {
-                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py,m_line_color);
+                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
                                 } else {
-                                    lines->add(lastpx,lastpy,px,py,m_line_color);
+                                    lines->add(lastpx,lastpy,px,py);
                                 }
                             }
 
@@ -528,7 +529,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             legendx-=bw/2;
 
             int tp=top-5-bw/2;
-            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_line_color);
+            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_line_color.rgba());
             legendx-=hi+bw/2;
         }
     }
@@ -551,7 +552,7 @@ AHIChart::AHIChart(const QColor col)
 :Layer(NoChannel),m_color(col)
 {
     m_miny=m_maxy=0;
-    addGLBuf(lines=new GLShortBuffer(100000,GL_LINES));
+    addVertexBuffer(lines=new gVertexBuffer(100000,GL_LINES));
     lines->setColor(col);
     lines->setAntiAlias(true);
     lines->setSize(1.5);
@@ -570,8 +571,8 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
         return;
 
     // Draw bounding box
-    GLShortBuffer *outlines=w.lines();
-    QColor blk=Qt::black;
+    gVertexBuffer *outlines=w.lines();
+    GLuint blk=QColor(Qt::black).rgba();
     outlines->add(left, top, left, top+height, blk);
     outlines->add(left, top+height, left+width,top+height, blk);
     outlines->add(left+width,top+height, left+width, top, blk);
@@ -600,6 +601,7 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
     double lastpx,lastpy;
     double top1=top+height;
     bool done=false;
+    GLuint color=m_color.rgba();
     for (int i=0;i<m_time.size();i++) {
         qint64 ti=m_time[i];
         EventDataType v=m_data[i];
@@ -617,7 +619,7 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
         } else {
            px=left+(double(ti-minx)*xmult);
            py=top1-(double(v-miny)*ymult);
-           lines->add(px,py,lastpx,lastpy,m_color);
+           lines->add(px,py,lastpx,lastpy);
         }
         lastpx=px;
         lastpy=py;

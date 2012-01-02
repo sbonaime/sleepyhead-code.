@@ -100,8 +100,8 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
     bool line_first=true;
     int line_last;
 
-    GLShortBuffer *quads=w.quads();
-    GLShortBuffer *lines2=w.lines();
+    gVertexBuffer *quads=w.quads();
+    gVertexBuffer *lines2=w.lines();
     for (unsigned m=0;m<size;m++) {
         data=m_values[m];
 
@@ -157,11 +157,11 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
             QColor & col=m_colors[m % m_colors.size()];
             float bw=xmult*float(data);
 
-            quads->add(xp,start_py,xp+bw,start_py,m_gradient_color);
-            quads->add(xp+bw,start_py+height,xp,start_py+height,col);
+            quads->add(xp,start_py,xp+bw,start_py,m_gradient_color.rgba());
+            quads->add(xp+bw,start_py+height,xp,start_py+height,col.rgba());
 
-            lines2->add(xp,start_py,xp+bw,start_py,m_outline_color);
-            lines2->add(xp+bw,start_py+height,xp,start_py+height,m_outline_color);
+            lines2->add(xp,start_py,xp+bw,start_py,m_outline_color.rgba());
+            lines2->add(xp+bw,start_py+height,xp,start_py+height,m_outline_color.rgba());
 
             if (!m_names[m].isEmpty()) {
                 int px,py;

@@ -2295,9 +2295,3 @@ void MainWindow::on_summaryView_linkClicked(const QUrl &arg1)
     qDebug() << arg1;
     on_recordsBox_linkClicked(arg1);
 }
-
-void MainWindow::on_summaryView_urlChanged(const QUrl &arg1)
-{
-//    qDebug() << arg1;
-//    on_recordsBox_linkClicked(arg1);
-}

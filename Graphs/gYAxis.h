@@ -109,7 +109,7 @@ class gYAxis:public Layer
 
         QColor m_line_color;
         QColor m_text_color;
-        GLShortBuffer * lines;
+        gVertexBuffer * lines;
         virtual bool mouseMoveEvent(QMouseEvent * event);
 
 };

@@ -50,7 +50,8 @@ class gFlagsLine:public Layer
         int total_lines,line_num;
         FlagType m_flt;
         QColor m_flag_color;
-        GLShortBuffer *quads, *lines;
+        gVertexBuffer *quads;
+        gVertexBuffer *lines;
         int m_lx, m_ly;
 };
 
@@ -87,7 +88,7 @@ public:
     QVector<gFlagsLine *> & visibleLayers() { return lvisible; }
 
 protected:
-    GLShortBuffer *quads, *lines;
+    gVertexBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;
     float m_barh;
     bool m_empty;

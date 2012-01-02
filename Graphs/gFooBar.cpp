@@ -9,8 +9,8 @@
 gShadowArea::gShadowArea(QColor shadow_color,QColor line_color)
 :Layer(NoChannel),m_shadow_color(shadow_color),m_line_color(line_color)
 {
-    addGLBuf(quads=new GLShortBuffer(20,GL_QUADS));
-    addGLBuf(lines=new GLShortBuffer(20,GL_LINES));
+    addVertexBuffer(quads=new gVertexBuffer(20,GL_QUADS));
+    addVertexBuffer(lines=new gVertexBuffer(20,GL_LINES));
     quads->forceAntiAlias(true);
     lines->setAntiAlias(true);
     lines->setSize(2);
@@ -35,11 +35,11 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
     double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
 
-    quads->add(start_px,top,start_px,top+height,start_px+px, top+height, start_px+px, top,m_shadow_color);
-    quads->add(start_px+py, top, start_px+py, top+height,end_px, top+height, end_px, top,m_shadow_color);
+    quads->add(start_px,top,start_px,top+height,start_px+px, top+height, start_px+px, top,m_shadow_color.rgba());
+    quads->add(start_px+py, top, start_px+py, top+height,end_px, top+height, end_px, top,m_shadow_color.rgba());
 
-    lines->add(start_px+px, top, start_px+py, top,m_line_color);
-    lines->add(start_px+px, top+height+1, start_px+py, top+height+1,m_line_color);
+    lines->add(start_px+px, top, start_px+py, top,m_line_color.rgba());
+    lines->add(start_px+px, top+height+1, start_px+py, top+height+1,m_line_color.rgba());
 }
 
 gFooBar::gFooBar(int offset,QColor handle_color,QColor line_color)

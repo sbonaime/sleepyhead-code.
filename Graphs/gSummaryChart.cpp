@@ -15,11 +15,11 @@ SummaryChart::SummaryChart(QString label,GraphType type)
 :Layer(NoChannel),m_label(label),m_graphtype(type)
 {
     //QColor color=Qt::black;
-    addGLBuf(quads=new GLShortBuffer(20000,GL_QUADS));
-    addGLBuf(lines=new GLShortBuffer(20000,GL_LINES));
+    addVertexBuffer(quads=new gVertexBuffer(20000,GL_QUADS));
+    addVertexBuffer(lines=new gVertexBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
-    lines->setSize(1.5);
-    lines->setBlendFunc(GL_ONE, GL_ONE);
+    lines->setSize(2);
+    lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
     lines->forceAntiAlias(false);
 
     m_empty=true;
@@ -313,10 +313,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_visible) return;
 
     rtop=top;
-    GLShortBuffer *outlines=w.lines();
-    QColor blk=Qt::black;
-    outlines->add(left, top, left, top+height, left, top+height, left+width,top+height, blk);
-    outlines->add(left+width,top+height, left+width, top, left+width, top, left, top, blk);
+    gVertexBuffer *outlines=w.lines();
+    outlines->setColor(Qt::black);
+    outlines->add(left, top, left, top+height, left, top+height, left+width,top+height);
+    outlines->add(left+width,top+height, left+width, top, left+width, top, left, top);
     //if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
 
     qint64 minx=w.min_x, maxx=w.max_x;
@@ -439,7 +439,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (x2<x1)
                 goto jumpnext;
                 //continue;
-            ChannelID code;
+            //ChannelID code;
 
             if (m_graphtype==GT_SESSIONS) {
                 int j;
@@ -450,7 +450,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 if (zd==hl_day) {
                     col=QColor("gold");
                 }
-                QColor col2=brighten(col);
+                GLuint col1=col.rgba();
+                GLuint col2=brighten(col).rgba();
+                outlines->setColor(Qt::black);
 
                 for (j=0;j<d.value().size();j++) {
                     tmp2=times.value()[j]-miny;
@@ -461,11 +463,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     //tmp-=miny;
                     h=tmp*ymult;
 
-                    quads->add(x1,py,x1,py-h,col);
-                    quads->add(x2,py-h,x2,py,col2);
+                    quads->add(x1,py,x1,py-h,x2,py-h,x2,py,col1,col2);
                     if (h>0 && barw>2) {
-                        outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,blk);
-                        outlines->add(x1,py,x2,py,x2,py,x2,py-h,blk);
+                        outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h);
+                        outlines->add(x1,py,x2,py,x2,py,x2,py-h);
                     } // if (bar
                     //py-=h;
                     totalvalues[0]+=tmp;
@@ -526,18 +527,21 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     h=tmp*ymult; // height in pixels
 
                     if (m_graphtype==GT_BAR) {
-                        QColor col2=brighten(col);
+                        GLuint col1=col.rgba();
+                        GLuint col2=brighten(col).rgba();
 
-                        quads->add(x1,py,x1,py-h,col);
+                        quads->add(x1,py,x1,py-h,col1);
                         quads->add(x2,py-h,x2,py,col2);
                         if (h>0 && barw>2) {
-                            outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,blk);
-                            outlines->add(x1,py,x2,py,x2,py,x2,py-h,blk);
+                            outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h);
+                            outlines->add(x1,py,x2,py,x2,py,x2,py-h);
                             if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
                         } // if (bar
                         py-=h;
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
                         col.setAlpha(128);
+                        GLuint col1=col.rgba();
+                        GLuint col2=m_colors[j].rgba();
                         px2=px+barw;
                         py2=(top+height-2)-h;
                         //py2+=j;
@@ -547,11 +551,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                             lastdaygood=false;
                         }
                         if (lastdaygood) {
-                            if (lastY[j]!=py2) // vertical line
-                                lines->add(lastX[j],lastY[j],px,py2,m_colors[j]);
-                            lines->add(px-1,py2,px2+1,py2,col);
+                            if (lastY[j]!=py2) {// vertical line
+                                lines->add(lastX[j],lastY[j],px,py2,col2);
+                            }
+                            lines->add(px-1,py2,px2+1,py2,col1);
                         } else {
-                            lines->add(x1-1,py2,x2+1,py2,col);
+                            lines->add(x1-1,py2,x2+1,py2,col1);
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;
@@ -629,7 +634,7 @@ jumpnext:
         float wt=20*w.printScaleX();
         px-=wt+x;
         w.renderText(a,px+wt,py+1);
-        quads->add(px+wt-y/4-y,py-y,px+wt-y/4,py-y,px+wt-y/4,py+1,px+wt-y/4-y,py+1,m_colors[j]);
+        quads->add(px+wt-y/4-y,py-y,px+wt-y/4,py-y,px+wt-y/4,py+1,px+wt-y/4-y,py+1,m_colors[j].rgba());
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }

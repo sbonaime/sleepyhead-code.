@@ -53,6 +53,95 @@ class gGraph;
 
 const int textque_max=512;
 
+typedef quint32 RGBA;
+/*union RGBA {
+   struct {
+        GLubyte red;
+        GLubyte green;
+        GLubyte blue;
+        GLubyte alpha;
+    } bytes;
+    quint32 value;
+}; */
+
+#ifdef BUILD_WITH_MSVC
+__declspec(align(1))
+#endif
+struct gVertex
+{
+    gVertex(GLshort _x, GLshort _y, GLuint _c) { x=_x; y=_y; color=_c; }
+    GLshort x;
+    GLshort y;
+    RGBA color;
+}
+#ifndef BUILD_WITH_MSVC
+__attribute__((packed))
+#endif
+;
+
+class gVertexBuffer
+{
+public:
+    gVertexBuffer(int max=2048,int type=GL_LINES);
+    ~gVertexBuffer();
+
+    void add(GLshort x1, GLshort y1, RGBA color);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, RGBA color);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color, RGBA color2);
+
+    void add(GLshort x1, GLshort y1);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
+
+    void draw();
+
+    void scissor(GLshort x, GLshort y, GLshort width, GLshort height) { s_x=x; s_y=y; s_width=width; s_height=height; m_scissor=true; }
+
+    void reset() { m_cnt=0; }
+    int Max() { return m_max; }
+    int cnt() { return m_cnt; }
+    GLuint type() { return m_type; }
+    float size() { return m_size; }
+    bool full() { return m_cnt>=m_max; }
+
+    void forceAntiAlias(bool b) { m_forceantialias=b; }
+    void setSize(float f) { m_size=f; }
+    void setAntiAlias(bool b) { m_antialias=b; }
+    void setStipple(GLshort stipple) { m_stipple=stipple; }
+    void setStippleOn(bool b) { m_stippled=b; }
+    void setColor(QColor col);
+    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1=b1; m_blendfunc2=b2; }
+
+protected:
+    //! \brief Maximum number of gVertex points contained in buffer
+    int m_max;
+    //! \brief Indicates type of GL vertex information (GL_LINES, GL_QUADS, etc)
+    GLuint m_type;
+    //! \brief Count of Vertex points used this draw cycle.
+    int m_cnt;
+    //! \brief Line/Point thickness
+    float m_size;
+
+    bool m_scissor;
+    bool m_antialias;
+    bool m_forceantialias;
+    bool m_stippled;
+
+    //! \brief Contains list of Vertex & Color points
+    gVertex * buffer;
+    //! \brief GL Scissor parameters
+    GLshort s_x,s_y,s_width,s_height;
+    //! \brief Current drawing color
+    GLuint m_color;
+    //! \brief Stipple bitfield
+    GLshort m_stipple;
+    //! \brief Source GL Blend Function
+    GLuint m_blendfunc1;
+    //! \brief Destination GL Blend Function
+    GLuint m_blendfunc2;
+};
+
 /*! \class GLBuffer
     \brief Base Object to hold an OpenGL draw list
     */
@@ -90,9 +179,8 @@ protected:
     GLuint m_blendfunc1, m_blendfunc2;
 };
 
-/*! \class GLShortBuffer
+/* ! \class GLShortBuffer
     \brief Holds an OpenGL draw list composed of 16bit integers and vertex colors
-    */
 class GLShortBuffer:public GLBuffer
 {
 public:
@@ -117,6 +205,7 @@ protected:
     GLshort * buffer;
     GLubyte * colors;
 };
+    */
 
 /*! \class GLFloatBuffer
     \brief Holds an OpenGL draw list composed of 32bit GLfloat objects and vertex colors
@@ -268,6 +357,7 @@ public:
 protected:
     //! \brief Add a GLBuffer (vertex) object customized to this layer
     void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
+    void addVertexBuffer(gVertexBuffer *buf) { mv_buffers.push_back(buf); }
     //QRect bounds; // bounds, relative to top of individual graph.
     Day *m_day;
     bool m_visible;
@@ -284,6 +374,7 @@ protected:
 
     //! \brief A vector containing all this layers custom drawing buffers
     QVector<GLBuffer *> mgl_buffers;
+    QVector<gVertexBuffer *> mv_buffers;
 
     //! \brief Mouse wheel moved somewhere over this layer
     virtual bool wheelEvent(QWheelEvent * event) { Q_UNUSED(event); return false; }
@@ -605,14 +696,20 @@ public:
     //! \brief Returns this graphs bottom margin
     short marginBottom();
 
-    //! \brief Returns the main gGraphView objects GLShortBuffer line list.
-    GLShortBuffer * lines();
-    //! \brief Returns the main gGraphView objects GLShortBuffer background line list.
-    GLShortBuffer * backlines();
-    //! \brief Returns the main gGraphView objects GLShortBuffer quads list.
-    GLShortBuffer * quads();
-    //! \brief Returns the main gGraphView objects GLShortBuffer stippled line list.
-    GLShortBuffer * stippled();
+    //! \brief Returns the main gGraphView objects gVertexBuffer line list.
+    gVertexBuffer * lines();
+    //! \brief Returns the main gGraphView objects gVertexBuffer background line list.
+    gVertexBuffer * backlines();
+    //! \brief Returns the main gGraphView objects gVertexBuffer front line list.
+    gVertexBuffer * frontlines();
+    //! \brief Returns the main gGraphView objects gVertexBuffer quads list.
+    gVertexBuffer * quads();
+
+    // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
+    //GLShortBuffer * stippled();
+
+    //gVertexBuffer * vlines(); // testing new vertexbuffer
+
     short left,right,top,bottom; // dirty magin hacks..
 
     Layer * getLineChart();
@@ -666,7 +763,7 @@ protected:
     short m_group;
     short m_lastx23;
     Day * m_day;
-    GLBuffer * m_quad;
+    gVertexBuffer * m_quad;
     bool m_enforceMinY,m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
@@ -829,7 +926,7 @@ public:
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day * day);
 
-    GLShortBuffer * lines, * backlines, *quads, * stippled;
+    gVertexBuffer *lines, *backlines, *quads, *frontlines;
 
     //! \brief pops a graph off the list for multithreaded drawing code
     gGraph * popGraph(); // exposed for multithreaded drawing

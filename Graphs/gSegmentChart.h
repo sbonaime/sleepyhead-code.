@@ -51,6 +51,8 @@ protected:
     QColor m_gradient_color;
     QColor m_outline_color;
     bool m_empty;
+
+    // gah.. can't convert these
     GLFloatBuffer *poly,*lines;
 };
 

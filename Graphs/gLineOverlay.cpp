@@ -11,10 +11,10 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code,QColor color,QString label,FlagType flt)
 :Layer(code),m_flag_color(color),m_label(label),m_flt(flt)
 {
-    addGLBuf(points=new GLShortBuffer(2048,GL_POINTS));
+    addVertexBuffer(points=new gVertexBuffer(2048,GL_POINTS));
     points->setSize(4);
     points->setColor(m_flag_color);
-    addGLBuf(quads=new GLShortBuffer(2048,GL_QUADS));
+    addVertexBuffer(quads=new gVertexBuffer(2048,GL_QUADS));
     //addGLBuf(lines=new GLBuffer(color,1024,GL_LINES));
     points->setAntiAlias(true);
     quads->setAntiAlias(true);
@@ -33,7 +33,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     if (!m_visible) return;
     if (!m_day) return;
 
-    lines=w.lines();
+    gVertexBuffer * lines=w.lines();
     int start_py=topp;
 
     double xx=w.max_x-w.min_x;
@@ -56,10 +56,13 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     m_sum=0;
     m_flag_color=schema::channel[m_code].defaultColor();
 
+    lines->setColor(m_flag_color);
+    points->setColor(m_flag_color);
     if (m_flt==FT_Span) {
         m_flag_color.setAlpha(128);
     }
     EventStoreType raw;
+
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled()) continue;
         cei=(*s)->eventlist.find(m_code);
@@ -92,7 +95,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 if (x2<left) x2=left;
                 if (x1>width+left) x1=width+left;
                 //double w1=x2-x1;
-                quads->add(x2,start_py, x1,start_py, x1,start_py+height, x2,start_py+height,m_flag_color);
+                quads->add(x2,start_py, x1,start_py, x1,start_py+height, x2,start_py+height,m_flag_color.rgba());
                 if (quads->full()) { verts_exceeded=true; break; }
             } else if (m_flt==FT_Dot) {
                 if ((PROFILE.appearance->overlayType()==ODT_Bars) || (xx<3600000)) {
@@ -101,7 +104,7 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                     if (points->full()) { verts_exceeded=true; break; }
                 } else {
                     // thin lines down the bottom
-                    lines->add(x1,start_py+1,x1,start_py+1+12,m_flag_color);
+                    lines->add(x1,start_py+1,x1,start_py+1+12);
                     if (lines->full()) { verts_exceeded=true; break; }
 
                 }
@@ -111,10 +114,10 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                     z=top;
 
                     points->add(x1,top);
-                    lines->add(x1,top,x1,bottom,m_flag_color);
+                    lines->add(x1,top,x1,bottom);
                     if (points->full()) { verts_exceeded=true; break; }
                } else {
-                    lines->add(x1,z,x1,z-12,m_flag_color);
+                    lines->add(x1,z,x1,z-12);
                }
                if (lines->full()) { verts_exceeded=true; break; }
                if (xx<(1800000)) {

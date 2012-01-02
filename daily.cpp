@@ -584,7 +584,7 @@ void Daily::on_calendar_selectionChanged()
        // GraphView->fadeOut();
         Unload(previous_date);
     }
-    bool fadedir=previous_date < ui->calendar->selectedDate();
+    //bool fadedir=previous_date < ui->calendar->selectedDate();
     ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
     //GraphView->fadeIn(fadedir);
@@ -929,14 +929,11 @@ void Daily::Load(QDate date)
             CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
-        int suboffset=0;
+        //int suboffset=0;
         for (int i=0;i<numchans;i++) {
 
             ChannelID code=chans[i];
             if (cpap && cpap->channelHasData(code)) {
-                if (code==CPAP_RespRate) {
-                    int i=5;
-                }
                 //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
