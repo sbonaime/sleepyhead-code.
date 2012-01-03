@@ -1119,16 +1119,20 @@ void MainWindow::on_summaryButton_clicked()
                 if (cpapmode>MODE_CPAP) {
                     extratxt="<td>&nbsp;</td>";
                 } else extratxt="";
-                tooltip=QString("%1")
-                .arg(machstr)
-                ;
+                tooltip="";
+                //QString("%1").arg(machstr);
             }
             QString presrel;
             if (rx.prelset>0) {
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
                 presrel+=QString(" x%1").arg(rx.prelset);
             } else presrel="None";
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\"); tooltip.show(\"%12\");' onmouseout='ChangeColor(this, \""+color+"\"); tooltip.hide();' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td>%11</tr>")
+            QString tooltipshow,tooltiphide;
+            if (!tooltip.isEmpty()) {
+                tooltipshow=QString("tooltip.show(\"%1\");").arg(tooltip);
+                tooltiphide="tooltip.hide();";
+            }
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#eeeeee\"); %12' onmouseout='ChangeColor(this, \""+color+"\"); %13' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td>%11</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
@@ -1140,7 +1144,8 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(presrel)
                     .arg(rx.min,0,'f',2)
                     .arg(extratxt)
-                    .arg(tooltip);
+                    .arg(tooltipshow)
+                    .arg(tooltiphide);
         }
         html+="</table>";
         html+=QString("<i>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</i><br/>").arg(rxthresh);
