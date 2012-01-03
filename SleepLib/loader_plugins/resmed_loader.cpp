@@ -39,6 +39,14 @@ EDFSignal * EDFParser::lookupSignal(ChannelID ch)
     }
     return NULL;
 }
+EDFSignal * EDFParser::lookupName(QString name)
+{
+    QHash<QString,EDFSignal *>::iterator i=lookup.find(name);
+    if (i!=lookup.end()) return i.value();
+    return NULL;
+}
+
+
 
 EDFParser::EDFParser(QString name)
 {
@@ -630,20 +638,16 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         sess->settings[CPAP_Mode]=MODE_BIPAP;
 
                     EventDataType tmp,epap=0,ipap=0;
-                    if (stredf.lookup.contains("EPAP")) {
-                        sig=stredf.lookup["EPAP"];
-                        //div=50; //1.0/sig->gain;
+                    if ((sig=stredf.lookupName("EPAP"))) {
                         epap=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_EPAP]=epap;
                         sess->setMin(CPAP_EPAP,epap);
                     }
-                    if (stredf.lookup.contains("IPAP")) {
-                        sig=stredf.lookup["IPAP"];
+                    if ((sig=stredf.lookupName("IPAP"))) {
                         ipap=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_IPAP]=ipap;
                     }
-                    if (stredf.lookup.contains("PS")) {
-                        sig=stredf.lookup["PS"];
+                    if ((sig=stredf.lookupName("PS"))) {
                         tmp=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
                         if (!ipap) {
@@ -651,27 +655,23 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                             sess->settings[CPAP_IPAP]=epap+tmp;
                         }
                     }
-                    if (stredf.lookup.contains("Min PS")) {
-                        sig=stredf.lookup["Min PS"];
+                    if ((sig=stredf.lookupName("Min PS"))) {
                         tmp=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PSMin]=tmp;
                         sess->settings[CPAP_IPAPLo]=epap+tmp;
                         sess->setMin(CPAP_IPAP,epap+tmp);
                     }
-                    if (stredf.lookup.contains("Max PS")) {
-                        sig=stredf.lookup["Max PS"];
+                    if ((sig=stredf.lookupName("Max PS"))) {
                         tmp=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PSMax]=tmp;
                         sess->settings[CPAP_IPAPHi]=epap+tmp;
                     }
-                    if (stredf.lookup.contains("RR")) { // Is this a setting to force respiratory rate on S/T machines?
-                        sig=stredf.lookup["RR"];
+                    if ((sig=stredf.lookupName("RR"))) { // Is this a setting to force respiratory rate on S/T machines?
                         tmp=sig->data[dn];
                         sess->settings[CPAP_RespRate]=tmp*sig->gain;
                     }
 
-                    if (stredf.lookup.contains("Easy-Breathe")) {
-                        sig=stredf.lookup["Easy-Breathe"];
+                    if ((sig=stredf.lookupName("Easy-Breathe"))) {
                         tmp=sig->data[dn]*sig->gain;
 
                         sess->settings[CPAP_PresReliefSet]=tmp;
@@ -699,217 +699,163 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
             EventDataType valmed=0,valmax=0,val95=0;
 
-            if (stredf.lookup.contains("Leak Med")) {
-                sig=stredf.lookup["Leak Med"];
+            if ((sig=stredf.lookupName("Leak Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_Leak,valmed*sig->gain*60.0);
                 sess->m_gain[CPAP_Leak]=sig->gain*60.0;
                 sess->m_valuesummary[CPAP_Leak][valmed]=51;
             }
-            if (stredf.lookup.contains("Leak 95")) {
-                sig=stredf.lookup["Leak 95"];
+            if ((sig=stredf.lookupName("Leak 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_Leak,val95*sig->gain*60.0);
                 sess->m_valuesummary[CPAP_Leak][val95]=45;
             }
-            if (stredf.lookup.contains("Leak Max")) {
-                sig=stredf.lookup["Leak Max"];
+            if ((sig=stredf.lookupName("Leak Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
                 sess->m_valuesummary[CPAP_Leak][valmax]=4;
             }
 
-            if (stredf.lookup.contains("Min Vent Med")) {
-                sig=stredf.lookup["Min Vent Med"];
+            if ((sig=stredf.lookupName("Min Vent Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_MinuteVent,valmed*sig->gain);
                 sess->m_gain[CPAP_MinuteVent]=sig->gain;
                 sess->m_valuesummary[CPAP_MinuteVent][valmed]=51;
             }
-            if (stredf.lookup.contains("Min Vent 95")) {
-                sig=stredf.lookup["Min Vent 95"];
+            if ((sig=stredf.lookupName("Min Vent 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_MinuteVent,val95*sig->gain);
                 sess->m_valuesummary[CPAP_MinuteVent][val95]=45;
             }
-            if (stredf.lookup.contains("Min Vent Max")) {
-                sig=stredf.lookup["Min Vent Max"];
+            if ((sig=stredf.lookupName("Min Vent Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
             }
-            if (stredf.lookup.contains("RR Med")) {
-                sig=stredf.lookup["RR Med"];
+            if ((sig=stredf.lookupName("RR Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_RespRate,valmed*sig->gain);
                 sess->m_gain[CPAP_RespRate]=sig->gain;
                 sess->m_valuesummary[CPAP_RespRate][valmed]=51;
             }
-            if (stredf.lookup.contains("RR 95")) {
-                sig=stredf.lookup["RR 95"];
+            if ((sig=stredf.lookupName("RR 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_RespRate,val95*sig->gain);
                 sess->m_valuesummary[CPAP_RespRate][val95]=45;
             }
-            if (stredf.lookup.contains("RR Max")) {
-                sig=stredf.lookup["RR Max"];
+            if ((sig=stredf.lookupName("RR Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_RespRate,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_RespRate][valmax]=4;
             }
 
-            if (stredf.lookup.contains("Tid Vol Med")) {
-                sig=stredf.lookup["Tid Vol Med"];
+            if ((sig=stredf.lookupName("Tid Vol Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_TidalVolume,valmed*sig->gain*1000.0);
                 sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
                 sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
             }
-            if (stredf.lookup.contains("Tid Vol 95")) {
-                sig=stredf.lookup["Tid Vol 95"];
+            if ((sig=stredf.lookupName("Tid Vol 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_TidalVolume,val95*sig->gain*1000.0);
                 sess->m_valuesummary[CPAP_TidalVolume][val95]=45;
             }
-            if (stredf.lookup.contains("Tid Vol Max")) {
-                sig=stredf.lookup["Tid Vol Max"];
+            if ((sig=stredf.lookupName("Tid Vol Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_TidalVolume,valmax*sig->gain*1000.0);
                 sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
             }
 
-            if (stredf.lookup.contains("Targ Vent Med")) {
-                sig=stredf.lookup["Targ Vent Med"];
+            if ((sig=stredf.lookupName("Targ Vent Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_TgMV,valmed*sig->gain);
                 sess->m_gain[CPAP_TgMV]=sig->gain;
                 sess->m_valuesummary[CPAP_TgMV][valmed]=51;
             }
-            if (stredf.lookup.contains("Targ Vent 95")) {
-                sig=stredf.lookup["Targ Vent 95"];
+            if ((sig=stredf.lookupName("Targ Vent 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_TgMV,val95*sig->gain);
                 sess->m_valuesummary[CPAP_TgMV][val95]=45;
             }
-            if (stredf.lookup.contains("Targ Vent Max")) {
-                sig=stredf.lookup["Targ Vent Max"];
+            if ((sig=stredf.lookupName("Targ Vent Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_TgMV,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_TgMV][valmax]=4;
             }
 
 
-            if (stredf.lookup.contains("I:E Med")) {
-                sig=stredf.lookup["I:E Med"];
+            if ((sig=stredf.lookupName("I:E Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_IE,valmed*sig->gain);
                 sess->m_gain[CPAP_IE]=sig->gain;
                 sess->m_valuesummary[CPAP_IE][valmed]=51;
             }
-            if (stredf.lookup.contains("I:E 95")) {
-                sig=stredf.lookup["I:E 95"];
+            if ((sig=stredf.lookupName("I:E 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_IE,val95*sig->gain);
                 sess->m_valuesummary[CPAP_IE][val95]=45;
             }
-            if (stredf.lookup.contains("I:E Max")) {
-                sig=stredf.lookup["I:E Max"];
+            if ((sig=stredf.lookupName("I:E Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_IE,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_IE][valmax]=4;
             }
 
-
-
-            if (stredf.lookup.contains("Mask Pres Med")) {
-                sig=stredf.lookup["Mask Pres Med"];
+            if ((sig=stredf.lookupName("Mask Pres Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_Pressure,valmed*sig->gain);
                 sess->m_gain[CPAP_Pressure]=sig->gain;
                 sess->m_valuesummary[CPAP_Pressure][valmed]=51;
             }
-            if (stredf.lookup.contains("Mask Pres 95")) {
-                sig=stredf.lookup["Mask Pres 95"];
+            if ((sig=stredf.lookupName("Mask Pres 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_Pressure,val95*sig->gain);
                 sess->m_valuesummary[CPAP_Pressure][val95]=45;
             }
-            if (stredf.lookup.contains("Mask Pres Max")) {
-                sig=stredf.lookup["Mask Pres Max"];
+            if ((sig=stredf.lookupName("Mask Pres Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_Pressure,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_Pressure][valmax]=4;
             }
 
-            if (stredf.lookup.contains("Insp Pres Med")) {
-                sig=stredf.lookup["Insp Pres Med"];
+            if ((sig=stredf.lookupName("Insp Pres Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_IPAP,valmed*sig->gain);
                 sess->m_gain[CPAP_IPAP]=sig->gain;
                 sess->m_valuesummary[CPAP_IPAP][valmed]=51;
             }
-            if (stredf.lookup.contains("Insp Pres 95")) {
-                sig=stredf.lookup["Insp Pres 95"];
+            if ((sig=stredf.lookupName("Insp Pres 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_IPAP,val95*sig->gain);
                 sess->m_valuesummary[CPAP_IPAP][val95]=45;
             }
-            if (stredf.lookup.contains("Insp Pres Max")) {
-                sig=stredf.lookup["Insp Pres Max"];
+            if ((sig=stredf.lookupName("Insp Pres Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_IPAP,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_IPAP][valmax]=4;
             }
-            if (stredf.lookup.contains("Exp Pres Med")) {
-                sig=stredf.lookup["Exp Pres Med"];
+            if ((sig=stredf.lookupName("Exp Pres Med"))) {
                 valmed=sig->data[dn];
-                sess->setMedian(CPAP_EPAP,valmed*sig->gain);
                 sess->m_gain[CPAP_EPAP]=sig->gain;
                 sess->m_valuesummary[CPAP_EPAP][valmed]=51;
             }
-            if (stredf.lookup.contains("Exp Pres 95")) {
-                sig=stredf.lookup["Exp Pres 95"];
+            if ((sig=stredf.lookupName("Exp Pres 95"))) {
                 val95=sig->data[dn];
-                sess->set95p(CPAP_EPAP,val95*sig->gain);
                 sess->m_valuesummary[CPAP_EPAP][val95]=45;
             }
-            if (stredf.lookup.contains("Exp Pres Max")) {
-                sig=stredf.lookup["Exp Pres Max"];
+            if ((sig=stredf.lookupName("Exp Pres Max"))) {
                 valmax=sig->data[dn];
                 sess->setMax(CPAP_EPAP,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_EPAP][valmax]=4;
             }
 
-            if (stredf.lookup.contains("Mask Dur")) {
-                sig=stredf.lookup["Mask Dur"];
+            if ((sig=stredf.lookupName("Mask Dur"))) {
                 dur=sig->data[dn]*sig->gain;
             }
-            if (stredf.lookup.contains("OAI")) {
-                sig=stredf.lookup["OAI"];
+            if ((sig=stredf.lookupName("OAI"))) {
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Obstructive,tmp);
                 sess->setCount(CPAP_Obstructive,tmp*(dur/60.0));
             }
-            if (stredf.lookup.contains("HI")) {
-                sig=stredf.lookup["HI"];
+            if ((sig=stredf.lookupName("HI"))) {
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Hypopnea,tmp);
                 sess->setCount(CPAP_Hypopnea,tmp*(dur/60.0));
             }
-            if (stredf.lookup.contains("UAI")) {
-                sig=stredf.lookup["UAI"];
+            if ((sig=stredf.lookupName("UAI"))) {
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Apnea,tmp);
                 sess->setCount(CPAP_Apnea,tmp*(dur/60.0));
             }
-            if (stredf.lookup.contains("CAI")) {
-                sig=stredf.lookup["CAI"];
+            if ((sig=stredf.lookupName("CAI"))) {
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_ClearAirway,tmp);
                 sess->setCount(CPAP_ClearAirway,tmp*(dur/60.0));
             }
-
-
 
         }
 

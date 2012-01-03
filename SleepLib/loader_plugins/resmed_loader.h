@@ -127,6 +127,7 @@ public:
 
     //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
     EDFSignal * lookupSignal(ChannelID);
+    EDFSignal * lookupName(QString name);
 
     //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }

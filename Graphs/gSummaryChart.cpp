@@ -74,13 +74,12 @@ void SummaryChart::SetDay(Day * nullday)
         } else if (mode>=MODE_BIPAP) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
             addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,0.95);
-
-            addSlice(CPAP_IPAP,QColor("light cyan"),ST_WAVG);
+            addSlice(CPAP_IPAP,QColor("light cyan"),ST_PERC,0.5);
             addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
             addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX);
         } else if (mode>=MODE_APAP) {
             addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN);
-            addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
+            addSlice(CPAP_Pressure,QColor("dark green"),ST_PERC,0.5);
             addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,0.95);
             addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX);
         } else {
@@ -182,11 +181,10 @@ void SummaryChart::SetDay(Day * nullday)
 
                     if (code==CPAP_Pressure) {
                         if (mode==MODE_CPAP) {
-                            if (type==ST_PERC)
-                                hascode=false;
-                            else if (type==ST_WAVG) {
-                                //hascode=false;
+                            hascode=false;
+                            if ((type==ST_PERC) && (m_typeval[j]==0.5)) {
                                 type=ST_SETWAVG;
+                                hascode=true;
                             }
 
                         } else {
@@ -612,7 +610,12 @@ jumpnext:
                 case ST_WAVG: b="Avg"; break;
                 case ST_AVG:  b="Avg"; break;
                 case ST_90P:  b="90%"; break;
-                case ST_PERC: b=QString("%1%").arg(tval*100.0,0,'f',0); break;
+                case ST_PERC:
+                    if (tval>=0.99) b="Max";
+                    else if (tval==0.5) b="Med";
+                    else b=QString("%1%").arg(tval*100.0,0,'f',0);
+                    break;
+            //b=QString("%1%").arg(tval*100.0,0,'f',0); break;
                 case ST_MIN:  b="Min"; break;
                 case ST_MAX:  b="Max"; break;
                 case ST_SETMIN:  b="Min"; break;
@@ -827,7 +830,11 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
                             case ST_WAVG: a="W-avg"; break;
                             case ST_AVG:  a="Avg"; break;
                             case ST_90P:  a="90%"; break;
-                            case ST_PERC: a=QString("%1%").arg(tval*100.0,0,'f',0); break;
+                            case ST_PERC:
+                                if (tval>=0.99) a="Max";
+                                else if (tval==0.5) a="Med";
+                                else a=QString("%1%").arg(tval*100.0,0,'f',0);
+                                break;
                             case ST_MIN:  a="Min"; break;
                             case ST_MAX:  a="Max"; break;
                             case ST_CPH:  a=""; break;

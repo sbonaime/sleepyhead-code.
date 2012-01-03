@@ -519,19 +519,31 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         float hours=float(duration)/3600.0;
 
         // Not using these because sometimes this summary is broken.
-        EventDataType minp,maxp,avgp,p90p;
+        //EventDataType minp,maxp,avgp,p90p;
 
-        minp=float(data[offset+0x16])/10.0;
-        maxp=float(data[offset+0x17])/10.0;
-        p90p=float(data[offset+0x18])/10.0;
-        avgp=float(data[offset+0x19])/10.0;
+        //minp=float(data[offset+0x16])/10.0;
+        //maxp=float(data[offset+0x17])/10.0;
+        //p90p=float(data[offset+0x18])/10.0;
+        //avgp=float(data[offset+0x19])/10.0;
 
-        if (minp>0) session->setMin(CPAP_Pressure,minp);
-        if (maxp>0) session->setMax(CPAP_Pressure,maxp);
-        if (avgp>0) session->setWavg(CPAP_Pressure,avgp);
-        if (p90p>0) {
-            session->set90p(CPAP_Pressure,p90p);
-        }
+        short minp=data[offset+0x16];
+        short maxp=data[offset+0x17];
+        short medp=data[offset+0x19];
+        short p90p=data[offset+0x18];
+
+        if (minp>0) session->setMin(CPAP_Pressure,EventDataType(minp)*0.10);
+        if (maxp>0) session->setMax(CPAP_Pressure,EventDataType(maxp)*0.10);
+        if (medp>0) session->setWavg(CPAP_Pressure,EventDataType(medp)*0.10); // ??
+
+        session->m_gain[CPAP_Pressure]=0.1;
+        session->m_valuesummary[CPAP_Pressure][minp]=5;
+        session->m_valuesummary[CPAP_Pressure][medp]=46;
+        session->m_valuesummary[CPAP_Pressure][p90p]=44;
+        session->m_valuesummary[CPAP_Pressure][maxp]=5;
+
+//        if (p90p>0) {
+//            session->set90p(CPAP_Pressure,p90p);
+//        }
 
         int oc, cc, hc, rc, fc;
         session->setCount(CPAP_Obstructive,oc=(int)data[offset+0x1C] | (data[offset+0x1D] << 8));

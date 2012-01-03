@@ -1037,6 +1037,16 @@ void gGraph::deselect()
         (*l)->deselect();
     }
 }
+bool gGraph::isSelected()
+{
+    bool res=false;
+    for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
+        res=(*l)->isSelected();
+        if (res) break;
+    }
+    return res;
+}
+
 bool gGraph::isEmpty()
 {
     bool empty=true;
@@ -2803,10 +2813,35 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
         if (py > height())
             break; // we are done.. can't draw anymore
 
+        if (!((y >= py+m_graphs[i]->top) && (y < py + h-m_graphs[i]->bottom))) {
+            if (m_graphs[i]->isSelected()) {
+                m_graphs[i]->deselect();
+                timedRedraw(150);
+                //redraw();
+            }
+        }
         if (m_button_down || ((py + h + graphSpacer) >= 0)) {
             if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
                 this->setCursor(Qt::SplitVCursor);
-            } else if (m_button_down || ((y >= py) && (y < py + h))) {
+            } else if (!m_button_down && (y >= py) && (y < py+m_graphs[i]->top)) {
+                // Mouse cursor is in top graph margin.
+//                if (m_graphs[i]->isSelected()) {
+//                    m_graphs[i]->deselect();
+//                    if (m_tooltip->visible())
+//                    m_tooltip->cancel();
+//                    redraw();
+//                }
+                //qDebug() << "upper bounds";
+            } else if (!m_button_down && (y >= py+h-m_graphs[i]->bottom) && (y <= py+h)) {
+                // Mouse cursor is in bottom grpah margin.
+//                if (m_graphs[i]->isSelected()) {
+//                    if (m_tooltip->visible())
+//                    m_tooltip->cancel();
+//                    m_graphs[i]->deselect();
+//                    redraw();
+//                }
+                //qDebug() << "lower bounds";
+            } else if (m_button_down || ((y >= py+m_graphs[i]->top) && (y < py + h-m_graphs[i]->bottom))) {
                 if (m_button_down || (x >= titleWidth+10)) { //(gYAxis::Margin-5)
                     this->setCursor(Qt::ArrowCursor);
                     m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);

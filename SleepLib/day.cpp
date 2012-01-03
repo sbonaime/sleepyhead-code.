@@ -375,9 +375,9 @@ bool Day::hasData(ChannelID code, SummaryType type)
         if (!(*s)->enabled()) continue;
         Session *sess=*s;
         switch(type) {
-        case ST_90P:
-            has=sess->m_90p.contains(code);
-            break;
+//        case ST_90P:
+//            has=sess->m_90p.contains(code);
+//            break;
         case ST_PERC:
             has=sess->m_valuesummary.contains(code);
             break;

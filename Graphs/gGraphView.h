@@ -280,6 +280,9 @@ public:
     //! \brief returns true if this layer contains no data.
     virtual bool isEmpty();
 
+    //! \brief Override and returns true if there are any highlighted components
+    virtual bool isSelected() { return false; }
+
     //! \brief Deselect any highlighted components
     virtual void deselect() { }
 
@@ -476,6 +479,9 @@ public:
 
     //! \brief Close the tooltip early.
     void cancel();
+
+    //! \brief Returns true if the tooltip is currently visible
+    bool visible() { return m_visible; }
 protected:
     gGraphView * m_graphview;
     QTimer * timer;
@@ -510,6 +516,9 @@ public:
 
     //! \brief Tells all Layers to deselect any highlighting
     void deselect();
+
+    //! \brief Returns true if any Layers have anything highlighted
+    bool isSelected();
 
     //! \brief Starts the singleshot Timer running, for ms milliseconds
     void Trigger(int ms);

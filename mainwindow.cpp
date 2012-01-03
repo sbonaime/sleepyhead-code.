@@ -2077,7 +2077,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
             sess->m_sph.clear();
             sess->m_avg.clear();
             sess->m_wavg.clear();
-            sess->m_90p.clear();
+            //sess->m_90p.clear();
             sess->m_firstchan.clear();
             sess->m_lastchan.clear();
             sess->SetChanged(true);

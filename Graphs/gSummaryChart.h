@@ -52,6 +52,10 @@ class SummaryChart:public Layer
             hl_day=-1;
         }
 
+        //! \brief Returns true if currently selected..
+        virtual bool isSelected() { return hl_day>=0; }
+
+
         //! \brief Sets the MachineType this SummaryChart is interested in
         void setMachineType(MachineType type) { m_machinetype=type; }
 

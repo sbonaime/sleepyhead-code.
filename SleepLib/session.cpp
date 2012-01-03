@@ -22,7 +22,7 @@ const quint16 filetype_data=1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version=10;
+const quint16 summary_version=11;
 const quint16 events_version=8;
 
 Session::Session(Machine * m,SessionID session)
@@ -138,9 +138,6 @@ bool Session::StoreSummary(QString filename)
     out << m_sum;
     out << m_avg;
     out << m_wavg;
-    out << m_90p;
-    out << m_95p;
-    out << m_med;
     out << m_min;
     out << m_max;
     out << m_cph;
@@ -218,6 +215,8 @@ bool Session::LoadSummary(QString filename)
     in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
 
+    QHash<ChannelID,EventDataType> cruft;
+
     if (version<7) {
         QHash<QString,QVariant> v1;
         in >> v1;
@@ -253,10 +252,11 @@ bool Session::LoadSummary(QString filename)
         }
         ztmp.clear();
         in >> ztmp; // 90p
-        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
-            code=schema::channel[i.key()].id();
-            m_90p[code]=i.value();
-        }
+        // Ignore this
+//        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
+//            code=schema::channel[i.key()].id();
+//            m_90p[code]=i.value();
+//        }
         ztmp.clear();
         in >> ztmp; // min
         for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
@@ -300,10 +300,15 @@ bool Session::LoadSummary(QString filename)
         in >> m_sum;
         in >> m_avg;
         in >> m_wavg;
-        in >> m_90p;
-        if (version >= 10) {
-            in >> m_95p;
-            in >> m_med;
+        if (version < 11) {
+            cruft.clear();
+            in >> cruft; // 90%
+            if (version >= 10) {
+                cruft.clear();
+                in >> cruft;// med
+                cruft.clear();
+                in >> cruft; //p95
+            }
         }
         in >> m_min;
         in >> m_max;
@@ -988,7 +993,7 @@ EventDataType Session::sph(ChannelID id) // sum per hour
     return val;
 }
 
-EventDataType Session::p90(ChannelID id) // 90th Percentile
+/*EventDataType Session::p90(ChannelID id) // 90th Percentile
 {
     QHash<ChannelID,EventDataType>::iterator i=m_90p.find(id);
     if (i!=m_90p.end())
@@ -1037,7 +1042,7 @@ EventDataType Session::median(ChannelID id)
     return val;
 }
 
-
+*/
 bool sortfunction (EventStoreType i,EventStoreType j) { return (i<j); }
 
 EventDataType Session::percentile(ChannelID id,EventDataType percent)
