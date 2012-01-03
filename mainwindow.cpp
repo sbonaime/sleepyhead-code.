@@ -1118,9 +1118,11 @@ void MainWindow::on_summaryButton_clicked()
             } else {
                 if (cpapmode>MODE_CPAP) {
                     extratxt="<td>&nbsp;</td>";
-                } else extratxt="";
-                tooltip="";
-                //QString("%1").arg(machstr);
+                    tooltip=QString("%1").arg(machstr);
+                } else {
+                    extratxt="";
+                    tooltip="";
+                }
             }
             QString presrel;
             if (rx.prelset>0) {
