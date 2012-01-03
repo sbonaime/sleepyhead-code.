@@ -208,6 +208,14 @@ private slots:
         */
     void on_ZombieMeter_valueChanged(int value);
 
+    void on_graphCombo_activated(int index);
+
+    void on_toggleGraphs_clicked(bool checked);
+
+    void on_zoomFullyOut_clicked();
+
+    void on_resetLayoutButton_clicked();
+
 protected:
 
 private:
@@ -246,6 +254,9 @@ private:
         */
     void UpdateEventsTree(QTreeWidget * tree,Day *day);
 
+    void updateCube();
+    void updateGraphCombo();
+
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF, *THPR,
            *PLETHY,*TI,*TE, *RE, *IE, *TgMV, *AHI, *RDI;
@@ -271,10 +282,11 @@ private:
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
     QLabel *emptyToggleArea;
+    QIcon * icon_on;
+    QIcon * icon_off;
+
     bool ZombieMeterMoved;
     bool BookmarksChanged;
 };
 
 #endif // DAILY_H
-
-

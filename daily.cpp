@@ -295,25 +295,27 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->evViewLCD->display(ews);
 
     GraphView->LoadSettings("Daily");
+    icon_on=new QIcon(":/icons/session-on.png");
+    icon_off=new QIcon(":/icons/session-off.png");
 
-    emptyToggleArea=new QLabel(this);
-    emptyToggleArea->setText("This may take a while...");
-    ui->graphToggleArea->addWidget(emptyToggleArea,1,Qt::AlignCenter);
-    emptyToggleArea->setVisible(false);
-    for (int i=0;i<GraphView->size();i++) {
-        QString title=(*GraphView)[i]->title();
-        QPushButton *btn=new QPushButton(title,this);
-        btn->setCheckable(true);
-        btn->setChecked((*GraphView)[i]->visible());
-        btn->setToolTip(tr("Show/Hide %1").arg(title));
-        btn->setVisible(false);
-        GraphToggles[title]=btn;
-        btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
-        ui->graphToggleArea->addWidget(btn);
-        connect(btn,SIGNAL(toggled(bool)),this,SLOT(graphtogglebutton_toggled(bool)));
-    }
-    ui->graphToggleArea->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
-    ui->graphVisibilityToggleArea->setVisible(false);
+//    emptyToggleArea=new QLabel(this);
+//    emptyToggleArea->setText("This may take a while...");
+//    ui->graphToggleArea->addWidget(emptyToggleArea,1,Qt::AlignCenter);
+//    emptyToggleArea->setVisible(false);
+//    for (int i=0;i<GraphView->size();i++) {
+//        QString title=(*GraphView)[i]->title();
+//        QPushButton *btn=new QPushButton(title,this);
+//        btn->setCheckable(true);
+//        btn->setChecked((*GraphView)[i]->visible());
+//        btn->setToolTip(tr("Show/Hide %1").arg(title));
+//        btn->setVisible(false);
+//        GraphToggles[title]=btn;
+//        btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
+//        ui->graphToggleArea->addWidget(btn);
+//        connect(btn,SIGNAL(toggled(bool)),this,SLOT(graphtogglebutton_toggled(bool)));
+//    }
+//    ui->graphToggleArea->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
+//    ui->graphVisibilityToggleArea->setVisible(false);
     ui->splitter->setVisible(false);
 
     // TODO: Add preference to hide do this for Widget Haters..
@@ -329,7 +331,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setDecimals(3);
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
-    GraphView->setCubeImage(images["sheep"]);
+    GraphView->setCubeImage(images["nodata"]);
     GraphView->setEmptyText(tr("No Data"));
 }
 
@@ -344,6 +346,8 @@ Daily::~Daily()
 
 //    delete splitter;
     delete ui;
+    delete icon_on;
+    delete icon_off;
 }
 void Daily::Link_clicked(const QUrl &url)
 {
@@ -688,14 +692,13 @@ void Daily::Load(QDate date)
     }
     //GraphView->redraw();
     //snapGV->redraw();
-    int graphsAvailable=0;
-    for (int i=0;i<GraphView->size();i++) {
-        QString title=(*GraphView)[i]->title();
-        bool empty=(*GraphView)[i]->isEmpty();
-        if (!empty) graphsAvailable++;
-        GraphToggles[title]->setVisible(!empty);
-    }
-    emptyToggleArea->setVisible(graphsAvailable==0);
+//    for (int i=0;i<GraphView->size();i++) {
+//        QString title=(*GraphView)[i]->title();
+//        bool empty=(*GraphView)[i]->isEmpty();
+//        if (!empty) graphsAvailable++;
+//        GraphToggles[title]->setVisible(!empty);
+//    }
+//    emptyToggleArea->setVisible(graphsAvailable==0);
 
     //ui->graphVisibilityToggleArea->setVisible(graphsAvailable>0);
 
@@ -707,16 +710,18 @@ void Daily::Load(QDate date)
     QString a;
     bool isBrick=false;
 
-    ui->graphVisibilityToggleArea->setVisible(true);
+    //ui->graphVisibilityToggleArea->setVisible(true);
 
-    if (graphsAvailable>0) {
-            GraphView->setCubeImage(images["sheep"]);
-            GraphView->setEmptyText(tr("Graphs Switched Off"));
-    } else {
-        GraphView->setCubeImage(images["nodata"]);
-        GraphView->setEmptyText(tr("No Data"));
-        emptyToggleArea->setText("No graph data available for this day");
-    }
+    updateGraphCombo();
+    int graphsAvailable=GraphView->visibleGraphs();
+//    if (graphsAvailable>0) {
+//            GraphView->setCubeImage(images["sheep"]);
+//            GraphView->setEmptyText(tr("Graphs Switched Off"));
+//    } else {
+//        GraphView->setCubeImage(images["nodata"]);
+//        GraphView->setEmptyText(tr("No Data"));
+//        emptyToggleArea->setText("No graph data available for this day");
+//    }
 
     if (cpap) {
         if (GraphView->isEmpty()) {
@@ -1704,4 +1709,102 @@ QString Daily::GetDetailsText()
     ui->webView->triggerPageAction(QWebPage::MoveToEndOfDocument);
     ui->webView->triggerPageAction(QWebPage::SelectEndOfDocument);
     return text;
+}
+
+void Daily::on_graphCombo_activated(int index)
+{
+    if (index<0)
+        return;
+
+    gGraph *g;
+    QString s;
+    s=ui->graphCombo->currentText();
+    bool b=!ui->graphCombo->itemData(index,Qt::UserRole).toBool();
+    ui->graphCombo->setItemData(index,b,Qt::UserRole);
+    if (b) {
+        ui->graphCombo->setItemIcon(index,*icon_on);
+    } else {
+        ui->graphCombo->setItemIcon(index,*icon_off);
+    }
+    g=GraphView->findGraph(s);
+    g->setVisible(b);
+
+    updateCube();
+    GraphView->updateScale();
+    GraphView->redraw();
+}
+void Daily::updateCube()
+{
+    //brick..
+    if ((GraphView->visibleGraphs()==0)) {
+        ui->toggleGraphs->setArrowType(Qt::UpArrow);
+        ui->toggleGraphs->setToolTip(tr("Show all graphs"));
+        ui->toggleGraphs->blockSignals(true);
+        ui->toggleGraphs->setChecked(true);
+        ui->toggleGraphs->blockSignals(false);
+
+        if (ui->graphCombo->count()>0) {
+            GraphView->setEmptyText(tr("No Graphs On!"));
+            GraphView->setCubeImage(images["sheep"]);
+
+        } else {
+            GraphView->setEmptyText("No Data");
+            GraphView->setCubeImage(images["nodata"]);
+        }
+    } else {
+        ui->toggleGraphs->setArrowType(Qt::DownArrow);
+        ui->toggleGraphs->setToolTip(tr("Hide all graphs"));
+        ui->toggleGraphs->blockSignals(true);
+        ui->toggleGraphs->setChecked(false);
+        ui->toggleGraphs->blockSignals(false);
+    }
+}
+
+
+void Daily::on_toggleGraphs_clicked(bool checked)
+{
+    gGraph *g;
+    QString s;
+    QIcon *icon=checked ? icon_off : icon_on;
+    for (int i=0;i<ui->graphCombo->count();i++) {
+        s=ui->graphCombo->itemText(i);
+        ui->graphCombo->setItemIcon(i,*icon);
+        ui->graphCombo->setItemData(i,!checked,Qt::UserRole);
+        g=GraphView->findGraph(s);
+        g->setVisible(!checked);
+    }
+    updateCube();
+    GraphView->updateScale();
+    GraphView->redraw();
+
+}
+
+void Daily::updateGraphCombo()
+{
+    ui->graphCombo->clear();
+    gGraph *g;
+
+    for (int i=0;i<GraphView->size();i++) {
+        g=(*GraphView)[i];
+        if (g->isEmpty()) continue;
+
+        if (g->visible()) {
+            ui->graphCombo->addItem(*icon_on,g->title(),true);
+        } else {
+            ui->graphCombo->addItem(*icon_off,g->title(),false);
+        }
+    }
+    ui->graphCombo->setCurrentIndex(0);
+    updateCube();
+}
+
+void Daily::on_zoomFullyOut_clicked()
+{
+    GraphView->ResetBounds(true);
+    GraphView->redraw();
+}
+
+void Daily::on_resetLayoutButton_clicked()
+{
+    GraphView->resetLayout();
 }

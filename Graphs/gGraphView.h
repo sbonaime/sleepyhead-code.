@@ -831,6 +831,9 @@ public:
     //! \brief Returns the current selected time range
     void GetXBounds(qint64 & st,qint64 & et);
 
+    //! \brief Returns the maximum time range bounds
+    void GetRXBounds(qint64 st, qint64 et);
+
     //! \brief Resets the time range to default for this day. Refreshing the display if refresh==true.
     void ResetBounds(bool refresh=true); //short group=0);
 

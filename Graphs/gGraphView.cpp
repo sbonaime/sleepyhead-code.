@@ -2108,6 +2108,18 @@ void gGraphView::selectionTime()
     }
 
 }
+void gGraphView::GetRXBounds(qint64 st, qint64 et)
+{
+    qint64 m1=0,m2=0;
+    gGraph *g=NULL;
+    for (int i=0;i<m_graphs.size();i++) {
+        g=m_graphs[i];
+        if (g->group()==0)
+            break;
+    }
+    st=g->rmin_x;
+    et=g->rmax_x;
+}
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)
