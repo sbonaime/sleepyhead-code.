@@ -161,7 +161,29 @@
        </spacer>
       </item>
       <item>
+       <widget class="QToolButton" name="toggleVisibility">
+        <property name="toolTip">
+         <string>Toggle Graph Visibility</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+        <property name="arrowType">
+         <enum>Qt::DownArrow</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="graphCombo">
+        <property name="toolTip">
+         <string>Drop down to see list of graphs to switch on/off.</string>
+        </property>
         <item>
          <property name="text">
           <string>Graphs</string>

@@ -100,6 +100,8 @@ private slots:
 
     void on_graphCombo_activated(int index);
 
+    void on_toggleVisibility_clicked(bool checked);
+
 private:
     Ui::Overview *ui;
     gGraphView *GraphView;
@@ -111,7 +113,7 @@ private:
 
     //! \brief Updates the calendar highlighting for the calendar object for this date.
     void UpdateCalendarDay(QDateEdit * calendar,QDate date);
-
+    void updateCube();
 
     //SessionTimes *session_times;
     //,*PRESSURE,*LEAK,*SESSTIMES;

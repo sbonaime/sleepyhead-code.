@@ -302,6 +302,7 @@ gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
 void Overview::ReloadGraphs()
 {
     GraphView->setDay(NULL);
+    updateCube();
 
     on_rangeCombo_activated(ui->rangeCombo->currentIndex());
 }
@@ -310,6 +311,10 @@ void Overview::updateGraphCombo()
 {
     ui->graphCombo->clear();
     gGraph *g;
+//    ui->graphCombo->addItem("Show All Graphs");
+//    ui->graphCombo->addItem("Hide All Graphs");
+//    ui->graphCombo->addItem("---------------");
+
     for (int i=0;i<GraphView->size();i++) {
         g=(*GraphView)[i];
         if (g->isEmpty()) continue;
@@ -320,6 +325,8 @@ void Overview::updateGraphCombo()
             ui->graphCombo->addItem(*icon_off,g->title(),false);
         }
     }
+    ui->graphCombo->setCurrentIndex(0);
+    updateCube();
 }
 
 void Overview::ResetGraphs()
@@ -327,6 +334,7 @@ void Overview::ResetGraphs()
     QDate start=ui->dateStart->date();
     QDate end=ui->dateEnd->date();
     GraphView->setDay(NULL);
+    updateCube();
     if (start.isValid() && end.isValid()) {
         setRange(start,end);
     }
@@ -494,6 +502,9 @@ void Overview::on_graphCombo_activated(int index)
     if (index<0)
         return;
 
+    gGraph *g;
+    QString s;
+    s=ui->graphCombo->currentText();
     bool b=!ui->graphCombo->itemData(index,Qt::UserRole).toBool();
     ui->graphCombo->setItemData(index,b,Qt::UserRole);
     if (b) {
@@ -501,9 +512,53 @@ void Overview::on_graphCombo_activated(int index)
     } else {
         ui->graphCombo->setItemIcon(index,*icon_off);
     }
-    QString s=ui->graphCombo->currentText();
-    gGraph *g=GraphView->findGraph(s);
+    g=GraphView->findGraph(s);
     g->setVisible(b);
+
+    updateCube();
+    GraphView->updateScale();
+    GraphView->redraw();
+}
+void Overview::updateCube()
+{
+    if ((GraphView->visibleGraphs()==0)) {
+        ui->toggleVisibility->setArrowType(Qt::UpArrow);
+        ui->toggleVisibility->setToolTip(tr("Show all graphs"));
+        ui->toggleVisibility->blockSignals(true);
+        ui->toggleVisibility->setChecked(true);
+        ui->toggleVisibility->blockSignals(false);
+
+        if (ui->graphCombo->count()>0) {
+            GraphView->setEmptyText(tr("No Graphs On!"));
+            GraphView->setCubeImage(images["sheep"]);
+
+        } else {
+            GraphView->setEmptyText("No Data");
+            GraphView->setCubeImage(images["nodata"]);
+        }
+    } else {
+        ui->toggleVisibility->setArrowType(Qt::DownArrow);
+        ui->toggleVisibility->setToolTip(tr("Hide all graphs"));
+        ui->toggleVisibility->blockSignals(true);
+        ui->toggleVisibility->setChecked(false);
+        ui->toggleVisibility->blockSignals(false);
+    }
+}
+
+void Overview::on_toggleVisibility_clicked(bool checked)
+{
+    gGraph *g;
+    QString s;
+    QIcon *icon=checked ? icon_off : icon_on;
+    //ui->toggleVisibility->setArrowType(checked ? Qt::UpArrow : Qt::DownArrow);
+    for (int i=0;i<ui->graphCombo->count();i++) {
+        s=ui->graphCombo->itemText(i);
+        ui->graphCombo->setItemIcon(i,*icon);
+        ui->graphCombo->setItemData(i,!checked,Qt::UserRole);
+        g=GraphView->findGraph(s);
+        g->setVisible(!checked);
+    }
+    updateCube();
     GraphView->updateScale();
     GraphView->redraw();
 }
