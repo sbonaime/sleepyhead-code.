@@ -312,8 +312,8 @@ void Overview::updateGraphCombo()
     gGraph *g;
     for (int i=0;i<GraphView->size();i++) {
         g=(*GraphView)[i];
-        if (g->isEmpty())
-            continue;
+        if (g->isEmpty()) continue;
+
         if (g->visible()) {
             ui->graphCombo->addItem(*icon_on,g->title(),true);
         } else {
@@ -501,6 +501,9 @@ void Overview::on_graphCombo_activated(int index)
     } else {
         ui->graphCombo->setItemIcon(index,*icon_off);
     }
-    (*GraphView)[index]->setVisible(b);
+    QString s=ui->graphCombo->currentText();
+    gGraph *g=GraphView->findGraph(s);
+    g->setVisible(b);
+    GraphView->updateScale();
     GraphView->redraw();
 }

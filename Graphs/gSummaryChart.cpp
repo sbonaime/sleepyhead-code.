@@ -55,15 +55,15 @@ void SummaryChart::SetDay(Day * nullday)
     int dn;
     EventDataType tmp,tmp2,total;
     ChannelID code;
+    CPAPMode cpapmode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
     if (m_label==STR_TR_Pressure) {
-        CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
         m_codes.clear();
         m_colors.clear();
         m_type.clear();
         //m_zeros.clear();
         m_typeval.clear();
 
-        if (mode>=MODE_ASV) {
+        if (cpapmode>=MODE_ASV) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
 
             addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN);
@@ -71,13 +71,13 @@ void SummaryChart::SetDay(Day * nullday)
             addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,0.95);
             //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
             addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX);
-        } else if (mode>=MODE_BIPAP) {
+        } else if (cpapmode>=MODE_BIPAP) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
             addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,0.95);
             addSlice(CPAP_IPAP,QColor("light cyan"),ST_PERC,0.5);
             addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
             addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX);
-        } else if (mode>=MODE_APAP) {
+        } else if (cpapmode>=MODE_APAP) {
             addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN);
             addSlice(CPAP_Pressure,QColor("dark green"),ST_PERC,0.5);
             addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,0.95);
@@ -180,13 +180,12 @@ void SummaryChart::SetDay(Day * nullday)
                             day->hasData(code,type);
 
                     if (code==CPAP_Pressure) {
-                        if (mode==MODE_CPAP) {
+                        if ((cpapmode>MODE_CPAP) && (mode==MODE_CPAP)) {
                             hascode=false;
                             if ((type==ST_PERC) && (m_typeval[j]==0.5)) {
                                 type=ST_SETWAVG;
                                 hascode=true;
                             }
-
                         } else {
                             type=m_type[j];
                         }
