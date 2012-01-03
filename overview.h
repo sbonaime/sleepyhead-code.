@@ -64,6 +64,8 @@ public:
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;
 
+    void updateGraphCombo();
+
 public slots:
     // ! \brief Print button down the bottom, does the same as File->Print
     //void on_printButton_clicked();
@@ -96,12 +98,16 @@ private slots:
 
     void on_rangeCombo_activated(int index);
 
+    void on_graphCombo_activated(int index);
+
 private:
     Ui::Overview *ui;
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
     gGraphView * m_shared;
+    QIcon * icon_on;
+    QIcon * icon_off;
 
     //! \brief Updates the calendar highlighting for the calendar object for this date.
     void UpdateCalendarDay(QDateEdit * calendar,QDate date);

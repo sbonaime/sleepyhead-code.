@@ -50,8 +50,8 @@ void gFlagsGroup::SetDay(Day * d)
         bool e=f->isEmpty();
         if (!e || f->isAlwaysVisible()) {
             lvisible.push_back(f);
-            //if (!e)
-             cnt++;
+            if (!e)
+               cnt++;
         }
     }
     m_empty=(cnt==0);

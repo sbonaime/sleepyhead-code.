@@ -261,6 +261,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     GraphView->LoadSettings("Overview"); //no trans
     ui->rangeCombo->setCurrentIndex(6);
+    icon_on=new QIcon(":/icons/session-on.png");
+    icon_off=new QIcon(":/icons/session-off.png");
 }
 Overview::~Overview()
 {
@@ -268,6 +270,8 @@ Overview::~Overview()
     disconnect(this,SLOT(dateStart_currentPageChanged(int,int)));
     disconnect(this,SLOT(dateEnd_currentPageChanged(int,int)));
     delete ui;
+    delete icon_on;
+    delete icon_off;
 }
 gGraph * Overview::createGraph(QString name,QString units, YTickerType yttype)
 {
@@ -300,6 +304,22 @@ void Overview::ReloadGraphs()
     GraphView->setDay(NULL);
 
     on_rangeCombo_activated(ui->rangeCombo->currentIndex());
+}
+
+void Overview::updateGraphCombo()
+{
+    ui->graphCombo->clear();
+    gGraph *g;
+    for (int i=0;i<GraphView->size();i++) {
+        g=(*GraphView)[i];
+        if (g->isEmpty())
+            continue;
+        if (g->visible()) {
+            ui->graphCombo->addItem(*icon_on,g->title(),true);
+        } else {
+            ui->graphCombo->addItem(*icon_off,g->title(),false);
+        }
+    }
 }
 
 void Overview::ResetGraphs()
@@ -465,4 +485,22 @@ void Overview::setRange(QDate start, QDate end)
     ui->dateEnd->blockSignals(false);
     ui->dateStart->blockSignals(false);
     this->on_toolButton_clicked();
+    updateGraphCombo();
+
+}
+
+void Overview::on_graphCombo_activated(int index)
+{
+    if (index<0)
+        return;
+
+    bool b=!ui->graphCombo->itemData(index,Qt::UserRole).toBool();
+    ui->graphCombo->setItemData(index,b,Qt::UserRole);
+    if (b) {
+        ui->graphCombo->setItemIcon(index,*icon_on);
+    } else {
+        ui->graphCombo->setItemIcon(index,*icon_off);
+    }
+    (*GraphView)[index]->setVisible(b);
+    GraphView->redraw();
 }

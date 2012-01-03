@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>611</width>
+    <width>681</width>
     <height>392</height>
    </rect>
   </property>
@@ -165,6 +165,15 @@
         <property name="text">
          <string>Print &amp;Daily Reports</string>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="graphCombo">
+        <item>
+         <property name="text">
+          <string>Graphs</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
