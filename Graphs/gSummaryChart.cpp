@@ -60,41 +60,38 @@ void SummaryChart::SetDay(Day * nullday)
         m_codes.clear();
         m_colors.clear();
         m_type.clear();
-        m_zeros.clear();
+        //m_zeros.clear();
         m_typeval.clear();
 
         if (mode>=MODE_ASV) {
-            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
+            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
 
-            addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN,true);
-            addSlice(CPAP_IPAP,QColor("cyan"),ST_PERC,true,0.5);
-            addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,true,0.95);
-            //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
-            addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX,true);
+            addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN);
+            addSlice(CPAP_IPAP,QColor("cyan"),ST_PERC,0.5);
+            addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,0.95);
+            //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
+            addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX);
         } else if (mode>=MODE_BIPAP) {
-            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
-            addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,true,0.95);
+            addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
+            addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,0.95);
 
-            addSlice(CPAP_IPAP,QColor("light cyan"),ST_WAVG,true);
-            addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
-            addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX,true);
+            addSlice(CPAP_IPAP,QColor("light cyan"),ST_WAVG);
+            addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
+            addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX);
         } else if (mode>=MODE_APAP) {
-            addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN,true);
-            addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
-            addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
-            addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX,true);
+            addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN);
+            addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG);
+            addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,0.95);
+            addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX);
         } else {
-            addSlice(CPAP_Pressure,QColor("dark green"),ST_SETWAVG,true);
+            addSlice(CPAP_Pressure,QColor("dark green"),ST_SETWAVG);
         }
-
     }
-
 
     m_goodcodes.resize(m_codes.size());
     for (int i=0;i<m_codes.size();i++) {
         m_goodcodes[i]=false;
     }
-
 
     m_fday=0;
     qint64 tt,zt;
@@ -385,14 +382,18 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     lastdaygood=true;
     for (int i=0;i<numcodes;i++) {
         totalcounts[i]=0;
-        if (m_type[i]==ST_MIN) {
+
+        // Set min and max to the opposite largest starting value
+        if ((m_type[i]==ST_MIN) || (m_type[i]==ST_SETMIN)) {
             totalvalues[i]=maxy;
-        } else if (m_type[i]==ST_MAX) {
+        } else if ((m_type[i]==ST_MAX) || (m_type[i]==ST_SETMAX)) {
             totalvalues[i]=miny;
         } else {
             totalvalues[i]=0;
         }
+        // Turn off legend display.. It will only display if it's turned back on during draw.
         goodcodes[i]=false;
+
         if (!m_goodcodes[i]) continue;
        // lastvalues[i]=0;
         lastX[i]=px;
@@ -455,6 +456,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 GLuint col2=brighten(col).rgba();
                 outlines->setColor(Qt::black);
 
+                if (d.value().size()>0) {
+                    for (int i=0;i<goodcodes.size();i++) {
+                        goodcodes[i]=true;
+                    }
+                }
                 for (j=0;j<d.value().size();j++) {
                     tmp2=times.value()[j]-miny;
                     py=top+height-(tmp2*ymult);
@@ -491,6 +497,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                 //}
                 bool good;
+                SummaryType type;
                 for (QHash<short,EventDataType>::iterator g=d.value().begin();g!=d.value().end();g++) {
                     short j=g.key();
                     if (!j) continue;
@@ -499,12 +506,14 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     if (!good)
                         continue;
 
+                    type=m_type[j];
+                    // code was actually used (to signal the display of the legend summary)
                     goodcodes[j]=good;
 
                     tmp=g.value();
 
                     QColor col=m_colors[j];
-                    if (m_type[j]==ST_HOURS) {
+                    if (type==ST_HOURS) {
                         if (tmp<compliance_hours) {
                             col=QColor("#f04040");
                             incompliant++;
@@ -516,10 +525,12 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     }
 
                     //if (!tmp) continue;
-                    if (m_type[j]==ST_MAX) {
-                        if (tmp>totalvalues[j]) totalvalues[j]=tmp;
-                    } else if (m_type[j]==ST_MIN) {
-                        if (tmp<totalvalues[j]) totalvalues[j]=tmp;
+                    if ((type==ST_MAX) || (type==ST_SETMAX)) {
+                        if (totalvalues[j]<tmp)
+                            totalvalues[j]=tmp;
+                    } else if ((type==ST_MIN) || (type==ST_SETMIN)) {
+                        if (totalvalues[j]>tmp)
+                            totalvalues[j]=tmp;
                     } else {
                         totalvalues[j]+=tmp*hours;
                     }
@@ -585,16 +596,19 @@ jumpnext:
     // Draw Ledgend
     px=left+width-3;
     py=top-5;
+    int legendx=px;
     QString a,b;
     int x,y;
 
     bool ishours=false;
+    int good=0;
     for (int j=0;j<m_codes.size();j++) {
         if (!goodcodes[j]) continue;
-
+        good++;
+        SummaryType type=m_type[j];
         ChannelID code=m_codes[j];
         EventDataType tval=m_typeval[j];
-        switch(m_type[j]) {
+        switch(type) {
                 case ST_WAVG: b="Avg"; break;
                 case ST_AVG:  b="Avg"; break;
                 case ST_90P:  b="90%"; break;
@@ -618,13 +632,13 @@ jumpnext:
         QString val;
         float f=0;
         if (totalcounts[j]>0) {
-            if ((m_type[j]==ST_MIN) || (m_type[j]==ST_MAX)) {
+            if ((type==ST_MIN) || (type==ST_MAX) || (type==ST_SETMIN) || (type==ST_SETMAX)) {
                 f=totalvalues[j];
             } else {
                 f=totalvalues[j]/totalcounts[j];
             }
         }
-        if (m_type[j]==ST_HOURS) {
+        if (type==ST_HOURS) {
             int h=f;
             int m=int(f*60) % 60;
             val.sprintf("%02i:%02i",h,m);
@@ -633,21 +647,38 @@ jumpnext:
             val=QString::number(f,'f',2);
         }
         a+="="+val;
-        GetTextExtent(a,x,y);
-        float wt=20*w.printScaleX();
-        px-=wt+x;
-        w.renderText(a,px+wt,py+1);
-        quads->add(px+wt-y/4-y,py-y,px+wt-y/4,py-y,px+wt-y/4,py+1,px+wt-y/4-y,py+1,m_colors[j].rgba());
+        //GetTextExtent(a,x,y);
+        //float wt=20*w.printScaleX();
+        //px-=wt+x;
+        //w.renderText(a,px+wt,py+1);
+        //quads->add(px+wt-y/4-y,py-y,px+wt-y/4,py-y,px+wt-y/4,py+1,px+wt-y/4-y,py+1,m_colors[j].rgba());
+
+
+        //QString text=schema::channel[code].label();
+
+        int wid,hi;
+        GetTextExtent(a,wid,hi);
+        legendx-=wid;
+        w.renderText(a,legendx,top-4);
+        int bw=GetXHeight();
+        legendx-=bw/2;
+
+        int tp=top-5-bw/2;
+        w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_colors[j].rgba());
+        legendx-=hi+bw/2;
+
+
         //lines->add(px,py,px+20,py,m_colors[j]);
         //lines->add(px,py+1,px+20,py+1,m_colors[j]);
     }
-    if (m_graphtype==GT_BAR) {
+    if ((m_graphtype==GT_BAR) && (good>0)) {
+
         if (m_type.size()>1) {
             float val=total_val/float(total_hours);
             a=m_label+"="+QString::number(val,'f',2)+" ";
             GetTextExtent(a,x,y);
-            px-=20+x;
-            w.renderText(a,px+24,py+1);
+            legendx-=20+x;
+            w.renderText(a,legendx+24,py+1);
         }
     }
 
@@ -667,8 +698,8 @@ jumpnext:
     }
 
 
-    GetTextExtent(a,x,y);
-    px-=30+x;
+    //GetTextExtent(a,x,y);
+    //legendx-=30+x;
     //w.renderText(a,px+24,py+5);
     w.renderText(a,left,py+1);
 }
