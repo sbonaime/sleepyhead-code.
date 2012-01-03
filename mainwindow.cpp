@@ -373,18 +373,20 @@ void MainWindow::on_action_Fullscreen_triggered()
 
 QString htmlHeader()
 {
+//   "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
+//   "a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
     return QString("<html><head>"
 "</head>"
 "<style type='text/css'>"
 "<!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
 "p,a,td,body { font-size: 14px }"
-"a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
-"a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
 "</style>"
+"<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
+
 "<script type='text/javascript'>"
 "function ChangeColor(tableRow, highLight)"
 "{ tableRow.style.backgroundColor = highLight; }"
-"function Go(url) { window.location=url; }"
+"function Go(url) { throw(url); }"
 "</script>"
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
@@ -490,6 +492,30 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     return true;
 }
 
+class MyStatsPage:public QWebPage
+{
+public:
+    MyStatsPage(QObject *parent);
+    virtual ~MyStatsPage();
+protected:
+    //virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
+    virtual void javaScriptAlert ( QWebFrame * frame, const QString & msg );
+};
+MyStatsPage::MyStatsPage(QObject *parent)
+:QWebPage(parent)
+{
+}
+MyStatsPage::~MyStatsPage()
+{
+}
+
+void MyStatsPage::javaScriptAlert(QWebFrame * frame, const QString & msg)
+{
+    Q_UNUSED(frame);
+    mainwin->sendStatsUrl(msg);
+}
+
+
 //bool operator<(const RXChange * & comp1, const RXChange * & comp2) {
 
 //}
@@ -507,6 +533,8 @@ QString formatTime(float time)
     seconds %= 60;
     return QString().sprintf("%02i:%02i",hours,minutes); //,seconds);
 }
+
+
 void MainWindow::on_summaryButton_clicked()
 {
     QString html=htmlHeader();
@@ -1056,7 +1084,7 @@ void MainWindow::on_summaryButton_clicked()
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
                 presrel+=QString(" x%1").arg(rx.prelset);
             } else presrel="None";
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='tabwidget.setCurrentIndex(3); print \"%1 %2\";'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
@@ -1102,13 +1130,18 @@ void MainWindow::on_summaryButton_clicked()
     }
     updateFavourites();
     html+=htmlFooter();
-    QWebFrame *frame=ui->summaryView->page()->currentFrame();
-    frame->addToJavaScriptWindowObject("mainwin",this);
-    ui->summaryView->setHtml(html);
+    //QWebFrame *frame=ui->summaryView->page()->currentFrame();
+    //frame->addToJavaScriptWindowObject("mainwin",this);
+    //ui->summaryView->setHtml(html);
+    MyStatsPage *page=new MyStatsPage(this);
+    page->currentFrame()->setHtml(html);
+    ui->summaryView->setPage(page);
+//    connect(ui->summaryView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
 //    QString file="qrc:/docs/index.html";
 //    QUrl url(file);
 //    ui->webView->setUrl(url);
 }
+
 void MainWindow::updateFavourites()
 {
     QDate date=PROFILE.LastDay(MT_JOURNAL);
@@ -2163,7 +2196,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
-    qDebug() << "Keypress:" << event->key();
+    //qDebug() << "Keypress:" << event->key();
 }
 
 void MainWindow::on_summaryButton_2_clicked()

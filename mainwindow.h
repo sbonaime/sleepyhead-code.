@@ -136,6 +136,8 @@ public:
         \param QDate date
         */
     void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
+
+    void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
 protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
