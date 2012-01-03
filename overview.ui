@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
+    <width>760</width>
     <height>392</height>
    </rect>
   </property>
@@ -159,13 +159,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="printDailyButton">
-        <property name="text">
-         <string>Print &amp;Daily Reports</string>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QComboBox" name="graphCombo">
