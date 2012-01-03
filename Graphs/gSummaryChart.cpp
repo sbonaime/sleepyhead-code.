@@ -18,9 +18,9 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addVertexBuffer(quads=new gVertexBuffer(20000,GL_QUADS));
     addVertexBuffer(lines=new gVertexBuffer(20000,GL_LINES));
     quads->forceAntiAlias(true);
-    lines->setSize(2);
-    lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
-    lines->forceAntiAlias(false);
+    lines->setSize(1.5);
+    //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
+    //lines->forceAntiAlias(false);
 
     m_empty=true;
     hl_day=-1;

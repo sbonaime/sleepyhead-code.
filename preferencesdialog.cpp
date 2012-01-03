@@ -156,12 +156,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
 
     ui->maskDescription->setText(profile->cpap->maskDescription());
-#ifdef Q_WS_MAC
-    ui->useAntiAliasing->setChecked(false);
-    ui->useAntiAliasing->setDisabled(true);
-#else
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
-#endif
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
     ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
     ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
@@ -172,14 +167,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->animationsAndTransitionsCheckbox->setChecked(profile->appearance->animations());
     ui->complianceGroupbox->setChecked(profile->cpap->showComplianceInfo());
     ui->complianceHours->setValue(profile->cpap->complianceHours());
-
-#ifdef Q_WS_MAC
-    profile->appearance->setHighResPrinting(true);
-    ui->highResolutionPrinting->setChecked(true);
-    ui->highResolutionPrinting->setEnabled(false);
-#else
-    ui->highResolutionPrinting->setChecked(profile->appearance->highResPrinting());
-#endif
 
     ui->graphHeight->setValue(profile->appearance->graphHeight());
 
@@ -280,11 +267,7 @@ void PreferencesDialog::Save()
 {
     bool needs_restart=false;
 
-#ifdef Q_WS_MAC
-    profile->appearance->setAntiAliasing(false);
-#else
     profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
-#endif
     if (ui->useSquareWavePlots->isChecked()!=profile->appearance->squareWavePlots()) {
         profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
         needs_restart=true;
@@ -294,7 +277,6 @@ void PreferencesDialog::Save()
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
     profile->cpap->setMaskDescription(ui->maskDescription->text());
-    profile->appearance->setHighResPrinting(ui->highResolutionPrinting->isChecked());
     profile->appearance->setAnimations(ui->animationsAndTransitionsCheckbox->isChecked());
 
     profile->cpap->setShowComplianceInfo(ui->complianceGroupbox->isChecked());

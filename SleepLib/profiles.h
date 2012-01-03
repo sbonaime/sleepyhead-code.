@@ -452,7 +452,6 @@ public:
 
 extern const char * AS_STR_GraphHeight;
 extern const char * AS_STR_AntiAliasing;
-extern const char * AS_STR_HighResPrinting;
 extern const char * AS_STR_GraphSnapshots;
 extern const char * AS_STR_Animations;
 extern const char * AS_STR_SquareWave;
@@ -469,7 +468,6 @@ public:
     {
         if (!m_profile->contains(AS_STR_GraphHeight)) (*m_profile)[AS_STR_GraphHeight]=180.0;
         if (!m_profile->contains(AS_STR_AntiAliasing)) (*m_profile)[AS_STR_AntiAliasing]=false; // i think it's ugly
-        if (!m_profile->contains(AS_STR_HighResPrinting)) (*m_profile)[AS_STR_HighResPrinting]=true;
         if (!m_profile->contains(AS_STR_GraphSnapshots)) (*m_profile)[AS_STR_GraphSnapshots]=true;
         if (!m_profile->contains(AS_STR_Animations)) (*m_profile)[AS_STR_Animations]=true;
         if (!m_profile->contains(AS_STR_SquareWave)) (*m_profile)[AS_STR_SquareWave]=false;
@@ -483,8 +481,6 @@ public:
     int graphHeight() { return (*m_profile)[AS_STR_GraphHeight].toInt(); }
     //! \brief Returns true if AntiAliasing (the graphical smoothing method) is enabled
     bool antiAliasing() { return (*m_profile)[AS_STR_AntiAliasing].toBool(); }
-    //! \brief Returns true if QPrinter object should use higher-quality High Resolution print mode
-    bool highResPrinting() { return (*m_profile)[AS_STR_HighResPrinting].toBool(); }
     //! \brief Returns true if renderPixmap function is in use, which takes snapshots of graphs
     bool graphSnapshots() { return (*m_profile)[AS_STR_GraphSnapshots].toBool(); }
     //! \brief Returns true if Graphical animations & Transitions will be drawn
@@ -498,8 +494,6 @@ public:
     void setGraphHeight(int height) { (*m_profile)[AS_STR_GraphHeight]=height; }
     //! \brief Set to true to turn on AntiAliasing (the graphical smoothing method)
     void setAntiAliasing(bool aa) { (*m_profile)[AS_STR_AntiAliasing]=aa; }
-    //! \brief Set to true if QPrinter object should use higher-quality High Resolution print mode
-    void setHighResPrinting(bool hires) { (*m_profile)[AS_STR_HighResPrinting]=hires; }
     //! \brief Set to true if renderPixmap functions are in use, which takes snapshots of graphs.
     void setGraphSnapshots(bool gs) { (*m_profile)[AS_STR_GraphSnapshots]=gs; }
     //! \brief Set to true if Graphical animations & Transitions will be drawn

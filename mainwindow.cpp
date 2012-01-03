@@ -1462,23 +1462,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     QPrinter * printer;
 
-    //bool highres;
     bool aa_setting=PROFILE.appearance->antiAliasing();
 
-#ifdef Q_WS_MAC
-    PROFILE.appearance->setHighResPrinting(true); // forced on
-//    bool force_antialiasing=true;
-//#else
-#endif
     bool force_antialiasing=aa_setting;
 
-    if (PROFILE.appearance->highResPrinting()) {
-        printer=new QPrinter(QPrinter::HighResolution);
-        //highres=true;
-    } else {
-        printer=new QPrinter(QPrinter::ScreenResolution);
-        //highres=false;
-    }
+    printer=new QPrinter(QPrinter::HighResolution);
 
 #ifdef Q_WS_X11
     printer->setPrinterName("Print to File (PDF)");
@@ -1507,11 +1495,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     painter.begin(printer);
 
     GLint gw;
-//#ifdef Q_WS_WIN32
     gw=2048;  // Rough guess.. No GL_MAX_RENDERBUFFER_SIZE in mingw.. :(
-//#else
-//    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&gw);
-//#endif
 
     //QSizeF pxres=printer->paperSize(QPrinter::DevicePixel);
     QRect prect=printer->pageRect();

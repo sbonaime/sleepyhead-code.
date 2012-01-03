@@ -565,7 +565,6 @@ const char * IS_STR_ShowSerialNumbers="ShowSerialNumbers";
 // AppearanceSettings Strings
 const char * AS_STR_GraphHeight="GraphHeight";
 const char * AS_STR_AntiAliasing="UseAntiAliasing";
-const char * AS_STR_HighResPrinting="HighResPrinting";
 const char * AS_STR_GraphSnapshots="EnableGraphSnapshots";
 const char * AS_STR_Animations="AnimationsAndTransitions";
 const char * AS_STR_SquareWave="SquareWavePlots";
