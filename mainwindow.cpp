@@ -420,7 +420,7 @@ EventDataType calcAHI(QDate start, QDate end)
 
 struct RXChange
 {
-    RXChange() { highlight=0; }
+    RXChange() { highlight=0; machine=NULL; }
     RXChange(const RXChange & copy) {
         first=copy.first;
         last=copy.last;
@@ -839,6 +839,7 @@ void MainWindow::on_summaryButton_clicked()
                 prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
+                mach=day->machine;
                 if (mode>=MODE_ASV) {
                     min=day->settings_min(CPAP_EPAP);
                     max=day->settings_max(CPAP_IPAPLo);
@@ -852,11 +853,8 @@ void MainWindow::on_summaryButton_clicked()
                 } else {
                     min=day->settings_min(CPAP_Pressure);
                 }
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (day->machine!=lastmach) || (prelief!=lastpr))  {
-                    if (!lastmach) { // set early.
-                        lastmach=day->machine;
-                    }
-                    if (cmode!=MODE_UNKNOWN) {
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (mach!=lastmach) || (prelief!=lastpr))  {
+                    if ((cmode!=MODE_UNKNOWN) && (lastmach!=NULL)) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
                         RXChange rx;
@@ -892,7 +890,7 @@ void MainWindow::on_summaryButton_clicked()
                     lastpr=prelief;
                     lastprelset=prelset;
                     last=date;
-                    lastmach=day->machine;
+                    lastmach=mach;
                     lastchanged=true;
                 }
 
@@ -901,7 +899,7 @@ void MainWindow::on_summaryButton_clicked()
         } while (date>=firstcpap);
 
         lastchanged=false;
-        if (!lastchanged) {
+        if (!lastchanged && (mach!=NULL)) {
            // last=date.addDays(1);
             first=firstcpap;
             int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -916,6 +914,7 @@ void MainWindow::on_summaryButton_clicked()
             rx.maxhi=maxhi;
             rx.prelief=prelief;
             rx.prelset=prelset;
+            rx.machine=mach;
             if (mode<MODE_BIPAP) {
                 rx.per1=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
                 rx.per2=0;
@@ -1043,23 +1042,24 @@ void MainWindow::on_summaryButton_clicked()
 
         if (cpapmode>=MODE_ASV) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>")
-                .arg(tr("EPAP")).arg(tr("IPAPLo")).arg(tr("IPAPHi")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
+                .arg(tr("EPAP")).arg(tr("IPAPLo")).arg(tr("IPAPHi")).arg(tr("PS Min")).arg(tr("PS Max"));
         } else if (cpapmode>=MODE_BIPAP) {
-            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td>")
-                .arg(tr("EPAP")).arg(tr("IPAP")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
-        } else if (cpapmode>MODE_CPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td>")
-                .arg(tr("Min Pressure")).arg(tr("Max Pressure")).arg(tr("%1% Pressure").arg(percentile*100.0));
+                .arg(tr("EPAP")).arg(tr("IPAP")).arg(tr("PS"));
+        } else if (cpapmode>MODE_CPAP) {
+            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td>")
+                .arg(tr("Min Pres.")).arg(tr("Max Pres."));
         } else {
             extratxt=QString("<td><b>%1</b></td>")
                 .arg(tr("Pressure"));
         }
         QString tooltip;
-        html+=QString("<tr title='%8'><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td>%7</tr>")
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</td>%8</tr>")
                   .arg(tr("First"))
                   .arg(tr("Last"))
                   .arg(tr("Days"))
                   .arg(ahitxt)
+                  .arg(tr("Machine"))
                   .arg(tr("Mode"))
                   .arg(tr("Pr. Rel."))
                   .arg(extratxt);
@@ -1082,35 +1082,43 @@ void MainWindow::on_summaryButton_clicked()
             if (rx.machine->properties.contains(STR_PROP_Model)) {
                  machstr+=" "+rx.machine->properties[STR_PROP_Model];
             }
+            if (rx.machine->properties.contains(STR_PROP_Serial)) {
+                 machstr+=" ("+rx.machine->properties[STR_PROP_Serial]+")<br/>";
+            }
 
-            if(cpapmode>=MODE_ASV) {
+            mode=rx.mode;
+            if(mode>=MODE_ASV) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
-                        .arg(rx.max,0,'f',2).arg(rx.maxhi,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
-                tooltip=tr("%5 %1% EPAP=%2 %3% IPAP %4")
+                        .arg(rx.max,0,'f',2).arg(rx.maxhi,0,'f',2).arg(rx.max-rx.min,0,'f',2).arg(rx.maxhi-rx.min,0,'f',2);
+
+                tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
                         .arg(percentile*100.0)
                         .arg(rx.per1,0,'f',2)
                         .arg(percentile*100.0)
                         .arg(rx.per2,0,'f',2)
                         .arg(machstr)
                         ;
-            } else if (cpapmode>=MODE_BIPAP) {
-                extratxt=QString("<td>%1</td><td>%2</td><td>%3</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
-                tooltip=tr("%5 %1% EPAP=%2 %3% IPAP %4")
+            } else if (mode>=MODE_BIPAP) {
+                extratxt=QString("<td>%1</td><td>%2</td>")
+                       .arg(rx.max,0,'f',2).arg(rx.max-rx.min,0,'f',2);
+                tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
                         .arg(percentile*100.0)
                         .arg(rx.per1,0,'f',2)
                         .arg(percentile*100.0)
                         .arg(rx.per2,0,'f',2)
                         .arg(machstr)
                         ;
-            } else if (cpapmode>MODE_CPAP) {
-                extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
+            } else if (mode>MODE_CPAP) {
+                extratxt=QString("<td>%1</td>").arg(rx.max,0,'f',2);
                 tooltip=tr("%3 %1% Pressure=%2")
                         .arg(percentile*100.0)
                         .arg(rx.per1,0,'f',2)
                         .arg(machstr)
                         ;
             } else {
-                extratxt="";
+                if (cpapmode>MODE_CPAP) {
+                    extratxt="<td>&nbsp;</td>";
+                } else extratxt="";
                 tooltip=QString("%1")
                 .arg(machstr)
                 ;
@@ -1120,13 +1128,14 @@ void MainWindow::on_summaryButton_clicked()
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
                 presrel+=QString(" x%1").arg(rx.prelset);
             } else presrel="None";
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\"); tooltip.show(\"%11\");' onmouseout='ChangeColor(this, \""+color+"\"); tooltip.hide();' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\"); tooltip.show(\"%12\");' onmouseout='ChangeColor(this, \""+color+"\"); tooltip.hide();' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td>%11</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.days)
                     .arg(rx.ahi,0,'f',2)
+                    .arg(rx.machine->GetClass())
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(presrel)
                     .arg(rx.min,0,'f',2)
