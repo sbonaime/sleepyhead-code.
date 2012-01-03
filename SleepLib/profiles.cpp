@@ -253,7 +253,6 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
 Day * Profile::GetGoodDay(QDate date,MachineType type)
 {
     Day *day=NULL;
-    // profile->     why did I d that??
     if (daylist.find(date)!=daylist.end()) {
         for (QList<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
 
@@ -613,7 +612,7 @@ EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QD
             val+=day->count(code);
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     return val;
 }
 double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
@@ -629,13 +628,15 @@ double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
             val+=day->sum(code);
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     return val;
 }
 EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
 
     double val=0;
@@ -645,7 +646,7 @@ EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
             val+=day->hours();
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     return val;
 }
 EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDate end)
@@ -663,7 +664,7 @@ EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDat
             cnt++;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (!cnt) return 0;
     return val/float(cnt);
 }
@@ -685,7 +686,7 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
             hours+=tmph;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (!hours) return 0;
     val=val/hours;
     return val;
@@ -704,7 +705,7 @@ EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDat
             if (min>tmp) min=tmp;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (min>=99999999) min=0;
     return min;
 }
@@ -722,7 +723,7 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
             if (max<tmp) max=tmp;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (max<=-99999999) max=0;
     return max;
 }
@@ -740,7 +741,7 @@ EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate sta
             if (min>tmp) min=tmp;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (min>=99999999) min=0;
     return min;
 }
@@ -758,7 +759,7 @@ EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate sta
             if (max<tmp) max=tmp;
         }
         date=date.addDays(1);
-    } while (date<end);
+    } while (date<=end);
     if (max<=-99999999) max=0;
     return max;
 }

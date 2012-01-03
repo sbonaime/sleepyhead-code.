@@ -359,6 +359,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     //QHash<short, EventDataType> lastvalues;
     int total_days=0;
     double total_val=0;
+    double total_hours=0;
     //qint64 lastQ=0;
     bool lastdaygood=false;
     QVector<double> totalcounts;
@@ -481,7 +482,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 total=d.value()[0];
                 //if (total>0) {
                 if (day) {
-                    total_val+=total;
+                    EventDataType hours=m_hours[zd];
+                    total_val+=total*hours;
+                    total_hours+=hours;
                     total_days++;
                 }
                 py=top+height;
@@ -640,12 +643,11 @@ jumpnext:
     }
     if (m_graphtype==GT_BAR) {
         if (m_type.size()>1) {
-            float val=total_val/float(total_days);
+            float val=total_val/float(total_hours);
             a=m_label+"="+QString::number(val,'f',2)+" ";
             GetTextExtent(a,x,y);
             px-=20+x;
             w.renderText(a,px+24,py+1);
-            //
         }
     }
 

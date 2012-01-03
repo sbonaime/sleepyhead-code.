@@ -714,7 +714,6 @@ void MainWindow::on_summaryButton_clicked()
             .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
             .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
             .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
-            html+="<tr><td colspan=6>Note, AHI calcs here are different to overview calcs.. Overview shows a average of the dialy AHI's, this shows combined counts divide by combined hours</td></tr>";
         }
     }
     int oxisize=oximeters.size();

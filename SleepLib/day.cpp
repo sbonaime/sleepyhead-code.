@@ -442,12 +442,12 @@ EventDataType Day::Max(ChannelID code)
 }
 EventDataType Day::cph(ChannelID code)
 {
-    EventDataType sum=0;
+    double sum=0;
     //EventDataType h=0;
     for (int i=0;i<sessions.size();i++) {
         if (!sessions[i]->enabled()) continue;
-        if (!sessions[i]->m_cph.contains(code)) continue;
-        sum+=sessions[i]->cph(code)*sessions[i]->hours();
+        if (!sessions[i]->m_cnt.contains(code)) continue;
+        sum+=sessions[i]->count(code);
         //h+=sessions[i]->hours();
     }
     sum/=hours();
