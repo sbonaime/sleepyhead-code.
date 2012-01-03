@@ -40,5 +40,6 @@
         <file>icons/session-off.png</file>
         <file>icons/session-on.png</file>
         <file>icons/bob-v3.0.png</file>
+        <file>docs/script.js</file>
     </qresource>
 </RCC>

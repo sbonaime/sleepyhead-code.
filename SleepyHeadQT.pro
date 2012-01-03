@@ -185,7 +185,8 @@ OTHER_FILES += \
     docs/countries.txt \
     docs/tz.txt \
     LICENSE.txt \
-    docs/tooltips.css
+    docs/tooltips.css \
+    docs/script.js
 
 
 

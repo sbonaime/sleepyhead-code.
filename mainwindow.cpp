@@ -373,7 +373,8 @@ void MainWindow::on_action_Fullscreen_triggered()
 
 QString htmlHeader()
 {
-//   "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
+
+    //   "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
 //   "a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
     return QString("<html><head>"
 "</head>"
@@ -382,7 +383,6 @@ QString htmlHeader()
 "p,a,td,body { font-size: 14px }"
 "</style>"
 "<link rel='stylesheet' type='text/css' href='qrc:/docs/tooltips.css' />"
-
 "<script type='text/javascript'>"
 "function ChangeColor(tableRow, highLight)"
 "{ tableRow.style.backgroundColor = highLight; }"
@@ -853,6 +853,9 @@ void MainWindow::on_summaryButton_clicked()
                     min=day->settings_min(CPAP_Pressure);
                 }
                 if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (day->machine!=lastmach) || (prelief!=lastpr))  {
+                    if (!lastmach) { // set early.
+                        lastmach=day->machine;
+                    }
                     if (cmode!=MODE_UNKNOWN) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -867,6 +870,7 @@ void MainWindow::on_summaryButton_clicked()
                         rx.maxhi=cmaxhi;
                         rx.prelief=lastpr;
                         rx.prelset=lastprelset;
+                        rx.machine=lastmach;
 
                         if (mode<MODE_BIPAP) {
                             rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
@@ -876,7 +880,7 @@ void MainWindow::on_summaryButton_clicked()
                             rx.per2=p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,first,last);
                         } else {
                             rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
-                            rx.per2=p_profile->calcPercentile(CPAP_IPAPHi,percentile,MT_CPAP,first,last);
+                            rx.per2=p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,first,last);
                         }
                         rx.weighted=float(rx.days)/float(cpapdays)*rx.ahi;
                         rxchange.push_back(rx);
@@ -1036,6 +1040,7 @@ void MainWindow::on_summaryButton_clicked()
         html+=QString("<br/><b>Changes to Prescription Settings</b>");
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
         QString extratxt;
+
         if (cpapmode>=MODE_ASV) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>")
                 .arg(tr("EPAP")).arg(tr("IPAPLo")).arg(tr("IPAPHi")).arg(tr("%1% EPAP").arg(percentile*100.0)).arg(tr("%1% IPAP").arg(percentile*100.0));
@@ -1049,7 +1054,8 @@ void MainWindow::on_summaryButton_clicked()
             extratxt=QString("<td><b>%1</b></td>")
                 .arg(tr("Pressure"));
         }
-        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td>%7</tr>")
+        QString tooltip;
+        html+=QString("<tr title='%8'><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td>%7</tr>")
                   .arg(tr("First"))
                   .arg(tr("Last"))
                   .arg(tr("Days"))
@@ -1070,20 +1076,51 @@ void MainWindow::on_summaryButton_clicked()
             } else if (rx.highlight==4) {
                 color="#ffc0c0";
             } else color="";
+            QString machstr;
+            if (rx.machine->properties.contains(STR_PROP_Brand))
+                machstr+=rx.machine->properties[STR_PROP_Brand];
+            if (rx.machine->properties.contains(STR_PROP_Model)) {
+                 machstr+=" "+rx.machine->properties[STR_PROP_Model];
+            }
+
             if(cpapmode>=MODE_ASV) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
                         .arg(rx.max,0,'f',2).arg(rx.maxhi,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
+                tooltip=tr("%5 %1% EPAP=%2 %3% IPAP %4")
+                        .arg(percentile*100.0)
+                        .arg(rx.per1,0,'f',2)
+                        .arg(percentile*100.0)
+                        .arg(rx.per2,0,'f',2)
+                        .arg(machstr)
+                        ;
             } else if (cpapmode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2).arg(rx.per2,0,'f',2);
+                tooltip=tr("%5 %1% EPAP=%2 %3% IPAP %4")
+                        .arg(percentile*100.0)
+                        .arg(rx.per1,0,'f',2)
+                        .arg(percentile*100.0)
+                        .arg(rx.per2,0,'f',2)
+                        .arg(machstr)
+                        ;
             } else if (cpapmode>MODE_CPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>").arg(rx.max,0,'f',2).arg(rx.per1,0,'f',2);
-            } else extratxt="";
+                tooltip=tr("%3 %1% Pressure=%2")
+                        .arg(percentile*100.0)
+                        .arg(rx.per1,0,'f',2)
+                        .arg(machstr)
+                        ;
+            } else {
+                extratxt="";
+                tooltip=QString("%1")
+                .arg(machstr)
+                ;
+            }
             QString presrel;
             if (rx.prelset>0) {
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
                 presrel+=QString(" x%1").arg(rx.prelset);
             } else presrel="None";
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\");' onmouseout='ChangeColor(this, \""+color+"\");' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#dddddd\"); tooltip.show(\"%11\");' onmouseout='ChangeColor(this, \""+color+"\"); tooltip.hide();' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td>%10</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
@@ -1093,7 +1130,8 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(presrel)
                     .arg(rx.min,0,'f',2)
-                    .arg(extratxt);
+                    .arg(extratxt)
+                    .arg(tooltip);
         }
         html+="</table>";
         html+=QString("<i>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</i><br/>").arg(rxthresh);
@@ -1127,6 +1165,7 @@ void MainWindow::on_summaryButton_clicked()
         html+="</table>";
         html+="</div>";
     }
+    html+="<script type='text/javascript' language='javascript' src='qrc:/docs/script.js'></script>";
     updateFavourites();
     html+=htmlFooter();
     //QWebFrame *frame=ui->summaryView->page()->currentFrame();
@@ -2077,7 +2116,8 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
             sess->m_sph.clear();
             sess->m_avg.clear();
             sess->m_wavg.clear();
-            //sess->m_90p.clear();
+            sess->m_valuesummary.clear();
+            sess->m_timesummary.clear();
             sess->m_firstchan.clear();
             sess->m_lastchan.clear();
             sess->SetChanged(true);
