@@ -97,10 +97,20 @@
           <string>Last Year</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Everything</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Custom</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="dateStartLabel">
         <property name="text">
          <string>Start:</string>
         </property>
@@ -117,7 +127,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="dateEndLabel">
         <property name="text">
          <string>End:</string>
         </property>

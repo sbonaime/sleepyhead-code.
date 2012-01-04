@@ -401,7 +401,7 @@ void Overview::on_dateEnd_dateChanged(const QDate &date)
     qint64 d1=qint64(QDateTime(ui->dateStart->date(),QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
     qint64 d2=qint64(QDateTime(date,QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
-
+    ui->dateStart->setMaximumDate(date);
 }
 
 void Overview::on_dateStart_dateChanged(const QDate &date)
@@ -409,7 +409,7 @@ void Overview::on_dateStart_dateChanged(const QDate &date)
     qint64 d1=qint64(QDateTime(date,QTime(0,10,0),Qt::UTC).toTime_t())*1000L;
     qint64 d2=qint64(QDateTime(ui->dateEnd->date(),QTime(23,0,0),Qt::UTC).toTime_t())*1000L;
     GraphView->SetXBounds(d1,d2);
-
+    ui->dateEnd->setMinimumDate(date);
 }
 
 void Overview::on_toolButton_clicked()
@@ -464,8 +464,26 @@ void Overview::on_printDailyButton_clicked()
 
 void Overview::on_rangeCombo_activated(int index)
 {
+    ui->dateStart->setMinimumDate(PROFILE.FirstDay());
+    ui->dateEnd->setMaximumDate(PROFILE.LastDay());
+
     QDate end=PROFILE.LastDay();
     QDate start;
+    if (index==8) { // Custom
+        ui->dateStartLabel->setEnabled(true);
+        ui->dateEndLabel->setEnabled(true);
+        ui->dateEnd->setEnabled(true);
+        ui->dateStart->setEnabled(true);
+
+        ui->dateStart->setMaximumDate(ui->dateEnd->date());
+        ui->dateEnd->setMinimumDate(ui->dateStart->date());
+        return;
+    }
+    ui->dateEnd->setEnabled(false);
+    ui->dateStart->setEnabled(false);
+    ui->dateStartLabel->setEnabled(false);
+    ui->dateEndLabel->setEnabled(false);
+
     if (index==0) {
         start=end.addDays(-6);
     } else if (index==1) {
@@ -480,12 +498,17 @@ void Overview::on_rangeCombo_activated(int index)
         start=end.addMonths(-6).addDays(1);
     } else if (index==6) {
         start=end.addYears(-1).addDays(1);
+    } else if (index==7) { // Everything
+        start=PROFILE.FirstDay();
     }
     if (start<PROFILE.FirstDay()) start=PROFILE.FirstDay();
     setRange(start,end);
 }
 void Overview::setRange(QDate start, QDate end)
 {
+    ui->dateStart->setMaximumDate(end);
+    ui->dateEnd->setMinimumDate(start);
+
     ui->dateEnd->blockSignals(true);
     ui->dateStart->blockSignals(true);
     ui->dateStart->setDate(start);
