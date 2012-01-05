@@ -560,7 +560,7 @@ void MainWindow::on_summaryButton_clicked()
 
     if (mach.size()==0) {
         html+="<table cellpadding=2 cellspacing=0 border=0 width=100% height=70%>";
-        html+="<tr><td align=center><h1>Please Import Some Data</h1><br/><i>SleepyHead is pretty much useless without it.</i></td></tr></table>";
+        html+="<tr><td align=center><h1>Please Import Some Data</h1><br/><i>SleepyHead is pretty much useless without it.</i><br/>First import can take a few minutes.</td></tr></table>";
         html+=htmlFooter();
         ui->summaryView->setHtml(html);
         return;
@@ -813,7 +813,6 @@ void MainWindow::on_summaryButton_clicked()
         QDate date=lastcpap;
         Day * day;
         bool lastchanged=false;
-        int cnt=0;
         QVector<RXChange> rxchange;
         do {
             day=PROFILE.GetGoodDay(date,MT_CPAP);
@@ -1531,7 +1530,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         return;
     }
 
-    QString username=PROFILE.Get(QString("_{")+QString(UI_STR_UserName)+"}_");
+    QString username=PROFILE.Get(QString("_{")+QString(STR_UI_UserName)+"}_");
 
     bool print_bookmarks=false;
     if (name==STR_TR_Daily) {
@@ -1823,7 +1822,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     if (name==STR_TR_Daily) {
         if (!print_bookmarks) {
             for (int i=0;i<gv->size();i++) {
-                gGraph *g=(*gv)[i];
+                g=(*gv)[i];
                 if (g->isEmpty()) continue;
                 if (!g->visible()) continue;
 
@@ -2251,6 +2250,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
+    Q_UNUSED(event)
     //qDebug() << "Keypress:" << event->key();
 }
 

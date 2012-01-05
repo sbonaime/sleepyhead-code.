@@ -140,7 +140,7 @@ void NewProfile::on_nextButton_clicked()
                 }
             } else {
 
-                prof.Erase(UI_STR_Password);
+                prof.Erase(STR_UI_Password);
             }
 
             profile->user->setGender((Gender)ui->genderCombo->currentIndex());
@@ -246,7 +246,7 @@ void NewProfile::edit(const QString name)
     ui->userNameEdit->setReadOnly(true);
     ui->firstNameEdit->setText(profile->user->firstName());
     ui->lastNameEdit->setText(profile->user->lastName());
-    if (profile->contains(UI_STR_Password) && !profile->p_preferences[UI_STR_Password].toString().isEmpty()) {
+    if (profile->contains(STR_UI_Password) && !profile->p_preferences[STR_UI_Password].toString().isEmpty()) {
         // leave the password box blank..
         QString a="******";
         ui->passwordEdit1->setText(a);

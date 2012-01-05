@@ -399,7 +399,11 @@ Machine *IntellipapLoader::CreateMachine(QString serial,Profile *profile)
     profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial]=serial;
-    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+    m->properties[STR_PROP_DataVersion]=QString::number(intellipap_data_version);
+
+    QString path="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+    m->properties[STR_PROP_Path]=path;
+    m->properties[STR_PROP_BackupPath]=path+"Backup/";
 
     return m;
 }

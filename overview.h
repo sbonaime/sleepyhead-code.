@@ -94,7 +94,7 @@ private slots:
     //! \brief Resets view to currently shown start & end dates
     void on_toolButton_clicked();
 
-    void on_printDailyButton_clicked();
+    //void on_printDailyButton_clicked();
 
     void on_rangeCombo_activated(int index);
 

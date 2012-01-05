@@ -87,6 +87,8 @@ private slots:
 
     void on_maskTypeCombo_activated(int index);
 
+    void on_createSDBackups_toggled(bool checked);
+
 private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();

@@ -12,7 +12,9 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include <algorithm>
-#include <SleepLib/calcs.h>
+
+#include "SleepLib/calcs.h"
+#include "SleepLib/profiles.h"
 
 using namespace std;
 
@@ -23,7 +25,7 @@ const quint16 filetype_data=1;
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
 const quint16 summary_version=11;
-const quint16 events_version=8;
+const quint16 events_version=9;
 
 Session::Session(Machine * m,SessionID session)
 {
@@ -337,26 +339,41 @@ bool Session::LoadSummary(QString filename)
     return true;
 }
 
+const quint16 compress_method=1;
+
 bool Session::StoreEvents(QString filename)
 {
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
-    QDataStream out(&file);
+    QByteArray headerbytes;
+    QDataStream header(&headerbytes,QIODevice::WriteOnly);
+    header.setVersion(QDataStream::Qt_4_6);
+    header.setByteOrder(QDataStream::LittleEndian);
+
+    header << (quint32)magic;      // New Magic Number
+    header << (quint16)events_version; // File Version
+    header << (quint16)filetype_data;  // File type 1 == Event
+    header << (quint32)s_machine->id();// Machine Type
+    header << (quint32)s_session;      // This session's ID
+    header << s_first;
+    header << s_last;
+
+    quint16 compress=0;
+
+    if (p_profile->session->compressSessionData())
+        compress=compress_method;
+
+    header << (quint16)compress;
+
+    header << (quint16)s_machine->GetType();// Machine Type
+
+    QByteArray databytes;
+    QDataStream out(&databytes,QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_6);
     out.setByteOrder(QDataStream::LittleEndian);
 
-    out << (quint32)magic;          // Magic Number
-    out << (quint16)events_version;      // File Version
-    out << (quint16)filetype_data;  // File type 1 == Event
-    out << (quint32)s_machine->id();// Machine ID
-
-    out << (quint32)s_session;      // This session's ID
-    out << s_first;
-    out << s_last;
-
     out << (qint16)eventlist.size(); // Number of event categories
-
 
     QHash<ChannelID,QVector<EventList *> >::iterator i;
 
@@ -386,26 +403,59 @@ bool Session::StoreEvents(QString filename)
         for (int j=0;j<i.value().size();j++) {
             EventList &e=*i.value()[j];
 
-            for (quint32 c=0;c<e.count();c++) {
-                out << e.raw(c);
-            }
+            // Store the raw event list data in EventStoreType (16bit short)
+            EventStoreType *ptr=e.m_data.data();
+            out.writeRawData((char *)ptr,e.count() << 1);
+//            for (quint32 c=0;c<e.count();c++) {
+//                out << *ptr++;//e.raw(c);
+//            }
+            // Store the second field, only if there
             if (e.hasSecondField()) {
-                for (quint32 c=0;c<e.count();c++) {
-                    out << e.raw2(c);
-                }
+                ptr=e.m_data2.data();
+                out.writeRawData((char *)ptr,e.count() << 1);
+//                for (quint32 c=0;c<e.count();c++) {
+//                    out << *ptr++; //e.raw2(c);
+//                }
             }
+            // Store the time delta fields for non-waveform EventLists
             if (e.type()!=EVL_Waveform) {
-                for (quint32 c=0;c<e.count();c++) {
-                    out << e.getTime()[c];
-                }
+                quint32 * tptr=e.m_time.data();
+                out.writeRawData((char *)tptr,e.count() << 2);
+//                for (quint32 c=0;c<e.count();c++) {
+//                    out << *tptr++; //e.getTime()[c];
+//                }
             }
         }
     }
 
+    qint32 datasize=databytes.size();
+
+    // Checksum the _uncompressed_ data
+    quint16 chk=qChecksum(databytes.data(),databytes.size());
+
+    header << datasize;
+    header << chk;
+
+    QByteArray data;
+
+    if (compress>0) {
+        data=qCompress(databytes);
+    } else {
+        data=databytes;
+    }
+
+    file.write(headerbytes);
+    file.write(data);
+    file.close();
     return true;
 }
 bool Session::LoadEvents(QString filename)
 {
+    quint32 t32,magicnum,machid,sessid;
+    quint16 t16,version,type,crc16,machtype,compmethod;
+    quint8 t8;
+    qint32 datasize;
+
     if (filename.isEmpty()) {
         qDebug() << "Session::LoadEvents() Filename is empty";
         return false;
@@ -416,47 +466,67 @@ bool Session::LoadEvents(QString filename)
         qDebug() << "Couldn't open file" << filename;
         return false;
     }
-    QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_4_6);
-    in.setByteOrder(QDataStream::LittleEndian);
 
-    quint32 t32;
-    quint16 t16;
-    quint8 t8;
-    //qint16 i16;
-    qint16 version;
+    QByteArray headerbytes=file.read(42);
 
-    in >> t32;      // Magic Number
-    if (t32!=magic) {
-        qWarning() << "Wrong Magic number in " << filename;
-        return false;
-    }
+    QDataStream header(headerbytes);
+    header.setVersion(QDataStream::Qt_4_6);
+    header.setByteOrder(QDataStream::LittleEndian);
 
-    in >> version;      // File Version
+    bool compressed=true;
+    header >> magicnum;         // Magic Number (quint32)
+    header >> version;          // Version (quint16)
+    header >> type;             // File type (quint16)
+    header >> machid;           // Machine ID (quint32)
+    header >> sessid;           //(quint32)
+    header >> s_first;          //(qint64)
+    header >> s_last;           //(qint64)
 
-    if (version<6) {    // prior to version 6 is too old to deal with
-        qDebug() << "Old File Version";
-        //throw OldDBVersion();
-        //qWarning() << "Old dbversion "<< t16 << "summary file.. Sorry, you need to purge and reimport";
-        return false;
-    }
-
-    in >> t16;      // File Type
-    if (t16!=filetype_data) {
+    if (type!=filetype_data) {
         qDebug() << "Wrong File Type in " << filename;
         return false;
     }
 
-    qint32 ts32;
-    in >> ts32;      // MachineID
-    if (ts32!=s_machine->id()) {
-        qWarning() << "Machine ID does not match in" << filename << " I will try to load anyway in case you know what your doing.";
+    if (magicnum!=magic) {
+         qWarning() << "Wrong Magic number in " << filename;
+         return false;
     }
 
-    in >> t32;      // Sessionid
-    s_session=t32;
-    in >> s_first;
-    in >> s_last;
+    if (version<6) {    // prior to version 6 is too old to deal with
+        qDebug() << "Old File Version, can't open file";
+        return false;
+    }
+
+    if (version<9) {
+        file.seek(32);
+    } else {
+        header >> compmethod;   // Compression Method (quint16)
+        header >> machtype;     // Machine Type (quint16)
+        header >> datasize;     // Size of Uncompressed Data (quint32)
+        header >> crc16;        // CRC16 of Uncompressed Data (quint16)
+    }
+
+    QByteArray databytes,temp=file.readAll();
+    file.close();
+    if (compmethod>0) {
+        databytes=qUncompress(temp);
+    } else {
+        databytes=temp;
+    }
+
+    if (databytes.size()!=datasize) {
+        qDebug() << "File" << filename << "has returned wrong datasize";
+        return false;
+    }
+    quint16 crc=qChecksum(databytes.data(),databytes.size());
+    if (crc!=crc16) {
+        qDebug() << "CRC Doesn't match in" << filename;
+        return false;
+    }
+
+    QDataStream in(databytes);
+    in.setVersion(QDataStream::Qt_4_6);
+    in.setByteOrder(QDataStream::LittleEndian);
 
     qint16 mcsize;
     in >> mcsize;   // number of Machine Code lists
@@ -523,34 +593,39 @@ bool Session::LoadEvents(QString filename)
         size2=sizevec[i];
         for (int j=0;j<size2;j++) {
             EventList &evec=*eventlist[code][j];
-            evec.m_data.reserve(evec.m_count);
-            for (quint32 c=0;c<evec.m_count;c++) {
-                in >> t;
-                evec.m_data.push_back(t);
-            }
+            evec.m_data.resize(evec.m_count);
+            EventStoreType *ptr=evec.m_data.data();
+
+            in.readRawData((char *)ptr, evec.m_count << 1);
+//            for (quint32 c=0;c<evec.m_count;c++) {
+//                in >> t;
+//                *ptr++=t;
+//            }
             if (evec.hasSecondField()) {
-                evec.m_data2.reserve(evec.m_count);
-                for (quint32 c=0;c<evec.m_count;c++) {
-                    in >> t;
-                    evec.m_data2.push_back(t);
-                }
+                evec.m_data2.resize(evec.m_count);
+                ptr=evec.m_data2.data();
+
+                in.readRawData((char *)ptr,evec.m_count << 1);
+//                for (quint32 c=0;c<evec.m_count;c++) {
+//                    in >> t;
+//                    *ptr++=t;
+//                }
             }
             //last=evec.first();
             if (evec.type()!=EVL_Waveform) {
-                evec.m_time.reserve(evec.m_count);
-                for (quint32 c=0;c<evec.m_count;c++) {
-                    in >> x;
-                    //last+=x;
-                    evec.m_time.push_back(x);
-                    //evec.m_time[c]=x;
-                }
+                evec.m_time.resize(evec.m_count);
+                quint32 * tptr=evec.m_time.data();
+                in.readRawData((char *)tptr,evec.m_count << 2);
+//                for (quint32 c=0;c<evec.m_count;c++) {
+//                    in >> x;
+//                    *tptr++=x;
+//                }
             }
         }
     }
-    file.close();
 
     if (version<events_version) {
-        qDebug() << "Upgrading Events file to version" << events_version;
+        qDebug() << "Upgrading Events file" << filename << "to version" << events_version;
         UpdateSummaries();
         StoreEvents(filename);
     }
@@ -619,7 +694,7 @@ void Session::UpdateSummaries()
                 EventDataType gain=el->gain();
                 m_gain[id]=gain;
             }
-            if (!((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)))
+            if (!((id==CPAP_FlowRate) || (id==CPAP_MaskPressureHi) || (id==CPAP_RespEvent) || (id==CPAP_MaskPressure)))
                 updateCountSummary(id);
 
             Min(id);
@@ -627,7 +702,8 @@ void Session::UpdateSummaries()
             count(id);
             last(id);
             first(id);
-            if ((id==CPAP_FlowRate) || (id==CPAP_MaskPressure)) continue;
+            if (((id==CPAP_FlowRate) || (id==CPAP_MaskPressureHi) || (id==CPAP_RespEvent) || (id==CPAP_MaskPressure)))
+                continue;
 
             cph(id);
             sph(id);
@@ -1183,6 +1259,7 @@ EventList * Session::AddEventList(ChannelID code, EventListType et,EventDataType
         //return NULL;
     }
     EventList * el=new EventList(et,gain,offset,min,max,rate,second_field);
+
     eventlist[code].push_back(el);
     //s_machine->registerChannel(chan);
     return el;

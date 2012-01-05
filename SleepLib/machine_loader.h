@@ -11,6 +11,7 @@ License: GPL
 #define MACHINE_LOADER_H
 #include "profiles.h"
 #include "machine.h"
+#include "zlib.h"
 
 /*! \class MachineLoader
     \brief Base class to derive a new Machine importer from
@@ -32,6 +33,8 @@ public:
 
     //! \brief Override to returns the class name of this MachineLoader
     virtual const QString & ClassName()=0;
+
+    bool compressFile(QString inpath, QString outpath="");
 
 
  /*

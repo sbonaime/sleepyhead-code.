@@ -28,6 +28,7 @@ class BoundsError {};
 class OldDBVersion {};
 
 const quint32 magic=0xC73216AB; // Magic number for Sleepyhead Data Files.. Don't touch!
+const quint32 compmagic=0xC73216AC; // Magic number for Compressed Sleepyhead Data Files.. Don't touch!
 
 //const int max_number_event_fields=10;
 // This should probably move somewhere else

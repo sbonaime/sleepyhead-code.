@@ -155,6 +155,7 @@ public:
 protected:
     //! \brief A Vector containing all sessions for this day
     QVector<Session *> sessions;
+    QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     qint64 d_first,d_last;
 private:
     bool d_firstsession;

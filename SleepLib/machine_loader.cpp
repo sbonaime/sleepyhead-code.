@@ -44,6 +44,45 @@ MachineLoader::~MachineLoader()
         delete *m;
     }
 }
+
+bool MachineLoader::compressFile(QString inpath, QString outpath)
+{
+    if (outpath.isEmpty())
+        outpath=inpath+".gz";
+    else if (!outpath.endsWith(".gz")) {
+        outpath+=".gz";
+    }
+
+    QFile f(inpath);
+    if (!f.exists(inpath)) {
+        qDebug() << "compressFile()" << inpath << "does not exist";
+        return false;
+    }
+    qint64 size=f.size();
+    if (!f.open(QFile::ReadOnly)) {
+        qDebug() << "compressFile() Couldn't open" << inpath;
+        return false;
+    }
+    char * buf=new char [size];
+    if (!f.read(buf,size)) {
+        delete buf;
+        qDebug() << "compressFile() Couldn't read all of" << inpath;
+        return false;
+    }
+    f.close();
+    gzFile gz=gzopen(outpath.toAscii(),"wb");
+    gzbuffer(gz,65536*2);
+    if (!gz) {
+        qDebug() << "compressFile() Couldn't open" << outpath <<"for writing";
+        delete buf;
+        return false;
+    }
+    gzwrite(gz,buf,size);
+    gzclose(gz);
+    delete buf;
+    return true;
+}
+
 /*const QString machine_profile_name="MachineList.xml";
 
 void MachineLoader::LoadMachineList()

@@ -409,7 +409,6 @@ int calcAHIGraph(Session *session)
     const qint64 window_size=3600000L;
     const qint64 window_step=30000; // 30 second windows
 
-
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
 

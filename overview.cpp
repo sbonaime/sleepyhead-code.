@@ -430,7 +430,7 @@ void Overview::ResetGraphLayout()
 }
 
 
-void Overview::on_printDailyButton_clicked()
+/*void Overview::on_printDailyButton_clicked()
 {
     qint64 st,et;
     GraphView->GetXBounds(st,et);
@@ -460,7 +460,7 @@ void Overview::on_printDailyButton_clicked()
 
     } else mainwin->Notify("If this was implemented yet, You'd be able to print multiple daily reports right now.");
 
-}
+}*/
 
 void Overview::on_rangeCombo_activated(int index)
 {

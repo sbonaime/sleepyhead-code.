@@ -36,3 +36,8 @@ QString weightString(float kg, UnitSystem us)
     }
     return("Bad UnitSystem");
 }
+
+bool operator <(const ValueCount & a, const ValueCount & b)
+{
+     return a.value < b.value;
+}

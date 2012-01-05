@@ -13,6 +13,7 @@ License: GPL
 #include <QMessageBox>
 #include <QDebug>
 #include <algorithm>
+#include <cmath>
 
 #include "preferences.h"
 #include "profiles.h"
@@ -26,6 +27,8 @@ extern MainWindow * mainwin;
 Preferences *p_pref;
 Preferences *p_layout;
 Profile * p_profile;
+
+
 
 Profile::Profile()
 :Preferences(),is_first_day(true)
@@ -428,7 +431,7 @@ Profile *Create(QString name)
     prof->user->setUserName(name);
     //prof->Set("Realname",realname);
     //if (!password.isEmpty()) prof.user->setPassword(password);
-    prof->Set(STR_GEN_DataFolder,QString("{home}/Profiles/{")+QString(UI_STR_UserName)+QString("}"));
+    prof->Set(STR_GEN_DataFolder,QString("{home}/Profiles/{")+QString(STR_UI_UserName)+QString("}"));
 
     Machine *m=new Machine(prof,0);
     m->SetClass("Journal");
@@ -503,80 +506,6 @@ void Scan()
 
 
 } // namespace Profiles
-
-// DoctorInfo Strings
-const char * DI_STR_Name="DoctorName";
-const char * DI_STR_Phone="DoctorPhone";
-const char * DI_STR_Email="DoctorEmail";
-const char * DI_STR_Practice="DoctorPractice";
-const char * DI_STR_Address="DoctorAddress";
-const char * DI_STR_PatientID="DoctorPatientID";
-
-// UserInfo Strings
-const char * UI_STR_DOB="DOB";
-const char * UI_STR_FirstName="FirstName";
-const char * UI_STR_LastName="LastName";
-const char * UI_STR_UserName="UserName";
-const char * UI_STR_Password="Password";
-const char * UI_STR_Address="Address";
-const char * UI_STR_Phone="Phone";
-const char * UI_STR_EmailAddress="EmailAddress";
-const char * UI_STR_Country="Country";
-const char * UI_STR_Height="Height";
-const char * UI_STR_Gender="Gender";
-const char * UI_STR_TimeZone="TimeZone";
-const char * UI_STR_Language="Language";
-const char * UI_STR_DST="DST";
-
-// OxiSettings Strings
-const char * OS_STR_EnableOximetry="EnableOximetry";
-const char * OS_STR_SyncOximetry="SyncOximetry";
-const char * OS_STR_OximeterType="OximeterType";
-const char * OS_STR_OxiDiscardThreshold="OxiDiscardThreshold";
-const char * OS_STR_SPO2DropDuration="SPO2DropDuration";
-const char * OS_STR_SPO2DropPercentage="SPO2DropPercentage";
-const char * OS_STR_PulseChangeDuration="PulseChangeDuration";
-const char * OS_STR_PulseChangeBPM="PulseChangeBPM";
-
-// CPAPSettings Strings
-const char * CS_STR_ComplianceHours="ComplianceHours";
-const char * CS_STR_ShowCompliance="ShowCompliance";
-const char * CS_STR_ShowLeaksMode="ShowLeaksMode";
-const char * CS_STR_MaskStartDate="MaskStartDate";
-const char * CS_STR_MaskDescription="MaskDescription";
-const char * CS_STR_MaskType="MaskType";
-const char * CS_STR_PrescribedMode="CPAPPrescribedMode";
-const char * CS_STR_PrescribedMinPressure="CPAPPrescribedMinPressure";
-const char * CS_STR_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
-const char * CS_STR_UntreatedAHI="UntreatedAHI";
-const char * CS_STR_Notes="CPAPNotes";
-const char * CS_STR_DateDiagnosed="DateDiagnosed";
-
-// ImportSettings Strings
-const char * IS_STR_DaySplitTime="DaySplitTime";
-const char * IS_STR_CacheSessions="MemoryHog";
-const char * IS_STR_CombineCloseSessions="CombineCloserSessions";
-const char * IS_STR_IgnoreShorterSessions="IgnoreShorterSessions";
-const char * IS_STR_Multithreading="EnableMultithreading";
-const char * IS_STR_TrashDayCache="TrashDayCache";
-const char * IS_STR_ShowSerialNumbers="ShowSerialNumbers";
-
-// AppearanceSettings Strings
-const char * AS_STR_GraphHeight="GraphHeight";
-const char * AS_STR_AntiAliasing="UseAntiAliasing";
-const char * AS_STR_GraphSnapshots="EnableGraphSnapshots";
-const char * AS_STR_Animations="AnimationsAndTransitions";
-const char * AS_STR_SquareWave="SquareWavePlots";
-const char * AS_STR_OverlayType="OverlayType";
-
-// UserSettings Strings
-const char * US_STR_UnitSystem="UnitSystem";
-const char * US_STR_EventWindowSize="EventWindowSize";
-const char * US_STR_SkipEmptyDays="SkipEmptyDays";
-const char * US_STR_RebuildCache="RebuildCache";
-const char * US_STR_ShowDebug="ShowDebug";
-const char * US_STR_LinkGroups="LinkGroups";
-const char * US_STR_CalculateRDI="CalculateRDI";
 
 int Profile::countDays(MachineType mt, QDate start, QDate end)
 {
@@ -778,17 +707,14 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     QDate date=start;
 
-    // This is one messy function.. It requires all data to be loaded.. :(
-
-    QHash<EventStoreType,EventStoreType> summary;
-    QHash<EventStoreType,EventStoreType>::iterator sumi;
-    QVector<EventDataType> array;
+    QMap<EventDataType, int> wmap;
 
     QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
     EventDataType val,gain;
     bool setgain=false;
+    EventDataType weight,value;
 
-    //double val=0,tmp,hours=0;
+    int SN=0;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
@@ -800,81 +726,86 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                     Session *sess=*s;
                     gain=sess->m_gain[code];
                     if (!gain) gain=1;
-                    setgain=true;
                     vsi=sess->m_valuesummary.find(code);
                     if (vsi==sess->m_valuesummary.end()) continue;
 
                     QHash<EventStoreType, EventStoreType> & vsum=vsi.value();
 
                     for (QHash<EventStoreType, EventStoreType>::iterator k=vsum.begin();k!=vsum.end();k++) {
-                        for (int z=0;z<k.value();z++) {
-                            val=k.key();
-                            val*=gain;
+                        weight=k.value();
+                        value=EventDataType(k.key())*gain;
 
-                            array.push_back(val);
+                        SN+=weight;
+                        if (wmap.contains(value)) {
+                            wmap[value]+=weight;
+                        } else  {
+                            wmap[value]=weight;
                         }
-                        /*sumi=summary.find(k.key());
-                        if (sumi==summary.end()) summary[k.key()]=k.value();
-                        else {
-                            sumi.value()+=k.value();
-                        }*/
                     }
-                    /*QHash<ChannelID,QVector<EventList *> >::iterator el=(*s)->eventlist.find(code);
-                    if (el==(*s)->eventlist.end()) continue;
-                    for (int j=0;j<el.value().size();j++) {
-                        EventList & e=*el.value()[j];
-                        for (unsigned k=0;k<e.count();k++) {
-                            array.push_back(e.data(k));
-                        }
-                    }*/
                 }
             }
         }
         date=date.addDays(1);
     } while (date<=end);
-//    for (QHash<EventStoreType, EventStoreType>::iterator k=summary.begin();k!=summary.end();k++) {
-//        for (int i=0;i<k.value();i++)  {
-//            array.push_back(k.key());
-//        }
-//    }
+    QVector<ValueCount> valcnt;
 
-    /*if (array.size()==0) return 0;
-    qSort(array);
+    // Build sorted list of value/counts
+    for (QMap<EventDataType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
+        ValueCount vc;
+        vc.value=n.key();
+        vc.count=n.value();
+        vc.p=0;
+        valcnt.push_back(vc);
+    }
+    // sort by weight, then value
+    qSort(valcnt);
 
+    //double SN=100.0/double(N); // 100% / overall sum
+    double p=100.0*percent;
 
-    int idx=array.size()*percent;
-    if (idx>array.size()-1) idx=array.size()-1;
-    return array[idx]; */
+    double nth=double(SN)*percent; // index of the position in the unweighted set would be
+    double nthi=floor(nth);
 
-    QVector<EventDataType>::iterator first=array.begin();
-    QVector<EventDataType>::iterator last=array.end();
-    QVector<EventDataType>::iterator middle = first + int((last-first) * percent);
-    std::nth_element(first,middle,last);
-    val=*middle;
+    int sum1=0,sum2=0;
+    int w1,w2=0;
+    EventDataType v1,v2;
 
-    return val;
-//    int size=array.size();
-//    if (!size)
-//        return 0;
-//    size--;
-//    qSort(array);
-//    int p=EventDataType(size)*percent;
-//    float p2=EventDataType(size)*percent;
-//    float diff=p2-p;
-//    val=array[p];
-//    if (diff>0) {
-//        int s=p+1;
-//        if (s>size-1) s=size-1;
-//        EventDataType v2=array[s];
-//        EventDataType v3=v2-val;
-//        if (v3>0) {
-//            val+=v3*diff;
-//        }
+    int N=valcnt.size();
+    int k=0;
 
-//    }
+    for (k=0;k < N;k++) {
+        v1=valcnt[k].value;
+        w1=valcnt[k].count;
+        sum1+=w1;
 
-//    return val;
+        if (sum1 > nthi) {
+            return v1;
+        }
+        if (sum1 == nthi){
+            break; // boundary condition
+        }
+    }
+    if (k>=N)
+        return v1;
 
+    v2=valcnt[k+1].value;
+    w2=valcnt[k+1].count;
+    sum2=sum1+w2;
+    // value lies between v1 and v2
+
+    double px=100.0/double(SN); // Percentile represented by one full value
+
+    // calculate percentile ranks
+    double p1=px * (double(sum1)-(double(w1)/2.0));
+    double p2=px * (double(sum2)-(double(w2)/2.0));
+
+    // calculate linear interpolation
+    double v=v1 + ((p-p1)/(p2-p1)) * (v2-v1);
+
+    //  p1.....p.............p2
+    //  37     55            70
+
+    return v;
 }
 
 QDate Profile::FirstDay(MachineType mt)
@@ -929,3 +860,81 @@ QDate Profile::LastGoodDay(MachineType mt)
     } while (d>=f);
     return f; //m_first;
 }
+
+
+// DoctorInfo Strings
+const char * STR_DI_Name="DoctorName";
+const char * STR_DI_Phone="DoctorPhone";
+const char * STR_DI_Email="DoctorEmail";
+const char * STR_DI_Practice="DoctorPractice";
+const char * STR_DI_Address="DoctorAddress";
+const char * STR_DI_PatientID="DoctorPatientID";
+
+// UserInfo Strings
+const char * STR_UI_DOB="DOB";
+const char * STR_UI_FirstName="FirstName";
+const char * STR_UI_LastName="LastName";
+const char * STR_UI_UserName="UserName";
+const char * STR_UI_Password="Password";
+const char * STR_UI_Address="Address";
+const char * STR_UI_Phone="Phone";
+const char * STR_UI_EmailAddress="EmailAddress";
+const char * STR_UI_Country="Country";
+const char * STR_UI_Height="Height";
+const char * STR_UI_Gender="Gender";
+const char * STR_UI_TimeZone="TimeZone";
+const char * STR_UI_Language="Language";
+const char * STR_UI_DST="DST";
+
+// OxiSettings Strings
+const char * STR_OS_EnableOximetry="EnableOximetry";
+const char * STR_OS_SyncOximetry="SyncOximetry";
+const char * STR_OS_OximeterType="OximeterType";
+const char * STR_OS_OxiDiscardThreshold="OxiDiscardThreshold";
+const char * STR_OS_SPO2DropDuration="SPO2DropDuration";
+const char * STR_OS_SPO2DropPercentage="SPO2DropPercentage";
+const char * STR_OS_PulseChangeDuration="PulseChangeDuration";
+const char * STR_OS_PulseChangeBPM="PulseChangeBPM";
+
+// CPAPSettings Strings
+const char * STR_CS_ComplianceHours="ComplianceHours";
+const char * STR_CS_ShowCompliance="ShowCompliance";
+const char * STR_CS_ShowLeaksMode="ShowLeaksMode";
+const char * STR_CS_MaskStartDate="MaskStartDate";
+const char * STR_CS_MaskDescription="MaskDescription";
+const char * STR_CS_MaskType="MaskType";
+const char * STR_CS_PrescribedMode="CPAPPrescribedMode";
+const char * STR_CS_PrescribedMinPressure="CPAPPrescribedMinPressure";
+const char * STR_CS_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
+const char * STR_CS_UntreatedAHI="UntreatedAHI";
+const char * STR_CS_Notes="CPAPNotes";
+const char * STR_CS_DateDiagnosed="DateDiagnosed";
+
+// ImportSettings Strings
+const char * STR_IS_DaySplitTime="DaySplitTime";
+const char * STR_IS_CacheSessions="MemoryHog";
+const char * STR_IS_CombineCloseSessions="CombineCloserSessions";
+const char * STR_IS_IgnoreShorterSessions="IgnoreShorterSessions";
+const char * STR_IS_Multithreading="EnableMultithreading";
+const char * STR_IS_BackupCardData="BackupCardData";
+const char * STR_IS_CompressBackupData="CompressBackupData";
+const char * STR_IS_CompressSessionData="CompressSessionData";
+
+// AppearanceSettings Strings
+const char * STR_AS_GraphHeight="GraphHeight";
+const char * STR_AS_AntiAliasing="UseAntiAliasing";
+const char * STR_AS_GraphSnapshots="EnableGraphSnapshots";
+const char * STR_AS_Animations="AnimationsAndTransitions";
+const char * STR_AS_SquareWave="SquareWavePlots";
+const char * STR_AS_OverlayType="OverlayType";
+
+// UserSettings Strings
+const char * STR_US_UnitSystem="UnitSystem";
+const char * STR_US_EventWindowSize="EventWindowSize";
+const char * STR_US_SkipEmptyDays="SkipEmptyDays";
+const char * STR_US_RebuildCache="RebuildCache";
+const char * STR_US_ShowDebug="ShowDebug";
+const char * STR_US_LinkGroups="LinkGroups";
+const char * STR_US_CalculateRDI="CalculateRDI";
+const char * STR_US_ShowSerialNumbers="ShowSerialNumbers";
+

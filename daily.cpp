@@ -423,15 +423,17 @@ void Daily::ReloadGraphs()
 {
     ui->splitter->setVisible(true);
     QDate d;
+
     if (previous_date.isValid()) {
         d=previous_date;
-        Unload(d);
-    } //else
+//        Unload(d);
+    }
     d=PROFILE.LastDay();
     if (!d.isValid()) {
         d=ui->calendar->selectedDate();
     }
     on_calendar_currentPageChanged(d.year(),d.month());
+    // this fires a signal which unloads the old and loads the new
     ui->calendar->setSelectedDate(d);
     //Load(d);
 }
@@ -582,15 +584,21 @@ void Daily::LoadDate(QDate date)
 
 void Daily::on_calendar_selectionChanged()
 {
-    this->setCursor(Qt::BusyCursor);
+    QTime time;
+    time_t unload_time, load_time, other_time;
+    time.start();
 
+    this->setCursor(Qt::BusyCursor);
     if (previous_date.isValid()) {
        // GraphView->fadeOut();
         Unload(previous_date);
     }
+    unload_time=time.restart();
     //bool fadedir=previous_date < ui->calendar->selectedDate();
     ZombieMeterMoved=false;
     Load(ui->calendar->selectedDate());
+    load_time=time.restart();
+
     //GraphView->fadeIn(fadedir);
     GraphView->redraw();
     ui->calButton->setText(ui->calendar->selectedDate().toString(Qt::TextDate));
@@ -607,6 +615,9 @@ void Daily::on_calendar_selectionChanged()
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
     this->setCursor(Qt::ArrowCursor);
+    other_time=time.restart();
+
+    qDebug() << "Page change time (in ms): Unload ="<<unload_time<<"Load =" << load_time << "Other =" << other_time;
 }
 void Daily::ResetGraphLayout()
 {
@@ -760,7 +771,7 @@ void Daily::Load(QDate date)
         if (cpap->machine->properties.find(STR_PROP_SubModel)!=cpap->machine->properties.end())
             submodel=" <br/>"+cpap->machine->properties[STR_PROP_SubModel];
         html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties[STR_PROP_Brand]+"</b> <br>"+cpap->machine->properties[STR_PROP_Model]+" "+cpap->machine->properties[STR_PROP_ModelNumber]+submodel+"</td></tr>\n";
-        if (PROFILE.session->showSerialNumbers()) {
+        if (PROFILE.general->showSerialNumbers()) {
             html+="<tr><td colspan=4 align=center>"+cpap->machine->properties[STR_PROP_Serial]+"</td></tr>\n";
         }
         CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);

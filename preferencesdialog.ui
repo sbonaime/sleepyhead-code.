@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -50,10 +50,10 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <property name="spacing">
-        <number>6</number>
+        <number>4</number>
        </property>
        <property name="margin">
-        <number>5</number>
+        <number>4</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_6">
@@ -62,7 +62,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <property name="spacing">
-           <number>0</number>
+           <number>4</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -259,6 +259,16 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="cacheSessionData">
+              <property name="toolTip">
+               <string>Keep session data in memory to speed up revisiting days.</string>
+              </property>
+              <property name="text">
+               <string>Cache Session Data (uses more system memory)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -277,197 +287,72 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="customEventGroupbox">
+        <widget class="QGroupBox" name="groupBox_7">
          <property name="title">
-          <string>Custom Event Flagging</string>
+          <string>Session Storage Options</string>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_9">
           <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
            <number>4</number>
           </property>
+          <property name="topMargin">
+           <number>9</number>
+          </property>
           <property name="rightMargin">
-           <number>0</number>
+           <number>4</number>
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>4</number>
           </property>
           <property name="spacing">
            <number>4</number>
           </property>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="apneaDuration">
-            <property name="suffix">
-             <string>s</string>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>10.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="value">
-             <double>10.000000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="label_34">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QCheckBox" name="createSDBackups">
             <property name="text">
-             <string>Apnea</string>
+             <string>Create SD Card Backups during Import (especially important for ResMed users)</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_38">
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="compressSessionData">
             <property name="text">
-             <string>Duration</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QLabel" name="label_35">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Flow Restriction</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="4">
-           <widget class="QDoubleSpinBox" name="hypopneaFlowRestriction">
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="value">
-             <double>40.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="hypopneaDuration">
-            <property name="suffix">
-             <string>s</string>
-            </property>
-            <property name="value">
-             <double>10.000000000000000</double>
+             <string>Compress Session Data (slower, but makes SleepyHead data smaller)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="label_37">
+           <widget class="QCheckBox" name="compressSDBackups">
             <property name="text">
-             <string>Hypopnea</string>
+             <string>Compress SD Card Backups (slower, but makes backups smaller)</string>
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="ahiGraphGroupbox">
-         <property name="title">
-          <string>AHI/Hour Graph Settings</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>4</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="horizontalSpacing">
-           <number>4</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>0</number>
-          </property>
           <item row="0" column="0">
-           <widget class="QLabel" name="label_36">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QLabel" name="label_32">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
             </property>
             <property name="text">
-             <string>Window Size</string>
+             <string>The following options affect the amount of disk space SleepyHead uses, and all have an effect on how long import takes. This will only really be noticeable on first import.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="ahiGraphWindowSize">
-            <property name="suffix">
-             <string> minutes</string>
-            </property>
-            <property name="value">
-             <number>60</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="ahiGraphZeroReset">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_41">
             <property name="text">
-             <string>Reset to zero after each window</string>
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Note: &lt;span style=&quot; font-style:italic;&quot;&gt;Compression options don't automatically recompress already saved data.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
-          </item>
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
@@ -487,111 +372,16 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tabOther">
+     <widget class="QWidget" name="tabCPAP">
       <attribute name="title">
-       <string>Other</string>
+       <string>&amp;CPAP</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_13">
+      <layout class="QHBoxLayout" name="horizontalLayout_15">
        <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
         <number>4</number>
        </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>4</number>
-       </property>
-       <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Import Locations</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>4</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QListView" name="importListWidget">
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QWidget" name="widget" native="true">
-            <layout class="QVBoxLayout" name="verticalLayout_9">
-             <item>
-              <widget class="QPushButton" name="addImportLocation">
-               <property name="text">
-                <string>Add</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="removeImportLocation">
-               <property name="text">
-                <string>Remove</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="maskTab">
-      <attribute name="title">
-       <string>&amp;Mask</string>
-      </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_14">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>2</number>
-       </property>
-       <property name="topMargin">
-        <number>2</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>2</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_5">
@@ -771,52 +561,257 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string/>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>2</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_32">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="text">
-             <string>Hmmm... Empty Space
-Mask History could go here one day
-
-For now a reminder for PRS1 Users
-The lower leak does not yet show unintentional 
-leaks. It currently showns the leak line 
-subtracted from the 0% percentile 
-(aka the minimum value)
-
-&lt;--- None of this data is being used yet!
-
-To solve this properly requires some fairly 
-complex forumulae derived from the 
-Mask Leak Profiles
-(Believe it or not, I am not a maths geek)</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="AddRERAtoAHI">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Use RDI instead of  AHI (PRS1 only)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="complianceGroupbox">
+           <property name="title">
+            <string>Show Compliance</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <property name="margin">
+             <number>4</number>
+            </property>
+            <property name="spacing">
+             <number>4</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="complianceHours">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Regard days with under this usage as &quot;incompliant&quot;.</string>
+              </property>
+              <property name="suffix">
+               <string> hours</string>
+              </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <double>8.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>4.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_39">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>as over</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_40">
+              <property name="text">
+               <string>of usage per night</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="customEventGroupbox">
+           <property name="title">
+            <string>Custom Event Flagging</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_38">
+              <property name="text">
+               <string>Duration</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_35">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Flow Restriction</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_34">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Apnea</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="apneaDuration">
+              <property name="suffix">
+               <string>s</string>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_37">
+              <property name="text">
+               <string>Hypopnea</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="hypopneaDuration">
+              <property name="suffix">
+               <string>s</string>
+              </property>
+              <property name="value">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QDoubleSpinBox" name="hypopneaFlowRestriction">
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="value">
+               <double>40.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="ahiGraphGroupbox">
+           <property name="title">
+            <string>AHI/Hour Graph Settings</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_36">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Window</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="ahiGraphWindowSize">
+              <property name="suffix">
+               <string> minutes</string>
+              </property>
+              <property name="value">
+               <number>60</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QCheckBox" name="ahiGraphZeroReset">
+              <property name="text">
+               <string>Zero Reset</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -825,10 +820,25 @@ Mask Leak Profiles
        <string>&amp;Events</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>This doesn't save yet...</string>
+          <string>Not entirely sure if this will get to live or not..</string>
          </property>
         </widget>
        </item>
@@ -926,7 +936,7 @@ Mask Leak Profiles
           <item>
            <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>Please Note: Graph visibility also depends on machine availability.</string>
+             <string>Double click on the (Y-axis) min/max values to edit them</string>
             </property>
            </widget>
           </item>
@@ -940,6 +950,9 @@ Mask Leak Profiles
        <string>&amp;Oximetry</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <property name="margin">
         <number>2</number>
        </property>
@@ -1169,6 +1182,12 @@ p, li { white-space: pre-wrap; }
        <string>&amp;General</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
@@ -1181,7 +1200,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing">
            <number>4</number>
           </property>
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QCheckBox" name="skipLoginScreen">
             <property name="toolTip">
              <string>Bypass the login screen and load the most recent User Profile</string>
@@ -1191,115 +1210,20 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="enableMultithreading">
-            <property name="toolTip">
-             <string>Allow use of multiple CPU cores where available to improve performance. May cause problems.</string>
-            </property>
-            <property name="text">
-             <string>Enable Multithreading</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QCheckBox" name="skipEmptyDays">
             <property name="text">
              <string>Skip over Empty Days</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="cacheSessionData">
-            <property name="toolTip">
-             <string>Keep session data in memory to speed up revisiting days.</string>
-            </property>
-            <property name="text">
-             <string>Cache Session Data</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="1">
-           <widget class="QCheckBox" name="enableGraphSnapshots">
+           <widget class="QCheckBox" name="enableMultithreading">
             <property name="toolTip">
-             <string>Allows graphs to be &quot;screenshotted&quot; for display purposes.
-The Event Breakdown PIE chart uses this method, as does
-the printing code.
-Unfortunately some older computers/versions of Qt can cause
-this application to be unstable with this feature enabled.</string>
+             <string>Allow use of multiple CPU cores where available to improve performance. May cause problems.</string>
             </property>
             <property name="text">
-             <string>Enable event breakdown pie chart</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QCheckBox" name="AddRERAtoAHI">
-            <property name="text">
-             <string>Use RDI instead of  AHI (PRS1 only)</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="complianceGroupbox">
-         <property name="title">
-          <string>Show Compliance</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <property name="margin">
-           <number>4</number>
-          </property>
-          <property name="spacing">
-           <number>4</number>
-          </property>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="complianceHours">
-            <property name="toolTip">
-             <string>Regard days with under this usage as &quot;incompliant&quot;.</string>
-            </property>
-            <property name="suffix">
-             <string> hours</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>8.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>4.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_39">
-            <property name="text">
-             <string>Define compliance as over</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_40">
-            <property name="text">
-             <string>of usage per night</string>
+             <string>Enable Multithreading</string>
             </property>
            </widget>
           </item>
@@ -1324,6 +1248,70 @@ this application to be unstable with this feature enabled.</string>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Import Locations</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QListView" name="importListWidget">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget" native="true">
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QPushButton" name="addImportLocation">
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="removeImportLocation">
+               <property name="text">
+                <string>Remove</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -1617,6 +1605,20 @@ this application to be unstable with this feature enabled.</string>
             <widget class="QCheckBox" name="useSquareWavePlots">
              <property name="text">
               <string>Square Wave Plots</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="enableGraphSnapshots">
+             <property name="toolTip">
+              <string>Allows graphs to be &quot;screenshotted&quot; for display purposes.
+The Event Breakdown PIE chart uses this method, as does
+the printing code.
+Unfortunately some older computers/versions of Qt can cause
+this application to be unstable with this feature enabled.</string>
+             </property>
+             <property name="text">
+              <string>Show event breakdown pie chart</string>
              </property>
             </widget>
            </item>

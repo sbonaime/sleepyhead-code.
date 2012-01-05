@@ -324,11 +324,11 @@ Machine *CMS50Loader::CreateMachine(Profile *profile)
     m->SetClass(cms50_class_name);
     m->properties[STR_PROP_Brand]="Contec";
     m->properties[STR_PROP_Model]="CMS50X";
-    QString a;
-    a.sprintf("%i",cms50_data_version);
-    m->properties[STR_PROP_DataVersion]=a;
+    m->properties[STR_PROP_DataVersion]=QString::number(cms50_data_version);
+
     profile->AddMachine(m);
-    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+m->hexid()+"/";
+    QString path="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+m->hexid()+"/";
+    m->properties[STR_PROP_Path]=path;
 
     return m;
 }

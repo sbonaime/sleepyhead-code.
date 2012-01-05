@@ -427,6 +427,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (!m_hours.contains(zd))
                 goto jumpnext;
                 //continue;
+
             hours=m_hours[zd];
 
             int x1=px;
@@ -473,12 +474,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         outlines->add(x1,py,x2,py,x2,py,x2,py-h);
                     } // if (bar
                     //py-=h;
-                    totalvalues[0]+=tmp;
+                    totalvalues[0]+=hours*tmp;
                 }
-                totalcounts[0]++;
+                totalcounts[0]+=hours;
                 totalvalues[1]+=j;
                 totalcounts[1]++;
                 total_val+=hours;
+                total_hours+=hours;
                 total_days++;
             } else {
                 if (!d.value().contains(0)) goto jumpnext;

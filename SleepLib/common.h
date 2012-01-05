@@ -6,10 +6,28 @@
 
 enum UnitSystem { US_Undefined, US_Metric, US_Archiac };
 
+typedef float EventDataType;
+
+struct ValueCount {
+    ValueCount() { value=0; count=0; p=0; }
+    ValueCount(const ValueCount & copy) {
+        value=copy.value;
+        count=copy.count;
+        p=copy.p;
+    }
+    EventDataType value;
+    int count;
+    double p;
+};
+
+// Primarily sort by value
+bool operator <(const ValueCount & a, const ValueCount & b);
+
 const float ounce_convert=28.3495231; // grams
 const float pound_convert=ounce_convert*16;
 
 QString weightString(float kg, UnitSystem us=US_Undefined);
+
 
 const QString STR_UNIT_CM=QObject::tr("cm");
 const QString STR_UNIT_INCH=QObject::tr("\"");
@@ -40,6 +58,7 @@ const QString STR_PROP_SubModel="SubModel";
 const QString STR_PROP_Serial="Serial";
 const QString STR_PROP_DataVersion="DataVersion";
 const QString STR_PROP_Path="Path";
+const QString STR_PROP_BackupPath="BackupPath";
 const QString STR_PROP_LastImported="LastImported";
 
 const QString STR_MACH_ResMed="ResMed";

@@ -138,6 +138,14 @@ public:
 
     //! \brief Returns the time storage vector (only used in EVL_Event types)
     QVector<quint32> & getTime() { return m_time; }
+
+    // Don't mess with these without considering the consequences
+    void rawDataResize(quint32 i) { m_data.resize(i); m_count=i; }
+    void rawData2Resize(quint32 i) { m_data2.resize(i); m_count=i; }
+    void rawTimeResize(quint32 i) { m_time.resize(i); m_count=i; }
+    EventStoreType * rawData() { return m_data.data(); }
+    EventStoreType * rawData2() { return m_data2.data(); }
+    quint32 * rawTime() { return m_time.data(); }
 protected:
 
     //! \brief The time storage vector, in 32bits delta format, added as offsets to m_first

@@ -6,6 +6,7 @@
 
 #include "day.h"
 #include "profiles.h"
+#include <cmath>
 #include <algorithm>
 
 Day::Day(Machine *m)
@@ -149,60 +150,110 @@ EventDataType Day::settings_wavg(ChannelID code)
 }
 
 
-
-
-
-
 EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 {
-    // Cache this calculation
-    //if (percentile>=1) return 0; // probably better to crash and burn.
+//    QHash<ChannelID, QHash<EventDataType, EventDataType> >::iterator pi;
+//    pi=perc_cache.find(code);
+//    if (pi!=perc_cache.end()) {
+//        QHash<EventDataType, EventDataType> & hsh=pi.value();
+//        QHash<EventDataType, EventDataType>::iterator hi=hsh.find(
+//        if (hi!=pi.value().end()) {
+//            return hi.value();
+//        }
+//    }
+    // Cache this calculation?
 
     QVector<Session *>::iterator s;
 
-    // Don't assume sessions are in order.
-    QVector<EventDataType> ar;
+    QMap<EventDataType, int> wmap;
+
+    int SN=0;
+
+    // First Calculate count of all events
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
         Session & sess=*(*s);
         QHash<ChannelID,QHash<EventStoreType, EventStoreType> > ::iterator ei=sess.m_valuesummary.find(code);
         if (ei==sess.m_valuesummary.end()) continue;
+
         EventDataType gain=sess.m_gain[code];
+        EventDataType weight,value;
         for (QHash<EventStoreType, EventStoreType>::iterator i=ei.value().begin();i!=ei.value().end();i++) {
-            for (int j=0;j<i.value();j++) {
-                ar.push_back(float(i.key())*gain);
+            weight=i.value();
+            value=EventDataType(i.key())*gain;
+
+            SN+=weight;
+            if (wmap.contains(value)) {
+                wmap[value]+=weight;
+            } else  {
+                wmap[value]=weight;
             }
         }
     }
-    int size=ar.size();
-    if (!size)
-        return 0;
-    size--;
 
-    QVector<EventDataType>::iterator first=ar.begin();
-    QVector<EventDataType>::iterator last=ar.end();
-    QVector<EventDataType>::iterator middle = first + int((last-first) * percentile);
-    std::nth_element(first,middle,last);
-    EventDataType val=*middle;
+    QVector<ValueCount> valcnt;
 
-//    qSort(ar);
-//    int p=EventDataType(size)*percentile;
-//    float p2=EventDataType(size)*percentile;
-//    float diff=p2-p;
-//    EventDataType val=ar[p];
-//    if (diff>0) {
-//        int s=p+1;
-//        if (s>size-1) s=size-1;
-//        EventDataType v2=ar[s];
-//        EventDataType v3=v2-val;
-//        if (v3>0) {
-//            val+=v3*diff;
-//        }
+    // Build sorted list of value/counts
+    for (QMap<EventDataType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
+        ValueCount vc;
+        vc.value=n.key();
+        vc.count=n.value();
+        vc.p=0;
+        valcnt.push_back(vc);
+    }
+    // sort by weight, then value
+    qSort(valcnt);
 
-//    }
+    //double SN=100.0/double(N); // 100% / overall sum
+    double p=100.0*percentile;
 
-    return val;
+    double nth=double(SN)*percentile; // index of the position in the unweighted set would be
+    double nthi=floor(nth);
+
+    int sum1=0,sum2=0;
+    int w1,w2=0;
+    EventDataType v1,v2;
+
+    int N=valcnt.size();
+    int k=0;
+
+    for (k=0;k < N;k++) {
+        v1=valcnt[k].value;
+        w1=valcnt[k].count;
+        sum1+=w1;
+
+        if (sum1 > nthi) {
+            return v1;
+        }
+        if (sum1 == nthi){
+            break; // boundary condition
+        }
+    }
+    if (k>=N)
+        return v1;
+
+    v2=valcnt[k+1].value;
+    w2=valcnt[k+1].count;
+    sum2=sum1+w2;
+    // value lies between v1 and v2
+
+    double px=100.0/double(SN); // Percentile represented by one full value
+
+    // calculate percentile ranks
+    double p1=px * (double(sum1)-(double(w1)/2.0));
+    double p2=px * (double(sum2)-(double(w2)/2.0));
+
+    // calculate linear interpolation
+    double v=v1 + ((p-p1)/(p2-p1)) * (v2-v1);
+
+    return v;
+
+
+//                p1.....p.............p2
+//                37     55            70
+
+
 }
 
 EventDataType Day::p90(ChannelID code)

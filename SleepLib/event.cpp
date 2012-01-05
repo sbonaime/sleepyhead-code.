@@ -22,6 +22,8 @@ EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, 
         m_update_minmax=false;
     }
 
+    m_data.reserve(2048);
+
     // Reserve a few to increase performace??
 }
 EventList::~EventList()
@@ -112,17 +114,33 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
     //double rate=duration/recs;
 
     //realloc buffers.
+    int r=m_count;
     m_count+=recs;
-    m_data.reserve(m_count);
+    m_data.resize(m_count);
 
+    EventStoreType *edata=m_data.data();
+
+    EventStoreType raw;
     EventDataType val;
-    for (int i=0;i<recs;i++) {
-        val=EventDataType(data[i])*m_gain+m_offset;
-        if (m_update_minmax) {
+    qint16 * sp=data;
+    EventStoreType * dp=&edata[r];
+
+    if (m_update_minmax) {
+        for (int i=0;i<recs;i++) {
+            raw=*sp++;
+            val=EventDataType(raw)*m_gain+m_offset;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
+            *dp=raw;
+            dp++;
         }
-        m_data.push_back(data[i]);
+    } else {
+        for (int i=0;i<recs;i++) {
+            raw=*(sp++);
+            val=EventDataType(raw)*m_gain+m_offset;
+            *dp=raw;
+            dp++;
+        }
     }
 
 }
@@ -155,17 +173,33 @@ void EventList::AddWaveform(qint64 start, unsigned char * data, int recs, qint64
     // TODO: Check waveform chunk really is contiguos
 
     //realloc buffers.
+    int r=m_count;
     m_count+=recs;
-    m_data.reserve(m_count);
+    m_data.resize(m_count);
 
+    EventStoreType *edata=m_data.data();
+    EventStoreType raw;
     EventDataType val;
-    for (int i=0;i<recs;i++) {
-        val=EventDataType(data[i])*m_gain+m_offset;
-        if (m_update_minmax) {
+
+    unsigned char * sp=data;
+    EventStoreType * dp=&edata[r];
+
+    if (m_update_minmax) {
+        for (int i=0;i<recs;i++) {
+            raw=*sp++;
+            val=EventDataType(val)*m_gain+m_offset;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
+            *dp=raw;
+            dp++;
         }
-        m_data.push_back(data[i]);
+    } else {
+        for (int i=0;i<recs;i++) {
+            raw=*sp++;
+            val=EventDataType(val)*m_gain+m_offset;
+            *dp=raw;
+            dp++;
+        }
     }
 
 }
@@ -199,17 +233,33 @@ void EventList::AddWaveform(qint64 start, char * data, int recs, qint64 duration
     // TODO: Check waveform chunk really is contiguos
 
     //realloc buffers.
-    m_count+=recs;
-    m_data.reserve(m_count);
 
+    int r=m_count;
+    m_count+=recs;
+    m_data.resize(m_count);
+
+    EventStoreType *edata=m_data.data();
+    EventStoreType raw;
     EventDataType val;
-    for (int i=0;i<recs;i++) {
-        val=EventDataType(data[i])*m_gain+m_offset;
-        if (m_update_minmax) {
+
+    char * sp=data;
+    EventStoreType * dp=&edata[r];
+
+    if (m_update_minmax) {
+        for (int i=0;i<recs;i++) {
+            raw=*sp++;
+            val=EventDataType(val)*m_gain+m_offset;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
+            *dp=raw;
+            dp++;
         }
-        m_data.push_back(data[i]);
+    } else {
+        for (int i=0;i<recs;i++) {
+            raw=*sp++;
+            val=EventDataType(val)*m_gain+m_offset;
+            *dp=raw;
+            dp++;
+        }
     }
-
 }

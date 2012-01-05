@@ -198,21 +198,45 @@ bool EDFParser::Parse()
 }
 bool EDFParser::Open(QString name)
 {
-    QFile f(name);
-    if (!f.open(QIODevice::ReadOnly)) return false;
-    if (!f.isReadable()) return false;
-    filename=name;
-    filesize=f.size();
-    datasize=filesize-EDFHeaderSize;
-    if (datasize<0) return false;
 
     //Urk.. This needs fixing for VC++, as it doesn't have packed attribute type..
 
-    f.read((char *)&header,EDFHeaderSize);
-    //qDebug() << "Opening " << name;
-    buffer=new char [datasize];
-    f.read(buffer,datasize);
-    f.close();
+    if (name.endsWith(".gz")) {
+        filename=name.mid(0,-3);
+        QFile fi(name);
+        fi.open(QFile::ReadOnly);
+        fi.seek(fi.size()-4);
+        unsigned char ch[4];
+        fi.read((char *)ch,4);
+        filesize=ch[0] | (ch [1] << 8) | (ch[2] << 16) | (ch[3] << 24);
+        datasize=filesize-EDFHeaderSize;
+        if (datasize<0) return false;
+        qDebug() << "Size of" << name << "uncompressed=" << filesize;
+        gzFile f=gzopen(name.toAscii(),"rb");
+        if (!f) {
+            qDebug() << "EDFParser::Open() Couldn't open file" << name;
+            return false;
+        }
+        gzread(f,(char *)&header,EDFHeaderSize);
+        buffer=new char [datasize];
+        gzbuffer(f,65536*2);
+        gzread(f,buffer,datasize);
+        gzclose(f);
+    } else {
+        QFile f(name);
+        if (!f.open(QIODevice::ReadOnly))
+            return false;
+        filename=name;
+        filesize=f.size();
+        datasize=filesize-EDFHeaderSize;
+        if (datasize<0) return false;
+
+        f.read((char *)&header,EDFHeaderSize);
+        //qDebug() << "Opening " << name;
+        buffer=new char [datasize];
+        f.read(buffer,datasize);
+        f.close();
+    }
     pos=0;
     return true;
 }
@@ -248,10 +272,11 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
 
     m->properties[STR_PROP_Serial]=serial;
     m->properties[STR_PROP_Brand]=STR_MACH_ResMed;
-    QString a;
-    a.sprintf("%i",resmed_data_version);
-    m->properties[STR_PROP_DataVersion]=a;
-    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+    m->properties[STR_PROP_DataVersion]=QString::number(resmed_data_version);
+
+    QString path="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+    m->properties[STR_PROP_Path]=path;
+    m->properties[STR_PROP_BackupPath]=path+"Backup/";
 
     return m;
 
@@ -268,6 +293,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     const QString ext_TGT="tgt";
     const QString ext_CRC="crc";
     const QString ext_EDF="edf";
+    const QString ext_gz=".gz";
 
     QString serial;                 // Serial number
     QString key,value;
@@ -330,15 +356,30 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     // Early check for STR.edf file, so we can early exit before creating faulty machine record.
     QString strpath=path+strfile+ext_EDF;  // STR.edf file
     f.setFileName(strpath);
-    if (!f.exists()) {
-        qDebug() << "Missing STR.edf file";
-        return 0;
+    if (!f.exists()) { // No STR.edf.. Do we have a STR.edf.gz?
+        strpath+=ext_gz;
+        f.setFileName(strpath);
+        if (!f.exists()) {
+            qDebug() << "Missing STR.edf file";
+            return 0;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Create machine object (unless it's already registered)
     ///////////////////////////////////////////////////////////////////////////////////
     Machine *m=CreateMachine(serial,profile);
+
+    bool create_backups=PROFILE.session->backupCardData();
+    bool compress_backups=PROFILE.session->compressBackupData();
+
+    QString backup_path=PROFILE.Get(m->properties[STR_PROP_BackupPath]);
+    if (backup_path.isEmpty())
+        backup_path=PROFILE.Get(m->properties[STR_PROP_Path])+"Backup/";
+
+    if (path==backup_path) {
+        create_backups=false;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse the idmap into machine objects properties, (overwriting any old values)
@@ -369,23 +410,35 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     // Creating early as we need the object
     QDir dir(newpath);
 
+
     ///////////////////////////////////////////////////////////////////////////////////
     // Create the backup folder for storing a copy of everything in..
+    // (Unless we are importing from this backup folder)
     ///////////////////////////////////////////////////////////////////////////////////
-    QString backup_path=PROFILE.Get(m->properties[STR_PROP_Path])+"Backup/";
-    if (!dir.exists(backup_path)) {
-        if (!dir.mkpath(backup_path+datalog)) {
-            qDebug() << "Could not create S9 backup directory :-/";
+    if (create_backups) {
+        if (!dir.exists(backup_path)) {
+            if (!dir.mkpath(backup_path+datalog)) {
+                qDebug() << "Could not create S9 backup directory :-/";
+            }
         }
+
+        // Copy Identification files to backup folder
+        QFile::copy(path+idfile+ext_TGT,backup_path+idfile+ext_TGT);
+        QFile::copy(path+idfile+ext_CRC,backup_path+idfile+ext_CRC);
+
+
+        //copy STR files to backup folder
+        if (strpath.endsWith(ext_gz))  // Already compressed.
+            QFile::copy(strpath,backup_path+strfile+ext_EDF+ext_gz);
+        else { // Compress STR file to backup folder
+            compress_backups ?
+                compressFile(strpath,backup_path+strfile+ext_EDF)
+            :
+                QFile::copy(strpath,backup_path+strfile+ext_EDF);
+        }
+
+        QFile::copy(path+"STR.crc",backup_path+"STR.crc");
     }
-
-    // Copy Identification files to backup folder
-    QFile::copy(path+idfile+ext_TGT,backup_path+idfile+ext_TGT);
-    QFile::copy(path+idfile+ext_CRC,backup_path+idfile+ext_CRC);
-
-    // Copy STR files to backup folder
-    QFile::copy(strpath,backup_path+strfile+ext_EDF);
-    QFile::copy(path+strfile+ext_CRC,backup_path+strfile+ext_CRC);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Process the actual STR.edf data
@@ -475,14 +528,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     dir.setSorting(QDir::Name);
     QFileInfoList flist=dir.entryInfoList();
 
-    QString ext,rest,datestr;//,s,codestr;
+    QString datestr;
     SessionID sessionid;
     QDateTime date;
     int size=flist.size();
 
     sessfiles.clear();
 
-    // For each file in filelist...
+    // For each file in flist...
     for (int i=0;i<size;i++) {
         QFileInfo fi=flist.at(i);
         filename=fi.fileName();
@@ -491,24 +544,28 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         if (!fi.isReadable())
             continue;
 
-        // Check the file extnsion
-        ext=filename.section(".",1).toLower();
-        if (ext!=ext_EDF) continue;
+        // Accept only .edf and .edf.gz files
+        if (!((filename.right(4).toLower() == "."+ext_EDF)
+            || (filename.right(7).toLower() == "."+ext_EDF+ext_gz)))
+            continue;
 
-        // Split the filename into components
-        rest=filename.section(".",0,0);
+        // Extract the session date out of the filename
         datestr=filename.section("_",0,1);
 
-        // Take the filename's date, and convert it to epoch to form the sessionID.
+        // Take the filename's date, and
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
-        if (!date.isValid())
-            continue; // Skip file if dates invalid
 
+        // Skip file if dates invalid, the filename is clearly wrong..
+        if (!date.isValid())
+            continue;
+
+        // convert this date to UNIX epoch to form the sessionID
         sessionid=date.toTime_t();
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // Resmed bugs up on the session filenames.. 1 or 2 seconds either way
-        // Moral of the story, when writing firmware and saving in batches, use the same datetimes.
+        // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
+        // and provide firmware updates for free to your customers.
         ////////////////////////////////////////////////////////////////////////////////////////////
         if (sessfiles.find(sessionid)==sessfiles.end()) {
             if (sessfiles.find(sessionid+2)!=sessfiles.end()) sessionid+=2;
@@ -517,8 +574,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             else if (sessfiles.find(sessionid-2)!=sessfiles.end()) sessionid-=2;
         }
 
-        // Push current filename to sanitized by-session list
-        sessfiles[sessionid].push_back(rest);
+        // Push current filename to ordered-by-sessionid list
+        sessfiles[sessionid].push_back(filename);
 
         // Update the progress bar
         if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
@@ -536,6 +593,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     /////////////////////////////////////////////////////////////////////////////
     // Scan over file list and knock out of dayused list
     /////////////////////////////////////////////////////////////////////////////
+    int dn;
     for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si.key();
 
@@ -544,17 +602,18 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         if (edn<0) edn=0;
 
         // Find real day number from str.edf mask on/off data.
-        int dn=-1;
+        dn=-1;
         for (int j=edn;j<strfirst.size();j++){
-            time_t st=strfirst.at(j);
-            time_t et=strlast.at(j);
+            st=strfirst.at(j);
             if (sessionid>=st) {
+                et=strlast.at(j);
                 if (sessionid<(et+300)) {
                     dn=j;
                     break;
                 }
             }
         }
+        // If found, mark day off so STR.edf summary data isn't used instead of the real thing.
         if (dn>=0) {
             dayused[dn]=0;
         }
@@ -565,16 +624,21 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     /////////////////////////////////////////////////////////////////////////////
     // For all days not in session lists, (to get at days without data records)
     /////////////////////////////////////////////////////////////////////////////
-    for (int dn=0;dn<days;dn++) {
-        if (!dayused[dn]) continue; // Skip days with loadable data.
+    for (dn=0;dn<days;dn++) {
+        // Skip days with loadable data.
+        if (!dayused[dn])
+            continue;
 
-        if (!daystarttimes.contains(dn)) continue;
-        int j;
-        int scnt=daystarttimes[dn].size();
+        if (!daystarttimes.contains(dn))
+            continue;
 
         sess=NULL;
-        // For each mask on/off segment.
-        for (j=0;j<scnt;j++) {
+
+        int scnt=daystarttimes[dn].size(); // count of sessions for this day
+
+        // Create a new session for each mask on/off segment in a day
+        // But only populate the last one with summary data.
+        for (int j=0;j<scnt;j++) {
             st=daystarttimes[dn].at(j);
 
             // Skip if session already exists
@@ -583,13 +647,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
             et=dayendtimes[dn].at(j);
 
-            // Create session
+            // Create the session
             sess=new Session(m,st);
             sess->really_set_first(qint64(st)*1000L);
             sess->really_set_last(qint64(et)*1000L);
             sess->SetChanged(true);
             m->AddSession(sess,profile);
-
         }
         // Add the actual data to the last session
         EventDataType tmp,dur;
@@ -693,12 +756,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         sess->settings[CPAP_PressureMax]=pressure;
                         //sess->setMax(CPAP_Pressure,pressure);
                     }
-
                 }
             }
 
             EventDataType valmed=0,valmax=0,val95=0;
 
+            /////////////////////////////////////////////////////////////////////
+            // Leak Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Leak Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_Leak]=sig->gain*60.0;
@@ -714,6 +779,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_Leak][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Minute Ventilation Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Min Vent Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_MinuteVent]=sig->gain;
@@ -728,6 +796,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
             }
+            /////////////////////////////////////////////////////////////////////
+            // Respiratory Rate Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("RR Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_RespRate]=sig->gain;
@@ -743,6 +814,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_RespRate][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Tidal Volume Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Tid Vol Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
@@ -758,6 +832,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Target Minute Ventilation Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Targ Vent Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_TgMV]=sig->gain;
@@ -774,6 +851,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             }
 
 
+            /////////////////////////////////////////////////////////////////////
+            // I:E Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("I:E Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_IE]=sig->gain;
@@ -789,6 +869,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_IE][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Mask Pressure Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Mask Pres Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_Pressure]=sig->gain;
@@ -804,6 +887,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_Pressure][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Inspiratory Pressure (IPAP) Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Insp Pres Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_IPAP]=sig->gain;
@@ -818,6 +904,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->setMax(CPAP_IPAP,valmax*sig->gain);
                 sess->m_valuesummary[CPAP_IPAP][valmax]=4;
             }
+            /////////////////////////////////////////////////////////////////////
+            // Expiratory Pressure (EPAP) Summary
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Exp Pres Med"))) {
                 valmed=sig->data[dn];
                 sess->m_gain[CPAP_EPAP]=sig->gain;
@@ -833,33 +922,39 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 sess->m_valuesummary[CPAP_EPAP][valmax]=4;
             }
 
+            /////////////////////////////////////////////////////////////////////
+            // Duration and Event Indices
+            /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Mask Dur"))) {
                 dur=sig->data[dn]*sig->gain;
+                dur/=60.0f; // convert to hours.
             }
-            if ((sig=stredf.lookupName("OAI"))) {
+            if ((sig=stredf.lookupName("OAI"))) { // Obstructive Apnea Index
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Obstructive,tmp);
-                sess->setCount(CPAP_Obstructive,tmp*(dur/60.0));
+                sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
             }
-            if ((sig=stredf.lookupName("HI"))) {
+            if ((sig=stredf.lookupName("HI"))) { // Hypopnea Index
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Hypopnea,tmp);
-                sess->setCount(CPAP_Hypopnea,tmp*(dur/60.0));
+                sess->setCount(CPAP_Hypopnea,tmp*dur);
             }
-            if ((sig=stredf.lookupName("UAI"))) {
+            if ((sig=stredf.lookupName("UAI"))) { // Unspecified Apnea Index
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_Apnea,tmp);
-                sess->setCount(CPAP_Apnea,tmp*(dur/60.0));
+                sess->setCount(CPAP_Apnea,tmp*dur);
             }
-            if ((sig=stredf.lookupName("CAI"))) {
+            if ((sig=stredf.lookupName("CAI"))) { // "Central" Apnea Index
                 tmp=sig->data[dn]*sig->gain;
                 sess->setCph(CPAP_ClearAirway,tmp);
-                sess->setCount(CPAP_ClearAirway,tmp*(dur/60.0));
+                sess->setCount(CPAP_ClearAirway,tmp*dur);
             }
 
         }
 
     }
+    bool gz;
+    backup_path+=datalog+"/";
 
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
@@ -873,18 +968,31 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         // Create the session
         sess=new Session(m,sessionid);
+        QString filename,fullpath,backupfile,backfile, crcfile;
 
         // Process EDF File List
         for (int i=0;i<si.value().size();++i) {
-            QString filename=si.value()[i]+".";
-            QString fullpath=newpath+filename;
+            filename=si.value()[i];
+            gz=(filename.right(3).toLower()==ext_gz);
+            fullpath=newpath+filename;
 
             // Copy the EDF file to the backup folder
-            QString backup_file=backup_path+datalog+"/"+filename;
-            QFile().copy(fullpath+ext_EDF, backup_file+ext_EDF);
-            QFile().copy(fullpath+ext_CRC, backup_file+ext_CRC);
+            if (create_backups) {
+                backupfile=backup_path+filename;
+                if (!gz) {
+                    compress_backups ?
+                        compressFile(fullpath, backupfile)
+                    :
+                        QFile::copy(fullpath, backupfile);
+                } else // already compressed, just copy it.
+                    QFile::copy(fullpath, backupfile);
 
-            fullpath+=ext_EDF;
+                backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
+                backupfile=backup_path+backfile;
+                crcfile=newpath+backfile;
+                QFile::copy(crcfile, backupfile);
+            }
+
             EDFParser edf(fullpath);
 
             // Parse the actual file
@@ -896,12 +1004,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 qDebug() << "edf Serial number doesn't match Identification.tgt";
             }
 
-            fn=fullpath.section("_",-1).toLower();
+            fn=filename.section("_",-1).section(".",0,0).toLower();
 
-            if (fn=="eve.edf") LoadEVE(sess,edf);
-            else if (fn=="pld.edf") LoadPLD(sess,edf);
-            else if (fn=="brp.edf") LoadBRP(sess,edf);
-            else if (fn=="sad.edf") LoadSAD(sess,edf);
+            if (fn=="eve") LoadEVE(sess,edf);
+            else if (fn=="pld") LoadPLD(sess,edf);
+            else if (fn=="brp") LoadBRP(sess,edf);
+            else if (fn=="sad") LoadSAD(sess,edf);
         }
         if (qprogress) qprogress->setValue(10.0+(float(++cnt)/float(size)*90.0));
         QApplication::processEvents();

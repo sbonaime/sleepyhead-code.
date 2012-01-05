@@ -152,7 +152,11 @@ Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
     profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial]=serial;
-    m->properties[STR_PROP_Path]="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";;
+    m->properties[STR_PROP_DataVersion]=QString::number(prs1_data_version);
+
+    QString path="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
+    m->properties[STR_PROP_Path]=path;
+    m->properties[STR_PROP_BackupPath]=path+"Backup/";
 
     return m;
 }
@@ -419,7 +423,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
     }
 
-    m->properties[STR_PROP_DataVersion]=QString().sprintf("%i",prs1_data_version);
+    m->properties[STR_PROP_DataVersion]=QString::number(prs1_data_version);
     m->properties[STR_PROP_LastImported]=QDateTime::currentDateTime().toString(Qt::ISODate);
     m->Save(); // Save any new sessions to disk in our format
     if (qprogress) qprogress->setValue(100);

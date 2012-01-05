@@ -168,6 +168,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->complianceGroupbox->setChecked(profile->cpap->showComplianceInfo());
     ui->complianceHours->setValue(profile->cpap->complianceHours());
 
+    bool bcd=profile->session->backupCardData();
+    ui->createSDBackups->setChecked(bcd);
+    ui->compressSDBackups->setEnabled(bcd);
+    ui->compressSDBackups->setChecked(profile->session->compressBackupData());
+    ui->compressSessionData->setChecked(profile->session->compressSessionData());
+
     ui->graphHeight->setValue(profile->appearance->graphHeight());
 
     if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) PREF[STR_GEN_UpdatesAutoCheck]=true;
@@ -288,14 +294,16 @@ void PreferencesDialog::Save()
     if ((profile->session->daySplitTime()!=ui->timeEdit->time()) ||
     (profile->session->combineCloseSessions()!=ui->combineSlider->value()) ||
     (profile->session->ignoreShortSessions()!=ui->IgnoreSlider->value())) {
-        profile->session->setTrashDayCache(true);
         needs_restart=true;
-    } else profile->session->setTrashDayCache(false);
+    }
 
     if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
         profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
         needs_restart=true;
     }
+    profile->session->setBackupCardData(ui->createSDBackups->isChecked());
+    profile->session->setCompressBackupData(ui->compressSDBackups->isChecked());
+    profile->session->setCompressSessionData(ui->compressSessionData->isChecked());
 
     profile->session->setCombineCloseSessions(ui->combineSlider->value());
     profile->session->setIgnoreShortSessions(ui->IgnoreSlider->value());
@@ -711,4 +719,24 @@ void PreferencesDialog::on_maskTypeCombo_activated(int index)
             } else item->setText(val);
         }
     }
+}
+
+void PreferencesDialog::on_createSDBackups_toggled(bool checked)
+{
+    if (profile->session->backupCardData() && !checked) {
+        QList<Machine *> mach=PROFILE.GetMachines(MT_CPAP);
+        bool haveS9=false;
+        for (int i=0;i<mach.size();i++) {
+            if (mach[i]->GetClass()==STR_MACH_ResMed) {
+                haveS9=true;
+                break;
+            }
+        }
+        if (haveS9 && QMessageBox::question(this,"This may not be a good idea","ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution). If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won't come back. If you need to conserve disk space, please remember to carry out manual backups. Are you sure you want to disable these backups?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            ui->createSDBackups->setChecked(true);
+            return;
+        }
+    }
+    if (!checked) ui->compressSDBackups->setChecked(false);
+    ui->compressSDBackups->setEnabled(checked);
 }
