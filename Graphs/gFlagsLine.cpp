@@ -156,13 +156,15 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
         int np=el.count();
 
         for (idx=0; idx < np; idx++) {
-            X=start + *tptr++;
-            L=*dptr++ * 1000;
+            X=start + *tptr;
+            L=*dptr * 1000;
             if (X >= minx)
                 break;
             X2=X-L;
             if (X2 >= minx)
                 break;
+            dptr++;
+            tptr++;
         }
         np-=idx;
 
@@ -211,12 +213,13 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
                 if (X > maxx)
                     break;
 
-                L=*dptr++ * 1000;
+                L=*dptr++ * 1000L;
                 X2=X-L;
 
-                x1=(X - minx) * xmult + left;
-                x2=(X2-minx)*xmult+left;
-                quads->unsafe_add(x2,bartop,x1,bartop, x1,bottom,x2,bottom);
+                x1=double(X - minx) * xmult + left;
+                x2=double(X2 - minx) * xmult + left;
+
+                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom);
                 //if (quads->full()) { verts_exceeded=true; break; }
 
             }

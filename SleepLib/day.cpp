@@ -165,10 +165,11 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
     QVector<Session *>::iterator s;
 
-    QMap<EventDataType, int> wmap;
+    QHash<EventStoreType, int> wmap;
 
     int SN=0;
 
+    EventDataType lastgain=0, gain=0;
     // First Calculate count of all events
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
@@ -177,27 +178,42 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
         QHash<ChannelID,QHash<EventStoreType, EventStoreType> > ::iterator ei=sess.m_valuesummary.find(code);
         if (ei==sess.m_valuesummary.end()) continue;
 
-        EventDataType gain=sess.m_gain[code];
-        EventDataType weight,value;
+        gain=sess.m_gain[code];
+
+        // Here's assuming gains don't change accross a days sessions
+        // Can't assume this in any multi day calculations..
+        if  (lastgain>0) {
+            if (gain!=lastgain) {
+                qDebug() << "Gains differ across sessions :(";
+            }
+        }
+        lastgain=gain;
+
+        int weight,value;
+        QHash<EventStoreType,int>::iterator wit;
         for (QHash<EventStoreType, EventStoreType>::iterator i=ei.value().begin();i!=ei.value().end();i++) {
             weight=i.value();
-            value=EventDataType(i.key())*gain;
+            value=i.key();
 
             SN+=weight;
-            if (wmap.contains(value)) {
-                wmap[value]+=weight;
-            } else  {
-                wmap[value]=weight;
-            }
+
+            // Cheating here.. On first access, it initializes to zero
+            wmap[value]+=weight;
+//            wit=wmap.find(value);
+//            if (wit==wmap.end()) {
+//                wmap[value]=weight;
+//            } else  {
+//                wit.value()+=weight;
+//            }
         }
     }
 
     QVector<ValueCount> valcnt;
 
     // Build sorted list of value/counts
-    for (QMap<EventDataType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
+    for (QHash<EventStoreType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
         ValueCount vc;
-        vc.value=n.key();
+        vc.value=EventDataType(n.key()) * gain;
         vc.count=n.value();
         vc.p=0;
         valcnt.push_back(vc);
@@ -213,7 +229,7 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
     int sum1=0,sum2=0;
     int w1,w2=0;
-    EventDataType v1,v2;
+    EventDataType v1=0,v2;
 
     int N=valcnt.size();
     int k=0;
@@ -249,10 +265,8 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
     return v;
 
-
 //                p1.....p.............p2
 //                37     55            70
-
 
 }
 

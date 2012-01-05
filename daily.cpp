@@ -724,7 +724,7 @@ void Daily::Load(QDate date)
     //ui->graphVisibilityToggleArea->setVisible(true);
 
     updateGraphCombo();
-    int graphsAvailable=GraphView->visibleGraphs();
+    //int graphsAvailable=GraphView->visibleGraphs();
 //    if (graphsAvailable>0) {
 //            GraphView->setCubeImage(images["sheep"]);
 //            GraphView->setEmptyText(tr("Graphs Switched Off"));
@@ -1537,7 +1537,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     bool ok;
     st=it->data(Qt::UserRole).toLongLong(&ok);
     et=it->data(Qt::UserRole+1).toLongLong(&ok);
-    qint64 st2,et2,st3,et3;
+    qint64 st2=0,et2=0,st3,et3;
     Day * day=PROFILE.GetGoodDay(previous_date,MT_CPAP);
     if (day) {
         st2=day->first();

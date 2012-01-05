@@ -710,8 +710,8 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     QMap<EventDataType, int> wmap;
 
     QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
-    EventDataType val,gain;
-    bool setgain=false;
+    EventDataType gain;
+    //bool setgain=false;
     EventDataType weight,value;
 
     int SN=0;
@@ -768,7 +768,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     int sum1=0,sum2=0;
     int w1,w2=0;
-    EventDataType v1,v2;
+    EventDataType v1=0,v2=0;
 
     int N=valcnt.size();
     int k=0;

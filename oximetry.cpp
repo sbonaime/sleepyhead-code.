@@ -272,10 +272,10 @@ void SerialOximeter::compactToEvent(EventList *el)
 {
     if (el->count()<2) return;
     EventList nel(EVL_Waveform);
-    EventDataType t,lastt=0; //el->data(0);
-    qint64 ti;//=el->time(0);
+    EventDataType t=0,lastt=0; //el->data(0);
+    qint64 ti=0;//=el->time(0);
     //nel.AddEvent(ti,lastt);
-    bool f;
+    bool f=false;
     qint64 lasttime=0;
     EventDataType min=999,max=0;
     for (quint32 i=0;i<el->count();i++) {
@@ -1373,7 +1373,7 @@ bool Oximetry::openSPOFile(QString filename)
     secondSPO2Update=true;
 
     unsigned char o2,pr;
-    quint16 pl;
+    //quint16 pl;
     qint64 tt=qint64(date.toTime_t())*1000L;
 
     for (int i=pos;i<size-5;) {
@@ -1382,7 +1382,9 @@ bool Oximetry::openSPOFile(QString filename)
         //oximeter->setLastTime(tt);
         oximeter->addPulse(tt,pr);
         oximeter->addSpO2(tt,o2);
-        pl=(unsigned char)(data.at(i+1));
+        //pl=(unsigned char)(data.at(i+1));
+
+
         //oximeter->addPlethy(tt,pl);
         //pl=(unsigned char)(data.at(i+1));
         //oximeter->addPlethy(tt,pl);
@@ -1453,7 +1455,7 @@ bool Oximetry::openSPORFile(QString filename)
     secondSPO2Update=true;
 
     unsigned char o2,pr;
-    quint16 pl;
+    //quint16 pl;
     qint64 tt=qint64(date.toTime_t())*1000L;
 
     for (int i=pos;i<size-2;) {
@@ -1461,7 +1463,7 @@ bool Oximetry::openSPORFile(QString filename)
         pr=(unsigned char)(data.at(i+0));
         oximeter->addPulse(tt,pr);
         oximeter->addSpO2(tt,o2);
-        pl=(unsigned char)(data.at(i+1));
+        //pl=(unsigned char)(data.at(i+1));
         i+=2;
         tt+=1000;
     }
