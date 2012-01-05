@@ -331,6 +331,8 @@ void Overview::updateGraphCombo()
 
 void Overview::ResetGraphs()
 {
+    //qint64 st,et;
+    //GraphView->GetXBounds(st,et);
     QDate start=ui->dateStart->date();
     QDate end=ui->dateEnd->date();
     GraphView->setDay(NULL);
@@ -338,6 +340,15 @@ void Overview::ResetGraphs()
     if (start.isValid() && end.isValid()) {
         setRange(start,end);
     }
+    //GraphView->SetXBounds(st,et);
+}
+
+void Overview::ResetGraph(QString name)
+{
+    gGraph *g=GraphView->findGraph(name);
+    if (!g) return;
+    g->setDay(NULL);
+    GraphView->redraw();
 }
 
 void Overview::RedrawGraphs()

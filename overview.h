@@ -65,6 +65,7 @@ public:
     QVector<SummaryChart *> OverviewCharts;
 
     void updateGraphCombo();
+    void ResetGraph(QString name);
 
 public slots:
     // ! \brief Print button down the bottom, does the same as File->Print

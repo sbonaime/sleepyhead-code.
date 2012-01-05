@@ -187,19 +187,6 @@ private slots:
         */
     void on_bookmarkTable_itemChanged(QTableWidgetItem *item);
 
-    /*! \fn on_weightSpinBox_valueChanged(double arg1);
-        \brief Called when weight has changed.. Updates the BMI dislpay and journal objects.
-
-        Also Refreshes the Overview charts
-        */
-    void on_weightSpinBox_valueChanged(double arg1);
-
-    /*! \fn on_ouncesSpinBox_valueChanged(int arg1);
-        \brief Called when weights ounces component has changed.. Updates the BMI dislpay and journal objects.
-
-        Also Refreshes the Overview charts
-        */
-    void on_ouncesSpinBox_valueChanged(int arg1);
 
     /*! \fn on_ouncesSpinBox_valueChanged(int arg1);
         \brief Called when the zombie slider has been moved.. Updates the BMI dislpay and journal objects.
@@ -215,6 +202,25 @@ private slots:
     void on_zoomFullyOut_clicked();
 
     void on_resetLayoutButton_clicked();
+
+    /*! \fn on_weightSpinBox_editingFinished();
+        \brief Called when weight has changed.. Updates the BMI dislpay and journal objects.
+
+        Also Refreshes the Overview charts
+        */
+
+    void on_weightSpinBox_editingFinished();
+
+    /*! \fn on_ouncesSpinBox_editingFinished();
+        \brief Called when weights ounces component has changed.. Updates the BMI dislpay and journal objects.
+
+        Also Refreshes the Overview charts
+        */
+    void on_ouncesSpinBox_editingFinished();
+
+    void on_ouncesSpinBox_valueChanged(int arg1);
+
+    void on_weightSpinBox_valueChanged(double arg1);
 
 protected:
 

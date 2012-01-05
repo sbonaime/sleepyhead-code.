@@ -1058,6 +1058,8 @@ protected:
     bool m_inAnimation;
     bool m_blockUpdates;
 
+    QPoint m_mouse;
+
     QTime m_animationStarted;
 
     //QVector<GLuint> texid;

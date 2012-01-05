@@ -1202,7 +1202,7 @@ void Daily::Load(QDate date)
 void Daily::UnitsChanged()
 {
     double kg;
-    if (PROFILE.general->unitSystem()==US_Metric) {
+    if (PROFILE.general->unitSystem()==US_Archiac) {
         kg=ui->weightSpinBox->value();
         float ounces=(kg*1000.0)/ounce_convert;
         int pounds=ounces/16;
@@ -1253,8 +1253,7 @@ void Daily::Unload(QDate date)
             }
         }
         if (journal->IsChanged()) {
-
-            mainwin->getOverview()->ResetGraphs();
+            // blah.. was updating overview graphs here.. Was too slow.
         }
         Machine *jm=PROFILE.GetMachine(MT_JOURNAL);
         if (jm) jm->SaveSession(journal);
@@ -1637,12 +1636,7 @@ void Daily::on_ZombieMeter_valueChanged(int action)
     journal->settings[Journal_ZombieMeter]=ui->ZombieMeter->value();
     journal->SetChanged(true);
 
-    gGraph *g;
-    if (mainwin->getOverview()) {
-        g=mainwin->getOverview()->graphView()->findGraph("Zombie");
-        if (g) g->setDay(NULL);
-        //mainwin->getOverview()->RedrawGraphs();
-    }
+    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Zombie");
 }
 
 void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
@@ -1650,8 +1644,26 @@ void Daily::on_bookmarkTable_itemChanged(QTableWidgetItem *item)
     Q_UNUSED(item);
     update_Bookmarks();
 }
+
 void Daily::on_weightSpinBox_valueChanged(double arg1)
 {
+    // Update the BMI display
+    double kg;
+    if (PROFILE.general->unitSystem()==US_Archiac) {
+         kg=((arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert)) / 1000.0;
+    } else kg=arg1;
+    double height=PROFILE.user->height()/100.0;
+    if ((height>0) && (kg>0)) {
+        double bmi=kg/(height * height);
+        ui->BMI->display(bmi);
+        ui->BMI->setVisible(true);
+    }
+}
+
+void Daily::on_weightSpinBox_editingFinished()
+{
+    double arg1=ui->weightSpinBox->value();
+
     double height=PROFILE.user->height()/100.0;
     Session *journal=GetJournalSession(previous_date);
     if (!journal) {
@@ -1660,7 +1672,7 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
 
     double kg;
     if (PROFILE.general->unitSystem()==US_Archiac) {
-            kg=(arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert);
+            kg=((arg1*pound_convert) + (ui->ouncesSpinBox->value()*ounce_convert)) / 1000.0;
     } else {
             kg=arg1;
     }
@@ -1683,16 +1695,29 @@ void Daily::on_weightSpinBox_valueChanged(double arg1)
     }
     journal->SetChanged(true);
 }
+
 void Daily::on_ouncesSpinBox_valueChanged(int arg1)
 {
+    // just update for BMI display
+    double height=PROFILE.user->height()/100.0;
+    double kg=((ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert)) / 1000.0;
+    if ((height>0) && (kg>0)) {
+        double bmi=kg/(height * height);
+        ui->BMI->display(bmi);
+        ui->BMI->setVisible(true);
+    }
+}
+
+void Daily::on_ouncesSpinBox_editingFinished()
+{
+    double arg1=ui->ouncesSpinBox->value();
     Session *journal=GetJournalSession(previous_date);
     if (!journal) {
         journal=CreateJournalSession(previous_date);
     }
     double height=PROFILE.user->height()/100.0;
-    double kg=(ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert);
+    double kg=((ui->weightSpinBox->value()*pound_convert) + (arg1*ounce_convert)) / 1000.0;
     journal->settings[Journal_Weight]=kg;
-
 
     gGraph *g;
     if (mainwin->getOverview()) {
@@ -1712,7 +1737,9 @@ void Daily::on_ouncesSpinBox_valueChanged(int arg1)
         }
     }
     journal->SetChanged(true);
+    if (mainwin->getOverview()) mainwin->getOverview()->ResetGraph("Weight");
 }
+
 QString Daily::GetDetailsText()
 {
     ui->webView->triggerPageAction(QWebPage::SelectAll);

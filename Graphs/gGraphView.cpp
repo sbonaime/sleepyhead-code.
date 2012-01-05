@@ -2356,6 +2356,8 @@ void gGraphView::renderSomethingFun()
     // When I'm feeling more energetic, I'll change it to a textured sheep or something.
     static float rotqube=0;
 
+    static float xpos=0,ypos=7,spos=0;
+
     glLoadIdentity();
 
     glAlphaFunc(GL_GREATER,0.1);
@@ -2368,13 +2370,24 @@ void gGraphView::renderSomethingFun()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glTranslatef(0.0f, 0.0f,-7.0f);
+    double xx=sin(M_PI/180.0 * xpos)*2; // ((4.0/width()) * m_mouse.rx())-2.0;
+    double yy=cos(M_PI/180.0 * ypos)*2; //2-((4.0/height()) * m_mouse.ry());
+    xpos+=1;
+    ypos+=1.32;
+    if (xpos > 360) xpos-=360.0;
+    if (ypos > 360) ypos-=360.0;
+
+
+    //m_mouse.x();
+    glTranslatef(xx, 0.0f,-7.0f+yy);
     glRotatef(rotqube,0.0f,1.0f,0.0f);
     glRotatef(rotqube,1.0f,1.0f,1.0f);
+
 
     int i=0;
     glEnable(GL_TEXTURE_2D);
     cubetex=bindTexture(*cubeimg[0]);
+
     //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
     i++;
     glColor4f(1,1,1,1);
@@ -2426,8 +2439,8 @@ void gGraphView::renderSomethingFun()
     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
     glEnd();
     // Left Face
-    //bindTexture(*cubeimg[i % imgcount]);
-    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+    //GLuint tex=bindTexture(*images["mask"]);
+    //glBindTexture(GL_TEXTURE_2D, tex);
     i++;
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
@@ -2753,12 +2766,23 @@ void gGraphView::paintGL()
     }
 
 #ifdef DEBUG_EFFICIENCY
+    const int rs=10;
+    static double ring[rs]={0};
+    static int rp=0;
+
     // Show FPS and draw time
     if (m_showsplitter && PROFILE.general->showDebug()) {
         QString ss;
         qint64 ela=time.nsecsElapsed();
         double ms=double(ela)/1000000.0;
-        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(1000.0/float(ms),'f',1)+"fps)";
+        ring[rp++]=1000.0/ms;
+        rp %= rs;
+        double v=0;
+        for (int i=0;i<rs;i++) {
+            v+=ring[i];
+        }
+        double fps=v/double(rs);
+        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps)";
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;
@@ -2773,7 +2797,7 @@ void gGraphView::paintGL()
 
     if (this->isVisible()) {
         if (m_limbo || m_inAnimation || (something_fun && !numgraphs)) {
-            redrawtimer->setInterval(20);
+            redrawtimer->setInterval(1000.0/50);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();
         }
@@ -2811,6 +2835,8 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 {
     int x=event->x();
     int y=event->y();
+
+    m_mouse=QPoint(x,y);
 
     if (m_sizer_dragging) { // Resize handle being dragged
         float my=y - m_sizer_point.y();
