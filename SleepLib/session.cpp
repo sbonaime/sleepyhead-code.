@@ -643,33 +643,53 @@ void Session::updateCountSummary(ChannelID code)
     QHash<ChannelID,QVector<EventList *> >::iterator ev=eventlist.find(code);
     if (ev==eventlist.end()) return;
 
+    QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vs=m_valuesummary.find(code);
+    if (vs!=m_valuesummary.end()) // already calculated?
+        return;
+
     QHash<EventStoreType, EventStoreType> valsum;
     QHash<EventStoreType, quint32> timesum;
-    QHash<EventStoreType, EventStoreType>::iterator vsi;
-    QHash<EventStoreType, quint32>::iterator tsi;
+    //QHash<EventStoreType, EventStoreType>::iterator vsi;
+    //QHash<EventStoreType, quint32>::iterator tsi;
 
     EventDataType raw,lastraw=0;
-    qint64 time,lasttime=0;
-    qint32 len;
+    qint64 start,time,lasttime=0;
+    qint32 len,cnt;
+    quint32 * tptr;
+    EventStoreType * dptr;
     for (int i=0;i<ev.value().size();i++) {
         EventList & e=*(ev.value()[i]);
-        //if (e.type()==EVL_Waveform) continue;
+        start=e.first();
+        cnt=e.count();
+        tptr=e.rawTime();
+        dptr=e.rawData();
+        m_gain[code]=e.gain();
 
-        for (unsigned j=0;j<e.count();j++) {
-            raw=e.raw(j);
-            vsi=valsum.find(raw);
-            if (vsi==valsum.end()) valsum[raw]=1;
-            else vsi.value()++;
+        //bool first=false;
+        lasttime=start + *tptr;
+        lastraw=*dptr;
 
-            time=e.time(j);
+        for (int j=0;j<cnt;j++) {
+            time=start + *tptr++;
+            raw=*dptr++;
 
-            if (lasttime>0) {
-                len=(time-lasttime) / 1000;
-            } else len=0;
+            //raw=e.raw(j);
+            valsum[raw]++;
+//            vsi=valsum.find(raw);
+//            if (vsi==valsum.end()) {
+//                valsum[raw]=1;
+//            }
+//            else vsi.value()++;
 
-            tsi=timesum.find(lastraw);
-            if (tsi==timesum.end()) timesum[raw]=len;
-            else tsi.value()+=len;
+            //time=e.time(j);
+
+            // elapsed time in seconds since last event
+            len=(time-lasttime) / 1000L;
+
+            timesum[lastraw]+=len;
+//            tsi=timesum.find(lastraw);
+//            if (tsi==timesum.end()) timesum[raw]=len;
+//            else tsi.value()+=len;
 
             lastraw=raw;
             lasttime=time;
@@ -899,13 +919,19 @@ int Session::rangeCount(ChannelID id, qint64 first,qint64 last)
         return 0;
     }
     QVector<EventList *> & evec=j.value();
-    int sum=0;
+    int sum=0,cnt;
 
-    qint64 t;
+    qint64 t,start;
+    quint32 * tptr;
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
-        for (unsigned j=0;j<ev.count();j++) {
-            t=ev.time(j);
+        start=ev.first();
+        tptr=ev.rawTime();
+        cnt=ev.count();
+
+        for (int j=0;j<cnt;j++) {
+            t=start + *tptr++;
+
             if ((t>=first) && (t<=last)) {
                 sum++;
             }
@@ -920,16 +946,26 @@ double Session::rangeSum(ChannelID id, qint64 first,qint64 last)
         return 0;
     }
     QVector<EventList *> & evec=j.value();
-    double sum=0;
+    double sum=0,gain;
 
-    qint64 t;
+    qint64 t,start;
+    EventStoreType * dptr;
+    quint32 * tptr;
+    int cnt;
+
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
-        for (unsigned j=0;j<ev.count();j++) {
-            t=ev.time(j);
+        start=ev.first();
+        tptr=ev.rawTime();
+        dptr=ev.rawData();
+        cnt=ev.count();
+        gain=ev.gain();
+        for (int j=0;j<cnt;j++) {
+            t=start + *tptr++;
             if ((t>=first) && (t<=last)) {
-                sum+=ev.data(j);
+                sum+=*dptr * gain;
             }
+            dptr++;
         }
     }
     return sum;
@@ -941,18 +977,28 @@ EventDataType Session::rangeMin(ChannelID id, qint64 first,qint64 last)
         return 0;
     }
     QVector<EventList *> & evec=j.value();
-    EventDataType v,min=999999999;
+    EventDataType gain,v,min=999999999;
 
-    qint64 t;
+    qint64 t,start;
+    EventStoreType * dptr;
+    quint32 * tptr;
+    int cnt;
+
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
+        start=ev.first();
+        tptr=ev.rawTime();
+        dptr=ev.rawData();
+        cnt=ev.count();
+        gain=ev.gain();
         for (unsigned j=0;j<ev.count();j++) {
-            t=ev.time(j);
+            t=start + *tptr++;
             if ((t>=first) && (t<=last)) {
-                v=ev.data(j);
+                v=EventDataType(*dptr) * gain;
                 if (v<min) min=v;
             }
         }
+        dptr++;
     }
     return min;
 }
@@ -963,17 +1009,27 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first,qint64 last)
         return 0;
     }
     QVector<EventList *> & evec=j.value();
-    EventDataType v,max=-999999999;
+    EventDataType gain,v,max=-999999999;
 
-    qint64 t;
+    qint64 t,start;
+    EventStoreType * dptr;
+    quint32 * tptr;
+    int cnt;
+
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
+        start=ev.first();
+        tptr=ev.rawTime();
+        dptr=ev.rawData();
+        cnt=ev.count();
+        gain=ev.gain();
         for (unsigned j=0;j<ev.count();j++) {
-            t=ev.time(j);
+            t=start + *tptr++;
             if ((t>=first) && (t<=last)) {
-                v=ev.data(j);
+                v=EventDataType(*dptr) * gain;
                 if (v>max) max=v;
             }
+            dptr++;
         }
     }
     return max;
@@ -1013,10 +1069,17 @@ double Session::sum(ChannelID id)
     }
     QVector<EventList *> & evec=j.value();
 
-    double sum=0;
+    double gain,sum=0;
+    EventStoreType * dptr;
+    int cnt;
     for (int i=0;i<evec.size();i++) {
-        for (quint32 j=0;j<evec[i]->count();j++) {
-            sum+=evec[i]->data(j);
+        EventList & ev=*(evec[i]);
+        gain=ev.gain();
+        cnt=ev.count();
+        dptr=ev.rawData();
+
+        for (int j=0;j<cnt;j++) {
+            sum+=double(*dptr) * gain;
         }
     }
     m_sum[id]=sum;
@@ -1036,11 +1099,18 @@ EventDataType Session::avg(ChannelID id)
     }
     QVector<EventList *> & evec=j.value();
 
-    double val=0;
+    double val=0,gain;
     int cnt=0;
+    EventStoreType * dptr;
+    int es;
     for (int i=0;i<evec.size();i++) {
-        for (quint32 j=0;j<evec[i]->count();j++) {
-            val+=evec[i]->data(j);
+        EventList & ev=*(evec[i]);
+        dptr=ev.rawData();
+        gain=ev.gain();
+        es=ev.count();
+
+        for (int j=0;j<es;j++) {
+            val+=double(*dptr++) * gain;
             cnt++;
         }
     }
@@ -1075,60 +1145,11 @@ EventDataType Session::sph(ChannelID id) // sum per hour
     return val;
 }
 
-/*EventDataType Session::p90(ChannelID id) // 90th Percentile
-{
-    QHash<ChannelID,EventDataType>::iterator i=m_90p.find(id);
-    if (i!=m_90p.end())
-        return i.value();
-
-    if (!eventlist.contains(id)) {
-        m_90p[id]=0;
-        return 0;
-    }
-
-    EventDataType val=percentile(id,0.9);
-    m_90p[id]=val;
-    return val;
-}
-
-EventDataType Session::p95(ChannelID id)
-{
-    QHash<ChannelID,EventDataType>::iterator i=m_95p.find(id);
-    if (i!=m_95p.end())
-        return i.value();
-
-    if (!eventlist.contains(id)) {
-        m_95p[id]=0;
-        return 0;
-    }
-
-    EventDataType val=percentile(id,0.95);
-    m_95p[id]=val;
-    return val;
-
-}
-
-EventDataType Session::median(ChannelID id)
-{
-    QHash<ChannelID,EventDataType>::iterator i=m_med.find(id);
-    if (i!=m_med.end())
-        return i.value();
-
-    if (!eventlist.contains(id)) {
-        m_med[id]=0;
-        return 0;
-    }
-
-    EventDataType val=percentile(id,0.5);
-    m_med[id]=val;
-    return val;
-}
-
-*/
 bool sortfunction (EventStoreType i,EventStoreType j) { return (i<j); }
 
 EventDataType Session::percentile(ChannelID id,EventDataType percent)
 {
+
     //if (channel[id].channeltype()==CT_Graph) return 0;
     QHash<ChannelID,QVector<EventList *> >::iterator jj=eventlist.find(id);
     if (jj==eventlist.end())
@@ -1173,88 +1194,98 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
 EventDataType Session::wavg(ChannelID id)
 {
+    if (id==CPAP_Pressure) {
+        int i=5;
+    }
     QHash<EventStoreType,quint32> vtime;
     QHash<ChannelID,EventDataType>::iterator i=m_wavg.find(id);
     if (i!=m_wavg.end())
         return i.value();
 
-    QHash<ChannelID,QVector<EventList *> >::iterator jj=eventlist.find(id);
-    if (jj==eventlist.end())
+    updateCountSummary(id);
+
+    QHash<ChannelID,QHash<EventStoreType, quint32> >::iterator j2=m_timesummary.find(id);
+    QHash<EventStoreType, quint32> & timesum=j2.value();
+
+    if (!m_gain.contains(id))
         return 0;
-    QVector<EventList *> & evec=jj.value();
 
-    int size=evec.size();
-    if (size==0)
-        return 0;
+    double s0=0,s1=0,s2;
 
-    qint64 lasttime=0,time,td;
-    EventStoreType val,lastval=0;
-
-
-    EventDataType gain=evec[0]->gain();
-    EventStoreType minval;
-
-    for (int i=0;i<size;i++) {
-        if (!evec[i]->count()) continue;
-        /*lastval=evec[i]->raw(0);
-        lasttime=evec[i]->time(0);
-        for (quint32 j=1;j<evec[i]->count();j++) {
-            val=evec[i]->raw(j);
-            time=evec[i]->time(j);
-            td=(time-lasttime);
-
-            if (vtime.contains(lastval)) {
-                vtime[lastval]+=td;
-            } else vtime[lastval]=td;
-            lasttime=time;
-            lastval=val;
-        }*/
-        time=evec[i]->time(0)/1000L;
-        minval=val=evec[i]->raw(0);
-        for (quint32 j=1;j<evec[i]->count();j++) {
-            lastval=val;
-            lasttime=time;
-            val=evec[i]->raw(j);
-            if (val<minval) minval=val;
-            time=evec[i]->time(j)/1000L;
-            td=(time-lasttime);
-            if (vtime.contains(lastval)) {
-                vtime[lastval]+=td;
-            } else vtime[lastval]=td;
-        }
-        if (lasttime>0) {
-            td=(last()/1000L)-time;
-            if (vtime.contains(val)) {
-                vtime[val]+=td;
-            } else vtime[val]=td;
-
-        }
+    EventDataType val, gain=m_gain[id];
+    for (QHash<EventStoreType, quint32>::iterator vi=timesum.begin();vi!=timesum.end();vi++) {
+        val=vi.key() * gain;
+        s2=vi.value();
+        s0+=s2;
+        s1+=val * s2;
     }
+    if (s0>0) {
+        val=s1/s0;
+    } else val=0;
 
-    if (minval<0) minval=-minval;
-    minval++;
-   // if (minval<0) minval+=(0-minval)+1; else minval=1;
-    qint64 s0=0,s1=0,s2=0,s3=0; // 32bit may all be thats needed here..
-    for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
-       s0=i.value();
-       s3=i.key()+minval;
-       s1+=s3*s0;
-       s2+=s0;
-    }
-    if (s2==0) {
-        return m_wavg[id]=0;
-    }
-    double j=double(s1)/double(s2);
-    j-=minval;
-    EventDataType v=j*gain;
-    if (v>32768*gain) {
-        v=0;
-    }
-    if (v<-(32768*gain)) {
-        v=0;
-    }
-    m_wavg[id]=v;
-    return v;
+    m_wavg[id]=val;
+    return val;
+
+//    int size=evec.size();
+//    if (size==0)
+//        return 0;
+
+//    qint64 lasttime=0,time,td;
+//    EventStoreType val,lastval=0;
+
+
+//    EventDataType gain=evec[0]->gain();
+//    EventStoreType minval;
+
+//    for (int i=0;i<size;i++) {
+//        if (!evec[i]->count()) continue;
+
+//        time=evec[i]->time(0)/1000L;
+//        minval=val=evec[i]->raw(0);
+//        for (quint32 j=1;j<evec[i]->count();j++) {
+//            lastval=val;
+//            lasttime=time;
+//            val=evec[i]->raw(j);
+//            if (val<minval) minval=val;
+//            time=evec[i]->time(j)/1000L;
+//            td=(time-lasttime);
+//            if (vtime.contains(lastval)) {
+//                vtime[lastval]+=td;
+//            } else vtime[lastval]=td;
+//        }
+//        if (lasttime>0) {
+//            td=(last()/1000L)-time;
+//            if (vtime.contains(val)) {
+//                vtime[val]+=td;
+//            } else vtime[val]=td;
+
+//        }
+//    }
+
+//    if (minval<0) minval=-minval;
+//    minval++;
+//   // if (minval<0) minval+=(0-minval)+1; else minval=1;
+//    qint64 s0=0,s1=0,s2=0,s3=0; // 32bit may all be thats needed here..
+//    for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
+//       s0=i.value();
+//       s3=i.key()+minval;
+//       s1+=s3*s0;
+//       s2+=s0;
+//    }
+//    if (s2==0) {
+//        return m_wavg[id]=0;
+//    }
+//    double j=double(s1)/double(s2);
+//    j-=minval;
+//    EventDataType v=j*gain;
+//    if (v>32768*gain) {
+//        v=0;
+//    }
+//    if (v<-(32768*gain)) {
+//        v=0;
+//    }
+//    m_wavg[id]=v;
+//    return v;
 }
 
 EventList * Session::AddEventList(ChannelID code, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate,bool second_field)
