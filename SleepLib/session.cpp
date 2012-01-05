@@ -1194,9 +1194,6 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
 EventDataType Session::wavg(ChannelID id)
 {
-    if (id==CPAP_Pressure) {
-        int i=5;
-    }
     QHash<EventStoreType,quint32> vtime;
     QHash<ChannelID,EventDataType>::iterator i=m_wavg.find(id);
     if (i!=m_wavg.end())
@@ -1205,6 +1202,10 @@ EventDataType Session::wavg(ChannelID id)
     updateCountSummary(id);
 
     QHash<ChannelID,QHash<EventStoreType, quint32> >::iterator j2=m_timesummary.find(id);
+
+    if (j2==m_timesummary.end())
+        return 0;
+
     QHash<EventStoreType, quint32> & timesum=j2.value();
 
     if (!m_gain.contains(id))
@@ -1225,67 +1226,6 @@ EventDataType Session::wavg(ChannelID id)
 
     m_wavg[id]=val;
     return val;
-
-//    int size=evec.size();
-//    if (size==0)
-//        return 0;
-
-//    qint64 lasttime=0,time,td;
-//    EventStoreType val,lastval=0;
-
-
-//    EventDataType gain=evec[0]->gain();
-//    EventStoreType minval;
-
-//    for (int i=0;i<size;i++) {
-//        if (!evec[i]->count()) continue;
-
-//        time=evec[i]->time(0)/1000L;
-//        minval=val=evec[i]->raw(0);
-//        for (quint32 j=1;j<evec[i]->count();j++) {
-//            lastval=val;
-//            lasttime=time;
-//            val=evec[i]->raw(j);
-//            if (val<minval) minval=val;
-//            time=evec[i]->time(j)/1000L;
-//            td=(time-lasttime);
-//            if (vtime.contains(lastval)) {
-//                vtime[lastval]+=td;
-//            } else vtime[lastval]=td;
-//        }
-//        if (lasttime>0) {
-//            td=(last()/1000L)-time;
-//            if (vtime.contains(val)) {
-//                vtime[val]+=td;
-//            } else vtime[val]=td;
-
-//        }
-//    }
-
-//    if (minval<0) minval=-minval;
-//    minval++;
-//   // if (minval<0) minval+=(0-minval)+1; else minval=1;
-//    qint64 s0=0,s1=0,s2=0,s3=0; // 32bit may all be thats needed here..
-//    for (QHash<EventStoreType,quint32>::iterator i=vtime.begin(); i!=vtime.end(); i++) {
-//       s0=i.value();
-//       s3=i.key()+minval;
-//       s1+=s3*s0;
-//       s2+=s0;
-//    }
-//    if (s2==0) {
-//        return m_wavg[id]=0;
-//    }
-//    double j=double(s1)/double(s2);
-//    j-=minval;
-//    EventDataType v=j*gain;
-//    if (v>32768*gain) {
-//        v=0;
-//    }
-//    if (v<-(32768*gain)) {
-//        v=0;
-//    }
-//    m_wavg[id]=v;
-//    return v;
 }
 
 EventList * Session::AddEventList(ChannelID code, EventListType et,EventDataType gain,EventDataType offset,EventDataType min, EventDataType max,EventDataType rate,bool second_field)

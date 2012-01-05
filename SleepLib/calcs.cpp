@@ -470,11 +470,21 @@ int calcLeaks(Session *session)
     int tcnt=0;
     QVector<EventDataType> med;
 
+    qint64 start;
+    quint32 * tptr;
+    EventStoreType * dptr;
+    EventDataType gain;
     for (int i=0;i<session->eventlist[CPAP_LeakTotal].size();i++) {
         EventList & el=*session->eventlist[CPAP_LeakTotal][i];
+        gain=el.gain();
+        dptr=el.rawData();
+        tptr=el.rawTime();
+        start=el.first();
+
         for (unsigned j=0;j<el.count();j++) {
-            tmp=el.data(j);
-            ti=el.time(j);
+            tmp=*dptr++ * gain;
+            ti=start+ *tptr++;
+
             rbuf[rpos]=tmp;
             rtime[rpos]=ti;
             tcnt++;
@@ -488,11 +498,12 @@ int calcLeaks(Session *session)
                 if (rtime[k] > ti-winsize) // if fits in time window, add to the list
                     med.push_back(rbuf[k]);
             }
-            qSort(med);
 
             int idx=float(med.size() * 0.0);
             if (idx>=med.size()) idx--;
-            median=tmp-med[idx];
+            nth_element(med.begin(),med.begin()+idx,med.end());
+            median=tmp-(*(med.begin()+idx));
+
             if (median<0) median=0;
             leak->AddEvent(ti,median);
 
