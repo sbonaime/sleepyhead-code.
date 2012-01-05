@@ -629,6 +629,8 @@ bool Session::LoadEvents(QString filename)
         }
     }
 
+    zzzzz; deliberately breaking git..
+
     if (version<events_version) {
         qDebug() << "Upgrading Events file" << filename << "to version" << events_version;
         UpdateSummaries();
