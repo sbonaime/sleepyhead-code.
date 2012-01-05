@@ -138,33 +138,87 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     float bottom=top+height-2;
     bool verts_exceeded=false;
     qint64 X,X2,L;
-    lines->setColor(schema::channel[m_code].defaultColor().rgba());
+    lines->setColor(schema::channel[m_code].defaultColor());
+
+    qint64 start;
+    quint32 * tptr;
+    EventStoreType *dptr;
+    int idx;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled()) continue;
 
         if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
 
         EventList & el=*((*s)->eventlist[m_code][0]);
+        start=el.first();
+        tptr=el.rawTime();
+        dptr=el.rawData();
+        int np=el.count();
 
-        for (quint32 i=0;i<el.count();i++) {
-            X=el.time(i);
-            L=el.data(i)*1000;
+        for (idx=0; idx < np; idx++) {
+            X=start + *tptr++;
+            L=*dptr++ * 1000;
+            if (X >= minx)
+                break;
             X2=X-L;
-            if (X2 < minx) continue;
-            if (X > maxx) break;
-            x1=(X - minx) * xmult + left;
-            if (m_flt==FT_Bar) {
+            if (X2 >= minx)
+                break;
+        }
+        np-=idx;
+
+        if (m_flt==FT_Bar) {
+            ///////////////////////////////////////////////////////////////////////////
+            // Draw Event Flag Bars
+            ///////////////////////////////////////////////////////////////////////////
+
+            // Check bounds outside of loop is faster..
+            // This will have to be reverted if multithreaded drawing is ever brought back
+
+            int rem=lines->Max() - lines->cnt();
+            if ((np<<1) > rem) {
+                qDebug() << "gFlagsLine would overfill lines for" << schema::channel[m_code].label();
+                np=rem >> 1;
+                verts_exceeded=true;
+            }
+
+            for (int i=0;i<np;i++) {
+                X=start + * tptr++; //el.time(i);
+
+                if (X > maxx)
+                    break;
+
+                x1=(X - minx) * xmult + left;
                 lines->add(x1,bartop,x1,bottom);
-                if (lines->full()) { verts_exceeded=true; break; }
-            } else if (m_flt==FT_Span) {
+
+                //if (lines->full()) { verts_exceeded=true; break; }
+            }
+        } else if (m_flt==FT_Span) {
+            ///////////////////////////////////////////////////////////////////////////
+            // Draw Event Flag Spans
+            ///////////////////////////////////////////////////////////////////////////
+            quads->setColor(m_flag_color);
+            int rem=quads->Max() - quads->cnt();
+
+            if ((np<<2) > rem) {
+                qDebug() << "gFlagsLine would overfill quads for" << schema::channel[m_code].label();
+                np=rem >> 2;
+                verts_exceeded=true;
+            }
+
+            for (int i=0;i < np; i++) {
+                X=start + * tptr++;
+
+                if (X > maxx)
+                    break;
+
+                L=*dptr++ * 1000;
+                X2=X-L;
+
+                x1=(X - minx) * xmult + left;
                 x2=(X2-minx)*xmult+left;
-                //w1=x2-x1;
-                /*if (qAbs(x1-x2)<=1) {
-                    x1-=1;
-                    x2+=1;
-                }*/
-                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom,m_flag_color.rgba());
-                if (quads->full()) { verts_exceeded=true; break; }
+                quads->unsafe_add(x2,bartop,x1,bartop, x1,bottom,x2,bottom);
+                //if (quads->full()) { verts_exceeded=true; break; }
+
             }
         }
         if (verts_exceeded) break;

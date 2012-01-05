@@ -63,33 +63,49 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     }
     EventStoreType raw;
 
+    quint32 * tptr;
+    EventStoreType * ptr;
+    qint64 stime;
+
+    OverlayDisplayType odt=PROFILE.appearance->overlayType();
+
+    // For each session, process it's eventlist
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled()) continue;
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end()) continue;
         if (cei.value().size()==0) continue;
 
+        // Could loop through here, but nowhere uses more than one yet..
         EventList & el=*cei.value()[0];
+        stime=el.first();
+        ptr=el.rawData();
+        tptr=el.rawTime();
 
-        for (quint32 i=0;i<el.count();i++) {
-            X=el.time(i);
-            raw=el.data(i);
-            if (m_flt==FT_Span) {
+        ////////////////////////////////////////////////////////////////////////////
+        // Skip data previous to minx bounds
+        ////////////////////////////////////////////////////////////////////////////
+        quint32 idx;
+        for (idx=0;idx<el.count();idx++) {
+            X=stime + *tptr;
+            if (X >= w.min_x)
+                break;
+            tptr++;
+            ptr++;
+        }
+
+        if (m_flt==FT_Span) {
+            ////////////////////////////////////////////////////////////////////////////
+            // FT_Span
+            ////////////////////////////////////////////////////////////////////////////
+            for (quint32 i=idx;i<el.count();i++) {
+                X=stime + *tptr++; //el.time(i);
+                raw=*ptr++; //el.data(i);
                 Y=X-(qint64(raw)*1000.0L); // duration
-
-                if (X < w.min_x) continue;
                 if (Y > w.max_x) break;
-            } else {
-                if (X < w.min_x) continue;
-                if (X > w.max_x) break;
-            }
-
-            //x1=w.x2p(X);
-            x1=double(width)/double(xx)*double(X-w.min_x)+left;
-            m_count++;
-            m_sum+=raw;
-            if (m_flt==FT_Span) {
-                //x2=w.x2p(Y);
+                x1=double(width)/double(xx)*double(X-w.min_x)+left;
+                m_count++;
+                m_sum+=raw;
                 x2=double(width)/double(xx)*double(Y-w.min_x)+left;
                 if (int(x1)==int(x2)) x2+=1;
                 if (x2<left) x2=left;
@@ -97,8 +113,19 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                 //double w1=x2-x1;
                 quads->add(x2,start_py, x1,start_py, x1,start_py+height, x2,start_py+height,m_flag_color.rgba());
                 if (quads->full()) { verts_exceeded=true; break; }
-            } else if (m_flt==FT_Dot) {
-                if ((PROFILE.appearance->overlayType()==ODT_Bars) || (xx<3600000)) {
+            }
+        } else if (m_flt==FT_Dot) {
+            ////////////////////////////////////////////////////////////////////////////
+            // FT_Dot
+            ////////////////////////////////////////////////////////////////////////////
+            for (quint32 i=idx;i<el.count();i++) {
+                X=stime + *tptr++; //el.time(i);
+                raw=*ptr++; //el.data(i);
+                if (X > w.max_x) break;
+                x1=double(width)/double(xx)*double(X-w.min_x)+left;
+                m_count++;
+                m_sum+=raw;
+                if ((odt==ODT_Bars) || (xx<3600000)) {
                     // show the fat dots in the middle
                     points->add(x1,double(height)/double(yy)*double(-20-w.min_y)+topp);
                     if (points->full()) { verts_exceeded=true; break; }
@@ -106,32 +133,38 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
                     // thin lines down the bottom
                     lines->add(x1,start_py+1,x1,start_py+1+12);
                     if (lines->full()) { verts_exceeded=true; break; }
-
                 }
-            } else if (m_flt==FT_Bar) {
+
+            }
+        } else if (m_flt==FT_Bar) {
+            ////////////////////////////////////////////////////////////////////////////
+            // FT_Bar
+            ////////////////////////////////////////////////////////////////////////////
+            for (quint32 i=idx;i<el.count();i++) {
+                X=stime + *tptr++;
+                raw=*ptr++;
+                if (X > w.max_x) break;
+                x1=double(width)/double(xx)*double(X-w.min_x)+left;
+                m_count++;
+                m_sum+=raw;
                 int z=start_py+height;
-                if ((PROFILE.appearance->overlayType()==ODT_Bars) || (xx<3600000)) {
+                if ((odt==ODT_Bars) || (xx<3600000)) {
                     z=top;
 
                     points->add(x1,top);
                     lines->add(x1,top,x1,bottom);
                     if (points->full()) { verts_exceeded=true; break; }
-               } else {
+                } else {
                     lines->add(x1,z,x1,z-12);
-               }
-               if (lines->full()) { verts_exceeded=true; break; }
-               if (xx<(1800000)) {
-                   GetTextExtent(m_label,x,y);
-                   w.renderText(m_label,x1-(x/2),top-y+(3*w.printScaleY()));
-
-                   // The follow lines enable the duration display underneath
-//                   QString a=QString::number(int(el.data(i)));
-//                   GetTextExtent(a,x,y);
-//                   w.renderText(a,x1-(x/2),bottom+y+(3*w.printScaleY()));
-               }
-
-           }
+                }
+                if (lines->full()) { verts_exceeded=true; break; }
+                if (xx<(1800000)) {
+                    GetTextExtent(m_label,x,y);
+                    w.renderText(m_label,x1-(x/2),top-y+(3*w.printScaleY()));
+                }
+            }
         }
+
         if (verts_exceeded) break;
     }
     if (verts_exceeded) {

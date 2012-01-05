@@ -153,7 +153,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType lastpx,lastpy;
     EventDataType px,py;
     int idx;
-    bool done,first;
+    bool done;
     double x0,xL;
     double sr;
     int sam;
@@ -326,45 +326,61 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                 double time;
                 EventDataType data;
                 EventDataType gain=el.gain();
-                EventDataType nmult=ymult*gain;
-                EventDataType ymin=EventDataType(miny)/gain;
+                //EventDataType nmult=ymult*gain;
+                //EventDataType ymin=EventDataType(miny)/gain;
 
-                const QVector<EventStoreType> & dat=el.getData();
-                const QVector<quint32> & tim=el.getTime();
+                //const QVector<EventStoreType> & dat=el.getData();
+                //const QVector<quint32> & tim=el.getTime();
+                //quint32 * tptr;
+
+
+                //qint64 stime=el.first();
 
                 done=false;
-                first=true;
 
                 if (!accel) {
                     lines->setSize(1.5);
                 } else lines->setSize(1);
-                bool firstpx=true;
+
                 if (el.type()==EVL_Waveform) {  // Waveform Plot
                     if (idx>sam) idx-=sam;
                     time=el.time(idx);
                     double rate=double(sr)*double(sam);
+                    EventStoreType * ptr=el.rawData()+idx;
 
                     if (accel) {
-    //////////////////////////////////////////////////////////////////
-    // Accelerated Waveform Plot
-    //////////////////////////////////////////////////////////////////
-                        for (int i=idx;i<siz;i+=sam) {
-                            time+=rate;
-                            //time=el.time(i);
-                            //if (time < minx)
-                            //    continue; // Skip stuff before the start of our data window
+                        //////////////////////////////////////////////////////////////////
+                        // Accelerated Waveform Plot
+                        //////////////////////////////////////////////////////////////////
 
-                            //data=el.data(i);
-                            data=dat[i];//*gain;
-                            px=((time - minx) * xmult);   // Scale the time scale X to pixel scale X
-                            py=((data - ymin) * nmult);   // Same for Y scale
+//                        qint64 tmax=(maxx-time)/rate;
+//                        if ((tmax*sam) < siz) {
+//                            siz=idx+tmax*sam;
+//                            done=true;
+//                        }
+
+                        for (int i=idx;i<siz;i+=sam,ptr+=sam) {
+                            time+=rate;
+                            // This is much faster than QVector access.
+                            data=*ptr;
+                            data *= gain;
+
+                            // Scale the time scale X to pixel scale X
+                            px=((time - minx) * xmult);
+
+                            // Same for Y scale, with gain factored in nmult
+                            py=((data - miny) * ymult);
 
                             // In accel mode, each pixel has a min/max Y value.
                             // m_drawlist's index is the pixel index for the X pixel axis.
-
                             int z=round(px); // Hmmm... round may screw this up.
-                            if (z<minz) minz=z;  // minz=First pixel
-                            if (z>maxz) maxz=z;  // maxz=Last pixel
+
+                            if (z<minz)
+                                minz=z;  // minz=First pixel
+
+                            if (z>maxz)
+                                maxz=z;  // maxz=Last pixel
+
                             if (minz<0) {
                                 qDebug() << "gLineChart::Plot() minz<0  should never happen!! minz =" << minz;
                                 minz=0;
@@ -375,142 +391,198 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             }
 
                             // Update the Y pixel bounds.
-                            if (py<m_drawlist[z].x()) m_drawlist[z].setX(py);
-                            if (py>m_drawlist[z].y()) m_drawlist[z].setY(py);
+                            if (py<m_drawlist[z].x())
+                                m_drawlist[z].setX(py);
+                            if (py>m_drawlist[z].y())
+                                m_drawlist[z].setY(py);
+
+                            if (time>maxx) {
+                                done=true;
+                                break;
+                            }
+
+                        }
+                        // Plot compressed accelerated vertex list
+                        if (maxz>width) {
+                            maxz=width;
+                        }
+                        float ax1,ay1;
+                        QPoint * drl=m_drawlist+minz;
+                        // Don't need to cap VertexBuffer here, as it's limited to max_drawlist_size anyway
+
+
+                        // Cap within VertexBuffer capacity, one vertex per line point
+                        int np=(maxz-minz)*2;
+
+                        int j=lines->Max()-lines->cnt();
+                        if (np < j) {
+                            for (int i=minz;i<maxz;i++, drl++) {
+                                ax1=drl->x();
+                                ay1=drl->y();
+                                lines->unsafe_add(xst+i,yst-ax1,xst+i,yst-ay1);
+
+                                //if (lines->full()) break;
+                            }
+                        } else {
+                            qDebug() << "gLineChart full trying to draw" << schema::channel[code].label();
+                            done=true;
+                        }
+
+                    } else { // Zoomed in Waveform
+                        //////////////////////////////////////////////////////////////////
+                        // Normal Waveform Plot
+                        //////////////////////////////////////////////////////////////////
+
+                        // Cap within VertexBuffer capacity, one vertex per line point
+//                        int np=((siz-idx)/sam)*2;
+//                        int j=lines->Max()-lines->cnt();
+//                        if (np > j) {
+//                            siz=j*sam;
+//                        }
+
+                        // Prime first point
+                        data=*ptr * gain;
+                        lastpx=xst+((time - minx) * xmult);
+                        lastpy=yst-((data - miny) * ymult);
+
+                        for (int i=idx;i<siz;i+=sam) {
+                            ptr+=sam;
+                            time+=rate;
+
+                            data=*ptr * gain;
+
+                            px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                            py=yst-((data - miny) * ymult);   // Same for Y scale, with precomputed gain
+                            //py=yst-((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
+
+                            lines->add(lastpx,lastpy,px,py);
+
+                            lastpx=px;
+                            lastpy=py;
+
+                            if (time>maxx) {
+                                done=true;
+                                break;
+                            }
+                            if (lines->full())
+                                break;
+                        }
+                    }
+
+                } else  {
+                    //////////////////////////////////////////////////////////////////
+                    // Standard events/zoomed in Plot
+                    //////////////////////////////////////////////////////////////////
+
+                    double start=el.first();
+
+                    quint32 * tptr=el.rawTime();
+
+                    int idx=0;
+
+                    if (siz>15) {
+                        for (;idx<siz;++idx) {
+                            time=start + *tptr++;
+                            if (time >= minx) {
+                                break;
+                            }
+                        }
+
+                        if (idx > 0) {
+                            idx--;
+                            //tptr--;
+                        }
+                    }
+
+                    // Step one backwards if possible (to draw through the left margin)
+                    EventStoreType * dptr=el.rawData() + idx;
+                    tptr=el.rawTime() + idx;
+
+                    time=start + *tptr++;
+                    data=*dptr++ * gain;
+
+                    idx++;
+
+                    lastpx=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                    lastpy=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
+
+                    siz-=idx;
+
+                    // Check if would overflow lines gVertexBuffer
+                    int gs=siz << 1;
+                    int j=lines->Max()-lines->cnt();
+                    if (square_plot)
+                        gs <<= 1;
+                    if (gs > j) {
+                        qDebug() << "Would overflow line points.. increase default VertexBuffer size in gLineChart";
+                        siz=j >> square_plot ? 2 : 1;
+                        done=true; // end after this partial draw..
+                    }
+
+                    // Unrolling square plot outside of loop to gain a minor speed improvement.
+                    if (square_plot) {
+                        for (int i=0;i<siz;i++) {
+                            time=start + *tptr++;
+                            data=gain  * *dptr++;
+
+                            px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
+                            py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
+
+                            // Horizontal lines are easy to cap
+                            if (py==lastpy) {
+                                // Cap px to left margin
+                                if (lastpx<xst) lastpx=xst;
+
+                                // Cap px to right margin
+                                if (px>xst+width) px=xst+width;
+
+                                lines->unsafe_add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
+                            } else {
+                                // Letting the scissor do the dirty work for non horizontal lines
+                                // This really should be changed, as it might be cause that weird
+                                // display glitch on Linux..
+                                lines->unsafe_add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
+                            }
+
+                            lastpx=px;
+                            lastpy=py;
 
                             if (time > maxx) {
                                 done=true; // Let this iteration finish.. (This point will be in far clipping)
                                 break;
                             }
                         }
-                        // Plot compressed accelerated vertex list
-                        if (maxz>width) {
-                            //qDebug() << "gLineChart::Plot() maxz exceeded graph width" << "maxz = " << maxz << "width =" << width;
-                            maxz=width;
-                        }
-                        float ax1,ay1;
-                        for (int i=minz;i<maxz;i++) {
-                           // ax1=(m_drawlist[i-1].x()+m_drawlist[i].x()+m_drawlist[i+1].x())/3.0;
-                           // ay1=(m_drawlist[i-1].y()+m_drawlist[i].y()+m_drawlist[i+1].y())/3.0;
-                            ax1=m_drawlist[i].x();
-                            ay1=m_drawlist[i].y();
-                            lines->add(xst+i,yst-ax1,xst+i,yst-ay1);
-
-                            if (lines->full()) break;
-                        }
-
-                    } else { // Zoomed in Waveform
-    //////////////////////////////////////////////////////////////////
-    // Normal Waveform Plot
-    //////////////////////////////////////////////////////////////////
-                        if (idx>sam) {
-                            idx-=sam;
-                            time=el.time(idx);
-                            //double rate=double(sr)*double(sam);
-                        }
-                        for (int i=idx;i<siz;i+=sam) {
-                            time+=rate;
-                            //if (time < minx)
-                            //    continue; // Skip stuff before the start of our data window
-                            data=dat[i];//el.data(i);
+                    } else {
+                        for (int i=0;i<siz;i++) {
+                            time=start + *tptr++;
+                            data=gain  * *dptr++;
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
-                            py=yst-((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
+                            py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
 
-                            if (firstpx) {
-                                lastpx=px;
-                                lastpy=py;
-                                firstpx=false;
-                                continue;
-                            }
-                            lines->add(lastpx,lastpy,px,py);
+                            // Horizontal lines are easy to cap
+                            if (py==lastpy) {
+                                // Cap px to left margin
+                                if (lastpx<xst) lastpx=xst;
 
-                            if (lines->full()) {
-                                done=true;
-                                break;
+                                // Cap px to right margin
+                                if (px>xst+width) px=xst+width;
+
+                                lines->unsafe_add(lastpx,lastpy,px,py);
+                            } else {
+                                // Letting the scissor do the dirty work for non horizontal lines
+                                // This really should be changed, as it might be cause that weird
+                                // display glitch on Linux..
+                                lines->unsafe_add(lastpx,lastpy,px,py);
                             }
-                            if (time > maxx) {
-                                //done=true; // Let this iteration finish.. (This point will be in far clipping)
-                                break;
-                            }
+
                             lastpx=px;
                             lastpy=py;
-                        }
-                    }
 
-                } else {
-    //////////////////////////////////////////////////////////////////
-    // Standard events/zoomed in Plot
-    //////////////////////////////////////////////////////////////////
-                    first=true;
-                    double start=el.first();
-                    /*if (siz==2) {
-                        time=start+tim[0];
-                        data=dat[0]*gain;
-                        data-=subtract_offset;
-                        lastpy=yst-((data - miny) * ymult);   // Same for Y scale with precomputed gain
-                        lastpx=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
-                        if (lastpx<xst-1) lastpx=xst-1;
-
-                        EventDataType data2=(dat[1]*gain)-subtract_offset;
-                        qint64 time2=start+tim[1];
-                        py=yst-((data2 - miny) * ymult);
-                        px=xst+((time2 - minx) * xmult);
-                        if (px>xst+width) px=xst+width;
-
-                        lines->add(lastpx,lastpy,px,py);
-                    } else*/
-                    for (int i=0;i<siz;i++) {
-
-                        time=start+tim[i];
-                        if (first) {
-                            if (num_points>15 && (time < minx)) continue; // Skip stuff before the start of our data window
-                            first=false;
-                            if (i>0)  i--; // Start with the previous sample (which will be in clipping area)
-                            time=start+tim[i];
-                        }
-                        data=dat[i]*gain; //
-                        data-=subtract_offset;
-                        //data=el.data(i); // raw access is faster
-
-                        px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
-                        //py=yst+((data - ymin) * nmult);   // Same for Y scale with precomputed gain
-                        py=yst-((data - miny) * ymult);   // Same for Y scale with precomputed gain
-
-                        //if (px<left) px=left;
-                        //if (px>left+width) px=left+width;
-                        if (firstpx) {
-                            firstpx=false;
-                        } else {
-                            if (py==lastpy) {
-                                if (lastpx<xst) lastpx=xst;
-                                if (px>xst+width) px=xst+width;
-                                if (square_plot) {
-                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
-                                } else {
-                                    lines->add(lastpx,lastpy,px,py);
-                                }
-                            } else {
-                                if (square_plot) {
-                                    lines->add(lastpx,lastpy,px,lastpy,px,lastpy,px,py);
-                                } else {
-                                    lines->add(lastpx,lastpy,px,py);
-                                }
-                            }
-
-                            //lines->add(px,py,m_line_color);
-
-                            if (lines->full()) {
+                            if (time > maxx) { // Past right edge, abort further drawing..
                                 done=true;
                                 break;
                             }
-                        }
-                        lastpx=px;
-                        lastpy=py;
-                        //if (lastpx>start_px+width) done=true;
-                        if (time > maxx) {
-                            done=true; // Let this iteration finish.. (This point will be in far clipping)
-                            break;
                         }
                     }
                 }
@@ -518,8 +590,11 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                 if (done) break;
             }
         }
+
+        ////////////////////////////////////////////////////////////////////
+        // Draw Legends on the top line
+        ////////////////////////////////////////////////////////////////////
         if ((codepoints>0)) { //(m_codes.size()>1) &&
-            // Draw Legends for plots..
             QString text=schema::channel[code].label();
             int wid,hi;
             GetTextExtent(text,wid,hi);
@@ -601,7 +676,7 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
     double lastpx,lastpy;
     double top1=top+height;
     bool done=false;
-    GLuint color=m_color.rgba();
+    //GLuint color=m_color.rgba();
     for (int i=0;i<m_time.size();i++) {
         qint64 ti=m_time[i];
         EventDataType v=m_data[i];

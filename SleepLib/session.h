@@ -258,6 +258,7 @@ protected:
     qint64 s_last;
     bool s_changed;
     bool s_lonesession;
+    bool s_evchecksum_checked;
     bool _first_session;
 
     bool s_events_loaded;

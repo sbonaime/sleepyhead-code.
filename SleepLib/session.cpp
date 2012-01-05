@@ -41,6 +41,8 @@ Session::Session(Machine * m,SessionID session)
 
     s_first=s_last=0;
     s_eventfile="";
+    s_evchecksum_checked=false;
+
 }
 Session::~Session()
 {
@@ -80,7 +82,7 @@ bool Session::OpenEvents() {
 
 
     return s_events_loaded=true;
-};
+}
 
 bool Session::Store(QString path)
 // Storing Session Data in our format
@@ -511,22 +513,22 @@ bool Session::LoadEvents(QString filename)
     if (version>=10) {
         if (compmethod>0) {
             databytes=qUncompress(temp);
+            if (!s_evchecksum_checked) {
+                if (databytes.size()!=datasize) {
+                    qDebug() << "File" << filename << "has returned wrong datasize";
+                    return false;
+                }
+                quint16 crc=qChecksum(databytes.data(),databytes.size());
+                if (crc!=crc16) {
+                    qDebug() << "CRC Doesn't match in" << filename;
+                    return false;
+                }
+                s_evchecksum_checked=true;
+            }
         } else {
             databytes=temp;
         }
     } else databytes=temp;
-
-    if (version>=10) {
-        if (databytes.size()!=datasize) {
-            qDebug() << "File" << filename << "has returned wrong datasize";
-            return false;
-        }
-        quint16 crc=qChecksum(databytes.data(),databytes.size());
-        if (crc!=crc16) {
-            qDebug() << "CRC Doesn't match in" << filename;
-            return false;
-        }
-    }
 
     QDataStream in(databytes);
     in.setVersion(QDataStream::Qt_4_6);

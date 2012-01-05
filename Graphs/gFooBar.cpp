@@ -32,8 +32,8 @@ void gShadowArea::paint(gGraph & w,int left, int top, int width, int height)
     //float h=top;
 
     double rmx=w.rmax_x-w.rmin_x;
-    double px=((1/rmx)*(w.min_x-w.rmin_x))*width;
-    double py=((1/rmx)*(w.max_x-w.rmin_x))*width;
+    double px=((1.0/rmx)*(w.min_x-w.rmin_x))*width;
+    double py=((1.0/rmx)*(w.max_x-w.rmin_x))*width;
 
     quads->add(start_px,top,start_px,top+height,start_px+px, top+height, start_px+px, top,m_shadow_color.rgba());
     quads->add(start_px+py, top, start_px+py, top+height,end_px, top+height, end_px, top,m_shadow_color.rgba());

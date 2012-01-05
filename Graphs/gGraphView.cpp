@@ -321,18 +321,40 @@ void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort 
         m_cnt+=4;
     }
 }
+void gVertexBuffer::unsafe_add(GLshort x1, GLshort y1)
+{
+    gVertex & v=buffer[m_cnt++];
+
+    v.color=m_color;
+    v.x=x1;
+    v.y=y1;
+}
 void gVertexBuffer::add(GLshort x1, GLshort y1)
 {
     if (m_cnt<m_max) {
-        gVertex & v=buffer[m_cnt];
+        gVertex & v=buffer[m_cnt++];
 
         v.color=m_color;
         v.x=x1;
         v.y=y1;
-
-        m_cnt++;
     }
 }
+void gVertexBuffer::unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
+{
+    gVertex * v=&buffer[m_cnt];
+
+    v->x=x1;
+    v->y=y1;
+    v->color=m_color;
+
+    v++;
+    v->x=x2;
+    v->y=y2;
+    v->color=m_color;
+
+    m_cnt+=2;
+}
+
 void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
 {
     if (m_cnt < (m_max-1)) {
@@ -376,6 +398,31 @@ void gVertexBuffer::add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort 
 
         m_cnt+=4;
     }
+}
+void gVertexBuffer::unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4)
+{
+    gVertex *v=&buffer[m_cnt];
+
+    v->color=m_color;
+    v->x=x1;
+    v->y=y1;
+    v++;
+
+    v->color=m_color;
+    v->x=x2;
+    v->y=y2;
+
+    v++;
+    v->color=m_color;
+    v->x=x3;
+    v->y=y3;
+
+    v++;
+    v->color=m_color;
+    v->x=x4;
+    v->y=y4;
+
+    m_cnt+=4;
 }
 
 

@@ -165,22 +165,24 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (py<start_px) continue;
         lines->add(py,top,py,mintop);
     }
+    static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
+    int ms,m,h,s,d;
+    qint64 j;
     for (qint64 i=aligned_start;i<maxx;i+=step) {
         px=(i-minx)*xmult;
         px+=left;
         lines->add(px,top,px,majtop);
-        qint64 j=i;
+        j=i;
         if (!m_utcfix) j+=tz_offset;
-        int ms=j % 1000;
-        int m=(j/60000L) % 60L;
-        int h=(j/3600000L) % 24L;
-        int s=(j/1000L) % 60L;
-        static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+        ms=j % 1000;
+        m=(j/60000L) % 60L;
+        h=(j/3600000L) % 24L;
+        s=(j/1000L) % 60L;
         //int d=(j/86400000) % 7;
 
         if (fitmode==0) {
-            int d=(j/1000);
+            d=(j/1000);
             QDateTime dt=QDateTime::fromTime_t(d).toUTC();
             tmpstr=dt.toString("MMM dd");
         //} else if (fitmode==0) {
@@ -194,9 +196,6 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         }
 
         int tx=px-x/2.0;
-
-        // Massive bottle neck..
-        //GetTextExtent(tmpstr,x,y); // this only really needs running once :(
 
         if (m_utcfix)
             tx+=step_pixels/2.0;

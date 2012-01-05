@@ -60,7 +60,6 @@ void SummaryChart::SetDay(Day * nullday)
         m_codes.clear();
         m_colors.clear();
         m_type.clear();
-        //m_zeros.clear();
         m_typeval.clear();
 
         if (cpapmode>=MODE_ASV) {
@@ -133,19 +132,8 @@ void SummaryChart::SetDay(Day * nullday)
                     zt=qint64(sess->first())/1000L;
                     zt+=tz_offset;
                     tmp2=zt-dn*86400;
-
-                    //zt %= 86400;
                     tmp2/=3600.0;
-                    //tmp2-=24.0;
 
-                    //if (zdn>dn2) {
-                    //if (tmp2<12) {
-                    //    tmp2-=24;
-                        //m_times[dn][s]=(tmp2+12);
-                    //}/* else {
-                      //  tmp2-=12;
-                        //m_times[dn][s]=(tmp2)-12;
-                    //}*/
                     m_times[dn][s]=tmp2;
 
                     if (tmp2 < m_miny)
@@ -162,8 +150,6 @@ void SummaryChart::SetDay(Day * nullday)
         } else {
             for (int j=0;j<m_codes.size();j++) { // for each code slice
                 code=m_codes[j];
-                //m_values[dn][0]=0;
-                //if (code==CPAP_Leak) suboffset=PROFILE.cpap->IntentionalLeak(); else
                 suboffset=0;
                 type=m_type[j];
                 EventDataType typeval=m_typeval[j];
@@ -171,7 +157,6 @@ void SummaryChart::SetDay(Day * nullday)
                     day=d.value()[i];
                     CPAPMode mode=(CPAPMode)(int)day->settings_max(CPAP_Mode);
                     if (day->machine_type()!=m_machinetype) continue;
-                    //m_values[dn][j+1]=0;
 
                     bool hascode=//day->channelHasData(code) ||
                             type==ST_HOURS ||
@@ -234,35 +219,9 @@ void SummaryChart::SetDay(Day * nullday)
                     if (total<m_miny) m_miny=total;
                     if (total>m_maxy) m_maxy=total;
                 }
-                //m_empty=false;
-           }// else m_hours[dn]=0;
-        }
-    }
-   /* if (m_graphtype!=GT_SESSIONS)
-    for (int j=0;j<m_codes.size();j++) { // for each code slice
-        ChannelID code=m_codes[j];
-        if (type==ST_HOURS || type==ST_SESSIONS || m_zeros[j]) continue;
-
-        for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
-            tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
-            dn=tt/86400;
-            for (int i=0;i<d.value().size();i++) { // for each machine object for this day
-                day=d.value().at(i);
-                if (day->machine_type()!=m_machinetype) continue;
-                if (!m_values[dn].contains(j+1)) {
-                    m_days[dn]=day;
-                    m_values[dn][j+1]=0;
-                    if (!m_values[dn].contains(0)) {
-                        m_values[dn][0]=0;
-                    }
-                    if (0<m_miny) m_miny=0;
-                    if (0>m_maxy) m_maxy=0;
-                    m_hours[dn]=day->hours();
-                }
-                break;
            }
         }
-    } */
+    }
     m_empty=true;
     for (int i=0;i<m_goodcodes.size();i++) {
         if (m_goodcodes[i]) {
@@ -314,7 +273,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     //if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
 
     qint64 minx=w.min_x, maxx=w.max_x;
-    //qint64 minx=m_minx, maxx=m_maxx;
     qint64 xx=maxx - minx;
     float days=double(xx)/86400000.0;
 
@@ -326,8 +284,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType ymult=float(height-2)/yy;
 
     barw=(float(width)/float(days));
-
-    //qint64 ts;
 
     graph=&w;
     float px=left;
@@ -350,21 +306,17 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     l_minx=minx;
     l_maxx=maxx+86400000L;
 
-    //QHash<short, EventDataType> lastvalues;
     int total_days=0;
     double total_val=0;
     double total_hours=0;
-    //qint64 lastQ=0;
     bool lastdaygood=false;
     QVector<double> totalcounts;
     QVector<double> totalvalues;
-    //QVector<EventDataType> lastvalues;
     QVector<float> lastX;
     QVector<short> lastY;
     int numcodes=m_codes.size();
     totalcounts.resize(numcodes);
     totalvalues.resize(numcodes);
-    //lastvalues.resize(numcodes);
     lastX.resize(numcodes);
     lastY.resize(numcodes);
     int zd=minx/86400000L;
@@ -373,9 +325,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     QVector<bool> goodcodes;
     goodcodes.resize(m_goodcodes.size());
-//    if (d==m_values.end()) {
-//        d=m_values.find(zd--);
- //   }
+
     lastdaygood=true;
     for (int i=0;i<numcodes;i++) {
         totalcounts[i]=0;
@@ -392,7 +342,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         goodcodes[i]=false;
 
         if (!m_goodcodes[i]) continue;
-       // lastvalues[i]=0;
+
         lastX[i]=px;
         if (d!=m_values.end() && d.value().contains(i+1)) {
 
@@ -413,6 +363,9 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     Day * day;
     EventDataType hours;
 
+    quint32 * tptr;
+    EventStoreType * dptr;
+
     short px2,py2;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
         zd=Q/86400000L;
@@ -421,12 +374,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
         qint64 extra=86400000;
         if (Q<minx)
             goto jumpnext;
-            //continue;
+
         if (d!=m_values.end()) {
             day=m_days[zd];
             if (!m_hours.contains(zd))
                 goto jumpnext;
-                //continue;
 
             hours=m_hours[zd];
 
@@ -438,8 +390,6 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (x2>left+width) x2=left+width;
             if (x2<x1)
                 goto jumpnext;
-                //continue;
-            //ChannelID code;
 
             if (m_graphtype==GT_SESSIONS) {
                 int j;
@@ -454,12 +404,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 GLuint col2=brighten(col).rgba();
                 outlines->setColor(Qt::black);
 
-                if (d.value().size()>0) {
+                int np=d.value().size();
+                if (np > 0) {
                     for (int i=0;i<goodcodes.size();i++) {
                         goodcodes[i]=true;
                     }
                 }
-                for (j=0;j<d.value().size();j++) {
+                for (j=0;j < np;j++) {
                     tmp2=times.value()[j]-miny;
                     py=top+height-(tmp2*ymult);
 
@@ -472,8 +423,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     if (h>0 && barw>2) {
                         outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h);
                         outlines->add(x1,py,x2,py,x2,py,x2,py-h);
-                    } // if (bar
-                    //py-=h;
+                    }
                     totalvalues[0]+=hours*tmp;
                 }
                 totalcounts[0]+=hours;

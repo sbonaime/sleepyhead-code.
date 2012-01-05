@@ -94,6 +94,10 @@ public:
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
 
+    void unsafe_add(GLshort x1, GLshort y1);
+    void unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
+    void unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
+
     void draw();
 
     void scissor(GLshort x, GLshort y, GLshort width, GLshort height) { s_x=x; s_y=y; s_width=width; s_height=height; m_scissor=true; }
