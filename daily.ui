@@ -566,7 +566,7 @@
               <item row="2" column="1" colspan="2">
                <widget class="QDoubleSpinBox" name="weightSpinBox">
                 <property name="maximum">
-                 <double>399.990000000000009</double>
+                 <double>1499.000000000000000</double>
                 </property>
                </widget>
               </item>
@@ -718,7 +718,7 @@
        </widget>
       </widget>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
         <number>0</number>
