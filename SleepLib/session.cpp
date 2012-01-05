@@ -451,8 +451,8 @@ bool Session::StoreEvents(QString filename)
 }
 bool Session::LoadEvents(QString filename)
 {
-    quint32 t32,magicnum,machid,sessid;
-    quint16 t16,version,type,crc16,machtype,compmethod;
+    quint32 magicnum,machid,sessid;
+    quint16 version,type,crc16,machtype,compmethod;
     quint8 t8;
     qint32 datasize;
 
@@ -473,7 +473,6 @@ bool Session::LoadEvents(QString filename)
     header.setVersion(QDataStream::Qt_4_6);
     header.setByteOrder(QDataStream::LittleEndian);
 
-    bool compressed=true;
     header >> magicnum;         // Magic Number (quint32)
     header >> version;          // Version (quint16)
     header >> type;             // File type (quint16)
@@ -515,7 +514,7 @@ bool Session::LoadEvents(QString filename)
         } else {
             databytes=temp;
         }
-    }
+    } else databytes=temp;
 
     if (version>=10) {
         if (databytes.size()!=datasize) {
@@ -628,8 +627,6 @@ bool Session::LoadEvents(QString filename)
             }
         }
     }
-
-    zzzzz; deliberately breaking git..
 
     if (version<events_version) {
         qDebug() << "Upgrading Events file" << filename << "to version" << events_version;
