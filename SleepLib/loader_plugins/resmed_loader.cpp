@@ -21,6 +21,10 @@ License: GPL
 #include "SleepLib/session.h"
 #include "SleepLib/calcs.h"
 
+#ifdef DEBUG_EFFICIENCY
+#include <QElapsedTimer>  // only available in 4.8
+#endif
+
 extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;
 QHash<ChannelID, QVector<QString> > resmed_codes;
@@ -1150,7 +1154,24 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             m->AddSession(sess,profile);
         }
     }
-
+#ifdef DEBUG_EFFICIENCY
+    {
+        qint64 totalbytes=0;
+        qint64 totalns=0;
+    qDebug() << "Time Delta Efficiency Information";
+    for (QHash<ChannelID,qint64>::iterator it=channel_efficiency.begin();it!=channel_efficiency.end();it++) {
+        ChannelID code=it.key();
+        qint64 value=it.value();
+        qint64 ns=channel_time[code];
+        totalbytes+=value;
+        totalns+=ns;
+        double secs=double(ns)/1000000000.0L;
+        QString s=value < 0 ? "saved" : "cost";
+        qDebug() << "Time-Delta conversion for "+schema::channel[code].label()+" "+s+" "+QString::number(qAbs(value))+" bytes and took "+QString::number(secs,'f',4)+"s";
+    }
+    qDebug() << "Total toTimeDelta function usage:" << totalbytes << "in" << double(totalns)/1000000000.0 << "seconds";
+    }
+#endif
 
     if (m) {
         m->Save();
@@ -1310,13 +1331,15 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         a->AddWaveform(edf.startdate,es.data,recs,duration);
         sess->setMin(code,a->Min());
         sess->setMax(code,a->Max());
-        //delete edf.edfsignals[s]->data;
-        //edf.edfsignals[s]->data=NULL; // so it doesn't get deleted when edf gets trashed.
     }
     return true;
 }
 EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType min,EventDataType max,bool square)
 {
+#ifdef DEBUG_EFFICIENCY
+    QElapsedTimer time;
+    time.start();
+#endif
     bool first=true;
     double rate=(duration/recs); // milliseconds per record
     double tt=edf.startdate;
@@ -1348,6 +1371,23 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     }
     el->AddEvent(tt,c);
     sess->updateLast(tt);
+
+
+#ifdef DEBUG_EFFICIENCY
+    qint64 t=time.nsecsElapsed();
+    int cnt=el->count();
+    int bytes=cnt * (sizeof(EventStoreType)+sizeof(quint32));
+    int wvbytes=recs * (sizeof(EventStoreType));
+    QHash<ChannelID,qint64>::iterator it=channel_efficiency.find(code);
+    if (it==channel_efficiency.end()) {
+       channel_efficiency[code]=wvbytes-bytes;
+       channel_time[code]=t;
+    } else {
+        it.value()+=wvbytes-bytes;
+        channel_time[code]+=t;
+    }
+#endif
+
     return el;
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)

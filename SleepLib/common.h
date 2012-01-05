@@ -4,6 +4,12 @@
 #include <QString>
 #include <QObject>
 
+#if QT_VERSION >= QT_VERSION_CHECK(4,8,0)
+
+#define DEBUG_EFFICIENCY 1
+
+#endif
+
 enum UnitSystem { US_Undefined, US_Metric, US_Archiac };
 
 typedef float EventDataType;

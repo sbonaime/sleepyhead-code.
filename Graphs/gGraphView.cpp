@@ -27,6 +27,11 @@ extern MainWindow *mainwin;
 #include "GL/glu.h"
 #endif
 
+#ifdef DEBUG_EFFICIENCY
+// Only works in 4.8
+#include <QElapsedTimer>
+#endif
+
 
 bool _graph_init=false;
 
@@ -2579,8 +2584,10 @@ void gGraphView::fadeIn(bool dir)
 
 void gGraphView::paintGL()
 {
-    QTime time;
+#ifdef DEBUG_EFFICIENCY
+    QElapsedTimer time;
     time.start();
+#endif
 
     if (redrawtimer->isActive()) {
         redrawtimer->stop();
@@ -2698,11 +2705,13 @@ void gGraphView::paintGL()
         }
     }
 
+#ifdef DEBUG_EFFICIENCY
     // Show FPS and draw time
     if (m_showsplitter && PROFILE.general->showDebug()) {
         QString ss;
-        int ela=time.elapsed();
-        ss="Debug Mode "+QString::number(ela)+"ms ("+QString::number(1000.0/float(ela),'f',1)+"fps)";
+        qint64 ela=time.nsecsElapsed();
+        double ms=double(ela)/1000000.0;
+        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(1000.0/float(ms),'f',1)+"fps)";
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;
@@ -2711,6 +2720,7 @@ void gGraphView::paintGL()
         AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
         DrawTextQue();
     }
+#endif
 
     swapBuffers(); // Dump to screen.
 

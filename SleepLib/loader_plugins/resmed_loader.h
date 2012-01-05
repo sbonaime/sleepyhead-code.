@@ -24,6 +24,7 @@ const int resmed_data_version=5;
 //
 //********************************************************************************************
 
+
 const QString resmed_class_name=STR_MACH_ResMed;
 
 /*! \struct EDFHeader
@@ -213,7 +214,10 @@ protected:
     bool LoadPLD(Session *sess,EDFParser &edf);
 
     QMap<SessionID,QVector<QString> > sessfiles;
-
+#ifdef DEBUG_EFFICIENCY
+    QHash<ChannelID,qint64> channel_efficiency;
+    QHash<ChannelID,qint64> channel_time;
+#endif
 };
 
 #endif // RESMED_LOADER_H
