@@ -25,7 +25,7 @@ const quint16 filetype_data=1;
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
 const quint16 summary_version=11;
-const quint16 events_version=9;
+const quint16 events_version=10;
 
 Session::Session(Machine * m,SessionID session)
 {
@@ -497,7 +497,7 @@ bool Session::LoadEvents(QString filename)
         return false;
     }
 
-    if (version<9) {
+    if (version<10) {
         file.seek(32);
     } else {
         header >> compmethod;   // Compression Method (quint16)
@@ -508,13 +508,16 @@ bool Session::LoadEvents(QString filename)
 
     QByteArray databytes,temp=file.readAll();
     file.close();
-    if (compmethod>0) {
-        databytes=qUncompress(temp);
-    } else {
-        databytes=temp;
+
+    if (version>=10) {
+        if (compmethod>0) {
+            databytes=qUncompress(temp);
+        } else {
+            databytes=temp;
+        }
     }
 
-    if (version>=9) {
+    if (version>=10) {
         if (databytes.size()!=datasize) {
             qDebug() << "File" << filename << "has returned wrong datasize";
             return false;
