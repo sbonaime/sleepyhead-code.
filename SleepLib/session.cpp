@@ -514,14 +514,16 @@ bool Session::LoadEvents(QString filename)
         databytes=temp;
     }
 
-    if (databytes.size()!=datasize) {
-        qDebug() << "File" << filename << "has returned wrong datasize";
-        return false;
-    }
-    quint16 crc=qChecksum(databytes.data(),databytes.size());
-    if (crc!=crc16) {
-        qDebug() << "CRC Doesn't match in" << filename;
-        return false;
+    if (version>=9) {
+        if (databytes.size()!=datasize) {
+            qDebug() << "File" << filename << "has returned wrong datasize";
+            return false;
+        }
+        quint16 crc=qChecksum(databytes.data(),databytes.size());
+        if (crc!=crc16) {
+            qDebug() << "CRC Doesn't match in" << filename;
+            return false;
+        }
     }
 
     QDataStream in(databytes);
