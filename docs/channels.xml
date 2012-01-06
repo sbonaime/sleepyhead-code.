@@ -13,7 +13,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="OA" unit="events/hour" color="#40c0ff"/>
   <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" unit="events/hour" color="blue"/>
   <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="UA" unit="events/hour" color="dark green"/>
-  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" unit="events/hour" color="dark grey"/>
+  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" unit="events/hour" color="#404040"/>
   <channel id="0x1006" class="data" name="RERA" details="Resp. Effort Related Arousal" unit="events/hour" label="RERA" color="gold"/>
   <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="events/hour" color="red"/>
   <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore #2" label="VS2" unit="events/hour" color="orange"/>
@@ -21,7 +21,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="events/hour" color="dark blue"/>
   <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="events/hour" color="orange"/>
   <channel id="0x100c" class="data" name="ExP" details="Exhale Puff" label="EP" unit="events/hour" color="dark magenta"/>
-  <channel id="0x101e" class="data" name="UserFlag1" details="User Flag #1" label="UF1" unit="events/hour" color="dark cyan"/>
+  <channel id="0x101e" class="data" name="UserFlag1" details="User Flag (Custom Event)" label="UF1" unit="events/hour" color="dark cyan"/>
   <channel id="0x101f" class="data" name="UserFlag2" details="User Flag #2" label="UF2" unit="events/hour" color="dark cyan"/>
 
   <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="Pressure" color="black"/>

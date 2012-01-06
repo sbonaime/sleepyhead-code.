@@ -1224,22 +1224,31 @@ void MainWindow::updateFavourites()
         if (journal) {
             if (journal->size()>0) {
                 Session *sess=(*journal)[0];
+                QString tmp;
+                bool filtered=!bookmarkFilter.isEmpty();
+                bool found=!filtered;
                 if (sess->settings.contains(Bookmark_Start)) {
                     //QVariantList start=sess->settings[Bookmark_Start].toList();
                     //QVariantList end=sess->settings[Bookmark_End].toList();
                     QStringList notes=sess->settings[Bookmark_Notes].toStringList();
                     if (notes.size()>0) {
-                        html+=QString("<tr><td><b><a href='daily=%1'>%2</a></b><br/>")
+                        tmp+=QString("<tr><td><b><a href='daily=%1'>%2</a></b><br/>")
                                 .arg(date.toString(Qt::ISODate))
                                 .arg(date.toString());
 
+                        tmp+="<list>";
+
                         for (int i=0;i<notes.size();i++) {
                             //QDate d=start[i].toDate();
-                            html+="&nbsp;"+notes[i]+"<br/>";
+                            QString note=notes[i];
+                            if (filtered && note.contains(bookmarkFilter,Qt::CaseInsensitive))
+                                found=true;
+                            tmp+="<li>"+note+"</li>";
                         }
-                        html+="</td>";
+                        tmp+="</list></td>";
                     }
                 }
+                if (found) html+=tmp;
             }
         }
 
@@ -2393,4 +2402,19 @@ void MainWindow::on_summaryView_linkClicked(const QUrl &arg1)
 void MainWindow::on_bookmarkView_linkClicked(const QUrl &arg1)
 {
     on_recordsBox_linkClicked(arg1);
+}
+
+void MainWindow::on_filterBookmarks_editingFinished()
+{
+    bookmarkFilter=ui->filterBookmarks->text();
+    updateFavourites();
+}
+
+void MainWindow::on_filterBookmarksButton_clicked()
+{
+    if (!bookmarkFilter.isEmpty()) {
+        ui->filterBookmarks->setText("");
+        bookmarkFilter="";
+        updateFavourites();
+    }
 }

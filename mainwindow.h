@@ -279,6 +279,10 @@ private slots:
 
     void on_bookmarkView_linkClicked(const QUrl &arg1);
 
+    void on_filterBookmarks_editingFinished();
+
+    void on_filterBookmarksButton_clicked();
+
 private:
 
     Ui::MainWindow *ui;
@@ -293,6 +297,7 @@ private:
     QSystemTrayIcon *systray;
     QMenu *systraymenu;
     gGraphView *SnapshotGraph;
+    QString bookmarkFilter;
 };
 
 #endif // MAINWINDOW_H
