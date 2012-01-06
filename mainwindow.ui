@@ -286,13 +286,13 @@
       <widget class="QToolBox" name="toolBox">
        <property name="minimumSize">
         <size>
-         <width>160</width>
+         <width>180</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>160</width>
+         <width>180</width>
          <height>16777215</height>
         </size>
        </property>
@@ -405,7 +405,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -743,7 +743,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>158</width>
+          <width>178</width>
           <height>313</height>
          </rect>
         </property>
@@ -765,7 +765,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QListWidget" name="favouritesList">
+          <widget class="QWebView" name="bookmarkView">
            <property name="palette">
             <palette>
              <active>
@@ -773,15 +773,6 @@
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>170</red>
-                 <green>170</green>
-                 <blue>255</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="AlternateBase">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>85</red>
                  <green>170</green>
                  <blue>255</blue>
                 </color>
@@ -798,15 +789,6 @@
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="AlternateBase">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>85</red>
-                 <green>170</green>
-                 <blue>255</blue>
-                </color>
-               </brush>
-              </colorrole>
              </inactive>
              <disabled>
               <colorrole role="Base">
@@ -818,40 +800,13 @@
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="AlternateBase">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>85</red>
-                 <green>170</green>
-                 <blue>255</blue>
-                </color>
-               </brush>
-              </colorrole>
              </disabled>
             </palette>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="editTriggers">
-            <set>QAbstractItemView::NoEditTriggers</set>
-           </property>
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-           <property name="selectionRectVisible">
-            <bool>false</bool>
+           <property name="url">
+            <url>
+             <string>about:blank</string>
+            </url>
            </property>
           </widget>
          </item>
@@ -862,8 +817,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>98</width>
-          <height>28</height>
+          <width>158</width>
+          <height>313</height>
          </rect>
         </property>
         <property name="mouseTracking">

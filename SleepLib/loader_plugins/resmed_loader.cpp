@@ -430,15 +430,18 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         QFile::copy(path+idfile+ext_TGT,backup_path+idfile+ext_TGT);
         QFile::copy(path+idfile+ext_CRC,backup_path+idfile+ext_CRC);
 
-
         //copy STR files to backup folder
         if (strpath.endsWith(ext_gz))  // Already compressed.
             QFile::copy(strpath,backup_path+strfile+ext_EDF+ext_gz);
         else { // Compress STR file to backup folder
+            QString strf=backup_path+strfile+ext_EDF;
+            if (QFile::exists(strf))
+                QFile::remove(strf);
+
             compress_backups ?
-                compressFile(strpath,backup_path+strfile+ext_EDF)
+                compressFile(strpath,strf)
             :
-                QFile::copy(strpath,backup_path+strfile+ext_EDF);
+                QFile::copy(strpath,strf);
         }
 
         QFile::copy(path+"STR.crc",backup_path+"STR.crc");
@@ -983,15 +986,41 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             // Copy the EDF file to the backup folder
             if (create_backups) {
                 backupfile=backup_path+filename;
-                if (!gz) {
-                    compress_backups ?
-                        compressFile(fullpath, backupfile)
-                    :
+                bool dobackup=true;
+                if (!gz && QFile::exists(backupfile+".gz")) {
+                    dobackup=false;
+                } else if (QFile::exists(backupfile)) {
+                    if (gz) {
+                        // don't bother, it's already there and compressed.
+                        dobackup=false;
+                    } else {
+                        // non compressed file is there..
+                        if (compress_backups) {
+                            // remove old edf file, as we are writing a compressed one
+                            QFile::remove(backupfile);
+                        } else { // don't bother copying it.
+                            dobackup=false;
+                        }
+                    }
+                }
+                if (dobackup) {
+                    if (!gz) {
+                        compress_backups ?
+                            compressFile(fullpath, backupfile)
+                        :
+                            QFile::copy(fullpath, backupfile);
+                    } else {
+                        // already compressed, just copy it.
                         QFile::copy(fullpath, backupfile);
-                } else // already compressed, just copy it.
-                    QFile::copy(fullpath, backupfile);
+                    }
+                }
 
-                backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
+                if (!gz) {
+                    backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
+                } else {
+                    backfile=filename.replace(".edf.gz",".crc",Qt::CaseInsensitive);
+                }
+
                 backupfile=backup_path+backfile;
                 crcfile=newpath+backfile;
                 QFile::copy(crcfile, backupfile);
@@ -1311,13 +1340,16 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
         //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
-        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
-        if (edf.edfsignals[s]->label=="Flow") {
+        if (es.offset>0) {
+            int i=5;
+        }
+        if (es.label=="Flow") {
             es.gain*=60;
             es.physical_dimension="L/M";
             code=CPAP_FlowRate;
-        } else if (edf.edfsignals[s]->label.startsWith("Mask Pres")) {
+        } else if (es.label.startsWith("Mask Pres")) {
             code=CPAP_MaskPressureHi;
         } else if (es.label.startsWith("Resp Event")) {
             code=CPAP_RespEvent;
@@ -1400,11 +1432,11 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
         //qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
-        long recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords();
+        long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
-        if (edf.edfsignals[s]->label.startsWith("Puls")) {
+        if (es.label.startsWith("Puls")) {
             code=OXI_Pulse;
-        } else if (edf.edfsignals[s]->label=="SpO2") {
+        } else if (es.label=="SpO2") {
             code=OXI_SPO2;
         } else {
             qDebug() << "Unobserved ResMed SAD Signal " << edf.edfsignals[s]->label;
@@ -1446,6 +1478,9 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     ChannelID code;
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
+        if (es.offset>0) {
+            int i=5;
+        }
         recs=es.nr*edf.GetNumDataRecords();
         if (recs<=0) continue;
         rate=double(duration)/double(recs);

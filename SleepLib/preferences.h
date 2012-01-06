@@ -121,49 +121,6 @@ protected:
     QString p_path;
 };
 
-enum PrefType { PT_Checkbox, PT_Spinbox, PT_Integer, PT_Number, PT_Date, PT_Time, PT_DateTime, PT_LineEdit, PT_TextEdit, PT_Dropdown };
-
-/*! \class Preference
-    \brief Holds a single preference
-    \note This is a work in progress to clean up preferences system
-    */
-class Preference
-{
-public:
-    Preference() {
-        m_pref=NULL;
-    }
-    Preference(const Preference & copy) {
-        m_pref=copy.m_pref;
-        m_code=copy.m_code;
-        m_type=copy.m_type;
-        m_label=copy.m_label;
-        m_tooltip=copy.m_tooltip;
-        m_defaultValue=copy.m_defaultValue;
-    }
-    Preference(Preferences * pref, QString code, PrefType type, QString label, QString tooltip, QVariant default_value);
-    ~Preference() {}
-
-    QString code() { return m_code; }
-
-    void setValue(QVariant v);
-    QVariant & value();
-
-    PrefType type() { return m_type; }
-    QString label() { return m_label; }
-    QString tooltip() { return m_tooltip; }
-    QVariant defaultValue() { return m_defaultValue; }
-protected:
-    Preferences * m_pref;
-    QString m_code;
-    PrefType m_type;
-    QString m_label;
-    QString m_tooltip;
-    QVariant m_defaultValue;
-};
-
-Q_DECLARE_METATYPE(Preference)
-
 //! \brief Main Preferences Object used throughout the application
 extern Preferences PREF;
 

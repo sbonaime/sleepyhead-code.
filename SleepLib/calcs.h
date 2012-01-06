@@ -15,7 +15,7 @@ int calcRespRate(Session *session);
 int calcAHIGraph(Session *session);
 
 //! \brief Calculates AHI for a session between start & end (a support function for the sliding window graph)
-EventDataType calcAHI(Session *session,qint64 start=0, qint64 end=0);
+EventDataType calcAHI(Session *session,qint64 start=-1, qint64 end=-1);
 
 //! \brief Leaks calculations for PRS1
 int calcLeaks(Session *session);

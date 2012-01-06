@@ -604,7 +604,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
             legendx-=bw/2;
 
             int tp=top-5-bw/2;
-            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_line_color.rgba());
+            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_colors[gi].rgba());
             legendx-=hi+bw/2;
         }
     }

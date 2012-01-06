@@ -342,6 +342,11 @@ extern const char * STR_CS_PrescribedMaxPressure;
 extern const char * STR_CS_UntreatedAHI;
 extern const char * STR_CS_Notes;
 extern const char * STR_CS_DateDiagnosed;
+extern const char * STR_CS_UserEventFlagging;
+extern const char * STR_CS_UserFlowRestriction;
+extern const char * STR_CS_UserEventDuration;
+extern const char * STR_CS_AHIWindow;
+extern const char * STR_CS_AHIReset;
 
 /*! \class CPAPSettings
     \brief Profile Options relating to the CPAP settings
@@ -365,6 +370,11 @@ public:
         if (!m_profile->contains(STR_CS_UntreatedAHI)) (*m_profile)[STR_CS_UntreatedAHI]=0.0;
         if (!m_profile->contains(STR_CS_Notes)) (*m_profile)[STR_CS_Notes]=QString();
         if (!m_profile->contains(STR_CS_DateDiagnosed)) (*m_profile)[STR_CS_DateDiagnosed]=QDate();
+        if (!m_profile->contains(STR_CS_UserFlowRestriction)) (*m_profile)[STR_CS_UserFlowRestriction]=10.0;
+        if (!m_profile->contains(STR_CS_UserEventDuration)) (*m_profile)[STR_CS_UserEventDuration]=10.0;
+        if (!m_profile->contains(STR_CS_UserEventFlagging)) (*m_profile)[STR_CS_UserEventFlagging]=false;
+        if (!m_profile->contains(STR_CS_AHIWindow)) (*m_profile)[STR_CS_AHIWindow]=60.0;
+        if (!m_profile->contains(STR_CS_AHIReset)) (*m_profile)[STR_CS_AHIReset]=false;
     }
 
     ~CPAPSettings() {}
@@ -384,6 +394,11 @@ public:
     double untreatedAHI() { return (*m_profile)[STR_CS_UntreatedAHI].toDouble(); }
     const QString notes() { return (*m_profile)[STR_CS_Notes].toString(); }
     QDate dateDiagnosed() { return (*m_profile)[STR_CS_DateDiagnosed].toDate(); }
+    double userFlowRestriction() { return (*m_profile)[STR_CS_UserFlowRestriction].toDouble(); }
+    double userEventDuration() { return (*m_profile)[STR_CS_UserEventDuration].toDouble(); }
+    double AHIWindow() { return (*m_profile)[STR_CS_AHIWindow].toDouble(); }
+    bool AHIReset() { return (*m_profile)[STR_CS_AHIReset].toBool(); }
+    bool userEventFlagging() { return (*m_profile)[STR_CS_UserEventFlagging].toBool(); }
 
     //Setters
     void setMode(CPAPMode mode) { (*m_profile)[STR_CS_PrescribedMode]=(int)mode; }
@@ -398,6 +413,11 @@ public:
     void setMaskStartDate(QDate date) { (*m_profile)[STR_CS_MaskStartDate]=date; }
     void setMaskDescription(QString description) { (*m_profile)[STR_CS_MaskDescription]=description; }
     void setMaskType(MaskType masktype) { (*m_profile)[STR_CS_MaskType]=(int)masktype; }
+    void setUserFlowRestriction(double flow) { (*m_profile)[STR_CS_UserFlowRestriction]=flow; }
+    void setUserEventDuration(double duration) { (*m_profile)[STR_CS_UserEventDuration]=duration; }
+    void setAHIWindow(double window) { (*m_profile)[STR_CS_AHIWindow]=window; }
+    void setAHIReset(bool reset) { (*m_profile)[STR_CS_AHIReset]=reset; }
+    void setUserEventFlagging(bool flagging) { (*m_profile)[STR_CS_UserEventFlagging]=flagging; }
 
     Profile *m_profile;
 };

@@ -105,36 +105,47 @@ int main(int argc, char *argv[])
     a.setApplicationName("SleepyHead");
     initialize();
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Register Importer Modules
+    ////////////////////////////////////////////////////////////////////////////////////////////
     PRS1Loader::Register();
     CMS50Loader::Register();
-    ZEOLoader::Register();
+    //ZEOLoader::Register();
     ResmedLoader::Register();
     IntellipapLoader::Register();
+
+    // Scan for user profiles
     Profiles::Scan();
-    qRegisterMetaType<Preference>("Preference");
+    //qRegisterMetaType<Preference>("Preference");
     PREF["AppName"]=QObject::tr("SleepyHead");
+
+
+    // Skip login screen, unless asked not to on the command line
     bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));
     if (force_login_screen) skip_login=false;
 
+    // Todo: Make a wrapper for Preference settings, like Profile settings have..
     QDateTime lastchecked, today=QDateTime::currentDateTime();
     if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) {
         PREF[STR_GEN_UpdatesAutoCheck]=true;
         PREF[STR_GEN_UpdateCheckFrequency]=7;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Check when last checked for updates..
+    ////////////////////////////////////////////////////////////////////////////////////////////
     bool check_updates=false;
     if (PREF[STR_GEN_UpdatesAutoCheck].toBool()) {
         int update_frequency=PREF[STR_GEN_UpdateCheckFrequency].toInt();
         int days=1000;
-        // p_pref ->Get
         lastchecked=PREF[STR_GEN_UpdatesLastChecked].toDateTime();
         if (PREF.contains(STR_GEN_UpdatesLastChecked)) {
             days=lastchecked.secsTo(today);
             days/=86400;
         };
         if (days>update_frequency) {
-            //QMessageBox::information(NULL,"Check for updates","Placeholder. Would automatically check for updates here.",QMessageBox::Ok);
             check_updates=true;
-            //PREF[STR_GEN_UpdatesLastChecked]=today;
         }
     }
 
@@ -173,14 +184,13 @@ int main(int argc, char *argv[])
     p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
 
     qDebug() << "Selected Profile" << p_profile->user->userName();
-    //if (!PREF.Exists(STR_GEN_Profile)) PREF[STR_GEN_Profile]=getUserName();
 
-    //int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
-   /* QFontDatabase fdb;
-    QStringList ffam=fdb.families();
-    for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
-        qDebug() << "Loaded Font: " << (*i);
-    } */
+//    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
+//    QFontDatabase fdb;
+//    QStringList ffam=fdb.families();
+//    for (QStringList::iterator i=ffam.begin();i!=ffam.end();i++) {
+//        qDebug() << "Loaded Font: " << (*i);
+//    }
 
     if (!PREF.contains("Fonts_Application_Name")) {
         PREF["Fonts_Application_Name"]="Sans Serif";

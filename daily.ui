@@ -248,7 +248,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -773,14 +773,10 @@
           <item>
            <widget class="QToolButton" name="resetLayoutButton">
             <property name="toolTip">
-             <string>Reset the graphs to uniform sizes</string>
+             <string>Reset the graph heights to uniform sizes</string>
             </property>
             <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="Resources.qrc">
-              <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+             <string>Reset</string>
             </property>
             <property name="autoRaise">
              <bool>true</bool>

@@ -97,10 +97,10 @@ void Profile::DataFormatError(Machine *m)
         if (!m->Purge(3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
 
             QMessageBox::critical(NULL,QObject::tr("Purge Failed"),QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")+PREF[STR_GEN_DataFolder].toString(),QMessageBox::Ok);
-            exit(-1);
+            QApplication::exit(-1);
         }
     } else {
-        exit(-1);
+        QApplication::exit(-1);
     }
     return;
 
@@ -909,6 +909,11 @@ const char * STR_CS_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
 const char * STR_CS_UntreatedAHI="UntreatedAHI";
 const char * STR_CS_Notes="CPAPNotes";
 const char * STR_CS_DateDiagnosed="DateDiagnosed";
+const char * STR_CS_UserEventFlagging="UserEventFlagging";
+const char * STR_CS_UserFlowRestriction="UserFlowRestriction";
+const char * STR_CS_UserEventDuration="UserEventDuration";
+const char * STR_CS_AHIWindow="AHIWindow";
+const char * STR_CS_AHIReset="AHIReset";
 
 // ImportSettings Strings
 const char * STR_IS_DaySplitTime="DaySplitTime";

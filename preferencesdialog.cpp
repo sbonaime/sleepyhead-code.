@@ -43,8 +43,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->leakProfile->setColumnWidth(0,100);
     ui->maskTypeCombo->clear();
 
-    ui->ahiGraphGroupbox->setEnabled(false);
-    ui->customEventGroupbox->setEnabled(false);
+    //ui->ahiGraphGroupbox->setEnabled(false);
+    //ui->customEventGroupbox->setEnabled(false);
 
     QString masktype=tr("Nasal Pillows");
     //masktype=PROFILEMaskType
@@ -194,6 +194,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     if (ot<0) ot=0;
     ui->oximetryType->setCurrentIndex(ot);
 
+    ui->ahiGraphWindowSize->setValue(profile->cpap->AHIWindow());
+    ui->ahiGraphZeroReset->setChecked(profile->cpap->AHIReset());
+
+    ui->customEventGroupbox->setChecked(profile->cpap->userEventFlagging());
+    ui->apneaDuration->setValue(profile->cpap->userEventDuration());
+    ui->apneaFlowRestriction->setValue(profile->cpap->userFlowRestriction());
+
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
     ui->eventTable->setColumnHidden(3,true);
@@ -337,6 +344,17 @@ void PreferencesDialog::Save()
     profile->oxi->setPulseChangeBPM(ui->pulseChange->value());
     profile->oxi->setPulseChangeDuration(ui->pulseChangeTime->value());
     profile->oxi->setOxiDiscardThreshold(ui->oxiDiscardThreshold->value());
+
+    profile->cpap->setAHIWindow(ui->ahiGraphWindowSize->value());
+    profile->cpap->setAHIReset(ui->ahiGraphZeroReset->isChecked());
+
+    // Restart if turning user event flagging on/off
+    if (profile->cpap->userEventFlagging()!=ui->customEventGroupbox->isChecked())
+        needs_restart=true;
+
+    profile->cpap->setUserEventFlagging(ui->customEventGroupbox->isChecked());
+    profile->cpap->setUserEventDuration(ui->apneaDuration->value());
+    profile->cpap->setUserFlowRestriction(ui->apneaFlowRestriction->value());
 
     PREF[STR_GEN_SkipLogin]=ui->skipLoginScreen->isChecked();
 

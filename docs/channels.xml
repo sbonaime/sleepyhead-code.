@@ -48,7 +48,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP" unit="cmH20" color="grey"/>
   <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP" unit="cmH20" color="grey"/>
   <channel id="0x1112" class="data" name="RespEvent" details="Respiratory Events" label="Resp Events" unit="" color="black"/>
-  <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="0&lt;n&lt;1" color="dark grey"/>
+  <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="0-1" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Target Vent." unit="" color="dark cyan"/>
   <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
   <channel id="0x1116" class="data" name="AHI" details="Apnea / Hypopnea Index" label="AHI/Hr" unit="events/hr" color="dark red"/>
@@ -69,7 +69,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1158" class="data" name="PRS1_10" details="Unknown 10" label="U10" unit="?" color="black"/>
   <channel id="0x1159" class="data" name="PRS1_12" details="PRS1 Unknown 12" label="U12" unit="" color="black"/>
   <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
-  <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="U02" unit="" color="black"/>
+  <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="E02" unit="" color="black"/>
   <channel id="0x1162" class="data" name="SetPressure" details="Set Pressure" label="Pressure" unit="" color="black"/>
   <channel id="0x1163" class="data" name="BrokenSummary" details="Broken Summary" label="Broken Summary" unit="" color="black"/>
   <channel id="0x1164" class="data" name="BrokenWaveform" details="Broken Waveform" label="Broken Waveform" unit="" color="black"/>

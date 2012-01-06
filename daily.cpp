@@ -153,8 +153,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),tr("FL"))));
     fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),tr("RE"))));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),tr("VS"))));
-    fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
-    fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
+    if (PROFILE.cpap->userEventFlagging()) {
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
+    }
     //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
     SF->setBlockZoom(true);
@@ -189,8 +191,10 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),tr("OA")))));
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),tr("CA")))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
+    if (PROFILE.cpap->userEventFlagging()) {
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
+    }
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),tr("O2"))));
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),tr("PC"),FT_Dot)));
 
@@ -437,6 +441,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     QHash<ChannelID,QTreeWidgetItem *> mcroot;
     QHash<ChannelID,int> mccnt;
     int total_events=0;
+    bool userflags=p_profile->cpap->userEventFlagging();
     for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -460,6 +465,9 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_PressurePulse)
                 && (code!=CPAP_VSnore2)
                 && (code!=CPAP_VSnore)) continue;
+
+            if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2))) continue;
+
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
                 int cnt=day->count(code);
@@ -657,8 +665,7 @@ void Daily::Load(QDate date)
     "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
     "<table cellspacing=0 cellpadding=1 border=0 width='100%'>\n";
     QString tmp;
-    //const int gwwidth=240;
-    //const int gwheight=100;
+
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateEventsTree(ui->treeWidget,cpap);
@@ -667,51 +674,20 @@ void Daily::Load(QDate date)
 
     snapGV->setDay(cpap);
 
-
     GraphView->ResetBounds(false);
 
-    //GraphView->setEmptyText(tr("No Data")); //tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
     if (!cpap && !oxi) {
-        //splitter->setMinimumHeight(0);
         scrollbar->hide();
- //       GraphView->hide();
     } else {
-        //NoData->hide();
-   //     GraphView->show();
         scrollbar->show();
     }
-    //GraphView->redraw();
-    //snapGV->redraw();
-//    for (int i=0;i<GraphView->size();i++) {
-//        QString title=(*GraphView)[i]->title();
-//        bool empty=(*GraphView)[i]->isEmpty();
-//        if (!empty) graphsAvailable++;
-//        GraphToggles[title]->setVisible(!empty);
-//    }
-//    emptyToggleArea->setVisible(graphsAvailable==0);
-
-    //ui->graphVisibilityToggleArea->setVisible(graphsAvailable>0);
-
-    //RedrawGraphs();
 
     QString modestr;
-    //float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
     QString a;
     bool isBrick=false;
 
-    //ui->graphVisibilityToggleArea->setVisible(true);
-
     updateGraphCombo();
-    //int graphsAvailable=GraphView->visibleGraphs();
-//    if (graphsAvailable>0) {
-//            GraphView->setCubeImage(images["sheep"]);
-//            GraphView->setEmptyText(tr("Graphs Switched Off"));
-//    } else {
-//        GraphView->setCubeImage(images["nodata"]);
-//        GraphView->setEmptyText(tr("No Data"));
-//        emptyToggleArea->setText("No graph data available for this day");
-//    }
 
     if (cpap) {
         if (GraphView->isEmpty()) {
@@ -866,6 +842,12 @@ void Daily::Load(QDate date)
 
             }
             html+="</tr>";
+
+            if (PROFILE.cpap->userEventFlagging()) {
+                EventDataType uf=cpap->count(CPAP_UserFlag1) / cpap->hours();
+                if (uf>0)
+                    html+=QString("<tr><td colspan=5>User flag index=%1</td></tr>").arg(uf,0,'f',2);
+            }
 
 
             // Note, this may not be a problem since Qt bug 13622 was discovered
@@ -1762,7 +1744,7 @@ void Daily::updateCube()
 
         if (ui->graphCombo->count()>0) {
             GraphView->setEmptyText(tr("No Graphs On!"));
-            GraphView->setCubeImage(images["sheep"]);
+            GraphView->setCubeImage(images["nographs"]);
 
         } else {
             GraphView->setEmptyText("No Data");

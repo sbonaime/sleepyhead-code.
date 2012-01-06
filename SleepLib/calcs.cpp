@@ -5,6 +5,7 @@
 */
 
 #include <cmath>
+#include <algorithm>
 
 #include "calcs.h"
 #include "profiles.h"
@@ -117,6 +118,8 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
 //    int rpos=0;
     EventDataType min=0,max=0;
     qint64 peakmin=0, peakmax=0;
+    double avgmax=0;
+    double avgmin=0;
     for (i=0;i<size;i++) {
         c=stage2[i];
 
@@ -144,6 +147,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                     // keep previously calculated negative peak
                     breaths_min_peak.push_back(peakmin);
                     breaths_min.push_back(min);
+                    avgmin+=min;
                     max=0;
                 }
             } else {
@@ -176,6 +180,7 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                     // keep previously calculated positive peak
                     breaths_max_peak.push_back(peakmax);
                     breaths_max.push_back(max);
+                    avgmax+=max;
                     min=0;
 
                 }
@@ -195,53 +200,90 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     if (!breaths.size()) {
         return 0;
     }
-    double avgmax=0;
-    for (int i=0;i<breaths_max.size();i++)  {
-        max=breaths_max[i];
-        avgmax+=max;
-    }
-    avgmax/=EventDataType(breaths_max.size());
 
-    double avgmin=0;
-    for (int i=0;i<breaths_min.size();i++)  {
-        min=breaths_min[i];
-        avgmin+=min;
-    }
+    avgmax/=EventDataType(breaths_max.size());
     avgmin/=EventDataType(breaths_min.size());
 
-    QVector<qint64> goodb;
-    for (int i=0;i<breaths_max.size();i++)  {
-        max=breaths_max[i];
-        time=breaths_max_peak[i];
+    if ((breaths_max.size()>5) && (breaths_min.size()>5) && (p_profile->cpap->userEventFlagging())) {
+        EventDataType maxperc,minperc;
 
-        if (max > avgmax*0.2) {
-            goodb.push_back(time);
-        }
-    }
-    for (int i=0;i<breaths_min.size();i++)  {
-        min=breaths_min[i];
-        time=breaths_min_peak[i];
-        if (min < avgmin*0.2) {
-            goodb.push_back(time);
-        }
-    }
-    EventList *uf=NULL;
+        int n=breaths_max.size()*0.8;
+        if (n > breaths_max.size()-1) n-=1;
+        nth_element(breaths_max.begin(),breaths_max.begin()+n,breaths_max.end());
+        maxperc=breaths_max[n];
 
-    qSort(goodb);
-    for (int  i=1;i<goodb.size();i++) {
-        qint64 len=qAbs(goodb[i]-goodb[i-1]);
-        if (len>=10000) {
-            time=goodb[i-1]+len/2;
-            if (!SearchApnea(session,time)) {
-                if (!uf) {
-                    uf=new EventList(EVL_Event,1,0,0,0,0,true);
-                    session->eventlist[CPAP_UserFlag1].push_back(uf);
+        n=breaths_min.size()*0.2;
+        if (n > breaths_min.size()-1) n-=1;
+        nth_element(breaths_min.begin(),breaths_min.begin()+n,breaths_min.end());
+        minperc=breaths_min[n];
+
+
+        QVector<qint64> goodb;
+
+        EventDataType restriction=p_profile->cpap->userFlowRestriction()/100.0;
+
+        // This is faster than vector access.
+        EventDataType *dptr=breaths_max.data();
+        qint64 * tptr=breaths_max_peak.data();
+
+        EventDataType restrict=maxperc * restriction;
+
+        // Knock out all the upper breath components above the flow restriction
+        for (int i=0;i<breaths_max.size();i++)  {
+            max=*dptr++; //breaths_max[i];
+            time=*tptr++; //breaths_max_peak[i];
+
+            if ((time > 0) && (max > restrict)) {
+                goodb.push_back(time);
+            }
+        }
+        dptr=breaths_min.data();
+        tptr=breaths_min_peak.data();
+
+        restrict=minperc * restriction;
+
+        // Knock out all the lower breath components above the flow restriction
+        for (int i=0;i<breaths_min.size();i++)  {
+            min=*dptr++; //breaths_min[i];
+            time=*tptr++; //breaths_min_peak[i];
+            if ((time > 0) && (min < restrict)) {
+                goodb.push_back(time);
+            }
+        }
+        EventList *uf=NULL;
+
+        if (goodb.size()>2) {
+            qint64 duration=p_profile->cpap->userEventDuration()*1000;
+
+            qSort(goodb);
+
+            tptr=goodb.data();
+
+            qint64 g0=*tptr++,g1;
+
+            EventDataType lf;
+            //
+            for (int i=1;i<goodb.size();i++) {
+                g1=*tptr++;
+                qint64 len=g1-g0;
+                if (len >= duration) {
+                    time=g0 + (len/2);
+                    if (!SearchApnea(session,time)) {
+                        if (!uf) {
+                            uf=new EventList(EVL_Event,1,0,0,0,0,true);
+                            session->eventlist[CPAP_UserFlag1].push_back(uf);
+                        }
+                        lf=double(len)/1000.0;
+                        if (lf>30) {
+                            int i=5;
+                        }
+                        uf->AddEvent(time,lf,1);
+                    }
                 }
-                uf->AddEvent(time,len/1000L,1);
+                g0=g1;
             }
         }
     }
-
     qint64 window=60000;
     qint64 t1=in->first()-window/2;
     qint64 t2=in->first()+window/2;
@@ -385,7 +427,7 @@ int calcRespRate(Session *session)
 EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 {
     double hours,ahi,cnt;
-    if ((start==end) && (start==0)) {
+    if (start<0) {
         // much faster..
         hours=session->hours();
         cnt=session->count(CPAP_Obstructive)
@@ -396,6 +438,7 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
         ahi=cnt/hours;
     } else {
         hours=double(end-start)/3600000L;
+        if (hours==0) return 0;
         cnt=session->rangeCount(CPAP_Obstructive,start,end)
                 +session->rangeCount(CPAP_Hypopnea,start,end)
                 +session->rangeCount(CPAP_ClearAirway,start,end)
@@ -408,8 +451,11 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 
 int calcAHIGraph(Session *session)
 {
-    const qint64 window_size=3600000L;
     const qint64 window_step=30000; // 30 second windows
+    double window_size=p_profile->cpap->AHIWindow();
+    qint64 window_size_ms=window_size*60000L;
+
+    bool zeroreset=p_profile->cpap->AHIReset();
 
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
@@ -428,22 +474,55 @@ int calcAHIGraph(Session *session)
 
     EventDataType ahi;
 
-    qint64 ti;
+    qint64 ti=first,lastti=first;
+
     double avg=0;
     int cnt=0;
-    for (ti=first;ti<last;ti+=window_step) {
-        f=ti-window_size;
-        ahi=calcAHI(session,f,ti);
-        if  (ti>=last) {
-            AHI->AddEvent(last,ahi);
+
+    double events;
+    double hours=(window_size/60.0);
+    if (zeroreset) {
+        // I personally don't see the point of resetting each hour.
+        do {
+            // For each window, in 30 second increments
+            for (qint64 t=ti;t < ti+window_size_ms; t+=window_step) {
+                if (t > last)
+                    break;
+                events=session->rangeCount(CPAP_Obstructive,ti,t)
+                        +session->rangeCount(CPAP_Hypopnea,ti,t)
+                        +session->rangeCount(CPAP_ClearAirway,ti,t)
+                        +session->rangeCount(CPAP_Apnea,ti,t);
+
+                //ahi=calcAHI(session,ti,t)* hours;
+
+                ahi = events / hours;
+
+                AHI->AddEvent(t,ahi);
+                avg+=ahi;
+                cnt++;
+            }
+            lastti=ti;
+            ti+=window_size_ms;
+        } while (ti<last);
+
+    } else {
+        for (ti=first;ti<last;ti+=window_step) {
+//            if  (ti>last) {
+////                AHI->AddEvent(last,ahi);
+////                avg+=ahi;
+////                cnt++;
+//                break;
+//            }
+            f=ti-window_size_ms;
+            ahi=calcAHI(session,f,ti);
             avg+=ahi;
             cnt++;
-            break;
+            AHI->AddEvent(ti,ahi);
+            lastti=ti;
+            ti+=window_step;
         }
-        AHI->AddEvent(ti,ahi);
-        ti+=window_step;
     }
-    AHI->AddEvent(last,0);
+    AHI->AddEvent(lastti,0);
     if (!cnt) avg=0; else avg/=double(cnt);
     session->setAvg(CPAP_AHI,avg);
 

@@ -151,6 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->summaryView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
+    ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->toolBox->setStyleSheet(
                                "QToolBox::tab {"
                                "background: #6789ab;"
@@ -278,8 +279,11 @@ void MainWindow::on_action_Import_Data_triggered()
         }
         if (res==2) return;
     }
+    if (asknew) {
+        mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
+    }
 
-    QStringList importFrom=importLocations;
+    QStringList importFrom;
 
     if (asknew) {
         QFileDialog w;
@@ -311,7 +315,7 @@ void MainWindow::on_action_Import_Data_triggered()
                 //addnew=true;
             }
         }
-    }
+    } else importFrom=importLocations;
 
     int successful=false;
 
@@ -559,8 +563,9 @@ void MainWindow::on_summaryButton_clicked()
 
 
     if (mach.size()==0) {
-        html+="<table cellpadding=2 cellspacing=0 border=0 width=100% height=70%>";
-        html+="<tr><td align=center><h1>Please Import Some Data</h1><br/><i>SleepyHead is pretty much useless without it.</i><br/>First import can take a few minutes.</td></tr></table>";
+        html+="<table cellpadding=2 cellspacing=0 border=0 width=100% height=60%>";
+        QString datacard;
+        html+="<tr><td align=center><h1>Please Import Some Data</h1><i>SleepyHead is pretty much useless without it.</i><br/><p>It might be a good idea to check preferences first,</br>as there are some options that affect import.</p><p>First import can take a few minutes.</p></td></tr></table>";
         html+=htmlFooter();
         ui->summaryView->setHtml(html);
         return;
@@ -581,6 +586,8 @@ void MainWindow::on_summaryButton_clicked()
     } else {
         ahitxt=tr("AHI");
     }
+
+    int decimals=2;
     html+="<div align=center>";
     html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
     if (cpapdays==0)  {
@@ -603,30 +610,30 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(tr("Last 6 months")).arg(tr("Last Year"));
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(ahitxt)
-            .arg(calcAHI(lastcpap,lastcpap),0,'f',3)
-            .arg(calcAHI(cpapweek,lastcpap),0,'f',3)
-            .arg(calcAHI(cpapmonth,lastcpap),0,'f',3)
-            .arg(calcAHI(cpap6month,lastcpap),0,'f',3)
-            .arg(calcAHI(cpapyear,lastcpap),0,'f',3);
+            .arg(calcAHI(lastcpap,lastcpap),0,'f',decimals)
+            .arg(calcAHI(cpapweek,lastcpap),0,'f',decimals)
+            .arg(calcAHI(cpapmonth,lastcpap),0,'f',decimals)
+            .arg(calcAHI(cpap6month,lastcpap),0,'f',decimals)
+            .arg(calcAHI(cpapyear,lastcpap),0,'f',decimals);
 
             if (PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapyear,lastcpap)) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("RERA Index"))
-                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_RERA,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             }
 
             if (PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapyear,lastcpap)) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Flow Limit Index"))
-                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,lastcpap,lastcpap)/PROFILE.calcHours(MT_CPAP,lastcpap,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapweek,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapmonth,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpap6month,lastcpap)/PROFILE.calcHours(MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(PROFILE.calcCount(CPAP_FlowLimit,MT_CPAP,cpapyear,lastcpap)/PROFILE.calcHours(MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             }
 
 
@@ -642,55 +649,55 @@ void MainWindow::on_summaryButton_clicked()
             if (cpapmode>=MODE_BIPAP) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Min EPAP"))
-                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("95% EPAP"))
-                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Max IPAP"))
-                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("95% IPAP"))
-                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             } else if (cpapmode>=MODE_APAP) {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Average Pressure"))
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("95% Pressure"))
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             } else {
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Pressure"))
-                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP),0,'f',decimals)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+                .arg(p_profile->calcSettingsMin(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             }
             //html+="<tr><td colspan=6>TODO: 90% pressure.. Any point showing if this is all CPAP?</td></tr>";
 
@@ -702,18 +709,18 @@ void MainWindow::on_summaryButton_clicked()
 
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("Average %1").arg(schema::channel[leak].label()))
-            .arg(p_profile->calcWavg(leak,MT_CPAP),0,'f',3)
-            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(leak,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            .arg(p_profile->calcWavg(leak,MT_CPAP),0,'f',decimals)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcWavg(leak,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
             .arg(tr("%1% %2").arg(percentile*100.0f,0,'f',0).arg(schema::channel[leak].label()))
-            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP),0,'f',3)
-            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',3)
-            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',3);
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP),0,'f',decimals)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
+            .arg(p_profile->calcPercentile(leak,percentile,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
         }
     }
     int oxisize=oximeters.size();
@@ -741,60 +748,60 @@ void MainWindow::on_summaryButton_clicked()
             if (oxiyear<firstoxi) oxiyear=firstoxi;
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Average SpO2"))
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Minimum SpO2"))
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_SPO2,MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("SpO2 Events / Hour"))
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2\%</td><td>%3\%</td><td>%4\%</td><td>%5\%</td><td>%6\%</td></tr>")
                 .arg(tr("% of time in SpO2 Events"))
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/3600.0,0,'f',3)
-                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/3600.0,0,'f',3);
+                .arg(100.0/p_profile->calcHours(MT_OXIMETER)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER)/3600.0,0,'f',decimals)
+                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiweek,lastoxi)/3600.0,0,'f',decimals)
+                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oximonth,lastoxi)/3600.0,0,'f',decimals)
+                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxi6month,lastoxi)/3600.0,0,'f',decimals)
+                .arg(100.0/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi)*p_profile->calcSum(OXI_SPO2Drop,MT_OXIMETER,oxiyear,lastoxi)/3600.0,0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Average Pulse Rate"))
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcWavg(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Minimum Pulse Rate"))
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMin(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Maximum Pulse Rate"))
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcMax(OXI_Pulse,MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
             html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                 .arg(tr("Pulse Change Events / Hour"))
-                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',3)
-                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',3)
-                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',3);
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER)/p_profile->calcHours(MT_OXIMETER),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiweek,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiweek,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oximonth,lastoxi)/p_profile->calcHours(MT_OXIMETER,oximonth,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxi6month,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxi6month,lastoxi),0,'f',decimals)
+                .arg(p_profile->calcCount(OXI_PulseChange,MT_OXIMETER,oxiyear,lastoxi)/p_profile->calcHours(MT_OXIMETER,oxiyear,lastoxi),0,'f',decimals);
         }
     }
 
@@ -944,10 +951,10 @@ void MainWindow::on_summaryButton_clicked()
             "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
             "</style></head><body>";
         recbox+="<table width=100% cellpadding=2 cellspacing=0>";
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg(tr("Best&nbsp;%1").arg(ahitxt)).arg(bestAHI,0,'f',2);
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg(tr("Best&nbsp;%1").arg(ahitxt)).arg(bestAHI,0,'f',decimals);
         recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(bestAHIdate.toString(Qt::SystemLocaleShortDate));
         recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg(tr("Worst&nbsp;%1").arg(ahitxt)).arg(worstAHI,0,'f',2);
+        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg(tr("Worst&nbsp;%1").arg(ahitxt)).arg(worstAHI,0,'f',decimals);
         recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(worstAHIdate.toString(Qt::SystemLocaleShortDate));
         recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
 
@@ -985,7 +992,7 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(tmpRX[ls]->first.toString(Qt::ISODate))
                     .arg(tmpRX[ls]->last.toString(Qt::ISODate))
                     .arg(tr("Best RX Setting"));
-            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',2);
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',decimals);
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
             recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[ls]->min,0,'f',1);
             if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1);
@@ -1020,7 +1027,7 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(tmpRX[0]->first.toString(Qt::ISODate))
                     .arg(tmpRX[0]->last.toString(Qt::ISODate))
                     .arg(tr("Worst RX Setting"));
-            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',2);
+            recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',decimals);
             recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Mode")).arg(modestr);
             recbox+=QString("<tr><td colspan=2>%1: %2").arg(minstr).arg(tmpRX[0]->min,0,'f',1);
             if (!maxstr.isEmpty()) recbox+=QString(" %1: %2").arg(maxstr).arg(tmpRX[0]->max,0,'f',1);
@@ -1088,30 +1095,30 @@ void MainWindow::on_summaryButton_clicked()
             mode=rx.mode;
             if(mode>=MODE_ASV) {
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
-                        .arg(rx.max,0,'f',2).arg(rx.maxhi,0,'f',2).arg(rx.max-rx.min,0,'f',2).arg(rx.maxhi-rx.min,0,'f',2);
+                        .arg(rx.max,0,'f',decimals).arg(rx.maxhi,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals).arg(rx.maxhi-rx.min,0,'f',decimals);
 
                 tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
                         .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',2)
+                        .arg(rx.per1,0,'f',decimals)
                         .arg(percentile*100.0)
-                        .arg(rx.per2,0,'f',2)
+                        .arg(rx.per2,0,'f',decimals)
                         .arg(machstr)
                         ;
             } else if (mode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>")
-                       .arg(rx.max,0,'f',2).arg(rx.max-rx.min,0,'f',2);
+                       .arg(rx.max,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals);
                 tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
                         .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',2)
+                        .arg(rx.per1,0,'f',decimals)
                         .arg(percentile*100.0)
-                        .arg(rx.per2,0,'f',2)
+                        .arg(rx.per2,0,'f',decimals)
                         .arg(machstr)
                         ;
             } else if (mode>MODE_CPAP) {
-                extratxt=QString("<td>%1</td>").arg(rx.max,0,'f',2);
+                extratxt=QString("<td>%1</td>").arg(rx.max,0,'f',decimals);
                 tooltip=tr("%3 %1% Pressure=%2")
                         .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',2)
+                        .arg(rx.per1,0,'f',decimals)
                         .arg(machstr)
                         ;
             } else {
@@ -1139,11 +1146,11 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.days)
-                    .arg(rx.ahi,0,'f',2)
+                    .arg(rx.ahi,0,'f',decimals)
                     .arg(rx.machine->GetClass())
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(presrel)
-                    .arg(rx.min,0,'f',2)
+                    .arg(rx.min,0,'f',decimals)
                     .arg(extratxt)
                     .arg(tooltipshow)
                     .arg(tooltiphide);
@@ -1201,8 +1208,16 @@ void MainWindow::updateFavourites()
     if (!date.isValid())
         return;
 
-    ui->favouritesList->blockSignals(true);
-    ui->favouritesList->clear();
+    QString html="<html><head><style type='text/css'>"
+        "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
+        "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
+        "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
+        "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
+        "</style></head><body>";
+    html+="<table width=100% cellpadding=2 cellspacing=0>";
+
+    //ui->favouritesList->blockSignals(true);
+    //ui->favouritesList->clear();
 
     do {
         Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
@@ -1210,20 +1225,19 @@ void MainWindow::updateFavourites()
             if (journal->size()>0) {
                 Session *sess=(*journal)[0];
                 if (sess->settings.contains(Bookmark_Start)) {
-                    QVariantList start=sess->settings[Bookmark_Start].toList();
-                    QVariantList end=sess->settings[Bookmark_End].toList();
+                    //QVariantList start=sess->settings[Bookmark_Start].toList();
+                    //QVariantList end=sess->settings[Bookmark_End].toList();
                     QStringList notes=sess->settings[Bookmark_Notes].toStringList();
                     if (notes.size()>0) {
-                        QListWidgetItem *item=new QListWidgetItem(date.toString());
-                        /*QString tooltip;
+                        html+=QString("<tr><td><b><a href='daily=%1'>%2</a></b><br/>")
+                                .arg(date.toString(Qt::ISODate))
+                                .arg(date.toString());
+
                         for (int i=0;i<notes.size();i++) {
-                            QDate d=start[i].toDate();
-                            tooltip+=d.toString(Qt::SystemLocaleShortDate)+":"+notes[i];
-                            if (i<notes.size()-1) tooltip+="\n";
+                            //QDate d=start[i].toDate();
+                            html+="&nbsp;"+notes[i]+"<br/>";
                         }
-                        item->setToolTip(tooltip);*/
-                        item->setData(Qt::UserRole,date);
-                        ui->favouritesList->addItem(item);
+                        html+="</td>";
                     }
                 }
             }
@@ -1231,7 +1245,9 @@ void MainWindow::updateFavourites()
 
         date=date.addDays(-1);
     } while (date>=PROFILE.FirstDay(MT_JOURNAL));
-    ui->favouritesList->blockSignals(false);
+    html+="</table></body></html>";
+    ui->bookmarkView->setHtml(html);
+    //ui->favouritesList->blockSignals(false);
 }
 
 void MainWindow::on_backButton_clicked()
@@ -1841,12 +1857,16 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                         graphs.push_back(g);
                         labels.push_back(tr("Entire Day's Flow Waveform"));
                     }
+                    start.push_back(savest);
+                    end.push_back(saveet);
+                    graphs.push_back(g);
+                    labels.push_back("Current Selection");
+                } else {
+                    start.push_back(savest);
+                    end.push_back(saveet);
+                    graphs.push_back(g);
+                    labels.push_back("");
                 }
-
-                start.push_back(savest);
-                end.push_back(saveet);
-                graphs.push_back(g);
-                labels.push_back("");
 
             }
         } else {
@@ -2243,6 +2263,8 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
         }
         if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties[STR_PROP_Brand]+" "+m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_ModelNumber]+" ("+m->properties[STR_PROP_Serial]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             m->Purge(3478216);
+            PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
+            delete m;
             RestartApplication();
         }
     }
@@ -2308,16 +2330,16 @@ void MainWindow::on_webView_linkClicked(const QUrl &url)
     }
 }
 
-void MainWindow::on_favouritesList_itemSelectionChanged()
-{
-    QListWidgetItem *item=ui->favouritesList->currentItem();
-    if (!item) return;
-    QDate date=item->data(Qt::UserRole).toDate();
-    if (date.isValid()) {
-        daily->LoadDate(date);
-        ui->tabWidget->setCurrentWidget(daily);
-    }
-}
+//void MainWindow::on_favouritesList_itemSelectionChanged()
+//{
+//    QListWidgetItem *item=ui->favouritesList->currentItem();
+//    if (!item) return;
+//    QDate date=item->data(Qt::UserRole).toDate();
+//    if (date.isValid()) {
+//        daily->LoadDate(date);
+//        ui->tabWidget->setCurrentWidget(daily);
+//    }
+//}
 
 /*void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
 {
@@ -2364,6 +2386,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 void MainWindow::on_summaryView_linkClicked(const QUrl &arg1)
 {
-    qDebug() << arg1;
+    //qDebug() << arg1;
+    on_recordsBox_linkClicked(arg1);
+}
+
+void MainWindow::on_bookmarkView_linkClicked(const QUrl &arg1)
+{
     on_recordsBox_linkClicked(arg1);
 }

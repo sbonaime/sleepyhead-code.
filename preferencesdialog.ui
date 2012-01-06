@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -310,7 +310,7 @@ p, li { white-space: pre-wrap; }
           <item row="1" column="0">
            <widget class="QCheckBox" name="createSDBackups">
             <property name="text">
-             <string>Create SD Card Backups during Import (especially important for ResMed users)</string>
+             <string>Create SD Card Backups during Import (only works with ResMed for now)</string>
             </property>
            </widget>
           </item>
@@ -507,24 +507,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="3">
-           <widget class="QLabel" name="label_31">
-            <property name="font">
-             <font>
-              <italic>true</italic>
-             </font>
-            </property>
-            <property name="text">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:normal;&quot;&gt;Note: &lt;/span&gt;Before the following date, all leaks &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;will show as reported by the machine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0">
+          <item row="11" column="0">
            <widget class="QLabel" name="label_28">
             <property name="font">
              <font>
@@ -537,7 +520,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="11" column="0" colspan="3">
+          <item row="12" column="0" colspan="3">
            <widget class="QTableWidget" name="leakProfile">
             <property name="alternatingRowColors">
              <bool>true</bool>
@@ -555,6 +538,22 @@ p, li { white-space: pre-wrap; }
               <string>Leak</string>
              </property>
             </column>
+           </widget>
+          </item>
+          <item row="10" column="0" colspan="3">
+           <widget class="QLabel" name="label_31">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:normal;&quot;&gt;Note: &lt;/span&gt;Leak profiles currently does not work yet..&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -651,20 +650,19 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="customEventGroupbox">
            <property name="title">
-            <string>Custom Event Flagging</string>
+            <string>Custom PRS1 Event Flagging</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_38">
-              <property name="text">
-               <string>Duration</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
+            <property name="margin">
+             <number>4</number>
+            </property>
+            <property name="spacing">
+             <number>4</number>
+            </property>
+            <item row="1" column="1">
              <widget class="QLabel" name="label_35">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -677,34 +675,14 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_34">
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="text">
-               <string>Apnea</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="apneaDuration">
-              <property name="suffix">
-               <string>s</string>
-              </property>
-              <property name="minimum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>10.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QDoubleSpinBox" name="apneaFlowRestriction">
               <property name="suffix">
                <string>%</string>
               </property>
@@ -713,7 +691,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
+            <item row="2" column="4">
              <spacer name="horizontalSpacer_4">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -726,30 +704,44 @@ p, li { white-space: pre-wrap; }
               </property>
              </spacer>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_37">
+            <item row="0" column="0" colspan="5">
+             <widget class="QLabel" name="label_34">
+              <property name="font">
+               <font>
+                <italic>true</italic>
+               </font>
+              </property>
               <property name="text">
-               <string>Hypopnea</string>
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Custom flagging is an experimental method of detecting events missed by the machine.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;** This only affects &lt;span style=&quot; text-decoration: underline;&quot;&gt;future&lt;/span&gt; imports **&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="hypopneaDuration">
+            <item row="2" column="3">
+             <widget class="QDoubleSpinBox" name="apneaDuration">
               <property name="suffix">
                <string>s</string>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
               </property>
               <property name="value">
                <double>10.000000000000000</double>
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="QDoubleSpinBox" name="hypopneaFlowRestriction">
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="value">
-               <double>40.000000000000000</double>
+            <item row="1" column="3">
+             <widget class="QLabel" name="label_38">
+              <property name="text">
+               <string>Event Duration</string>
               </property>
              </widget>
             </item>
@@ -765,6 +757,12 @@ p, li { white-space: pre-wrap; }
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
+            <property name="horizontalSpacing">
+             <number>4</number>
+            </property>
+            <property name="margin">
+             <number>4</number>
+            </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_36">
               <property name="sizePolicy">

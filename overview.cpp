@@ -564,7 +564,7 @@ void Overview::updateCube()
 
         if (ui->graphCombo->count()>0) {
             GraphView->setEmptyText(tr("No Graphs On!"));
-            GraphView->setCubeImage(images["sheep"]);
+            GraphView->setCubeImage(images["nographs"]);
 
         } else {
             GraphView->setEmptyText("No Data");

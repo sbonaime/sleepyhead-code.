@@ -265,7 +265,7 @@ private slots:
 
     void on_webView_linkClicked(const QUrl &arg1);
 
-    void on_favouritesList_itemSelectionChanged();
+    //void on_favouritesList_itemSelectionChanged();
 
     //void on_favouritesList_itemClicked(QListWidgetItem *item);
 
@@ -276,6 +276,8 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
     void on_summaryView_linkClicked(const QUrl &arg1);
+
+    void on_bookmarkView_linkClicked(const QUrl &arg1);
 
 private:
 

@@ -90,14 +90,13 @@ void InitGraphs()
         mediumfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
         bigfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
 
-        images["mask"]=new QImage(":/icons/mask.png");
+        //images["mask"]=new QImage(":/icons/mask.png");
         images["oximeter"]=new QImage(":/icons/cubeoximeter.png");
         images["smiley"]=new QImage(":/icons/smileyface.png");
-        images["sad"]=new QImage(":/icons/sadface.png");
+        //images["sad"]=new QImage(":/icons/sadface.png");
+
         images["brick"]=new QImage(":/icons/brick.png");
-        //images["warning"]=new QImage(":/icons/warning.png");
-        //images["bug"]=new QImage(":/icons/bug.png");
-        images["sheep"]=new QImage(":/icons/sheep.png");
+        images["nographs"]=new QImage(":/icons/nographs.png");
         images["nodata"]=new QImage(":/icons/nodata.png");
 
         _graph_init=true;
@@ -2160,9 +2159,9 @@ void gGraphView::selectionTime()
     }
 
 }
-void gGraphView::GetRXBounds(qint64 st, qint64 et)
+void gGraphView::GetRXBounds(qint64 & st, qint64 & et)
 {
-    qint64 m1=0,m2=0;
+    //qint64 m1=0,m2=0;
     gGraph *g=NULL;
     for (int i=0;i<m_graphs.size();i++) {
         g=m_graphs[i];
@@ -2356,7 +2355,7 @@ void gGraphView::renderSomethingFun()
     // When I'm feeling more energetic, I'll change it to a textured sheep or something.
     static float rotqube=0;
 
-    static float xpos=0,ypos=7,spos=0;
+    static float xpos=0,ypos=7;
 
     glLoadIdentity();
 
@@ -2370,12 +2369,17 @@ void gGraphView::renderSomethingFun()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    double xx=sin(M_PI/180.0 * xpos)*2; // ((4.0/width()) * m_mouse.rx())-2.0;
-    double yy=cos(M_PI/180.0 * ypos)*2; //2-((4.0/height()) * m_mouse.ry());
-    xpos+=1;
-    ypos+=1.32;
-    if (xpos > 360) xpos-=360.0;
-    if (ypos > 360) ypos-=360.0;
+    double xx=0.0,yy=0.0;
+
+    // set this to 0 to make the cube stay in the center of the screen
+    if (1) {
+        xx=sin(M_PI/180.0 * xpos)*2; // ((4.0/width()) * m_mouse.rx())-2.0;
+        yy=cos(M_PI/180.0 * ypos)*2; //2-((4.0/height()) * m_mouse.ry());
+        xpos+=1;
+        ypos+=1.32;
+        if (xpos > 360) xpos-=360.0;
+        if (ypos > 360) ypos-=360.0;
+    }
 
 
     //m_mouse.x();
@@ -2808,6 +2812,7 @@ void gGraphView::setCubeImage(QImage *img)
 {
     cubeimg.clear();
     cubeimg.push_back(img);
+
     cubetex=bindTexture(*img);
     glBindTexture(GL_TEXTURE_2D,0);
 }
@@ -2920,22 +2925,8 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                 this->setCursor(Qt::SplitVCursor);
             } else if (!m_button_down && (y >= py) && (y < py+m_graphs[i]->top)) {
                 // Mouse cursor is in top graph margin.
-//                if (m_graphs[i]->isSelected()) {
-//                    m_graphs[i]->deselect();
-//                    if (m_tooltip->visible())
-//                    m_tooltip->cancel();
-//                    redraw();
-//                }
-                //qDebug() << "upper bounds";
             } else if (!m_button_down && (y >= py+h-m_graphs[i]->bottom) && (y <= py+h)) {
                 // Mouse cursor is in bottom grpah margin.
-//                if (m_graphs[i]->isSelected()) {
-//                    if (m_tooltip->visible())
-//                    m_tooltip->cancel();
-//                    m_graphs[i]->deselect();
-//                    redraw();
-//                }
-                //qDebug() << "lower bounds";
             } else if (m_button_down || ((y >= py+m_graphs[i]->top) && (y < py + h-m_graphs[i]->bottom))) {
                 if (m_button_down || (x >= titleWidth+10)) { //(gYAxis::Margin-5)
                     this->setCursor(Qt::ArrowCursor);
@@ -2988,7 +2979,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
         }
         py+=h;
-        py+=graphSpacer; // do we want the extra spacer down the bottom?
+        py+=graphSpacer;
     }
 
 }
@@ -3007,7 +2998,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
 
         h=m_graphs[i]->height()*m_scaleY;
         if (py>height())
-            break; // we are done.. can't draw anymore
+            break;
 
         if ((py + h + graphSpacer) >= 0) {
             if ((y >= py) && (y < py + h)) {
@@ -3041,7 +3032,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
 
         }
         py+=h;
-        py+=graphSpacer; // do we want the extra spacer down the bottom?
+        py+=graphSpacer;
 
     }
 }
