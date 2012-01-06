@@ -298,28 +298,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     icon_on=new QIcon(":/icons/session-on.png");
     icon_off=new QIcon(":/icons/session-off.png");
 
-//    emptyToggleArea=new QLabel(this);
-//    emptyToggleArea->setText("This may take a while...");
-//    ui->graphToggleArea->addWidget(emptyToggleArea,1,Qt::AlignCenter);
-//    emptyToggleArea->setVisible(false);
-//    for (int i=0;i<GraphView->size();i++) {
-//        QString title=(*GraphView)[i]->title();
-//        QPushButton *btn=new QPushButton(title,this);
-//        btn->setCheckable(true);
-//        btn->setChecked((*GraphView)[i]->visible());
-//        btn->setToolTip(tr("Show/Hide %1").arg(title));
-//        btn->setVisible(false);
-//        GraphToggles[title]=btn;
-//        btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
-//        ui->graphToggleArea->addWidget(btn);
-//        connect(btn,SIGNAL(toggled(bool)),this,SLOT(graphtogglebutton_toggled(bool)));
-//    }
-//    ui->graphToggleArea->addSpacerItem(new QSpacerItem(0,0,QSizePolicy::Expanding));
-//    ui->graphVisibilityToggleArea->setVisible(false);
     ui->splitter->setVisible(false);
-
-    // TODO: Add preference to hide do this for Widget Haters..
-    //ui->calNavWidget->hide();
 
     if (PROFILE.general->unitSystem()==US_Archiac) {
         ui->weightSpinBox->setSuffix(STR_UNIT_POUND);
@@ -687,9 +666,9 @@ void Daily::Load(QDate date)
     mainwin->refreshStatistics();
 
     snapGV->setDay(cpap);
+
+
     GraphView->ResetBounds(false);
-    //snapGV->ResetBounds();
-    //GraphView->ResetBounds(1);
 
     //GraphView->setEmptyText(tr("No Data")); //tr("No data for ")+date.toString(Qt::SystemLocaleLongDate));
     if (!cpap && !oxi) {
@@ -715,7 +694,7 @@ void Daily::Load(QDate date)
 
     //RedrawGraphs();
 
-    QString epr,modestr;
+    QString modestr;
     //float iap90,eap90;
     CPAPMode mode=MODE_UNKNOWN;
     QString a;
@@ -1801,16 +1780,17 @@ void Daily::updateCube()
 
 void Daily::on_toggleGraphs_clicked(bool checked)
 {
-    gGraph *g;
     QString s;
     QIcon *icon=checked ? icon_off : icon_on;
     for (int i=0;i<ui->graphCombo->count();i++) {
         s=ui->graphCombo->itemText(i);
         ui->graphCombo->setItemIcon(i,*icon);
         ui->graphCombo->setItemData(i,!checked,Qt::UserRole);
-        g=GraphView->findGraph(s);
-        g->setVisible(!checked);
     }
+    for (int i=0;i<GraphView->size();i++) {
+        (*GraphView)[i]->setVisible(!checked);
+    }
+
     updateCube();
     GraphView->updateScale();
     GraphView->redraw();
