@@ -827,29 +827,29 @@ void Daily::Load(QDate date)
         QString cs;
         if (!isBrick) {
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-                cs="4 width='100%' align=center>";
+                cs="4 width='70%' align=center>";
             } else cs="2 width='50%'>";
             html+="<tr><td colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
 
             if (PROFILE.general->calculateRDI()) {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                         .arg("#F88017").arg("black").arg(tr("RDI")).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
             } else {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                         .arg("#F88017").arg("black").arg(tr("AHI")).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
                 //html+="<tr><td align='left' bgcolor='#F88017'><b><font color='black'><a class=info href='#'>"+tr("AHI")+"<span class='classic'>"+schema::channel[CPAP_AHI].description()+"</span></a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
             }
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#4040ff").arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                         .arg("#208020").arg("black")
                         .arg(tr("Apnea")).arg(schema::channel[CPAP_Apnea].description()).arg(uai,0,'f',2).arg(CPAP_Apnea);
             }
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#40afbf").arg("black").arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
 
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#b254cd").arg("black").arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
             html+="</table></td>";
 

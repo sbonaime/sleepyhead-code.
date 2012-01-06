@@ -153,12 +153,6 @@ bool Session::StoreSummary(QString filename)
     out << m_timesummary;
     out << m_gain;
 
-    // First output the Machine Code and type for each summary record
-/*    for (QHash<ChannelID,QVariant>::iterator i=settings.begin(); i!=settings.end(); i++) {
-        ChannelID mc=i.key();
-        out << (qint16)mc;
-        out << i.value();
-    } */
     file.close();
     return true;
 }
@@ -218,7 +212,6 @@ bool Session::LoadSummary(QString filename)
     in >> s_first;  // Start time
     in >> s_last;   // Duration // (16bit==Limited to 18 hours)
 
-
     QHash<ChannelID,EventDataType> cruft;
 
     if (version<7) {
@@ -256,11 +249,6 @@ bool Session::LoadSummary(QString filename)
         }
         ztmp.clear();
         in >> ztmp; // 90p
-        // Ignore this
-//        for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
-//            code=schema::channel[i.key()].id();
-//            m_90p[code]=i.value();
-//        }
         ztmp.clear();
         in >> ztmp; // min
         for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
@@ -673,23 +661,12 @@ void Session::updateCountSummary(ChannelID code)
             time=start + *tptr++;
             raw=*dptr++;
 
-            //raw=e.raw(j);
             valsum[raw]++;
-//            vsi=valsum.find(raw);
-//            if (vsi==valsum.end()) {
-//                valsum[raw]=1;
-//            }
-//            else vsi.value()++;
-
-            //time=e.time(j);
 
             // elapsed time in seconds since last event
             len=(time-lasttime) / 1000L;
 
             timesum[lastraw]+=len;
-//            tsi=timesum.find(lastraw);
-//            if (tsi==timesum.end()) timesum[raw]=len;
-//            else tsi.value()+=len;
 
             lastraw=raw;
             lasttime=time;
@@ -735,30 +712,26 @@ void Session::UpdateSummaries()
             sph(id);
             avg(id);
             wavg(id);
-//            p90(id);
-//            p95(id);
-//            median(id);
         }
     }
-
-    /*if (channelExists(CPAP_Obstructive)) {
-        setCph(CPAP_AHI,cph(CPAP_Obstructive)+cph(CPAP_Hypopnea)+cph(CPAP_ClearAirway));
-        setSph(CPAP_AHI,sph(CPAP_Obstructive)+sph(CPAP_Hypopnea)+sph(CPAP_ClearAirway));
-    }*/
-
 }
 
 bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
 {
-    qint64 t;
+    qint64 t,start;
     QHash<ChannelID,QVector<EventList *> >::iterator it;
     it=eventlist.find(code);
+    quint32 * tptr;
+    int cnt;
     if (it!=eventlist.end()) {
         for (int i=0;i<it.value().size();i++)  {
             EventList *el=it.value()[i];
-            for (unsigned j=0;j<el->count();j++) {
-                t=el->time(j);
-                if (qAbs(time-t)<dist)
+            start=el->first();
+            tptr=el->rawTime();
+            cnt=el->count();
+            for (unsigned j=0;j<cnt;j++) {
+                t=start + *tptr++;
+                if (qAbs(time - t) < dist)
                     return true;
             }
         }

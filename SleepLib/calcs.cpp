@@ -21,6 +21,8 @@ bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
     return false;
 }
 
+
+
 // Support function for calcRespRate()
 int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
 {

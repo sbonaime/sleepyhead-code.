@@ -391,6 +391,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (x2<x1)
                 goto jumpnext;
 
+
+            if (zd==hl_day) {
+                QColor col=QColor("red");
+                col.setAlpha(64);
+                quads->add(x1-1,top,x1-1,top+height,x2,top+height,x2,top,col.rgba());
+            }
+
             if (m_graphtype==GT_SESSIONS) {
                 int j;
                 QHash<int,QHash<short,EventDataType> >::iterator times=m_times.find(zd);
