@@ -495,6 +495,17 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     }
     return true;
 }
+struct DateData {
+    DateData() { value=0; }
+    DateData(QDate d, EventDataType v) { date=d; value=v; }
+    DateData(const DateData & copy) { date=copy.date; value=copy.value; }
+    QDate date;
+    EventDataType value;
+};
+bool operator <(const DateData & c1, const DateData & c2)
+{
+    return c1.value < c2.value;
+}
 
 class MyStatsPage:public QWebPage
 {
@@ -808,6 +819,8 @@ void MainWindow::on_summaryButton_clicked()
     html+="</table>";
     html+="</div>";
 
+    QList<DateData> AHI;
+
     QDate bestAHIdate, worstAHIdate;
     EventDataType bestAHI=999.0, worstAHI=0;
     if (cpapdays>0) {
@@ -821,6 +834,7 @@ void MainWindow::on_summaryButton_clicked()
         Day * day;
         bool lastchanged=false;
         QVector<RXChange> rxchange;
+
         do {
             day=PROFILE.GetGoodDay(date,MT_CPAP);
 
@@ -833,14 +847,7 @@ void MainWindow::on_summaryButton_clicked()
                     EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
                     if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
                     ahi/=day->hours();
-                    if (ahi > worstAHI) {
-                        worstAHI=ahi;
-                        worstAHIdate=date;
-                    }
-                    if (ahi < bestAHI) {
-                        bestAHI=ahi;
-                        bestAHIdate=date;
-                    }
+                    AHI.push_back(DateData(date,ahi));
                 }
                 prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
@@ -904,6 +911,9 @@ void MainWindow::on_summaryButton_clicked()
             date=date.addDays(-1);
         } while (date>=firstcpap);
 
+        // Sort list by AHI
+        qSort(AHI);
+
         lastchanged=false;
         if (!lastchanged && (mach!=NULL)) {
            // last=date.addDays(1);
@@ -951,12 +961,31 @@ void MainWindow::on_summaryButton_clicked()
             "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
             "</style></head><body>";
         recbox+="<table width=100% cellpadding=2 cellspacing=0>";
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</b></td><td><b>%3</b></td></tr>").arg(bestAHIdate.toString(Qt::ISODate)).arg(tr("Best&nbsp;%1").arg(ahitxt)).arg(bestAHI,0,'f',decimals);
-        recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(bestAHIdate.toString(Qt::SystemLocaleShortDate));
-        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
-        recbox+=QString("<tr><td><b><a href='daily=%1'>%2</a></b></td><td><b>%3</b></td></tr>").arg(worstAHIdate.toString(Qt::ISODate)).arg(tr("Worst&nbsp;%1").arg(ahitxt)).arg(worstAHI,0,'f',decimals);
-        recbox+=QString("<tr><td colspan=2>%1</td></tr>").arg(worstAHIdate.toString(Qt::SystemLocaleShortDate));
-        recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+        int numdays=AHI.size();
+        if (numdays>1) {
+            int z=numdays/2;
+            if (z>4) z=4;
+
+            recbox+=QString("<tr><tdcolspan=2><b>%1</b></td></tr>").arg(tr("Best&nbsp;%1").arg(ahitxt));
+
+            for (int i=0;i<z;i++) {
+                const DateData & a=AHI.at(i);
+                recbox+=QString("<tr><td><a href='daily=%1'>%2</a></td><td  align=right>%3</td></tr>")
+                    .arg(a.date.toString(Qt::ISODate))
+                    .arg(a.date.toString(Qt::SystemLocaleShortDate))
+                    .arg(a.value,0,'f',decimals);
+            }
+            recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+            recbox+=QString("<tr><td><b>%1</b></td></tr>").arg(tr("Worst&nbsp;%1").arg(ahitxt));
+            for (int i=0;i<z;i++) {
+                const DateData & a=AHI.at((numdays-1)-i);
+                recbox+=QString("<tr><td><a href='daily=%1'>%2</a></td><td align=right>%3</td></tr>")
+                    .arg(a.date.toString(Qt::ISODate))
+                    .arg(a.date.toString(Qt::SystemLocaleShortDate))
+                    .arg(a.value,0,'f',decimals);
+            }
+            recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+        }
 
 
         if (tmpRX.size()>0) {
@@ -1201,6 +1230,7 @@ void MainWindow::on_summaryButton_clicked()
 //    QUrl url(file);
 //    ui->webView->setUrl(url);
 }
+
 
 void MainWindow::updateFavourites()
 {
