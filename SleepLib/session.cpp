@@ -579,8 +579,8 @@ bool Session::LoadEvents(QString filename)
         }
     }
 
-    EventStoreType t;
-    quint32 x;
+    //EventStoreType t;
+    //quint32 x;
 
     for (int i=0;i<mcsize;i++) {
         code=mcorder[i];
@@ -747,16 +747,27 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
     it=eventlist.find(code);
     quint32 * tptr;
     int cnt;
+    qint64 rate;
     if (it!=eventlist.end()) {
         for (int i=0;i<it.value().size();i++)  {
             EventList *el=it.value()[i];
-            start=el->first();
-            tptr=el->rawTime();
+            rate=el->rate();
             cnt=el->count();
-            for (unsigned j=0;j<cnt;j++) {
-                t=start + *tptr++;
-                if (qAbs(time - t) < dist)
-                    return true;
+            if (el->type()==EVL_Waveform) {
+                t=el->first();
+                for (int j=0;j<cnt;j++) {
+                    if (qAbs(time - t) < dist)
+                        return true;
+                    t+=rate;
+                }
+            } else {
+                start=el->first();
+                tptr=el->rawTime();
+                for (int j=0;j<cnt;j++) {
+                    t=start + *tptr++;
+                    if (qAbs(time - t) < dist)
+                        return true;
+                }
             }
         }
     }
@@ -920,17 +931,28 @@ int Session::rangeCount(ChannelID id, qint64 first,qint64 last)
 
     qint64 t,start;
     quint32 * tptr;
+    qint64 rate;
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
-        start=ev.first();
-        tptr=ev.rawTime();
         cnt=ev.count();
 
-        for (int j=0;j<cnt;j++) {
-            t=start + *tptr++;
+        if (ev.type()==EVL_Waveform) {
+            rate=ev.rate();
+            t=ev.first();
+            for (int j=0;j<cnt;j++) {
+                if ((t>=first) && (t<=last))
+                    sum++;
+                t+=rate;
+            }
+        } else {
+            start=ev.first();
+            tptr=ev.rawTime();
+            for (int j=0;j<cnt;j++) {
+                t=start + *tptr++;
 
-            if ((t>=first) && (t<=last)) {
-                sum++;
+                if ((t>=first) && (t<=last)) {
+                    sum++;
+                }
             }
         }
     }
@@ -950,19 +972,32 @@ double Session::rangeSum(ChannelID id, qint64 first,qint64 last)
     quint32 * tptr;
     int cnt;
 
+    qint64 rate;
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
         start=ev.first();
-        tptr=ev.rawTime();
         dptr=ev.rawData();
         cnt=ev.count();
         gain=ev.gain();
-        for (int j=0;j<cnt;j++) {
-            t=start + *tptr++;
-            if ((t>=first) && (t<=last)) {
-                sum+=*dptr * gain;
+        rate=ev.rate();
+        if (ev.type()==EVL_Waveform) {
+            t=start;
+            for (int j=0;j<cnt;j++) {
+                if ((t>=first) && (t<=last)) {
+                    sum+=*dptr * gain;
+                }
+                dptr++;
+                t+=rate;
             }
-            dptr++;
+        } else {
+            tptr=ev.rawTime();
+            for (int j=0;j<cnt;j++) {
+                t=start + *tptr++;
+                if ((t>=first) && (t<=last)) {
+                    sum+=*dptr * gain;
+                }
+                dptr++;
+            }
         }
     }
     return sum;
@@ -976,7 +1011,7 @@ EventDataType Session::rangeMin(ChannelID id, qint64 first,qint64 last)
     QVector<EventList *> & evec=j.value();
     EventDataType gain,v,min=999999999;
 
-    qint64 t,start;
+    qint64 t,start,rate;
     EventStoreType * dptr;
     quint32 * tptr;
     int cnt;
@@ -984,18 +1019,31 @@ EventDataType Session::rangeMin(ChannelID id, qint64 first,qint64 last)
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*evec[i];
         start=ev.first();
-        tptr=ev.rawTime();
         dptr=ev.rawData();
         cnt=ev.count();
         gain=ev.gain();
-        for (unsigned j=0;j<ev.count();j++) {
-            t=start + *tptr++;
-            if ((t>=first) && (t<=last)) {
-                v=EventDataType(*dptr) * gain;
-                if (v<min) min=v;
+        rate=ev.rate();
+        if (ev.type()==EVL_Waveform) {
+            t=start;
+            for (int j=0;j<cnt;j++) {
+                if ((t>=first) && (t<=last)) {
+                    v=EventDataType(*dptr) * gain;
+                    if (v<min) min=v;
+                }
+                dptr++;
+                t+=rate;
+            }
+        } else {
+            tptr=ev.rawTime();
+            for (int j=0;j<cnt;j++) {
+                t=start + *tptr++;
+                if ((t>=first) && (t<=last)) {
+                    v=EventDataType(*dptr) * gain;
+                    if (v<min) min=v;
+                }
+                dptr++;
             }
         }
-        dptr++;
     }
     return min;
 }
@@ -1008,7 +1056,7 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first,qint64 last)
     QVector<EventList *> & evec=j.value();
     EventDataType gain,v,max=-999999999;
 
-    qint64 t,start;
+    qint64 t,start,rate;
     EventStoreType * dptr;
     quint32 * tptr;
     int cnt;
@@ -1020,13 +1068,26 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first,qint64 last)
         dptr=ev.rawData();
         cnt=ev.count();
         gain=ev.gain();
-        for (unsigned j=0;j<ev.count();j++) {
-            t=start + *tptr++;
-            if ((t>=first) && (t<=last)) {
-                v=EventDataType(*dptr) * gain;
-                if (v>max) max=v;
+        if (ev.type()==EVL_Waveform) {
+            rate=ev.rate();
+            t=start;
+            for (int j=0;j<cnt;j++) {
+                if ((t>=first) && (t<=last)) {
+                    v=EventDataType(*dptr) * gain;
+                    if (v>max) max=v;
+                }
+                dptr++;
+                t+=rate;
             }
-            dptr++;
+        } else {
+            for (int j=0;j<cnt;j++) {
+                t=start + *tptr++;
+                if ((t>=first) && (t<=last)) {
+                    v=EventDataType(*dptr) * gain;
+                    if (v>max) max=v;
+                }
+                dptr++;
+            }
         }
     }
     return max;
@@ -1166,16 +1227,33 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
     EventDataType gain=evec[0]->gain();
 
+    EventStoreType * dptr, * sptr;
+
     int tt=0,cnt;
     for (int i=0;i<size;i++) {
-        cnt=evec[i]->count();
+        EventList & ev=*evec[i];
+        cnt=ev.count();
         tt+=cnt;
-        array.reserve(tt);
+    }
+    array.resize(tt);
+
+    for (int i=0;i<size;i++) {
+        EventList & ev=*evec[i];
+        sptr=ev.rawData();
+        dptr=array.data();
+
         for (int j=0;j<cnt;j++) {
-            array.push_back(evec[i]->raw(j));
+            *dptr++ = * sptr++;
+            //array.push_back(evec[i]->raw(j));
         }
     }
-    std::sort(array.begin(),array.end(),sortfunction);
+
+    int n=array.size()*percent;
+    if (n>array.size()-1) n--;
+    nth_element(array.begin(), array.begin()+n, array.end());
+
+    return array[n] * gain;
+    /*std::sort(array.begin(),array.end(),sortfunction);
     double s=array.size();
     if (!s)
         return 0;
@@ -1186,7 +1264,7 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
     //if (j>=size-1) return array[j];
 
-    return EventDataType(array[j])*gain;
+    return EventDataType(array[j])*gain; */
 }
 
 EventDataType Session::wavg(ChannelID id)
