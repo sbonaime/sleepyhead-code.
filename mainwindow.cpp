@@ -79,6 +79,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
+    // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
+#ifdef Q_WS_MAC
+    ui->action_Screenshot->setVisible(false);
+#endif
+
     overview=NULL;
     daily=NULL;
     oximetry=NULL;

@@ -649,27 +649,51 @@ void Session::updateCountSummary(ChannelID code)
         EventList & e=*(ev.value()[i]);
         start=e.first();
         cnt=e.count();
-        tptr=e.rawTime();
         dptr=e.rawData();
+        qint64 rate=0;
+        if (e.type()==EVL_Event)
+            tptr=e.rawTime();
+        else tptr=NULL;
+
         m_gain[code]=e.gain();
 
         //bool first=false;
-        lasttime=start + *tptr;
         lastraw=*dptr;
+        if (tptr) {
+            lasttime=start + *tptr;
+            // Event version
+            for (int j=0;j<cnt;j++) {
+                 time=start + *tptr++;
+                 raw=*dptr++;
 
-        for (int j=0;j<cnt;j++) {
-            time=start + *tptr++;
-            raw=*dptr++;
+                 valsum[raw]++;
 
-            valsum[raw]++;
+                 // elapsed time in seconds since last event
+                 len=(time-lasttime) / 1000L;
 
-            // elapsed time in seconds since last event
-            len=(time-lasttime) / 1000L;
+                 timesum[lastraw]+=len;
 
-            timesum[lastraw]+=len;
+                 lastraw=raw;
+                 lasttime=time;
+            }
+        } else {
+            QHash<EventStoreType, quint64> timesum2;
 
-            lastraw=raw;
-            lasttime=time;
+            // Waveform version
+            rate=e.rate();
+            time=start;
+            for (int j=0;j<cnt;j++) {
+                raw=*dptr++;
+                valsum[raw]++;
+                timesum2[lastraw]+=rate;
+                lastraw=raw;
+                lasttime=time;
+                time+=rate;
+            }
+
+            for (QHash<EventStoreType, quint64>::iterator it=timesum2.begin(); it!=timesum2.end(); it++) {
+                timesum[it.key()]+=it.value()/1000.0;
+            }
         }
     }
     if (valsum.size()==0) return;
