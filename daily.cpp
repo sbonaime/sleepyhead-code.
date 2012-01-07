@@ -796,14 +796,6 @@ void Daily::Load(QDate date)
             } else cs="2 width='50%'>";
             html+="<tr><td valign=top colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
 
-//            if (PROFILE.general->calculateRDI()) {
-//                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-//                        .arg("#F88017").arg("black").arg(tr("<b>RDI</b>")).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
-//            } else {
-//                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='#'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-//                        .arg("#F88017").arg("black").arg(tr("<b>AHI</b>")).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
-//                //html+="<tr><td align='left' bgcolor='#F88017'><b><font color='black'><a class=info href='#'>"+tr("AHI")+"<span class='classic'>"+schema::channel[CPAP_AHI].description()+"</span></a></font></b></td><td width=20% bgcolor='#F88017'><b><font color='black'>"+QString().sprintf("%.2f",ahi)+"</font></b></td></tr>\n";
-//            }
             html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#4040ff").arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
@@ -877,11 +869,8 @@ void Daily::Load(QDate date)
                     html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     html+="<tr><td colspan=5 align=center><hr/></td></tr>";
-                    //G_AHI->setFixedSize(gwwidth,120);
-                    //mainwin->snapshotGraph()->setPrintScaleX(1);
-                    //mainwin->snapshotGraph()->setPrintScaleY(1);
                     GAHI->setShowTitle(false);
-                    //snapGV->setFixedSize(150,150);
+
                     QPixmap pixmap=GAHI->renderPixmap(150,150,false);
                     QByteArray byteArray;
                     QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
@@ -914,7 +903,7 @@ void Daily::Load(QDate date)
         html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
                 .arg(tr("Channel"))
                 .arg(tr("Min"))
-                .arg(tr("Avg"))
+                .arg(tr("Med"))
                 .arg(tr("%1%").arg(percentile*100,0,'f',0))
                 .arg(tr("Max"));
         ChannelID chans[]={
@@ -925,32 +914,61 @@ void Daily::Load(QDate date)
         };
         int numchans=sizeof(chans)/sizeof(ChannelID);
         //int suboffset=0;
+        int ccnt=0;
+        EventDataType wavg,med,perc,mx,mn;
         for (int i=0;i<numchans;i++) {
 
             ChannelID code=chans[i];
+
             if (cpap && cpap->channelHasData(code)) {
                 //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    .arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+tr("RDI")+"<span class='classic'>"+
-                        .arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
-                    .arg(cpap->Min(code),0,'f',2)
-                    .arg(cpap->wavg(code),0,'f',2)
-                    .arg(cpap->percentile(code,percentile),0,'f',2)
-                    .arg(cpap->Max(code),0,'f',2);
+                mx=cpap->Max(code);
+                mn=cpap->Min(code);
+                perc=cpap->percentile(code,percentile);
+                med=cpap->percentile(code,0.5);
+                wavg=cpap->wavg(code);
+                if (wavg>0 || mx==0) {
+                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
+                }
+
+                html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='black';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                    //.arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+tr("RDI")+"<span class='classic'>"+
+                    //.arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
+                    .arg(schema::channel[code].label())
+                    .arg(mn,0,'f',2)
+                    .arg(med,0,'f',2)
+                    .arg(perc,0,'f',2)
+                    .arg(mx,0,'f',2)
+                    .arg(tooltip);
+                ccnt++;
             }
             if (oxi && oxi->channelHasData(code)) {
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+                wavg=oxi->wavg(code);
+                mx=oxi->Max(code);
+                mn=oxi->Min(code);
+                perc=oxi->percentile(code,percentile);
+                med=oxi->percentile(code,0.5);
+                if ((med>0 && wavg>0) || (med==0)) {
+                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
+                }
+
                 html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
                     .arg(QString("<a class=info href='graph=%1'>%2<span>%3</span></a>")
                         .arg(QString::number(code)).arg(schema::channel[code].label()).arg(tooltip))
-                    .arg(oxi->Min(code),0,'f',2)
-                    .arg(oxi->wavg(code),0,'f',2)
-                    .arg(oxi->percentile(code,percentile),0,'f',2)
-                    .arg(oxi->Max(code),0,'f',2);
+                    .arg(mn,0,'f',2)
+                    .arg(med,0,'f',2)
+                    .arg(perc,0,'f',2)
+                    .arg(mx,0,'f',2);
+                ccnt++;
             }
+        }
+        if (GraphView->isEmpty() && (ccnt>0)) {
+            html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+            html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
         }
     } else {
         html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
@@ -970,27 +988,23 @@ void Daily::Load(QDate date)
 
     if (cpap && cpap->hasEnabledSessions()) {
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
-//        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5><hr height=2></td></tr>";
-            int i=cpap->settings_max(CPAP_PresReliefType);
-            int j=cpap->settings_max(CPAP_PresReliefSet);
-            QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : "None";
+        int i=cpap->settings_max(CPAP_PresReliefType);
+        int j=cpap->settings_max(CPAP_PresReliefSet);
+        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : "None";
+        html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                .arg(tr("Pr. Relief"))
+                .arg(schema::channel[CPAP_PresReliefType].description())
+                .arg(flexstr);
+        if (cpap->machine->GetClass()==STR_MACH_PRS1) {
+            int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
+            html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                .arg(tr("Humidifier"))
+                .arg(schema::channel[PRS1_HumidSetting].description())
+                .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
+        }
 
-            html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Pr. Relief"))
-                    .arg(flexstr);
-            if (cpap->machine->GetClass()==STR_MACH_PRS1) {
-                int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
-                html+=QString("<tr><td>%1</td><td colspan=4>%2</td></tr>").arg(tr("Humidifier"))
-                    .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
-            }
-        /*} else if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-            int epr=cpap->settings_max(RMS9_EPR);
-            int epr2=cpap->settings_max(RMS9_EPRSet);
-            html+=QString("<tr><td>%1</td><td colspan=4>%2 / %3</td></tr>")
-                    .arg(tr("EPR")).arg(epr).arg(epr2);
-
-        }*/
     }
     html+="</table>";
 

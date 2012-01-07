@@ -7,7 +7,6 @@ position:relative;
 position:absolute;
 left:-999em;
 }
-
 .info:hover span {
 left:90px;
 top:evt.page;
