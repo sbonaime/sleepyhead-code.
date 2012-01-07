@@ -11,7 +11,14 @@ License: GPL
 #define MACHINE_LOADER_H
 #include "profiles.h"
 #include "machine.h"
+
+#ifdef Q_WS_WIN
+// Windows just needs the headers
+#include "../quazip/zlib.h"
+#else
+// use the system one
 #include "zlib.h"
+#endif
 
 /*! \class MachineLoader
     \brief Base class to derive a new Machine importer from
