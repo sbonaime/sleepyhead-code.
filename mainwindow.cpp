@@ -504,7 +504,11 @@ struct DateData {
 };
 bool operator <(const DateData & c1, const DateData & c2)
 {
-    return c1.value < c2.value;
+    if (c1.value < c2.value)
+        return true;
+    if ((c1.value == c2.value) && (c1.date > c1.date)) return true;
+    return false;
+    //return c1.value < c2.value;
 }
 
 class MyStatsPage:public QWebPage
@@ -843,12 +847,12 @@ void MainWindow::on_summaryButton_clicked()
 
                 EventDataType hours=day->hours();
 
-                if (hours>PROFILE.cpap->complianceHours()) {
+                //if (hours>PROFILE.cpap->complianceHours()) {
                     EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
                     if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
                     ahi/=day->hours();
                     AHI.push_back(DateData(date,ahi));
-                }
+                //}
                 prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));

@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -309,6 +309,14 @@ p, li { white-space: pre-wrap; }
           </property>
           <item row="1" column="0">
            <widget class="QCheckBox" name="createSDBackups">
+            <property name="toolTip">
+             <string>This maintains a backup of SD-card data for ResMed machines, 
+
+ResMed machines delete high resolution data older than 7 days, and graph data older than 30 days..
+
+Sleepyhead can keep a copy of this data if you ever need to reinstall. 
+(Highly recomended, unless your short on disk space and don't care about the graph data)</string>
+            </property>
             <property name="text">
              <string>Create SD Card Backups during Import (only works with ResMed for now)</string>
             </property>
@@ -316,6 +324,10 @@ p, li { white-space: pre-wrap; }
           </item>
           <item row="3" column="0">
            <widget class="QCheckBox" name="compressSessionData">
+            <property name="toolTip">
+             <string>This makes SleepyHead's data take less disk space (about half as much),
+but it makes import take longer, and also makes switching between days a little slower.</string>
+            </property>
             <property name="text">
              <string>Compress Session Data (slower, but makes SleepyHead data smaller)</string>
             </property>
@@ -323,6 +335,14 @@ p, li { white-space: pre-wrap; }
           </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="compressSDBackups">
+            <property name="toolTip">
+             <string>Compress ResMed (EDF) backups to save disk space.
+Backed up EDF files are stored in the .gz format, 
+which is common on Mac &amp; Linux platforms.. 
+
+SleepyHead can import from this compressed backup directory natively.. 
+To use with ResScan will require the .gz files to be uncompressed first..</string>
+            </property>
             <property name="text">
              <string>Compress SD Card Backups (slower, but makes backups smaller)</string>
             </property>
@@ -425,6 +445,9 @@ p, li { white-space: pre-wrap; }
           </item>
           <item row="2" column="1" colspan="2">
            <widget class="QComboBox" name="maskTypeCombo">
+            <property name="toolTip">
+             <string>Generic mask type. Select the one that's closest to your mask.</string>
+            </property>
             <item>
              <property name="text">
               <string/>
@@ -446,7 +469,11 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item row="3" column="1" colspan="2">
-           <widget class="QLineEdit" name="maskDescription"/>
+           <widget class="QLineEdit" name="maskDescription">
+            <property name="toolTip">
+             <string>The name of your mask, or at least the name you call it.</string>
+            </property>
+           </widget>
           </item>
           <item row="4" column="1" colspan="2">
            <widget class="QComboBox" name="leakModeCombo">
@@ -455,6 +482,9 @@ p, li { white-space: pre-wrap; }
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Ignore this, it's not implemented yet.</string>
             </property>
             <item>
              <property name="text">
@@ -501,6 +531,9 @@ p, li { white-space: pre-wrap; }
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>The date you started using this mask</string>
             </property>
             <property name="calendarPopup">
              <bool>true</bool>
@@ -579,6 +612,9 @@ p, li { white-space: pre-wrap; }
              <bold>true</bold>
             </font>
            </property>
+           <property name="toolTip">
+            <string>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</string>
+           </property>
            <property name="text">
             <string>Use RDI instead of  AHI (PRS1 only)</string>
            </property>
@@ -586,6 +622,9 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QGroupBox" name="complianceGroupbox">
+           <property name="toolTip">
+            <string>Don't show any compliance information</string>
+           </property>
            <property name="title">
             <string>Show Compliance</string>
            </property>
@@ -608,7 +647,7 @@ p, li { white-space: pre-wrap; }
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>Regard days with under this usage as &quot;incompliant&quot;.</string>
+               <string>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</string>
               </property>
               <property name="suffix">
                <string> hours</string>
@@ -649,6 +688,12 @@ p, li { white-space: pre-wrap; }
          </item>
          <item>
           <widget class="QGroupBox" name="customEventGroupbox">
+           <property name="toolTip">
+            <string>Enable/disable experimental event flagging enhancements. 
+It allows detecting borderline events on PRS1 machines..
+
+Has no effect on other machines (yet).</string>
+           </property>
            <property name="title">
             <string>Custom PRS1 Event Flagging</string>
            </property>
@@ -682,6 +727,9 @@ p, li { white-space: pre-wrap; }
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Percentage of restriction in airflow</string>
               </property>
               <property name="suffix">
                <string>%</string>
@@ -727,6 +775,9 @@ p, li { white-space: pre-wrap; }
             </item>
             <item row="2" column="3">
              <widget class="QDoubleSpinBox" name="apneaDuration">
+              <property name="toolTip">
+               <string>Duration of airflow restriction</string>
+              </property>
               <property name="suffix">
                <string>s</string>
               </property>
@@ -754,7 +805,10 @@ p, li { white-space: pre-wrap; }
             <string>AHI/Hour Graph Settings</string>
            </property>
            <property name="checkable">
-            <bool>true</bool>
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <property name="horizontalSpacing">
@@ -778,8 +832,17 @@ p, li { white-space: pre-wrap; }
             </item>
             <item row="0" column="1">
              <widget class="QSpinBox" name="ahiGraphWindowSize">
+              <property name="toolTip">
+               <string>Adjusts the amount of data considered for each point in the AHI/Hour graph.</string>
+              </property>
               <property name="suffix">
                <string> minutes</string>
+              </property>
+              <property name="minimum">
+               <number>5</number>
+              </property>
+              <property name="maximum">
+               <number>999</number>
               </property>
               <property name="value">
                <number>60</number>
@@ -788,6 +851,9 @@ p, li { white-space: pre-wrap; }
             </item>
             <item row="0" column="2">
              <widget class="QCheckBox" name="ahiGraphZeroReset">
+              <property name="toolTip">
+               <string>Reset the counter to zero at beginning of each (time) window</string>
+              </property>
               <property name="text">
                <string>Zero Reset</string>
               </property>
@@ -905,7 +971,11 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="graphFilter"/>
+          <widget class="QLineEdit" name="graphFilter">
+           <property name="toolTip">
+            <string>Filters the graph list. Simply start typing the name of the graph your looking for.</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -1058,6 +1128,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="0" column="1">
               <widget class="QDoubleSpinBox" name="spo2Drop">
+               <property name="toolTip">
+                <string>Percentage drop in oxygen saturation</string>
+               </property>
                <property name="suffix">
                 <string>%</string>
                </property>
@@ -1084,6 +1157,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="pulseChange">
+               <property name="toolTip">
+                <string>Sudden change in Pulse Rate of at least this amount</string>
+               </property>
                <property name="suffix">
                 <string> bpm</string>
                </property>
@@ -1097,6 +1173,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="0" column="2">
               <widget class="QDoubleSpinBox" name="spo2DropTime">
+               <property name="toolTip">
+                <string>Minimum duration of drop in oxygen saturation</string>
+               </property>
                <property name="suffix">
                 <string>s</string>
                </property>
@@ -1107,6 +1186,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="2" column="2">
               <widget class="QDoubleSpinBox" name="pulseChangeTime">
+               <property name="toolTip">
+                <string>Minimum duration of pulse change event.</string>
+               </property>
                <property name="suffix">
                 <string>s</string>
                </property>
@@ -1127,6 +1209,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="3" column="2">
               <widget class="QSpinBox" name="oxiDiscardThreshold">
+               <property name="toolTip">
+                <string>Small chunks of oximetry data under this amount will be discarded.</string>
+               </property>
                <property name="suffix">
                 <string>s</string>
                </property>
@@ -1210,6 +1295,9 @@ p, li { white-space: pre-wrap; }
           </item>
           <item row="5" column="0">
            <widget class="QCheckBox" name="skipEmptyDays">
+            <property name="toolTip">
+             <string>Daily view navigation buttons will skip over days without data records</string>
+            </property>
             <property name="text">
              <string>Skip over Empty Days</string>
             </property>
@@ -1218,7 +1306,8 @@ p, li { white-space: pre-wrap; }
           <item row="1" column="1">
            <widget class="QCheckBox" name="enableMultithreading">
             <property name="toolTip">
-             <string>Allow use of multiple CPU cores where available to improve performance. May cause problems.</string>
+             <string>Allow use of multiple CPU cores where available to improve performance. 
+Mainly affects the importer.</string>
             </property>
             <property name="text">
              <string>Enable Multithreading</string>
@@ -1553,6 +1642,9 @@ p, li { white-space: pre-wrap; }
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="toolTip">
+               <string>Default display height of graphs in pixels</string>
+              </property>
               <property name="minimum">
                <number>50</number>
               </property>
@@ -1594,6 +1686,13 @@ p, li { white-space: pre-wrap; }
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
             <widget class="QCheckBox" name="useAntiAliasing">
+             <property name="toolTip">
+              <string>Anti-Aliasing applies smoothing to graph plots.. 
+Certain plots look more attractive with this on. 
+This also affects printed reports.
+
+Try it and see if you like it.</string>
+             </property>
              <property name="text">
               <string>Use Anti-Aliasing</string>
              </property>
@@ -1601,6 +1700,9 @@ p, li { white-space: pre-wrap; }
            </item>
            <item>
             <widget class="QCheckBox" name="useSquareWavePlots">
+             <property name="toolTip">
+              <string>Makes certain plots look more &quot;square waved&quot;.</string>
+             </property>
              <property name="text">
               <string>Square Wave Plots</string>
              </property>
@@ -1622,6 +1724,9 @@ this application to be unstable with this feature enabled.</string>
            </item>
            <item>
             <widget class="QCheckBox" name="animationsAndTransitionsCheckbox">
+             <property name="toolTip">
+              <string>Turn on/off the spinning &quot;context&quot; cube.</string>
+             </property>
              <property name="text">
               <string>Animations &amp;&amp; Fancy Stuff</string>
              </property>
