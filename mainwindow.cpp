@@ -495,18 +495,19 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     }
     return true;
 }
-struct DateData {
-    DateData() { value=0; }
-    DateData(QDate d, EventDataType v) { date=d; value=v; }
-    DateData(const DateData & copy) { date=copy.date; value=copy.value; }
+struct UsageData {
+    UsageData() { ahi=0; hours=0; }
+    UsageData(QDate d, EventDataType v, EventDataType h) { date=d; ahi=v; hours=h; }
+    UsageData(const UsageData & copy) { date=copy.date; ahi=copy.ahi; hours=copy.hours; }
     QDate date;
-    EventDataType value;
+    EventDataType ahi;
+    EventDataType hours;
 };
-bool operator <(const DateData & c1, const DateData & c2)
+bool operator <(const UsageData & c1, const UsageData & c2)
 {
-    if (c1.value < c2.value)
+    if (c1.ahi < c2.ahi)
         return true;
-    if ((c1.value == c2.value) && (c1.date > c1.date)) return true;
+    if ((c1.ahi == c2.ahi) && (c1.date > c2.date)) return true;
     return false;
     //return c1.value < c2.value;
 }
@@ -823,7 +824,7 @@ void MainWindow::on_summaryButton_clicked()
     html+="</table>";
     html+="</div>";
 
-    QList<DateData> AHI;
+    QList<UsageData> AHI;
 
     //QDate bestAHIdate, worstAHIdate;
     //EventDataType bestAHI=999.0, worstAHI=0;
@@ -838,21 +839,25 @@ void MainWindow::on_summaryButton_clicked()
         Day * day;
         bool lastchanged=false;
         QVector<RXChange> rxchange;
+        EventDataType hours;
 
+        int compliant=0;
         do {
             day=PROFILE.GetGoodDay(date,MT_CPAP);
 
             if (day) {
                 lastchanged=false;
 
-                EventDataType hours=day->hours();
+                hours=day->hours();
 
-                //if (hours>PROFILE.cpap->complianceHours()) {
-                    EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
-                    if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
-                    ahi/=day->hours();
-                    AHI.push_back(DateData(date,ahi));
-                //}
+                if (hours > PROFILE.cpap->complianceHours())
+                    compliant++;
+
+                EventDataType ahi=day->count(CPAP_Obstructive)+day->count(CPAP_Hypopnea)+day->count(CPAP_Apnea)+day->count(CPAP_ClearAirway);
+                if (PROFILE.general->calculateRDI()) ahi+=day->count(CPAP_RERA);
+                ahi/=hours;
+                AHI.push_back(UsageData(date,ahi,hours));
+
                 prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
                 mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
@@ -970,23 +975,36 @@ void MainWindow::on_summaryButton_clicked()
             int z=numdays/2;
             if (z>4) z=4;
 
-            recbox+=QString("<tr><td colspan=2 align=center><b>%1</b></td></tr>").arg(tr("Best&nbsp;%1").arg(ahitxt));
+            recbox+=QString("<tr><td colspan=2 align=center><b>%1</b></td></tr>").arg(tr("Usage Information"));
+            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Total Days")).arg(numdays);
+            if (PROFILE.cpap->showComplianceInfo()) {
+                recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Compliant Days")).arg(compliant);
+            }
+            int highahi=0;
+            for (int i=0;i<numdays;i++) {
+                if (AHI.at(i).ahi > 5.0)
+                    highahi++;
+            }
+            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Days AHI &gt;5.0")).arg(highahi);
 
+
+            recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
+            recbox+=QString("<tr><td colspan=2 align=center><b>%1</b></td></tr>").arg(tr("Best&nbsp;%1").arg(ahitxt));
             for (int i=0;i<z;i++) {
-                const DateData & a=AHI.at(i);
+                const UsageData & a=AHI.at(i);
                 recbox+=QString("<tr><td><a href='daily=%1'>%2</a></td><td  align=right>%3</td></tr>")
                     .arg(a.date.toString(Qt::ISODate))
                     .arg(a.date.toString(Qt::SystemLocaleShortDate))
-                    .arg(a.value,0,'f',decimals);
+                    .arg(a.ahi,0,'f',decimals);
             }
             recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
             recbox+=QString("<tr><td colspan=2 align=center><b>%1</b></td></tr>").arg(tr("Worst&nbsp;%1").arg(ahitxt));
             for (int i=0;i<z;i++) {
-                const DateData & a=AHI.at((numdays-1)-i);
+                const UsageData & a=AHI.at((numdays-1)-i);
                 recbox+=QString("<tr><td><a href='daily=%1'>%2</a></td><td align=right>%3</td></tr>")
                     .arg(a.date.toString(Qt::ISODate))
                     .arg(a.date.toString(Qt::SystemLocaleShortDate))
-                    .arg(a.value,0,'f',decimals);
+                    .arg(a.ahi,0,'f',decimals);
             }
             recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
         }
@@ -999,7 +1017,7 @@ void MainWindow::on_summaryButton_clicked()
             tmpRX[0]->highlight=4; // worst
             int ls=tmpRX.size()-1;
             tmpRX[ls]->highlight=1; //best
-            CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->first);
+            CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->last);
 
             if (mode<MODE_APAP) { // is CPAP?
                 minstr="Pressure";
@@ -1037,7 +1055,7 @@ void MainWindow::on_summaryButton_clicked()
 
             recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
 
-            mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->first);
+            mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->last);
             if (mode<MODE_APAP) { // is CPAP?
                 minstr="Pressure";
                 maxstr="";
@@ -1071,8 +1089,6 @@ void MainWindow::on_summaryButton_clicked()
             if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[0]->maxhi,0,'f',1).arg(STR_UNIT_CMH2O);
             recbox+="</table></td></tr>";
 
-            //recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("Start")).arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate));
-            //recbox+=QString("<tr><td colspan=2>%1: %2</td></tr>").arg(tr("End")).arg(tmpRX[0]->last.toString(Qt::SystemLocaleShortDate));
         }
         recbox+="</table>";
         recbox+="</body></html>";
