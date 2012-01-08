@@ -231,6 +231,10 @@ QDomElement Profile::ExtraSave(QDomDocument & doc)
 #include <QMessageBox>
 void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     //date+=wxTimeSpan::Day();
+    if (!day)  {
+        qDebug() << "Profile::AddDay called with null day object";
+        return;
+    }
     if (is_first_day) {
         m_first=m_last=date;
         is_first_day=false;
@@ -282,17 +286,21 @@ Day * Profile::GetGoodDay(QDate date,MachineType type)
 
 Day * Profile::GetDay(QDate date,MachineType type)
 {
-    Day *day=NULL;
-    // profile->     why did I d that??
+    Day *tmp,*day=NULL;
     if (daylist.find(date)!=daylist.end()) {
         for (QList<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
+            tmp=*di;
+            if (!tmp) {
+                qDebug() << "This should never happen in Profile::GetDay()";
+                break;
+            }
 
             if (type==MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
-                day=(*di);
+                day=tmp;
                 break;
             }
             if ((*di)->machine_type()==type) {
-                day=(*di);
+                day=tmp;
                 break;
             }
         }

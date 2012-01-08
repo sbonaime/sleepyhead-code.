@@ -2311,7 +2311,8 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             if ((*it)==day) break;
         }
         if (it!=dl.end()) {
-            PROFILE.daylist[date].erase(it);
+            dl.erase(it);
+            //PROFILE.daylist[date].  // ??
             delete day;
         }
     }
