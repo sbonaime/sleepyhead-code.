@@ -95,6 +95,7 @@ void InitGraphs()
         images["smiley"]=new QImage(":/icons/smileyface.png");
         //images["sad"]=new QImage(":/icons/sadface.png");
 
+        images["sheep"]=new QImage(":/icons/sheep.png");
         images["brick"]=new QImage(":/icons/brick.png");
         images["nographs"]=new QImage(":/icons/nographs.png");
         images["nodata"]=new QImage(":/icons/nodata.png");
@@ -2331,7 +2332,7 @@ void gGraphView::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
-void gGraphView::renderSomethingFun()
+void gGraphView::renderSomethingFun(float alpha)
 {
     if (cubeimg.size()==0) return;
 //    glPushMatrix();
@@ -2394,7 +2395,7 @@ void gGraphView::renderSomethingFun()
 
     //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
     i++;
-    glColor4f(1,1,1,1);
+    glColor4f(1,1,1,alpha);
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
@@ -2747,8 +2748,14 @@ void gGraphView::paintGL()
         }
     }
 
+    // Need a really good condition/excuse to switch this on.. :-}
+    bool bereallyannoying=false;
+
     if (!m_inAnimation || (!m_fadingIn)) {
         // Not in animation sequence, draw graphs like normal
+        if (bereallyannoying)
+            renderSomethingFun(0.7);
+
         numgraphs=renderGraphs();
 
         if (!numgraphs) { // No graphs drawn?
@@ -2756,7 +2763,8 @@ void gGraphView::paintGL()
             GetTextExtent(m_emptytext,x,y,bigfont);
             int tp;
             if (something_fun && this->isVisible()) {// Do something fun instead
-                renderSomethingFun();
+                if (!bereallyannoying)
+                    renderSomethingFun();
                 tp=height()-(y/2);
             } else {
                 tp=height() / 2 + y / 2;
@@ -2800,7 +2808,7 @@ void gGraphView::paintGL()
     swapBuffers(); // Dump to screen.
 
     if (this->isVisible()) {
-        if (m_limbo || m_inAnimation || (something_fun && !numgraphs)) {
+        if (m_limbo || m_inAnimation || (something_fun && (bereallyannoying || !numgraphs))) {
             redrawtimer->setInterval(1000.0/50);
             redrawtimer->setSingleShot(true);
             redrawtimer->start();

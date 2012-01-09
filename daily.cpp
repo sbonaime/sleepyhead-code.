@@ -859,7 +859,7 @@ void Daily::Load(QDate date)
 
                 html+="</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
-                html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=2 border=0 width='100%'>";
+                html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
                 .arg("#40c0c0").arg("black").arg(tr("Leak")).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
 
@@ -1796,6 +1796,8 @@ void Daily::updateCube()
             GraphView->setCubeImage(images["nodata"]);
         }
     } else {
+        GraphView->setCubeImage(images["sheep"]);
+
         ui->toggleGraphs->setArrowType(Qt::DownArrow);
         ui->toggleGraphs->setToolTip(tr("Hide all graphs"));
         ui->toggleGraphs->blockSignals(true);

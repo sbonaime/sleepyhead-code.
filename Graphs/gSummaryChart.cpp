@@ -363,8 +363,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     Day * day;
     EventDataType hours;
 
-    quint32 * tptr;
-    EventStoreType * dptr;
+    //quint32 * tptr;
+    //EventStoreType * dptr;
 
     short px2,py2;
     for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {

@@ -41,5 +41,6 @@
         <file>icons/bob-v3.0.png</file>
         <file>docs/script.js</file>
         <file>icons/nographs.png</file>
+        <file>icons/sheep.png</file>
     </qresource>
 </RCC>

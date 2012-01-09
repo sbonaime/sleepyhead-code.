@@ -1020,7 +1020,7 @@ protected:
     //! \variable Scale used to enlarge graphs when less graphs than can fit on screen.
     float m_scaleY;
 
-    void renderSomethingFun();
+    void renderSomethingFun(float alpha=1);
 
     bool m_sizer_dragging;
     int m_sizer_index;

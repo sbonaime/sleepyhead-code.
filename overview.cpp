@@ -517,11 +517,10 @@ void Overview::on_rangeCombo_activated(int index)
 }
 void Overview::setRange(QDate start, QDate end)
 {
-    ui->dateStart->setMaximumDate(end);
-    ui->dateEnd->setMinimumDate(start);
-
     ui->dateEnd->blockSignals(true);
     ui->dateStart->blockSignals(true);
+    ui->dateStart->setMaximumDate(end);
+    ui->dateEnd->setMinimumDate(start);
     ui->dateStart->setDate(start);
     ui->dateEnd->setDate(end);
     ui->dateEnd->blockSignals(false);

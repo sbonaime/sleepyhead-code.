@@ -520,10 +520,11 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     }
 
                     // Unrolling square plot outside of loop to gain a minor speed improvement.
+                    EventStoreType *eptr=dptr+siz;
                     if (square_plot) {
-                        for (int i=0;i<siz;i++) {
+                        for (; dptr < eptr; dptr++) {
                             time=start + *tptr++;
-                            data=gain  * *dptr++;
+                            data=gain * *dptr;
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                             py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
@@ -553,9 +554,10 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             }
                         }
                     } else {
-                        for (int i=0;i<siz;i++) {
+                        for (; dptr < eptr; dptr++) {
+                        //for (int i=0;i<siz;i++) {
                             time=start + *tptr++;
-                            data=gain  * *dptr++;
+                            data=gain  * *dptr;
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                             py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
