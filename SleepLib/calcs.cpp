@@ -919,6 +919,30 @@ void calcRespRate(Session *session, FlowParser * flowparser)
     bool calcTe=!session->eventlist.contains(CPAP_Te);
     bool calcMv=!session->eventlist.contains(CPAP_MinuteVent);
 
+
+    // If any of these three missing, remove all, and switch all on
+    if (!(calcResp & calcTv & calcMv)) {
+        calcTv=calcMv=calcResp=true;
+
+        QVector<EventList *> & list=session->eventlist[CPAP_RespRate];
+        for (int i=0;i<list.size();i++) {
+            delete list[i];
+        }
+        session->eventlist[CPAP_RespRate].clear();
+
+        QVector<EventList *> & list2=session->eventlist[CPAP_TidalVolume];
+        for (int i=0;i<list2.size();i++) {
+            delete list2[i];
+        }
+        session->eventlist[CPAP_TidalVolume].clear();
+
+        QVector<EventList *> & list3=session->eventlist[CPAP_MinuteVent];
+        for (int i=0;i<list3.size();i++) {
+            delete list3[i];
+        }
+        session->eventlist[CPAP_MinuteVent].clear();
+    }
+
     flowparser->clearFilters();
 
     // No filters works rather well with the new peak detection algorithm..
@@ -931,7 +955,7 @@ void calcRespRate(Session *session, FlowParser * flowparser)
     int cnt=0;
     for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
         flow=session->eventlist[CPAP_FlowRate][ws];
-        if (flow->count() > 5) {
+        if (flow->count() > 20) {
             flowparser->openFlow(session, flow);
             flowparser->calc(calcResp, calcTv, calcTi ,calcTe, calcMv);
         }
