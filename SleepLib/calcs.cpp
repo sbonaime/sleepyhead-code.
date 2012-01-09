@@ -625,10 +625,12 @@ void FlowParser::flagEvents()
         len=st-lastet;
         dur=len/1000.0;
         if (dur>=duration) {
-            if (!uf1) {
-                uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
-            }
-            uf1->AddEvent(st-len/2,dur);
+            //if (!SearchApnea(m_session,st-len/2,15000)) {
+                if (!uf1) {
+                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
+                }
+                uf1->AddEvent(st-len/2,dur);
+            //}
         }
 
         // Uncomment to use UserFlags to show waveform crossover points
@@ -649,41 +651,41 @@ void FlowParser::flagEvents()
 
     //EventList *uf1=NULL;
 
-    int lastbad=-1;
-    qint64 firstbad=0;
+//    int lastbad=-1;
+//    qint64 firstbad=0;
 
-    bool fr=false; // flow restriction
-    for (int i=0;i<numbreaths;i++) {
-        st=start+ breaths[i].start * m_rate;
-        et=start+ breaths[i].end * m_rate;
+//    bool fr=false; // flow restriction
+//    for (int i=0;i<numbreaths;i++) {
+//        st=start+ breaths[i].start * m_rate;
+//        et=start+ breaths[i].end * m_rate;
 
-        fr=false;
-        int j=i;
-        for (j=i;j<numbreaths;j++) {
-            mx=breaths[j].max;
-            mn=breaths[j].min;
-            val=mx-mn;
-            if (val > cutoffval)
-                break;
-            fr=true;
-            et=start + breaths[j].end * m_rate;
-        }
+//        fr=false;
+//        int j=i;
+//        for (j=i;j<numbreaths;j++) {
+//            mx=breaths[j].max;
+//            mn=breaths[j].min;
+//            val=mx-mn;
+//            if (val > cutoffval)
+//                break;
+//            fr=true;
+//            et=start + breaths[j].end * m_rate;
+//        }
 
 
-        if (fr) {
-            i=j-1; // rewind
+//        if (fr) {
+//            i=j-1; // rewind
 
-            len=et-st;
-            dur=(len) / 1000.0;
+//            len=et-st;
+//            dur=(len) / 1000.0;
 
-            if (dur >= duration) {
-                if (!uf1) {
-                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
-                }
-                uf1->AddEvent(et-(len/2),dur);
-            }
-        }
-    }
+//            if (dur >= duration) {
+//                if (!uf1) {
+//                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
+//                }
+//                uf1->AddEvent(et-(len/2),dur);
+//            }
+//        }
+//    }
 
 
 
