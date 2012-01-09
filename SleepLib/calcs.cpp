@@ -522,24 +522,26 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     // Respiratory Rate post filtering
     /////////////////////////////////////////////////////////////////////
 
-    RR->setGain(0.02);
-    RR->setMin(minrr);
-    RR->setMax(maxrr);
-    RR->setFirst(start);
-    RR->setLast(et);
-    RR->setCount(rr_count);
-
+    if (calcResp) {
+        RR->setGain(0.02);
+        RR->setMin(minrr);
+        RR->setMax(maxrr);
+        RR->setFirst(start);
+        RR->setLast(et);
+        RR->setCount(rr_count);
+    }
     /////////////////////////////////////////////////////////////////////
     // Tidal Volume post filtering
     /////////////////////////////////////////////////////////////////////
 
-    TV->setGain(0.1);
-    TV->setMin(mintv);
-    TV->setMax(maxtv);
-    TV->setFirst(start);
-    TV->setLast(et);
-    TV->setCount(tv_count);
-
+    if (calcTv) {
+        TV->setGain(0.1);
+        TV->setMin(mintv);
+        TV->setMax(maxtv);
+        TV->setFirst(start);
+        TV->setLast(et);
+        TV->setCount(tv_count);
+    }
 }
 
 
