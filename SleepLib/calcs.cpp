@@ -651,7 +651,7 @@ void FlowParser::flagEvents()
         len=et-st;
         dur=len/1000.0;
         if (dur>=duration) {
-            if (!SearchApnea(m_session,st-len/2,15000)) {
+            if (!SearchApnea(m_session,et-len/2,15000)) {
                 if (!uf1) {
                     uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
                 }
