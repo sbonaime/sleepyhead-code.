@@ -974,7 +974,7 @@ void MainWindow::on_summaryButton_clicked()
             "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
             "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
             "</style></head><body>";
-        recbox+="<table width=100% cellpadding=2 cellspacing=0>";
+        recbox+="<table width=100% cellpadding=1 cellspacing=0>";
         int numdays=AHI.size();
         if (numdays>1) {
             int z=numdays/2;
@@ -1044,7 +1044,7 @@ void MainWindow::on_summaryButton_clicked()
 
             }
 
-            recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
+            recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
                     .arg(tr("Best RX Setting"));
             recbox+=QString("<tr><td valign=top>Start<br/>End</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
                     .arg(tmpRX[ls]->first.toString(Qt::ISODate))
@@ -1080,7 +1080,7 @@ void MainWindow::on_summaryButton_clicked()
                 modestr=tr("ST/ASV");
             }
 
-            recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
+            recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
                     .arg(tr("Worst RX Setting"));
             recbox+=QString("<tr><td valign=top>Start<br/>End</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
                     .arg(tmpRX[0]->first.toString(Qt::ISODate))

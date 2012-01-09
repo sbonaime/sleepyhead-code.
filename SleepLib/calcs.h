@@ -105,6 +105,7 @@ public:
 
     // Minute vent needs Resp & TV calcs made here..
     void calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool calcMv);
+    void flagEvents();
 
     /*void calcTidalVolume();
     void calcRespRate();
@@ -113,10 +114,7 @@ public:
 
     QList<Filter> m_filters;
 protected:
-    QVector<BreathPeak> breaths_lower;
-    QVector<BreathPeak> breaths_upper;
     QVector<BreathPeak> breaths;
-    QList<BreathPeak> breatsh_good;
 
     int m_samples;
     EventList * m_flow;

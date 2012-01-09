@@ -118,6 +118,7 @@ void init()
 
     CPAP_UserFlag1=schema::channel["UserFlag1"].id();
     CPAP_UserFlag2=schema::channel["UserFlag2"].id();
+    CPAP_UserFlag3=schema::channel["UserFlag3"].id();
     RMS9_E01=schema::channel["RMS9_E01"].id();
     RMS9_E02=schema::channel["RMS9_E02"].id();
     RMS9_EPR=schema::channel["EPR"].id();

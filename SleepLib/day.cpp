@@ -184,7 +184,7 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
         // Can't assume this in any multi day calculations..
         if  (lastgain>0) {
             if (gain!=lastgain) {
-                qDebug() << "Gains differ across sessions :(";
+                qDebug() << "Gains differ across sessions: " << gain << lastgain;
             }
         }
         lastgain=gain;

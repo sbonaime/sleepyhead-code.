@@ -157,6 +157,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     if (PROFILE.cpap->userEventFlagging()) {
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3,QColor("brown"),tr("UF3"))));
     }
     //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
     fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
@@ -195,6 +196,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     if (PROFILE.cpap->userEventFlagging()) {
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3,QColor("brown"),tr("U3"),FT_Bar)));
     }
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),tr("O2"))));
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),tr("PC"),FT_Dot)));
@@ -468,6 +470,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_RERA)
                 && (code!=CPAP_UserFlag1)
                 && (code!=CPAP_UserFlag2)
+                && (code!=CPAP_UserFlag3)
                 && (code!=CPAP_NRI)
                 && (code!=CPAP_LeakFlag)
                 && (code!=CPAP_ExP)
@@ -476,7 +479,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_VSnore2)
                 && (code!=CPAP_VSnore)) continue;
 
-            if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2))) continue;
+            if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2) || (code==CPAP_UserFlag3))) continue;
 
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -826,6 +829,15 @@ void Daily::Load(QDate date)
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
                     .arg("#80ff80").arg("black").arg(tr("PB/CSR")).arg(schema::channel[CPAP_CSR].description()).arg(csr,0,'f',2).arg(CPAP_CSR);
             }
+            if (PROFILE.cpap->userEventFlagging()) {
+                EventDataType uf1=cpap->count(CPAP_UserFlag1) / cpap->hours();
+                if (uf1>0)
+                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                        .arg("#e0e0e0").arg("black")
+                        .arg(tr("User Flags"))
+                        .arg(schema::channel[CPAP_UserFlag1].description())
+                        .arg(uf1,0,'f',2).arg(CPAP_UserFlag1);
+            }
 
             html+="</table></td>";
 
@@ -843,15 +855,6 @@ void Daily::Load(QDate date)
                     html+="<tr bgcolor='#404040'><td colspan=2>&nbsp;</td></tr>";
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                         .arg("#ff4040").arg("black").arg(tr("VSnore2")).arg(schema::channel[CPAP_VSnore2].description()).arg(cpap->count(CPAP_VSnore2)/cpap->hours(),0,'f',2).arg(CPAP_VSnore2);
-                }
-                if (PROFILE.cpap->userEventFlagging()) {
-                    EventDataType uf1=cpap->count(CPAP_UserFlag1) / cpap->hours();
-                    if (uf1>0)
-                        html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                            .arg("#e0e0e0").arg("black")
-                            .arg(tr("User Flags"))
-                            .arg(schema::channel[CPAP_UserFlag1].description())
-                            .arg(uf1,0,'f',2).arg(CPAP_UserFlag1);
                 }
                 html+="</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {

@@ -710,7 +710,10 @@ void Session::UpdateSummaries()
     ChannelID id;
     QHash<ChannelID,QVector<EventList *> >::iterator c;
     calcAHIGraph(this);
+
+    // Calculates RespRate and related waveforms (Tv, MV, Te, Ti) if missing
     calcRespRate(this);
+
     calcLeaks(this);
     calcSPO2Drop(this);
     calcPulseChange(this);
