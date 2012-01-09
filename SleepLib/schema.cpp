@@ -109,6 +109,8 @@ void init()
     CPAP_Te=schema::channel["Te"].id();
     CPAP_Ti=schema::channel["Ti"].id();
     CPAP_TgMV=schema::channel["TgMV"].id();
+    CPAP_Test1=schema::channel["TestChan1"].id();
+    CPAP_Test2=schema::channel["TestChan2"].id();
 
     CPAP_PresReliefSet=schema::channel["PresRelSet"].id();
     CPAP_PresReliefMode=schema::channel["PresRelMode"].id();

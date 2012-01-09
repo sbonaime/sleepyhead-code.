@@ -12,7 +12,7 @@
 
 extern double round(double number);
 
-bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
+bool SearchApnea(Session *session, qint64 time, qint64 dist)
 {
     if (session->SearchEvent(CPAP_Obstructive,time,dist)) return true;
     if (session->SearchEvent(CPAP_Apnea,time,dist)) return true;
@@ -22,15 +22,537 @@ bool SearchApnea(Session *session, qint64 time, qint64 dist=15000)
     return false;
 }
 
+// Sort BreathPeak by peak index
+bool operator<(const BreathPeak & p1, const BreathPeak & p2)
+{
+    return p1.start < p2.start;
+}
+
+//! \brief Filters input to output with a percentile filter with supplied width.
+//! \param samples Number of samples
+//! \param width number of surrounding samples to consider
+//! \param percentile fractional percentage, between 0 and 1
+void percentileFilter(EventDataType * input, EventDataType * output, int samples, int width, EventDataType percentile)
+{
+    if (samples<=0)
+        return;
+
+    if (percentile>1)
+        percentile=1;
+
+    QVector<EventDataType> buf(width);
+    int s,e;
+    int z1=width/2;
+    int z2=z1+(width % 2);
+    int nm1=samples-1;
+    //int j;
+
+    // Scan through all of input
+    for (int k=0;k < samples;k++) {
+
+        s=k-z1;
+        e=k+z2;
+
+        // Cap bounds
+        if (s < 0) s=0;
+        if (e > nm1) e=nm1;
+
+        //
+        int j=0;
+        for (int i=s; i < e; i++) {
+            buf[j++]=input[i];
+        }
+        j--;
+
+        EventDataType val=j * percentile;
+        EventDataType fl=floor(val);
+
+        // If even percentile, or already max value..
+        if ((val==fl) || (j>=width-1)) {
+            nth_element(buf.begin(),buf.begin()+j,buf.begin()+width-1);
+            val=buf[j];
+        } else {
+            // Percentile lies between two points, interpolate.
+            double v1,v2;
+            nth_element(buf.begin(),buf.begin()+j,buf.begin()+width-1);
+            v1=buf[j];
+            nth_element(buf.begin(),buf.begin()+j+1,buf.begin()+width-1);
+            v2=buf[j+1];
+
+            val = v1 + (v2-v1)*(val-fl);
+        }
+        output[k]=val;
+    }
+}
+
+void xpassFilter(EventDataType * input, EventDataType * output, int samples, EventDataType weight)
+{
+    // prime the first value
+    output[0]=input[0];
+
+    for (int i=1;i<samples-1;i++) {
+        output[i]=weight*input[i] + (1.0-weight)*output[i-1];
+    }
+    output[samples-1]=input[samples-1];
+}
+
+FlowParser::FlowParser()
+{
+    m_session=NULL;
+    m_flow=NULL;
+    m_filtered=NULL;
+    m_gain=1;
+    m_samples=0;
+    m_startsUpper=true;
+
+    // Allocate filter chain buffers..
+    for (int i=0;i<num_filter_buffers;i++) {
+        m_buffers[i]=(EventDataType *) malloc(max_filter_buf_size);
+    }
+    m_filtered=(EventDataType *) malloc(max_filter_buf_size);
+}
+FlowParser::~FlowParser()
+{
+    free (m_filtered);
+    for (int i=0;i<num_filter_buffers;i++) {
+        free(m_buffers[i]);
+    }
+}
+void FlowParser::clearFilters()
+{
+    m_filters.clear();
+}
+
+EventDataType * FlowParser::applyFilters(EventDataType * data, int samples)
+{
+    EventDataType *in=NULL,*out=NULL;
+    if (m_filters.size()==0) {
+        qDebug() << "Trying to apply empty filter list in FlowParser..";
+        return NULL;
+    }
+
+    int numfilt=m_filters.size();
+
+    for (int i=0;i<numfilt;i++) {
+        if (i==0) {
+            in=data;
+            out=m_buffers[0];
+            if (in==out) {
+                qDebug() << "Error: If you need to use internal m_buffers as initial input, use the second one. No filters were applied";
+                return NULL;
+            }
+        } else {
+            in=m_buffers[(i+1) % 2];
+            out=m_buffers[i % 2];
+        }
+
+        // If final link in chain, pass it back out to input data
+        if (i==numfilt-1) {
+            out=data;
+        }
+        Filter & filter=m_filters[i];
+        if (filter.type==FilterNone) {
+            // Just copy it..
+            memcpy(in,out,samples*sizeof(EventDataType));
+        } else if (filter.type==FilterPercentile) {
+            percentileFilter(in,out,samples,filter.param1,filter.param2);
+        } else if (filter.type==FilterXPass) {
+            xpassFilter(in,out,samples,filter.param1);
+        }
+    }
+
+    return out;
+}
+void FlowParser::openFlow(Session * session, EventList * flow)
+{
+    if (!flow) {
+        qDebug() << "called FlowParser::processFlow() with a null EventList!";
+        return;
+    }
+    m_session=session;
+    m_flow=flow;
+    m_gain=flow->gain();
+    m_rate=flow->rate();
+    m_samples=flow->count();
+    EventStoreType *inraw=flow->rawData();
+
+    // Make sure we won't overflow internal buffers
+    if (m_samples > max_filter_buf_size) {
+        qDebug() << "Error: Sample size exceeds max_filter_buf_size in FlowParser::openFlow().. Capping!!!";
+        m_samples=max_filter_buf_size;
+    }
+
+    // Begin with the second internal buffer
+    EventDataType * buf=m_filtered;
+    EventDataType c;
+    // Apply gain to waveform
+    for (int i=0;i<m_samples;i++) {
+        c= EventDataType(*inraw++) * m_gain;
+        *buf++ = c;
+    }
+
+    // Apply the rest of the filters chain
+    buf=applyFilters(m_filtered, m_samples);
+    if (buf!=m_filtered) {
+        int i=5;
+    }
+
+    calcPeaks(m_filtered, m_samples);
+}
+
+// Calculates breath upper & lower peaks for a chunk of EventList data
+void FlowParser::calcPeaks(EventDataType * input, int samples)
+{
+    if (samples<=0)
+        return;
+
+    EventDataType min=0,max=0, c, lastc=0;
+
+    EventDataType zeroline=0;
+
+    // For each sample in flow waveform
+    double rate=m_flow->rate();
+
+    double flowstart=m_flow->first();
+    double lasttime,time;
+
+    double peakmax=flowstart, peakmin=flowstart;
+
+    time=lasttime=flowstart;
+
+    // Estimate storage space needed using typical average breaths per minute.
+    m_minutes=double(m_flow->last() - m_flow->first()) / 60000.0;
+    const double avgbpm=20;
+    int guestimate=m_minutes*avgbpm;
+    breaths_lower.reserve(guestimate);
+    breaths_upper.reserve(guestimate);
+
+    // Prime min & max, and see which side of the zero line we are starting from.
+    c=input[0];
+    min=max=c;
+    lastc=c;
+    m_startsUpper=(c >= zeroline);
+
+    qint32 start=0,middle=0;//,end=0;
+
+    breaths.clear();
+
+    int sps=1000/m_rate;
+    // For each samples, find the peak upper and lower breath components
+    //bool dirty=false;
+    int len=0, lastk=0; //lastlen=0
+
+    EventList *uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
+    //EventList *uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
+
+    qint64 sttime=time;//, ettime=time;
+
+    for (int k=0; k < samples; k++) {
+        c=input[k];
+      //  dirty=false;
+
+        if (c >= zeroline) {
+
+            // Did we just cross the zero line going up?
+            if (lastc < zeroline) {
+                // This helps filter out dirty breaths..
+                len=k-start;
+                if ((max>3) && ((max-min) > 8) && (len>sps) && (middle > start))  {
+                    breaths.push_back(BreathPeak(min, max, start, peakmax, middle, peakmin, k));
+                    //EventDataType g0=(0-lastc) / (c-lastc);
+                    //double d=(m_rate*g0);
+                    double d1=flowstart+ (start*rate);
+                    //double d2=flowstart+ (k*rate);
+
+                    uf1->AddEvent(d1,0);
+                    //uf2->AddEvent(d2,0);
+                    //lastlen=k-start;
+                    // Set max for start of the upper breath cycle
+                    max=c;
+                    peakmax=time;
 
 
+                    // Starting point of next breath cycle
+                    start=k;
+                    sttime=time;
+                } //else {
+//                    dirty=true;
+//                    lastc=-1;
+//                }
+            } else if (c > max) {
+                // Update upper breath peak
+                max=c;
+                peakmax=time;
+            }
+        }
+
+        if (c < zeroline) {
+            // Did we just cross the zero line going down?
+
+            if (lastc >= zeroline) {
+                // Set min for start of the lower breath cycle
+                min=c;
+                peakmin=time;
+                middle=k;
+
+            } else if (c < min) {
+                // Update lower breath peak
+                min=c;
+                peakmin=time;
+            }
+
+        }
+        lasttime=time;
+        time+=rate;
+        //if (!dirty)
+        lastc=c;
+        lastk=k;
+    }
+}
+
+
+//! \brief Calculate Respiratory Rate, TidalVolume, Minute Ventilation, Ti & Te..
+// These are grouped together because, a) it's faster, and b) some of these calculations rely on others.
+void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool calcMv)
+{
+    if (!m_session) {
+        return;
+    }
+
+    // Don't even bother if only a few breaths in this chunk
+    const int lowthresh=4;
+    int nm=breaths.size();
+    if (nm < lowthresh)
+        return;
+
+    const qint64 minute=60000;
+
+
+    double start=m_flow->first();
+    double time=start;
+
+    int bs,be,bm;
+    double st,et,mt;
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Respiratory Rate setup
+    /////////////////////////////////////////////////////////////////////////////////
+    EventDataType minrr,maxrr;
+    EventList * RR=NULL;
+    quint32 * rr_tptr=NULL;
+    EventStoreType * rr_dptr=NULL;
+    if (calcResp) {
+        RR=m_session->AddEventList(CPAP_RespRate,EVL_Event);
+        minrr=RR->Min(), maxrr=RR->Max();
+        RR->setFirst(time+minute);
+        RR->getData().resize(nm);
+        RR->getTime().resize(nm);
+        rr_tptr=RR->rawTime();
+        rr_dptr=RR->rawData();
+    }
+
+    int rr_count=0;
+
+    double len, st2,et2,adj, stmin, b, rr=0;
+    int idx;
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Inspiratory / Expiratory Time setup
+    /////////////////////////////////////////////////////////////////////////////////
+    double lastte2=0,lastti2=0,lastte=0, lastti=0, te, ti, ti1, te1,c;
+    EventList * Te=NULL, * Ti=NULL;
+    if (calcTi) {
+        Ti=m_session->AddEventList(CPAP_Ti,EVL_Event);
+        Ti->setGain(0.1);
+    }
+    if (calcTe) {
+        Te=m_session->AddEventList(CPAP_Te,EVL_Event);
+        Te->setGain(0.1);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Tidal Volume setup
+    /////////////////////////////////////////////////////////////////////////////////
+    EventList * TV;
+    EventDataType mintv, maxtv, tv;
+    double val1, val2;
+    quint32 * tv_tptr;
+    EventStoreType * tv_dptr;
+    int tv_count=0;
+    if (calcTv) {
+        TV=m_session->AddEventList(CPAP_TidalVolume,EVL_Event);
+        mintv=TV->Min(), maxtv=TV->Max();
+        TV->setFirst(start);
+        TV->getData().resize(nm);
+        TV->getTime().resize(nm);
+        tv_tptr=TV->rawTime();
+        tv_dptr=TV->rawData();
+    }
+    /////////////////////////////////////////////////////////////////////////////////
+    // Minute Ventilation setup
+    /////////////////////////////////////////////////////////////////////////////////
+    EventList * MV=NULL;
+    EventDataType mv;
+    if (calcMv) {
+        MV=m_session->AddEventList(CPAP_MinuteVent,EVL_Event);
+        MV->setGain(0.1);
+    }
+
+    EventDataType sps=(1000.0/m_rate); // Samples Per Second
+
+
+    qint32 timeval=0; // Time relative to start
+
+    for (idx=0;idx<nm;idx++) {
+        bs=breaths[idx].start;
+        bm=breaths[idx].middle;
+        be=breaths[idx].end;
+
+        // Calculate start, middle and end time of this breath
+        st=start+bs * m_rate;
+        mt=start+bm * m_rate;
+
+        timeval=be * m_rate;
+
+        et=start+timeval;
+
+
+
+        /////////////////////////////////////////////////////////////////////
+        // Calculate Inspiratory Time (Ti) for this breath
+        /////////////////////////////////////////////////////////////////////
+        if (calcTi) {
+            ti=(mt-st)/100.0;
+            ti1=(lastti2+lastti+ti)/3.0;
+            Ti->AddEvent(mt,ti1);
+            lastti2=lastti;
+            lastti=ti;
+        }
+        /////////////////////////////////////////////////////////////////////
+        // Calculate Expiratory Time (Te) for this breath
+        /////////////////////////////////////////////////////////////////////
+        if (calcTe) {
+            te=(et-mt)/100.0; // (/1000 * 10)
+            // Average last three values..
+            te1=(lastte2+lastte+te)/3.0;
+            Te->AddEvent(mt,te1);
+
+            lastte2=lastte;
+            lastte=te;
+        }
+        /////////////////////////////////////////////////////////////////////
+        // Calculate TidalVolume
+        /////////////////////////////////////////////////////////////////////
+        if (calcTv) {
+            val1=0, val2=0;
+            // Scan the upper breath
+            for (int j=bs;j<bm;j++)  {
+                // convert flow to ml/s to L/min and divide by samples per second
+                c=double(qAbs(m_filtered[j])) * 1000.0 / 60.0 / sps;
+                val2+=c;
+                //val2+=c*c; // for RMS
+            }
+            // calculate root mean square
+            //double n=bm-bs;
+            //double q=(1/n)*val2;
+            //double x=sqrt(q)*2;
+            //val2=x;
+            tv=val2;
+
+            if (tv < mintv) mintv=tv;
+            if (tv > maxtv) maxtv=tv;
+            *tv_tptr++ = timeval;
+            *tv_dptr++ = tv * 10.0;
+            tv_count++;
+
+        }
+
+        /////////////////////////////////////////////////////////////////////
+        // Respiratory Rate Calculations
+        /////////////////////////////////////////////////////////////////////
+        if (calcResp) {
+            stmin=et-minute;
+            if (stmin < start)
+                stmin=start;
+            len=et-stmin;
+            if (len < minute)
+                continue;
+
+            rr=0;
+            //et2=et;
+
+            // Step back through last minute and count breaths
+            for (int i=idx;i>=0;i--) {
+                st2=start + double(breaths[i].start) * m_rate;
+                et2=start + double(breaths[i].end) * m_rate;
+                if (et2 < stmin)
+                    break;
+
+                len=et2-st2;
+                if (st2 < stmin) {
+                    // Partial breath
+                    st2=stmin;
+                    adj=et2 - st2;
+                    b=(1.0 / len) * adj;
+                } else b=1;
+                rr+=b;
+            }
+
+            // Calculate min & max
+            if (rr < minrr) minrr=rr;
+            if (rr > maxrr) maxrr=rr;
+
+            // Add manually.. (much quicker)
+            *rr_tptr++ = timeval;
+            *rr_dptr++ = rr * 50.0;
+            rr_count++;
+
+            //rr->AddEvent(et,br * 50.0);
+        }
+        if (calcMv && calcResp && calcTv) {
+            mv=(tv/1000.0) * rr;
+            MV->AddEvent(et,mv * 10.0);
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Respiratory Rate post filtering
+    /////////////////////////////////////////////////////////////////////
+
+    RR->setGain(0.02);
+    RR->setMin(minrr);
+    RR->setMax(maxrr);
+    RR->setFirst(start);
+    RR->setLast(et);
+    RR->setCount(rr_count);
+
+    /////////////////////////////////////////////////////////////////////
+    // Tidal Volume post filtering
+    /////////////////////////////////////////////////////////////////////
+
+    TV->setGain(0.1);
+    TV->setMin(mintv);
+    TV->setMax(maxtv);
+    TV->setFirst(start);
+    TV->setLast(et);
+    TV->setCount(tv_count);
+
+}
+
+
+/*
 // Support function for calcRespRate()
 int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, EventList *mv, double rate)
 {
-
     int size=in->count();
-    EventDataType *stage1=new EventDataType [size];
-    EventDataType *stage2=new EventDataType [size];
+    int samples=size;
+
+    // Create two buffers for filter stages.
+    EventDataType *stage1=new EventDataType [samples];
+    EventDataType *stage2=new EventDataType [samples];
 
     QVector<EventDataType> med;
     med.reserve(8);
@@ -39,65 +561,11 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     int cnt;
 
     EventDataType c;
-    //double avg;
     int i;
 
-    // Extra median filter stage
-    /*i=3;
-    stage1[0]=in->data(0);
-    stage1[1]=in->data(1);
-    stage1[2]=in->data(2);
-    for (;i<size-2;i++) {
-        med.clear();
-        for (quint32 k=0;k<5;k++) {
-            med.push_back(in->data(i-2+k));
-        }
-        qSort(med);
-        stage1[i]=med[3];
-    }
-    stage1[i]=in->data(i);
-    i++;
-    stage1[i]=in->data(i);
-    i++;
-    stage1[i]=in->data(i);
-    */
+    percentileFilter(in->rawData(), stage1, samples, 11,  0.5);
+    percentileFilter(stage1, stage2, samples, 7,  0.5);
 
-    //i++;
-    //stage1[i]=in->data(i);
-
-    // Anti-Alias the flow waveform to get rid of jagged edges.
-    stage2[0]=in->data(0);
-    stage2[1]=in->data(1);
-    stage2[2]=in->data(2);
-
-    i=3;
-    for (;i<size-3;i++) {
-        cnt=0;
-        r=0;
-        for (quint32 k=0;k<7;k++) {
-            //r+=stage1[i-3+k];
-            r+=in->data(i-3+k);
-            cnt++;
-        }
-        c=r/float(cnt);
-        stage2[i]=c;
-    }
-    stage2[i]=in->data(i);
-    i++;
-    stage2[i]=in->data(i);
-    i++;
-    stage2[i]=in->data(i);
-    //i++;
-    //stage2[i]=in->data(i);
-
-
-//    float weight=0.6;
-//    stage2[0]=in->data(0);
-//    stage1[0]=stage2[0];
-//    for (int i=1;i<size;i++) {
-//        //stage2[i]=in->data(i);
-//        stage1[i]=weight*stage2[i]+(1.0-weight)*stage1[i-1];
-//    }
 
     qint64 time=in->first();
     qint64 u1=0,u2=0,len,l1=0,l2=0;
@@ -111,11 +579,6 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
     QVector<qint64> breaths_max_peak;
     QVector<EventDataType> breaths_max;
 
-//    const int ringsize=256;
-//    EventDataType ringmax[ringsize]={0};
-//    EventDataType ringmin[ringsize]={0};
-//    qint64 ringtime[ringsize]={0};
-//    int rpos=0;
     EventDataType min=0,max=0;
     qint64 peakmin=0, peakmax=0;
     double avgmax=0;
@@ -145,9 +608,11 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                     breaths.push_back(len);
 
                     // keep previously calculated negative peak
-                    breaths_min_peak.push_back(peakmin);
-                    breaths_min.push_back(min);
-                    avgmin+=min;
+                    if (peakmin) {
+                        breaths_min_peak.push_back(peakmin);
+                        breaths_min.push_back(min);
+                        avgmin+=min;
+                    }
                     max=0;
                 }
             } else {
@@ -178,9 +643,11 @@ int filterFlow(Session *session, EventList *in, EventList *out, EventList *tv, E
                         }
                     }
                     // keep previously calculated positive peak
-                    breaths_max_peak.push_back(peakmax);
-                    breaths_max.push_back(max);
-                    avgmax+=max;
+                    if (peakmax>0) {
+                        breaths_max_peak.push_back(peakmax);
+                        breaths_max.push_back(max);
+                        avgmax+=max;
+                    }
                     min=0;
 
                 }
@@ -421,6 +888,57 @@ int calcRespRate(Session *session)
         }
     }
     return cnt;
+}
+
+ */
+
+void calcRespRate(Session *session, FlowParser * flowparser)
+{
+    if (session->machine()->GetType()!=MT_CPAP) return;
+
+//    if (session->machine()->GetClass()!=STR_MACH_PRS1) return;
+
+    if (!session->eventlist.contains(CPAP_FlowRate)) {
+        qDebug() << "calcRespRate called without FlowRate waveform available";
+        return; //need flow waveform
+    }
+
+    bool trashfp;
+    if (!flowparser) {
+        flowparser=new FlowParser();
+        trashfp=true;
+        qDebug() << "calcRespRate called without valid FlowParser object.. using a slow throw-away!";
+        //return;
+    } else {
+        trashfp=false;
+    }
+
+    bool calcResp=!session->eventlist.contains(CPAP_RespRate);
+    bool calcTv=!session->eventlist.contains(CPAP_TidalVolume);
+    bool calcTi=!session->eventlist.contains(CPAP_Ti);
+    bool calcTe=!session->eventlist.contains(CPAP_Te);
+    bool calcMv=!session->eventlist.contains(CPAP_MinuteVent);
+
+    flowparser->clearFilters();
+
+    // No filters works rather well with the new peak detection algorithm..
+    // Although the output could use filtering.
+
+    //flowparser->addFilter(FilterPercentile,7,0.5);
+    //flowparser->addFilter(FilterPercentile,5,0.5);
+    //flowparser->addFilter(FilterXPass,0.5);
+    EventList *flow;
+    int cnt=0;
+    for (int ws=0; ws < session->eventlist[CPAP_FlowRate].size(); ws++) {
+        flow=session->eventlist[CPAP_FlowRate][ws];
+        if (flow->count() > 5) {
+            flowparser->openFlow(session, flow);
+            flowparser->calc(calcResp, calcTv, calcTi ,calcTe, calcMv);
+        }
+    }
+    if (trashfp) {
+        delete flowparser;
+    }
 }
 
 

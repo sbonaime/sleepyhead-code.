@@ -184,8 +184,9 @@ void ProfileSelect::on_newProfileButton_clicked()
 {
     NewProfile newprof(this);
     newprof.skipWelcomeScreen();
-    newprof.exec();
-    accept();
+    if (newprof.exec()==NewProfile::Rejected) {
+//        reject();
+    } else accept();
 }
 
 

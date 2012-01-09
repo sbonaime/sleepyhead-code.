@@ -246,15 +246,24 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    RR->AddLayer(AddCPAP(new gLineChart(CPAP_RespRate,Qt::darkMagenta,square)));
+    RR->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate,Qt::darkBlue,square)));
+
+    // Delete me!!
+//    lc->addPlot(CPAP_Test1,Qt::darkRed,square);
+
     MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
-    TV->AddLayer(AddCPAP(new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
+    TV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
+    //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
+
+
+
     //TV->AddLayer(AddCPAP(new gLineChart("TidalVolume2",Qt::magenta,square)));
     FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG,Qt::darkBlue,true)));
     //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::magenta,true)));
-    IE->AddLayer(AddCPAP(new gLineChart(CPAP_IE,Qt::darkRed,square)));
-    TE->AddLayer(AddCPAP(new gLineChart(CPAP_Te,Qt::darkGreen,square)));
-    TI->AddLayer(AddCPAP(new gLineChart(CPAP_Ti,Qt::darkBlue,square)));
+    IE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE,Qt::darkRed,square)));
+    TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te,Qt::darkGreen,square)));
+    TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti,Qt::darkBlue,square)));
+    //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
     TgMV->AddLayer(AddCPAP(new gLineChart(CPAP_TgMV,Qt::darkCyan,square)));
     //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));

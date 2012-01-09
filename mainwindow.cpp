@@ -2333,7 +2333,8 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
         if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties[STR_PROP_Brand]+" "+m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_ModelNumber]+" ("+m->properties[STR_PROP_Serial]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             m->Purge(3478216);
             PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
-            delete m;
+            // delete or not to delete.. this needs to delete later.. :/
+            //delete m;
             RestartApplication();
         }
     }

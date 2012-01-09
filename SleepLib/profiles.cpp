@@ -299,7 +299,7 @@ Day * Profile::GetDay(QDate date,MachineType type)
                 day=tmp;
                 break;
             }
-            if ((*di)->machine_type()==type) {
+            if (tmp->machine_type()==type) {
                 day=tmp;
                 break;
             }
