@@ -242,7 +242,7 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
     //bool dirty=false;
     int len=0, lastk=0; //lastlen=0
 
-    EventList *uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
+    //EventList *uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
     //EventList *uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
 
     qint64 sttime=time;//, ettime=time;
@@ -261,10 +261,10 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
                     breaths.push_back(BreathPeak(min, max, start, peakmax, middle, peakmin, k));
                     //EventDataType g0=(0-lastc) / (c-lastc);
                     //double d=(m_rate*g0);
-                    double d1=flowstart+ (start*rate);
+                    //double d1=flowstart+ (start*rate);
                     //double d2=flowstart+ (k*rate);
 
-                    uf1->AddEvent(d1,0);
+                    //uf1->AddEvent(d1,0);
                     //uf2->AddEvent(d2,0);
                     //lastlen=k-start;
                     // Set max for start of the upper breath cycle
