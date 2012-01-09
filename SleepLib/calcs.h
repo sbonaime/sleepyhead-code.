@@ -43,24 +43,24 @@ struct Filter {
 };
 
 struct BreathPeak {
-    BreathPeak() { min=0; max=0; start=0; peakmax=0; middle=0; peakmin=0; end=0;  }
-    BreathPeak(EventDataType _min, EventDataType _max, qint32 _start, qint64 _peakmax, qint32 _middle, qint64 _peakmin, qint32 _end) {
+    BreathPeak() { min=0; max=0; start=0; middle=0; end=0; } // peakmin=0; peakmax=0;  }
+    BreathPeak(EventDataType _min, EventDataType _max, qint32 _start, qint32 _middle,  qint32 _end) {//, qint64 _peakmin, qint64 _peakmax) {
         min=_min;
         max=_max;
         start=_start;
         middle=_middle;
         end=_end;
-        peakmax=_peakmax;
-        peakmin=_peakmin;
+        //peakmax=_peakmax;
+        //peakmin=_peakmin;
     }
     BreathPeak(const BreathPeak & copy) {
         min=copy.min;
         max=copy.max;
         start=copy.start;
-        peakmax=copy.peakmax;
         middle=copy.middle;
-        peakmin=copy.peakmin;
         end=copy.end;
+        //peakmin=copy.peakmin;
+        //peakmax=copy.peakmax;
     }
     int samplelength() { return end-start; }
     int upperLength() { return middle-start; }
@@ -69,10 +69,10 @@ struct BreathPeak {
     EventDataType min;   // peak value
     EventDataType max;   // peak value
     qint32 start;       // beginning zero cross
-    qint64 peakmax;     // max peak index
     qint32 middle;         // ending zero cross
-    qint64 peakmin;     // min peak index
     qint32 end;         // ending zero cross
+    //qint64 peakmin;     // min peak index
+    //qint64 peakmax;     // max peak index
 };
 
 bool operator<(const BreathPeak & p1, const BreathPeak & p2);

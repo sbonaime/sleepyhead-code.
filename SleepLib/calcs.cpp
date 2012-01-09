@@ -90,10 +90,10 @@ void xpassFilter(EventDataType * input, EventDataType * output, int samples, Eve
     // prime the first value
     output[0]=input[0];
 
-    for (int i=1;i<samples-1;i++) {
+    for (int i=1;i<samples;i++) {
         output[i]=weight*input[i] + (1.0-weight)*output[i-1];
     }
-    output[samples-1]=input[samples-1];
+    //output[samples-1]=input[samples-1];
 }
 
 FlowParser::FlowParser()
@@ -106,17 +106,14 @@ FlowParser::FlowParser()
     m_startsUpper=true;
 
     // Allocate filter chain buffers..
-    for (int i=0;i<num_filter_buffers;i++) {
-        m_buffers[i]=(EventDataType *) malloc(max_filter_buf_size);
-    }
     m_filtered=(EventDataType *) malloc(max_filter_buf_size);
 }
 FlowParser::~FlowParser()
 {
     free (m_filtered);
-    for (int i=0;i<num_filter_buffers;i++) {
-        free(m_buffers[i]);
-    }
+//    for (int i=0;i<num_filter_buffers;i++) {
+//        free(m_buffers[i]);
+//    }
 }
 void FlowParser::clearFilters()
 {
@@ -130,6 +127,9 @@ EventDataType * FlowParser::applyFilters(EventDataType * data, int samples)
         //qDebug() << "Trying to apply empty filter list in FlowParser..";
         return NULL;
     }
+    for (int i=0;i<num_filter_buffers;i++) {
+        m_buffers[i]=(EventDataType *) malloc(max_filter_buf_size);
+    }
 
     int numfilt=m_filters.size();
 
@@ -142,14 +142,15 @@ EventDataType * FlowParser::applyFilters(EventDataType * data, int samples)
                 return NULL;
             }
         } else {
-            in=m_buffers[(i+1) % 2];
-            out=m_buffers[i % 2];
+            in=m_buffers[(i+1) % num_filter_buffers];
+            out=m_buffers[i % num_filter_buffers];
         }
 
         // If final link in chain, pass it back out to input data
         if (i==numfilt-1) {
             out=data;
         }
+
         Filter & filter=m_filters[i];
         if (filter.type==FilterNone) {
             // Just copy it..
@@ -161,6 +162,9 @@ EventDataType * FlowParser::applyFilters(EventDataType * data, int samples)
         }
     }
 
+    for (int i=0;i<num_filter_buffers;i++) {
+        free(m_buffers[i]);
+    }
     return out;
 }
 void FlowParser::openFlow(Session * session, EventList * flow)
@@ -186,16 +190,15 @@ void FlowParser::openFlow(Session * session, EventList * flow)
     EventDataType * buf=m_filtered;
     EventDataType c;
     // Apply gain to waveform
-    for (int i=0;i<m_samples;i++) {
-        c= EventDataType(*inraw++) * m_gain;
-        *buf++ = c;
+    EventStoreType *eptr=inraw+m_samples;
+
+    // Convert from store type to floats..
+    for (; inraw < eptr; inraw++) {
+        *buf++ = EventDataType(*inraw) * m_gain;
     }
 
     // Apply the rest of the filters chain
     buf=applyFilters(m_filtered, m_samples);
-    if (buf!=m_filtered) {
-        int i=5;
-    }
 
     calcPeaks(m_filtered, m_samples);
 }
@@ -257,7 +260,8 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
                 len=k-start;
                 if ((max>3) && ((max-min) > 8) && (len>sps) && (middle > start))  {
 
-                    breaths.push_back(BreathPeak(min, max, start, peakmax, middle, peakmin, k));
+                    // peak detection may not be needed..
+                    breaths.push_back(BreathPeak(min, max, start, middle, k)); //, peakmin, peakmax));
                     //EventDataType g0=(0-lastc) / (c-lastc);
                     //double d=(m_rate*g0);
                     //double d1=flowstart+ (start*rate);
@@ -365,11 +369,11 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     EventList * Te=NULL, * Ti=NULL;
     if (calcTi) {
         Ti=m_session->AddEventList(CPAP_Ti,EVL_Event);
-        Ti->setGain(0.1);
+        Ti->setGain(0.02);
     }
     if (calcTe) {
         Te=m_session->AddEventList(CPAP_Te,EVL_Event);
-        Te->setGain(0.1);
+        Te->setGain(0.02);
     }
 
 
@@ -425,7 +429,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
         // Calculate Inspiratory Time (Ti) for this breath
         /////////////////////////////////////////////////////////////////////
         if (calcTi) {
-            ti=(mt-st)/100.0;
+            ti=((mt-st)/1000.0)*50.0;
             ti1=(lastti2+lastti+ti)/3.0;
             Ti->AddEvent(mt,ti1);
             lastti2=lastti;
@@ -435,7 +439,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
         // Calculate Expiratory Time (Te) for this breath
         /////////////////////////////////////////////////////////////////////
         if (calcTe) {
-            te=(et-mt)/100.0; // (/1000 * 10)
+            te=((et-mt)/1000.0)*50.0;
             // Average last three values..
             te1=(lastte2+lastte+te)/3.0;
             Te->AddEvent(mt,te1);
@@ -478,42 +482,43 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
             if (stmin < start)
                 stmin=start;
             len=et-stmin;
-            if (len < minute)
-                continue;
-
             rr=0;
-            //et2=et;
+            if (len >= minute) {
+                //et2=et;
 
-            // Step back through last minute and count breaths
-            for (int i=idx;i>=0;i--) {
-                st2=start + double(breaths[i].start) * m_rate;
-                et2=start + double(breaths[i].end) * m_rate;
-                if (et2 < stmin)
-                    break;
+                // Step back through last minute and count breaths
+                for (int i=idx;i>=0;i--) {
+                    st2=start + double(breaths[i].start) * m_rate;
+                    et2=start + double(breaths[i].end) * m_rate;
+                    if (et2 < stmin)
+                        break;
 
-                len=et2-st2;
-                if (st2 < stmin) {
-                    // Partial breath
-                    st2=stmin;
-                    adj=et2 - st2;
-                    b=(1.0 / len) * adj;
-                } else b=1;
-                rr+=b;
+                    len=et2-st2;
+                    if (st2 < stmin) {
+                        // Partial breath
+                        st2=stmin;
+                        adj=et2 - st2;
+                        b=(1.0 / len) * adj;
+                    } else b=1;
+                    rr+=b;
+                }
+
+                // Calculate min & max
+                if (rr < minrr)
+                    minrr=rr;
+                if (rr > maxrr)
+                    maxrr=rr;
+
+                // Add manually.. (much quicker)
+                *rr_tptr++ = timeval;
+
+                // Use the same gains as ResMed..
+
+                *rr_dptr++ = rr * 5.0;
+                rr_count++;
+
+                //rr->AddEvent(et,br * 50.0);
             }
-
-            // Calculate min & max
-            if (rr < minrr) minrr=rr;
-            if (rr > maxrr) maxrr=rr;
-
-            // Add manually.. (much quicker)
-            *rr_tptr++ = timeval;
-
-            // Use the same gains as ResMed..
-
-            *rr_dptr++ = rr * 5.0;
-            rr_count++;
-
-            //rr->AddEvent(et,br * 50.0);
         }
         if (calcMv && calcResp && calcTv) {
             mv=(tv/1000.0) * rr;
@@ -659,129 +664,6 @@ void FlowParser::flagEvents()
             }
         }
     }
-
-
-
-/*    QVector<qint64> good;
-
-
-    good.reserve(numbreaths);
-    bool bad=false;
-    int bs,bm,be;
-
-    for (int idx=0;idx<numbreaths;idx++) {
-        bs=breaths[i].start;
-        bm=breaths[i].middle;
-        be=breaths[i].end;
-
-        mx=breaths[i].max;
-        mn=breaths[i].min;
-        val=mx - mn;
-    }
-
-
-    for (int i=0;i<numbreaths;i++) {
-        bs=breaths[i].start;
-        bm=breaths[i].middle;
-        be=breaths[i].end;
-
-        mx=breaths[i].max;
-        mn=breaths[i].min;
-        val=mx - mn;
-
-        et=start + be * m_rate;
-        if (et<lastet) continue;
-        if (val > cutoffval) continue;
-
-        int j=bs;
-        for (;j>0;j--) {
-            if (qAbs(m_filtered[j]) > cutoffval) {
-                bs=j;
-                break;
-            }
-        }
-
-        if (bs==be) continue;
-        j=be;
-        for (;j<m_samples;j++) {
-            if (qAbs(m_filtered[j]) > cutoffval) {
-                be=j;
-                break;
-            }
-        }
-
-
-        st=start + bs * m_rate;
-        mt=start + bm * m_rate;
-        et=start + be * m_rate;
-
-        len=et-st;
-        dur=len/1000.0;
-        if (dur>=duration) {
-            //if (!SearchApnea(m_session,st-len/2,15000)) {
-                if (!uf1) {
-                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
-                }
-                uf1->AddEvent(et-len/2,dur);
-            //}
-        }
-
-        // Uncomment to use UserFlags to show waveform crossover points
-        // Good for debugging this stuff. (Make sure to add the EventLists up above)
-
-        //if (val > cutoffval) {
-            //uf2->AddEvent(st,0);
-            //uf2->AddEvent(mt,0);
-            //uf3->AddEvent(et,0);
-            lastet=et;
-            lastst=st;
-        //}
-
-
-    }
-    return;
-
-*/
-    //EventList *uf1=NULL;
-
-//    int lastbad=-1;
-//    qint64 firstbad=0;
-
-//    bool fr=false; // flow restriction
-//    for (int i=0;i<numbreaths;i++) {
-//        st=start+ breaths[i].start * m_rate;
-//        et=start+ breaths[i].end * m_rate;
-
-//        fr=false;
-//        int j=i;
-//        for (j=i;j<numbreaths;j++) {
-//            mx=breaths[j].max;
-//            mn=breaths[j].min;
-//            val=mx-mn;
-//            if (val > cutoffval)
-//                break;
-//            fr=true;
-//            et=start + breaths[j].end * m_rate;
-//        }
-
-
-//        if (fr) {
-//            i=j-1; // rewind
-
-//            len=et-st;
-//            dur=(len) / 1000.0;
-
-//            if (dur >= duration) {
-//                if (!uf1) {
-//                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
-//                }
-//                uf1->AddEvent(et-(len/2),dur);
-//            }
-//        }
-//    }
-
-
-
 }
 
 void calcRespRate(Session *session, FlowParser * flowparser)
@@ -812,8 +694,11 @@ void calcRespRate(Session *session, FlowParser * flowparser)
     bool calcMv=!session->eventlist.contains(CPAP_MinuteVent);
 
 
+    int z=(calcResp ? 1 : 0) + (calcTv ? 1 : 0) + (calcMv ? 1 : 0);
+
     // If any of these three missing, remove all, and switch all on
-    if (!(calcResp & calcTv & calcMv)) {
+    if (z>0 && z<3) {
+        if (!calcResp && !calcTv && !calcMv)
         calcTv=calcMv=calcResp=true;
 
         QVector<EventList *> & list=session->eventlist[CPAP_RespRate];
@@ -904,6 +789,8 @@ int calcAHIGraph(Session *session)
            f;
 
     EventList *AHI=new EventList(EVL_Event);
+
+    AHI->setGain(0.02);
     session->eventlist[CPAP_AHI].push_back(AHI);
 
     EventDataType ahi;
@@ -931,7 +818,7 @@ int calcAHIGraph(Session *session)
 
                 ahi = events / hours;
 
-                AHI->AddEvent(t,ahi);
+                AHI->AddEvent(t,ahi * 50);
                 avg+=ahi;
                 cnt++;
             }
@@ -951,7 +838,7 @@ int calcAHIGraph(Session *session)
             ahi=calcAHI(session,f,ti);
             avg+=ahi;
             cnt++;
-            AHI->AddEvent(ti,ahi);
+            AHI->AddEvent(ti,ahi * 50);
             lastti=ti;
             ti+=window_step;
         }

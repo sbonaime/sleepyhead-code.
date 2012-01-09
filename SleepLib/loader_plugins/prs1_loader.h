@@ -79,8 +79,8 @@ protected:
     //! \brief Parse a .005 waveform file, extracting Flow Rate waveform (and Mask Pressure data if available)
     bool OpenWaveforms(SessionID sid, QString filename);
 
-    //! \brief ParseWaveform chunk.. Currently unused, as the old one works fine.
-    bool ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
+    // //! \brief ParseWaveform chunk.. Currently unused, as the old one works fine.
+    //bool ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
 
     //! \brief Parse a data chunk from the .000 (brick) and .001 (summary) files.
     bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version);

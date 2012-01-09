@@ -27,7 +27,8 @@ public:
 
     /*! \brief Add an event starting at time, containing data to this event list
       Note, data2 is only used if second_field is specified in the constructor */
-    void AddEvent(qint64 time, EventStoreType data, EventStoreType data2=0);
+    void AddEvent(qint64 time, EventStoreType data);
+    void AddEvent(qint64 time, EventStoreType data, EventStoreType data2);
     void AddWaveform(qint64 start, qint16 * data, int recs, qint64 duration);
     void AddWaveform(qint64 start, unsigned char * data, int recs, qint64 duration);
     void AddWaveform(qint64 start, char * data, int recs, qint64 duration);

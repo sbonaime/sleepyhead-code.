@@ -219,12 +219,12 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         return false;
     }
 
-    QDateTime last_pulse_time=date;
-    QDateTime last_spo2_time=date;
+    //QDateTime last_pulse_time=date;
+    //QDateTime last_spo2_time=date;
 
     EventDataType last_pulse=buffer[0];
     EventDataType last_spo2=buffer[1];
-    EventDataType cp,cs;
+    EventDataType cp=0,cs=0;
 
     Session *sess=new Session(mach,sessid);
     sess->updateFirst(starttime);

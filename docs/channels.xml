@@ -42,8 +42,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1107" class="data" name="PTB" details="Patient Triggered Breaths" label="Pat. Trig. Breaths" unit="%" color="dark grey"/>
   <channel id="0x1108" class="data" name="Leak" details="Leak Rate" label="Leaks" unit="L/min" color="dark green"/>
   <channel id="0x1109" class="data" name="IE" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
-  <channel id="0x110a" class="data" name="Te" details="Expiratory Time" label="Te" unit="" color="dark green"/>
-  <channel id="0x110b" class="data" name="Ti" details="Inspiratory Time" label="Ti" unit="" color="dark blue"/>
+  <channel id="0x110a" class="data" name="Te" details="Expiratory Time" label="Exp Time" unit="seconds" color="dark green"/>
+  <channel id="0x110b" class="data" name="Ti" details="Inspiratory Time" label="Insp Time" unit="seconds" color="dark blue"/>
   <channel id="0x110c" class="data" name="Pressure" details="Pressure" label="Pressure" unit="cmH20" color="dark green"/>
   <channel id="0x110d" class="data" name="IPAP" details="Inspiratory Pressure" label="IPAP" unit="cmH20" color="orange"/>
   <channel id="0x110e" class="data" name="EPAP" details="Expiratory Pressure" label="EPAP" unit="cmH20" color="light blue"/>

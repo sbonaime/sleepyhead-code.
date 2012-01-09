@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>407</height>
+    <height>414</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -312,24 +312,26 @@ p, li { white-space: pre-wrap; }
             <property name="toolTip">
              <string>This maintains a backup of SD-card data for ResMed machines, 
 
-ResMed machines delete high resolution data older than 7 days, and graph data older than 30 days..
+ResMed machines delete high resolution data older than 7 days, 
+and graph data older than 30 days..
 
 Sleepyhead can keep a copy of this data if you ever need to reinstall. 
-(Highly recomended, unless your short on disk space and don't care about the graph data)</string>
+(Highly recomended, unless your short on disk space or don't care about the graph data)</string>
             </property>
             <property name="text">
-             <string>Create SD Card Backups during Import (only works with ResMed for now)</string>
+             <string>Create SD Card Backups during Import (only for ResMed so far, highly recommended)</string>
             </property>
            </widget>
           </item>
           <item row="3" column="0">
            <widget class="QCheckBox" name="compressSessionData">
             <property name="toolTip">
-             <string>This makes SleepyHead's data take less disk space (about half as much),
-but it makes import take longer, and also makes switching between days a little slower.</string>
+             <string>This makes SleepyHead's data take around half as much space.
+But it makes import and day changing take longer.. 
+If you've got a new computer with a small solid state disk, this is a good option.</string>
             </property>
             <property name="text">
-             <string>Compress Session Data (slower, but makes SleepyHead data smaller)</string>
+             <string>Compress Session Data (makes SleepyHead data smaller, but day changing slower.)</string>
             </property>
            </widget>
           </item>
@@ -344,7 +346,7 @@ SleepyHead can import from this compressed backup directory natively..
 To use with ResScan will require the .gz files to be uncompressed first..</string>
             </property>
             <property name="text">
-             <string>Compress SD Card Backups (slower, but makes backups smaller)</string>
+             <string>Compress SD Card Backups (slower first import, but makes backups smaller)</string>
             </property>
            </widget>
           </item>
@@ -370,7 +372,7 @@ To use with ResScan will require the .gz files to be uncompressed first..</strin
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Note: &lt;span style=&quot; font-style:italic;&quot;&gt;Compression options don't automatically recompress already saved data.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Note: &lt;span style=&quot; font-style:italic;&quot;&gt;Compression options don't automatically recompress already saved data. (yet)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -690,9 +692,8 @@ p, li { white-space: pre-wrap; }
           <widget class="QGroupBox" name="customEventGroupbox">
            <property name="toolTip">
             <string>Enable/disable experimental event flagging enhancements. 
-It allows detecting borderline events on PRS1 machines..
-
-Has no effect on other machines (yet).</string>
+It allows detecting borderline events, and some the machine missed.
+This option must be enabled before import, otherwise a purge is required.</string>
            </property>
            <property name="title">
             <string>Custom PRS1 Event Flagging</string>
@@ -729,7 +730,8 @@ Has no effect on other machines (yet).</string>
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>Percentage of restriction in airflow</string>
+               <string>Percentage of restriction in airflow from the median value. 
+A value of 20% works well for detecting apneas. </string>
               </property>
               <property name="suffix">
                <string>%</string>
@@ -833,7 +835,8 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="1">
              <widget class="QSpinBox" name="ahiGraphWindowSize">
               <property name="toolTip">
-               <string>Adjusts the amount of data considered for each point in the AHI/Hour graph.</string>
+               <string>Adjusts the amount of data considered for each point in the AHI/Hour graph.
+Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
               </property>
               <property name="suffix">
                <string> minutes</string>
@@ -852,7 +855,8 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="2">
              <widget class="QCheckBox" name="ahiGraphZeroReset">
               <property name="toolTip">
-               <string>Reset the counter to zero at beginning of each (time) window</string>
+               <string>Reset the counter to zero at beginning of each (time) window.
+Note: Unless you purge and reimport after changing this, you won't see the changes.</string>
               </property>
               <property name="text">
                <string>Zero Reset</string>
@@ -1088,6 +1092,9 @@ p, li { white-space: pre-wrap; }
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Tries to forces the oximetry data to link with CPAP when possible.</string>
             </property>
             <property name="text">
              <string>Link Oximetry and CPAP graphs</string>
@@ -1433,6 +1440,9 @@ Mainly affects the importer.</string>
             </item>
             <item>
              <widget class="QSpinBox" name="updateCheckEvery">
+              <property name="toolTip">
+               <string>Sourceforge hosts this project for free.. Please be considerate of their resources..</string>
+              </property>
               <property name="maximum">
                <number>90</number>
               </property>
@@ -1613,7 +1623,8 @@ Mainly affects the importer.</string>
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>The visual method of displaying waveform overlay flags.</string>
+               <string>The visual method of displaying waveform overlay flags.
+</string>
               </property>
               <item>
                <property name="text">
@@ -1725,7 +1736,8 @@ this application to be unstable with this feature enabled.</string>
            <item>
             <widget class="QCheckBox" name="animationsAndTransitionsCheckbox">
              <property name="toolTip">
-              <string>Turn on/off the spinning &quot;context&quot; cube.</string>
+              <string>Turn on/off the spinning &quot;context&quot; cube.
+It really doesn't use that much resources.. :)</string>
              </property>
              <property name="text">
               <string>Animations &amp;&amp; Fancy Stuff</string>

@@ -40,6 +40,7 @@ extern QProgressBar *qprogress;
 QHash<int,QString> ModelMap;
 
 #define PRS1_CRC_CHECK
+
 #ifdef PRS1_CRC_CHECK
 typedef quint16 crc_t;
 
@@ -359,9 +360,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         }
         // sessions are fully loaded here..
 
-        cnt++;
-        if (qprogress) qprogress->setValue(0.0+(float(cnt)/float(size)*100.0));
-        QApplication::processEvents();
+        if ((++cnt % 10)==0) {
+            if (qprogress) qprogress->setValue(0.0+(float(cnt)/float(size)*100.0));
+            QApplication::processEvents();
+        }
     }
     // strictly can do this in the above loop, but this is cautionary
     cnt=0;
@@ -417,9 +419,10 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         sess->SetChanged(true);
         m->AddSession(sess,profile);
-        cnt++;
-        if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
-        QApplication::processEvents();
+        if ((++cnt % 10) ==0) {
+            //if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
+            QApplication::processEvents();
+        }
 
     }
 
@@ -1029,34 +1032,38 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 }
 
 
-bool PRS1Loader::ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format)
-{
-    if (!new_sessions.contains(sequence))
-        return false;
+//bool PRS1Loader::ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format)
+//{
+//    Q_UNUSED(interleave)
+//    Q_UNUSED(sample_format)
+//    // this whole function is currently unused..
 
-    qint64 t=qint64(timestamp)*1000L;
+//    if (!new_sessions.contains(sequence))
+//        return false;
 
-    Session *session=new_sessions[sequence];
+//    qint64 t=qint64(timestamp)*1000L;
 
-    if (num_signals==1) {
-        session->updateFirst(t);
-        double d=duration*1000;
-        EventDataType rate=d / EventDataType(size);
-        EventList *ev=session->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0.00,0,0,rate);
-        ev->AddWaveform(t,(char *)data,size,qint64(duration)*1000L);
-        session->updateLast(t+qint64(duration)*1000L);
+//    Session *session=new_sessions[sequence];
 
-    }
+//    if (num_signals==1) {
+//        session->updateFirst(t);
+//        double d=duration*1000;
+//        EventDataType rate=d / EventDataType(size);
+//        EventList *ev=session->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0.00,0,0,rate);
+//        ev->AddWaveform(t,(char *)data,size,qint64(duration)*1000L);
+//        session->updateLast(t+qint64(duration)*1000L);
 
-    return true;
-}
+//    }
+
+//    return true;
+//}
 
 bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 {
     int sequence,version;
     quint32 timestamp;
     qint64 pos;
-    unsigned char ext,htype,sum;
+    unsigned char ext,sum, htype;
     unsigned char *header,*data;
     int chunk,hl;
     quint16 size,datasize,c16,crc;
@@ -1090,6 +1097,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
         size=(header[2] << 8) | header[1];
         htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
+        Q_UNUSED(htype);
         version=header[4]; // == 5
         ext=header[6];
         sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
@@ -1097,6 +1105,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
         if (ext==5) {
             duration=header[0xf] | header[0x10] << 8;    // block duration in seconds
+            Q_UNUSED(duration);
             num_signals=header[0x12] | header[0x13] << 8;
             if (num_signals>2) {
                 qWarning() << "More than 2 Waveforms in " << filename;
@@ -1265,6 +1274,8 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
             }
             length=m_buffer[pos+0x1] | m_buffer[pos+0x2] << 8;      // block length in bytes
             duration=m_buffer[pos+0xf] | m_buffer[pos+0x10] << 8;    // block duration in seconds
+
+
             if (diff<0) {
                 qDebug() << "Padding waveform to keep sync" << block;
                 //diff=qAbs(diff);

@@ -167,7 +167,7 @@ void SummaryChart::SetDay(Day * nullday)
                     if (code==CPAP_Pressure) {
                         if ((cpapmode>MODE_CPAP) && (mode==MODE_CPAP)) {
                             hascode=false;
-                            if ((type==ST_PERC) && (m_typeval[j]==0.5)) {
+                            if ((type==ST_PERC) && (typeval==0.5)) {
                                 type=ST_SETWAVG;
                                 hascode=true;
                             }
@@ -177,7 +177,7 @@ void SummaryChart::SetDay(Day * nullday)
                     }
                     if (hascode) {
                         m_days[dn]=day;
-                        switch(m_type[j]) {
+                        switch(type) {
                             case ST_AVG: tmp=day->avg(code); break;
                             case ST_SUM: tmp=day->sum(code); break;
                             case ST_WAVG: tmp=day->wavg(code); break;

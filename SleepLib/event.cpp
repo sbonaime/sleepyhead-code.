@@ -47,6 +47,41 @@ EventDataType EventList::data2(quint32 i)
     return EventDataType(m_data2[i]);
 }
 
+void EventList::AddEvent(qint64 time, EventStoreType data)
+{
+    m_data.push_back(data);
+
+    // Apply gain & offset
+    EventDataType val=EventDataType(data)*m_gain; // ignoring m_offset
+
+    if (m_update_minmax) {
+        if (m_min>val) m_min=val;
+        else if (m_max<val) m_max=val;
+    }
+
+    if (!m_first) {
+        m_first=time;
+        m_last=time;
+    }
+    if (m_first>time) {
+        // Crud.. Update all the previous records
+        // This really shouldn't happen.
+
+        qint32 t=(m_first-time);
+        for (quint32 i=0;i<m_count;i++) {
+            m_time[i]-=t;
+        }
+        m_first=time;
+    }
+    if (m_last < time)
+        m_last=time;
+
+    quint32 t=(time-m_first);
+
+    m_time.push_back(t);
+    m_count++;
+}
+
 void EventList::AddEvent(qint64 time, EventStoreType data, EventStoreType data2)
 {
     // Apply gain & offset
@@ -78,7 +113,9 @@ void EventList::AddEvent(qint64 time, EventStoreType data, EventStoreType data2)
         }
         m_first=time;
     }
-    if (m_last < time) m_last=time;
+    if (m_last < time)
+        m_last=time;
+
     quint32 t=(time-m_first);
 
     m_time.push_back(t);
@@ -122,24 +159,25 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
 
     EventStoreType raw;
     EventDataType val;
-    qint16 * sp=data;
+    qint16 * ep=data+recs;
+    qint16 * sp;
     EventStoreType * dp=&edata[r];
 
     if (m_update_minmax) {
-        for (int i=0;i<recs;i++) {
-            raw=*sp++;
-            val=EventDataType(raw)*m_gain+m_offset;
-            if (m_min>val) m_min=val;
-            if (m_max<val) m_max=val;
-            *dp=raw;
-            dp++;
+        register EventDataType min=m_min,max=m_max,val,gain=m_gain;
+        //if (m_offset;
+        for (sp=data; sp<ep; sp++) {
+            *dp++=raw=*sp;
+            val=EventDataType(*sp)*gain;
+            if (min > val) min=val;
+            if (max < val) max=val;
         }
+        m_min=min;
+        m_max=max;
     } else {
-        for (int i=0;i<recs;i++) {
-            raw=*(sp++);
+        for (sp=data; sp < ep; sp++) {
+            *dp++=raw=*sp;
             val=EventDataType(raw)*m_gain+m_offset;
-            *dp=raw;
-            dp++;
         }
     }
 
@@ -181,24 +219,24 @@ void EventList::AddWaveform(qint64 start, unsigned char * data, int recs, qint64
     EventStoreType raw;
     EventDataType val;
 
-    unsigned char * sp=data;
+    unsigned char * sp;
+    unsigned char * ep=data+recs;
     EventStoreType * dp=&edata[r];
 
     if (m_update_minmax) {
-        for (int i=0;i<recs;i++) {
-            raw=*sp++;
-            val=EventDataType(val)*m_gain+m_offset;
+        // ignoring m_offset
+        for (sp=data; sp < ep; sp++) {
+            raw=*sp;
+            val=EventDataType(raw)*m_gain;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
-            *dp=raw;
-            dp++;
+            *dp++=raw;
         }
     } else {
-        for (int i=0;i<recs;i++) {
-            raw=*sp++;
-            val=EventDataType(val)*m_gain+m_offset;
-            *dp=raw;
-            dp++;
+        for (sp=data; sp < ep; sp++) {
+            raw=*sp;
+            val=EventDataType(raw)*m_gain;
+            *dp++=raw;
         }
     }
 
@@ -242,24 +280,23 @@ void EventList::AddWaveform(qint64 start, char * data, int recs, qint64 duration
     EventStoreType raw;
     EventDataType val;
 
-    char * sp=data;
+    char * sp;
+    char * ep=data+recs;
     EventStoreType * dp=&edata[r];
 
     if (m_update_minmax) {
-        for (int i=0;i<recs;i++) {
-            raw=*sp++;
+        for (sp=data; sp < ep; sp++) {
+            raw=*sp;
             val=EventDataType(val)*m_gain+m_offset;
             if (m_min>val) m_min=val;
             if (m_max<val) m_max=val;
-            *dp=raw;
-            dp++;
+            *dp++=raw;
         }
     } else {
-        for (int i=0;i<recs;i++) {
-            raw=*sp++;
+        for (sp=data; sp < ep; sp++) {
+            raw=*sp;
             val=EventDataType(val)*m_gain+m_offset;
-            *dp=raw;
-            dp++;
+            *dp++=raw;
         }
     }
 }

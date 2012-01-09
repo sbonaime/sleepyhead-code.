@@ -584,9 +584,11 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         // Push current filename to ordered-by-sessionid list
         sessfiles[sessionid].push_back(filename);
 
-        // Update the progress bar
-        if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
-        QApplication::processEvents();
+        if ((i%10) ==0) {
+            // Update the progress bar
+            if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
+            QApplication::processEvents();
+        }
     }
 
     QString fn;
@@ -932,6 +934,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             /////////////////////////////////////////////////////////////////////
             // Duration and Event Indices
             /////////////////////////////////////////////////////////////////////
+            dur=0;
             if ((sig=stredf.lookupName("Mask Dur"))) {
                 dur=sig->data[dn]*sig->gain;
                 dur/=60.0f; // convert to hours.
@@ -1044,8 +1047,10 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             else if (fn=="brp") LoadBRP(sess,edf);
             else if (fn=="sad") LoadSAD(sess,edf);
         }
-        if (qprogress) qprogress->setValue(10.0+(float(++cnt)/float(size)*90.0));
-        QApplication::processEvents();
+        if ((++cnt%10) ==0) {
+            if (qprogress) qprogress->setValue(10.0+(float(cnt)/float(size)*90.0));
+            QApplication::processEvents();
+        }
 
         if (!sess) continue;
         if (!sess->first()) {
@@ -1342,9 +1347,6 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
-        if (es.offset>0) {
-            int i=5;
-        }
         if (es.label=="Flow") {
             es.gain*=60;
             es.physical_dimension="L/M";
@@ -1372,37 +1374,43 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     QElapsedTimer time;
     time.start();
 #endif
-    bool first=true;
+
+
     double rate=(duration/recs); // milliseconds per record
     double tt=edf.startdate;
     //sess->UpdateFirst(tt);
     EventDataType c,last;
 
-    EventList *el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,min,max);
     int startpos=0;
 
     if ((code==CPAP_Pressure) || (code==CPAP_IPAP) || (code==CPAP_EPAP)) {
         startpos=20; // Shave the first 20 seconds of pressure data
         tt+=rate*startpos;
     }
-    for (int i=startpos;i<recs;i++) {
-        c=es.data[i];
+    qint16 * sptr=es.data;
+    qint16 * eptr=sptr+recs;
+    sptr+=startpos;
 
-        if (first) {
-            el->AddEvent(tt,c);
-            first=false;
-        } else {
+    EventList *el=NULL;
+    if (recs>startpos+1) {
+        el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,min,max);
+        c=last=*sptr++;
+        el->AddEvent(tt,last);
+
+        for (; sptr < eptr; sptr++) { //int i=startpos;i<recs;i++) {
+            c=*sptr; //es.data[i];
+
             if (last!=c) {
                 if (square) el->AddEvent(tt,last); // square waves look better on some charts.
                 el->AddEvent(tt,c);
             }
-        }
-        tt+=rate;
+            tt+=rate;
 
-        last=c;
+            last=c;
+        }
+        el->AddEvent(tt,c);
+        sess->updateLast(tt);
     }
-    el->AddEvent(tt,c);
-    sess->updateLast(tt);
 
 
 #ifdef DEBUG_EFFICIENCY
@@ -1472,15 +1480,12 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     sess->updateLast(edf.startdate+duration);
     QString t;
     int emptycnt=0;
-    EventList *a;
+    EventList *a=NULL;
     double rate;
     long recs;
     ChannelID code;
     for (int s=0;s<edf.GetNumSignals();s++) {
         EDFSignal & es=*edf.edfsignals[s];
-        if (es.offset>0) {
-            int i=5;
-        }
         recs=es.nr*edf.GetNumDataRecords();
         if (recs<=0) continue;
         rate=double(duration)/double(recs);

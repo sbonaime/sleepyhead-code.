@@ -268,6 +268,7 @@ bool Machine::Load()
         ext_s=fi.fileName().section(".",-1);
         ext=ext_s.toInt(&ok,10);
         if (!ok) continue;
+
         sesstr=fi.fileName().section(".",0,-2);
         sessid=sesstr.toLong(&ok,16);
         if (!ok) continue;
@@ -278,12 +279,10 @@ bool Machine::Load()
     int size=sessfiles.size();
     int cnt=0;
     for (s=sessfiles.begin(); s!=sessfiles.end(); s++) {
-        cnt++;
-        if ((cnt % 10)==0) {
+        if ((++cnt % 50)==0) { // This is slow.. :-/
             if (qprogress) qprogress->setValue((float(cnt)/float(size)*100.0));
-
+            QApplication::processEvents();
         }
-        QApplication::processEvents();
 
         Session *sess=new Session(this,s.key());
 
@@ -330,8 +329,10 @@ bool Machine::Save()
     savelistSize=m_savelist.size();
     if (!PROFILE.session->multithreading()) {
         for (int i=0;i<savelistSize;i++) {
-            qprogress->setValue(0+(float(savelistCnt)/float(savelistSize)*100.0));
-            QApplication::processEvents();
+            if ((i % 10) ==0) {
+                qprogress->setValue(0+(float(savelistCnt)/float(savelistSize)*100.0));
+                QApplication::processEvents();
+            }
             Session *s=m_savelist.at(i);
             s->UpdateSummaries();
             s->Store(path);
