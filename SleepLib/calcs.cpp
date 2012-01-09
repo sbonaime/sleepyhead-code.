@@ -552,48 +552,39 @@ void FlowParser::flagEvents()
     int numbreaths=breaths.size();
 
     EventDataType val,mx,mn;
-    QVector<EventDataType> br(numbreaths);
+    QVector<EventDataType> br;
 
-//    QVector<qint64> bstart(numbreaths);
-//    QVector<qint64> bend(numbreaths);
-//    QVector<EventDataType> bvalue(numbreaths);
+    QVector<qint32> bstart;
+    QVector<qint32> bend;
+    //QVector<EventDataType> bvalue;
+
+    bstart.reserve(numbreaths*2);
+    bend.reserve(numbreaths*2);
+    //bvalue.reserve(numbreaths*2);
+    br.reserve(numbreaths*2);
 
     double start=m_flow->first();
-    double sps=1000.0/m_rate;
+   // double sps=1000.0/m_rate;
     double st,mt,et, dur;
     qint64 len;
 
 
     for (int i=0;i<numbreaths;i++) {
-//        st=start+breaths[i].start * m_rate;
-//        et=start+breaths[i].end * m_rate;
-//        bstart[i]=st;
-//        bend[i]=et;
-
-        val=breaths[i].max - breaths[i].min;
-        //bvalue[i]=val;
-
-        br[i]=val;
+        mx=breaths[i].max;
+        mn=breaths[i].min;
+        br.push_back(qAbs(mx));
+        br.push_back(qAbs(mn));
     }
 
-    const EventDataType perc=0.95;
-    int idx=numbreaths*perc;
+    const EventDataType perc=0.6;
+    int idx=float(br.size())*perc;
     nth_element(br.begin(),br.begin()+idx,br.end());
 
-    EventDataType peak=*(br.begin()+idx);
+    EventDataType peak=br[idx];//*(br.begin()+idx);
 
     EventDataType cutoffval=peak * (PROFILE.cpap->userFlowRestriction()/100.0);
-    EventDataType duration=PROFILE.cpap->userEventDuration();
 
-    QVector<qint64> good;
-    EventList * uf1=NULL;
-    //EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
-    //  EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
-
-    double lastst=start, lastet=start;
-    good.reserve(numbreaths);
-    bool bad=false;
-    int bs,bm,be;
+    int bs,bm,be, bs1, bm1, be1;
     for (int i=0;i<numbreaths;i++) {
         bs=breaths[i].start;
         bm=breaths[i].middle;
@@ -603,52 +594,154 @@ void FlowParser::flagEvents()
         mn=breaths[i].min;
         val=mx - mn;
 
-        int i=bs;
-        for (;i<bm;i++) {
-            if (qAbs(m_filtered[i]) > cutoffval) {
-                bs=i;
+//        if (qAbs(mx) > cutoffval) {
+            bs1=bs;
+            for (;bs1<be;bs1++) {
+                if (qAbs(m_filtered[bs1]) > cutoffval) {
+                    break;
+                }
+            }
+
+            bm1=bm;
+            for (;bm1>bs;bm1--) {
+                if (qAbs(m_filtered[bm1]) > cutoffval) {
+                    break;
+                }
+            }
+            if (bm1>=bs1) {
+                bstart.push_back(bs1);
+                bend.push_back(bm1);
+            }
+  //      }
+    //    if (qAbs(mn) > cutoffval) {
+            bm1=bm;
+            for (;bm1<be;bm1++) {
+                if (qAbs(m_filtered[bm1]) > cutoffval) {
+                    break;
+                }
+            }
+            be1=be;
+            for (;be1>bm;be1--) {
+                if (qAbs(m_filtered[be1]) > cutoffval) {
+                    break;
+                }
+            }
+            if (be1>=bm1) {
+                bstart.push_back(bm1);
+                bend.push_back(be1);
+            }
+//        }
+    }
+
+
+    EventDataType duration=PROFILE.cpap->userEventDuration();
+    //double lastst=start, lastet=start;
+    //EventDataType v;
+    int bsize=bstart.size();
+    EventList * uf1=NULL;
+   // EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
+   // EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
+
+    for (int i=0;i<bsize-1;i++) {
+        bs=bend[i];
+        be=bstart[i+1];
+        st=start + bs * m_rate;
+        et=start + be  * m_rate;
+
+        len=et-st;
+        dur=len/1000.0;
+        if (dur>=duration) {
+            if (!SearchApnea(m_session,st-len/2,15000)) {
+                if (!uf1) {
+                    uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
+                }
+                uf1->AddEvent(et-len/2,dur);
+            }
+        }
+    }
+
+
+
+/*    QVector<qint64> good;
+
+
+    good.reserve(numbreaths);
+    bool bad=false;
+    int bs,bm,be;
+
+    for (int idx=0;idx<numbreaths;idx++) {
+        bs=breaths[i].start;
+        bm=breaths[i].middle;
+        be=breaths[i].end;
+
+        mx=breaths[i].max;
+        mn=breaths[i].min;
+        val=mx - mn;
+    }
+
+
+    for (int i=0;i<numbreaths;i++) {
+        bs=breaths[i].start;
+        bm=breaths[i].middle;
+        be=breaths[i].end;
+
+        mx=breaths[i].max;
+        mn=breaths[i].min;
+        val=mx - mn;
+
+        et=start + be * m_rate;
+        if (et<lastet) continue;
+        if (val > cutoffval) continue;
+
+        int j=bs;
+        for (;j>0;j--) {
+            if (qAbs(m_filtered[j]) > cutoffval) {
+                bs=j;
                 break;
             }
         }
-        i=be;
-        for (;i>bm;i--) {
-            if (qAbs(m_filtered[i]) > cutoffval) {
-                be=i;
+
+        if (bs==be) continue;
+        j=be;
+        for (;j<m_samples;j++) {
+            if (qAbs(m_filtered[j]) > cutoffval) {
+                be=j;
                 break;
             }
         }
+
 
         st=start + bs * m_rate;
         mt=start + bm * m_rate;
         et=start + be * m_rate;
 
-        len=st-lastet;
+        len=et-st;
         dur=len/1000.0;
         if (dur>=duration) {
             //if (!SearchApnea(m_session,st-len/2,15000)) {
                 if (!uf1) {
                     uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
                 }
-                uf1->AddEvent(st-len/2,dur);
+                uf1->AddEvent(et-len/2,dur);
             //}
         }
 
         // Uncomment to use UserFlags to show waveform crossover points
         // Good for debugging this stuff. (Make sure to add the EventLists up above)
 
-        if (val > cutoffval) {
+        //if (val > cutoffval) {
             //uf2->AddEvent(st,0);
             //uf2->AddEvent(mt,0);
             //uf3->AddEvent(et,0);
             lastet=et;
             lastst=st;
-        }
+        //}
 
 
     }
     return;
 
-
+*/
     //EventList *uf1=NULL;
 
 //    int lastbad=-1;
