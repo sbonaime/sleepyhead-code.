@@ -740,7 +740,6 @@ void Session::updateCountSummary(ChannelID code)
     m_timesummary[code]=timesum;
 }
 
-FlowParser flowparserobject;
 void Session::UpdateSummaries()
 {
     ChannelID id;
@@ -748,7 +747,7 @@ void Session::UpdateSummaries()
     calcAHIGraph(this);
 
     // Calculates RespRate and related waveforms (Tv, MV, Te, Ti) if missing
-    calcRespRate(this, &flowparserobject);
+    calcRespRate(this);
 
     calcLeaks(this);
     calcSPO2Drop(this);
