@@ -64,6 +64,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     ui->startedUsingMask->calendarWidget()->setFirstDayOfWeek(dow);
 
+    ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->colourTab));
 
     // Stop both calendar drop downs highlighting weekends in red
     QTextCharFormat format = ui->startedUsingMask->calendarWidget()->weekdayTextFormat(Qt::Saturday);
