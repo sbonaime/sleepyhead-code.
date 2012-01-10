@@ -200,6 +200,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->customEventGroupbox->setChecked(profile->cpap->userEventFlagging());
     ui->apneaDuration->setValue(profile->cpap->userEventDuration());
     ui->apneaFlowRestriction->setValue(profile->cpap->userFlowRestriction());
+    ui->userEventDuplicates->setChecked(profile->cpap->userEventDuplicates());
+    ui->userEventDuplicates->setVisible(false);
 
     ui->eventTable->setColumnWidth(0,40);
     ui->eventTable->setColumnWidth(1,55);
@@ -297,6 +299,7 @@ bool PreferencesDialog::Save()
     }
     if (profile->cpap->userEventFlagging() &&
        (profile->cpap->userEventDuration()!=ui->apneaDuration->value() ||
+        profile->cpap->userEventDuplicates()!=ui->userEventDuplicates->isChecked() ||
         profile->cpap->userFlowRestriction()!=ui->apneaFlowRestriction->value()))
         recalc_events=true;
 
@@ -383,6 +386,7 @@ bool PreferencesDialog::Save()
 
     profile->cpap->setUserEventDuration(ui->apneaDuration->value());
     profile->cpap->setUserFlowRestriction(ui->apneaFlowRestriction->value());
+    profile->cpap->setUserEventDuplicates(ui->userEventDuplicates->isChecked());
 
     PREF[STR_GEN_SkipLogin]=ui->skipLoginScreen->isChecked();
 

@@ -223,7 +223,7 @@ bool EDFParser::Open(QString name)
         }
         gzread(f,(char *)&header,EDFHeaderSize);
         buffer=new char [datasize];
-        gzbuffer(f,65536*2);
+        //gzbuffer(f,65536*2);
         gzread(f,buffer,datasize);
         gzclose(f);
     } else {

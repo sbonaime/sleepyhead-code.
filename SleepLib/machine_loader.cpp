@@ -71,7 +71,7 @@ bool MachineLoader::compressFile(QString inpath, QString outpath)
     }
     f.close();
     gzFile gz=gzopen(outpath.toAscii(),"wb");
-    gzbuffer(gz,65536*2);
+    //gzbuffer(gz,65536*2);
     if (!gz) {
         qDebug() << "compressFile() Couldn't open" << outpath <<"for writing";
         delete buf;

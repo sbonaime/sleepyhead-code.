@@ -919,6 +919,7 @@ const char * STR_CS_DateDiagnosed="DateDiagnosed";
 const char * STR_CS_UserEventFlagging="UserEventFlagging";
 const char * STR_CS_UserFlowRestriction="UserFlowRestriction";
 const char * STR_CS_UserEventDuration="UserEventDuration";
+const char * STR_CS_UserEventDuplicates="UserEventDuplicates";
 const char * STR_CS_AHIWindow="AHIWindow";
 const char * STR_CS_AHIReset="AHIReset";
 

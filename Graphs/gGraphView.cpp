@@ -1858,9 +1858,6 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
-    if (title()=="Sessions") {
-        int i=5;
-    }
     int m,t;
     bool ymin_good=false,ymax_good=false;
     if (rec_miny!=rec_maxy) {

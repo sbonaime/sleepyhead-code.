@@ -555,6 +555,7 @@ void FlowParser::flagEvents()
     double st,mt,et, dur;
     qint64 len;
 
+    bool allowDuplicates=PROFILE.cpap->userEventDuplicates();
 
     for (int i=0;i<numbreaths;i++) {
         mx=breaths[i].max;
@@ -562,6 +563,8 @@ void FlowParser::flagEvents()
         br.push_back(qAbs(mx));
         br.push_back(qAbs(mn));
     }
+    EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
+    EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
 
     const EventDataType perc=0.6;
     int idx=float(br.size())*perc;
@@ -618,6 +621,11 @@ void FlowParser::flagEvents()
                 bend.push_back(be1);
             }
 //        }
+         st=start + bs1 * m_rate;
+         et=start + be1  * m_rate;
+         uf2->AddEvent(st,0);
+         uf3->AddEvent(et,0);
+
     }
 
 
@@ -626,8 +634,6 @@ void FlowParser::flagEvents()
     //EventDataType v;
     int bsize=bstart.size();
     EventList * uf1=NULL;
-   // EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
-   // EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
 
     for (int i=0;i<bsize-1;i++) {
         bs=bend[i];
@@ -638,7 +644,7 @@ void FlowParser::flagEvents()
         len=et-st;
         dur=len/1000.0;
         if (dur>=duration) {
-            if (!SearchApnea(m_session,et-len/2,15000)) {
+            if (allowDuplicates || !SearchApnea(m_session,et-len/2,15000)) {
                 if (!uf1) {
                     uf1=m_session->AddEventList(CPAP_UserFlag1,EVL_Event);
                 }
