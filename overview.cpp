@@ -227,7 +227,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //PR->setRecMinY(4.0);
     //PR->setRecMaxY(12.0);
 
-    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
+    //CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,PROFILE.FirstDay(MT_CPAP),PROFILE.LastDay(MT_CPAP));
 
 //    //if (mode>=MODE_BIPAP) {
 //        pr->addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);

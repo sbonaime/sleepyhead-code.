@@ -1255,7 +1255,6 @@ EventDataType Session::avg(ChannelID id)
     double val=0,gain;
     int cnt=0;
     EventStoreType * dptr, * eptr;
-    int es;
     for (int i=0;i<evec.size();i++) {
         EventList & ev=*(evec[i]);
         dptr=ev.rawData();

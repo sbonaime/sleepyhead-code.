@@ -302,9 +302,10 @@ bool PreferencesDialog::Save()
 
     // Restart if turning user event flagging on/off
     if (profile->cpap->userEventFlagging()!=ui->customEventGroupbox->isChecked()) {
-        if (!profile->cpap->userEventFlagging()) // Don't bother recalculating, just switch off
+        if (profile->cpap->userEventFlagging()) {
+            // Don't bother recalculating, just switch off
             needs_restart=true;
-        else recalc_events=true;
+        } else recalc_events=true;
     }
 
     if (profile->session->compressSessionData()!=ui->compressSessionData->isChecked())

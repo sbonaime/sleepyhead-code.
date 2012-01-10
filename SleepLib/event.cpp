@@ -158,7 +158,6 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
     EventStoreType *edata=m_data.data();
 
     EventStoreType raw;
-    EventDataType val;
     qint16 * ep=data+recs;
     qint16 * sp;
     EventStoreType * dp=&edata[r];
@@ -175,9 +174,10 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
         m_min=min;
         m_max=max;
     } else {
+        //register EventDataType val,gain=m_gain;
         for (sp=data; sp < ep; sp++) {
             *dp++=raw=*sp;
-            val=EventDataType(raw)*m_gain+m_offset;
+            //val=EventDataType(raw)*gain;
         }
     }
 

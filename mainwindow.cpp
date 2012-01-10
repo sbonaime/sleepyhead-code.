@@ -2493,8 +2493,11 @@ void MainWindow::doReprocessEvents()
     // For each day in history
     int daycount=first.daysTo(date);
     int idx=0;
+
+    QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
+
     if (qprogress) {
-        qstatus->setText(tr("Recalculating Summaries"));
+        qstatus->setText(tr("Loading Event Data"));
         qprogress->setValue(0);
         qprogress->setVisible(true);
     }
@@ -2521,8 +2524,8 @@ void MainWindow::doReprocessEvents()
 
                 sess->UpdateSummaries();
                 sess->SetChanged(true);
-                sess->machine()->SaveSession(sess);
-                if (!isopen) sess->TrashEvents();
+                //sess->machine()->SaveSession(sess);
+                //if (!isopen) sess->TrashEvents();
             }
         }
         date=date.addDays(-1);
@@ -2532,6 +2535,11 @@ void MainWindow::doReprocessEvents()
        // }
 
     } while (date>=first);
+    qstatus->setText(tr("Recalculating Summaries"));
+    for (int i=0;i<machines.size();i++) {
+        machines.at(i)->Save();
+    }
+
     qstatus->setText(tr(""));
     qprogress->setVisible(false);
     if (!m_restartRequired) {

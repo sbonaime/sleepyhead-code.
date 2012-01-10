@@ -188,7 +188,6 @@ void FlowParser::openFlow(Session * session, EventList * flow)
 
     // Begin with the second internal buffer
     EventDataType * buf=m_filtered;
-    EventDataType c;
     // Apply gain to waveform
     EventStoreType *eptr=inraw+m_samples;
 

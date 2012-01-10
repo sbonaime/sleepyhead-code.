@@ -90,7 +90,6 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
             ////////////////////////////////////////////////////////////////////////////
             // Skip data previous to minx bounds
             ////////////////////////////////////////////////////////////////////////////
-            quint32 idx;
             for (; dptr < eptr; dptr++) {
                 X=stime + *tptr;
                 if (X >= w.min_x)
