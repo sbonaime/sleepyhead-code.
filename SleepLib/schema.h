@@ -58,6 +58,10 @@ public:
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
     const QString & units() { return m_unit; }
+
+    void setLabel(QString label) { m_label=label; }
+    void setUnit(QString unit) { m_unit=unit; }
+    void setDescription(QString desc) { m_description=desc; }
     QString option(int i) {
         if (m_options.contains(i))
             return m_options[i];

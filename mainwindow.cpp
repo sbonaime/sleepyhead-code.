@@ -260,6 +260,12 @@ void MainWindow::Startup()
 
 void MainWindow::on_action_Import_Data_triggered()
 {
+    if (m_inRecalculation) {
+        Notify("Access to Import has been blocked while recalculations are in progress.");
+        return;
+
+    }
+
     QStringList importLocations;
     {
         QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
@@ -2483,13 +2489,9 @@ void MainWindow::doReprocessEvents()
     Session *sess;
     Day *day;
     //FlowParser flowparser;
-    if (m_restartRequired) {
-        QMessageBox::information(this,"Restart Required",QString("The application will automatically restart after the following reindexing operation"),QMessageBox::Ok);
-    }
 
     mainwin->Notify("Performance will be degraded during these recalculations.","Recalculating Indices");
 
-    bool isopen;
     // For each day in history
     int daycount=first.daysTo(date);
     int idx=0;
@@ -2501,12 +2503,12 @@ void MainWindow::doReprocessEvents()
         qprogress->setValue(0);
         qprogress->setVisible(true);
     }
+    QDate current=daily->getDate();
     do {
         day=PROFILE.GetDay(date,MT_CPAP);
         if (day) {
             for (int i=0;i<day->size();i++) {
                 sess=(*day)[i];
-                isopen=sess->eventsLoaded();
                 // Load the events
                 sess->OpenEvents();
 
@@ -2521,6 +2523,7 @@ void MainWindow::doReprocessEvents()
 
                 // AHI flags
                 sess->destroyEvent(CPAP_AHI);
+                sess->destroyEvent(CPAP_RDI);
 
                 sess->SetChanged(true);
                 //sess->machine()->SaveSession(sess);
@@ -2534,6 +2537,7 @@ void MainWindow::doReprocessEvents()
        // }
 
     } while (date>=first);
+
     qstatus->setText(tr("Recalculating Summaries"));
     for (int i=0;i<machines.size();i++) {
         machines.at(i)->Save();
@@ -2541,12 +2545,15 @@ void MainWindow::doReprocessEvents()
 
     qstatus->setText(tr(""));
     qprogress->setVisible(false);
-    if (!m_restartRequired) {
-        if (overview) overview->ReloadGraphs();
-        daily->ReloadGraphs();
-    } else {
-        RestartApplication();
-    }
     m_inRecalculation=false;
-    mainwin->Notify("Recalculations are now complete.","Recalculating Indices");
+    if (m_restartRequired) {
+        QMessageBox::information(this,"Restart Required",QString("Recalculations are complete, the application now needs to restart to display the changes."),QMessageBox::Ok);
+        RestartApplication();
+        return;
+    } else {
+        Notify("Recalculations are now complete.","Task Completed");
+
+        daily->LoadDate(current);
+        if (overview) overview->ReloadGraphs();
+    }
 }

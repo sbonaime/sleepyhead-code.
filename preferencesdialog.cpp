@@ -292,7 +292,7 @@ bool PreferencesDialog::Save()
         needs_restart=true;
     }
     if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
-        recalc_events=true;
+        //recalc_events=true;
         needs_restart=true;
     }
     if (profile->cpap->userEventFlagging() &&
@@ -312,7 +312,7 @@ bool PreferencesDialog::Save()
         recalc_events=true;
 
     if (recalc_events) {
-        if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A data reindexing proceedure is required to apply these changes.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+        if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
             return false;
         }
     } else if (needs_restart) {

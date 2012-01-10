@@ -727,6 +727,8 @@ void calcRespRate(Session *session, FlowParser * flowparser)
 
 EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 {
+    bool rdi=PROFILE.general->calculateRDI();
+
     double hours,ahi,cnt;
     if (start<0) {
         // much faster..
@@ -735,6 +737,10 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
                 +session->count(CPAP_Hypopnea)
                 +session->count(CPAP_ClearAirway)
                 +session->count(CPAP_Apnea);
+
+        if (rdi) {
+            cnt+=session->count(CPAP_RERA);
+        }
 
         ahi=cnt/hours;
     } else {
@@ -745,6 +751,10 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
                 +session->rangeCount(CPAP_ClearAirway,start,end)
                 +session->rangeCount(CPAP_Apnea,start,end);
 
+        if (rdi) {
+            cnt+=session->rangeCount(CPAP_RERA,start,end);
+        }
+
         ahi=cnt/hours;
     }
     return ahi;
@@ -752,6 +762,10 @@ EventDataType calcAHI(Session *session,qint64 start, qint64 end)
 
 int calcAHIGraph(Session *session)
 {
+    bool calcrdi=session->machine()->GetClass()=="PRS1";
+    //PROFILE.general->calculateRDI()
+
+
     const qint64 window_step=30000; // 30 second windows
     double window_size=p_profile->cpap->AHIWindow();
     qint64 window_size_ms=window_size*60000L;
@@ -759,27 +773,46 @@ int calcAHIGraph(Session *session)
     bool zeroreset=p_profile->cpap->AHIReset();
 
     if (session->machine()->GetType()!=MT_CPAP) return 0;
-    if (session->eventlist.contains(CPAP_AHI)) return 0; // abort if already there
+
+    bool hasahi=session->eventlist.contains(CPAP_AHI);
+    bool hasrdi=session->eventlist.contains(CPAP_RDI);
+    if (hasahi && hasrdi)
+        return 0; // abort if already there
+
+    if (!(!hasahi && !hasrdi)) {
+        session->destroyEvent(CPAP_AHI);
+        session->destroyEvent(CPAP_RDI);
+    }
 
     if (!session->channelExists(CPAP_Obstructive) &&
             !session->channelExists(CPAP_Hypopnea) &&
             !session->channelExists(CPAP_Apnea) &&
-            !session->channelExists(CPAP_ClearAirway)) return 0;
+            !session->channelExists(CPAP_ClearAirway) &&
+            !session->channelExists(CPAP_RERA)
+            ) return 0;
 
     qint64 first=session->first(),
            last=session->last(),
            f;
 
     EventList *AHI=new EventList(EVL_Event);
-
     AHI->setGain(0.02);
     session->eventlist[CPAP_AHI].push_back(AHI);
 
-    EventDataType ahi;
+    EventList *RDI=NULL;
+
+    if (calcrdi) {
+        RDI=new EventList(EVL_Event);
+        RDI->setGain(0.02);
+        session->eventlist[CPAP_RDI].push_back(RDI);
+    }
+
+    EventDataType ahi,rdi;
 
     qint64 ti=first,lastti=first;
 
-    double avg=0;
+    double avgahi=0;
+    double avgrdi=0;
     int cnt=0;
 
     double events;
@@ -796,12 +829,18 @@ int calcAHIGraph(Session *session)
                         +session->rangeCount(CPAP_ClearAirway,ti,t)
                         +session->rangeCount(CPAP_Apnea,ti,t);
 
-                //ahi=calcAHI(session,ti,t)* hours;
-
                 ahi = events / hours;
 
                 AHI->AddEvent(t,ahi * 50);
-                avg+=ahi;
+                avgahi+=ahi;
+
+                if (calcrdi) {
+                    events+=session->rangeCount(CPAP_RERA,ti,t);
+                    rdi=events / hours;
+                    RDI->AddEvent(t,rdi * 50);
+                    avgrdi+=rdi;
+                }
+
                 cnt++;
             }
             lastti=ti;
@@ -810,26 +849,46 @@ int calcAHIGraph(Session *session)
 
     } else {
         for (ti=first;ti<last;ti+=window_step) {
-//            if  (ti>last) {
-////                AHI->AddEvent(last,ahi);
-////                avg+=ahi;
-////                cnt++;
-//                break;
-//            }
             f=ti-window_size_ms;
-            ahi=calcAHI(session,f,ti);
-            avg+=ahi;
-            cnt++;
+            //hours=window_size; //double(ti-f)/3600000L;
+
+            events=session->rangeCount(CPAP_Obstructive,f,ti)
+                    +session->rangeCount(CPAP_Hypopnea,f,ti)
+                    +session->rangeCount(CPAP_ClearAirway,f,ti)
+                    +session->rangeCount(CPAP_Apnea,f,ti);
+
+            ahi=events/hours;
+            avgahi+=ahi;
             AHI->AddEvent(ti,ahi * 50);
+
+            if (calcrdi) {
+                events+=session->rangeCount(CPAP_RERA,f,ti);
+                rdi=events/hours;
+                RDI->AddEvent(ti,rdi * 50);
+                avgrdi+=rdi;
+            }
+
+            cnt++;
             lastti=ti;
             ti+=window_step;
         }
     }
     AHI->AddEvent(lastti,0);
-    if (!cnt) avg=0; else avg/=double(cnt);
-    session->setAvg(CPAP_AHI,avg);
+    if (calcrdi)
+        RDI->AddEvent(lastti,0);
 
-    return AHI->count();
+    if (!cnt) {
+            avgahi=0;
+            avgrdi=0;
+    } else {
+        avgahi/=double(cnt);
+        avgrdi/=double(cnt);
+    }
+    cnt++;
+    session->setAvg(CPAP_AHI,avgahi);
+    if (calcrdi)
+        session->setAvg(CPAP_RDI,avgrdi);
+    return cnt;
 }
 
 int calcLeaks(Session *session)

@@ -89,12 +89,13 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     layout->layout();
 
     // TODO: Automate graph creation process
+    ChannelID ahicode=PROFILE.general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
 
-    // The following code (to the closing marker) is crap --->
-    if (PROFILE.general->calculateRDI())
+    if (ahicode==CPAP_RDI)
         AHI=createGraph(tr("RDI"),"Respiratory\nDisturbance\nIndex");
     else
         AHI=createGraph(tr("AHI"),tr("Apnea\nHypopnea\nIndex"));
+
     UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
 
@@ -103,7 +104,11 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SET=createGraph(tr("Settings"),("Settings"));
     LK=createGraph(tr("Leaks"),tr("Leak Rate\n(L/min)"));
     NPB=createGraph(tr("% in PB"),tr("Periodic\nBreathing\n(% of night)"));
-    AHIHR=createGraph(tr("AHI/Hour"),tr("AHI Events/Hour\n(ahi/hr)"));
+    if (ahicode==CPAP_RDI) {
+        AHIHR=createGraph(tr("Peak RDI"),tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
+    } else {
+        AHIHR=createGraph(tr("Peak AHI"),tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
+    }
     RR=createGraph(tr("Resp. Rate"),tr("Respiratory\nRate\n(breaths/min)"));
     TV=createGraph(tr("Tidal Volume"),tr("Tidal\nVolume\n(ml)"));
     MV=createGraph(tr("Minute Vent."),tr("Minute\nVentilation\n(L/min)"));
@@ -117,9 +122,9 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
 
-    ahihr=new SummaryChart(tr("AHI/Hr"),GT_LINE);
-    ahihr->addSlice(CPAP_AHI,QColor("blue"),ST_MAX);
-    ahihr->addSlice(CPAP_AHI,QColor("orange"),ST_WAVG);
+    ahihr=new SummaryChart(tr("Events/Hr"),GT_LINE);
+    ahihr->addSlice(ahicode,QColor("blue"),ST_MAX);
+    ahihr->addSlice(ahicode,QColor("orange"),ST_WAVG);
     AHIHR->AddLayer(ahihr);
 
     weight=new SummaryChart(STR_TR_Weight,GT_LINE);
@@ -164,7 +169,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ses->addSlice(NoChannel,QColor("blue"),ST_SESSIONS);
     SES->AddLayer(ses);
 
-    if (PROFILE.general->calculateRDI())
+    if (ahicode==CPAP_RDI)
         bc=new SummaryChart(tr("RDI"),GT_BAR);
     else
         bc=new SummaryChart(tr("AHI"),GT_BAR);

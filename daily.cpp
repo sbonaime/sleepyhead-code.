@@ -234,7 +234,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     pc->addPlot(CPAP_IPAPHi,Qt::darkRed,square);
 
     if (PROFILE.general->calculateRDI()) {
-        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
+        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI,QColor("light green"),square)));
+//        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     } else {
         AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
     }
