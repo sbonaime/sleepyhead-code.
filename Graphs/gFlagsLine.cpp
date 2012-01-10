@@ -55,6 +55,11 @@ void gFlagsGroup::SetDay(Day * d)
         }
     }
     m_empty=(cnt==0);
+    if (m_empty) {
+        if (d) {
+            m_empty=!d->channelExists(CPAP_Pressure);
+        }
+    }
     m_barh=0;
 }
 
@@ -142,87 +147,96 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
     qint64 start;
     quint32 * tptr;
-    EventStoreType *dptr;
+    EventStoreType *dptr, * eptr;
     int idx;
+    QHash<ChannelID,QVector<EventList *> >::iterator cei;
+
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
-        if (!(*s)->enabled()) continue;
+        if (!(*s)->enabled())
+            continue;
 
-        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
+        cei=(*s)->eventlist.find(m_code);
+        if (cei==(*s)->eventlist.end())
+            continue;
 
-        EventList & el=*((*s)->eventlist[m_code][0]);
-        start=el.first();
-        tptr=el.rawTime();
-        dptr=el.rawData();
-        int np=el.count();
+        QVector<EventList *> & evlist=cei.value();
+        for (int k=0;k<evlist.size();k++) {
+            EventList & el=*(evlist[k]);
+            start=el.first();
+            tptr=el.rawTime();
+            dptr=el.rawData();
+            int np=el.count();
+            eptr=dptr+np;
 
-        for (idx=0; idx < np; idx++) {
-            X=start + *tptr;
-            L=*dptr * 1000;
-            if (X >= minx)
-                break;
-            X2=X-L;
-            if (X2 >= minx)
-                break;
-            dptr++;
-            tptr++;
-        }
-        np-=idx;
-
-        if (m_flt==FT_Bar) {
-            ///////////////////////////////////////////////////////////////////////////
-            // Draw Event Flag Bars
-            ///////////////////////////////////////////////////////////////////////////
-
-            // Check bounds outside of loop is faster..
-            // This will have to be reverted if multithreaded drawing is ever brought back
-
-            int rem=lines->Max() - lines->cnt();
-            if ((np<<1) > rem) {
-                qDebug() << "gFlagsLine would overfill lines for" << schema::channel[m_code].label();
-                np=rem >> 1;
-                verts_exceeded=true;
-            }
-
-            for (int i=0;i<np;i++) {
-                X=start + * tptr++; //el.time(i);
-
-                if (X > maxx)
+            for (idx=0;dptr < eptr; dptr++, tptr++, idx++) {
+                X=start + *tptr;
+                L=*dptr * 1000;
+                if (X >= minx)
                     break;
-
-                x1=(X - minx) * xmult + left;
-                lines->add(x1,bartop,x1,bottom);
-
-                //if (lines->full()) { verts_exceeded=true; break; }
-            }
-        } else if (m_flt==FT_Span) {
-            ///////////////////////////////////////////////////////////////////////////
-            // Draw Event Flag Spans
-            ///////////////////////////////////////////////////////////////////////////
-            quads->setColor(m_flag_color);
-            int rem=quads->Max() - quads->cnt();
-
-            if ((np<<2) > rem) {
-                qDebug() << "gFlagsLine would overfill quads for" << schema::channel[m_code].label();
-                np=rem >> 2;
-                verts_exceeded=true;
-            }
-
-            for (int i=0;i < np; i++) {
-                X=start + * tptr++;
-
-                if (X > maxx)
-                    break;
-
-                L=*dptr++ * 1000L;
                 X2=X-L;
-
-                x1=double(X - minx) * xmult + left;
-                x2=double(X2 - minx) * xmult + left;
-
-                quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom);
-                //if (quads->full()) { verts_exceeded=true; break; }
+                if (X2 >= minx)
+                    break;
 
             }
+            np-=idx;
+
+            if (m_flt==FT_Bar) {
+                ///////////////////////////////////////////////////////////////////////////
+                // Draw Event Flag Bars
+                ///////////////////////////////////////////////////////////////////////////
+
+                // Check bounds outside of loop is faster..
+                // This will have to be reverted if multithreaded drawing is ever brought back
+
+                int rem=lines->Max() - lines->cnt();
+                if ((np<<1) > rem) {
+                    qDebug() << "gFlagsLine would overfill lines for" << schema::channel[m_code].label();
+                    np=rem >> 1;
+                    verts_exceeded=true;
+                }
+
+                for (int i=0;i<np;i++) {
+                    X=start + *tptr++;
+
+                    if (X > maxx)
+                        break;
+
+                    x1=(X - minx) * xmult + left;
+                    lines->add(x1,bartop,x1,bottom);
+
+                    //if (lines->full()) { verts_exceeded=true; break; }
+                }
+            } else if (m_flt==FT_Span) {
+                ///////////////////////////////////////////////////////////////////////////
+                // Draw Event Flag Spans
+                ///////////////////////////////////////////////////////////////////////////
+                quads->setColor(m_flag_color);
+                int rem=quads->Max() - quads->cnt();
+
+                if ((np<<2) > rem) {
+                    qDebug() << "gFlagsLine would overfill quads for" << schema::channel[m_code].label();
+                    np=rem >> 2;
+                    verts_exceeded=true;
+                }
+
+                for (; dptr < eptr; dptr++) {
+                    X=start + * tptr++;
+
+                    if (X > maxx)
+                        break;
+
+                    L=*dptr * 1000L;
+                    X2=X-L;
+
+                    x1=double(X - minx) * xmult + left;
+                    x2=double(X2 - minx) * xmult + left;
+
+                    quads->add(x2,bartop,x1,bartop, x1,bottom,x2,bottom);
+                    //if (quads->full()) { verts_exceeded=true; break; }
+
+                }
+            }
+            if (verts_exceeded) break;
         }
         if (verts_exceeded) break;
     }
