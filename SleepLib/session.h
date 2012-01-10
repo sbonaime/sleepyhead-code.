@@ -154,7 +154,11 @@ public:
     QHash<ChannelID,QHash<EventStoreType, quint32> > m_timesummary;
     QHash<ChannelID,EventDataType> m_gain;
 
+    //! \brief Generates sum and time data for each distinct value in 'code' events..
     void updateCountSummary(ChannelID code);
+
+    //! \brief Destroy any trace of event 'code', freeing any memory if loaded.
+    void destroyEvent(ChannelID code);
 
     // UpdateSummaries may recalculate all these, but it may be faster setting upfront
     void setCount(ChannelID id,int val) { m_cnt[id]=val; }
@@ -221,6 +225,9 @@ public:
 
     //! \brief Returns true if the channel has events loaded, or a record of a count for when they are not
     bool channelExists(ChannelID name);
+
+    //! \brief Returns true if the channel has event data available (must be loaded first)
+    bool channelDataExists(ChannelID id);
 
     bool IsLoneSession() { return s_lonesession; }
     void SetLoneSession(bool b) { s_lonesession=b; }

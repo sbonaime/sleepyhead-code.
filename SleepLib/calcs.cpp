@@ -213,7 +213,6 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
 
     EventDataType zeroline=0;
 
-    // For each sample in flow waveform
     double rate=m_flow->rate();
 
     double flowstart=m_flow->first();
@@ -240,17 +239,13 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
 
 
     int sps=1000/m_rate;
-    // For each samples, find the peak upper and lower breath components
-    //bool dirty=false;
     int len=0, lastk=0; //lastlen=0
-
-    //EventList *uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
 
     qint64 sttime=time;//, ettime=time;
 
+    // For each samples, find the peak upper and lower breath components
     for (int k=0; k < samples; k++) {
         c=input[k];
-      //  dirty=false;
 
         if (c >= zeroline) {
 
@@ -262,14 +257,7 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
 
                     // peak detection may not be needed..
                     breaths.push_back(BreathPeak(min, max, start, middle, k)); //, peakmin, peakmax));
-                    //EventDataType g0=(0-lastc) / (c-lastc);
-                    //double d=(m_rate*g0);
-                    //double d1=flowstart+ (start*rate);
-                    //double d2=peakmax;
 
-                    //uf1->AddEvent(d1,0);
-                    //uf2->AddEvent(d2,0);
-                    //lastlen=k-start;
                     // Set max for start of the upper breath cycle
                     max=c;
                     peakmax=time;
@@ -278,11 +266,7 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
                     // Starting point of next breath cycle
                     start=k;
                     sttime=time;
-                }/* else {
-                    if ((max <=3) || ((max-min) <= 8)) {
-                        start=k;
-                    }
-                }*/
+                }
             } else if (c > max) {
                 // Update upper breath peak
                 max=c;
@@ -308,7 +292,6 @@ void FlowParser::calcPeaks(EventDataType * input, int samples)
         }
         lasttime=time;
         time+=rate;
-        //if (!dirty)
         lastc=c;
         lastk=k;
     }

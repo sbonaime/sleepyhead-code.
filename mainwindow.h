@@ -88,7 +88,6 @@ public:
     //! \brief Refresh the statistics page
     void refreshStatistics() { on_summaryButton_clicked(); }
 
-
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
         \param QString string
@@ -138,6 +137,14 @@ public:
     void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
 
     void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
+
+    //! \brief Sets up recalculation of all event summaries and flags
+    void reprocessEvents(bool restart=false);
+
+public slots:
+    //! \brief Recalculate all event summaries and flags
+    void doReprocessEvents();
+
 protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
@@ -298,6 +305,8 @@ private:
     QMenu *systraymenu;
     gGraphView *SnapshotGraph;
     QString bookmarkFilter;
+    bool m_restartRequired;
+    volatile bool m_inRecalculation;
 };
 
 #endif // MAINWINDOW_H

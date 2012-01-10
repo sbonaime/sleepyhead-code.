@@ -57,8 +57,8 @@ public:
     explicit PreferencesDialog(QWidget *parent, Profile * _profile);
     ~PreferencesDialog();
 
-    //! \brief Save the current preferences, called when Ok button is clicked on
-    void Save();
+    //! \brief Save the current preferences, called when Ok button is clicked on.
+    bool Save();
 
     //! \brief Updates the date text of the last time updates where checked
     void RefreshLastChecked();
@@ -88,6 +88,8 @@ private slots:
     void on_maskTypeCombo_activated(int index);
 
     void on_createSDBackups_toggled(bool checked);
+
+    void on_okButton_clicked();
 
 private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects

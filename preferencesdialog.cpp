@@ -10,7 +10,6 @@
 #include "preferencesdialog.h"
 #include "common_gui.h"
 
-
 #include <Graphs/gGraphView.h>
 #include <mainwindow.h>
 #include "ui_preferencesdialog.h"
@@ -43,7 +42,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->leakProfile->setColumnWidth(0,100);
     ui->maskTypeCombo->clear();
 
-    //ui->ahiGraphGroupbox->setEnabled(false);
     //ui->customEventGroupbox->setEnabled(false);
 
     QString masktype=tr("Nasal Pillows");
@@ -194,6 +192,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     if (ot<0) ot=0;
     ui->oximetryType->setCurrentIndex(ot);
 
+    ui->ahiGraphWindowSize->setEnabled(false);
     ui->ahiGraphWindowSize->setValue(profile->cpap->AHIWindow());
     ui->ahiGraphZeroReset->setChecked(profile->cpap->AHIReset());
 
@@ -276,15 +275,48 @@ void PreferencesDialog::on_eventTable_doubleClicked(const QModelIndex &index)
     }
 }
 
-void PreferencesDialog::Save()
+bool PreferencesDialog::Save()
 {
+    bool recalc_events=false;
     bool needs_restart=false;
 
-    profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
+    if (ui->ahiGraphZeroReset->isChecked()!=profile->cpap->AHIReset()) recalc_events=true;
+
     if (ui->useSquareWavePlots->isChecked()!=profile->appearance->squareWavePlots()) {
-        profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
         needs_restart=true;
     }
+    if ((profile->session->daySplitTime()!=ui->timeEdit->time()) ||
+        (profile->session->combineCloseSessions()!=ui->combineSlider->value()) ||
+        (profile->session->ignoreShortSessions()!=ui->IgnoreSlider->value())) {
+        needs_restart=true;
+    }
+    if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
+        recalc_events=true;
+        needs_restart=true;
+    }
+    if (profile->cpap->userEventFlagging() &&
+       (profile->cpap->userEventDuration()!=ui->apneaDuration->value() ||
+        profile->cpap->userFlowRestriction()!=ui->apneaFlowRestriction->value()))
+        recalc_events=true;
+
+    // Restart if turning user event flagging on/off
+    if (profile->cpap->userEventFlagging()!=ui->customEventGroupbox->isChecked()) {
+        if (!profile->cpap->userEventFlagging()) // Don't bother recalculating, just switch off
+            needs_restart=true;
+        else recalc_events=true;
+    }
+    if (recalc_events) {
+        if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A lengthy data reindexing proceedure is required to apply these changes.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            return false;
+        }
+    } else if (needs_restart) {
+        if (QMessageBox::question(this,tr("Restart Required"),tr("One or more of the changes you have made will require this application to be restarted,\nin order for these changes to come into effect.\n\nWould you like do this now?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            return false;
+        }
+    }
+
+    profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
+    profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
     profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
@@ -298,16 +330,8 @@ void PreferencesDialog::Save()
     profile->cpap->setMaskStartDate(ui->startedUsingMask->date());
     profile->appearance->setGraphHeight(ui->graphHeight->value());
 
-    if ((profile->session->daySplitTime()!=ui->timeEdit->time()) ||
-    (profile->session->combineCloseSessions()!=ui->combineSlider->value()) ||
-    (profile->session->ignoreShortSessions()!=ui->IgnoreSlider->value())) {
-        needs_restart=true;
-    }
 
-    if (profile->general->calculateRDI() != ui->AddRERAtoAHI->isChecked()) {
-        profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
-        needs_restart=true;
-    }
+    profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
     profile->session->setBackupCardData(ui->createSDBackups->isChecked());
     profile->session->setCompressBackupData(ui->compressSDBackups->isChecked());
     profile->session->setCompressSessionData(ui->compressSessionData->isChecked());
@@ -348,11 +372,9 @@ void PreferencesDialog::Save()
     profile->cpap->setAHIWindow(ui->ahiGraphWindowSize->value());
     profile->cpap->setAHIReset(ui->ahiGraphZeroReset->isChecked());
 
-    // Restart if turning user event flagging on/off
-    if (profile->cpap->userEventFlagging()!=ui->customEventGroupbox->isChecked())
-        needs_restart=true;
 
     profile->cpap->setUserEventFlagging(ui->customEventGroupbox->isChecked());
+
     profile->cpap->setUserEventDuration(ui->apneaDuration->value());
     profile->cpap->setUserFlowRestriction(ui->apneaFlowRestriction->value());
 
@@ -428,11 +450,15 @@ void PreferencesDialog::Save()
     //PROFILE.Save();
     //PREF.Save();
 
-    if (needs_restart) {
-        if (QMessageBox::question(this,tr("Restart Required"),tr("One or more of the changes you have made will require this application to be restarted, in order for these changes to come into effect.\nWould you like do this now?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+    if (recalc_events) {
+        // send a signal instead?
+        mainwin->reprocessEvents(needs_restart);
+    } else {
+        if (needs_restart) {
             mainwin->RestartApplication();
         }
     }
+    return true;
 }
 
 void PreferencesDialog::on_combineSlider_valueChanged(int position)
@@ -757,4 +783,10 @@ void PreferencesDialog::on_createSDBackups_toggled(bool checked)
     }
     if (!checked) ui->compressSDBackups->setChecked(false);
     ui->compressSDBackups->setEnabled(checked);
+}
+
+void PreferencesDialog::on_okButton_clicked()
+{
+    if (Save())
+        accept();
 }

@@ -33,7 +33,9 @@
 #include "SleepLib/schema.h"
 #include "Graphs/glcommon.h"
 #include "UpdaterWindow.h"
+#include "SleepLib/calcs.h"
 #include "version.h"
+
 
 QProgressBar *qprogress;
 QLabel *qstatus;
@@ -89,6 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
     oximetry=NULL;
     prefdialog=NULL;
 
+    m_inRecalculation=false;
+    m_restartRequired=false;
     // Initialize Status Bar objects
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
@@ -152,6 +156,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     ui->toolBox->setCurrentIndex(0);
     daily->graphView()->redraw();
+
+    if (PROFILE.cpap->AHIWindow() < 30.0) {
+        PROFILE.cpap->setAHIWindow(60.0);
+    }
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->summaryView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
@@ -1423,11 +1431,15 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 
 void MainWindow::on_action_Preferences_triggered()
 {
+    if (m_inRecalculation) {
+        mainwin->Notify("Access to Preferences has been blocked until recalculation completes.");
+        return;
+    }
     PreferencesDialog pd(this,p_profile);
     prefdialog=&pd;
     if (pd.exec()==PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
-        pd.Save();
+        //pd.Save();
         if (daily) {
             //daily->ReloadGraphs();
             daily->RedrawGraphs();
@@ -2400,30 +2412,6 @@ void MainWindow::on_webView_linkClicked(const QUrl &url)
     }
 }
 
-//void MainWindow::on_favouritesList_itemSelectionChanged()
-//{
-//    QListWidgetItem *item=ui->favouritesList->currentItem();
-//    if (!item) return;
-//    QDate date=item->data(Qt::UserRole).toDate();
-//    if (date.isValid()) {
-//        daily->LoadDate(date);
-//        ui->tabWidget->setCurrentWidget(daily);
-//    }
-//}
-
-/*void MainWindow::on_favouritesList_itemClicked(QListWidgetItem *item)
-{
-    if (!item) return;
-    QDate date=item->data(Qt::UserRole).toDate();
-    if (date.isValid()) {
-        if (date==daily->getDate()) {
-            ui->tabWidget->setCurrentWidget(daily);
-            daily->graphView()->ResetBounds();
-            daily->graphView()->redraw();
-        }
-    }
-}*/
-
 void MainWindow::on_webView_statusBarMessage(const QString &text)
 {
     ui->statusbar->showMessage(text);
@@ -2478,4 +2466,84 @@ void MainWindow::on_filterBookmarksButton_clicked()
         bookmarkFilter="";
         updateFavourites();
     }
+}
+
+void MainWindow::reprocessEvents(bool restart)
+{
+    m_restartRequired=restart;
+    QTimer::singleShot(0,this,SLOT(doReprocessEvents()));
+}
+
+
+void MainWindow::doReprocessEvents()
+{
+    m_inRecalculation=true;
+    QDate first=PROFILE.FirstDay();
+    QDate date=PROFILE.LastDay();
+    Session *sess;
+    Day *day;
+    //FlowParser flowparser;
+    if (m_restartRequired) {
+        QMessageBox::information(this,"Restart Required",QString("The application will automatically restart after the following reindexing operation"),QMessageBox::Ok);
+    }
+
+    mainwin->Notify("Performance will be degraded during these recalculations.","Recalculating Indicdes");
+
+    bool isopen;
+    // For each day in history
+    int daycount=first.daysTo(date);
+    int idx=0;
+    if (qprogress) {
+        qstatus->setText(tr("Recalculating Summaries"));
+        qprogress->setValue(0);
+        qprogress->setVisible(true);
+    }
+    do {
+        day=PROFILE.GetDay(date,MT_CPAP);
+        if (day) {
+            for (int i=0;i<day->size();i++) {
+                sess=(*day)[i];
+                isopen=sess->eventsLoaded();
+                // Load the events
+                sess->OpenEvents();
+
+                //if (!sess->channelDataExists(CPAP_FlowRate)) continue;
+
+                //QVector<EventList *> & flowlist=sess->eventlist[CPAP_FlowRate];
+
+                // Destroy any current user flags..
+                sess->destroyEvent(CPAP_UserFlag1);
+                sess->destroyEvent(CPAP_UserFlag2);
+                sess->destroyEvent(CPAP_UserFlag3);
+
+                // AHI flags
+                sess->destroyEvent(CPAP_AHI);
+
+//                for (int j=0;j<flowlist.size();j++) {
+//                    flowparser.openFlow(sess,flowlist[j]);
+//                    flowparser.flagEvents();
+//                }
+                sess->UpdateSummaries();
+                sess->SetChanged(true);
+                sess->machine()->SaveSession(sess);
+                if (!isopen) sess->TrashEvents();
+            }
+        }
+        date=date.addDays(-1);
+       // if (qprogress && (++idx % 10) ==0) {
+            qprogress->setValue(0+(float(++idx)/float(daycount)*100.0));
+            QApplication::processEvents();
+       // }
+
+    } while (date>=first);
+    qstatus->setText(tr(""));
+    qprogress->setVisible(false);
+    if (!m_restartRequired) {
+        if (overview) overview->ReloadGraphs();
+        daily->ReloadGraphs();
+    } else {
+        RestartApplication();
+    }
+    m_inRecalculation=false;
+    mainwin->Notify("Recalculations are now complete.","Recalculating Indicdes");
 }

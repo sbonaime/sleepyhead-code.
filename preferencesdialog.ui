@@ -2185,22 +2185,6 @@ It really doesn't use that much resources.. :)</string>
  </resources>
  <connections>
   <connection>
-   <sender>okButton</sender>
-   <signal>clicked()</signal>
-   <receiver>PreferencesDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>632</x>
-     <y>387</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>cancelButton</sender>
    <signal>clicked()</signal>
    <receiver>PreferencesDialog</receiver>

@@ -370,7 +370,7 @@ public:
         if (!m_profile->contains(STR_CS_UntreatedAHI)) (*m_profile)[STR_CS_UntreatedAHI]=0.0;
         if (!m_profile->contains(STR_CS_Notes)) (*m_profile)[STR_CS_Notes]=QString();
         if (!m_profile->contains(STR_CS_DateDiagnosed)) (*m_profile)[STR_CS_DateDiagnosed]=QDate();
-        if (!m_profile->contains(STR_CS_UserFlowRestriction)) (*m_profile)[STR_CS_UserFlowRestriction]=10.0;
+        if (!m_profile->contains(STR_CS_UserFlowRestriction)) (*m_profile)[STR_CS_UserFlowRestriction]=20.0;
         if (!m_profile->contains(STR_CS_UserEventDuration)) (*m_profile)[STR_CS_UserEventDuration]=10.0;
         if (!m_profile->contains(STR_CS_UserEventFlagging)) (*m_profile)[STR_CS_UserEventFlagging]=false;
         if (!m_profile->contains(STR_CS_AHIWindow)) (*m_profile)[STR_CS_AHIWindow]=60.0;
