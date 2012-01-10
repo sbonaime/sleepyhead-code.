@@ -2513,22 +2513,28 @@ void MainWindow::doReprocessEvents()
     int daycount=first.daysTo(date);
     int idx=0;
 
-    //QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
+    QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
 
-    if (qprogress) {
+    bool cache_sessions=PROFILE.session->cacheSessions();
+    if (cache_sessions) { // Use multithreaded save to handle reindexing.. (hogs memory like hell)
+        qstatus->setText(tr("Loading Event Data"));
+    } else {
         qstatus->setText(tr("Recalculating Summaries"));
-        //qstatus->setText(tr("Loading Event Data"));
+    }
+    if (qprogress) {
         qprogress->setValue(0);
         qprogress->setVisible(true);
     }
+    bool isopen;
     QDate current=daily->getDate();
     do {
         day=PROFILE.GetDay(date,MT_CPAP);
         if (day) {
             for (int i=0;i<day->size();i++) {
                 sess=(*day)[i];
-                bool isopen=sess->eventsLoaded();
-                // Load the events
+                isopen=sess->eventsLoaded();
+
+                // Load the events if they aren't loaded already
                 sess->OpenEvents();
 
                 //if (!sess->channelDataExists(CPAP_FlowRate)) continue;
@@ -2545,9 +2551,12 @@ void MainWindow::doReprocessEvents()
                 sess->destroyEvent(CPAP_RDI);
 
                 sess->SetChanged(true);
-                sess->UpdateSummaries();
-                sess->machine()->SaveSession(sess);
-                if (!isopen) sess->TrashEvents();
+                if (!cache_sessions) {
+                    sess->UpdateSummaries();
+                    sess->machine()->SaveSession(sess);
+                    if (!isopen)
+                        sess->TrashEvents();
+                }
             }
         }
         date=date.addDays(-1);
@@ -2558,9 +2567,12 @@ void MainWindow::doReprocessEvents()
 
     } while (date>=first);
 
-//    for (int i=0;i<machines.size();i++) {
-//        machines.at(i)->Save();
-//    }
+    if (cache_sessions) {
+        qstatus->setText(tr("Recalculating Summaries"));
+        for (int i=0;i<machines.size();i++) {
+            machines.at(i)->Save();
+        }
+    }
 
     qstatus->setText(tr(""));
     qprogress->setVisible(false);

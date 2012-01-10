@@ -327,6 +327,7 @@ bool Machine::Save()
     }
     savelistCnt=0;
     savelistSize=m_savelist.size();
+    bool cachesessions=PROFILE.session->cacheSessions();
     if (!PROFILE.session->multithreading()) {
         for (int i=0;i<savelistSize;i++) {
             if ((i % 10) ==0) {
@@ -336,7 +337,8 @@ bool Machine::Save()
             Session *s=m_savelist.at(i);
             s->UpdateSummaries();
             s->Store(path);
-            s->TrashEvents();
+            if (!cachesessions)
+                s->TrashEvents();
             savelistCnt++;
 
         }
@@ -378,12 +380,15 @@ bool Machine::Save()
 
 void SaveThread::run()
 {
+    bool cachesessions=PROFILE.session->cacheSessions();
+
     while (Session *sess=machine->popSaveList()) {
         int i=(float(machine->savelistCnt)/float(machine->savelistSize)*100.0);
         emit UpdateProgress(i);
         sess->UpdateSummaries();
         sess->Store(path);
-        sess->TrashEvents();
+        if (!cachesessions)
+            sess->TrashEvents();
     }
     machine->savelistSem->release(1);
 }
