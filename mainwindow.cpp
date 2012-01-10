@@ -2487,7 +2487,7 @@ void MainWindow::doReprocessEvents()
         QMessageBox::information(this,"Restart Required",QString("The application will automatically restart after the following reindexing operation"),QMessageBox::Ok);
     }
 
-    mainwin->Notify("Performance will be degraded during these recalculations.","Recalculating Indicdes");
+    mainwin->Notify("Performance will be degraded during these recalculations.","Recalculating Indices");
 
     bool isopen;
     // For each day in history
@@ -2519,10 +2519,6 @@ void MainWindow::doReprocessEvents()
                 // AHI flags
                 sess->destroyEvent(CPAP_AHI);
 
-//                for (int j=0;j<flowlist.size();j++) {
-//                    flowparser.openFlow(sess,flowlist[j]);
-//                    flowparser.flagEvents();
-//                }
                 sess->UpdateSummaries();
                 sess->SetChanged(true);
                 sess->machine()->SaveSession(sess);
@@ -2545,5 +2541,5 @@ void MainWindow::doReprocessEvents()
         RestartApplication();
     }
     m_inRecalculation=false;
-    mainwin->Notify("Recalculations are now complete.","Recalculating Indicdes");
+    mainwin->Notify("Recalculations are now complete.","Recalculating Indices");
 }
