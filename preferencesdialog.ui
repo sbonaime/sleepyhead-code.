@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -624,7 +624,7 @@ p, li { white-space: pre-wrap; }
             <string>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</string>
            </property>
            <property name="text">
-            <string>Use RDI instead of  AHI (PRS1 only)</string>
+            <string>Use RDI instead of AHI (PRS1 only)</string>
            </property>
           </widget>
          </item>

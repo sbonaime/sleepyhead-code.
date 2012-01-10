@@ -291,6 +291,7 @@ private slots:
     void on_filterBookmarksButton_clicked();
 
 private:
+    void FreeSessions();
 
     Ui::MainWindow *ui;
     Daily * daily;

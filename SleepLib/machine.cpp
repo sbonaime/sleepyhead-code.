@@ -336,7 +336,7 @@ bool Machine::Save()
             Session *s=m_savelist.at(i);
             s->UpdateSummaries();
             s->Store(path);
-            //s->TrashEvents();
+            s->TrashEvents();
             savelistCnt++;
 
         }

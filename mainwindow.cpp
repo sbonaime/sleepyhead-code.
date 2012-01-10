@@ -2481,6 +2481,23 @@ void MainWindow::reprocessEvents(bool restart)
 }
 
 
+void MainWindow::FreeSessions()
+{
+    QDate first=PROFILE.FirstDay();
+    QDate date=PROFILE.LastDay();
+    Day *day;
+    QDate current=daily->getDate();
+    do {
+        day=PROFILE.GetDay(date,MT_CPAP);
+        if (day) {
+            if (date!=current) {
+                day->CloseEvents();
+            }
+        }
+        date=date.addDays(-1);
+    }  while (date>=first);
+}
+
 void MainWindow::doReprocessEvents()
 {
     m_inRecalculation=true;
@@ -2496,10 +2513,11 @@ void MainWindow::doReprocessEvents()
     int daycount=first.daysTo(date);
     int idx=0;
 
-    QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
+    //QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
 
     if (qprogress) {
-        qstatus->setText(tr("Loading Event Data"));
+        qstatus->setText(tr("Recalculating Summaries"));
+        //qstatus->setText(tr("Loading Event Data"));
         qprogress->setValue(0);
         qprogress->setVisible(true);
     }
@@ -2509,6 +2527,7 @@ void MainWindow::doReprocessEvents()
         if (day) {
             for (int i=0;i<day->size();i++) {
                 sess=(*day)[i];
+                bool isopen=sess->eventsLoaded();
                 // Load the events
                 sess->OpenEvents();
 
@@ -2526,8 +2545,9 @@ void MainWindow::doReprocessEvents()
                 sess->destroyEvent(CPAP_RDI);
 
                 sess->SetChanged(true);
-                //sess->machine()->SaveSession(sess);
-                //if (!isopen) sess->TrashEvents();
+                sess->UpdateSummaries();
+                sess->machine()->SaveSession(sess);
+                if (!isopen) sess->TrashEvents();
             }
         }
         date=date.addDays(-1);
@@ -2538,10 +2558,9 @@ void MainWindow::doReprocessEvents()
 
     } while (date>=first);
 
-    qstatus->setText(tr("Recalculating Summaries"));
-    for (int i=0;i<machines.size();i++) {
-        machines.at(i)->Save();
-    }
+//    for (int i=0;i<machines.size();i++) {
+//        machines.at(i)->Save();
+//    }
 
     qstatus->setText(tr(""));
     qprogress->setVisible(false);
@@ -2553,6 +2572,7 @@ void MainWindow::doReprocessEvents()
     } else {
         Notify("Recalculations are now complete.","Task Completed");
 
+        FreeSessions();
         daily->LoadDate(current);
         if (overview) overview->ReloadGraphs();
     }
