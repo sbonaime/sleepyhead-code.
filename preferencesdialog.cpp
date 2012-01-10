@@ -306,7 +306,8 @@ bool PreferencesDialog::Save()
         else recalc_events=true;
     }
 
-    if (profile->session->compressSessionData()!=ui->compressSessionData->isChecked()) recalc_events=true;
+    if (profile->session->compressSessionData()!=ui->compressSessionData->isChecked())
+        recalc_events=true;
 
     if (recalc_events) {
         if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A data reindexing proceedure is required to apply these changes.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
