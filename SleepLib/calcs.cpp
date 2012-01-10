@@ -563,8 +563,8 @@ void FlowParser::flagEvents()
         br.push_back(qAbs(mx));
         br.push_back(qAbs(mn));
     }
-    EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
-    EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
+    //EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
+    //EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
 
     const EventDataType perc=0.6;
     int idx=float(br.size())*perc;
@@ -623,8 +623,8 @@ void FlowParser::flagEvents()
 //        }
          st=start + bs1 * m_rate;
          et=start + be1  * m_rate;
-         uf2->AddEvent(st,0);
-         uf3->AddEvent(et,0);
+//         uf2->AddEvent(st,0);
+//         uf3->AddEvent(et,0);
 
     }
 
