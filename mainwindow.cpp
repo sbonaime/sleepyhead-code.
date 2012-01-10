@@ -2522,7 +2522,6 @@ void MainWindow::doReprocessEvents()
                 // AHI flags
                 sess->destroyEvent(CPAP_AHI);
 
-                sess->UpdateSummaries();
                 sess->SetChanged(true);
                 //sess->machine()->SaveSession(sess);
                 //if (!isopen) sess->TrashEvents();
