@@ -188,8 +188,6 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     set->addSlice(CPAP_PresReliefSet,QColor("red"),ST_SETWAVG);
     //set->addSlice(RMS9_EPRSet,QColor("green"),ST_SETWAVG);
     //set->addSlice(INTP_SmartFlex,QColor("purple"),ST_SETWAVG);
-    SET->setRecMinY(0);
-    SET->setRecMaxY(5);
     SET->AddLayer(set);
 
     rr=new SummaryChart(tr("breaths/min"),GT_LINE);
@@ -268,6 +266,10 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ui->rangeCombo->setCurrentIndex(6);
     icon_on=new QIcon(":/icons/session-on.png");
     icon_off=new QIcon(":/icons/session-off.png");
+    SES->setRecMinY(1);
+    SET->setRecMinY(0);
+    SET->setRecMaxY(5);
+
 }
 Overview::~Overview()
 {

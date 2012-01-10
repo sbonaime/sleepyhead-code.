@@ -1050,6 +1050,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
+
     m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
     f_miny=f_maxy=0;
@@ -1857,49 +1858,67 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
 
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
+    if (title()=="Sessions") {
+        int i=5;
+    }
     int m,t;
     bool ymin_good=false,ymax_good=false;
     if (rec_miny!=rec_maxy) {
-        if (miny>rec_miny) miny=rec_miny;
-        if (maxy<rec_maxy) maxy=rec_maxy;
+        if (miny>rec_miny)
+            miny=rec_miny;
+        if (maxy<rec_maxy)
+            maxy=rec_maxy;
 
-        if (miny==rec_miny) ymin_good=true;
-        if (maxy==rec_maxy) ymax_good=true;
+        if (miny==rec_miny)
+            ymin_good=true;
+        if (maxy==rec_maxy)
+            ymax_good=true;
     }
     if (maxy==miny) {
         m=ceil(maxy/2.0);
         t=m*2;
-        if (maxy==t) t+=2;
-        if (!ymax_good) maxy=t;
+        if (maxy==t)
+            t+=2;
+        if (!ymax_good)
+            maxy=t;
 
         m=floor(miny/2.0);
         t=m*2;
-        if (miny==t) t-=2;
-        if (miny>=0 && t<0) t=0;
-        if (!ymin_good) miny=t;
+        if (miny==t)
+            t-=2;
+        if (miny>=0 && t<0)
+            t=0;
+        if (!ymin_good)
+            miny=t;
         return;
     }
 
     if (maxy>=400) {
         m=ceil(maxy/50.0);
         t=m*50;
-        if (!ymax_good) maxy=t;
+        if (!ymax_good)
+            maxy=t;
         m=floor(miny/50.0);
-        if (!ymin_good) miny=m*50;
+        if (!ymin_good)
+            miny=m*50;
     } else if (maxy>=5) {
         m=ceil(maxy/5.0);
         t=m*5;
-        if (!ymax_good) maxy=t;
+        if (!ymax_good)
+            maxy=t;
         m=floor(miny/5.0);
-        if (!ymin_good) miny=m*5;
+        if (!ymin_good)
+            miny=m*5;
     } else {
         if (maxy==miny && maxy==0) {
             maxy=0.5;
         } else {
             //maxy*=4.0;
             //miny*=4.0;
-            if (!ymax_good) maxy=ceil(maxy);
-            if (!ymin_good) miny=floor(miny);
+            if (!ymax_good)
+                maxy=ceil(maxy);
+            if (!ymin_good)
+                miny=floor(miny);
             //maxy/=4.0;
             //miny/=4.0;
         }
