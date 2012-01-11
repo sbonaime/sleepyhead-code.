@@ -186,7 +186,8 @@ OTHER_FILES += \
     docs/tz.txt \
     LICENSE.txt \
     docs/tooltips.css \
-    docs/script.js
+    docs/script.js \
+    update.xml
 
 
 

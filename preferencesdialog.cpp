@@ -315,9 +315,11 @@ bool PreferencesDialog::Save()
         recalc_events=true;
 
     if (recalc_events) {
-        if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-            return false;
-        }
+        if (PROFILE.countDays(MT_CPAP,PROFILE.FirstDay(),PROFILE.LastDay())>0) {
+            if (QMessageBox::question(this,tr("Data Reindex Required"),tr("A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.\n\nAre you sure you want to make these changes?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+                return false;
+            }
+        } else recalc_events=false;
     } else if (needs_restart) {
         if (QMessageBox::question(this,tr("Restart Required"),tr("One or more of the changes you have made will require this application to be restarted,\nin order for these changes to come into effect.\n\nWould you like do this now?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
             return false;

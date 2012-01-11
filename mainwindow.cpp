@@ -2500,6 +2500,9 @@ void MainWindow::FreeSessions()
 
 void MainWindow::doReprocessEvents()
 {
+    if (PROFILE.countDays(MT_CPAP,PROFILE.FirstDay(),PROFILE.LastDay())==0)
+        return;
+
     m_inRecalculation=true;
     QDate first=PROFILE.FirstDay();
     QDate date=PROFILE.LastDay();
@@ -2513,7 +2516,7 @@ void MainWindow::doReprocessEvents()
     int daycount=first.daysTo(date);
     int idx=0;
 
-    QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
+    QList<Machine *> machines=PROFILE.GetMachines(MT_CPAP);
 
     // Disabling multithreaded save as it appears it's causing problems
     bool cache_sessions=false; //PROFILE.session->cacheSessions();
