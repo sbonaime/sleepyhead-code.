@@ -545,6 +545,7 @@ void Daily::UpdateCalendarDay(QDate date)
     QTextCharFormat oxiday;
     QTextCharFormat oxicpap;
     QTextCharFormat jourday;
+    QTextCharFormat stageday;
 
     cpaponly.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
     cpaponly.setFontWeight(QFont::Normal);
@@ -554,6 +555,8 @@ void Daily::UpdateCalendarDay(QDate date)
     oxiday.setFontWeight(QFont::Normal);
     oxicpap.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxicpap.setFontWeight(QFont::Bold);
+    stageday.setForeground(QBrush(Qt::magenta, Qt::SolidPattern));
+    stageday.setFontWeight(QFont::Bold);
     jourday.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
     jourday.setFontWeight(QFont::Bold);
     nodata.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
@@ -562,11 +565,14 @@ void Daily::UpdateCalendarDay(QDate date)
     bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
     bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
     bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=NULL;
+    bool hasstage=PROFILE.GetDay(date,MT_SLEEPSTAGE)!=NULL;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxicpap);
         } else if (hasjournal) {
             ui->calendar->setDateTextFormat(date,cpapjour);
+        } else if (hasstage) {
+            ui->calendar->setDateTextFormat(date,stageday);
         } else {
             ui->calendar->setDateTextFormat(date,cpaponly);
         }

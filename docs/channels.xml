@@ -118,7 +118,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="light blue"/>
  </group>
  <group name="SLEEP">
-  <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" color="dark grey"/>
+  <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" unit="1=Awake 2=REM 3=Light Sleep 4=Deep Sleep" color="dark grey"/>
   <channel id="0x2001" class="data" name="ZeoBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
   <channel id="0x2002" class="data" name="Awakenings" details="Awakenings" label="Awakenings" color="black"/>
   <channel id="0x2003" class="data" name="MorningFeel" details="ZEO Morning Feel" label="Morning Feel" color="black"/>
