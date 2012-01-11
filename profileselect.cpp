@@ -7,7 +7,6 @@
 #include "profileselect.h"
 #include <QDebug>
 #include <QStringListModel>
-#include <QStandardItemModel>
 #include <QStandardItem>
 #include <QDialog>
 #include <QLineEdit>
@@ -15,6 +14,7 @@
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include <QTimer>
+#include <QDir>
 #include "ui_profileselect.h"
 #include "SleepLib/profiles.h"
 #include "newprofile.h"
@@ -25,7 +25,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 {
     ui->setupUi(this);
     QStringList str;
-    QStandardItemModel *model=new QStandardItemModel (0,0);
+    model=new QStandardItemModel (0,0);
 
     int i=0;
     int sel=-1;
@@ -119,8 +119,8 @@ void ProfileSelect::deleteProfile()
 {
     QString name=ui->listView->currentIndex().data().toString();
     if (QMessageBox::question(this,tr("Question"),tr("Are you sure you want to trash the profile \"%1\"?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
-        if (QMessageBox::question(this,tr("Question"),tr("Double Checking: Do you really want \"%1\" profile to be obliterated?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
-            if (QMessageBox::question(this,tr("Question"),tr("Last chance to save the \"%1\" profile. Are you totally sure?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
+        if (QMessageBox::question(this,tr("Question"),tr("Double Checking:\n\nDo you really want \"%1\" profile to be obliterated?").arg(name),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes){
+            if (QMessageBox::question(this,tr("Question"),tr("Okay, I am about to totally OBLITERATE the profile \"%1\" and all it's contained data..\n\nDon't say you weren't warned. :-p").arg(name),QMessageBox::Cancel,QMessageBox::Ok)==QMessageBox::Ok){
                 bool reallydelete=false;
                 Profile *profile=Profiles::profiles[name];
                 if (!profile) {
@@ -156,8 +156,15 @@ void ProfileSelect::deleteProfile()
                 } else reallydelete=true;
 
                 if (reallydelete) {
-                    QMessageBox::information(this,tr("Whoops."),tr("After all that nagging, I haven't got around to writing this code yet.. For now you can delete the directory in %1").arg(GetAppRoot()+"/Profiles/"+PROFILE.user->userName()),QMessageBox::Ok);
-                    qDebug() << "delete" << name;
+                    QString path=profile->Get(PrefMacro(STR_GEN_DataFolder));
+                    if (!path.isEmpty()) {
+                        if (!removeDir(path)) {
+                            QMessageBox::information(this,tr("Whoops."),tr("There was an error deleting the profile directory.. You need to manually remove %1").arg(path),QMessageBox::Ok);
+                        }
+                    }
+                    model->removeRow(ui->listView->currentIndex().row());
+
+                    qDebug() << "Delete" << path;
                 }
             }
         }

@@ -5,6 +5,7 @@
 */
 
 #include <QDateTime>
+#include <QDir>
 
 #include "profiles.h"
 
@@ -40,4 +41,27 @@ QString weightString(float kg, UnitSystem us)
 bool operator <(const ValueCount & a, const ValueCount & b)
 {
      return a.value < b.value;
+}
+
+bool removeDir(const QString & path)
+{
+    bool result = true;
+    QDir dir(path);
+
+    if (dir.exists(path)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) { // Recurse to remove this child directory
+                result = removeDir(info.absoluteFilePath());
+            } else { // File
+                result = QFile::remove(info.absoluteFilePath());
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(path);
+    }
+
+    return result;
 }

@@ -34,6 +34,9 @@ const float pound_convert=ounce_convert*16;
 
 QString weightString(float kg, UnitSystem us=US_Undefined);
 
+//! \brief Mercilessly trash a directory
+bool removeDir(const QString & path);
+
 
 const QString STR_UNIT_CM=QObject::tr("cm");
 const QString STR_UNIT_INCH=QObject::tr("\"");

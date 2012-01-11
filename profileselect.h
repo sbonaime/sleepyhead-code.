@@ -9,6 +9,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QStandardItemModel>
 #include <QMenu>
 
 namespace Ui {
@@ -47,6 +48,7 @@ private:
     QString m_selectedProfile;
     int m_tries;
     QMenu *popupMenu;
+    QStandardItemModel *model;
 };
 
 #endif // PROFILESELECT_H
