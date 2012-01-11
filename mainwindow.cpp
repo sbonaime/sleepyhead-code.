@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QFontMetrics>
+#include <SleepLib/loader_plugins/zeo_loader.h>
 #include <cmath>
 
 #include "mainwindow.h"
@@ -481,6 +482,41 @@ struct RXChange
 enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_maxhi, RX_per1, RX_per2, RX_weighted };
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
+
+bool operator<(const RXChange & c1, const RXChange & c2) {
+    const RXChange * comp1=&c1;
+    const RXChange * comp2=&c2;
+    if (RXorder) {
+        switch (RXsort) {
+        case RX_ahi: return comp1->ahi < comp2->ahi;
+        case RX_days: return comp1->days < comp2->days;
+        case RX_first: return comp1->first < comp2->first;
+        case RX_last: return comp1->last < comp2->last;
+        case RX_mode: return comp1->mode < comp2->mode;
+        case RX_min:  return comp1->min < comp2->min;
+        case RX_max:  return comp1->max < comp2->max;
+        case RX_maxhi: return comp1->maxhi < comp2->maxhi;
+        case RX_per1:  return comp1->per1 < comp2->per1;
+        case RX_per2:  return comp1->per2 < comp2->per2;
+        case RX_weighted:  return comp1->weighted < comp2->weighted;
+        };
+    } else {
+        switch (RXsort) {
+        case RX_ahi: return comp1->ahi > comp2->ahi;
+        case RX_days: return comp1->days > comp2->days;
+        case RX_first: return comp1->first > comp2->first;
+        case RX_last: return comp1->last > comp2->last;
+        case RX_mode: return comp1->mode > comp2->mode;
+        case RX_min:  return comp1->min > comp2->min;
+        case RX_max:  return comp1->max > comp2->max;
+        case RX_maxhi: return comp1->maxhi > comp2->maxhi;
+        case RX_per1:  return comp1->per1 > comp2->per1;
+        case RX_per2:  return comp1->per2 > comp2->per2;
+        case RX_weighted:  return comp1->weighted > comp2->weighted;
+        };
+    }
+    return true;
+}
 
 bool RXSort(const RXChange * comp1, const RXChange * comp2) {
     if (RXorder) {
@@ -1113,6 +1149,9 @@ void MainWindow::on_summaryButton_clicked()
         recbox+="</body></html>";
         ui->recordsBox->setHtml(recbox);
 
+        RXsort=RX_min;
+        RXorder=true;
+        qSort(rxchange.begin(),rxchange.end());
         html+="<div align=center>";
         html+=QString("<br/><b>Changes to Prescription Settings</b>");
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
@@ -2592,4 +2631,26 @@ void MainWindow::doReprocessEvents()
         daily->LoadDate(current);
         if (overview) overview->ReloadGraphs();
     }
+}
+
+void MainWindow::on_actionImport_ZEO_Data_triggered()
+{
+    QFileDialog w;
+    w.setFileMode(QFileDialog::ExistingFiles);
+    w.setOption(QFileDialog::ShowDirsOnly, false);
+    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setFilters(QStringList("Zeo CSV File (*.csv)"));
+
+    ZEOLoader zeo;
+    if (w.exec()==QFileDialog::Accepted) {
+        QString filename=w.selectedFiles()[0];
+        if (!zeo.OpenFile(filename)) {
+            Notify("There was a problem opening ZEO File: "+filename);
+            return;
+        }
+        Notify("Zeo CSV Import complete");
+        daily->LoadDate(daily->getDate());
+    }
+
+
 }

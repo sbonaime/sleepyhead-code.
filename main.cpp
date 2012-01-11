@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     PRS1Loader::Register();
     CMS50Loader::Register();
-    //ZEOLoader::Register();
+    //ZEOLoader::Register(); // Use outside of directory importer..
     ResmedLoader::Register();
     IntellipapLoader::Register();
 

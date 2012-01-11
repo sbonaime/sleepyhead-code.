@@ -113,6 +113,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TE=new gGraph(GraphView,tr("Exp. Time"),schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
     IE=new gGraph(GraphView,tr("IE"),schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
 
+    STAGE=new gGraph(GraphView,tr("Sleep Stage"),schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
     PULSE=new gGraph(GraphView,STR_TR_PulseRate,schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
     SPO2=new gGraph(GraphView,STR_TR_SpO2,schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
@@ -205,7 +206,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE };
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE, STAGE };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -272,6 +273,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TgMV->AddLayer(AddCPAP(new gLineChart(CPAP_TgMV,Qt::darkCyan,square)));
     //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
+
+    STAGE->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage,Qt::gray,true)));
 
     gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
     gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
@@ -645,7 +648,7 @@ void Daily::Load(QDate date)
     previous_date=date;
     Day *cpap=PROFILE.GetDay(date,MT_CPAP);
     Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
-   // Day *sleepstage=profile->GetDay(date,MT_SLEEPSTAGE);
+    Day *stage=PROFILE.GetDay(date,MT_SLEEPSTAGE);
 
     if (!PROFILE.session->cacheSessions()) {
         if (lastcpapday && (lastcpapday!=cpap)) {
@@ -687,6 +690,7 @@ void Daily::Load(QDate date)
 
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
+    UpdateSTAGEGraphs(stage);
     UpdateEventsTree(ui->treeWidget,cpap);
 
     mainwin->refreshStatistics();
@@ -1117,6 +1121,37 @@ void Daily::Load(QDate date)
                 //html+=tmp;
             }
         }
+        if (stage) {
+            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("Sleep Stage Sessions"));
+            for (QVector<Session *>::iterator s=stage->begin();s!=stage->end();s++) {
+                fd=QDateTime::fromTime_t((*s)->first()/1000L);
+                ld=QDateTime::fromTime_t((*s)->last()/1000L);
+                int len=(*s)->length()/1000L;
+                int h=len/3600;
+                int m=(len/60) % 60;
+                int s1=len % 60;
+                tooltip=stage->machine->GetClass()+" "+tr("Sleep Stage")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+
+                Session *sess=*s;
+                if (!sess->settings.contains(SESSION_ENABLED)) {
+                    sess->settings[SESSION_ENABLED]=true;
+                }
+                bool b=sess->settings[SESSION_ENABLED].toBool();
+
+                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
+                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
+                html+=QString("<tr><td align=left><a class=info href='stage=%1'>%3<span>%2</span></a></td><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                        .arg((*s)->session())
+                        .arg(tooltip)
+                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg((b ? "on" : "off"))
+                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
+                        .arg(fd.toString("HH:mm"))
+                        .arg(ld.toString("HH:mm"));
+                //tmp.sprintf(("<tr><td align=left><a href='stage=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
+                //html+=tmp;
+            }
+        }
         if (corrupted_waveform) {
             html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
         }
@@ -1409,6 +1444,16 @@ void Daily::UpdateCPAPGraphs(Day *day)
         day->OpenEvents();
     }
     for (QList<Layer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
+        (*g)->SetDay(day);
+    }
+}
+void Daily::UpdateSTAGEGraphs(Day *day)
+{
+    //if (!day) return;
+    if (day) {
+        day->OpenEvents();
+    }
+    for (QList<Layer *>::iterator g=STAGEData.begin();g!=STAGEData.end();g++) {
         (*g)->SetDay(day);
     }
 }

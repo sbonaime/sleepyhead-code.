@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>414</height>
+    <height>421</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -884,8 +884,7 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             <item row="0" column="2">
              <widget class="QCheckBox" name="ahiGraphZeroReset">
               <property name="toolTip">
-               <string>Reset the counter to zero at beginning of each (time) window.
-Note: Unless you purge and reimport after changing this, you won't see the changes.</string>
+               <string>Reset the counter to zero at beginning of each (time) window.</string>
               </property>
               <property name="text">
                <string>Zero Reset</string>

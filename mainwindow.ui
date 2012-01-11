@@ -1559,6 +1559,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Import_Data"/>
+    <addaction name="actionImport_ZEO_Data"/>
     <addaction name="action_Preferences"/>
     <addaction name="action_Edit_Profile"/>
     <addaction name="separator"/>
@@ -1813,6 +1814,11 @@
    </property>
    <property name="shortcut">
     <string>F4</string>
+   </property>
+  </action>
+  <action name="actionImport_ZEO_Data">
+   <property name="text">
+    <string>Import &amp;ZEO Data</string>
    </property>
   </action>
  </widget>

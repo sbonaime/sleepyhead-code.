@@ -187,7 +187,8 @@ OTHER_FILES += \
     LICENSE.txt \
     docs/tooltips.css \
     docs/script.js \
-    update.xml
+    update.xml \
+    docs/changelog.txt
 
 
 

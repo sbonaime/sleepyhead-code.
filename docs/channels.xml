@@ -119,7 +119,15 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
  </group>
  <group name="SLEEP">
   <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" color="dark grey"/>
-  <channel id="0x2001" class="data" name="ZEOBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
+  <channel id="0x2001" class="data" name="ZeoBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>
+  <channel id="0x2002" class="data" name="Awakenings" details="Awakenings" label="Awakenings" color="black"/>
+  <channel id="0x2003" class="data" name="MorningFeel" details="ZEO Morning Feel" label="Morning Feel" color="black"/>
+  <channel id="0x2004" class="data" name="TimeInWake" details="Time In Wake" label="Time In Wake" color="red"/>
+  <channel id="0x2005" class="data" name="TimeInREM" details="Time In REM Sleep" label="Time In REM" color="green"/>
+  <channel id="0x2006" class="data" name="TimeInLight" details="Time In Light Sleep" label="Time In Light" color="blue"/>
+  <channel id="0x2007" class="data" name="TimeInDeep" details="Time In Deep Sleep" label="Time In Deep" color="magenta"/>
+  <channel id="0x2008" class="data" name="TimeToZ" details="Time To Sleep" label="Time To Z" color="magenta"/>
+  <channel id="0x2009" class="data" name="ZeoZQ" details="ZEO ZQ" label="ZEO ZQ" color="magenta"/>
  </group>
  <group name="GENERAL">
   <channel id="0x0800" class="data" name="BPSys" details="Blood Pressure Systolic" label="BPS" unit="mmHg" color="red"/>

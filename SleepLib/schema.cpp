@@ -163,6 +163,15 @@ void init()
     Bookmark_End=schema::channel["BookmarkEnd"].id();
     Bookmark_Notes=schema::channel["BookmarkNotes"].id();
 
+    ZEO_SleepStage=schema::channel["SleepStage"].id();
+    ZEO_ZQ=schema::channel["ZeoZQ"].id();
+    ZEO_Awakenings=schema::channel["Awakenings"].id();
+    ZEO_MorningFeel=schema::channel["MorningFeel"].id();
+    ZEO_TimeInWake=schema::channel["TimeInWake"].id();
+    ZEO_TimeInREM=schema::channel["TimeInREM"].id();
+    ZEO_TimeInLight=schema::channel["TimeInLight"].id();
+    ZEO_TimeInDeep=schema::channel["TimeInDeep"].id();
+    ZEO_TimeToZ=schema::channel["TimeToZ"].id();
 }
 
 Channel::Channel(int id, ChanType type, ScopeType scope, QString name, QString description, QString label, QString unit, DataType datatype, QColor color, int link):

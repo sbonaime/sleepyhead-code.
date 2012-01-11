@@ -290,6 +290,8 @@ private slots:
 
     void on_filterBookmarksButton_clicked();
 
+    void on_actionImport_ZEO_Data_triggered();
+
 private:
     void FreeSessions();
 

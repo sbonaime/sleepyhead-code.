@@ -105,6 +105,9 @@ extern ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;
 
 extern ChannelID Journal_Notes, Journal_Weight, Journal_BMI, Journal_ZombieMeter, Bookmark_Start, Bookmark_End, Bookmark_Notes;
 
+extern ChannelID ZEO_SleepStage, ZEO_ZQ, ZEO_TotalZ, ZEO_TimeToZ, ZEO_TimeInWake, ZEO_TimeInREM, ZEO_TimeInLight, ZEO_TimeInDeep, ZEO_Awakenings,
+ZEO_AlarmReason, ZEO_SnoozeTime, ZEO_WakeTone, ZEO_WakeWindow, ZEO_AlarmType, ZEO_MorningFeel, ZEO_FirmwareVersion,
+ZEO_FirstAlarmRing, ZEO_LastAlarmRing, ZEO_FirstSnoozeTime, ZEO_LastSnoozeTime, ZEO_SetAlarmTime, ZEO_RiseTime;
 
 
 #endif // MACHINE_COMMON_H

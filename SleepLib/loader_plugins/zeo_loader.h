@@ -10,7 +10,7 @@ License: GPL
 
 #include "SleepLib/machine_loader.h"
 
-const QString zeo_class_name="CMS50";
+const QString zeo_class_name="ZEO";
 const int zeo_data_version=1;
 
 
@@ -23,6 +23,7 @@ class ZEOLoader : public MachineLoader
         ZEOLoader();
         virtual ~ZEOLoader();
         virtual int Open(QString & path,Profile *profile);
+        virtual int OpenFile(QString filename);
         static void Register();
 
         virtual int Version() { return zeo_data_version; }
