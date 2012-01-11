@@ -816,13 +816,15 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
 bool Session::enabled()
 {
     if (s_enabled>=0) {
-        return s_enabled;
+        return s_enabled!=0;
     }
     if (!settings.contains(SESSION_ENABLED)) {
-        settings[SESSION_ENABLED]=s_enabled=true;
-        return true;
+        bool b=true;
+        settings[SESSION_ENABLED]=b;
+        s_enabled=b ? 1 : 0;
+        return b;
     }
-    s_enabled=settings[SESSION_ENABLED].toBool();
+    s_enabled=settings[SESSION_ENABLED].toBool() ? 1 : 0;
     return s_enabled;
 }
 

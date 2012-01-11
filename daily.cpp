@@ -503,12 +503,15 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             } else {
                 mcr=mcroot[code];
             }
+
             for (int z=0;z<m.value().size();z++) {
-                for (quint32 o=0;o<m.value()[z]->count();o++) {
-                    qint64 t=m.value()[z]->time(o);
+                EventList & ev=*(m.value()[z]);
+
+                for (quint32 o=0;o<ev.count();o++) {
+                    qint64 t=ev.time(o);
 
                     if (code==CPAP_CSR) { // center it in the middle of span
-                        t-=float(m.value()[z]->raw(o)/2.0)*1000.0;
+                        t-=float(ev.raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
                     QDateTime d=QDateTime::fromTime_t(t/1000);
@@ -706,7 +709,8 @@ void Daily::Load(QDate date)
     updateGraphCombo();
 
     if (cpap) {
-        if (GraphView->isEmpty()) {
+        float hours=cpap->hours();
+        if (GraphView->isEmpty() && (hours>0)) {
             if (cpap->machine->GetClass()!=STR_MACH_ResMed) {
                 GraphView->setCubeImage(images["brick"]);
                 GraphView->setEmptyText(tr("No Graphs :("));
@@ -721,17 +725,17 @@ void Daily::Load(QDate date)
 
         float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
         if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
-        ahi/=cpap->hours();
+        ahi/=hours;
         float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
-        float uai=cpap->count(CPAP_Apnea)/cpap->hours();
-        float oai=cpap->count(CPAP_Obstructive)/cpap->hours();
-        float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/cpap->hours();
-        float cai=cpap->count(CPAP_ClearAirway)/cpap->hours();
-        float rei=cpap->count(CPAP_RERA)/cpap->hours();
-        float fli=cpap->count(CPAP_FlowLimit)/cpap->hours();
-        float nri=cpap->count(CPAP_NRI)/cpap->hours();
-        float lki=cpap->count(CPAP_LeakFlag)/cpap->hours();
-        float exp=cpap->count(CPAP_ExP)/cpap->hours();
+        float uai=cpap->count(CPAP_Apnea)/hours;
+        float oai=cpap->count(CPAP_Obstructive)/hours;
+        float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours;
+        float cai=cpap->count(CPAP_ClearAirway)/hours;
+        float rei=cpap->count(CPAP_RERA)/hours;
+        float fli=cpap->count(CPAP_FlowLimit)/hours;
+        float nri=cpap->count(CPAP_NRI)/hours;
+        float lki=cpap->count(CPAP_LeakFlag)/hours;
+        float exp=cpap->count(CPAP_ExP)/hours;
 
         //float p90=cpap->p90(CPAP_Pressure);
         //eap90=cpap->p90(CPAP_EPAP);
@@ -780,24 +784,26 @@ void Daily::Load(QDate date)
         html+="</td></tr>\n";
 
 
-        html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
-        int tt=qint64(cpap->total_time())/1000L;
-        QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
-        QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
+        if (hours>0) {
+            html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
+            int tt=qint64(cpap->total_time())/1000L;
+            QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
+            QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
 
-        int h=tt/3600;
-        int m=(tt/60)%60;
-        int s=tt % 60;
-        html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
-        "<tr><td colspan=4 align=center><hr></td></tr>\n")
-                .arg(date.date().toString(Qt::SystemLocaleShortDate))
-                .arg(date.toString("HH:mm"))
-                .arg(date2.toString("HH:mm"))
-                .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
+            int h=tt/3600;
+            int m=(tt/60)%60;
+            int s=tt % 60;
+            html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
+                "<tr><td colspan=4 align=center><hr></td></tr>\n")
+                    .arg(date.date().toString(Qt::SystemLocaleShortDate))
+                    .arg(date.toString("HH:mm"))
+                    .arg(date2.toString("HH:mm"))
+                    .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
+        }
 
         QString cs;
 
-        if (!isBrick) {
+        if (!isBrick && hours>0) {
             if (PROFILE.general->calculateRDI()) {
                 html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
                         .arg("#F88017").arg("black").arg(tr("RDI")).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
@@ -878,8 +884,8 @@ void Daily::Load(QDate date)
             // as it only relates to text drawing, which the Pie chart does not do
             // ^^ Scratch that.. pie now includes text..
 
-            if (PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
-                if (oai+hi+cai+uai+rei+fli>0) {
+            if ((hours > 0) && PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
+                if ((oai+hi+cai+uai+rei+fli)>0) {
                     html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     html+="<tr><td colspan=5 align=center><hr/></td></tr>";
@@ -898,9 +904,20 @@ void Daily::Load(QDate date)
 
 
         } else { // machine is a brick
-            html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-            html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
-            html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
+            if (!isBrick) {
+                html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
+                if (cpap->size()>0) {
+                    html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Sessions all off!")+"</h2></b></td></tr>";
+                    html+="<tr><td colspan='5' align='center'><i>"+tr("Sessions exist for this day but are switched off.")+"</i></td></tr>\n";
+                } else {
+                    html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Impossibly short session")+"</h2></b></td></tr>";
+                    html+="<tr><td colspan='5' align='center'><i>"+tr("Zero hours??")+"</i></td></tr>\n";
+                }
+            } else {
+                html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
+                html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
+                html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
+            }
             html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
         }
         html+="</table>";
@@ -909,7 +926,7 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     float percentile=0.95;
-    if ((cpap && !isBrick) || oxi) {
+    if ((cpap && !isBrick && (cpap->hours()>0)) || oxi) {
         html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Statistics"));
@@ -985,8 +1002,11 @@ void Daily::Load(QDate date)
             html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
         }
     } else {
-        html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
-        html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+        if (cpap && cpap->hours()==0) {
+        } else {
+            html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
+            html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+        }
 
     }
     if (oxi && oxi->hasEnabledSessions()) {

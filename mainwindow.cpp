@@ -2515,7 +2515,8 @@ void MainWindow::doReprocessEvents()
 
     QList<Machine *> machines=PROFILE.GetMachines(MT_UNKNOWN);
 
-    bool cache_sessions=PROFILE.session->cacheSessions();
+    // Disabling multithreaded save as it appears it's causing problems
+    bool cache_sessions=false; //PROFILE.session->cacheSessions();
     if (cache_sessions) { // Use multithreaded save to handle reindexing.. (hogs memory like hell)
         qstatus->setText(tr("Loading Event Data"));
     } else {
@@ -2526,7 +2527,6 @@ void MainWindow::doReprocessEvents()
         qprogress->setVisible(true);
     }
     bool isopen;
-    QDate current=daily->getDate();
     do {
         day=PROFILE.GetDay(date,MT_CPAP);
         if (day) {
@@ -2585,6 +2585,7 @@ void MainWindow::doReprocessEvents()
         Notify("Recalculations are now complete.","Task Completed");
 
         FreeSessions();
+        QDate current=daily->getDate();
         daily->LoadDate(current);
         if (overview) overview->ReloadGraphs();
     }
