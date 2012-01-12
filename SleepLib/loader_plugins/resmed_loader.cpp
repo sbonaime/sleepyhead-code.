@@ -1232,9 +1232,17 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     //Event *e;
     //totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
-    EventList *EL[4]={NULL};
+//    EventList *EL[4]={NULL};
     sess->updateFirst(edf.startdate);
     //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
+
+    EventList *OA=NULL, *HY=NULL, *CA=NULL, *UA=NULL;
+
+    // Allow for empty sessions..
+    OA=sess->AddEventList(CPAP_Obstructive,EVL_Event);
+    HY=sess->AddEventList(CPAP_Hypopnea,EVL_Event);
+    UA=sess->AddEventList(CPAP_Apnea,EVL_Event);
+
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
 
@@ -1295,26 +1303,17 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
                 } while ((data[pos]!=20) && (pos<recs)); // start code
                 if (!t.isEmpty()) {
                     if (t=="obstructive apnea") {
-                        if (!EL[0]) {
-                            if (!(EL[0]=sess->AddEventList(CPAP_Obstructive,EVL_Event))) return false;
-                        }
-                        EL[0]->AddEvent(tt,duration);
+                        OA->AddEvent(tt,duration);
                     } else if (t=="hypopnea") {
-                        if (!EL[1]) {
-                            if (!(EL[1]=sess->AddEventList(CPAP_Hypopnea,EVL_Event))) return false;
-                        }
-                        EL[1]->AddEvent(tt,duration+10); // Only Hyponea's Need the extra duration???
+                        HY->AddEvent(tt,duration+10); // Only Hyponea's Need the extra duration???
                     } else if (t=="apnea") {
-                        if (!EL[2]) {
-                            if (!(EL[2]=sess->AddEventList(CPAP_Apnea,EVL_Event))) return false;
-                        }
-                        EL[2]->AddEvent(tt,duration);
+                        UA->AddEvent(tt,duration);
                     } else if (t=="central apnea") {
-                        //code=CPAP_ClearAirway;
-                        if (!EL[3]) {
-                            if (!(EL[3]=sess->AddEventList(CPAP_ClearAirway,EVL_Event))) return false;
+                        // Not all machines have it, so only create it when necessary..
+                        if (!CA) {
+                            if (!(CA=sess->AddEventList(CPAP_ClearAirway,EVL_Event))) return false;
                         }
-                        EL[3]->AddEvent(tt,duration);
+                        CA->AddEvent(tt,duration);
                     } else {
                         if (t!="recording starts") {
                             qDebug() << "Unobserved ResMed annotation field: " << t;
