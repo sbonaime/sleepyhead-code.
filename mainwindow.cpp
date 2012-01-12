@@ -1149,9 +1149,9 @@ void MainWindow::on_summaryButton_clicked()
         recbox+="</body></html>";
         ui->recordsBox->setHtml(recbox);
 
-        RXsort=RX_min;
+        /*RXsort=RX_min;
         RXorder=true;
-        qSort(rxchange.begin(),rxchange.end());
+        qSort(rxchange.begin(),rxchange.end());*/
         html+="<div align=center>";
         html+=QString("<br/><b>Changes to Prescription Settings</b>");
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
