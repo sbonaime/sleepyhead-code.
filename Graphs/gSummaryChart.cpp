@@ -175,6 +175,10 @@ void SummaryChart::SetDay(Day * nullday)
                             type=m_type[j];
                         }
                     }
+
+                    if (code==CPAP_Hypopnea) { // Make sure at least one of the CPAP data gets through with 0
+                        hascode=true;
+                    }
                     if (hascode) {
                         m_days[dn]=day;
                         switch(type) {

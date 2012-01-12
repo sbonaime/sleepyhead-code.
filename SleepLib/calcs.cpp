@@ -903,9 +903,9 @@ int calcLeaks(Session *session)
     if (session->eventlist.contains(CPAP_Leak)) return 0; // abort if already there
     if (!session->eventlist.contains(CPAP_LeakTotal)) return 0; // can't calculate without this..
 
-    if (session->settings[CPAP_Mode].toInt()>MODE_APAP) return 0; // Don't bother calculating when in APAP mode
+    if (session->settings[CPAP_Mode].toInt()>=MODE_APAP) return 0; // Don't bother calculating when in APAP mode
 
-    const qint64 winsize=3600000; // 5 minute window
+    const qint64 winsize=3600000;
 
     //qint64 first=session->first(), last=session->last(), f;
 
