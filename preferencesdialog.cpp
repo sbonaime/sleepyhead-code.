@@ -168,6 +168,12 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->complianceGroupbox->setChecked(profile->cpap->showComplianceInfo());
     ui->complianceHours->setValue(profile->cpap->complianceHours());
 
+    ui->prefCalcMiddle->setCurrentIndex(profile->general->prefCalcMiddle());
+    ui->prefCalcMax->setCurrentIndex(profile->general->prefCalcMax());
+    float f=profile->general->prefCalcPercentile();
+    ui->prefCalcPercentile->setValue(f);
+
+
     bool bcd=profile->session->backupCardData();
     ui->createSDBackups->setChecked(bcd);
     ui->compressSDBackups->setEnabled(bcd);
@@ -298,6 +304,12 @@ bool PreferencesDialog::Save()
         //recalc_events=true;
         needs_restart=true;
     }
+    if ((profile->general->prefCalcMiddle()!=ui->prefCalcMiddle->currentIndex())
+     || (profile->general->prefCalcMax()!=ui->prefCalcMax->currentIndex())
+     || (profile->general->prefCalcPercentile()!=ui->prefCalcPercentile->value())) {
+        needs_restart=true;
+    }
+
     if (profile->cpap->userEventFlagging() &&
        (profile->cpap->userEventDuration()!=ui->apneaDuration->value() ||
         profile->cpap->userEventDuplicates()!=ui->userEventDuplicates->isChecked() ||
@@ -343,6 +355,9 @@ bool PreferencesDialog::Save()
     profile->cpap->setMaskStartDate(ui->startedUsingMask->date());
     profile->appearance->setGraphHeight(ui->graphHeight->value());
 
+    profile->general->setPrefCalcMiddle(ui->prefCalcMiddle->currentIndex());
+    profile->general->setPrefCalcMax(ui->prefCalcMax->currentIndex());
+    profile->general->setPrefCalcPercentile(ui->prefCalcPercentile->value());
 
     profile->general->setCalculateRDI(ui->AddRERAtoAHI->isChecked());
     profile->session->setBackupCardData(ui->createSDBackups->isChecked());

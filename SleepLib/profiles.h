@@ -50,6 +50,8 @@ public:
     Profile();
     virtual ~Profile();
 
+    virtual bool Open(QString filename="");
+
     //! \brief Save Profile object (This is an extension to Preference::Save(..))
     virtual bool Save(QString filename="");
 
@@ -151,12 +153,91 @@ extern Profile * p_profile;
 #define LAYOUT (*p_layout)
 #define PROFILE (*p_profile)
 
-extern const char * STR_DI_Name;
-extern const char * STR_DI_Phone;
-extern const char * STR_DI_Email;
-extern const char * STR_DI_Practice;
-extern const char * STR_DI_Address;
-extern const char * STR_DI_PatientID;
+// DoctorInfo Strings
+const QString STR_DI_Name="DoctorName";
+const QString STR_DI_Phone="DoctorPhone";
+const QString STR_DI_Email="DoctorEmail";
+const QString STR_DI_Practice="DoctorPractice";
+const QString STR_DI_Address="DoctorAddress";
+const QString STR_DI_PatientID="DoctorPatientID";
+
+// UserInfo Strings
+const QString STR_UI_DOB="DOB";
+const QString STR_UI_FirstName="FirstName";
+const QString STR_UI_LastName="LastName";
+const QString STR_UI_UserName="UserName";
+const QString STR_UI_Password="Password";
+const QString STR_UI_Address="Address";
+const QString STR_UI_Phone="Phone";
+const QString STR_UI_EmailAddress="EmailAddress";
+const QString STR_UI_Country="Country";
+const QString STR_UI_Height="Height";
+const QString STR_UI_Gender="Gender";
+const QString STR_UI_TimeZone="TimeZone";
+const QString STR_UI_Language="Language";
+const QString STR_UI_DST="DST";
+
+// OxiSettings Strings
+const QString STR_OS_EnableOximetry="EnableOximetry";
+const QString STR_OS_SyncOximetry="SyncOximetry";
+const QString STR_OS_OximeterType="OximeterType";
+const QString STR_OS_OxiDiscardThreshold="OxiDiscardThreshold";
+const QString STR_OS_SPO2DropDuration="SPO2DropDuration";
+const QString STR_OS_SPO2DropPercentage="SPO2DropPercentage";
+const QString STR_OS_PulseChangeDuration="PulseChangeDuration";
+const QString STR_OS_PulseChangeBPM="PulseChangeBPM";
+
+// CPAPSettings Strings
+const QString STR_CS_ComplianceHours="ComplianceHours";
+const QString STR_CS_ShowCompliance="ShowCompliance";
+const QString STR_CS_ShowLeaksMode="ShowLeaksMode";
+const QString STR_CS_MaskStartDate="MaskStartDate";
+const QString STR_CS_MaskDescription="MaskDescription";
+const QString STR_CS_MaskType="MaskType";
+const QString STR_CS_PrescribedMode="CPAPPrescribedMode";
+const QString STR_CS_PrescribedMinPressure="CPAPPrescribedMinPressure";
+const QString STR_CS_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
+const QString STR_CS_UntreatedAHI="UntreatedAHI";
+const QString STR_CS_Notes="CPAPNotes";
+const QString STR_CS_DateDiagnosed="DateDiagnosed";
+const QString STR_CS_UserEventFlagging="UserEventFlagging";
+const QString STR_CS_UserFlowRestriction="UserFlowRestriction";
+const QString STR_CS_UserEventDuration="UserEventDuration";
+const QString STR_CS_UserEventDuplicates="UserEventDuplicates";
+const QString STR_CS_AHIWindow="AHIWindow";
+const QString STR_CS_AHIReset="AHIReset";
+
+// ImportSettings Strings
+const QString STR_IS_DaySplitTime="DaySplitTime";
+const QString STR_IS_CacheSessions="MemoryHog";
+const QString STR_IS_CombineCloseSessions="CombineCloserSessions";
+const QString STR_IS_IgnoreShorterSessions="IgnoreShorterSessions";
+const QString STR_IS_Multithreading="EnableMultithreading";
+const QString STR_IS_BackupCardData="BackupCardData";
+const QString STR_IS_CompressBackupData="CompressBackupData";
+const QString STR_IS_CompressSessionData="CompressSessionData";
+
+// AppearanceSettings Strings
+const QString STR_AS_GraphHeight="GraphHeight";
+const QString STR_AS_AntiAliasing="UseAntiAliasing";
+const QString STR_AS_GraphSnapshots="EnableGraphSnapshots";
+const QString STR_AS_Animations="AnimationsAndTransitions";
+const QString STR_AS_SquareWave="SquareWavePlots";
+const QString STR_AS_OverlayType="OverlayType";
+
+// UserSettings Strings
+const QString STR_US_UnitSystem="UnitSystem";
+const QString STR_US_EventWindowSize="EventWindowSize";
+const QString STR_US_SkipEmptyDays="SkipEmptyDays";
+const QString STR_US_RebuildCache="RebuildCache";
+const QString STR_US_ShowDebug="ShowDebug";
+const QString STR_US_LinkGroups="LinkGroups";
+const QString STR_US_CalculateRDI="CalculateRDI";
+const QString STR_US_ShowSerialNumbers="ShowSerialNumbers";
+const QString STR_US_PrefCalcMiddle="PrefCalcMiddle";
+const QString STR_US_PrefCalcPercentile="PrefCalcPercentile";
+const QString STR_US_PrefCalcMax="PrefCalcMax";
+
 
 class DoctorInfo
 {
@@ -190,20 +271,6 @@ public:
     Profile *m_profile;
 };
 
-extern const char * STR_UI_DOB;
-extern const char * STR_UI_FirstName;
-extern const char * STR_UI_LastName;
-extern const char * STR_UI_UserName;
-extern const char * STR_UI_Password;
-extern const char * STR_UI_Address;
-extern const char * STR_UI_Phone;
-extern const char * STR_UI_EmailAddress;
-extern const char * STR_UI_Country;
-extern const char * STR_UI_Height;
-extern const char * STR_UI_Gender;
-extern const char * STR_UI_TimeZone;
-extern const char * STR_UI_Language;
-extern const char * STR_UI_DST;
 
 /*! \class UserInfo
     \brief Profile Options relating to the User Information
@@ -278,14 +345,6 @@ public:
     Profile *m_profile;
 };
 
-extern const char * STR_OS_EnableOximetry;
-extern const char * STR_OS_SyncOximetry;
-extern const char * STR_OS_OximeterType;
-extern const char * STR_OS_OxiDiscardThreshold;
-extern const char * STR_OS_SPO2DropDuration;
-extern const char * STR_OS_SPO2DropPercentage;
-extern const char * STR_OS_PulseChangeDuration;
-extern const char * STR_OS_PulseChangeBPM;
 
 /*! \class OxiSettings
     \brief Profile Options relating to the Oximetry settings
@@ -329,25 +388,6 @@ public:
 
     Profile *m_profile;
 };
-
-extern const char * STR_CS_ComplianceHours;
-extern const char * STR_CS_ShowCompliance;
-extern const char * STR_CS_ShowLeaksMode;
-extern const char * STR_CS_MaskStartDate;
-extern const char * STR_CS_MaskDescription;
-extern const char * STR_CS_MaskType;
-extern const char * STR_CS_PrescribedMode;
-extern const char * STR_CS_PrescribedMinPressure;
-extern const char * STR_CS_PrescribedMaxPressure;
-extern const char * STR_CS_UntreatedAHI;
-extern const char * STR_CS_Notes;
-extern const char * STR_CS_DateDiagnosed;
-extern const char * STR_CS_UserEventFlagging;
-extern const char * STR_CS_UserFlowRestriction;
-extern const char * STR_CS_UserEventDuration;
-extern const char * STR_CS_UserEventDuplicates;
-extern const char * STR_CS_AHIWindow;
-extern const char * STR_CS_AHIReset;
 
 /*! \class CPAPSettings
     \brief Profile Options relating to the CPAP settings
@@ -426,15 +466,6 @@ public:
     Profile *m_profile;
 };
 
-extern const char * STR_IS_DaySplitTime;
-extern const char * STR_IS_CacheSessions;
-extern const char * STR_IS_CombineCloseSessions;
-extern const char * STR_IS_IgnoreShorterSessions;
-extern const char * STR_IS_Multithreading;
-extern const char * STR_IS_BackupCardData;
-extern const char * STR_IS_CompressBackupData;
-extern const char * STR_IS_CompressSessionData;
-
 /*! \class ImportSettings
     \brief Profile Options relating to the Import process
     */
@@ -477,13 +508,6 @@ public:
 
     Profile *m_profile;
 };
-
-extern const char * STR_AS_GraphHeight;
-extern const char * STR_AS_AntiAliasing;
-extern const char * STR_AS_GraphSnapshots;
-extern const char * STR_AS_Animations;
-extern const char * STR_AS_SquareWave;
-extern const char * STR_AS_OverlayType;
 
 /*! \class AppearanceSettings
     \brief Profile Options relating to Visual Appearance
@@ -534,15 +558,6 @@ public:
     Profile *m_profile;
 };
 
-extern const char * STR_US_UnitSystem;
-extern const char * STR_US_EventWindowSize;
-extern const char * STR_US_SkipEmptyDays;
-extern const char * STR_US_RebuildCache;
-extern const char * STR_US_ShowDebug;
-extern const char * STR_US_LinkGroups;
-extern const char * STR_US_CalculateRDI;
-extern const char * STR_US_ShowSerialNumbers;
-
 /*! \class UserSettings
     \brief Profile Options relating to General User Settings
     */
@@ -560,6 +575,9 @@ public:
         if (!m_profile->contains(STR_US_LinkGroups)) (*m_profile)[STR_US_LinkGroups]=true; // can't remember..
         if (!m_profile->contains(STR_US_CalculateRDI)) (*m_profile)[STR_US_CalculateRDI]=false;
         if (!m_profile->contains(STR_US_ShowSerialNumbers)) (*m_profile)[STR_US_ShowSerialNumbers]=false;
+        if (!m_profile->contains(STR_US_PrefCalcMiddle)) (*m_profile)[STR_US_PrefCalcMiddle]=(int)0;
+        if (!m_profile->contains(STR_US_PrefCalcPercentile)) (*m_profile)[STR_US_PrefCalcPercentile]=(double)95.0;
+        if (!m_profile->contains(STR_US_PrefCalcMax)) (*m_profile)[STR_US_PrefCalcMax]=(int)0;
     }
     ~UserSettings() {}
 
@@ -573,6 +591,10 @@ public:
     bool linkGroups() { return (*m_profile)[STR_US_LinkGroups].toBool(); }
     bool calculateRDI() { return (*m_profile)[STR_US_CalculateRDI].toBool(); }
     bool showSerialNumbers() { return (*m_profile)[STR_US_ShowSerialNumbers].toBool(); }
+    int prefCalcMiddle() { return (*m_profile)[STR_US_PrefCalcMiddle].toInt(); }
+    double prefCalcPercentile() { return (*m_profile)[STR_US_PrefCalcPercentile].toDouble(); }
+    int prefCalcMax() { return (*m_profile)[STR_US_PrefCalcMax].toInt(); }
+
 
     void setUnitSystem(UnitSystem us) { (*m_profile)[STR_US_UnitSystem]=(int)us; }
     void setEventWindowSize(double size) { (*m_profile)[STR_US_EventWindowSize]=size; }
@@ -582,6 +604,9 @@ public:
     void setLinkGroups(bool link) { (*m_profile)[STR_US_LinkGroups]=link; }
     void setCalculateRDI(bool rdi) { (*m_profile)[STR_US_CalculateRDI]=rdi; }
     void setShowSerialNumbers(bool enabled) { (*m_profile)[STR_US_ShowSerialNumbers]=enabled; }
+    void setPrefCalcMiddle(int i) { (*m_profile)[STR_US_PrefCalcMiddle]=i; }
+    void setPrefCalcPercentile(double p) { (*m_profile)[STR_US_PrefCalcPercentile]=p; }
+    void setPrefCalcMax(int i) { (*m_profile)[STR_US_PrefCalcMax]=i; }
 
     Profile *m_profile;
 };

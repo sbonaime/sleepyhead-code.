@@ -57,13 +57,13 @@ Profile::Profile(QString path)
     p_filename=p_path+p_name+xmlext;
     machlist.clear();
 
-    doctor=new DoctorInfo(this);
-    user=new UserInfo(this);
-    cpap=new CPAPSettings(this);
-    oxi=new OxiSettings(this);
-    appearance=new AppearanceSettings(this);
-    session=new SessionSettings(this);
-    general=new UserSettings(this);
+    doctor=NULL;
+    user=NULL;
+    cpap=NULL;
+    oxi=NULL;
+    appearance=NULL;
+    session=NULL;
+    general=NULL;
 }
 bool Profile::Save(QString filename)
 {
@@ -84,6 +84,20 @@ Profile::~Profile()
         delete i.value();
     }
 }
+
+bool Profile::Open(QString filename)
+{
+    bool b=Preferences::Open(filename);
+    doctor=new DoctorInfo(this);
+    user=new UserInfo(this);
+    cpap=new CPAPSettings(this);
+    oxi=new OxiSettings(this);
+    appearance=new AppearanceSettings(this);
+    session=new SessionSettings(this);
+    general=new UserSettings(this);
+    return b;
+}
+
 void Profile::DataFormatError(Machine *m)
 {
     QString msg=QObject::tr("Software changes have been made that require the reimporting of the following machines data:\n\n");
@@ -867,87 +881,3 @@ QDate Profile::LastGoodDay(MachineType mt)
     } while (d>=f);
     return f; //m_first;
 }
-
-
-// DoctorInfo Strings
-const char * STR_DI_Name="DoctorName";
-const char * STR_DI_Phone="DoctorPhone";
-const char * STR_DI_Email="DoctorEmail";
-const char * STR_DI_Practice="DoctorPractice";
-const char * STR_DI_Address="DoctorAddress";
-const char * STR_DI_PatientID="DoctorPatientID";
-
-// UserInfo Strings
-const char * STR_UI_DOB="DOB";
-const char * STR_UI_FirstName="FirstName";
-const char * STR_UI_LastName="LastName";
-const char * STR_UI_UserName="UserName";
-const char * STR_UI_Password="Password";
-const char * STR_UI_Address="Address";
-const char * STR_UI_Phone="Phone";
-const char * STR_UI_EmailAddress="EmailAddress";
-const char * STR_UI_Country="Country";
-const char * STR_UI_Height="Height";
-const char * STR_UI_Gender="Gender";
-const char * STR_UI_TimeZone="TimeZone";
-const char * STR_UI_Language="Language";
-const char * STR_UI_DST="DST";
-
-// OxiSettings Strings
-const char * STR_OS_EnableOximetry="EnableOximetry";
-const char * STR_OS_SyncOximetry="SyncOximetry";
-const char * STR_OS_OximeterType="OximeterType";
-const char * STR_OS_OxiDiscardThreshold="OxiDiscardThreshold";
-const char * STR_OS_SPO2DropDuration="SPO2DropDuration";
-const char * STR_OS_SPO2DropPercentage="SPO2DropPercentage";
-const char * STR_OS_PulseChangeDuration="PulseChangeDuration";
-const char * STR_OS_PulseChangeBPM="PulseChangeBPM";
-
-// CPAPSettings Strings
-const char * STR_CS_ComplianceHours="ComplianceHours";
-const char * STR_CS_ShowCompliance="ShowCompliance";
-const char * STR_CS_ShowLeaksMode="ShowLeaksMode";
-const char * STR_CS_MaskStartDate="MaskStartDate";
-const char * STR_CS_MaskDescription="MaskDescription";
-const char * STR_CS_MaskType="MaskType";
-const char * STR_CS_PrescribedMode="CPAPPrescribedMode";
-const char * STR_CS_PrescribedMinPressure="CPAPPrescribedMinPressure";
-const char * STR_CS_PrescribedMaxPressure="CPAPPrescribedMaxPressure";
-const char * STR_CS_UntreatedAHI="UntreatedAHI";
-const char * STR_CS_Notes="CPAPNotes";
-const char * STR_CS_DateDiagnosed="DateDiagnosed";
-const char * STR_CS_UserEventFlagging="UserEventFlagging";
-const char * STR_CS_UserFlowRestriction="UserFlowRestriction";
-const char * STR_CS_UserEventDuration="UserEventDuration";
-const char * STR_CS_UserEventDuplicates="UserEventDuplicates";
-const char * STR_CS_AHIWindow="AHIWindow";
-const char * STR_CS_AHIReset="AHIReset";
-
-// ImportSettings Strings
-const char * STR_IS_DaySplitTime="DaySplitTime";
-const char * STR_IS_CacheSessions="MemoryHog";
-const char * STR_IS_CombineCloseSessions="CombineCloserSessions";
-const char * STR_IS_IgnoreShorterSessions="IgnoreShorterSessions";
-const char * STR_IS_Multithreading="EnableMultithreading";
-const char * STR_IS_BackupCardData="BackupCardData";
-const char * STR_IS_CompressBackupData="CompressBackupData";
-const char * STR_IS_CompressSessionData="CompressSessionData";
-
-// AppearanceSettings Strings
-const char * STR_AS_GraphHeight="GraphHeight";
-const char * STR_AS_AntiAliasing="UseAntiAliasing";
-const char * STR_AS_GraphSnapshots="EnableGraphSnapshots";
-const char * STR_AS_Animations="AnimationsAndTransitions";
-const char * STR_AS_SquareWave="SquareWavePlots";
-const char * STR_AS_OverlayType="OverlayType";
-
-// UserSettings Strings
-const char * STR_US_UnitSystem="UnitSystem";
-const char * STR_US_EventWindowSize="EventWindowSize";
-const char * STR_US_SkipEmptyDays="SkipEmptyDays";
-const char * STR_US_RebuildCache="RebuildCache";
-const char * STR_US_ShowDebug="ShowDebug";
-const char * STR_US_LinkGroups="LinkGroups";
-const char * STR_US_CalculateRDI="CalculateRDI";
-const char * STR_US_ShowSerialNumbers="ShowSerialNumbers";
-

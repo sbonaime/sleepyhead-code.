@@ -608,11 +608,8 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_13">
-         <property name="spacing">
-          <number>4</number>
-         </property>
-         <item>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="1" column="0" colspan="3">
           <widget class="QCheckBox" name="AddRERAtoAHI">
            <property name="font">
             <font>
@@ -628,7 +625,7 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
-         <item>
+         <item row="2" column="0" colspan="3">
           <widget class="QGroupBox" name="complianceGroupbox">
            <property name="toolTip">
             <string>Don't show any compliance information</string>
@@ -694,7 +691,7 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="3" column="0" colspan="3">
           <widget class="QGroupBox" name="customEventGroupbox">
            <property name="toolTip">
             <string>Enable/disable experimental event flagging enhancements. 
@@ -830,7 +827,7 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="4" column="0" colspan="3">
           <widget class="QGroupBox" name="ahiGraphGroupbox">
            <property name="title">
             <string>AHI/Hour Graph Settings</string>
@@ -894,7 +891,7 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="5" column="0">
           <spacer name="verticalSpacer_7">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -1299,7 +1296,7 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string>&amp;General</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
        <property name="spacing">
         <number>4</number>
        </property>
@@ -1307,7 +1304,7 @@ p, li { white-space: pre-wrap; }
         <number>4</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="GeneralSettings">
          <property name="title">
           <string>General Settings</string>
          </property>
@@ -1318,16 +1315,6 @@ p, li { white-space: pre-wrap; }
           <property name="spacing">
            <number>4</number>
           </property>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="skipLoginScreen">
-            <property name="toolTip">
-             <string>Bypass the login screen and load the most recent User Profile</string>
-            </property>
-            <property name="text">
-             <string>Skip Login Screen</string>
-            </property>
-           </widget>
-          </item>
           <item row="5" column="0">
            <widget class="QCheckBox" name="skipEmptyDays">
             <property name="toolTip">
@@ -1349,91 +1336,225 @@ Mainly affects the importer.</string>
             </property>
            </widget>
           </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="skipLoginScreen">
+            <property name="toolTip">
+             <string>Bypass the login screen and load the most recent User Profile</string>
+            </property>
+            <property name="text">
+             <string>Skip Login Screen</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="Line" name="line_3">
+        <widget class="Line" name="line_7">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Import Locations</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>4</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QListView" name="importListWidget">
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <item>
+          <widget class="QGroupBox" name="PreferredCalcs">
+           <property name="toolTip">
+            <string>Changes to the following settings needs a restart, but not a recalc.</string>
+           </property>
+           <property name="title">
+            <string>Preferred Calculation Methods</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <property name="leftMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QWidget" name="widget" native="true">
-            <layout class="QVBoxLayout" name="verticalLayout_9">
-             <item>
-              <widget class="QPushButton" name="addImportLocation">
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>4</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_37">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Middle Calculations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_42">
+              <property name="text">
+               <string>Upper Percentile</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QSpinBox" name="prefCalcPercentile">
+              <property name="toolTip">
+               <string>For consistancy, ResMed users should use 95% here,
+as this is the only value available on summary-only days.</string>
+              </property>
+              <property name="suffix">
+               <string notr="true">%</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QComboBox" name="prefCalcMiddle">
+              <property name="toolTip">
+               <string>Median is recommended for ResMed users.</string>
+              </property>
+              <item>
                <property name="text">
-                <string>Add</string>
+                <string>Median</string>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="removeImportLocation">
+              </item>
+              <item>
                <property name="text">
-                <string>Remove</string>
+                <string>Weighted Average</string>
                </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
+              </item>
+              <item>
+               <property name="text">
+                <string>Normal Average</string>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
+              </item>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QComboBox" name="prefCalcMax">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>140</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>ResMed users probably should use 99th Percentile for visual consistency.</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>True Maximum</string>
                </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
+              </item>
+              <item>
+               <property name="text">
+                <string>99% Percentile</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_43">
+              <property name="text">
+               <string>Maximum Calcs</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="ImportLocations">
+           <property name="title">
+            <string>Import Locations</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QListView" name="importListWidget">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_9">
+               <item>
+                <widget class="QPushButton" name="addImportLocation">
+                 <property name="text">
+                  <string>Add</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="removeImportLocation">
+                 <property name="text">
+                  <string>Remove</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -1617,14 +1738,32 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Allow experimental and test builds (Advanced users only please.)</string>
+             <string>I want to try experimental and test builds (Advanced users only please.)</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Page</string>
+      </attribute>
      </widget>
      <widget class="QWidget" name="appearanceTab">
       <attribute name="title">
