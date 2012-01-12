@@ -102,7 +102,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);
     PR=createGraph(STR_TR_Pressure,tr("Pressure\n(cmH2O)"));
     SET=createGraph(tr("Settings"),("Settings"));
-    LK=createGraph(tr("Leaks"),tr("Leak Rate\n(L/min)"));
+    LK=createGraph(tr("Leaks"),tr("Unintentional Leaks\n(L/min)"));
+    TOTLK=createGraph(tr("Total Leaks"),tr("Total Leaks\n(L/min)"));
     NPB=createGraph(tr("% in PB"),tr("Periodic\nBreathing\n(% of night)"));
     if (ahicode==CPAP_RDI) {
         AHIHR=createGraph(tr("Peak RDI"),tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
@@ -257,6 +258,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     lk->addSlice(CPAP_Leak,QColor("grey"),ST_PERC,0.999);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     LK->AddLayer(lk);
+
+    totlk=new SummaryChart(tr("Total Leaks"),GT_LINE);
+    totlk->addSlice(CPAP_LeakTotal,QColor("light blue"),ST_PERC,0.5);
+    totlk->addSlice(CPAP_LeakTotal,QColor("dark grey"),ST_PERC,0.95);
+    totlk->addSlice(CPAP_LeakTotal,QColor("grey"),ST_PERC,0.999);
+    //tot->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
+    //tot->addSlice(CPAP_Leak,QColor("dark yellow"));
+    TOTLK->AddLayer(totlk);
 
     NPB->AddLayer(npb=new SummaryChart(tr("% PB"),GT_BAR));
     npb->addSlice(CPAP_CSR,QColor("light green"),ST_SPH);
