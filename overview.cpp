@@ -277,7 +277,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     icon_off=new QIcon(":/icons/session-off.png");
     SES->setRecMinY(1);
     SET->setRecMinY(0);
-    SET->setRecMaxY(5);
+    //SET->setRecMaxY(5);
 
 }
 Overview::~Overview()
