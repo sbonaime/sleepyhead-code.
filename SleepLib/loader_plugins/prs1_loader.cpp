@@ -584,6 +584,29 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     int ncodes=sizeof(Codes)/sizeof(QString);
     EventList * Code[0x20]={NULL};
 
+
+    EventList * OA=session->AddEventList(CPAP_Obstructive, EVL_Event);
+    EventList * HY=session->AddEventList(CPAP_Hypopnea, EVL_Event);
+    EventList * CSR=session->AddEventList(CPAP_CSR, EVL_Event);
+    EventList * LEAK=session->AddEventList(CPAP_LeakTotal,EVL_Event);
+    EventList * SNORE=session->AddEventList(CPAP_Snore,EVL_Event);
+    EventList * IPAP=session->AddEventList(CPAP_IPAP,EVL_Event,0.1);
+    EventList * EPAP=session->AddEventList(CPAP_EPAP,EVL_Event,0.1);
+    EventList * PS=session->AddEventList(CPAP_PS,EVL_Event);
+    EventList * IPAPLo=session->AddEventList(CPAP_IPAPLo,EVL_Event,0.1);
+    EventList * IPAPHi=session->AddEventList(CPAP_IPAPHi,EVL_Event,0.1);
+    EventList * RR=session->AddEventList(CPAP_RespRate,EVL_Event);
+    EventList * PTB=session->AddEventList(CPAP_PTB,EVL_Event);
+
+    EventList * MV=session->AddEventList(CPAP_MinuteVent,EVL_Event);
+    EventList * TV=session->AddEventList(CPAP_TidalVolume,EVL_Event);
+
+    EventList * CA=NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList * VS=NULL, * VS2=NULL, * FL=NULL;//,* RE=NULL;
+
+    //EventList * PRESSURE=NULL;
+    //EventList * PP=NULL;
+
     EventDataType data[10],tmp;
 
 
@@ -639,14 +662,14 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             Code[1]->AddEvent(t,0);
             break;
 
-        case 0x02: // Pressure
+        case 0x02: // Pressure ???
             data[0]=buffer[pos++];
             if (!Code[2]) {
                 if (!(Code[2]=session->AddEventList(cpapcode,EVL_Event,0.1))) return false;
             }
             Code[2]->AddEvent(t,data[0]);
             break;
-        case 0x04: // Pressure Pulse
+        case 0x04: // Pressure Pulse??
             data[0]=buffer[pos++];
             if (!Code[3]) {
                 if (!(Code[3]=session->AddEventList(cpapcode,EVL_Event))) return false;
@@ -655,29 +678,26 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             break;
 
         case 0x05:
+            //code=CPAP_Obstructive;
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[4]) {
-                if (!(Code[4]=session->AddEventList(cpapcode,EVL_Event))) return false;
-            }
-            Code[4]->AddEvent(tt,data[0]);
+            OA->AddEvent(tt,data[0]);
             break;
 
         case 0x06:
+            //code=CPAP_ClearAirway;
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[5]) {
-                if (!(Code[5]=session->AddEventList(cpapcode,EVL_Event))) return false;
+            if (!CA) {
+                if (!(CA=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
-            Code[5]->AddEvent(tt,data[0]);
+            CA->AddEvent(tt,data[0]);
             break;
         case 0x07:
+            //code=CPAP_Hypopnea;
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[6]) {
-                if (!(Code[6]=session->AddEventList(cpapcode,EVL_Event))) return false;
-            }
-            Code[6]->AddEvent(tt,data[0]);
+            HY->AddEvent(tt,data[0]);
             break;
         case 0x08: // ASV Codes
             data[0]=buffer[pos++];
@@ -688,12 +708,13 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             Code[10]->AddEvent(tt,data[0]);
             break;
         case 0x09: // ASV Codes
+            //code=CPAP_FlowLimit;
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[11]) {
-                if (!(Code[11]=session->AddEventList(cpapcode,EVL_Event))) return false;
+            if (!FL) {
+                if (!(FL=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
-            Code[11]->AddEvent(tt,data[0]);
+            FL->AddEvent(tt,data[0]);
 
             break;
 
@@ -706,15 +727,6 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             Code[7]->AddEvent(tt,data[0]);
             break;
 
-        case 0x0c:
-            data[0]=buffer[pos++];
-            tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[8]) {
-                if (!(Code[8]=session->AddEventList(cpapcode,EVL_Event))) return false;
-            }
-            Code[8]->AddEvent(tt,data[0]);
-            break;
-
 
         case 0x0b: // Cheyne Stokes
             data[0]=((unsigned char *)buffer)[pos+1]<<8 | ((unsigned char *)buffer)[pos];
@@ -724,47 +736,42 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             pos+=1;
             //tt-=delta;
             tt-=qint64(data[1])*1000L;
-            if (!Code[9]) {
-                if (!(Code[9]=session->AddEventList(cpapcode,EVL_Event)))
+            if (!CSR) {
+                if (!(CSR=session->AddEventList(cpapcode,EVL_Event)))
                     return false;
             }
-            Code[9]->AddEvent(tt,data[0]);
-            //session->AddEvent(new Event(tt,cpapcode, data[0], data, 2));
+            CSR->AddEvent(tt,data[0]);
             break;
-        case 0x0d: // All the other ASV graph stuff.
-            if (!Code[12]) {
-                if (!(Code[12]=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
-                if (!(Code[13]=session->AddEventList(CPAP_IPAPLo,EVL_Event,0.1))) return false;
-                if (!(Code[14]=session->AddEventList(CPAP_IPAPHi,EVL_Event,0.1))) return false;
-                if (!(Code[15]=session->AddEventList(CPAP_LeakTotal,EVL_Event))) return false;
-                if (!(Code[16]=session->AddEventList(CPAP_RespRate,EVL_Event))) return false;
-                if (!(Code[17]=session->AddEventList(CPAP_PTB,EVL_Event))) return false;
 
-                if (!(Code[18]=session->AddEventList(CPAP_MinuteVent,EVL_Event))) return false;
-                if (!(Code[19]=session->AddEventList(CPAP_TidalVolume,EVL_Event))) return false;
-                if (!(Code[20]=session->AddEventList(CPAP_Snore,EVL_Event))) return false;
-                if (!(Code[22]=session->AddEventList(CPAP_EPAP,EVL_Event,0.1))) return false;
-                if (!(Code[23]=session->AddEventList(CPAP_PS,EVL_Event))) return false;
+        case 0x0c:
+            data[0]=buffer[pos++];
+            tt-=qint64(data[0])*1000L; // Subtract Time Offset
+            if (!Code[8]) {
+                if (!(Code[8]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
-            Code[12]->AddEvent(t,data[0]=buffer[pos++]); // IAP
-            Code[13]->AddEvent(t,buffer[pos++]); // IAP Low
-            Code[14]->AddEvent(t,buffer[pos++]); // IAP High
-            Code[15]->AddEvent(t,buffer[pos++]); // LEAK
-            Code[16]->AddEvent(t,buffer[pos++]); // Breaths Per Minute
-            Code[17]->AddEvent(t,buffer[pos++]); // Patient Triggered Breaths
-            Code[18]->AddEvent(t,buffer[pos++]); // Minute Ventilation
-            tmp=buffer[pos++]*10.0;
-            Code[19]->AddEvent(t,tmp); // Tidal Volume
-            Code[20]->AddEvent(t,data[2]=buffer[pos++]); // Snore
+            Code[8]->AddEvent(tt,data[0]);
+            break;
+
+        case 0x0d: // All the other ASV graph stuff.
+            IPAP->AddEvent(t,data[0]=buffer[pos++]);    // 00=IAP
+            IPAPLo->AddEvent(t,buffer[pos++]);          // 01=IAP Low
+            IPAPHi->AddEvent(t,buffer[pos++]);          // 02=IAP High
+            LEAK->AddEvent(t,buffer[pos++]);            // 03=LEAK
+            RR->AddEvent(t,buffer[pos++]);              // 04=Breaths Per Minute
+            PTB->AddEvent(t,buffer[pos++]);             // 05=Patient Triggered Breaths
+            MV->AddEvent(t,buffer[pos++]);              // 06=Minute Ventilation
+            tmp=buffer[pos++] * 10.0;
+            TV->AddEvent(t,tmp);                        // 07=Tidal Volume
+            SNORE->AddEvent(t,data[2]=buffer[pos++]);   // 08=Snore
             if (data[2]>0) {
-                if (!Code[21]) {
-                    if (!(Code[21]=session->AddEventList(CPAP_VSnore,EVL_Event)))
+                if (!VS) {
+                    if (!(VS2=session->AddEventList(CPAP_VSnore,EVL_Event)))
                         return false;
                 }
-                Code[21]->AddEvent(t,0); //data[2]); // VSnore
+                VS->AddEvent(t,0); //data[2]); // VSnore
             }
-            Code[22]->AddEvent(t,data[1]=buffer[pos++]); // EPAP
-            Code[23]->AddEvent(t,data[0]-data[1]);      // Pressure Support
+            EPAP->AddEvent(t,data[1]=buffer[pos++]);    // 09=EPAP
+            PS->AddEvent(t,data[0]-data[1]);            // Pressure Support
             break;
         case 0x03: // BIPAP Pressure
             qDebug() << "0x03 Observed in ASV data!!????";
@@ -847,6 +854,26 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
     Session *session=new_sessions[sequence];
     session->updateFirst(t);
 
+
+    EventList * OA=session->AddEventList(CPAP_Obstructive, EVL_Event);
+    EventList * HY=session->AddEventList(CPAP_Hypopnea, EVL_Event);
+    EventList * CSR=session->AddEventList(CPAP_CSR, EVL_Event);
+    EventList * LEAK=session->AddEventList(CPAP_LeakTotal,EVL_Event);
+    EventList * SNORE=session->AddEventList(CPAP_Snore,EVL_Event);
+
+    EventList * CA=NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList * VS=NULL, * VS2=NULL, * FL=NULL,* RE=NULL;
+
+    EventList * PRESSURE=NULL;
+    EventList * EPAP=NULL;
+    EventList * IPAP=NULL;
+    EventList * PS=NULL;
+
+    EventList * PP=NULL;
+
+    //session->AddEventList(CPAP_VSnore, EVL_Event);
+    //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
+
     for (pos=0;pos<size;) {
         code=buffer[pos++];
         if (code>0x12) {
@@ -875,69 +902,64 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             Code[1]->AddEvent(t,0);
             break;
         case 0x02: // Pressure
-            if (!Code[2]) {
-                Code[2]=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
-                if (!Code[2]) return false;
+            if (!PRESSURE) {
+                PRESSURE=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
+                if (!PRESSURE) return false;
             }
-            Code[2]->AddEvent(t,buffer[pos++]);
+            PRESSURE->AddEvent(t,buffer[pos++]);
             break;
         case 0x03: // BIPAP Pressure
-            if (!Code[3]) {
-                if (!(Code[3]=session->AddEventList(CPAP_EPAP,EVL_Event,0.1))) return false;
-                if (!(Code[4]=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
-                if (!(Code[5]=session->AddEventList(CPAP_PS,EVL_Event,0.1))) return false;
+            if (!EPAP) {
+                if (!(EPAP=session->AddEventList(CPAP_EPAP,EVL_Event,0.1))) return false;
+                if (!(IPAP=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
+                if (!(PS=session->AddEventList(CPAP_PS,EVL_Event,0.1))) return false;
             }
-            Code[3]->AddEvent(t,data[0]=buffer[pos++]);
-            Code[4]->AddEvent(t,data[1]=buffer[pos++]);
-            Code[5]->AddEvent(t,data[1]-data[0]);
+            EPAP->AddEvent(t,data[0]=buffer[pos++]);
+            IPAP->AddEvent(t,data[1]=buffer[pos++]);
+            PS->AddEvent(t,data[1]-data[0]);
             break;
         case 0x04: // Pressure Pulse
-            if (!Code[6]) {
-                if (!(Code[6]=session->AddEventList(CPAP_PressurePulse,EVL_Event))) return false;
+            if (!PP) {
+                if (!(PP=session->AddEventList(CPAP_PressurePulse,EVL_Event))) return false;
             }
-            Code[6]->AddEvent(t,buffer[pos++]);
-            //qDebug() << hex << data[0];
+            PP->AddEvent(t,buffer[pos++]);
             break;
         case 0x05: // RERA
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
-            if (!Code[7]) {
-                if (!(Code[7]=session->AddEventList(CPAP_RERA,EVL_Event))) return false;
+            if (!RE) {
+                if (!(RE=session->AddEventList(CPAP_RERA,EVL_Event))) return false;
             }
-            Code[7]->AddEvent(tt,data[0]);
+            RE->AddEvent(tt,data[0]);
             break;
 
         case 0x06: // Obstructive Apoanea
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
-            if (!Code[8]) {
-                if (!(Code[8]=session->AddEventList(CPAP_Obstructive,EVL_Event))) return false;
-            }
-            Code[8]->AddEvent(tt,data[0]);
+            OA->AddEvent(tt,data[0]);
             break;
         case 0x07: // Clear Airway
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
-            if (!Code[9]) {
-                if (!(Code[9]=session->AddEventList(CPAP_ClearAirway,EVL_Event))) return false;
+            if (!CA) {
+                if (!(CA=session->AddEventList(CPAP_ClearAirway,EVL_Event))) return false;
             }
-            Code[9]->AddEvent(tt,data[0]);
+            CA->AddEvent(tt,data[0]);
             break;
+
         case 0x0a: // Hypopnea
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
-            if (!Code[10]) {
-                if (!(Code[10]=session->AddEventList(CPAP_Hypopnea,EVL_Event))) return false;
-            }
-            Code[10]->AddEvent(tt,data[0]);
+            HY->AddEvent(tt,data[0]);
             break;
+
         case 0x0c: // Flow Limitation
             data[0]=buffer[pos++];
             tt=t-(qint64(data[0])*1000L);
-            if (!Code[11]) {
-                if (!(Code[11]=session->AddEventList(CPAP_FlowLimit,EVL_Event))) return false;
+            if (!FL) {
+                if (!(FL=session->AddEventList(CPAP_FlowLimit,EVL_Event))) return false;
             }
-            Code[11]->AddEvent(tt,data[0]);
+            FL->AddEvent(tt,data[0]);
             break;
 
         case 0x0b: // Hypopnea related code
@@ -949,26 +971,25 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             // FIXME
             Code[12]->AddEvent(t,data[0]);
             break;
+
         case 0x0d: // Vibratory Snore
-            if (!Code[13]) {
-                if (!(Code[13]=session->AddEventList(CPAP_VSnore,EVL_Event))) return false;
+            if (!VS) {
+                if (!(VS=session->AddEventList(CPAP_VSnore,EVL_Event))) return false;
             }
-            Code[13]->AddEvent(t,0);
+            VS->AddEvent(t,0);
             break;
         case 0x11: // Leak Rate & Snore Graphs
             data[0]=buffer[pos++];
             data[1]=buffer[pos++];
-            if (!Code[14]) {
-                if (!(Code[14]=session->AddEventList(CPAP_LeakTotal,EVL_Event))) return false;
-                if (!(Code[15]=session->AddEventList(CPAP_Snore,EVL_Event))) return false;
-            }
-            Code[14]->AddEvent(t,data[0]);
-            Code[15]->AddEvent(t,data[1]);
+
+            LEAK->AddEvent(t,data[0]);
+            SNORE->AddEvent(t,data[1]);
+
             if (data[1]>0) {
-                if (!Code[16]) {
-                    if (!(Code[16]=session->AddEventList(CPAP_VSnore2,EVL_Event))) return false;
+                if (!VS2) {
+                    if (!(VS2=session->AddEventList(CPAP_VSnore2,EVL_Event))) return false;
                 }
-                Code[16]->AddEvent(t,data[1]);
+                VS2->AddEvent(t,data[1]);
             }
             break;
         case 0x0e: // Unknown
@@ -1002,10 +1023,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             pos+=2;
             data[1]=buffer[pos++];
             tt=t-qint64(data[1])*1000L;
-            if (!Code[23]) {
-                if (!(Code[23]=session->AddEventList(CPAP_CSR,EVL_Event))) return false;
-            }
-            Code[23]->AddEvent(tt,data[0]);
+            CSR->AddEvent(tt,data[0]);
             break;
         case 0x12: // Summary
             data[0]=buffer[pos++];
