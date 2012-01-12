@@ -935,7 +935,7 @@ void Daily::Load(QDate date)
     } // if (!CPAP)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
-    float percentile=0.95;
+    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
     if ((cpap && !isBrick && (cpap->hours()>0)) || oxi) {
         html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 

@@ -3189,7 +3189,7 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
     // Pick the first valid graph in the primary group
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->group()==group) {
-            if (!m_graphs[i]->isEmpty()) {
+            if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
                 g=m_graphs[i];
                 break;
             }

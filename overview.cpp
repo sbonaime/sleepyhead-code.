@@ -98,6 +98,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
+    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
+
 
     US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);
     PR=createGraph(STR_TR_Pressure,tr("Pressure\n(cmH2O)"));
@@ -153,7 +155,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     spo2=new SummaryChart(STR_TR_SpO2,GT_LINE);
     spo2->setMachineType(MT_OXIMETER);
     spo2->addSlice(OXI_SPO2,QColor("cyan"),ST_WAVG);
-    spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_PERC,0.95);
+    spo2->addSlice(OXI_SPO2,QColor("light blue"),ST_PERC,percentile);
     spo2->addSlice(OXI_SPO2,QColor("blue"),ST_MIN);
     SPO2->AddLayer(spo2);
 
@@ -194,7 +196,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     rr=new SummaryChart(tr("breaths/min"),GT_LINE);
     rr->addSlice(CPAP_RespRate,QColor("light blue"),ST_MIN);
     rr->addSlice(CPAP_RespRate,QColor("blue"),ST_PERC,0.5);
-    rr->addSlice(CPAP_RespRate,QColor("light green"),ST_PERC,0.95);
+    rr->addSlice(CPAP_RespRate,QColor("light green"),ST_PERC,percentile);
     rr->addSlice(CPAP_RespRate,QColor("green"),ST_PERC,0.999);
    // rr->addSlice(CPAP_RespRate,QColor("green"),ST_MAX);
     RR->AddLayer(rr);
@@ -202,28 +204,28 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     tv=new SummaryChart(tr("L/b"),GT_LINE);
     tv->addSlice(CPAP_TidalVolume,QColor("light blue"),ST_MIN);
     tv->addSlice(CPAP_TidalVolume,QColor("blue"),ST_PERC,0.5);
-    tv->addSlice(CPAP_TidalVolume,QColor("light green"),ST_PERC,0.95);
+    tv->addSlice(CPAP_TidalVolume,QColor("light green"),ST_PERC,percentile);
     tv->addSlice(CPAP_TidalVolume,QColor("green"),ST_PERC,0.999);
     TV->AddLayer(tv);
 
     mv=new SummaryChart(tr("L/m"),GT_LINE);
     mv->addSlice(CPAP_MinuteVent,QColor("light blue"),ST_MIN);
     mv->addSlice(CPAP_MinuteVent,QColor("blue"),ST_PERC,0.5);
-    mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_PERC,0.95);
+    mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_PERC,percentile);
     mv->addSlice(CPAP_MinuteVent,QColor("green"),ST_PERC,0.999);
     MV->AddLayer(mv);
 
     tgmv=new SummaryChart(tr("L/m"),GT_LINE);
     tgmv->addSlice(CPAP_TgMV,QColor("light blue"),ST_MIN);
     tgmv->addSlice(CPAP_TgMV,QColor("blue"),ST_PERC,0.5);
-    tgmv->addSlice(CPAP_TgMV,QColor("light green"),ST_PERC,0.95);
+    tgmv->addSlice(CPAP_TgMV,QColor("light green"),ST_PERC,percentile);
     tgmv->addSlice(CPAP_TgMV,QColor("green"),ST_PERC,0.999);
     TGMV->AddLayer(tgmv);
 
     ptb=new SummaryChart(tr("%PTB"),GT_LINE);
     ptb->addSlice(CPAP_PTB,QColor("yellow"),ST_MIN);
     ptb->addSlice(CPAP_PTB,QColor("blue"),ST_PERC,0.5);
-    ptb->addSlice(CPAP_PTB,QColor("light gray"),ST_PERC,0.95);
+    ptb->addSlice(CPAP_PTB,QColor("light gray"),ST_PERC,percentile);
     ptb->addSlice(CPAP_PTB,QColor("orange"),ST_WAVG);
     PTB->AddLayer(ptb);
 
@@ -235,15 +237,15 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
 //    //if (mode>=MODE_BIPAP) {
 //        pr->addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN,true);
-//        pr->addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,true,0.95);
+//        pr->addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,true,percentile);
 
-//        pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,0.95);
+//        pr->addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,true,percentile);
 //        pr->addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX,true);
 //    //} else if (mode>MODE_CPAP) {
 //        pr->addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN,true);
 //        pr->addSlice(CPAP_Pressure,QColor("dark green"),ST_WAVG,true);
 //    //pr->addSlice(CPAP_Pressure,QColor("grey"),ST_90P,true);
-//        pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,0.95);
+//        pr->addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,true,percentile);
 //        pr->addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX,true);
 //    //} else {
 
@@ -253,7 +255,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     lk=new SummaryChart(tr("Leaks"),GT_LINE);
     lk->addSlice(CPAP_Leak,QColor("light blue"),ST_PERC,0.5);
-    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_PERC,0.95);
+    lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_PERC,percentile);
     //lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     lk->addSlice(CPAP_Leak,QColor("grey"),ST_PERC,0.999);
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
@@ -261,7 +263,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     totlk=new SummaryChart(tr("Total Leaks"),GT_LINE);
     totlk->addSlice(CPAP_LeakTotal,QColor("light blue"),ST_PERC,0.5);
-    totlk->addSlice(CPAP_LeakTotal,QColor("dark grey"),ST_PERC,0.95);
+    totlk->addSlice(CPAP_LeakTotal,QColor("dark grey"),ST_PERC,percentile);
     totlk->addSlice(CPAP_LeakTotal,QColor("grey"),ST_PERC,0.999);
     //tot->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
     //tot->addSlice(CPAP_Leak,QColor("dark yellow"));
