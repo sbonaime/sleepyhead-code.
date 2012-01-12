@@ -1,12 +1,12 @@
 <!DOCTYPE Upgrade>
 <SleepyHead>
  <Release version="0.9.1" codename="Funky" status="beta">
-  <update type="qtlibs" version="4.8.0" platform="win32">
+  <update type="qtlibs" version="4.8.0" platform="win32" status="stable">
    <file name="qtlibs-4.8.0-win32.zip"
 	 url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/qtlibs-4.8.0-win32.zip/download"
 	 hash="ed0312c0f9a51e8774e6556f83b13df8d4195d2b"/>
   </update>
-  <update type="application" version="0.9.1" platform="win32" release_date="2012-01-10">
+  <update type="application" version="0.9.1" platform="win32" release_date="2012-01-10" status="testing">
    <file name="SleepyHead-0.9.1-beta-win32-binary_only.zip"
 	 url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/SleepyHead-0.9.1-beta-win32-binary_only.zip/download"
 	 hash="89cf16fbbc5dc5018946916dc8c95c01578635f8"/>
@@ -14,7 +14,7 @@
     Initial v0.9.1 release.
    </notes>
   </update>
-  <update type="application" version="0.9.1" platform="macosx" release_date="2012-01-11">
+  <update type="application" version="0.9.1" platform="macosx" release_date="2012-01-11" status="stable">
    <file name="SleepyHead-0.9.1-beta-macosx-binary_only.zip"
    url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/MacOSX/SleepyHead-0.9.1-beta-macosx-binary_only.zip/download"
    hash="2f0983dfec2e9968b36ff8ccd7c24a1af5bb8818"/>

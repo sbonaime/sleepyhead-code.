@@ -79,6 +79,27 @@ void release_notes()
     relnotes.exec();
 }
 
+void build_notes()
+{
+    QDialog relnotes;
+    QVBoxLayout layout(&relnotes);
+    QWebView web(&relnotes);
+    relnotes.setWindowTitle("SleepyHead v"+FullVersionString+" Update");
+    // Language???
+
+    web.load(QUrl("qrc:/docs/update_notes.html"));
+    //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
+    relnotes.setLayout(&layout);
+    layout.insertWidget(0,&web,1);
+    QPushButton okbtn(QObject::tr("&Ok, get on with it.."),&relnotes);
+    relnotes.connect(&okbtn,SIGNAL(clicked()),SLOT(accept()));
+    layout.insertWidget(1,&okbtn,1);
+    layout.setMargin(0);
+    relnotes.setFixedSize(500,400);
+    relnotes.exec();
+}
+
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_X11
@@ -122,7 +143,7 @@ int main(int argc, char *argv[])
 
 
     // Skip login screen, unless asked not to on the command line
-    bool skip_login=(PREF.ExistsAndTrue("SkipLoginScreen"));
+    bool skip_login=PREF.ExistsAndTrue(STR_GEN_SkipLogin);
     if (force_login_screen) skip_login=false;
 
     // Todo: Make a wrapper for Preference settings, like Profile settings have..
@@ -130,6 +151,9 @@ int main(int argc, char *argv[])
     if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) {
         PREF[STR_GEN_UpdatesAutoCheck]=true;
         PREF[STR_GEN_UpdateCheckFrequency]=7;
+    }
+    if (!PREF.contains(STR_PREF_AllowEarlyUpdates)) {
+        PREF[STR_PREF_AllowEarlyUpdates]=false;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,9 +183,16 @@ int main(int argc, char *argv[])
     } else {
         if (PREF.contains("VersionString")) {
             QString V=PREF["VersionString"].toString();
-            if (VersionString>V) {
-                release_notes();
-                //QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the "+AppRoot+" folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
+
+            if (FullVersionString>V) {
+                QString V2=V.section("-",0,0);
+
+                if (VersionString>V2) {
+                    release_notes();
+                    //QMessageBox::warning(0,"New Version Warning","This is a new version of SleepyHead. If you experience a crash right after clicking Ok, you will need to manually delete the "+AppRoot+" folder (it's located in your Documents folder) and reimport your data. After this things should work normally.",QMessageBox::Ok);
+                } else {
+                    build_notes();
+                }
                 check_updates=false;
             }
         }
@@ -179,7 +210,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    PREF["VersionString"]=VersionString;
+    PREF["VersionString"]=FullVersionString;
 
     p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
 

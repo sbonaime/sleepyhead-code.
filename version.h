@@ -5,9 +5,12 @@
 
 const int major_version=0;
 const int minor_version=9;
-const int revision_number=1;
+const int revision_number=2;
+const int release_number=1;
 
 const QString VersionString=QString().sprintf("%i.%i.%i",major_version,minor_version,revision_number);
+const QString FullVersionString=QString().sprintf("%i.%i.%i-%i",major_version,minor_version,revision_number,release_number);
+
 const QString ReleaseStatus="beta";
 
 #ifdef Q_WS_MAC

@@ -188,7 +188,8 @@ OTHER_FILES += \
     docs/tooltips.css \
     docs/script.js \
     update.xml \
-    docs/changelog.txt
+    docs/changelog.txt \
+    docs/update_notes.html
 
 
 

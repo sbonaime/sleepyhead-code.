@@ -42,5 +42,6 @@
         <file>docs/script.js</file>
         <file>icons/nographs.png</file>
         <file>icons/sheep.png</file>
+        <file>docs/update_notes.html</file>
     </qresource>
 </RCC>

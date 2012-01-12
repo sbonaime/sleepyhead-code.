@@ -68,6 +68,17 @@ bool UpdateParser::characters(const QString &ch)
     return true;
 }
 
+UpdateStatus lookupUpdateStatus(QString stat)
+{
+    UpdateStatus status=UPDATE_TESTING;
+
+    if (stat=="testing") status=UPDATE_TESTING;
+    else if (stat=="beta") status=UPDATE_BETA;
+    else if (stat=="stable") status=UPDATE_STABLE;
+    else if (stat=="critical") status=UPDATE_CRITICAL;
+
+    return status;
+}
 bool UpdateParser::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts)
 {
     Q_UNUSED(namespaceURI)
@@ -75,6 +86,7 @@ bool UpdateParser::startElement(const QString &namespaceURI, const QString &loca
     QString name=qName.toLower();
     if (inRelease && name=="update") {
         QString ver, type;
+        UpdateStatus updatestatus=UPDATE_TESTING;
         for (int i=0;i<atts.count();i++) {
             if (atts.localName(i)=="type")
                 type=atts.value(i).toLower();
@@ -84,12 +96,16 @@ bool UpdateParser::startElement(const QString &namespaceURI, const QString &loca
                 platform=atts.value(i).toLower();
             if (atts.localName(i)=="release_date")
                 release_date=atts.value(i);
+            if (atts.localName(i)=="status") {
+                updatestatus=lookupUpdateStatus(atts.value(i).toLower());
+            }
         }
         QDate date=QDate::fromString(release_date,"yyyy-MM-dd");
         if (!date.isValid()) date=QDate::currentDate();
 
         release->updates[platform].push_back(Update(type,ver,platform,date));
         update=&release->updates[platform][release->updates[platform].size()-1];
+        update->status=updatestatus;
         inUpdate=true;
     } else if (inRelease && name=="info") {
         QString tmp=atts.value("url");
@@ -121,14 +137,16 @@ bool UpdateParser::startElement(const QString &namespaceURI, const QString &loca
         inNotes=true;
     } else if (name=="release") {
         inRelease=true;
-        QString codename,status;
+        QString codename;
+        UpdateStatus status=UPDATE_TESTING;
         for (int i=0;i<atts.count();i++) {
             if (atts.localName(i)=="version")
                 version=atts.value(i).toLower();
             if (atts.localName(i)=="codename")
                 codename=atts.value(i);
-            if (atts.localName(i)=="status")
-                status=atts.value(i);
+            if (atts.localName(i)=="status") {
+                status=lookupUpdateStatus(atts.value(i).toLower());
+            }
         }
         releases[version]=Release(version,codename,status);
         release=&releases[version];

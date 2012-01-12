@@ -602,7 +602,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     EventList * TV=session->AddEventList(CPAP_TidalVolume,EVL_Event);
 
     EventList * CA=NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
-    EventList * VS=NULL, * VS2=NULL, * FL=NULL;//,* RE=NULL;
+    EventList * VS=NULL, * FL=NULL;//,* RE=NULL,* VS2=NULL;
 
     //EventList * PRESSURE=NULL;
     //EventList * PP=NULL;

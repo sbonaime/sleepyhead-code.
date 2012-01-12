@@ -158,7 +158,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
     ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
-    ui->skipLoginScreen->setChecked(PREF["SkipLoginScreen"].toBool());
+    ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
+    ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
 
     ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
     ui->enableMultithreading->setChecked(profile->session->multithreading());
@@ -395,6 +396,7 @@ bool PreferencesDialog::Save()
 
     PREF[STR_GEN_UpdatesAutoCheck]=ui->automaticallyCheckUpdates->isChecked();
     PREF[STR_GEN_UpdateCheckFrequency]=ui->updateCheckEvery->value();
+    PREF[STR_PREF_AllowEarlyUpdates]=ui->allowEarlyUpdates->isChecked();
 
     PREF["Fonts_Application_Name"]=ui->applicationFont->currentText();
     PREF["Fonts_Application_Size"]=ui->applicationFontSize->value();

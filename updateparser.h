@@ -5,6 +5,8 @@
 #include <QMetaType>
 #include <QDate>
 
+enum UpdateStatus { UPDATE_TESTING=0, UPDATE_BETA, UPDATE_STABLE, UPDATE_CRITICAL };
+
 /*! \struct Update
     \brief Holds platform specific information about an individual updates
   */
@@ -17,6 +19,7 @@ public:
     QString type;
     QString version;
     QString platform;
+    UpdateStatus status;
     QDate date;
     QString filename;
     QString url;
@@ -41,10 +44,10 @@ struct Release
         updates=copy.updates;
     }
 
-    Release(QString ver, QString code, QString stat) { version=ver; codename=code; status=stat; }
+    Release(QString ver, QString code, UpdateStatus stat) { version=ver; codename=code; status=stat; }
     QString version;
     QString codename;
-    QString status;
+    UpdateStatus status;
     QString info_url;
     QHash<QString,QString> notes; // by platform
     QHash<QString,QList<Update> > updates;

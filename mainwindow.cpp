@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     logtime.start();
     ui->setupUi(this);
 
-    QString version=VersionString;
+    QString version=FullVersionString;
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
     this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
@@ -1446,12 +1446,12 @@ void MainWindow::on_action_About_triggered()
     QString gitrev=QString(GIT_REVISION);
     if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev;
 
-     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3 (%7)</h2>Build Date: %4 %5<br/>%6<hr>"
+     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3-%4 (%8)</h2>Build Date: %5 %6<br/>%7<hr>"
 "Copyright &copy;2011 Mark Watkins (jedimark) <br> \n"
 "<a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>"
 "This software is released under the GNU Public License <br>"
 "<i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays."
-                    "</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus);
+                    "</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus);
     QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
     msgbox.setTextFormat(Qt::RichText);
     msgbox.setText(msg);
