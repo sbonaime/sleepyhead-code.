@@ -1,44 +1,34 @@
 <!DOCTYPE Upgrade>
 <SleepyHead>
- <Release version="0.9.1" codename="Funky" status="beta">
+ <Release version="0.9.2" codename="Roofus" status="beta">
   <update type="qtlibs" version="4.8.0" platform="win32" status="stable">
    <file name="qtlibs-4.8.0-win32.zip"
 	 url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/qtlibs-4.8.0-win32.zip/download"
 	 hash="ed0312c0f9a51e8774e6556f83b13df8d4195d2b"/>
   </update>
-  <update type="application" version="0.9.1" platform="win32" release_date="2012-01-10" status="testing">
-   <file name="SleepyHead-0.9.1-beta-win32-binary_only.zip"
+  <update type="application" version="0.9.2-1" platform="win32" release_date="2012-01-12" status="testing">
+   <file name="SleepyHead-0.9.2-beta-win32-binary_only.zip"
 	 url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/SleepyHead-0.9.1-beta-win32-binary_only.zip/download"
 	 hash="89cf16fbbc5dc5018946916dc8c95c01578635f8"/>
    <notes>
-    Initial v0.9.1 release.
+    Some bug fixes to the beta, and a test of the auto-updater.
+    Adds some new functionality to the updater, so test updates can be delivered with out affecting other users.
+    Please proceed with caution. If unsure, wait for feedback in the forums..
    </notes>
   </update>
-  <update type="application" version="0.9.1" platform="macosx" release_date="2012-01-11" status="stable">
-   <file name="SleepyHead-0.9.1-beta-macosx-binary_only.zip"
+  <update type="application" version="0.9.2-1" platform="macosx" release_date="2012-01-12" status="testing">
+   <file name="SleepyHead-0.9.2-beta-macosx-binary_only.zip"
    url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/MacOSX/SleepyHead-0.9.1-beta-macosx-binary_only.zip/download"
    hash="2f0983dfec2e9968b36ff8ccd7c24a1af5bb8818"/>
    <notes>
-    The Official v0.9.1 release. (You've been using a sneak preview)
+    Some bug fixes to the beta, and a test of the auto-updater.
+    Adds some new functionality to the updater, so test updates can be delivered with out affecting other users.
+    Please proceed with caution. If unsure, wait for feedback in the forums..
    </notes>
   </update>
-  <notes>&lt;p&gt;SleepyHead has finally reached beta.. Welcome to the 0.9 series.&lt;/p&gt;
-   &lt;b&gt;Features&lt;/b&gt;
-   &lt;list&gt;
-   &lt;li&gt;New Auto-Updater for Mac &amp; Windows platforms&lt;/li&gt;
-   &lt;li&gt;SleepLib database improvements, and lots of other underneath stuff and code cleanups you don't see.&lt;/li&gt;
-   &lt;li&gt;New Statistics page showing some more useful data.&lt;/li&gt;
-   &lt;li&gt;Welcome page has become a Help Browser.&lt;/li&gt;
-   &lt;li&gt;New Navigation Panel on the right side, now accessible from all tabs. It can be hidden to reclaim screen space.&lt;/li&gt;
-   &lt;li&gt;New Favourites tab in this right panel for bookmarking days and quickly finding them again.&lt;/li&gt;
-   &lt;li&gt;New Records tab to show some best/worst entries, which have links going directly to the related day or overview range.&lt;/li&gt;
-   &lt;li&gt;Daily reports bookmarked areas show oximetry data when available.&lt;/li&gt;
-   &lt;li&gt;Can print from both the Statistics &amp; Help Browser pages.&lt;/li&gt;
-   &lt;li&gt;New Context cube can be switched on to make empty pages more attractive.&lt;/li&gt;
-   &lt;li&gt;More stuff that's mentioned in the official release notes.. (Editing in this xml file sucks)&lt;/li&gt;
-   &lt;li&gt;Plenty of other bug fixes, including more oximetry fixes.&lt;/li&gt;
-   &lt;li&gt; &lt;/li&gt;
-   &lt;/list&gt;
+  <notes>
+   This is an updater test, though it does deliver some important bug fixes to the beta..
+   This message will change when it's ready to grab.. (it might work now)
   </notes>
   <notes platform="linux">Linux Rules. But you already knew that!</notes>
   <notes platform="macosx">Always remember to write-protect your SD card, as MacOSX occasionally likes to eat them.</notes>
