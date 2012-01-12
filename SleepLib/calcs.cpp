@@ -330,6 +330,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     if (calcResp) {
         RR=m_session->AddEventList(CPAP_RespRate,EVL_Event);
         minrr=RR->Min(), maxrr=RR->Max();
+        RR->setGain(0.2);
         RR->setFirst(time+minute);
         RR->getData().resize(nm);
         RR->getTime().resize(nm);
@@ -340,6 +341,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     int rr_count=0;
 
     double len, st2,et2,adj, stmin, b, rr=0;
+    double len2;
     int idx;
 
 
@@ -371,6 +373,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     if (calcTv) {
         TV=m_session->AddEventList(CPAP_TidalVolume,EVL_Event);
         mintv=TV->Min(), maxtv=TV->Max();
+        TV->setGain(20);
         TV->setFirst(start);
         TV->getData().resize(nm);
         TV->getTime().resize(nm);
@@ -465,7 +468,8 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
                 stmin=start;
             len=et-stmin;
             rr=0;
-            if (len >= minute) {
+            len2=0;
+            //if ( len >= minute) {
                 //et2=et;
 
                 // Step back through last minute and count breaths
@@ -481,10 +485,17 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
                         st2=stmin;
                         adj=et2 - st2;
                         b=(1.0 / len) * adj;
-                    } else b=1;
+                        len2+=adj;
+                    } else {
+                        b=1;
+                        len2+=len;
+                    }
+
                     rr+=b;
                 }
-
+                if (len2 < minute) {
+                    rr*=minute/len2;
+                }
                 // Calculate min & max
                 if (rr < minrr)
                     minrr=rr;
@@ -500,7 +511,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
                 rr_count++;
 
                 //rr->AddEvent(et,br * 50.0);
-            }
+            //}
         }
         if (calcMv && calcResp && calcTv) {
             mv=(tv/1000.0) * rr;
@@ -513,7 +524,6 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////
 
     if (calcResp) {
-        RR->setGain(0.2);
         RR->setMin(minrr);
         RR->setMax(maxrr);
         RR->setFirst(start);
@@ -525,7 +535,6 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////
 
     if (calcTv) {
-        TV->setGain(20);
         TV->setMin(mintv);
         TV->setMax(maxtv);
         TV->setFirst(start);

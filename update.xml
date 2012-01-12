@@ -7,19 +7,9 @@
 	 hash="ed0312c0f9a51e8774e6556f83b13df8d4195d2b"/>
   </update>
   <update type="application" version="0.9.2-1" platform="win32" release_date="2012-01-12" status="testing">
-   <file name="SleepyHead-0.9.2-beta-win32-binary_only.zip"
-	 url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/SleepyHead-0.9.1-beta-win32-binary_only.zip/download"
-	 hash="89cf16fbbc5dc5018946916dc8c95c01578635f8"/>
-   <notes>
-    Some bug fixes to the beta, and a test of the auto-updater.
-    Adds some new functionality to the updater, so test updates can be delivered with out affecting other users.
-    Please proceed with caution. If unsure, wait for feedback in the forums..
-   </notes>
-  </update>
-  <update type="application" version="0.9.2-1" platform="macosx" release_date="2012-01-12" status="testing">
-   <file name="SleepyHead-0.9.2-beta-macosx-binary_only.zip"
-   url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/MacOSX/SleepyHead-0.9.1-beta-macosx-binary_only.zip/download"
-   hash="2f0983dfec2e9968b36ff8ccd7c24a1af5bb8818"/>
+   <file name="SleepyHead-0.9.2-beta-win32-update.zip"
+         url="http://sourceforge.net/projects/sleepyhead/files/AutoUpdate/Win32/SleepyHead-0.9.2-beta-win32-update.zip/download"
+         hash="294cbb319a62b547d88f6879295878975d6b5e56"/>
    <notes>
     Some bug fixes to the beta, and a test of the auto-updater.
     Adds some new functionality to the updater, so test updates can be delivered with out affecting other users.
@@ -28,10 +18,7 @@
   </update>
   <notes>
    This is an updater test, though it does deliver some important bug fixes to the beta..
-   This message will change when it's ready to grab.. (it might work now)
   </notes>
-  <notes platform="linux">Linux Rules. But you already knew that!</notes>
-  <notes platform="macosx">Always remember to write-protect your SD card, as MacOSX occasionally likes to eat them.</notes>
   <notes platform="win32">Nothing particularly platform relevant to this Windows build</notes>
   <info url="http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=ReleaseNotes-0.9.1"/>
  </Release>

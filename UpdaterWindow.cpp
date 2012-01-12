@@ -226,6 +226,12 @@ void UpdaterWindow::ParseUpdateXML(QIODevice * dev)
                 }
             }
         }
+        if (!upq && !upd) {
+            mainwin->Notify(tr("No new updates were found for your platform."),tr("SleepyHead Updates"),5000);
+            PREF[STR_GEN_UpdatesLastChecked]=QDateTime::currentDateTime();
+            close();
+            return;
+        }
 
         if (upq && (upq->version > QT_VERSION_STR)) {
             updates.push_back(upq);
