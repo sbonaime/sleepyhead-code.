@@ -765,7 +765,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             SNORE->AddEvent(t,data[2]=buffer[pos++]);   // 08=Snore
             if (data[2]>0) {
                 if (!VS) {
-                    if (!(VS2=session->AddEventList(CPAP_VSnore,EVL_Event)))
+                    if (!(VS=session->AddEventList(CPAP_VSnore,EVL_Event)))
                         return false;
                 }
                 VS->AddEvent(t,0); //data[2]); // VSnore
