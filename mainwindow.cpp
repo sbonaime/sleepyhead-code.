@@ -649,7 +649,13 @@ void MainWindow::on_summaryButton_clicked()
 
     CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
-    float percentile=0.95;
+    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
+
+//    int mididx=PROFILE.general->prefCalcMiddle();
+//    SummaryType ST_mid;
+//    if (mididx==0) ST_mid=ST_PERC;
+//    if (mididx==1) ST_mid=ST_WAVG;
+//    if (mididx==2) ST_mid=ST_AVG;
 
     QString ahitxt;
     if (PROFILE.general->calculateRDI()) {
@@ -726,7 +732,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("95% EPAP"))
+                .arg(tr("%1% EPAP").arg(percentile*100.0,0,'f',0))
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
@@ -740,7 +746,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("95% IPAP"))
+                .arg(tr("%1% IPAP").arg(percentile*100.0,0,'f',0))
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
@@ -755,7 +761,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcWavg(CPAP_Pressure,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("95% Pressure"))
+                .arg(tr("%1% Pressure").arg(percentile*100.0,0,'f',0))
                 .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
@@ -996,11 +1002,11 @@ void MainWindow::on_summaryButton_clicked()
             rx.prelset=prelset;
             rx.machine=mach;
             if (mode<MODE_BIPAP) {
-                rx.per1=p_profile->calcPercentile(CPAP_Pressure,0.9,MT_CPAP,first,last);
+                rx.per1=p_profile->calcPercentile(CPAP_Pressure,percentile,MT_CPAP,first,last);
                 rx.per2=0;
             } else if (mode<MODE_ASV) {
-                rx.per1=p_profile->calcPercentile(CPAP_EPAP,0.9,MT_CPAP,first,last);
-                rx.per2=p_profile->calcPercentile(CPAP_IPAP,0.9,MT_CPAP,first,last);
+                rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
+                rx.per2=p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,first,last);
             } else {
                 rx.per1=p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,first,last);
                 rx.per2=p_profile->calcPercentile(CPAP_IPAPHi,percentile,MT_CPAP,first,last);

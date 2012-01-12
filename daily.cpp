@@ -717,6 +717,11 @@ void Daily::Load(QDate date)
     bool isBrick=false;
 
     updateGraphCombo();
+    int mididx=PROFILE.general->prefCalcMiddle();
+    SummaryType ST_mid;
+    if (mididx==0) ST_mid=ST_PERC;
+    if (mididx==1) ST_mid=ST_WAVG;
+    if (mididx==2) ST_mid=ST_AVG;
 
     if (cpap) {
         float hours=cpap->hours();
@@ -936,6 +941,15 @@ void Daily::Load(QDate date)
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
+
+    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
+    const EventDataType maxperc=0.995;
+
+    QString midname;
+    if (ST_mid==ST_WAVG) midname=tr("Avg");
+    else if (ST_mid==ST_AVG) midname=tr("Avg");
+    else if (ST_mid==ST_PERC) midname=tr("Med");
+
     if ((cpap && !isBrick && (cpap->hours()>0)) || oxi) {
         html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 
@@ -944,7 +958,7 @@ void Daily::Load(QDate date)
         html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
                 .arg(tr("Channel"))
                 .arg(tr("Min"))
-                .arg(tr("Med"))
+                .arg(midname)
                 .arg(tr("%1%").arg(percentile*100,0,'f',0))
                 .arg(tr("Max"));
         ChannelID chans[]={
@@ -956,7 +970,7 @@ void Daily::Load(QDate date)
         int numchans=sizeof(chans)/sizeof(ChannelID);
         //int suboffset=0;
         int ccnt=0;
-        EventDataType wavg,med,perc,mx,mn;
+        EventDataType tmp,med,perc,mx,mn;
         for (int i=0;i<numchans;i++) {
 
             ChannelID code=chans[i];
@@ -965,13 +979,32 @@ void Daily::Load(QDate date)
                 //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                mx=cpap->Max(code);
+                if (ST_max==ST_MAX) {
+                    mx=cpap->Max(code);
+                } else {
+                    mx=cpap->percentile(code,maxperc);
+                }
                 mn=cpap->Min(code);
                 perc=cpap->percentile(code,percentile);
-                med=cpap->percentile(code,0.5);
-                wavg=cpap->wavg(code);
-                if (wavg>0 || mx==0) {
-                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
+
+                if (ST_mid==ST_PERC) {
+                    med=cpap->percentile(code,0.5);
+                    tmp=cpap->wavg(code);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>W-Avg: %1").arg(tmp,0,'f',2);
+                    }
+                } else if (ST_mid==ST_WAVG) {
+                    med=cpap->wavg(code);
+                    tmp=cpap->percentile(code,0.5);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                    }
+                } else if (ST_mid==ST_AVG) {
+                    med=cpap->avg(code);
+                    tmp=cpap->percentile(code,0.5);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                    }
                 }
 
                 html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='black';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
@@ -988,14 +1021,36 @@ void Daily::Load(QDate date)
             if (oxi && oxi->channelHasData(code)) {
                 QString tooltip=schema::channel[code].description();
                 if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                wavg=oxi->wavg(code);
+                //wavg=oxi->wavg(code);
                 mx=oxi->Max(code);
                 mn=oxi->Min(code);
                 perc=oxi->percentile(code,percentile);
-                med=oxi->percentile(code,0.5);
-                if ((med>0 && wavg>0) || (med==0)) {
-                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
+                //med=oxi->percentile(code,0.5);
+
+                if (ST_mid==ST_PERC) {
+                    med=oxi->percentile(code,0.5);
+                    tmp=oxi->wavg(code);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>W-Avg: %1").arg(tmp,0,'f',2);
+                    }
+                } else if (ST_mid==ST_WAVG) {
+                    med=oxi->wavg(code);
+                    tmp=oxi->percentile(code,0.5);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                    }
+                } else if (ST_mid==ST_AVG) {
+                    med=oxi->avg(code);
+                    tmp=oxi->percentile(code,0.5);
+                    if (tmp>0 || mx==0) {
+                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                    }
                 }
+
+
+//                if ((med>0 && wavg>0) || (med==0)) {
+//                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
+//                }
 
                 html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
                     .arg(QString("<a class=info href='graph=%1'>%2<span>%3</span></a>")

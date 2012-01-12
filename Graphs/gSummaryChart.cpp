@@ -62,24 +62,31 @@ void SummaryChart::SetDay(Day * nullday)
         m_type.clear();
         m_typeval.clear();
 
+        float perc=PROFILE.general->prefCalcPercentile();
+        int mididx=PROFILE.general->prefCalcMiddle();
+        SummaryType mid;
+        if (mididx==0) mid=ST_PERC;
+        if (mididx==1) mid=ST_WAVG;
+        if (mididx==2) mid=ST_AVG;
+
         if (cpapmode>=MODE_ASV) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
 
             addSlice(CPAP_IPAPLo,QColor("light blue"),ST_SETMIN);
-            addSlice(CPAP_IPAP,QColor("cyan"),ST_PERC,0.5);
-            addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,0.95);
+            addSlice(CPAP_IPAP,QColor("cyan"),mid,0.5);
+            addSlice(CPAP_IPAP,QColor("dark cyan"),ST_PERC,perc);
             //addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
             addSlice(CPAP_IPAPHi,QColor("blue"),ST_SETMAX);
         } else if (cpapmode>=MODE_BIPAP) {
             addSlice(CPAP_EPAP,QColor("green"),ST_SETMIN);
-            addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,0.95);
-            addSlice(CPAP_IPAP,QColor("light cyan"),ST_PERC,0.5);
-            addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,0.95);
+            addSlice(CPAP_EPAP,QColor("light green"),ST_PERC,perc);
+            addSlice(CPAP_IPAP,QColor("light cyan"),mid,0.5);
+            addSlice(CPAP_IPAP,QColor("light blue"),ST_PERC,perc);
             addSlice(CPAP_IPAP,QColor("blue"),ST_SETMAX);
         } else if (cpapmode>=MODE_APAP) {
             addSlice(CPAP_PressureMin,QColor("orange"),ST_SETMIN);
-            addSlice(CPAP_Pressure,QColor("dark green"),ST_PERC,0.5);
-            addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,0.95);
+            addSlice(CPAP_Pressure,QColor("dark green"),mid,0.5);
+            addSlice(CPAP_Pressure,QColor("grey"),ST_PERC,perc);
             addSlice(CPAP_PressureMax,QColor("red"),ST_SETMAX);
         } else {
             addSlice(CPAP_Pressure,QColor("dark green"),ST_SETWAVG);
@@ -167,7 +174,7 @@ void SummaryChart::SetDay(Day * nullday)
                     if (code==CPAP_Pressure) {
                         if ((cpapmode>MODE_CPAP) && (mode==MODE_CPAP)) {
                             hascode=false;
-                            if ((type==ST_PERC) && (typeval==0.5)) {
+                            if ((type==ST_WAVG) || (type==ST_AVG) || ((type==ST_PERC) && (typeval==0.5))) {
                                 type=ST_SETWAVG;
                                 hascode=true;
                             }
