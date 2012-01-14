@@ -105,7 +105,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     RR=new gGraph(GraphView,tr("Resp. Rate"),schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
     TV=new gGraph(GraphView,tr("Tidal Volume"),schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
     MV=new gGraph(GraphView,tr("Minute Vent."),schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
-    TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
+    //TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
     FLG=new gGraph(GraphView,tr("Flow Limitation"),schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
     PTB=new gGraph(GraphView,tr("Pat. Trig. Breath"),schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
     RE=new gGraph(GraphView,tr("Resp. Event"),schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
@@ -206,7 +206,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, TgMV, SPO2, PLETHY, PULSE, STAGE };
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -256,7 +256,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     // Delete me!!
 //    lc->addPlot(CPAP_Test1,Qt::darkRed,square);
 
-    MV->AddLayer(AddCPAP(new gLineChart(CPAP_MinuteVent,Qt::darkCyan,square)));
+    MV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent,Qt::cyan,square)));
+    lc->addPlot(CPAP_TgMV,Qt::darkCyan,square);
 
     TV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
     //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
@@ -270,7 +271,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te,Qt::darkGreen,square)));
     TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti,Qt::darkBlue,square)));
     //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
-    TgMV->AddLayer(AddCPAP(new gLineChart(CPAP_TgMV,Qt::darkCyan,square)));
     //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
     //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
 
@@ -490,6 +490,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
                 int cnt=day->count(code);
+                if (!cnt) continue; // If no events than don't bother showing..
                 total_events+=cnt;
                 QString st=schema::channel[code].description();
                 if (st.isEmpty())  {

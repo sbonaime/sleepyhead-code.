@@ -379,7 +379,9 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
         if (sess->count(CPAP_IPAP)>0) {
             //sess->summaryCPAP_Mode]!=MODE_ASV)
-            sess->settings[CPAP_Mode]=MODE_BIPAP;
+            if (sess->settings[CPAP_Mode].toInt()!=(int)MODE_ASV) {
+                sess->settings[CPAP_Mode]=MODE_BIPAP;
+            }
 
             if (sess->settings[CPAP_PresReliefType].toInt()!=PR_NONE) {
                 sess->settings[CPAP_PresReliefType]=PR_BIFLEX;
@@ -521,7 +523,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         if (max>0) {
             session->setMin(CPAP_Pressure,min);
             session->setMax(CPAP_Pressure,max);
-            session->setWavg(CPAP_Pressure,min);
+            //session->setWavg(CPAP_Pressure,min);
         }
     } else {
         // 0X28 & 0X29 is length on r5
@@ -604,14 +606,14 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     EventList * SNORE=session->AddEventList(CPAP_Snore,EVL_Event);
     EventList * IPAP=session->AddEventList(CPAP_IPAP,EVL_Event,0.1);
     EventList * EPAP=session->AddEventList(CPAP_EPAP,EVL_Event,0.1);
-    EventList * PS=session->AddEventList(CPAP_PS,EVL_Event);
+    EventList * PS=session->AddEventList(CPAP_PS,EVL_Event,0.1);
     EventList * IPAPLo=session->AddEventList(CPAP_IPAPLo,EVL_Event,0.1);
     EventList * IPAPHi=session->AddEventList(CPAP_IPAPHi,EVL_Event,0.1);
     EventList * RR=session->AddEventList(CPAP_RespRate,EVL_Event);
     EventList * PTB=session->AddEventList(CPAP_PTB,EVL_Event);
 
     EventList * MV=session->AddEventList(CPAP_MinuteVent,EVL_Event);
-    EventList * TV=session->AddEventList(CPAP_TidalVolume,EVL_Event);
+    EventList * TV=session->AddEventList(CPAP_TidalVolume,EVL_Event,10);
 
     EventList * CA=NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
     EventList * VS=NULL, * FL=NULL;//,* RE=NULL,* VS2=NULL;
@@ -676,10 +678,10 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
         case 0x02: // Pressure ???
             data[0]=buffer[pos++];
-            if (!Code[2]) {
-                if (!(Code[2]=session->AddEventList(cpapcode,EVL_Event,0.1))) return false;
-            }
-            Code[2]->AddEvent(t,data[0]);
+//            if (!Code[2]) {
+//                if (!(Code[2]=session->AddEventList(cpapcode,EVL_Event,0.1))) return false;
+//            }
+//            Code[2]->AddEvent(t,data[0]);
             break;
         case 0x04: // Pressure Pulse??
             data[0]=buffer[pos++];
@@ -766,14 +768,16 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
         case 0x0d: // All the other ASV graph stuff.
             IPAP->AddEvent(t,data[0]=buffer[pos++]);    // 00=IAP
-            IPAPLo->AddEvent(t,buffer[pos++]);          // 01=IAP Low
-            IPAPHi->AddEvent(t,buffer[pos++]);          // 02=IAP High
+            data[4]=buffer[pos++];
+            IPAPLo->AddEvent(t,data[4]);                // 01=IAP Low
+            data[5]=buffer[pos++];
+            IPAPHi->AddEvent(t,data[5]);                // 02=IAP High
             LEAK->AddEvent(t,buffer[pos++]);            // 03=LEAK
             RR->AddEvent(t,buffer[pos++]);              // 04=Breaths Per Minute
             PTB->AddEvent(t,buffer[pos++]);             // 05=Patient Triggered Breaths
             MV->AddEvent(t,buffer[pos++]);              // 06=Minute Ventilation
-            tmp=buffer[pos++] * 10.0;
-            TV->AddEvent(t,tmp);                        // 07=Tidal Volume
+            //tmp=buffer[pos++] * 10.0;
+            TV->AddEvent(t,buffer[pos++]);              // 07=Tidal Volume
             SNORE->AddEvent(t,data[2]=buffer[pos++]);   // 08=Snore
             if (data[2]>0) {
                 if (!VS) {
@@ -783,7 +787,8 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
                 VS->AddEvent(t,0); //data[2]); // VSnore
             }
             EPAP->AddEvent(t,data[1]=buffer[pos++]);    // 09=EPAP
-            PS->AddEvent(t,data[0]-data[1]);            // Pressure Support
+            data[2]=data[0]-data[1];
+            PS->AddEvent(t,data[2]);            // Pressure Support
             break;
         case 0x03: // BIPAP Pressure
             qDebug() << "0x03 Observed in ASV data!!????";
@@ -845,6 +850,10 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     session->updateLast(t);
     session->m_cnt.clear();
     session->m_cph.clear();
+    session->settings[CPAP_IPAPLo]=session->Min(CPAP_IPAPLo);
+    session->settings[CPAP_IPAPHi]=session->Max(CPAP_IPAPHi);
+    session->settings[CPAP_PSMax]=session->Max(CPAP_IPAPHi) - session->Min(CPAP_EPAP);
+    session->settings[CPAP_PSMin]=session->Min(CPAP_IPAPLo) - session->Min(CPAP_EPAP);
     return true;
 
 }

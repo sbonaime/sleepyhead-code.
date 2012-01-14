@@ -48,8 +48,8 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x110d" class="data" name="IPAP" details="Inspiratory Pressure" label="IPAP" unit="cmH20" color="orange"/>
   <channel id="0x110e" class="data" name="EPAP" details="Expiratory Pressure" label="EPAP" unit="cmH20" color="light blue"/>
   <channel id="0x110f" class="data" name="PS" details="Pressure Support" label="PS" unit="cmH20" color="dark blue"/>
-  <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP" unit="cmH20" color="grey"/>
-  <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP" unit="cmH20" color="grey"/>
+  <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP Lo" unit="cmH20" color="grey"/>
+  <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP Hi" unit="cmH20" color="grey"/>
   <channel id="0x1112" class="data" name="RespEvent" details="Respiratory Events" label="Resp Events" unit="" color="black"/>
   <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="0-1" color="dark grey"/>
   <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Target Vent." unit="" color="dark cyan"/>
