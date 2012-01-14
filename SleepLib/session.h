@@ -140,9 +140,6 @@ public:
     QHash<ChannelID,double> m_sum;
     QHash<ChannelID,EventDataType> m_avg;
     QHash<ChannelID,EventDataType> m_wavg;
-    //QHash<ChannelID,EventDataType> m_90p;
-    //QHash<ChannelID,EventDataType> m_95p;
-    //QHash<ChannelID,EventDataType> m_med;
     QHash<ChannelID,EventDataType> m_min;
     QHash<ChannelID,EventDataType> m_max;
     QHash<ChannelID,EventDataType> m_cph;  // Counts per hour (eg AHI)

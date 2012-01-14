@@ -213,7 +213,7 @@ protected:
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
     bool LoadPLD(Session *sess,EDFParser &edf);
 
-    QMap<SessionID,QVector<QString> > sessfiles;
+    QMap<SessionID,QStringList> sessfiles;
 #ifdef DEBUG_EFFICIENCY
     QHash<ChannelID,qint64> channel_efficiency;
     QHash<ChannelID,qint64> channel_time;

@@ -541,6 +541,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     int size=flist.size();
 
     sessfiles.clear();
+    bool gz;
+
+    QMap<SessionID,QStringList>::iterator si;
 
     // For each file in flist...
     for (int i=0;i<size;i++) {
@@ -552,9 +555,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             continue;
 
         // Accept only .edf and .edf.gz files
-        if (!((filename.right(4).toLower() == "."+ext_EDF)
-            || (filename.right(7).toLower() == "."+ext_EDF+ext_gz)))
-            continue;
+        if (filename.right(4).toLower() != "."+ext_EDF) {
+
+            if (filename.right(7).toLower() != "."+ext_EDF+ext_gz)
+                continue;
+            gz=true;
+        } else gz=false;
 
         // Extract the session date out of the filename
         datestr=filename.section("_",0,1);
@@ -574,15 +580,39 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
         // and provide firmware updates for free to your customers.
         ////////////////////////////////////////////////////////////////////////////////////////////
-        if (sessfiles.find(sessionid)==sessfiles.end()) {
-            if (sessfiles.find(sessionid+2)!=sessfiles.end()) sessionid+=2;
-            else if (sessfiles.find(sessionid+1)!=sessfiles.end()) sessionid++;
-            else if (sessfiles.find(sessionid-1)!=sessfiles.end()) sessionid--;
-            else if (sessfiles.find(sessionid-2)!=sessfiles.end()) sessionid-=2;
+        si=sessfiles.find(sessionid);
+
+        if (si==sessfiles.end()) {
+            // Scan 3 seconds either way for sessions..
+            for (int j=1;j<3;j++) {
+
+                if ((si=sessfiles.find(sessionid+j)) != sessfiles.end()) {
+                    sessionid+=j;
+                    break;
+                } else if ((si=sessfiles.find(sessionid-j)) != sessfiles.end()) {
+                    sessionid-=j;
+                    break;
+                }
+            }
         }
 
         // Push current filename to ordered-by-sessionid list
-        sessfiles[sessionid].push_back(filename);
+        if (si!=sessfiles.end()) {
+            // Ignore if already compressed version of the same file exists.. (just in case)
+            if (!gz) {
+                if (si.value().contains(filename+ext_gz,Qt::CaseInsensitive))
+                    continue;
+            } else {
+                QString str=filename;
+                str.chop(3);
+                if (si.value().contains(str,Qt::CaseInsensitive))
+                    continue;
+            }
+
+            si.value().push_back(filename);
+        } else {
+            sessfiles[sessionid].push_back(filename);
+        }
 
         if ((i%10) ==0) {
             // Update the progress bar
@@ -603,7 +633,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     // Scan over file list and knock out of dayused list
     /////////////////////////////////////////////////////////////////////////////
     int dn;
-    for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si.key();
 
         // Earliest possible day number
@@ -963,13 +993,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         }
 
     }
-    bool gz;
     backup_path+=datalog+"/";
 
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
     /////////////////////////////////////////////////////////////////////////////
-    for (QMap<SessionID,QVector<QString> >::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
         sessionid=si.key();
 
         // Skip file if already imported
@@ -1246,7 +1275,6 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     for (int s=0;s<edf.GetNumSignals();s++) {
         recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
 
-        //qDebug() << edf.edfsignals[s]->label << " " << t;
         data=(char *)edf.edfsignals[s]->data;
         pos=0;
         tt=edf.startdate;

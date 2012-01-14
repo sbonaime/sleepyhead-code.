@@ -300,7 +300,6 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         } else if (filename.toLower()=="e") {
             // don't really give a crap about .004 files yet.
         }
-        //if (qprogress) qprogress->Pulse();
     }
 
     SessionID sid;
@@ -322,24 +321,21 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             QString session_s=fi.fileName().section(".",0,-2);
 
             ext=ext_s.toLong(&ok);
-            if (!ok) continue;
+            if (!ok)
+                continue;
+
             sid=session_s.toLong(&ok);
-            if (!ok) continue;
+            if (!ok)
+                continue;
 
-            if (m->SessionExists(sid)) continue; // could skip this and error check data by reloading summary.
-
-            //if (sessfiles[session].capacity()==0) sessfiles[session].resize(3);
+            if (m->SessionExists(sid))
+                continue; // could skip this and error check data by reloading summary.
 
             if ((ext==1) || (ext==0)) {
                 OpenFile(m,fi.canonicalFilePath()); // Open just the summary files first round
             } else {
                 sessfiles[sid].push_back(fi.canonicalFilePath()); // and keep the rest of the names
             }
-            //cnt++;
-
-            //if (qprogress) qprogress->setValue((float(cnt)/float(size)*33.0));
-            //QApplication::processEvents();
-
         }
     }
     cnt=0;
@@ -353,7 +349,6 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
                 if (name.endsWith(".002")) {
                     OpenFile(m,name);
                 } else if (name.endsWith(".005")) {
-                    //OpenFile(m,name);
                     OpenWaveforms(sid,name);
                 }
             }
