@@ -389,9 +389,16 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
             EventDataType max=sess->settings[CPAP_PressureMax].toDouble();
             sess->settings[CPAP_EPAP]=min;
             sess->settings[CPAP_IPAP]=max;
+
             sess->settings[CPAP_PS]=max-min;
             sess->settings.erase(sess->settings.find(CPAP_PressureMin));
             sess->settings.erase(sess->settings.find(CPAP_PressureMax));
+
+            sess->m_valuesummary.erase(sess->m_valuesummary.find(CPAP_Pressure));
+            sess->m_wavg.erase(sess->m_wavg.find(CPAP_Pressure));
+            sess->m_min.erase(sess->m_min.find(CPAP_Pressure));
+            sess->m_max.erase(sess->m_max.find(CPAP_Pressure));
+            sess->m_gain.erase(sess->m_gain.find(CPAP_Pressure));
 
 
         } else {
@@ -457,6 +464,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     min=float(data[0x03])/10.0;
     max=float(data[0x04])/10.0;
     int offset=0;
+
     if (version==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
         offset=4;   // non zero adds 4 extra fields..
     }
@@ -465,7 +473,8 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->settings[CPAP_RampPressure]=(EventDataType)data[offset+0x07]/10.0;
 
     if (max>0) { // Ignoring bipap until we see some more data during import
-        session->settings[CPAP_Mode]=(int)MODE_APAP;
+        session->settings[CPAP_Mode]=(version==5) ? (int)MODE_ASV : (int)MODE_APAP;
+
         session->settings[CPAP_PressureMin]=(EventDataType)min;
         session->settings[CPAP_PressureMax]=(EventDataType)max;
     } else {
@@ -476,7 +485,13 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     // This is incorrect..
     if (data[offset+0x08] & 0x80) { // Flex Setting
         if (data[offset+0x08] & 0x08) {
-            if (max>0) session->settings[CPAP_PresReliefType]=(int)PR_AFLEX;
+            if (max>0) {
+                if (version==5) {
+                    session->settings[CPAP_PresReliefType]=(int)PR_BIFLEX;
+                } else {
+                    session->settings[CPAP_PresReliefType]=(int)PR_AFLEX;
+                }
+            }
             else session->settings[CPAP_PresReliefType]=(int)PR_CFLEXPLUS;
         } else session->settings[CPAP_PresReliefType]=(int)PR_CFLEX;
     } else session->settings[CPAP_PresReliefType]=(int)PR_NONE;
@@ -533,15 +548,17 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         short medp=data[offset+0x19];
         short p90p=data[offset+0x18];
 
-        if (minp>0) session->setMin(CPAP_Pressure,EventDataType(minp)*0.10);
-        if (maxp>0) session->setMax(CPAP_Pressure,EventDataType(maxp)*0.10);
-        if (medp>0) session->setWavg(CPAP_Pressure,EventDataType(medp)*0.10); // ??
+        if (version<5) {
+            if (minp>0) session->setMin(CPAP_Pressure,EventDataType(minp)*0.10);
+            if (maxp>0) session->setMax(CPAP_Pressure,EventDataType(maxp)*0.10);
+            if (medp>0) session->setWavg(CPAP_Pressure,EventDataType(medp)*0.10); // ??
 
-        session->m_gain[CPAP_Pressure]=0.1;
-        session->m_valuesummary[CPAP_Pressure][minp]=5;
-        session->m_valuesummary[CPAP_Pressure][medp]=46;
-        session->m_valuesummary[CPAP_Pressure][p90p]=44;
-        session->m_valuesummary[CPAP_Pressure][maxp]=5;
+            session->m_gain[CPAP_Pressure]=0.1;
+            session->m_valuesummary[CPAP_Pressure][minp]=5;
+            session->m_valuesummary[CPAP_Pressure][medp]=46;
+            session->m_valuesummary[CPAP_Pressure][p90p]=44;
+            session->m_valuesummary[CPAP_Pressure][maxp]=5;
+        }
 
 //        if (p90p>0) {
 //            session->set90p(CPAP_Pressure,p90p);
