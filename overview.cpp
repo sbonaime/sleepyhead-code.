@@ -223,6 +223,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     mv->addSlice(CPAP_MinuteVent,QColor("green"),ST_max,maxperc);
     MV->AddLayer(mv);
 
+    // should merge...
     tgmv=new SummaryChart(tr("L/m"),GT_LINE);
     tgmv->addSlice(CPAP_TgMV,QColor("light blue"),ST_MIN);
     tgmv->addSlice(CPAP_TgMV,QColor("blue"),ST_mid,0.5);

@@ -171,7 +171,7 @@
            <item>
             <widget class="QPushButton" name="CloseButton">
              <property name="text">
-              <string>&amp;No Thanks</string>
+              <string>Maybe &amp;Later</string>
              </property>
             </widget>
            </item>
@@ -187,13 +187,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item>
-            <widget class="QPushButton" name="LaterButton">
-             <property name="text">
-              <string>&amp;Remind Me Later</string>
-             </property>
-            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="upgradeButton">

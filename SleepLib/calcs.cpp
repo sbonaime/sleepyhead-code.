@@ -545,7 +545,10 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
 void FlowParser::flagEvents()
 {
+    if (!PROFILE.cpap->userEventFlagging())  return;
+
     int numbreaths=breaths.size();
+    if (numbreaths<5) return;
 
     EventDataType val,mx,mn;
     QVector<EventDataType> br;
@@ -577,7 +580,7 @@ void FlowParser::flagEvents()
 
     const EventDataType perc=0.6;
     int idx=float(br.size())*perc;
-    nth_element(br.begin(),br.begin()+idx,br.end());
+    nth_element(br.begin(),br.begin()+idx,br.end()-1);
 
     EventDataType peak=br[idx];//*(br.begin()+idx);
 
@@ -906,69 +909,512 @@ int calcAHIGraph(Session *session)
     return cnt;
 }
 
+struct TimeValue {
+    TimeValue() {
+        time=0;
+        value=0;
+    }
+    TimeValue(qint64 t, EventStoreType v) {
+        time=t;
+        value=v;
+    }
+    TimeValue(const TimeValue & copy) {
+        time=copy.time;
+        value=copy.value;
+    }
+    qint64 time;
+    EventStoreType value;
+};
+bool operator<(const TimeValue &p1, const TimeValue & p2) {
+    return p1.time < p2.time;
+}
+
+struct zMaskProfile {
+public:
+    zMaskProfile(MaskType type, QString name);
+
+    void reset() { pressureleaks.clear(); }
+    void scanLeaks(Session * session);
+    void scanPressure(Session * session);
+    void updatePressureMin();
+    void updateProfile(Session * session);
+
+    QMap<EventStoreType, EventDataType> pressuremin;
+
+    QVector<TimeValue> Pressure;
+
+protected:
+    void scanLeakList(EventList * leak);
+    void scanPressureList(EventList * el);
+
+    MaskType    m_type;
+    QString     m_name;
+
+
+    // QHash<pressure, QMap<leak, leakcount> >
+    QHash<EventStoreType, QMap<EventStoreType,quint32> > pressureleaks;
+
+    //QHash<EventStoreType, int> pressurecount;
+
+};
+zMaskProfile::zMaskProfile(MaskType type, QString name)
+    :m_type(type), m_name(name)
+{
+}
+
+void zMaskProfile::scanPressureList(EventList * el)
+{
+    qint64 start=el->first();
+    int count=el->count();
+    EventStoreType * dptr=el->rawData();
+    EventStoreType * eptr=dptr+count;
+    quint32 * tptr=el->rawTime();
+    qint64 time;
+    EventStoreType pressure;
+
+    for (;dptr < eptr; dptr++) {
+        time=start+ *tptr++;
+        pressure=*dptr;
+        Pressure.push_back(TimeValue(time,pressure));
+    }
+}
+void zMaskProfile::scanPressure(Session * session)
+{
+    Pressure.clear();
+
+    int prescnt=0;
+    EventStoreType pressure;
+    if (session->eventlist.contains(CPAP_Pressure)) {
+        prescnt=session->count(CPAP_Pressure);
+        Pressure.reserve(prescnt);
+        for (int j=0;j<session->eventlist[CPAP_Pressure].size();j++) {
+            QVector<EventList *> & el=session->eventlist[CPAP_Pressure];
+            for (int e=0;e<el.size();e++) {
+                scanPressureList(el[e]);
+            }
+        }
+    } else if (session->eventlist.contains(CPAP_IPAP)) {
+        prescnt=session->count(CPAP_IPAP);
+        Pressure.reserve(prescnt);
+        for (int j=0;j<session->eventlist[CPAP_IPAP].size();j++) {
+            QVector<EventList *> & el=session->eventlist[CPAP_IPAP];
+            for (int e=0;e<el.size();e++) {
+                scanPressureList(el[e]);
+            }
+        }
+    }
+    qSort(Pressure);
+}
+void zMaskProfile::scanLeakList(EventList * el)
+{
+    qint64 start=el->first();
+    int count=el->count();
+    EventStoreType * dptr=el->rawData();
+    EventStoreType * eptr=dptr+count;
+    quint32 * tptr=el->rawTime();
+    EventDataType gain=el->gain();
+
+    EventStoreType pressure,leak;
+
+    EventDataType fleak;
+    QMap<EventStoreType, EventDataType>::iterator pmin;
+    qint64 ti;
+    bool found;
+    for (;dptr<eptr;dptr++) {
+        leak=*dptr;
+        ti=start + *tptr++;
+
+        found=false;
+        pressure=Pressure[0].value;
+        for (int i=0;i<Pressure.size()-1;i++) {
+            const TimeValue & p1=Pressure[i];
+            const TimeValue & p2=Pressure[i+1];
+
+            if ((p2.time > ti) && (p1.time <= ti)) {
+                pressure=p1.value;
+                found=true;
+                break;
+            } else if (p2.time==ti) {
+                pressure=p2.value;
+                found=true;
+                break;
+            }
+        }
+        if (found) {
+            pressureleaks[pressure][leak]++;
+            pmin=pressuremin.find(pressure);
+            fleak=EventDataType(leak) * gain;
+            if (pmin==pressuremin.end()) {
+                pressuremin[pressure]=fleak;
+            } else {
+                if (pmin.value() > fleak)
+                    pmin.value()=fleak;
+            }
+        } else {
+            int i=5;
+        }
+    }
+
+
+}
+void zMaskProfile::scanLeaks(Session * session)
+{
+    QVector<EventList *> & elv=session->eventlist[CPAP_LeakTotal];
+    for (int i=0;i<elv.size();i++) {
+        scanLeakList(elv[i]);
+    }
+}
+void zMaskProfile::updatePressureMin()
+{
+    QHash<EventStoreType, QMap<EventStoreType,quint32> >::iterator it;
+
+    EventStoreType pressure;
+    //EventDataType perc=0.1;
+    //EventDataType tmp,l1,l2;
+    //int idx1, idx2,
+    int lks;
+    double SN;
+    double percentile=0.75;
+
+    double p=100.0*percentile;
+    double nth,nthi;
+
+    int sum1,sum2,w1,w2,N,k;
+
+    for (it=pressureleaks.begin();it!=pressureleaks.end();it++) {
+        pressure=it.key();
+        QMap<EventStoreType,quint32> & leakmap = it.value();
+        lks=leakmap.size();
+        SN=0;
+
+        // First sum total counts of all leaks
+        for (QMap<EventStoreType,quint32>::iterator lit=leakmap.begin();lit!=leakmap.end();lit++) {
+            SN+=lit.value();
+        }
+
+
+        nth=double(SN)*percentile; // index of the position in the unweighted set would be
+        nthi=floor(nth);
+
+        sum1=0,sum2=0;
+        w1,w2=0;
+
+        EventDataType v1=0,v2;
+
+        N=leakmap.size();
+        k=0;
+
+        bool found=false;
+        for (QMap<EventStoreType,quint32>::iterator lit=leakmap.begin();lit!=leakmap.end();lit++,k++) {
+        //for (k=0;k < N;k++) {
+            v1=lit.key();
+            w1=lit.value();
+            sum1+=w1;
+
+            if (sum1 > nthi) {
+                pressuremin[pressure]=v1;
+                found=true;
+                break;
+            }
+            if (sum1 == nthi) {
+                break; // boundary condition
+            }
+        }
+        if (found) continue;
+        if (k>=N) {
+            pressuremin[pressure]=v1;
+            continue;
+        }
+
+        v2=(leakmap.begin()+(k+1)).key();
+        w2=(leakmap.begin()+(k+1)).value();
+        sum2=sum1+w2;
+        // value lies between v1 and v2
+
+        double px=100.0/double(SN); // Percentile represented by one full value
+
+        // calculate percentile ranks
+        double p1=px * (double(sum1)-(double(w1)/2.0));
+        double p2=px * (double(sum2)-(double(w2)/2.0));
+
+        // calculate linear interpolation
+        double v=v1 + ((p-p1)/(p2-p1)) * (v2-v1);
+        pressuremin[pressure]=v;
+
+    }
+
+
+//    for (it=pressureleaks.begin();it!=pressureleaks.end();it++) {
+//        pressure=it.key();
+//        QMap<EventStoreType,quint32> & leakmap = it.value();
+//        lks=leakmap.size();
+//        tmp=perc * EventDataType(lks);
+//        idx1=floor(tmp);
+//        idx2=ceil(tmp);
+//        if (idx1==idx2) {
+//            pressuremin[pressure]=(leakmap.begin()+int(idx1)).key();
+//        } else if (idx1==lks-1) {
+//            pressuremin[pressure]=(leakmap.begin()+int(idx1)).key();
+//        } else {
+//            l1=(leakmap.begin()+int(idx1)).key();
+//            l2=(leakmap.begin()+int(idx2)).key();
+//            tmp=l1+(l2-l1)*(tmp-idx1);
+//            pressuremin[pressure]=tmp;
+//        }
+
+//    }
+    //QMap<EventStoreType, EventDataType> pressuremin;
+}
+
+void zMaskProfile::updateProfile(Session * session)
+{
+    scanPressure(session);
+    scanLeaks(session);
+    updatePressureMin();
+}
+
+zMaskProfile maskProfile(Mask_NasalPillows,"ResMed Swift FX");
+
 int calcLeaks(Session *session)
 {
     if (session->machine()->GetType()!=MT_CPAP) return 0;
     if (session->eventlist.contains(CPAP_Leak)) return 0; // abort if already there
     if (!session->eventlist.contains(CPAP_LeakTotal)) return 0; // can't calculate without this..
 
-    if (session->settings[CPAP_Mode].toInt()>=MODE_APAP) return 0; // Don't bother calculating when in APAP mode
+   // maskProfile.reset();
+    maskProfile.updateProfile(session);
 
-    const qint64 winsize=3600000;
+    EventList *leak=session->AddEventList(CPAP_Leak,EVL_Event,1);
 
-    //qint64 first=session->first(), last=session->last(), f;
-
-    EventList *leak=new EventList(EVL_Event);
-    session->eventlist[CPAP_Leak].push_back(leak);
-
-    const int rbsize=128;
-    EventDataType rbuf[rbsize],tmp,median;
-    qint64 rtime[rbsize],ti;
-    int rpos=0;
-    int tcnt=0;
-    QVector<EventDataType> med;
-
-    qint64 start;
-    quint32 * tptr;
-    EventStoreType * dptr;
-    EventDataType gain;
     for (int i=0;i<session->eventlist[CPAP_LeakTotal].size();i++) {
         EventList & el=*session->eventlist[CPAP_LeakTotal][i];
-        gain=el.gain();
-        dptr=el.rawData();
+        EventDataType gain=el.gain(),tmp,val;
+        int count = el.count();
+        EventStoreType *dptr=el.rawData();
+        EventStoreType *eptr=dptr+count;
+        quint32 * tptr=el.rawTime();
+        qint64 start=el.first(),ti;
+        EventStoreType pressure;
         tptr=el.rawTime();
         start=el.first();
 
-        for (unsigned j=0;j<el.count();j++) {
-            tmp=*dptr++ * gain;
+        bool found;
+        for (; dptr < eptr; dptr++) {
+            tmp=EventDataType(*dptr) * gain;
             ti=start+ *tptr++;
 
-            rbuf[rpos]=tmp;
-            rtime[rpos]=ti;
-            tcnt++;
-            rpos++;
+            found=false;
+            pressure=maskProfile.Pressure[0].value;
+            for (int i=0;i<maskProfile.Pressure.size()-1;i++) {
+                const TimeValue & p1=maskProfile.Pressure[i];
+                const TimeValue & p2=maskProfile.Pressure[i+1];
 
-            int rcnt;
-            if (tcnt<rbsize) rcnt=tcnt; else rcnt=rbsize;
+                if ((p2.time > ti) && (p1.time <= ti)) {
+                    pressure=p1.value;
+                    found=true;
+                    break;
+                } else if (p2.time==ti) {
+                    pressure=p2.value;
+                    found=true;
+                    break;
+                }
+            }
+            if (found) {
+                val=tmp-maskProfile.pressuremin[pressure];
 
-            med.clear();
-            for (int k=0;k<rcnt;k++) {
-                if (rtime[k] > ti-winsize) // if fits in time window, add to the list
-                    med.push_back(rbuf[k]);
+                if (val < 0) {
+                    val=0;
+                }
+
+                leak->AddEvent(ti,val);
             }
 
-            int idx=float(med.size() * 0.0);
-            if (idx>=med.size()) idx--;
-            nth_element(med.begin(),med.begin()+idx,med.end());
-            median=tmp-(*(med.begin()+idx));
-
-            if (median<0) median=0;
-            leak->AddEvent(ti,median);
-
-            rpos=rpos % rbsize;
         }
     }
     return leak->count();
+
+
+    //if (session->settings[CPAP_Mode].toInt()>=MODE_BIPAP) return 0; // Don't bother calculating when in APAP mode
+
+
+//    int prescnt=0;
+//    EventStoreType pressure;
+//    if (session->eventlist.contains(CPAP_Pressure)) {
+//        prescnt=session->count(CPAP_Pressure);
+//        Pressure.reserve(prescnt);
+//        for (int j=0;j<session->eventlist[CPAP_Pressure].size();j++) {
+//            QVector<EventList *> & el=session->eventlist[CPAP_Pressure];
+//            for (int e=0;e<el.size();e++) {
+//                EventList & ev=*(el[e]);
+//                for (int i=0;i<ev.count();i++) {
+//                    pressure=ev.raw(i);
+//                    Pressure.push_back(TimeValue(ev.time(i),pressure));
+//                    pressurecount[pressure]++;
+//                }
+//            }
+//        }
+//    } else if (session->eventlist.contains(CPAP_IPAP)) {
+//        prescnt=session->count(CPAP_IPAP);
+//        Pressure.reserve(prescnt);
+//        for (int j=0;j<session->eventlist[CPAP_IPAP].size();j++) {
+//            QVector<EventList *> & el=session->eventlist[CPAP_IPAP];
+//            for (int e=0;e<el.size();e++) {
+//                EventList & ev=*(el[e]);
+//                for (int i=0;i<ev.count();i++) {
+//                    pressure=ev.raw(i);
+//                    Pressure.push_back(TimeValue(ev.time(i),pressure));
+//                    pressurecount[pressure]++;
+//                }
+//            }
+//        }
+//    }
+//    qSort(Pressure);
+////    const qint64 winsize=3600000;
+
+//    //qint64 first=session->first(), last=session->last(), f;
+
+//
+
+//    qint64 start,ti;
+//    quint32 * tptr;
+//    EventStoreType * dptr;
+//    EventDataType gain,val,tmp;
+
+
+//    int pcnt=0;
+
+//    for (int i=0;i<session->eventlist[CPAP_LeakTotal].size();i++) {
+//        EventList & el=*session->eventlist[CPAP_LeakTotal][i];
+//        gain=el.gain();
+//        dptr=el.rawData();
+//        tptr=el.rawTime();
+//        start=el.first();
+//        pcnt=0;
+
+//        for (unsigned j=0;j<el.count();j++) {
+//            tmp=*dptr++ * gain;
+//            ti=start+ *tptr++;
+
+//            pressure=Pressure.at(Pressure.size()-1).value;
+//            for (pcnt=0;pcnt < Pressure.size()-1;pcnt++) {
+
+//                const TimeValue & p1=Pressure[pcnt];
+//                const TimeValue & p2=Pressure[pcnt+1];
+
+//                if ((p2.time > ti) && (p1.time < ti)) {
+//                    pressure=p1.value;
+//                    break;
+//                }
+//            }
+
+//            if (pcnt > 0) pcnt--;
+
+//            // leak and pressure intersection
+
+
+
+//            pressureleaks[pressure].push_back(tmp);
+//            // pressure current leak value is at..
+//        }
+//    }
+//    if (pressureleaks.size()>2) {
+//        int i=5;
+//    }
+//    int size=0,siz,idx;
+//    EventDataType perc=0.05;
+//    EventDataType f1,f2,fidx,diff;
+//    QMap<EventStoreType, EventDataType> presleakmin;
+//    QHash<EventStoreType, QVector<EventDataType> >::iterator it;
+//    for (it=pressureleaks.begin();it!=pressureleaks.end();it++) {
+//        pressure=it.key();
+//        QVector<EventDataType> & leaks=it.value();
+//        siz=leaks.size();
+//        // Only keep mask pressure value if there is enough samples to be reasonably accurate
+
+////       if ((pls<60) || (siz > 10)) {
+//            // Grab the 'perc' percentile of leak data
+//            fidx=float(siz) * perc;
+//            idx=fidx;
+//            diff=fidx-float(idx);
+//            nth_element(leaks.begin(),leaks.begin()+idx,leaks.end());
+//            f1=leaks.at(idx);
+//            if (idx < (siz-1)) {
+//                nth_element(leaks.begin(),leaks.begin()+idx+1,leaks.end());
+//                f2=leaks.at(idx+1);
+//                val=f1 + (f2-f1)*diff;
+//            } else val=f1;
+//            presleakmin[pressure]=val;
+//  //      }
+
+//        size+=siz;
+//    }
+
+//    QMap<EventStoreType, EventDataType>::iterator pit=presleakmin.begin(),npit;
+//    EventStoreType k;
+
+//    EventDataType p1,p2,v1,v2;
+//    bool skip;
+
+//    ////////////////////////////////////////////////////////////////////////
+//    // Generate the Mask Profile
+//    ////////////////////////////////////////////////////////////////////////
+//    if (pressureleaks.size()>presleakmin.size()) {
+//        for (it=pressureleaks.begin();it!=pressureleaks.end();it++) {
+//            pressure=it.key();
+
+//            skip=false;
+//            for (pit=presleakmin.begin();pit!=presleakmin.end();pit++) {
+//                k=pit.key();
+//                // if already in pressure table, skip this record.
+//                if (k==pressure) {
+//                    skip=true;
+//                    break;
+//                }
+//                if (k > pressure) break;
+//            }
+//            if (skip) continue;
+
+//            // rewind a step if not at the beginning already
+//            npit=pit;
+//            if (pit!=presleakmin.begin()) pit--;
+
+//            if (npit==presleakmin.end()) { // last entry..
+//                //can do better here by calculate the general trend
+//                presleakmin[pressure]=pit.value();
+//                break;
+//            }
+//            if (npit==pit) { // first entry missing (unusual)
+//                presleakmin[pressure]=pit.value();
+//                continue;
+//            }
+
+//            p1=pit.key();
+//            v1=pit.value();
+//            p2=npit.key();
+//            v2=npit.value();
+
+//            // Interpolate the pressure value in between the two valid data samples.
+//            val= v1+ ((pressure-p1)/(p2-p1) * (v2-v1));
+//            presleakmin[pressure]=val;
+//        }
+
+//    }
+
+//    // Secret Evil algorithm :)
+//    QList<EventDataType> values;
+//    values.reserve(presleakmin.size());
+//    for (npit=presleakmin.begin();npit!=presleakmin.end();npit++) {
+//        values.push_back(npit.value());
+//    }
+//    qSort(values);
+//    int i=0;
+//    for (npit=presleakmin.begin();npit!=presleakmin.end();npit++) {
+//        npit.value()=values.at(i++);
+//    }
+//    if (presleakmin.size()>2) {
+//        int i=5;
+//    }
+
 }
 
 

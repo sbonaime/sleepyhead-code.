@@ -206,7 +206,9 @@ void SummaryChart::SetDay(Day * nullday)
                             case ST_SETAVG: tmp=day->settings_avg(code); break;
                             case ST_SETWAVG: tmp=day->settings_wavg(code); break;
                             case ST_SETSUM: tmp=day->settings_sum(code); break;
-                        default:    break;
+                        default:
+                            tmp=0;
+                            break;
                         }
                         if (suboffset>0) {
                             tmp-=suboffset;

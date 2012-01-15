@@ -212,12 +212,13 @@ void gTAPGraph::SetDay(Day *d)
     bool rfirst=true;
     //bool changed;
     EventDataType gain=1,offset=0;
+    QHash<ChannelID,QVector<EventList *> >::iterator ei;
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
         if (!(*s)->enabled())  continue;
 
-        if ((*s)->eventlist.find(m_code)==(*s)->eventlist.end()) continue;
-        for (int q=0;q<(*s)->eventlist[m_code].size();q++) {
-            EventList &el=*(*s)->eventlist[m_code][q];
+        if ((ei=(*s)->eventlist.find(m_code))==(*s)->eventlist.end()) continue;
+        for (int q=0;q<ei.value().size();q++) {
+            EventList &el=*(ei.value()[q]);
             lasttime=el.time(0);
             lastval=el.raw(0);
             if (rfirst) {
