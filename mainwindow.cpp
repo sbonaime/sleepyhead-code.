@@ -359,8 +359,9 @@ void MainWindow::on_action_Import_Data_triggered()
     }
     if (successful) {
         PROFILE.Save();
-        if (daily) daily->ReloadGraphs();
         if (overview) overview->ReloadGraphs();
+        on_summaryButton_clicked();
+        if (daily) daily->LoadDate(daily->getDate());
         if ((goodlocations.size()>0) && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
             for (int i=0;i<goodlocations.size();i++) {
                 importLocations.push_back(goodlocations[i]);
@@ -375,7 +376,6 @@ void MainWindow::on_action_Import_Data_triggered()
             }
             file.close();
         }
-        on_summaryButton_clicked();
     } else {
         mainwin->Notify("Import Problem\n\nCouldn't find any new Machine Data at the locations given");
     }

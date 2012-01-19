@@ -107,6 +107,7 @@ void SummaryChart::SetDay(Day * nullday)
     }
     int suboffset;
     SummaryType type;
+
     for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
         dn=tt/86400;

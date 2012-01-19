@@ -69,6 +69,10 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
     OverlayDisplayType odt=PROFILE.appearance->overlayType();
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
     int count;
+
+    qint64 clockdrift=qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 drift=0;
+
     // For each session, process it's eventlist
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
 
@@ -77,12 +81,13 @@ void gLineOverlayBar::paint(gGraph & w, int left, int topp, int width, int heigh
         if (cei==(*s)->eventlist.end()) continue;
         QVector<EventList *> & evlist=cei.value();
         if (evlist.size()==0) continue;
+        drift=((*s)->machine()->GetType()==MT_CPAP) ? clockdrift : 0;
 
         // Could loop through here, but nowhere uses more than one yet..
         for (int k=0;k<evlist.size();k++) {
             EventList & el=*(evlist[k]);
             count=el.count();
-            stime=el.first();
+            stime=el.first() + drift;
             dptr=el.rawData();
             eptr=dptr+count;
             tptr=el.rawTime();

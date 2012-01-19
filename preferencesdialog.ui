@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>421</height>
+    <height>429</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -42,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -609,7 +609,7 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_11">
-         <item row="1" column="0" colspan="3">
+         <item row="1" column="0" colspan="2">
           <widget class="QCheckBox" name="AddRERAtoAHI">
            <property name="font">
             <font>
@@ -625,7 +625,7 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
-         <item row="2" column="0" colspan="3">
+         <item row="2" column="0" colspan="2">
           <widget class="QGroupBox" name="complianceGroupbox">
            <property name="toolTip">
             <string>Don't show any compliance information</string>
@@ -691,7 +691,7 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item row="3" column="0" colspan="3">
+         <item row="3" column="0" colspan="2">
           <widget class="QGroupBox" name="customEventGroupbox">
            <property name="toolTip">
             <string>Enable/disable experimental event flagging enhancements. 
@@ -827,7 +827,7 @@ p, li { white-space: pre-wrap; }
            </layout>
           </widget>
          </item>
-         <item row="4" column="0" colspan="3">
+         <item row="4" column="0" colspan="2">
           <widget class="QGroupBox" name="ahiGraphGroupbox">
            <property name="title">
             <string>AHI/Hour Graph Settings</string>
@@ -903,6 +903,39 @@ Defaults to 60 minutes.. Highly recommend it's left at this value.</string>
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_44">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>CPAP Clock Drift</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="clockDrift">
+           <property name="toolTip">
+            <string>Don't touch this unless you know your CPAP clock is out.
+Try to sync it to your PC's clock (which should be synced to a timeserver)</string>
+           </property>
+           <property name="suffix">
+            <string> seconds</string>
+           </property>
+           <property name="minimum">
+            <number>-7200</number>
+           </property>
+           <property name="maximum">
+            <number>7200</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -399,8 +399,8 @@ void Profile::RemoveSession(Session * sess)
                     if (!first || first>sess.first()) first=sess.first();
                     if (!last || last<sess.last()) last=sess.last();
                 }
-                day->setFirst(first);
-                day->setLast(last);
+                // day->setFirst(first);
+                // day->setLast(last);
                 return;
             }
         }

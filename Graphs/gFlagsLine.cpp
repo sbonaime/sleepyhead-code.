@@ -151,9 +151,13 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     int idx;
     QHash<ChannelID,QVector<EventList *> >::iterator cei;
 
+    qint64 clockdrift=qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 drift=0;
+
     for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled())
             continue;
+        drift=((*s)->machine()->GetType()==MT_CPAP) ? clockdrift : 0;
 
         cei=(*s)->eventlist.find(m_code);
         if (cei==(*s)->eventlist.end())
@@ -162,7 +166,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
         QVector<EventList *> & evlist=cei.value();
         for (int k=0;k<evlist.size();k++) {
             EventList & el=*(evlist[k]);
-            start=el.first();
+            start=el.first() + drift;
             tptr=el.rawTime();
             dptr=el.rawData();
             int np=el.count();

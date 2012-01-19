@@ -457,7 +457,7 @@ void CMS50Serial::import_process()
     while (i<(size-3)) {
         a=data.at(i++); // low bits are supposedly the high bits of the heart rate
         pl=((data.at(i++) & 0x7f) | ((a & 1) << 7)) & 0xff;
-        o2=data.at(i++);
+        o2=data.at(i++) & 0x7f;
         if (pl!=0) {
             if (lastpl!=pl) {
                 if (lastpl==0 || !pulse) {
@@ -709,7 +709,7 @@ void CMS50Serial::ReadyRead()
                 i+=3;
             } else {
                 pl=(bytes[i] & 0x7f) | hb;
-                o2=bytes[i+1];
+                o2=bytes[i+1] & 0x7f;
                 addPulse(lasttime,pl);
                 addSpO2(lasttime,o2);
                 i+=2;
@@ -1056,7 +1056,7 @@ void Oximetry::on_RunButton_toggled(bool checked)
         secondSPO2Update=true;
 
         qint64 f=oximeter->getSession()->first();
-        day->setFirst(f);
+        //day->setFirst(f);
         plethy->setMinX(f);
         pulse->setMinX(f);
         spo2->setMinX(f);
@@ -1091,7 +1091,7 @@ void Oximetry::data_changed()
 
     qint64 last=oximeter->lastTime();
     qint64 first=last-30000L;
-    day->setLast(last);
+    //day->setLast(last);
 
     plethy->setMinX(first);
     plethy->setMaxX(last);
@@ -1324,8 +1324,7 @@ void Oximetry::on_saveButton_clicked()
         oximeter->getMachine()->Save();
         day->getSessions().clear();
 
-
-        mainwin->getDaily()->ReloadGraphs();
+        mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
         mainwin->getOverview()->ReloadGraphs();
         GraphView->setEmptyText("No Oximetry Data");
         GraphView->redraw();
@@ -1398,7 +1397,7 @@ bool Oximetry::openSPOFile(QString filename)
     qint64 t2=session->first(OXI_SPO2);
     qint64 t3=qMin(t1,t2);
     session->set_first(t3);
-    day->setFirst(t3);
+    //day->setFirst(t3);
     int zi=t3/1000L;
     session->SetSessionID(zi);
     date.fromTime_t(zi);
@@ -1410,7 +1409,7 @@ bool Oximetry::openSPOFile(QString filename)
     t2=session->last(OXI_SPO2);
     t3=qMax(t1,t2);
     session->set_last(t3);
-    day->setLast(t3);
+    //day->setLast(t3);
     CONTROL->setVisible(false);
 
     updateGraphs();
@@ -1471,7 +1470,7 @@ bool Oximetry::openSPORFile(QString filename)
     qint64 t2=session->first(OXI_SPO2);
     qint64 t3=qMin(t1,t2);
     session->set_first(t3);
-    day->setFirst(t3);
+    //day->setFirst(t3);
     int zi=t3/1000L;
     session->SetSessionID(zi);
     date.fromTime_t(zi);
@@ -1484,7 +1483,7 @@ bool Oximetry::openSPORFile(QString filename)
     t2=session->last(OXI_SPO2);
     t3=qMax(t1,t2);
     session->set_last(t3);
-    day->setLast(t3);
+    //day->setLast(t3);
 
 
     //PLETHY->setVisible(false);
@@ -1599,8 +1598,8 @@ void Oximetry::updateGraphs()
     SPO2->setRecMinY(90);
     SPO2->setRecMaxY(100);
 
-    day->setFirst(first);
-    day->setLast(last);
+    //day->setFirst(first);
+    //day->setLast(last);
     pulse->setMinY(session->Min(OXI_Pulse));
     pulse->setMaxY(session->Max(OXI_Pulse));
     spo2->setMinY(session->Min(OXI_SPO2));

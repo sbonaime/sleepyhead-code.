@@ -460,6 +460,8 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     QHash<ChannelID,int> mccnt;
     int total_events=0;
     bool userflags=p_profile->cpap->userEventFlagging();
+
+    qint64 drift=0, clockdrift=PROFILE.cpap->clockDrift()*1000L;
     for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -486,6 +488,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_VSnore)) continue;
 
             if (!userflags && ((code==CPAP_UserFlag1) || (code==CPAP_UserFlag2) || (code==CPAP_UserFlag3))) continue;
+            drift=(*s)->machine()->GetType()==MT_CPAP ? clockdrift : 0;
 
             QTreeWidgetItem *mcr;
             if (mcroot.find(code)==mcroot.end()) {
@@ -512,13 +515,13 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 EventList & ev=*(m.value()[z]);
 
                 for (quint32 o=0;o<ev.count();o++) {
-                    qint64 t=ev.time(o);
+                    qint64 t=ev.time(o)+drift;
 
                     if (code==CPAP_CSR) { // center it in the middle of span
                         t-=float(ev.raw(o)/2.0)*1000.0;
                     }
                     QStringList a;
-                    QDateTime d=QDateTime::fromTime_t(t/1000);
+                    QDateTime d=QDateTime::fromTime_t(t/1000L);
                     QString s=QString("#%1: %2 (%3)").arg((int)(++mccnt[code]),(int)3,(int)10,QChar('0')).arg(d.toString("HH:mm:ss")).arg(m.value()[z]->raw(o));
                     a.append(s);
                     QTreeWidgetItem *item=new QTreeWidgetItem(a);
@@ -1302,10 +1305,15 @@ void Daily::Load(QDate date)
 
             ui->bookmarkTable->blockSignals(true);
 
+
+            qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
+            Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
+            drift=(dday!=NULL) ? clockdrift : 0;
+
             bool ok;
             for (int i=0;i<start.size();i++) {
-                qint64 st=start.at(i).toLongLong(&ok);
-                qint64 et=end.at(i).toLongLong(&ok);
+                qint64 st=start.at(i).toLongLong(&ok)+drift;
+                qint64 et=end.at(i).toLongLong(&ok)+drift;
 
                 QDateTime d=QDateTime::fromTime_t(st/1000L);
                 //int row=ui->bookmarkTable->rowCount();
@@ -1666,6 +1674,10 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
     int row=item->row();
     qint64 st,et;
 
+//    qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
+//    Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
+//    drift=(dday!=NULL) ? clockdrift : 0;
+
     QTableWidgetItem *it=ui->bookmarkTable->item(row,1);
     bool ok;
     st=it->data(Qt::UserRole).toLongLong(&ok);
@@ -1712,8 +1724,15 @@ void Daily::on_addBookmarkButton_clicked()
     dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     ui->bookmarkTable->setItem(row,0,dw);
     ui->bookmarkTable->setItem(row,1,tw);
-    tw->setData(Qt::UserRole,st);
-    tw->setData(Qt::UserRole+1,et);
+    qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
+    Day * day=PROFILE.GetDay(previous_date,MT_CPAP);
+    drift=(day!=NULL) ? clockdrift : 0;
+
+    // Counter CPAP clock drift for storage, in case user changes it later on
+    // This won't fix the text string names..
+
+    tw->setData(Qt::UserRole,st-drift);
+    tw->setData(Qt::UserRole+1,et-drift);
 
     ui->bookmarkTable->blockSignals(false);
     update_Bookmarks();

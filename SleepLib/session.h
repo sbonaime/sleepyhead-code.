@@ -71,14 +71,10 @@ public:
     void setEnabled(bool b);
 
     //! \brief Return the start of this sessions time range (in milliseconds since epoch)
-    qint64 first() {
-        return s_first;
-    }
+    qint64 first();
 
     //! \brief Return the end of this sessions time range (in milliseconds since epoch)
-    qint64 last() {
-        return s_last;
-    }
+    qint64 last();
 
     //! \brief Return the millisecond length of this session
     qint64 length() {

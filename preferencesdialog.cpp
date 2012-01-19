@@ -161,6 +161,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
     ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
 
+    ui->clockDrift->setValue(profile->cpap->clockDrift());
+
     ui->skipEmptyDays->setChecked(profile->general->skipEmptyDays());
     ui->enableMultithreading->setChecked(profile->session->multithreading());
     ui->cacheSessionData->setChecked(profile->session->cacheSessions());
@@ -368,6 +370,8 @@ bool PreferencesDialog::Save()
     profile->session->setIgnoreShortSessions(ui->IgnoreSlider->value());
     profile->session->setDaySplitTime(ui->timeEdit->time());
 
+    profile->cpap->setClockDrift(ui->clockDrift->value());
+
     profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
     profile->cpap->setLeakMode(ui->leakModeCombo->currentIndex());
     profile->cpap->setMaskType((MaskType)ui->maskTypeCombo->currentIndex());
@@ -483,10 +487,10 @@ bool PreferencesDialog::Save()
     if (recalc_events) {
         // send a signal instead?
         mainwin->reprocessEvents(needs_restart);
+    } else if (needs_restart) {
+        mainwin->RestartApplication();
     } else {
-        if (needs_restart) {
-            mainwin->RestartApplication();
-        }
+        mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
     }
     return true;
 }

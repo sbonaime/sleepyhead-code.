@@ -896,9 +896,15 @@ EventDataType Session::Max(ChannelID id)
 }
 qint64 Session::first(ChannelID id)
 {
+    qint64 drift=qint64(PROFILE.cpap->clockDrift())*1000L;
+    qint64 tmp;
     QHash<ChannelID,quint64>::iterator i=m_firstchan.find(id);
-    if (i!=m_firstchan.end())
-        return i.value();
+    if (i!=m_firstchan.end()) {
+        tmp=i.value();
+        if (s_machine->GetType()==MT_CPAP)
+            tmp+=drift;
+        return tmp;
+    }
 
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
     if (j==eventlist.end())
@@ -917,14 +923,21 @@ qint64 Session::first(ChannelID id)
         }
     }
     m_firstchan[id]=min;
+    if (s_machine->GetType()==MT_CPAP)
+        min+=drift;
     return min;
 }
 qint64 Session::last(ChannelID id)
 {
+    qint64 drift=qint64(PROFILE.cpap->clockDrift())*1000L;
+    qint64 tmp;
     QHash<ChannelID,quint64>::iterator i=m_lastchan.find(id);
-    if (i!=m_lastchan.end())
-        return i.value();
-
+    if (i!=m_lastchan.end()) {
+        tmp=i.value();
+        if (s_machine->GetType()==MT_CPAP)
+            tmp+=drift;
+        return tmp;
+    }
     QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
     if (j==eventlist.end())
         return 0;
@@ -943,6 +956,8 @@ qint64 Session::last(ChannelID id)
     }
 
     m_lastchan[id]=max;
+    if (s_machine->GetType()==MT_CPAP)
+        max+=drift;
     return max;
 }
 bool Session::channelDataExists(ChannelID id)
@@ -1426,4 +1441,18 @@ void Session::offsetSession(qint64 offset)
     }
     qDebug() << "Session now starts" << QDateTime::fromTime_t(s_first/1000).toString("yyyy-MM-dd HH:mm:ss");
 
+}
+
+qint64 Session::first() {
+    qint64 start=s_first;
+    if (s_machine->GetType()==MT_CPAP)
+        start+=qint64(PROFILE.cpap->clockDrift())*1000L;
+    return start;
+}
+
+qint64 Session::last() {
+    qint64 last=s_last;
+    if (s_machine->GetType()==MT_CPAP)
+        last+=qint64(PROFILE.cpap->clockDrift())*1000L;
+    return last;
 }

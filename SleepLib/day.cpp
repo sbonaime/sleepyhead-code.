@@ -40,14 +40,14 @@ void Day::AddSession(Session *s)
         qWarning("Day::AddSession called with NULL session object");
         return;
     }
-    if (d_firstsession) {
-        d_firstsession=false;
-        d_first=s->first();
-        d_last=s->last();
-    } else {
-        if (d_first > s->first()) d_first = s->first();
-        if (d_last < s->last()) d_last = s->last();
-    }
+//    if (d_firstsession) {
+//        d_firstsession=false;
+//        d_first=s->first();
+//        d_last=s->last();
+//    } else {
+//        if (d_first > s->first()) d_first = s->first();
+//        if (d_last < s->last()) d_last = s->last();
+//    }
     sessions.push_back(s);
 }
 

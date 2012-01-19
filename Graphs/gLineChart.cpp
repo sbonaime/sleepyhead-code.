@@ -174,6 +174,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     int total_points=0;
     int total_visible=0;
     bool square_plot,accel;
+    qint64 clockdrift=qint64(PROFILE.cpap->clockDrift()) * 1000L;
+    qint64 drift=0;
 
     QHash<ChannelID,QVector<EventList *> >::iterator ci;
 
@@ -195,6 +197,9 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                 qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
                 continue;
             }
+
+            drift=(sess->machine()->GetType()==MT_CPAP) ? clockdrift : 0;
+
             if (!sess->enabled()) continue;
             schema::Channel ch=schema::channel[code];
             bool fndbetter=false;
@@ -242,8 +247,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                 int siz=evec[n]->count();
                 if (siz<=1) continue; // Don't bother drawing 1 point or less.
 
-                x0=el.time(0);
-                xL=el.time(siz-1);
+                x0=el.time(0)+drift;
+                xL=el.time(siz-1)+drift;
 
                 if (maxx<x0) continue;
                 if (xL<minx) continue;
@@ -343,8 +348,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 //                } else lines->setSize(1);
 
                 if (el.type()==EVL_Waveform) {  // Waveform Plot
-                    if (idx>sam) idx-=sam;
-                    time=el.time(idx);
+                    if (idx > sam) idx-=sam;
+                    time=el.time(idx) + drift;
                     double rate=double(sr)*double(sam);
                     EventStoreType * ptr=el.rawData()+idx;
 
@@ -474,7 +479,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     // Standard events/zoomed in Plot
                     //////////////////////////////////////////////////////////////////
 
-                    double start=el.first();
+                    double start=el.first() + drift;
 
                     quint32 * tptr=el.rawTime();
 
@@ -728,11 +733,14 @@ void AHIChart::SetDay(Day *d)
         EventDataType ahi=0;
         int cnt=0;
 
+        qint64 clockdrift=(qint64(PROFILE.cpap->clockDrift())*1000L),drift=0;
+
         bool fnd=false;
         for (s=d->begin();s!=d->end();s++) {
             if (!(*s)->enabled()) continue;
             Session *sess=*s;
-            if ((ti<sess->first()) || (f>sess->last())) continue;
+            if ((ti < sess->first()) || (f > sess->last())) continue;
+            drift=(sess->machine()->GetType()==MT_CPAP) ? clockdrift : 0;
 
             // Drop off suddenly outside of sessions
             //if (ti>sess->last()) continue;
@@ -764,7 +772,7 @@ void AHIChart::SetDay(Day *d)
             for (int i=0;i<znt;i++) {
                 if (!el[i]) continue;
                 for (quint32 j=0;j<el[i]->count();j++) {
-                    t=el[i]->time(j);
+                    t=el[i]->time(j)+drift;
                     if ((t>=f) && (t<ti)) {
                         cnt++;
                     }

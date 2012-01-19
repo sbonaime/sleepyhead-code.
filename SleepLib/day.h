@@ -92,11 +92,11 @@ public:
     //! \brief Returns the last session time of this day
     qint64 last();
 
-    //! \brief Sets the first session time of this day
-    void setFirst(qint64 val) { d_first=val; }
+    // //! \brief Sets the first session time of this day
+    // void setFirst(qint64 val) { d_first=val; }
 
-    //! \brief Sets the last session time of this day
-    void setLast(qint64 val) { d_last=val; }
+    // //! \brief Sets the last session time of this day
+    // void setLast(qint64 val) { d_last=val; }
 
     //! \brief Returns the last session time of this day for the supplied Channel code
     qint64 first(ChannelID code);
@@ -156,7 +156,7 @@ protected:
     //! \brief A Vector containing all sessions for this day
     QVector<Session *> sessions;
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
-    qint64 d_first,d_last;
+    //qint64 d_first,d_last;
 private:
     bool d_firstsession;
 };

@@ -109,6 +109,8 @@ QDate Machine::AddSession(Session *s,Profile *p)
 
     sessionlist[s->session()]=s; // To make sure it get's saved later even if it's not wanted.
 
+    int drift=PROFILE.cpap->clockDrift();
+
     QDateTime d2=QDateTime::fromTime_t(s->first()/1000);
 
     QDate date=d2.date();
