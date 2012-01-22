@@ -135,6 +135,20 @@ void ExportCSV::on_exportButton_clicked()
     const QString sep=",";
     const QString newline="\n";
 
+//    if (ui->rb1_details->isChecked()) {
+//        fields.append(DumpField(NoChannel,MT_CPAP,ST_DATE));
+//    } else {
+//        header=tr("DateTime")+sep+tr("Session")+sep+tr("Event")+sep+tr("Data/Duration");
+//    } else {
+//        if (ui->rb1_Summary->isChecked()) {
+//            header=tr("Date")+sep+tr("Session Count")+sep+tr("Start")+sep+tr("End")+sep+tr("Total Time")+sep+tr("AHI");
+//        } else if (ui->rb1_Sessions->isChecked()) {
+//            header=tr("Date")+sep+tr("Session")+sep+tr("Start")+sep+tr("End")+sep+tr("Total Time")+sep+tr("AHI");
+//        }
+//    }
+//    fields.append(DumpField(NoChannel,MT_CPAP,ST_SESSIONS));
+
+
     QList<ChannelID> countlist,avglist,p90list;
     countlist.append(CPAP_Hypopnea);
     countlist.append(CPAP_Obstructive);
@@ -144,7 +158,14 @@ void ExportCSV::on_exportButton_clicked()
     countlist.append(CPAP_VSnore2);
     countlist.append(CPAP_RERA);
     countlist.append(CPAP_FlowLimit);
+    countlist.append(CPAP_NRI);
+    countlist.append(CPAP_ExP);
+    countlist.append(CPAP_LeakFlag);
+    countlist.append(CPAP_UserFlag1);
+    countlist.append(CPAP_UserFlag2);
     countlist.append(CPAP_PressurePulse);
+
+
 
     avglist.append(CPAP_Pressure);
     avglist.append(CPAP_IPAP);
@@ -153,6 +174,7 @@ void ExportCSV::on_exportButton_clicked()
     p90list.append(CPAP_Pressure);
     p90list.append(CPAP_IPAP);
     p90list.append(CPAP_EPAP);
+    EventDataType percent=0.90;
 
     // Not sure this section should be translateable.. :-/
     if (ui->rb1_details->isChecked()) {
@@ -164,11 +186,11 @@ void ExportCSV::on_exportButton_clicked()
             header=tr("Date")+sep+tr("Session")+sep+tr("Start")+sep+tr("End")+sep+tr("Total Time")+sep+tr("AHI");
         }
         for (int i=0;i<countlist.size();i++)
-            header+=sep+countlist[i]+tr(" Count");
+            header+=sep+schema::channel[countlist[i]].label()+tr(" Count");
         for (int i=0;i<avglist.size();i++)
-            header+=sep+avglist[i]+tr(" Avg");
+            header+=sep+schema::channel[avglist[i]].label()+tr(" Avg");
         for (int i=0;i<p90list.size();i++)
-            header+=sep+p90list[i]+tr(" 90%");
+            header+=sep+schema::channel[p90list[i]].label()+tr(" %1%").arg(percent,0,'f',0);
     }
     header+=newline;
     file.write(header.toAscii());

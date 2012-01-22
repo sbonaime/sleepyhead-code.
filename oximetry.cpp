@@ -939,7 +939,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
     bool current_found=false;
 
     // Windows build mixes these up
-#ifdef Q_WS_WIN32
+#ifdef Q_WS_WIN32 || Q_WS_MAC
 #define qesPORTNAME portName
 #else
 #define qesPORTNAME physName

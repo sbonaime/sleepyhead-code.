@@ -831,7 +831,7 @@ void Daily::Load(QDate date)
                         .arg("#F88017").arg("black").arg(tr("AHI")).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
             }
 
-            if (cpap->machine->GetClass()==STR_MACH_ResMed) {
+            if (cpap->machine->GetClass()==STR_MACH_ResMed || cpap->machine->GetClass()==STR_MACH_FPIcon) {
                 cs="4 width='70%' align=center>";
             } else cs="2 width='50%'>";
             html+="<tr><td valign=top colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
@@ -846,8 +846,13 @@ void Daily::Load(QDate date)
             html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#40afbf").arg("black").arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
 
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+            if (cpap->machine->GetClass()==STR_MACH_FPIcon) {
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                    .arg("#404040").arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
+            } else {
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#b254cd").arg("black").arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
+            }
 
             if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")

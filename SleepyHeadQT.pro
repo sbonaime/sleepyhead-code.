@@ -79,7 +79,8 @@ SOURCES += main.cpp\
     quazip/qioapi.cpp \
     quazip/JlCompress.cpp \
     UpdaterWindow.cpp \
-    SleepLib/common.cpp
+    SleepLib/common.cpp \
+    SleepLib/loader_plugins/icon_loader.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -156,7 +157,8 @@ HEADERS  += \
     quazip/ioapi.h \
     quazip/crypt.h \
     UpdaterWindow.h \
-    SleepLib/common.h
+    SleepLib/common.h \
+    SleepLib/loader_plugins/icon_loader.h
 
 
 FORMS    += \

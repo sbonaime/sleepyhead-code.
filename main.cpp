@@ -26,6 +26,7 @@
 #include "SleepLib/loader_plugins/zeo_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
 #include "SleepLib/loader_plugins/intellipap_loader.h"
+#include "SleepLib/loader_plugins/icon_loader.h"
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -135,6 +136,7 @@ int main(int argc, char *argv[])
     //ZEOLoader::Register(); // Use outside of directory importer..
     ResmedLoader::Register();
     IntellipapLoader::Register();
+    FPIconLoader::Register();
 
     // Scan for user profiles
     Profiles::Scan();

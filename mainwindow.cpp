@@ -300,7 +300,7 @@ void MainWindow::on_action_Import_Data_triggered()
         if (res==2) return;
     }
     if (asknew) {
-        mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
+        //mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
     }
 
     QStringList importFrom;

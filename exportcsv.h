@@ -9,10 +9,21 @@
 
 #include <QDateEdit>
 #include <QDialog>
+#include "SleepLib/machine_common.h"
 
 namespace Ui {
     class ExportCSV;
 }
+
+
+struct DumpField {
+    DumpField() { code=NoChannel; mtype=MT_UNKNOWN; type=ST_CNT; }
+    DumpField(ChannelID c, MachineType mt, SummaryType t) { code=c; mtype=mt; type=t; }
+    DumpField(const DumpField & copy) {code=copy.code; mtype=copy.mtype; type=copy.type; }
+    ChannelID code;
+    MachineType mtype;
+    SummaryType type;
+};
 
 
 /*! \class ExportCSV
@@ -42,6 +53,7 @@ private:
     void UpdateCalendarDay(QDateEdit * dateedit,QDate date);
 
     Ui::ExportCSV *ui;
+    QList<DumpField> fields;
 };
 
 #endif // EXPORTCSV_H

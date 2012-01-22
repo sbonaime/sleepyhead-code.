@@ -6,7 +6,6 @@ Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
 
 Notes: Intellipap requires the SmartLink attachment to access this data.
-It does not seem to record multiple days, graph data is overwritten each time..
 
 */
 
