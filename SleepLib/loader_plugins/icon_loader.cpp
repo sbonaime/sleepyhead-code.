@@ -170,10 +170,15 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
     quint16 t1,t2;
     quint32 ts;
+    qint64 ti;
+    qint8 b;
     //QByteArray line;
 
-    char * buf=data.data();
+    char * buf=data.data()+4;
 
+    EventList * flow=NULL;
+    qint16 dat[0x34];
+    EventDataType rate=200;
     do {
         in >> t1;
         in >> t2;
@@ -182,12 +187,37 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
         ts+=epoch;
 
-        if (!Sessions.contains(ts))
+        if (!Sessions.contains(ts)) {
+            // Skip until ends in 0xFF FF FF 7F
+            // skip 0
             break;
+        }
+        Session *sess=Sessions[ts];
 
-        // ends in 0xFF FF FF 7F
+        flow=sess->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0,0,0,rate);
 
+        ti=qint64(ts)*1000L;
+        int i;
+        do {
+            in >> t1;
+            for (i=0;i<0x34;i++) {
+                if (t1==0xffff)
+                    break;
+                dat[i]=t1;
+                in >> t1;
+            }
+            flow->AddWaveform(ti,dat,i,i*rate);
+        } while ((t1!=0xff7f) && !in.atEnd());
 
+        if (in.atEnd()) break;
+
+        do {
+            in >> b;
+        } while (!b);
+
+        t1=b << 8;
+        in >> b;
+        t1|=b;
     } while (!in.atEnd());
 
     return true;
