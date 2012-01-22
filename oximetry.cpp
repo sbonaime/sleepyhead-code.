@@ -805,7 +805,7 @@ void CMS50Serial::startImportTimeout()
     } else {
         import_fails++;
         if (import_fails<5) {
-            resetDevice();
+           // resetDevice();
             QTimer::singleShot(250,this,SLOT(startImportTimeout()));
         } else {
             qDebug() << "No oximeter signal!!!!!!!!!!!!!!!!";
