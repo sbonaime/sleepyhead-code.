@@ -79,7 +79,6 @@ protected:
     QHash<SessionID, Session *> Sessions;
 
     unsigned char * m_buffer;
-    quint32 epoch;
 };
 
 #endif // ICON_LOADER_H

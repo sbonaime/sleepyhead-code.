@@ -1007,7 +1007,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         // Create the session
         sess=new Session(m,sessionid);
-        QString filename,fullpath,backupfile,backfile, crcfile;
+        QString fullpath,backupfile,backfile, crcfile;
 
         // Process EDF File List
         for (int i=0;i<si.value().size();++i) {

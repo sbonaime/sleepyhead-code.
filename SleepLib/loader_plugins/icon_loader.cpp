@@ -30,7 +30,6 @@ FPIcon::~FPIcon()
 
 FPIconLoader::FPIconLoader()
 {
-    epoch=QDateTime(QDate(1970,1,1),QTime(0,0,0)).secsTo(QDateTime(QDate(1995,1,1),QTime(0,0,0)));
     m_buffer=NULL;
 }
 
@@ -137,7 +136,14 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
     for (int i=0;i<det.size();i++) {
         OpenDetail(mach,det[i],profile);
     }
+    mach->Save();
+
     return true;
+}
+
+QDateTime decodeTime(quint32 time)
+{
+
 }
 
 bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
@@ -168,7 +174,7 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
 
-    quint16 t1,t2;
+    quint16 t1;
     quint32 ts;
     qint64 ti;
     qint8 b;
@@ -179,13 +185,33 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
     EventList * flow=NULL;
     qint16 dat[0x34];
     EventDataType rate=200;
+    QDateTime datetime;
+    quint8 a1,a2;
+
+    int month,day,year,hour,minute,second;
     do {
-        in >> t1;
-        in >> t2;
+        in >> a1;
+        in >> a2;
+        t1=a2 << 8 | a1;
 
-        ts=(t1*86400)+(t2*1.5);
+        if (t1==0xfafe)
+            break;
 
-        ts+=epoch;
+        day=t1 & 0x1f;
+        month=(t1 >> 5) & 0x0f;
+        year=2000+((t1 >> 9) & 0x7f);
+
+        in >> a1;
+        in >> a2;
+        t1=a2 << 8 | a1;
+
+        second=(t1 & 0x1f) * 2;
+        minute=(t1 >> 5) & 0x3f;
+        hour=(t1 >> 11) & 0x1f;
+
+        datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+
+        ts=datetime.toTime_t();
 
         if (!Sessions.contains(ts)) {
             // Skip until ends in 0xFF FF FF 7F
@@ -265,38 +291,58 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
     QDate date;
     QTime time;
 
+    int runtime,usage;
+
+    int day,month,year,hour,minute,second;
+    quint32 tmp;
     do {
-        in >> t1;
-        in >> t2;
+        in >> a1;
+        in >> a2;
+        t1=a2 << 8 | a1;
 
-        ts=(t1*86400)+(t2*1.5);
+        if (t1==0xfafe)
+            break;
 
-        ts+=epoch;
-        //ts*=1;
-        datetime=QDateTime::fromTime_t(ts);
+        day=t1 & 0x1f;
+        month=(t1 >> 5) & 0x0f;
+        year=2000+((t1 >> 9) & 0x7f);
+
+        in >> a1;
+        in >> a2;
+        t1=a2 << 8 | a1;
+
+        second=(t1 & 0x1f) * 2;
+        minute=(t1 >> 5) & 0x3f;
+        hour=(t1 >> 11) & 0x1f;
+
+        datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+
+        ts=datetime.toTime_t();
         date=datetime.date();
         time=datetime.time();
 
 
         // the following two quite often match in value
-        in >> a1;  // 0x04
-        in >> a2;  // 0x05
+        in >> a1;  // 0x04 Run Time
+        in >> a2;  // 0x05 Usage Time
+        runtime=a1 * 360; // durations are in tenth of an hour intervals
+        usage=a2 * 360;
 
-        in >> a3;  // 0x06
-        in >> a4;  // 0x07 // pressure value?
-        in >> a5;  // 0x08
+        in >> a3;  // 0x06  // Ramps???
+        in >> a4;  // 0x07  // a pressure value?
+        in >> a5;  // 0x08  // ?? varies.. always less than 90% leak..
 
         in >> d1;  // 0x09
         in >> d2;  // 0x0b
-        in >> d3;  // 0x0d   // offset 0x0d is always more than offset 0x08
+        in >> d3;  // 0x0d   // 90% Leak value..
 
         in >> p1;  // 0x0f
         in >> p2;  // 0x10
 
         in >> j1;  // 0x11
-        in >> j2;  // 0x12
-        in >> j3;  // 0x13
-        in >> j4;  // 0x14
+        in >> j2;  // 0x12  // Apnea Events
+        in >> j3;  // 0x13  // Hypopnea events
+        in >> j4;  // 0x14  // Flow Limitation events
         in >> j5;  // 0x15
         in >> j6;  // 0x16
         in >> j7;  // 0x17
@@ -306,10 +352,15 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
         in >> p5;  // 0x1a
 
         in >> x1;  // 0x1b
-        in >> x2;  // 0x1c
+        in >> x2;  // 0x1c    // humidifier setting
 
         if (!mach->SessionExists(ts)) {
             Session *sess=new Session(mach,ts);
+            sess->really_set_first(qint64(ts)*1000L);
+            sess->really_set_last(qint64(ts+usage)*1000L);
+            sess->SetChanged(true);
+            sess->setCount(CPAP_Obstructive, j2);
+            sess->setCount(CPAP_Hypopnea, j3);
 //            sess->setCount(CPAP_Obstructive,j1);
 //            sess->setCount(CPAP_Hypopnea,j2);
 //            sess->setCount(CPAP_ClearAirway,j3);
@@ -324,6 +375,7 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
                 sess->settings[CPAP_Pressure]=p1/10.0;
             }
             Sessions[ts]=sess;
+            mach->AddSession(sess,profile);
         }
     } while (!in.atEnd());
 
@@ -370,23 +422,38 @@ bool FPIconLoader::OpenDetail(Machine * mach, QString filename, Profile * profil
     QVector<quint16> start;
     QVector<quint8> records;
 
-    quint16 t1,t2;
+    quint16 t1;
     quint16 strt;
-    quint8 recs;
+    quint8 recs,z1,z2;
+
+
+    int day,month,year,hour,minute,second;
 
     int totalrecs=0;
     do {
-        in >> t1; // 0x00    day?
-        in >> t2; // 0x02    time?
-        if (t1==0xffff) break;
+        in >> z1;
+        in >> z2;
+        t1=z2 << 8 | z1;
 
-        //ts = (t1 << 16) + t2;
-        ts=(t1*86400)+(t2*1.5);
+        if (t1==0xfafe)
+            break;
 
-        ts+=epoch;
+        day=t1 & 0x1f;
+        month=(t1 >> 5) & 0x0f;
+        year=2000+((t1 >> 9) & 0x7f);
 
+        in >> z1;
+        in >> z2;
+        t1=z2 << 8 | z1;
 
-        datetime=QDateTime::fromTime_t(ts);
+        second=(t1 & 0x1f) * 2;
+        minute=(t1 >> 5) & 0x3f;
+        hour=(t1 >> 11) & 0x1f;
+
+        datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+
+        ts=datetime.toTime_t();
+
         date=datetime.date();
         time=datetime.time();
         in >> strt;
@@ -427,27 +494,28 @@ bool FPIconLoader::OpenDetail(Machine * mach, QString filename, Profile * profil
         unsigned stidx=start[r];
         int rec=records[r];
 
-        idx=stidx*5;
+        idx=stidx*15;
         for (int i=0;i<rec;i++) {
-            pressure=data[idx];
-            leak=data[idx+1];
-            a1=data[idx+2];
-            a2=data[idx+3];
-            a3=data[idx+4];
-            PR->AddEvent(ti,pressure);
-            LK->AddEvent(ti,leak);
-            if (a1>0) OA->AddEvent(ti,a1);
-            if (a2>0) H->AddEvent(ti,a2);
-            if (a3>0) FL->AddEvent(ti,a3);
-            FLG->AddEvent(ti,a3);
-            ti+=300000L;
-            idx+=5;
+            for (int j=0;j<3;j++) {
+                pressure=data[idx];
+                leak=data[idx+1];
+                a1=data[idx+2];
+                a2=data[idx+3];
+                a3=data[idx+4];
+                PR->AddEvent(ti,pressure);
+                LK->AddEvent(ti,leak);
+                if (a1>0) OA->AddEvent(ti,a1);
+                if (a2>0) H->AddEvent(ti,a2);
+                if (a3>0) FL->AddEvent(ti,a3);
+                FLG->AddEvent(ti,a3);
+                ti+=120000L;
+                idx+=5;
+            }
         }
-        sess->really_set_last(ti-300000L);
-        sess->SetChanged(true);
-        mach->AddSession(sess,profile);
+      //  sess->really_set_last(ti-360000L);
+//        sess->SetChanged(true);
+ //       mach->AddSession(sess,profile);
     }
-    mach->Save();
 
     return 1;
 }
