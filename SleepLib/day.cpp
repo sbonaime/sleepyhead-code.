@@ -7,6 +7,7 @@
 #include "day.h"
 #include "profiles.h"
 #include <cmath>
+#include <QMultiMap>
 #include <algorithm>
 
 Day::Day(Machine *m)
@@ -340,13 +341,41 @@ EventDataType Day::wavg(ChannelID code)
 qint64 Day::total_time()
 {
     qint64 d_totaltime=0;
+    // Sessions may overlap.. :(
+    QMultiMap<qint64,bool> range;
+
+    //range.reserve(size()*2);
+
     for (QVector<Session *>::iterator s=begin();s!=end();s++) {
         if (!(*s)->enabled()) continue;
 
         Session & sess=*(*s);
+        range.insert(sess.first(),0);
+        range.insert(sess.last(),1);
         d_totaltime+=sess.length();
     }
-    return d_totaltime;
+
+    qint64 ti=0;
+    bool b;
+    int nest=0;
+    qint64 total=0;
+    for (QMultiMap<qint64,bool>::iterator it=range.begin();it!=range.end();it++) {
+        b=it.value();
+        if (!b) {
+            if (!ti) ti=it.key();
+            nest++;
+        } else {
+            if (--nest <= 0) {
+                total+=it.key()-ti;
+                ti=0;
+            }
+        }
+    }
+
+    if (total!=d_totaltime) {
+        qDebug() << "Sessions Times overlaps!" << total << d_totaltime;
+    }
+    return total; //d_totaltime;
 }
 bool Day::hasEnabledSessions()
 {

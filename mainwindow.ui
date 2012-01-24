@@ -1617,6 +1617,7 @@
      <addaction name="menu_Purge_CPAP_Data"/>
     </widget>
     <addaction name="actionImport_ZEO_Data"/>
+    <addaction name="actionImport_RemStar_MSeries_Data"/>
     <addaction name="separator"/>
     <addaction name="action_Rebuild_Oximetry_Index"/>
     <addaction name="separator"/>
@@ -1820,6 +1821,11 @@
   <action name="actionImport_ZEO_Data">
    <property name="text">
     <string>Import &amp;ZEO Data</string>
+   </property>
+  </action>
+  <action name="actionImport_RemStar_MSeries_Data">
+   <property name="text">
+    <string>Import RemStar &amp;MSeries Data</string>
    </property>
   </action>
  </widget>

@@ -77,6 +77,7 @@ const QString STR_MACH_PRS1="PRS1";
 const QString STR_MACH_Journal="Journal";
 const QString STR_MACH_Intellipap="Intellipap";
 const QString STR_MACH_FPIcon="FPIcon";
+const QString STR_MACH_MSeries="MSeries";
 const QString STR_MACH_CMS50="CMS50";
 const QString STR_MACH_ZEO="Zeo";
 

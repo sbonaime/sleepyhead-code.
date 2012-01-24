@@ -4,6 +4,7 @@ SleepLib Fisher & Paykel Icon Loader Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+Copyright: (c)2012 Mark Watkins
 
 */
 

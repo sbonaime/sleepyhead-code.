@@ -24,8 +24,11 @@
 #include <QPainter>
 #include <QProcess>
 #include <QFontMetrics>
-#include <SleepLib/loader_plugins/zeo_loader.h>
 #include <cmath>
+
+// Custom loaders that don't autoscan..
+#include <SleepLib/loader_plugins/zeo_loader.h>
+#include <SleepLib/loader_plugins/mseries_loader.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -2659,4 +2662,24 @@ void MainWindow::on_actionImport_ZEO_Data_triggered()
     }
 
 
+}
+
+void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
+{
+    QFileDialog w;
+    w.setFileMode(QFileDialog::ExistingFiles);
+    w.setOption(QFileDialog::ShowDirsOnly, false);
+    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setFilters(QStringList("M-Series data file (*.bin)"));
+
+    MSeriesLoader mseries;
+    if (w.exec()==QFileDialog::Accepted) {
+        QString filename=w.selectedFiles()[0];
+        if (!mseries.Open(filename,p_profile)) {
+            Notify("There was a problem opening MSeries block File: "+filename);
+            return;
+        }
+        Notify("MSeries Import complete");
+        daily->LoadDate(daily->getDate());
+    }
 }

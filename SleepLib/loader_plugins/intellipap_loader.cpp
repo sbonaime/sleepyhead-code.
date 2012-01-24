@@ -4,6 +4,7 @@ SleepLib (DeVilbiss) Intellipap Loader Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+Copyright: (c)2011 Mark Watkins
 
 Notes: Intellipap requires the SmartLink attachment to access this data.
 

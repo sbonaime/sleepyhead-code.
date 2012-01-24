@@ -4,6 +4,8 @@ SleepLib PRS1 Loader Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+Copyright: (c)2011 Mark Watkins
+
 */
 
 #include <QApplication>

@@ -4,6 +4,7 @@ SleepLib PRS1 Loader Header
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+Copyright: (c)2011 Mark Watkins
 
 */
 

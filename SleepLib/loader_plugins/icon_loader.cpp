@@ -4,6 +4,7 @@ SleepLib Fisher & Paykel Icon Loader Implementation
 
 Author: Mark Watkins <jedimark64@users.sourceforge.net>
 License: GPL
+Copyright: (c)2012 Mark Watkins
 
 */
 
@@ -42,8 +43,6 @@ FPIconLoader::~FPIconLoader()
 
 int FPIconLoader::Open(QString & path,Profile *profile)
 {
-    // Check for SL directory
-    // Check for DV5MFirm.bin?
     QString newpath;
 
     if (path.endsWith("/"))
@@ -288,13 +287,10 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
 
 
     QDateTime datetime;
-    QDate date;
-    QTime time;
 
     int runtime,usage;
 
     int day,month,year,hour,minute,second;
-    quint32 tmp;
     do {
         in >> a1;
         in >> a2;
@@ -318,9 +314,6 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
         datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
 
         ts=datetime.toTime_t();
-        date=datetime.date();
-        time=datetime.time();
-
 
         // the following two quite often match in value
         in >> a1;  // 0x04 Run Time

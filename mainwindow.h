@@ -292,6 +292,8 @@ private slots:
 
     void on_actionImport_ZEO_Data_triggered();
 
+    void on_actionImport_RemStar_MSeries_Data_triggered();
+
 private:
     void FreeSessions();
 
