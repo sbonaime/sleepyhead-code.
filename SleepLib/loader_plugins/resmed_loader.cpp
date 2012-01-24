@@ -569,6 +569,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         // Take the filename's date, and
         date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
+        date=date.toUTC();
 
         // Skip file if dates invalid, the filename is clearly wrong..
         if (!date.isValid())

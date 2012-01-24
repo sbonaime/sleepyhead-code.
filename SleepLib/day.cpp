@@ -359,6 +359,8 @@ qint64 Day::total_time()
     bool b;
     int nest=0;
     qint64 total=0;
+    // This is my implementation of a typical "brace counting" algorithm mentioned here:
+    // http://stackoverflow.com/questions/7468948/problem-calculating-overlapping-date-ranges
     for (QMultiMap<qint64,bool>::iterator it=range.begin();it!=range.end();it++) {
         b=it.value();
         if (!b) {
