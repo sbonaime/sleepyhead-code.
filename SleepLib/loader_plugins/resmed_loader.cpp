@@ -579,7 +579,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         sessionid=date.toTime_t();
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        // Resmed bugs up on the session filenames.. 1 or 2 seconds either way
+        // Resmed bugs up on the session filenames.. More than these 3 seconds
+
         // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
         // and provide firmware updates for free to your customers.
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -808,17 +809,23 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Leak Med"))) {
                 valmed=sig->data[dn];
-                sess->m_gain[CPAP_Leak]=sig->gain*60.0;
-                sess->m_valuesummary[CPAP_Leak][valmed]=51;
+                if (valmed>=0) {
+                    sess->m_gain[CPAP_Leak]=sig->gain*60.0;
+
+                    sess->m_valuesummary[CPAP_Leak][valmed]=51;
+                }
             }
             if ((sig=stredf.lookupName("Leak 95"))) {
                 val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_Leak][val95]=45;
+                if (val95>=0)
+                    sess->m_valuesummary[CPAP_Leak][val95]=45;
             }
             if ((sig=stredf.lookupName("Leak Max"))) {
                 valmax=sig->data[dn];
-                sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
-                sess->m_valuesummary[CPAP_Leak][valmax]=4;
+                if (valmax>=0) {
+                    sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
+                    sess->m_valuesummary[CPAP_Leak][valmax]=4;
+                }
             }
 
             /////////////////////////////////////////////////////////////////////
@@ -916,17 +923,46 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Mask Pres Med"))) {
                 valmed=sig->data[dn];
-                sess->m_gain[CPAP_Pressure]=sig->gain;
-                sess->m_valuesummary[CPAP_Pressure][valmed]=51;
+                if (valmed >= 0) {
+                    sess->m_gain[CPAP_Pressure]=sig->gain;
+                    sess->m_valuesummary[CPAP_Pressure][valmed]=51;
+                }
             }
             if ((sig=stredf.lookupName("Mask Pres 95"))) {
                 val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_Pressure][val95]=45;
+                if (val95 >= 0) {
+                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
+                }
             }
             if ((sig=stredf.lookupName("Mask Pres Max"))) {
                 valmax=sig->data[dn];
-                sess->setMax(CPAP_Pressure,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_Pressure][valmax]=4;
+                if (valmax >= 0) {
+                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
+                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
+                }
+            }
+            /////////////////////////////////////////////////////////////////////
+            // Therapy Pressure Summary
+            /////////////////////////////////////////////////////////////////////
+            if ((sig=stredf.lookupName("Therapy Pres Me"))) {
+                valmed=sig->data[dn];
+                if (valmed >= 0) {
+                    //sess->m_gain[CPAP_Pressure]=sig->gain;
+                    //sess->m_valuesummary[CPAP_Pressure][valmed]=51;
+                }
+            }
+            if ((sig=stredf.lookupName("Therapy Pres 95"))) {
+                val95=sig->data[dn];
+                if (val95 >= 0) {
+//                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
+                }
+            }
+            if ((sig=stredf.lookupName("Therapy Pres Ma"))) {
+                valmax=sig->data[dn];
+                if (valmax >= 0) {
+//                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
+//                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
+                }
             }
 
             /////////////////////////////////////////////////////////////////////
@@ -951,17 +987,23 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             /////////////////////////////////////////////////////////////////////
             if ((sig=stredf.lookupName("Exp Pres Med"))) {
                 valmed=sig->data[dn];
-                sess->m_gain[CPAP_EPAP]=sig->gain;
-                sess->m_valuesummary[CPAP_EPAP][valmed]=51;
+                if (valmed>=0) {
+                    sess->m_gain[CPAP_EPAP]=sig->gain;
+                    sess->m_valuesummary[CPAP_EPAP][valmed]=51;
+                }
             }
             if ((sig=stredf.lookupName("Exp Pres 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_EPAP][val95]=45;
+                if (val95>=0) {
+                    val95=sig->data[dn];
+                    sess->m_valuesummary[CPAP_EPAP][val95]=45;
+                }
             }
             if ((sig=stredf.lookupName("Exp Pres Max"))) {
                 valmax=sig->data[dn];
-                sess->setMax(CPAP_EPAP,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_EPAP][valmax]=4;
+                if (valmax>=0) {
+                    sess->setMax(CPAP_EPAP,valmax*sig->gain);
+                    sess->m_valuesummary[CPAP_EPAP][valmax]=4;
+                }
             }
 
             /////////////////////////////////////////////////////////////////////
@@ -974,23 +1016,31 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             }
             if ((sig=stredf.lookupName("OAI"))) { // Obstructive Apnea Index
                 tmp=sig->data[dn]*sig->gain;
-                sess->setCph(CPAP_Obstructive,tmp);
-                sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
+                if (tmp>=0) {
+                    sess->setCph(CPAP_Obstructive,tmp);
+                    sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
+                }
             }
             if ((sig=stredf.lookupName("HI"))) { // Hypopnea Index
                 tmp=sig->data[dn]*sig->gain;
-                sess->setCph(CPAP_Hypopnea,tmp);
-                sess->setCount(CPAP_Hypopnea,tmp*dur);
+                if (tmp>=0) {
+                    sess->setCph(CPAP_Hypopnea,tmp);
+                    sess->setCount(CPAP_Hypopnea,tmp*dur);
+                }
             }
             if ((sig=stredf.lookupName("UAI"))) { // Unspecified Apnea Index
                 tmp=sig->data[dn]*sig->gain;
-                sess->setCph(CPAP_Apnea,tmp);
-                sess->setCount(CPAP_Apnea,tmp*dur);
+                if (tmp>=0) {
+                    sess->setCph(CPAP_Apnea,tmp);
+                    sess->setCount(CPAP_Apnea,tmp*dur);
+                }
             }
             if ((sig=stredf.lookupName("CAI"))) { // "Central" Apnea Index
                 tmp=sig->data[dn]*sig->gain;
-                sess->setCph(CPAP_ClearAirway,tmp);
-                sess->setCount(CPAP_ClearAirway,tmp*dur);
+                if (tmp>=0) {
+                    sess->setCph(CPAP_ClearAirway,tmp);
+                    sess->setCount(CPAP_ClearAirway,tmp*dur);
+                }
             }
 
         }
@@ -1611,6 +1661,9 @@ void ResInitModelMap()
     RMS9ModelMap[36006]="S9 VPAP Auto";
     RMS9ModelMap[36007]="S9 VPAP Adapt";
     RMS9ModelMap[36008]="S9 VPAP ST";
+    RMS9ModelMap[36141]="S9 Escape";
+
+
     /* S8 Series
     RMS9ModelMap[33007]="S8 Escape";
     RMS9ModelMap[33039]="S8 Elite II";

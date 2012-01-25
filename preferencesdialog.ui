@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>429</height>
+    <height>462</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -492,16 +492,17 @@ p, li { white-space: pre-wrap; }
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>Ignore this, it's not implemented yet.</string>
+             <string>Method of unintentional leaks calculation if not provided by your machine.
+Note: Statistical Model is experimental.</string>
             </property>
             <item>
              <property name="text">
-              <string>Total Leaks</string>
+              <string>Mask Profile</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Unintentional Leaks</string>
+              <string>Statistical Model</string>
              </property>
             </item>
            </widget>
@@ -515,7 +516,7 @@ p, li { white-space: pre-wrap; }
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Leak mode</string>
+             <string>Leak calcs</string>
             </property>
            </widget>
           </item>

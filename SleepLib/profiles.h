@@ -112,6 +112,8 @@ public:
     EventDataType calcMax(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcPercentile(ChannelID code, EventDataType percent, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
 
+    bool hasChannel(ChannelID code);
+
     EventDataType calcSettingsMin(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
     EventDataType calcSettingsMax(ChannelID code, MachineType mt=MT_CPAP, QDate start=QDate(), QDate end=QDate());
 

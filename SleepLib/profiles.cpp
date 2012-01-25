@@ -881,3 +881,26 @@ QDate Profile::LastGoodDay(MachineType mt)
     } while (d>=f);
     return f; //m_first;
 }
+bool Profile::hasChannel(ChannelID code)
+{
+    QDate d=LastDay();
+    QDate f=FirstDay();
+    if (!(d.isValid() && f.isValid())) return false;
+    QMap<QDate,QList<Day *> >::iterator dit;
+    bool found=false;
+    do {
+        dit=daylist.find(d);
+        if (dit!=daylist.end()) {
+            for (int i=0;i<dit.value().size();i++) {
+                Day *day=dit.value().at(i);
+                if (day->channelHasData(code)) {
+                    found=true;
+                    break;
+                }
+            }
+        }
+        if (found) break;
+        d=d.addDays(-1);
+    } while (d>=f);
+    return found;
+}

@@ -334,6 +334,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     }
     GraphView->setCubeImage(images["nodata"]);
     GraphView->setEmptyText(tr("No Data"));
+    previous_date=QDate();
 }
 
 Daily::~Daily()
@@ -730,7 +731,7 @@ void Daily::Load(QDate date)
     if (cpap) {
         float hours=cpap->hours();
         if (GraphView->isEmpty() && (hours>0)) {
-            if (cpap->machine->GetClass()!=STR_MACH_ResMed) {
+            if (!PROFILE.hasChannel(CPAP_Obstructive) && !PROFILE.hasChannel(CPAP_Hypopnea)) {
                 GraphView->setCubeImage(images["brick"]);
                 GraphView->setEmptyText(tr("No Graphs :("));
 
