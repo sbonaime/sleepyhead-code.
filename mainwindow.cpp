@@ -364,7 +364,7 @@ void MainWindow::on_action_Import_Data_triggered()
         PROFILE.Save();
         if (overview) overview->ReloadGraphs();
         on_summaryButton_clicked();
-        if (daily) daily->LoadDate(daily->getDate());
+        if (daily) daily->ReloadGraphs();
         if ((goodlocations.size()>0) && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
             for (int i=0;i<goodlocations.size();i++) {
                 importLocations.push_back(goodlocations[i]);
