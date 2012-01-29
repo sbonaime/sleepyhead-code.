@@ -135,15 +135,14 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
     for (int i=0;i<det.size();i++) {
         OpenDetail(mach,det[i],profile);
     }
+    for (int i=0;i<flw.size();i++) {
+        OpenFLW(mach,flw[i],profile);
+    }
     mach->Save();
 
     return true;
 }
 
-QDateTime decodeTime(quint32 time)
-{
-
-}
 
 bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 {
@@ -175,75 +174,145 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
     quint16 t1;
     quint32 ts;
-    qint64 ti;
+    double ti;
     qint8 b;
     //QByteArray line;
 
-    char * buf=data.data()+4;
+    unsigned char * buf=(unsigned char *)data.data();
+
+    unsigned char * endbuf=buf+data.size();
 
     EventList * flow=NULL;
-    qint16 dat[0x34];
-    EventDataType rate=200;
+//    qint16 dat[0x32];
     QDateTime datetime;
-    quint8 a1,a2;
+  //  quint8 a1,a2;
 
     int month,day,year,hour,minute,second;
-    do {
-        in >> a1;
-        in >> a2;
-        t1=a2 << 8 | a1;
 
-        if (t1==0xfafe)
-            break;
+    long pos=0;
 
-        day=t1 & 0x1f;
-        month=(t1 >> 5) & 0x0f;
-        year=2000+((t1 >> 9) & 0x7f);
+    t1=buf[pos+1] << 8 | buf[pos];
+    pos+=2;
+    buf+=2;
 
-        in >> a1;
-        in >> a2;
-        t1=a2 << 8 | a1;
+    if (t1==0xfafe)  // End of file marker..
+    {
+        qDebug() << "FaFE observed in" << filename;
 
-        second=(t1 & 0x1f) * 2;
-        minute=(t1 >> 5) & 0x3f;
-        hour=(t1 >> 11) & 0x1f;
+    }
 
-        datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+    day=t1 & 0x1f;
+    month=(t1 >> 5) & 0x0f;
+    year=2000+((t1 >> 9) & 0x7f);
 
-        ts=datetime.toTime_t();
+    //in >> a1;
+    //in >> a2;
+    t1=buf[pos+1] << 8 | buf[pos];
+    pos+=2;
+    buf+=2;
 
-        if (!Sessions.contains(ts)) {
-            // Skip until ends in 0xFF FF FF 7F
-            // skip 0
-            break;
-        }
-        Session *sess=Sessions[ts];
+    second=(t1 & 0x1f) * 2;
+    minute=(t1 >> 5) & 0x3f;
+    hour=(t1 >> 11) & 0x1f;
 
-        flow=sess->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0,0,0,rate);
+    datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+    QDate date=datetime.date();
+
+    QList<Session *> values = SessDate.values(date);
+    EventStoreType pbuf[256];
+
+    Session *sess;
+
+    int count;
+    for (int chunks=0;chunks<values.size();++chunks) { // each chunk is a seperate session
+        ts=values.at(chunks)->session();
+
+        datetime=datetime.toTimeSpec(Qt::UTC);
+        QTime time=datetime.time();
+
+        //ts=datetime.toTime_t();
+
+        flow=NULL;
+        if (Sessions.contains(ts)) {
+            sess=Sessions[ts];
+
+        } else sess=NULL;
 
         ti=qint64(ts)*1000L;
-        int i;
+
+        // Little endian.
+        // 100 byte blocks ending in 0x84 03 ?? ff ff   (900)
+        // 0x90 01 ?? ff ff    (400)
+
+        // 900 / 400   Waveform ID?
+        // entire sequence ends in 0xff 7f
+
+        count=0;
+        int len;
+        qint16 z1;
+        qint8 z2;
         do {
-            in >> t1;
-            for (i=0;i<0x34;i++) {
-                if (t1==0xffff)
+            unsigned char * p=buf,*p2;
+
+            // scan ahead to 0xffff marker
+            do {
+                while ((*p++ != 0xff) && (p < endbuf)) {
+                    pos++;
+                }
+                if (p >= endbuf)
                     break;
-                dat[i]=t1;
-                in >> t1;
+                pos++;
+            } while ((*p++ != 0xff) && (p < endbuf));
+            if (p >= endbuf)
+                break;
+            p2=p-5;
+            len=p2-buf;
+            z1=p2[1] << 8 | p2[0];
+            z2=p2[2];
+
+            count++;
+
+            double rate=1000.0/23.5;
+            if (sess && !flow) {
+                flow=sess->AddEventList(CPAP_FlowRate,EVL_Waveform,1.0,0,0,0,rate);
             }
-            flow->AddWaveform(ti,dat,i,i*rate);
-        } while ((t1!=0xff7f) && !in.atEnd());
+            if (flow) {
+                quint16 tmp;
+                unsigned char * bb=(unsigned char *)buf;
+                char c;
+                if (len>100) {
+                    int i=5;
+                }
 
-        if (in.atEnd()) break;
+                for (int i=0;i<len/2;i++) {
+                    c=bb[1];// & 0x1f;
+                    //c-=0x10;
+                    tmp=c << 8 | bb[0];
+                    if (tmp<0) tmp=-tmp;
+                    //tmp ^= 0x8000;
+                    bb+=2;
 
-        do {
-            in >> b;
-        } while (!b);
+                    pbuf[i]=tmp;
+                }
+                flow->AddWaveform(ti,pbuf,len/2,rate);
+            }
 
-        t1=b << 8;
-        in >> b;
-        t1|=b;
-    } while (!in.atEnd());
+            ti+=qint64(len/2)*rate;
+
+            buf=p;
+
+            if (buf >= endbuf-1) break;
+            if ((p[0]==0xff) && (p[1]==0x7f)) {
+                buf+=2;
+                pos+=2;
+                while ((*buf++ == 0) && (buf < endbuf)) pos++;
+                break;
+            }
+
+        } while (buf < endbuf);
+        if (buf >= endbuf)
+            break;
+    }
 
     return true;
 }
@@ -291,6 +360,8 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
     int runtime,usage;
 
     int day,month,year,hour,minute,second;
+    QDate date;
+
     do {
         in >> a1;
         in >> a2;
@@ -312,7 +383,8 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
         hour=(t1 >> 11) & 0x1f;
 
         datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
-
+        date=datetime.date();
+        datetime=datetime.toTimeSpec(Qt::UTC);
         ts=datetime.toTime_t();
 
         // the following two quite often match in value
@@ -354,6 +426,7 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
             sess->SetChanged(true);
             sess->setCount(CPAP_Obstructive, j2);
             sess->setCount(CPAP_Hypopnea, j3);
+            SessDate.insert(date,sess);
 //            sess->setCount(CPAP_Obstructive,j1);
 //            sess->setCount(CPAP_Hypopnea,j2);
 //            sess->setCount(CPAP_ClearAirway,j3);
@@ -444,6 +517,7 @@ bool FPIconLoader::OpenDetail(Machine * mach, QString filename, Profile * profil
         hour=(t1 >> 11) & 0x1f;
 
         datetime=QDateTime(QDate(year,month,day),QTime(hour,minute,second));
+        datetime=datetime.toTimeSpec(Qt::UTC);
 
         ts=datetime.toTime_t();
 

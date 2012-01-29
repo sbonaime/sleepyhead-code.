@@ -294,6 +294,10 @@ private slots:
 
     void on_actionImport_RemStar_MSeries_Data_triggered();
 
+    void on_actionSleep_Disorder_Terms_Glossary_triggered();
+
+    void on_actionHelp_Support_Sleepyhead_Development_triggered();
+
 private:
     void FreeSessions();
 

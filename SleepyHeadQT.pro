@@ -20,6 +20,10 @@ CONFIG += rtti
 #PKGCONFIG += freetype2
 
 TARGET = SleepyHead
+unix:!macx {
+TARGET.path=/usr/bin
+}
+
 TEMPLATE = app
 
 # GIT_VERSION = $$system(git describe --tags --long --abbrev=6 --dirty="*")

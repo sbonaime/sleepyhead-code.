@@ -11,7 +11,7 @@ Copyright: (c)2012 Mark Watkins
 #ifndef ICON_LOADER_H
 #define ICON_LOADER_H
 
-
+#include <QMultiMap>
 #include "SleepLib/machine.h"
 #include "SleepLib/machine_loader.h"
 #include "SleepLib/profiles.h"
@@ -78,6 +78,7 @@ protected:
     QString last;
     QHash<QString,Machine *> MachList;
     QHash<SessionID, Session *> Sessions;
+    QMultiMap<QDate,Session *> SessDate;
 
     unsigned char * m_buffer;
 };

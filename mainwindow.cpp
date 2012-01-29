@@ -187,6 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>Loading...</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
+    ui->actionImport_RemStar_MSeries_Data->setVisible(false);
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -2460,7 +2461,6 @@ void MainWindow::on_webView_linkClicked(const QUrl &url)
     qDebug() << "Link Clicked" << url;
     if (s.toLower().startsWith("https:")) {
         QDesktopServices().openUrl(url);
-
     } else {
         ui->webView->setUrl(url);
     }
@@ -2682,4 +2682,18 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
         Notify("MSeries Import complete");
         daily->LoadDate(daily->getDate());
     }
+}
+
+void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
+{
+    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary"));
+    ui->tabWidget->setCurrentWidget(ui->helpTab);
+}
+
+void MainWindow::on_actionHelp_Support_Sleepyhead_Development_triggered()
+{
+    QUrl url=QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Support_SleepyHead_Development");
+    QDesktopServices().openUrl(url);
+//    ui->webView->load(url);
+//    ui->tabWidget->setCurrentWidget(ui->helpTab);
 }

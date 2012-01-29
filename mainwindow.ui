@@ -78,7 +78,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -1592,10 +1592,12 @@
     </property>
     <addaction name="actionOnline_Users_Guide"/>
     <addaction name="action_Frequently_Asked_Questions"/>
+    <addaction name="actionSleep_Disorder_Terms_Glossary"/>
     <addaction name="separator"/>
     <addaction name="actionDebug"/>
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
+    <addaction name="actionHelp_Support_Sleepyhead_Development"/>
     <addaction name="action_About"/>
    </widget>
    <widget class="QMenu" name="menu_Data">
@@ -1714,7 +1716,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Debug</string>
+    <string>Show Debug Pane</string>
    </property>
   </action>
   <action name="action_Reset_Graph_Layout">
@@ -1826,6 +1828,16 @@
   <action name="actionImport_RemStar_MSeries_Data">
    <property name="text">
     <string>Import RemStar &amp;MSeries Data</string>
+   </property>
+  </action>
+  <action name="actionHelp_Support_Sleepyhead_Development">
+   <property name="text">
+    <string>&amp;Support Sleepyhead Development</string>
+   </property>
+  </action>
+  <action name="actionSleep_Disorder_Terms_Glossary">
+   <property name="text">
+    <string>Sleep Disorder Terms &amp;Glossary</string>
    </property>
   </action>
  </widget>
