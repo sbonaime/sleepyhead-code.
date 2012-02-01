@@ -166,12 +166,13 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
     QVector<Session *>::iterator s;
 
-    QHash<EventStoreType, int> wmap;
+    QHash<EventStoreType, qint64> wmap;
 
-    int SN=0;
+    qint64 SN=0;
 
     EventDataType lastgain=0, gain=0;
     // First Calculate count of all events
+    bool timeweight;
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -179,6 +180,9 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
         QHash<ChannelID,QHash<EventStoreType, EventStoreType> > ::iterator ei=sess.m_valuesummary.find(code);
         if (ei==sess.m_valuesummary.end()) continue;
 
+        QHash<ChannelID,QHash<EventStoreType, quint32> > ::iterator tei=sess.m_timesummary.find(code);
+        timeweight=(tei!=sess.m_timesummary.end());
+        timeweight=false;
         gain=sess.m_gain[code];
 
         // Here's assuming gains don't change accross a days sessions
@@ -190,29 +194,33 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
         }
         lastgain=gain;
 
-        int weight,value;
-        QHash<EventStoreType,int>::iterator wit;
-        for (QHash<EventStoreType, EventStoreType>::iterator i=ei.value().begin();i!=ei.value().end();i++) {
-            weight=i.value();
-            value=i.key();
+        int value;
+        qint64 weight;
+        qint64 tval;
+        if (timeweight) {
+            for (QHash<EventStoreType, quint32>::iterator i=tei.value().begin();i!=tei.value().end();i++) {
+                value=i.key();
+                weight=i.value();
+                SN+=weight;
+                wmap[value]+=weight;
+            }
+        } else {
+            for (QHash<EventStoreType, EventStoreType>::iterator i=ei.value().begin();i!=ei.value().end();i++) {
 
-            SN+=weight;
+                value=i.key();
+                weight=i.value();
 
-            // Cheating here.. On first access, it initializes to zero
-            wmap[value]+=weight;
-//            wit=wmap.find(value);
-//            if (wit==wmap.end()) {
-//                wmap[value]=weight;
-//            } else  {
-//                wit.value()+=weight;
-//            }
+                SN+=weight;
+
+                wmap[value]+=weight;
+            }
         }
     }
 
     QVector<ValueCount> valcnt;
 
     // Build sorted list of value/counts
-    for (QHash<EventStoreType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
+    for (QHash<EventStoreType, qint64>::iterator n=wmap.begin();n!=wmap.end();n++) {
         ValueCount vc;
         vc.value=EventDataType(n.key()) * gain;
         vc.count=n.value();
@@ -228,9 +236,9 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
     double nth=double(SN)*percentile; // index of the position in the unweighted set would be
     double nthi=floor(nth);
 
-    int sum1=0,sum2=0;
-    int w1,w2=0;
-    EventDataType v1=0,v2;
+    qint64 sum1=0,sum2=0;
+    qint64 w1,w2=0;
+    double v1=0,v2;
 
     int N=valcnt.size();
     int k=0;

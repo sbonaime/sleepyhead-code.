@@ -1106,11 +1106,12 @@ void Daily::Load(QDate date)
                 .arg(tr("Pr. Relief"))
                 .arg(schema::channel[CPAP_PresReliefType].description())
                 .arg(flexstr);
-        if (cpap->machine->GetClass()==STR_MACH_PRS1) {
-            int humid=round(cpap->settings_wavg(PRS1_HumidSetting));
+        QString mclass=cpap->machine->GetClass();
+        if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
+            int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
             html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
                 .arg(tr("Humidifier"))
-                .arg(schema::channel[PRS1_HumidSetting].description())
+                .arg(schema::channel[CPAP_HumidSetting].description())
                 .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
         }
 

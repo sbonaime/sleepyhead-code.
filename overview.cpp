@@ -195,7 +195,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     set=new SummaryChart("",GT_LINE);
     //set->addSlice(PRS1_SysOneResistSet,QColor("grey"),ST_SETAVG);
-    set->addSlice(PRS1_HumidSetting,QColor("blue"),ST_SETWAVG);
+    set->addSlice(CPAP_HumidSetting,QColor("blue"),ST_SETWAVG);
     set->addSlice(CPAP_PresReliefSet,QColor("red"),ST_SETWAVG);
     //set->addSlice(RMS9_EPRSet,QColor("green"),ST_SETWAVG);
     //set->addSlice(INTP_SmartFlex,QColor("purple"),ST_SETWAVG);

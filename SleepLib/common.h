@@ -22,7 +22,7 @@ struct ValueCount {
         p=copy.p;
     }
     EventDataType value;
-    int count;
+    qint64 count;
     double p;
 };
 

@@ -62,7 +62,7 @@ enum CPAPMode//:short
   */
 enum PRTypes//:short
 {
-    PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX,PR_EASYBREATHE
+    PR_UNKNOWN=0,PR_NONE,PR_CFLEX,PR_CFLEXPLUS,PR_AFLEX,PR_BIFLEX,PR_EPR,PR_SMARTFLEX,PR_EASYBREATHE,PR_SENSAWAKE
 };
 enum PRModes//:short
 {
@@ -96,7 +96,7 @@ CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_PSMin, CPAP_P
 extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 extern ChannelID INTP_SmartFlex;
 extern ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10, PRS1_12,
-PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, PRS1_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
+PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, CPAP_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
 PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
 
 extern ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;

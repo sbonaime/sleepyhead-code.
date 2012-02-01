@@ -728,14 +728,17 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
 
     QDate date=start;
 
-    QMap<EventDataType, int> wmap;
+    QMap<EventDataType, qint64> wmap;
 
     QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
+    QHash<ChannelID,QHash<EventStoreType, quint32> >::iterator tsi;
     EventDataType gain;
     //bool setgain=false;
-    EventDataType weight,value;
+    EventDataType value;
+    int weight;
 
-    int SN=0;
+    qint64 SN=0;
+    bool timeweight;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
@@ -749,18 +752,35 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                     if (!gain) gain=1;
                     vsi=sess->m_valuesummary.find(code);
                     if (vsi==sess->m_valuesummary.end()) continue;
+                    tsi=sess->m_timesummary.find(code);
+                    timeweight=(tsi!=sess->m_timesummary.end());
 
                     QHash<EventStoreType, EventStoreType> & vsum=vsi.value();
+                    QHash<EventStoreType, quint32> & tsum=tsi.value();
 
-                    for (QHash<EventStoreType, EventStoreType>::iterator k=vsum.begin();k!=vsum.end();k++) {
-                        weight=k.value();
-                        value=EventDataType(k.key())*gain;
+                    if (timeweight) {
+                        for (QHash<EventStoreType, quint32>::iterator k=tsum.begin();k!=tsum.end();k++) {
+                            weight=k.value();
+                            value=EventDataType(k.key())*gain;
 
-                        SN+=weight;
-                        if (wmap.contains(value)) {
-                            wmap[value]+=weight;
-                        } else  {
-                            wmap[value]=weight;
+                            SN+=weight;
+                            if (wmap.contains(value)) {
+                                wmap[value]+=weight;
+                            } else  {
+                                wmap[value]=weight;
+                            }
+                        }
+                    } else {
+                        for (QHash<EventStoreType, EventStoreType>::iterator k=vsum.begin();k!=vsum.end();k++) {
+                            weight=k.value();
+                            value=EventDataType(k.key())*gain;
+
+                            SN+=weight;
+                            if (wmap.contains(value)) {
+                                wmap[value]+=weight;
+                            } else  {
+                                wmap[value]=weight;
+                            }
                         }
                     }
                 }
@@ -771,7 +791,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     QVector<ValueCount> valcnt;
 
     // Build sorted list of value/counts
-    for (QMap<EventDataType, int>::iterator n=wmap.begin();n!=wmap.end();n++) {
+    for (QMap<EventDataType, qint64>::iterator n=wmap.begin();n!=wmap.end();n++) {
         ValueCount vc;
         vc.value=n.key();
         vc.count=n.value();
@@ -787,9 +807,9 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     double nth=double(SN)*percent; // index of the position in the unweighted set would be
     double nthi=floor(nth);
 
-    int sum1=0,sum2=0;
-    int w1,w2=0;
-    EventDataType v1=0,v2=0;
+    qint64 sum1=0,sum2=0;
+    qint64 w1,w2=0;
+    double v1=0,v2=0;
 
     int N=valcnt.size();
     int k=0;

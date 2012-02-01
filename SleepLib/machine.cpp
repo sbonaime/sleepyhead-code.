@@ -461,7 +461,7 @@ ChannelID INTP_SmartFlex;
 ChannelID INTELLIPAP_Unknown1, INTELLIPAP_Unknown2;
 
 ChannelID PRS1_00, PRS1_01, PRS1_08, PRS1_0A, PRS1_0B, PRS1_0C, PRS1_0E, PRS1_0F, PRS1_10, PRS1_12,
-PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, PRS1_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
+PRS1_FlexMode, PRS1_FlexSet, PRS1_HumidStatus, CPAP_HumidSetting, PRS1_SysLock, PRS1_SysOneResistStat,
 PRS1_SysOneResistSet, PRS1_HoseDiam, PRS1_AutoOn, PRS1_AutoOff, PRS1_MaskAlert, PRS1_ShowAHI;
 
 ChannelID OXI_Pulse, OXI_SPO2, OXI_PulseChange, OXI_SPO2Drop, OXI_Plethy;

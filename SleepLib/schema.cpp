@@ -137,7 +137,7 @@ void init()
     PRS1_FlexMode=schema::channel["FlexMode"].id();
     PRS1_FlexSet=schema::channel["FlexSet"].id();
     PRS1_HumidStatus=schema::channel["HumidStat"].id();
-    PRS1_HumidSetting=schema::channel["HumidSet"].id();
+    CPAP_HumidSetting=schema::channel["HumidSet"].id();
     PRS1_SysLock=schema::channel["SysLock"].id();
     PRS1_SysOneResistStat=schema::channel["SysOneResistStat"].id();
     PRS1_SysOneResistSet=schema::channel["SysOneResistSet"].id();

@@ -686,6 +686,9 @@ void Session::updateCountSummary(ChannelID code)
     qint32 len,cnt;
     quint32 * tptr;
     EventStoreType * dptr, * eptr;
+    if (code==CPAP_MinuteVent) {
+        int i=5;
+    }
     for (int i=0;i<ev.value().size();i++) {
         EventList & e=*(ev.value()[i]);
         start=e.first();
