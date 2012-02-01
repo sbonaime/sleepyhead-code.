@@ -182,7 +182,6 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
         QHash<ChannelID,QHash<EventStoreType, quint32> > ::iterator tei=sess.m_timesummary.find(code);
         timeweight=(tei!=sess.m_timesummary.end());
-        timeweight=false;
         gain=sess.m_gain[code];
 
         // Here's assuming gains don't change accross a days sessions
