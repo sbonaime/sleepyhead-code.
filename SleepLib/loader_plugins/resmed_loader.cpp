@@ -1596,9 +1596,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_dimension="L/M";
-            a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
-            a->AddWaveform(edf.startdate,es.data,recs,duration);
-            //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0,true);
+            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0,true);
         } else if (es.label=="FFL Index") {
             code=CPAP_FLG;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
