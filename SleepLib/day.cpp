@@ -173,6 +173,7 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
     EventDataType lastgain=0, gain=0;
     // First Calculate count of all events
     bool timeweight;
+
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 

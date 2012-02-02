@@ -686,9 +686,6 @@ void Session::updateCountSummary(ChannelID code)
     qint32 len,cnt;
     quint32 * tptr;
     EventStoreType * dptr, * eptr;
-    if (code==CPAP_MinuteVent) {
-        int i=5;
-    }
     for (int i=0;i<ev.value().size();i++) {
         EventList & e=*(ev.value()[i]);
         start=e.first();
@@ -701,11 +698,10 @@ void Session::updateCountSummary(ChannelID code)
         m_gain[code]=e.gain();
 
         if (e.type()==EVL_Event) {
-            lastraw=*dptr;
+            lastraw=*dptr++;
             tptr=e.rawTime();
-            lasttime=start + *tptr;
+            lasttime=start + *tptr++;
             // Event version
-
 
             for (;dptr < eptr; dptr++) {
                  time=start + *tptr++;

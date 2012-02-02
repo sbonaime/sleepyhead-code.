@@ -623,7 +623,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     //EventList * PRESSURE=NULL;
     //EventList * PP=NULL;
 
-    EventDataType data[10],tmp;
+    EventDataType data[10];//,tmp;
 
 
     //qint64 start=timestamp;
@@ -856,6 +856,9 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     session->settings[CPAP_IPAPHi]=session->Max(CPAP_IPAPHi);
     session->settings[CPAP_PSMax]=session->Max(CPAP_IPAPHi) - session->Min(CPAP_EPAP);
     session->settings[CPAP_PSMin]=session->Min(CPAP_IPAPLo) - session->Min(CPAP_EPAP);
+
+    session->m_valuesummary[CPAP_Pressure].clear();
+    session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
     return true;
 
 }
@@ -1069,6 +1072,9 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
     session->m_cph.clear();
     session->m_lastchan.clear();
     session->m_firstchan.clear();
+    session->m_valuesummary[CPAP_Pressure].clear();
+    session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
+
     return true;
 }
 
