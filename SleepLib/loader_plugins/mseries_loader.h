@@ -61,7 +61,7 @@ public:
     static void Register();
 protected:
     QHash<QString,Machine *> MachList;
-
+    quint32 epoch;
 };
 
 #endif // MSERIES_LOADER_H

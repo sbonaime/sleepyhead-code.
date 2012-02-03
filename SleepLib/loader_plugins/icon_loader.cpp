@@ -168,7 +168,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
         OpenDetail(mach,det[i],profile);
     }
     for (int i=0;i<flw.size();i++) {
-        OpenFLW(mach,flw[i],profile);
+        //OpenFLW(mach,flw[i],profile);
     }
     SessionID zz,sid,st;
     float hours,dur,mins;

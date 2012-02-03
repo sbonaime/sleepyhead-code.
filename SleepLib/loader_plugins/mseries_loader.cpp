@@ -30,6 +30,8 @@ MSeries::~MSeries()
 
 MSeriesLoader::MSeriesLoader()
 {
+    epoch=QDateTime(QDate(2000,1,1),QTime(0,0,0),Qt::UTC).toTime_t();
+    epoch-=QDateTime(QDate(1970,1,1),QTime(0,0,0),Qt::UTC).toTime_t();
 }
 
 MSeriesLoader::~MSeriesLoader()
@@ -111,6 +113,8 @@ blockLayoutOffsets   {
                 startChar = 0xfe,
                 stopChar = 0x7f
                     */
+
+
 int MSeriesLoader::Open(QString & path,Profile *profile)
 {
     // Until a smartcard reader is written, this is not an auto-scanner.. it just opens a block file..
@@ -162,12 +166,75 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
 
     const unsigned char * rxblock=(unsigned char *)block.data()+rx_offset;
 
-    const unsigned char * controlblock=(unsigned char *)block.data()+control_offset;
+    unsigned char * controlblock=(unsigned char *)block.data()+control_offset;
+    quint16 count=controlblock[0] << 8 | controlblock[1]; // number of control blocks
+    if (controlblock[1]!=controlblock[2]) {
+        qDebug() << "Control block count does not match." << path;
+    }
+    QList<quint16> head, tail;
+    controlblock+=3;
+    quint16 datastarts,dataends,tmp16,h16,t16;
+    if (controlblock[0]) {
+        datastarts=controlblock[1] | (controlblock[2] << 8);
+        dataends=controlblock[3] | (controlblock[4] << 8);
+    }
+    controlblock+=6;
 
-    quint16 headptr1=controlblock[4] << 8 | controlblock[5];
-    quint16 tailptr1=controlblock[6] << 8 | controlblock[7];
-    quint16 headptr2=controlblock[10] << 8 | controlblock[11];
-    quint16 tailptr2=controlblock[12] << 8 | controlblock[13];
+    if (controlblock[0]) {
+        if ((controlblock[1] | (controlblock[2] << 8))!=datastarts) {
+            qDebug() << "Non matching card size start identifier" << path;
+        }
+        if ((controlblock[3] | (controlblock[4] << 8))!=dataends) {
+            qDebug() << "Non matching card size end identifier" << path;
+        }
+    }
+    controlblock+=6;
+    count-=2;
+
+    tmp16=controlblock[0] | controlblock[1] << 8;
+
+    controlblock+=2;
+    for (int i=0;i<count/2;i++) {
+        if (controlblock[0]) {
+            h16=controlblock[1] | (controlblock[2] << 8);
+            t16=controlblock[3] | (controlblock[4] << 8);
+            head.push_back(h16);
+            tail.push_back(t16);
+        }
+        controlblock+=6;
+        if (controlblock[0]) {
+            if ((controlblock[1] | (controlblock[2] << 8))!=h16) {
+                qDebug() << "Non matching control block head value" << path;
+            }
+            if ((controlblock[3] | (controlblock[4] << 8))!=t16) {
+                qDebug() << "Non matching control block tail value" << path;
+            }
+        }
+        controlblock+=6;
+    }
+
+    unsigned char *cb=controlblock;
+
+    for (int chk=0;chk<8;chk++) {
+        quint32 ts=cb[0] << 24 | cb[1] << 16 | cb[2] << 8 | cb[3];
+        //ts-=epoch;
+        QDateTime dt=QDateTime::fromTime_t(ts);
+        QDate date=dt.date();
+        QTime time=dt.time();
+
+        cb+=4;
+        quint8 sum=0;
+        for (int i=0;i<0x268;i++) sum+=cb[i];
+        if (cb[0x268]==sum) {
+            qDebug() << "Checksum bad for block" << chk << path;
+        }
+        cb+=0x26a;
+    }
+
+
+    //graph data
+    //starts with timestamp.. or time delta if high bit is set.
+
 //    validFlagOne = 3,
 //    headPtrOne = 4,
 //    tailPtrOne = 6,
@@ -192,6 +259,34 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
     quint8 ventCompliance2=datablock[13];
     quint8 sleepProfile3=datablock[14];
     quint8 sleepTrend3=datablock[15];
+
+    int xblock_offset=data_offset+datablock[16];
+
+    // 0xa6: 01 00 b2 7f ff 31
+    // 0xac: 01 00 b2 7f ff 31
+
+    // 0xb2: prescription block... ?
+    // 0xb2: 00 00
+
+    // 0xb4: 01 36 a3 36 a2 b2    // the last bytes of all these are 8 bit additive checksums.
+    // 0xba: 01 36 a3 36 a2 b2
+    // 0xc0: 01 00 26 00 07 2e
+    // 0xc6: 01 00 26 00 07 2e
+    // 0xcc: 01 52 5a 58 e6 eb
+    // 0xd2: 01 52 5a 58 e6 eb
+
+    // repeat 8 times
+    // 0xd8: 4e 1a 4a fe
+    // 268 bytes
+    // 1 byte checksum
+
+    const char * xblock=block.data()+xblock_offset;
+
+
+    // starting at 0xD8, with timestamp?
+    // 8 blocks of 0x26e in size
+
+    // idx 0x159 =
 
 //    basicCompliance = 1,
 //    fosq = 2,
