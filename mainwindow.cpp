@@ -187,7 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>Loading...</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
-    ui->actionImport_RemStar_MSeries_Data->setVisible(false);
+    //ui->actionImport_RemStar_MSeries_Data->setVisible(false);
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
