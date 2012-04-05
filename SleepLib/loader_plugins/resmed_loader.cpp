@@ -482,49 +482,49 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     qint16 o1[10],o2[10];
     time_t st,et;
     time_t time=stredf.startdate/1000L; // == 12pm on first day
-    for (int i=0;i<days;i++) {
-        EDFSignal *maskon=stredf.lookup["Mask On"];
-        EDFSignal *maskoff=stredf.lookup["Mask Off"];
-        int j=i*10;
+//    for (int i=0;i<days;i++) {
+//        EDFSignal *maskon=stredf.lookup["Mask On"];
+//        EDFSignal *maskoff=stredf.lookup["Mask Off"];
+//        int j=i*10;
 
-        // Counts for on and off don't line up, and I'm not sure why
-        // The extra 'off' always seems to start with a 1 at the beginning
-        // A signal it's carried over from the day before perhaps? (noon boundary)
-        int ckon=0,ckoff=0;
-        for (int k=0;k<10;k++) {
-            on=maskon->data[j+k];
-            off=maskoff->data[j+k];
-            o1[k]=on;
-            o2[k]=off;
-            if (on >= 0) ckon++;
-            if (off >= 0) ckoff++;
-        }
+//        // Counts for on and off don't line up, and I'm not sure why
+//        // The extra 'off' always seems to start with a 1 at the beginning
+//        // A signal it's carried over from the day before perhaps? (noon boundary)
+//        int ckon=0,ckoff=0;
+//        for (int k=0;k<10;k++) {
+//            on=maskon->data[j+k];
+//            off=maskoff->data[j+k];
+//            o1[k]=on;
+//            o2[k]=off;
+//            if (on >= 0) ckon++;
+//            if (off >= 0) ckoff++;
+//        }
 
-        // set to true if day starts with machine running
-        int offset=ckoff-ckon;
-        dayfoo.push_back(offset>0);
+//        // set to true if day starts with machine running
+//        int offset=ckoff-ckon;
+//        dayfoo.push_back(offset>0);
 
-        st=0,et=0;
-        time_t l,f;
+//        st=0,et=0;
+//        time_t l,f;
 
-        // Find the Min & Max times for this day
-        for (int k=0;k<ckon;k++) {
-            on=o1[k];
-            off=o2[k+offset];
-            f=time+on*60;
-            l=time+off*60;
-            daystarttimes[i].push_back(f);
-            dayendtimes[i].push_back(l);
+//        // Find the Min & Max times for this day
+//        for (int k=0;k<ckon;k++) {
+//            on=o1[k];
+//            off=o2[k+offset];
+//            f=time+on*60;
+//            l=time+off*60;
+//            daystarttimes[i].push_back(f);
+//            dayendtimes[i].push_back(l);
 
-            if (!st || (st > f)) st=f;
-            if (!et || (et < l)) et=l;
-        }
-        strfirst.push_back(st);
-        strlast.push_back(et);
-        strday.push_back(i);
-        dayused[i]=ckon;
-        time+=86400;
-    }
+//            if (!st || (st > f)) st=f;
+//            if (!et || (et < l)) et=l;
+//        }
+//        strfirst.push_back(st);
+//        strlast.push_back(et);
+//        strday.push_back(i);
+//        dayused[i]=ckon;
+//        time+=86400;
+//    }
 
     // reset time to first day
     time=stredf.startdate/1000;
@@ -618,7 +618,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             sessfiles[sessionid].push_back(filename);
         }
 
-        if ((i%10) ==0) {
+        if ((i % 10)==0) {
             // Update the progress bar
             if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
             QApplication::processEvents();
@@ -637,415 +637,415 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     // Scan over file list and knock out of dayused list
     /////////////////////////////////////////////////////////////////////////////
     int dn;
-    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
-        sessionid=si.key();
+//    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
+//        sessionid=si.key();
 
-        // Earliest possible day number
-        int edn=((sessionid-time)/86400)-1;
-        if (edn<0) edn=0;
+//        // Earliest possible day number
+//        int edn=((sessionid-time)/86400)-1;
+//        if (edn<0) edn=0;
 
-        // Find real day number from str.edf mask on/off data.
-        dn=-1;
-        for (int j=edn;j<strfirst.size();j++){
-            st=strfirst.at(j);
-            if (sessionid>=st) {
-                et=strlast.at(j);
-                if (sessionid<(et+300)) {
-                    dn=j;
-                    break;
-                }
-            }
-        }
-        // If found, mark day off so STR.edf summary data isn't used instead of the real thing.
-        if (dn>=0) {
-            dayused[dn]=0;
-        }
-    }
+//        // Find real day number from str.edf mask on/off data.
+//        dn=-1;
+//        for (int j=edn;j<strfirst.size();j++){
+//            st=strfirst.at(j);
+//            if (sessionid>=st) {
+//                et=strlast.at(j);
+//                if (sessionid<(et+300)) {
+//                    dn=j;
+//                    break;
+//                }
+//            }
+//        }
+//        // If found, mark day off so STR.edf summary data isn't used instead of the real thing.
+//        if (dn>=0) {
+//            dayused[dn]=0;
+//        }
+//    }
 
     EDFSignal *sig;
 
     /////////////////////////////////////////////////////////////////////////////
     // For all days not in session lists, (to get at days without data records)
     /////////////////////////////////////////////////////////////////////////////
-    for (dn=0;dn<days;dn++) {
-        // Skip days with loadable data.
-        if (!dayused[dn])
-            continue;
+//    for (dn=0;dn<days;dn++) {
+//        // Skip days with loadable data.
+//        if (!dayused[dn])
+//            continue;
 
-        if (!daystarttimes.contains(dn))
-            continue;
+//        if (!daystarttimes.contains(dn))
+//            continue;
 
-        sess=NULL;
+//        sess=NULL;
 
-        int scnt=daystarttimes[dn].size(); // count of sessions for this day
+//        int scnt=daystarttimes[dn].size(); // count of sessions for this day
 
-        // Create a new session for each mask on/off segment in a day
-        // But only populate the last one with summary data.
-        for (int j=0;j<scnt;j++) {
-            st=daystarttimes[dn].at(j);
+//        // Create a new session for each mask on/off segment in a day
+//        // But only populate the last one with summary data.
+//        for (int j=0;j<scnt;j++) {
+//            st=daystarttimes[dn].at(j);
 
-            // Skip if session already exists
-            if (m->SessionExists(st))
-                continue;
+//            // Skip if session already exists
+//            if (m->SessionExists(st))
+//                continue;
 
-            et=dayendtimes[dn].at(j);
+//            et=dayendtimes[dn].at(j);
 
-            // Create the session
-            sess=new Session(m,st);
-            sess->really_set_first(qint64(st)*1000L);
-            sess->really_set_last(qint64(et)*1000L);
-            sess->SetChanged(true);
-            m->AddSession(sess,profile);
-        }
-        // Add the actual data to the last session
-        EventDataType tmp,dur;
-        if (sess) {
-            /////////////////////////////////////////////////////////////////////
-            // CPAP Mode
-            /////////////////////////////////////////////////////////////////////
-            int mode;
-            sig=stredf.lookupSignal(CPAP_Mode);
-            if (sig) {
-                mode=sig->data[dn];
-            } else mode=0;
-
-
-            /////////////////////////////////////////////////////////////////////
-            // EPR Settings
-            /////////////////////////////////////////////////////////////////////
-            sess->settings[CPAP_PresReliefType]=PR_EPR;
-
-            // Note: AutoSV machines don't have both fields
-            sig=stredf.lookupSignal(RMS9_EPR);
-            if (sig) {
-                sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
-            }
-            sig=stredf.lookupSignal(RMS9_EPRSet);
-            if (sig)  {
-                sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
-            }
+//            // Create the session
+//            sess=new Session(m,st);
+//            sess->really_set_first(qint64(st)*1000L);
+//            sess->really_set_last(qint64(et)*1000L);
+//            sess->SetChanged(true);
+//            m->AddSession(sess,profile);
+//        }
+//        // Add the actual data to the last session
+//        EventDataType tmp,dur;
+//        if (sess) {
+//            /////////////////////////////////////////////////////////////////////
+//            // CPAP Mode
+//            /////////////////////////////////////////////////////////////////////
+//            int mode;
+//            sig=stredf.lookupSignal(CPAP_Mode);
+//            if (sig) {
+//                mode=sig->data[dn];
+//            } else mode=0;
 
 
-            /////////////////////////////////////////////////////////////////////
-            // Set Min & Max pressures depending on CPAP mode
-            /////////////////////////////////////////////////////////////////////
-            if (mode==0) {
-                sess->settings[CPAP_Mode]=MODE_CPAP;
-                sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
-                if (sig) {
-                    EventDataType pressure=sig->data[dn]*sig->gain;
-                    sess->settings[CPAP_Pressure]=pressure;
-                }
-            } else { // VPAP or Auto
-                if (mode>5) {
-                    if (mode>=7)
-                        sess->settings[CPAP_Mode]=MODE_ASV;
-                    else
-                        sess->settings[CPAP_Mode]=MODE_BIPAP;
+//            /////////////////////////////////////////////////////////////////////
+//            // EPR Settings
+//            /////////////////////////////////////////////////////////////////////
+//            sess->settings[CPAP_PresReliefType]=PR_EPR;
 
-                    EventDataType tmp,epap=0,ipap=0;
-                    if ((sig=stredf.lookupName("EPAP"))) {
-                        epap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_EPAP]=epap;
-                        sess->setMin(CPAP_EPAP,epap);
-                    }
-                    if ((sig=stredf.lookupName("IPAP"))) {
-                        ipap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_IPAP]=ipap;
-                    }
-                    if ((sig=stredf.lookupName("PS"))) {
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
-                        if (!ipap) {
-                            // not really possible. but anyway, just in case..
-                            sess->settings[CPAP_IPAP]=epap+tmp;
-                        }
-                    }
-                    if ((sig=stredf.lookupName("Min PS"))) {
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PSMin]=tmp;
-                        sess->settings[CPAP_IPAPLo]=epap+tmp;
-                        sess->setMin(CPAP_IPAP,epap+tmp);
-                    }
-                    if ((sig=stredf.lookupName("Max PS"))) {
-                        tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PSMax]=tmp;
-                        sess->settings[CPAP_IPAPHi]=epap+tmp;
-                    }
-                    if ((sig=stredf.lookupName("RR"))) { // Is this a setting to force respiratory rate on S/T machines?
-                        tmp=sig->data[dn];
-                        sess->settings[CPAP_RespRate]=tmp*sig->gain;
-                    }
-
-                    if ((sig=stredf.lookupName("Easy-Breathe"))) {
-                        tmp=sig->data[dn]*sig->gain;
-
-                        sess->settings[CPAP_PresReliefSet]=tmp;
-                        sess->settings[CPAP_PresReliefType]=(int)PR_EASYBREATHE;
-                        sess->settings[CPAP_PresReliefMode]=(int)PM_FullTime;
-                    }
-
-                } else {
-                    sess->settings[CPAP_Mode]=MODE_APAP;
-                    sig=stredf.lookupSignal(CPAP_PressureMin);
-                    if (sig) {
-                        EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PressureMin]=pressure;
-                        //sess->setMin(CPAP_Pressure,pressure);
-                    }
-                    sig=stredf.lookupSignal(CPAP_PressureMax);
-                    if (sig) {
-                        EventDataType pressure=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PressureMax]=pressure;
-                        //sess->setMax(CPAP_Pressure,pressure);
-                    }
-                }
-            }
-
-            EventDataType valmed=0,valmax=0,val95=0;
-
-            /////////////////////////////////////////////////////////////////////
-            // Leak Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Leak Med"))) {
-                valmed=sig->data[dn];
-                if (valmed>=0) {
-                    sess->m_gain[CPAP_Leak]=sig->gain*60.0;
-
-                    sess->m_valuesummary[CPAP_Leak][valmed]=51;
-                }
-            }
-            if ((sig=stredf.lookupName("Leak 95"))) {
-                val95=sig->data[dn];
-                if (val95>=0)
-                    sess->m_valuesummary[CPAP_Leak][val95]=45;
-            }
-            if ((sig=stredf.lookupName("Leak Max"))) {
-                valmax=sig->data[dn];
-                if (valmax>=0) {
-                    sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
-                    sess->m_valuesummary[CPAP_Leak][valmax]=4;
-                }
-            }
-
-            /////////////////////////////////////////////////////////////////////
-            // Minute Ventilation Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Min Vent Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_MinuteVent]=sig->gain;
-                sess->m_valuesummary[CPAP_MinuteVent][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("Min Vent 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_MinuteVent][val95]=45;
-            }
-            if ((sig=stredf.lookupName("Min Vent Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
-            }
-            /////////////////////////////////////////////////////////////////////
-            // Respiratory Rate Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("RR Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_RespRate]=sig->gain;
-                sess->m_valuesummary[CPAP_RespRate][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("RR 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_RespRate][val95]=45;
-            }
-            if ((sig=stredf.lookupName("RR Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_RespRate,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_RespRate][valmax]=4;
-            }
-
-            /////////////////////////////////////////////////////////////////////
-            // Tidal Volume Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Tid Vol Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
-                sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("Tid Vol 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_TidalVolume][val95]=45;
-            }
-            if ((sig=stredf.lookupName("Tid Vol Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_TidalVolume,valmax*sig->gain*1000.0);
-                sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
-            }
-
-            /////////////////////////////////////////////////////////////////////
-            // Target Minute Ventilation Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Targ Vent Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_TgMV]=sig->gain;
-                sess->m_valuesummary[CPAP_TgMV][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("Targ Vent 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_TgMV][val95]=45;
-            }
-            if ((sig=stredf.lookupName("Targ Vent Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_TgMV,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_TgMV][valmax]=4;
-            }
+//            // Note: AutoSV machines don't have both fields
+//            sig=stredf.lookupSignal(RMS9_EPR);
+//            if (sig) {
+//                sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
+//            }
+//            sig=stredf.lookupSignal(RMS9_EPRSet);
+//            if (sig)  {
+//                sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
+//            }
 
 
-            /////////////////////////////////////////////////////////////////////
-            // I:E Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("I:E Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_IE]=sig->gain;
-                sess->m_valuesummary[CPAP_IE][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("I:E 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_IE][val95]=45;
-            }
-            if ((sig=stredf.lookupName("I:E Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_IE,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_IE][valmax]=4;
-            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Set Min & Max pressures depending on CPAP mode
+//            /////////////////////////////////////////////////////////////////////
+//            if (mode==0) {
+//                sess->settings[CPAP_Mode]=MODE_CPAP;
+//                sig=stredf.lookupSignal(RMS9_SetPressure); // ?? What's meant by Set Pressure?
+//                if (sig) {
+//                    EventDataType pressure=sig->data[dn]*sig->gain;
+//                    sess->settings[CPAP_Pressure]=pressure;
+//                }
+//            } else { // VPAP or Auto
+//                if (mode>5) {
+//                    if (mode>=7)
+//                        sess->settings[CPAP_Mode]=MODE_ASV;
+//                    else
+//                        sess->settings[CPAP_Mode]=MODE_BIPAP;
 
-            /////////////////////////////////////////////////////////////////////
-            // Mask Pressure Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Mask Pres Med"))) {
-                valmed=sig->data[dn];
-                if (valmed >= 0) {
-                    sess->m_gain[CPAP_Pressure]=sig->gain;
-                    sess->m_valuesummary[CPAP_Pressure][valmed]=51;
-                }
-            }
-            if ((sig=stredf.lookupName("Mask Pres 95"))) {
-                val95=sig->data[dn];
-                if (val95 >= 0) {
-                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
-                }
-            }
-            if ((sig=stredf.lookupName("Mask Pres Max"))) {
-                valmax=sig->data[dn];
-                if (valmax >= 0) {
-                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
-                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
-                }
-            }
-            /////////////////////////////////////////////////////////////////////
-            // Therapy Pressure Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Therapy Pres Me"))) {
-                valmed=sig->data[dn];
-                if (valmed >= 0) {
-                    //sess->m_gain[CPAP_Pressure]=sig->gain;
-                    //sess->m_valuesummary[CPAP_Pressure][valmed]=51;
-                }
-            }
-            if ((sig=stredf.lookupName("Therapy Pres 95"))) {
-                val95=sig->data[dn];
-                if (val95 >= 0) {
+//                    EventDataType tmp,epap=0,ipap=0;
+//                    if ((sig=stredf.lookupName("EPAP"))) {
+//                        epap=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_EPAP]=epap;
+//                        sess->setMin(CPAP_EPAP,epap);
+//                    }
+//                    if ((sig=stredf.lookupName("IPAP"))) {
+//                        ipap=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_IPAP]=ipap;
+//                    }
+//                    if ((sig=stredf.lookupName("PS"))) {
+//                        tmp=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
+//                        if (!ipap) {
+//                            // not really possible. but anyway, just in case..
+//                            sess->settings[CPAP_IPAP]=epap+tmp;
+//                        }
+//                    }
+//                    if ((sig=stredf.lookupName("Min PS"))) {
+//                        tmp=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_PSMin]=tmp;
+//                        sess->settings[CPAP_IPAPLo]=epap+tmp;
+//                        sess->setMin(CPAP_IPAP,epap+tmp);
+//                    }
+//                    if ((sig=stredf.lookupName("Max PS"))) {
+//                        tmp=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_PSMax]=tmp;
+//                        sess->settings[CPAP_IPAPHi]=epap+tmp;
+//                    }
+//                    if ((sig=stredf.lookupName("RR"))) { // Is this a setting to force respiratory rate on S/T machines?
+//                        tmp=sig->data[dn];
+//                        sess->settings[CPAP_RespRate]=tmp*sig->gain;
+//                    }
+
+//                    if ((sig=stredf.lookupName("Easy-Breathe"))) {
+//                        tmp=sig->data[dn]*sig->gain;
+
+//                        sess->settings[CPAP_PresReliefSet]=tmp;
+//                        sess->settings[CPAP_PresReliefType]=(int)PR_EASYBREATHE;
+//                        sess->settings[CPAP_PresReliefMode]=(int)PM_FullTime;
+//                    }
+
+//                } else {
+//                    sess->settings[CPAP_Mode]=MODE_APAP;
+//                    sig=stredf.lookupSignal(CPAP_PressureMin);
+//                    if (sig) {
+//                        EventDataType pressure=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_PressureMin]=pressure;
+//                        //sess->setMin(CPAP_Pressure,pressure);
+//                    }
+//                    sig=stredf.lookupSignal(CPAP_PressureMax);
+//                    if (sig) {
+//                        EventDataType pressure=sig->data[dn]*sig->gain;
+//                        sess->settings[CPAP_PressureMax]=pressure;
+//                        //sess->setMax(CPAP_Pressure,pressure);
+//                    }
+//                }
+//            }
+
+//            EventDataType valmed=0,valmax=0,val95=0;
+
+//            /////////////////////////////////////////////////////////////////////
+//            // Leak Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Leak Med"))) {
+//                valmed=sig->data[dn];
+//                if (valmed>=0) {
+//                    sess->m_gain[CPAP_Leak]=sig->gain*60.0;
+
+//                    sess->m_valuesummary[CPAP_Leak][valmed]=51;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Leak 95"))) {
+//                val95=sig->data[dn];
+//                if (val95>=0)
+//                    sess->m_valuesummary[CPAP_Leak][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("Leak Max"))) {
+//                valmax=sig->data[dn];
+//                if (valmax>=0) {
+//                    sess->setMax(CPAP_Leak,valmax*sig->gain*60.0);
+//                    sess->m_valuesummary[CPAP_Leak][valmax]=4;
+//                }
+//            }
+
+//            /////////////////////////////////////////////////////////////////////
+//            // Minute Ventilation Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Min Vent Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_MinuteVent]=sig->gain;
+//                sess->m_valuesummary[CPAP_MinuteVent][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("Min Vent 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_MinuteVent][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("Min Vent Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_MinuteVent,valmax*sig->gain);
+//                sess->m_valuesummary[CPAP_MinuteVent][valmax]=4;
+//            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Respiratory Rate Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("RR Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_RespRate]=sig->gain;
+//                sess->m_valuesummary[CPAP_RespRate][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("RR 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_RespRate][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("RR Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_RespRate,valmax*sig->gain);
+//                sess->m_valuesummary[CPAP_RespRate][valmax]=4;
+//            }
+
+//            /////////////////////////////////////////////////////////////////////
+//            // Tidal Volume Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Tid Vol Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_TidalVolume]=sig->gain*1000.0;
+//                sess->m_valuesummary[CPAP_TidalVolume][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("Tid Vol 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_TidalVolume][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("Tid Vol Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_TidalVolume,valmax*sig->gain*1000.0);
+//                sess->m_valuesummary[CPAP_TidalVolume][valmax]=4;
+//            }
+
+//            /////////////////////////////////////////////////////////////////////
+//            // Target Minute Ventilation Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Targ Vent Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_TgMV]=sig->gain;
+//                sess->m_valuesummary[CPAP_TgMV][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("Targ Vent 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_TgMV][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("Targ Vent Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_TgMV,valmax*sig->gain);
+//                sess->m_valuesummary[CPAP_TgMV][valmax]=4;
+//            }
+
+
+//            /////////////////////////////////////////////////////////////////////
+//            // I:E Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("I:E Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_IE]=sig->gain;
+//                sess->m_valuesummary[CPAP_IE][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("I:E 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_IE][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("I:E Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_IE,valmax*sig->gain);
+//                sess->m_valuesummary[CPAP_IE][valmax]=4;
+//            }
+
+//            /////////////////////////////////////////////////////////////////////
+//            // Mask Pressure Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Mask Pres Med"))) {
+//                valmed=sig->data[dn];
+//                if (valmed >= 0) {
+//                    sess->m_gain[CPAP_Pressure]=sig->gain;
+//                    sess->m_valuesummary[CPAP_Pressure][valmed]=51;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Mask Pres 95"))) {
+//                val95=sig->data[dn];
+//                if (val95 >= 0) {
 //                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
-                }
-            }
-            if ((sig=stredf.lookupName("Therapy Pres Ma"))) {
-                valmax=sig->data[dn];
-                if (valmax >= 0) {
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Mask Pres Max"))) {
+//                valmax=sig->data[dn];
+//                if (valmax >= 0) {
 //                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
 //                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
-                }
-            }
+//                }
+//            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Therapy Pressure Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Therapy Pres Me"))) {
+//                valmed=sig->data[dn];
+//                if (valmed >= 0) {
+//                    //sess->m_gain[CPAP_Pressure]=sig->gain;
+//                    //sess->m_valuesummary[CPAP_Pressure][valmed]=51;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Therapy Pres 95"))) {
+//                val95=sig->data[dn];
+//                if (val95 >= 0) {
+////                    sess->m_valuesummary[CPAP_Pressure][val95]=45;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Therapy Pres Ma"))) {
+//                valmax=sig->data[dn];
+//                if (valmax >= 0) {
+////                    sess->setMax(CPAP_Pressure,valmax*sig->gain);
+////                    sess->m_valuesummary[CPAP_Pressure][valmax]=4;
+//                }
+//            }
 
-            /////////////////////////////////////////////////////////////////////
-            // Inspiratory Pressure (IPAP) Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Insp Pres Med"))) {
-                valmed=sig->data[dn];
-                sess->m_gain[CPAP_IPAP]=sig->gain;
-                sess->m_valuesummary[CPAP_IPAP][valmed]=51;
-            }
-            if ((sig=stredf.lookupName("Insp Pres 95"))) {
-                val95=sig->data[dn];
-                sess->m_valuesummary[CPAP_IPAP][val95]=45;
-            }
-            if ((sig=stredf.lookupName("Insp Pres Max"))) {
-                valmax=sig->data[dn];
-                sess->setMax(CPAP_IPAP,valmax*sig->gain);
-                sess->m_valuesummary[CPAP_IPAP][valmax]=4;
-            }
-            /////////////////////////////////////////////////////////////////////
-            // Expiratory Pressure (EPAP) Summary
-            /////////////////////////////////////////////////////////////////////
-            if ((sig=stredf.lookupName("Exp Pres Med"))) {
-                valmed=sig->data[dn];
-                if (valmed>=0) {
-                    sess->m_gain[CPAP_EPAP]=sig->gain;
-                    sess->m_valuesummary[CPAP_EPAP][valmed]=51;
-                }
-            }
-            if ((sig=stredf.lookupName("Exp Pres 95"))) {
-                if (val95>=0) {
-                    val95=sig->data[dn];
-                    sess->m_valuesummary[CPAP_EPAP][val95]=45;
-                }
-            }
-            if ((sig=stredf.lookupName("Exp Pres Max"))) {
-                valmax=sig->data[dn];
-                if (valmax>=0) {
-                    sess->setMax(CPAP_EPAP,valmax*sig->gain);
-                    sess->m_valuesummary[CPAP_EPAP][valmax]=4;
-                }
-            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Inspiratory Pressure (IPAP) Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Insp Pres Med"))) {
+//                valmed=sig->data[dn];
+//                sess->m_gain[CPAP_IPAP]=sig->gain;
+//                sess->m_valuesummary[CPAP_IPAP][valmed]=51;
+//            }
+//            if ((sig=stredf.lookupName("Insp Pres 95"))) {
+//                val95=sig->data[dn];
+//                sess->m_valuesummary[CPAP_IPAP][val95]=45;
+//            }
+//            if ((sig=stredf.lookupName("Insp Pres Max"))) {
+//                valmax=sig->data[dn];
+//                sess->setMax(CPAP_IPAP,valmax*sig->gain);
+//                sess->m_valuesummary[CPAP_IPAP][valmax]=4;
+//            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Expiratory Pressure (EPAP) Summary
+//            /////////////////////////////////////////////////////////////////////
+//            if ((sig=stredf.lookupName("Exp Pres Med"))) {
+//                valmed=sig->data[dn];
+//                if (valmed>=0) {
+//                    sess->m_gain[CPAP_EPAP]=sig->gain;
+//                    sess->m_valuesummary[CPAP_EPAP][valmed]=51;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Exp Pres 95"))) {
+//                if (val95>=0) {
+//                    val95=sig->data[dn];
+//                    sess->m_valuesummary[CPAP_EPAP][val95]=45;
+//                }
+//            }
+//            if ((sig=stredf.lookupName("Exp Pres Max"))) {
+//                valmax=sig->data[dn];
+//                if (valmax>=0) {
+//                    sess->setMax(CPAP_EPAP,valmax*sig->gain);
+//                    sess->m_valuesummary[CPAP_EPAP][valmax]=4;
+//                }
+//            }
 
-            /////////////////////////////////////////////////////////////////////
-            // Duration and Event Indices
-            /////////////////////////////////////////////////////////////////////
-            dur=0;
-            if ((sig=stredf.lookupName("Mask Dur"))) {
-                dur=sig->data[dn]*sig->gain;
-                dur/=60.0f; // convert to hours.
-            }
-            if ((sig=stredf.lookupName("OAI"))) { // Obstructive Apnea Index
-                tmp=sig->data[dn]*sig->gain;
-                if (tmp>=0) {
-                    sess->setCph(CPAP_Obstructive,tmp);
-                    sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
-                }
-            }
-            if ((sig=stredf.lookupName("HI"))) { // Hypopnea Index
-                tmp=sig->data[dn]*sig->gain;
-                if (tmp>=0) {
-                    sess->setCph(CPAP_Hypopnea,tmp);
-                    sess->setCount(CPAP_Hypopnea,tmp*dur);
-                }
-            }
-            if ((sig=stredf.lookupName("UAI"))) { // Unspecified Apnea Index
-                tmp=sig->data[dn]*sig->gain;
-                if (tmp>=0) {
-                    sess->setCph(CPAP_Apnea,tmp);
-                    sess->setCount(CPAP_Apnea,tmp*dur);
-                }
-            }
-            if ((sig=stredf.lookupName("CAI"))) { // "Central" Apnea Index
-                tmp=sig->data[dn]*sig->gain;
-                if (tmp>=0) {
-                    sess->setCph(CPAP_ClearAirway,tmp);
-                    sess->setCount(CPAP_ClearAirway,tmp*dur);
-                }
-            }
+//            /////////////////////////////////////////////////////////////////////
+//            // Duration and Event Indices
+//            /////////////////////////////////////////////////////////////////////
+//            dur=0;
+//            if ((sig=stredf.lookupName("Mask Dur"))) {
+//                dur=sig->data[dn]*sig->gain;
+//                dur/=60.0f; // convert to hours.
+//            }
+//            if ((sig=stredf.lookupName("OAI"))) { // Obstructive Apnea Index
+//                tmp=sig->data[dn]*sig->gain;
+//                if (tmp>=0) {
+//                    sess->setCph(CPAP_Obstructive,tmp);
+//                    sess->setCount(CPAP_Obstructive,tmp*dur); // Converting from indice to counts..
+//                }
+//            }
+//            if ((sig=stredf.lookupName("HI"))) { // Hypopnea Index
+//                tmp=sig->data[dn]*sig->gain;
+//                if (tmp>=0) {
+//                    sess->setCph(CPAP_Hypopnea,tmp);
+//                    sess->setCount(CPAP_Hypopnea,tmp*dur);
+//                }
+//            }
+//            if ((sig=stredf.lookupName("UAI"))) { // Unspecified Apnea Index
+//                tmp=sig->data[dn]*sig->gain;
+//                if (tmp>=0) {
+//                    sess->setCph(CPAP_Apnea,tmp);
+//                    sess->setCount(CPAP_Apnea,tmp*dur);
+//                }
+//            }
+//            if ((sig=stredf.lookupName("CAI"))) { // "Central" Apnea Index
+//                tmp=sig->data[dn]*sig->gain;
+//                if (tmp>=0) {
+//                    sess->setCph(CPAP_ClearAirway,tmp);
+//                    sess->setCount(CPAP_ClearAirway,tmp*dur);
+//                }
+//            }
 
-        }
+//        }
 
-    }
+//    }
     backup_path+=datalog+"/";
 
     /////////////////////////////////////////////////////////////////////////////

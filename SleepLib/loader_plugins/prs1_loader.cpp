@@ -600,7 +600,6 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     int ncodes=sizeof(Codes)/sizeof(QString);
     EventList * Code[0x20]={NULL};
 
-
     EventList * OA=session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList * HY=session->AddEventList(CPAP_Hypopnea, EVL_Event);
     EventList * CSR=session->AddEventList(CPAP_CSR, EVL_Event);
@@ -635,11 +634,23 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     short delta;//,duration;
     QDateTime d;
     bool badcode=false;
+    unsigned char lastcode3=0,lastcode2=0,lastcode=0,code=0;
+    int lastpos=0,startpos=0,lastpos2=0,lastpos3=0;
 
     while (pos<size) {
-        unsigned char code=buffer[pos++];
+        lastcode3=lastcode2;
+        lastcode2=lastcode;
+        lastcode=code;
+        lastpos3=lastpos2;
+        lastpos2=lastpos;
+        lastpos=startpos;
+        startpos=pos;
+        code=buffer[pos++];
         if (code>=ncodes) {
-            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << pos;
+            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
+            qDebug() << "1: (" << int(lastcode ) << lastpos << ")";
+            qDebug() << "2: (" << int(lastcode2) << lastpos2 <<")";
+            qDebug() << "3: (" << int(lastcode3) << lastpos3 <<")";
             return false;
         }
         if (code==0) {
@@ -715,12 +726,15 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             HY->AddEvent(tt,data[0]);
             break;
-        case 0x08: // ASV Codes
+        case 0x08: // ???
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
             if (!Code[10]) {
                 if (!(Code[10]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
+
+            //????
+            //data[1]=buffer[pos++]; // ???
             Code[10]->AddEvent(tt,data[0]);
             break;
         case 0x09: // ASV Codes
@@ -1211,7 +1225,9 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
             ParseSummary(mach,sequence,timestamp,data,datasize,version);
         } else if (ext==2) {
             if (version==5) {
-               Parse002v5(sequence,timestamp,data,datasize);
+               if (!Parse002v5(sequence,timestamp,data,datasize)) {
+                   qDebug() << "in file: " << filename;
+               }
             } else {
                Parse002(sequence,timestamp,data,datasize);
             }

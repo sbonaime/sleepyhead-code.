@@ -260,9 +260,11 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     QList<Day *> & dl=daylist[date];
     for (QList<Day *>::iterator a=dl.begin();a!=dl.end();a++) {
         if ((*a)->machine->GetType()==mt) {
-            if (QMessageBox::question(NULL,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
-                throw OneTypePerDay();
-            }
+
+            // disabled this because two machines isn't all that bad
+            //            if (QMessageBox::question(NULL,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            //                throw OneTypePerDay();
+            //            }
             daylist[date].erase(a);
             break;
         }
