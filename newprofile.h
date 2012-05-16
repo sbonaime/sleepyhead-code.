@@ -48,6 +48,8 @@ private slots:
 
     void on_heightCombo_currentIndexChanged(int index);
 
+    void on_dataFolderButton_clicked();
+
 private:
     Ui::NewProfile *ui;
     bool m_editMode;

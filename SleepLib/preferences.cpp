@@ -16,6 +16,7 @@ License: GPL
 #include <QDir>
 #include <QDesktopServices>
 #include <QDebug>
+#include <QSettings>
 #ifdef Q_WS_WIN32
 #include "windows.h"
 #include "lmcons.h"
@@ -52,11 +53,16 @@ const QString & getUserName()
     return userName;
 }
 
-const QString & GetAppRoot()
-{
-    // Should it go here: QDesktopServices::DataLocation ???
 
-    static QString HomeAppRoot=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)+"/"+AppRoot;
+QString GetAppRoot()
+{
+    QSettings settings("Jedimark", "SleepyHead");
+
+    QString HomeAppRoot=settings.value("Settings/AppRoot").toString();
+
+    // Should it go here: QDesktopServices::DataLocation ???
+    if (HomeAppRoot.isEmpty())
+        HomeAppRoot=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)+"/"+AppRoot;
 
     return HomeAppRoot;
 }

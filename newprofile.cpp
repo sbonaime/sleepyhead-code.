@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCryptographicHash>
+#include <QFileDialog>
+#include <QSettings>
 #include "SleepLib/profiles.h"
 
 #include "newprofile.h"
@@ -74,6 +76,9 @@ NewProfile::NewProfile(QWidget *parent) :
     ui->AppTitle->setText("SleepyHead v"+VersionString);
     ui->releaseStatus->setText(ReleaseStatus);
 
+    ui->dataFolderPath->setReadOnly(true);
+    ui->dataFolderPath->setText(GetAppRoot());
+
 
 }
 
@@ -84,11 +89,22 @@ NewProfile::~NewProfile()
 
 void NewProfile::on_nextButton_clicked()
 {
+    const QString xmlext=".xml";
+
+    QSettings settings("Jedimark", "SleepyHead");
     if (!ui->agreeCheckbox->isChecked())
         return;
 
     int index=ui->stackedWidget->currentIndex();
     switch(index) {
+    case 0:
+        settings.setValue("Settings/AppRoot", ui->dataFolderPath->text());
+        p_pref->setFilename(ui->dataFolderPath->text()+"/"+p_pref->name()+xmlext);
+        p_pref->setPath(ui->dataFolderPath->text());
+        p_layout->setFilename(ui->dataFolderPath->text()+"/"+p_layout->name()+xmlext);
+        p_layout->setPath(ui->dataFolderPath->text());
+        // Reload Preferences object
+        break;
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
             QMessageBox::information(this,STR_MESSAGE_ERROR,tr("Empty Username"),QMessageBox::Ok);
@@ -343,5 +359,20 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         int inches=v % 12;
         ui->heightEdit->setValue(feet);
         ui->heightEdit2->setValue(inches);
+    }
+}
+
+void NewProfile::on_dataFolderButton_clicked()
+{
+    QFileDialog fd(this);
+    QString filename;
+    fd.setFileMode(QFileDialog::Directory);
+    fd.setOption(QFileDialog::ShowDirsOnly,true);
+
+    fd.setAcceptMode(QFileDialog::AcceptSave);
+    if (fd.exec()==QFileDialog::Accepted) {
+        filename=fd.selectedFiles()[0];
+        ui->dataFolderPath->setText(filename);
+        //ui->dataFolderPath->setEnabled(true);
     }
 }

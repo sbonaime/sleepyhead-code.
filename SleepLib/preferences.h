@@ -21,7 +21,7 @@ License: GPL
 const QString AppName="SleepyHead"; // Outer tag of XML files
 const QString AppRoot="SleepyHeadData";    // The Folder Name
 
-extern const QString & GetAppRoot(); //returns app root path plus trailing path separator.
+extern QString GetAppRoot(); //returns app root path plus trailing path separator.
 
 inline QString PrefMacro(QString s)
 {
@@ -112,6 +112,11 @@ public:
 
     //! \brief Stores all the variants indexed by a QString name for this Preferences object
     QHash<QString,QVariant> p_preferences;
+
+    void setPath(const QString & path) { p_path=path; }
+    void setFilename(const QString & filename) { p_filename=filename; }
+
+    const QString name() { return p_name; }
 
 protected:
     //QHash<int,QString> p_codes;
