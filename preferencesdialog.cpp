@@ -175,6 +175,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     float f=profile->general->prefCalcPercentile();
     ui->prefCalcPercentile->setValue(f);
 
+    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout());
 
     bool bcd=profile->session->backupCardData();
     ui->createSDBackups->setChecked(bcd);
@@ -346,6 +347,8 @@ bool PreferencesDialog::Save()
     profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
     profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
+    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value());
+
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
     profile->cpap->setMaskDescription(ui->maskDescription->text());

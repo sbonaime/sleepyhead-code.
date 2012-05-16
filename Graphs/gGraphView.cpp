@@ -2978,7 +2978,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                                         if (i<count) {
                                             ChannelID code=fg->visibleLayers()[i]->code();
                                             QString ttip=schema::channel[code].description();
-                                            m_tooltip->display(ttip,x,y-20,800);
+                                            m_tooltip->display(ttip,x,y-20,p_profile->general->tooltipTimeout());
                                             redraw();
                                             //qDebug() << code << ttip;
                                         }
@@ -2989,7 +2989,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
                             }
                         } else {
                             if (!m_graphs[i]->units().isEmpty()) {
-                                m_tooltip->display(m_graphs[i]->units(),x,y-20,800);
+                                m_tooltip->display(m_graphs[i]->units(),x,y-20,p_profile->general->tooltipTimeout());
                                 redraw();
                             }
                         }
