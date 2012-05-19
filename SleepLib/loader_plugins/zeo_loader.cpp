@@ -237,7 +237,9 @@ int ZEOLoader::OpenFile(QString filename)
             if (!SetAlarmTime.isValid()) dodgy=true;
         }
         MorningFeel=linecomp[idxMorningFeel].toInt(&ok);
-        if (!ok) dodgy=true;
+        //if (!ok) dodgy=true;
+
+        if (!ok) MorningFeel=0;
 
         FirmwareVersion=linecomp[idxFirmwareVersion];
         if (idxMyZEOVersion>=0) MyZeoVersion=linecomp[idxMyZEOVersion];
