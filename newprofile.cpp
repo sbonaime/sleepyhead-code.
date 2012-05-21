@@ -99,9 +99,9 @@ void NewProfile::on_nextButton_clicked()
     switch(index) {
     case 0:
         settings.setValue("Settings/AppRoot", ui->dataFolderPath->text());
-        p_pref->setFilename(ui->dataFolderPath->text()+"/"+p_pref->name()+xmlext);
+        p_pref->setFilename(ui->dataFolderPath->text()+QDir::separator()+p_pref->name()+xmlext);
         p_pref->setPath(ui->dataFolderPath->text());
-        p_layout->setFilename(ui->dataFolderPath->text()+"/"+p_layout->name()+xmlext);
+        p_layout->setFilename(ui->dataFolderPath->text()+QDir::separator()+p_layout->name()+xmlext);
         p_layout->setPath(ui->dataFolderPath->text());
         // Reload Preferences object
         break;
