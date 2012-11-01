@@ -94,6 +94,7 @@ unix:!macx:LIBS        += -lX11 -lz -lGLU
 macx {
   SOURCES          += qextserialport/qextserialenumerator_osx.cpp
   LIBS             += -framework IOKit -framework CoreFoundation -lz
+  ICON              = icons/iconfile.icns
 }
 
 win32 {
