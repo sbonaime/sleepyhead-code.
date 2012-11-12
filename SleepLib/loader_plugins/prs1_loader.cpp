@@ -597,7 +597,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
         CPAP_LeakTotal, PRS1_12
     };
 
-    int ncodes=sizeof(Codes)/sizeof(QString);
+    int ncodes=sizeof(Codes)/sizeof(ChannelID);
     EventList * Code[0x20]={NULL};
 
     EventList * OA=session->AddEventList(CPAP_Obstructive, EVL_Event);

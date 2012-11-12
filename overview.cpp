@@ -98,6 +98,8 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
+    FL=createGraph(tr("Flow Limit"),tr("Flow Limit"));
+
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
     int mididx=PROFILE.general->prefCalcMiddle();
     SummaryType ST_mid;
@@ -170,6 +172,10 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     uc=new SummaryChart(STR_UNIT_Hours,GT_BAR);
     uc->addSlice(NoChannel,QColor("green"),ST_HOURS);
     UC->AddLayer(uc);
+
+    fl=new SummaryChart(tr("FL"),GT_BAR);
+    fl->addSlice(CPAP_FlowLimit,QColor("brown"),ST_CPH);
+    FL->AddLayer(fl);
 
     us=new SummaryChart(STR_UNIT_Hours,GT_SESSIONS);
     us->addSlice(NoChannel,QColor("dark blue"),ST_HOURS);

@@ -58,8 +58,8 @@ public:
         \param QString units The units of measurements to show in the popup */
     gGraph * createGraph(QString name,QString units="",YTickerType yttype=YT_Number);
 
-    gGraph *AHI, *AHIHR, *UC, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI, *TGMV, *TOTLK;
-    SummaryChart *bc,*uc, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi, *ahihr, *tgmv, *totlk;
+    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI, *TGMV, *TOTLK;
+    SummaryChart *bc,*uc, *fl, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi, *ahihr, *tgmv, *totlk;
 
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;

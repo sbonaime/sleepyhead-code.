@@ -68,6 +68,7 @@ typedef unzFile__ *unzFile;
 typedef voidp unzFile;
 #endif
 
+#define OF(x) x
 
 #define UNZ_OK                          (0)
 #define UNZ_END_OF_LIST_OF_FILE         (-100)

@@ -446,6 +446,20 @@ EventDataType calcAHI(QDate start, QDate end)
     return val;
 }
 
+EventDataType calcFL(QDate start, QDate end)
+{
+    EventDataType val=(p_profile->calcCount(CPAP_FlowLimit,MT_CPAP,start,end));
+    EventDataType hours=p_profile->calcHours(MT_CPAP,start,end);
+
+    if (hours>0)
+        val/=hours;
+    else
+        val=0;
+
+    return val;
+}
+
+
 struct RXChange
 {
     RXChange() { highlight=0; machine=NULL; }
@@ -454,6 +468,7 @@ struct RXChange
         last=copy.last;
         days=copy.days;
         ahi=copy.ahi;
+	fl=copy.fl;
         mode=copy.mode;
         min=copy.min;
         max=copy.max;
@@ -470,6 +485,7 @@ struct RXChange
     QDate last;
     int days;
     EventDataType ahi;
+    EventDataType fl;
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
@@ -940,7 +956,7 @@ void MainWindow::on_summaryButton_clicked()
                 } else {
                     min=day->settings_min(CPAP_Pressure);
                 }
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (maxhi!=cmaxhi) || (mach!=lastmach) || (prelief!=lastpr))  {
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (mach!=lastmach) || (prelset!=lastprelset))  {
                     if ((cmode!=MODE_UNKNOWN) && (lastmach!=NULL)) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -949,6 +965,7 @@ void MainWindow::on_summaryButton_clicked()
                         rx.last=last;
                         rx.days=days;
                         rx.ahi=calcAHI(first,last);
+			rx.fl=calcFL(first,last);
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
@@ -998,6 +1015,7 @@ void MainWindow::on_summaryButton_clicked()
             rx.last=last;
             rx.days=days;
             rx.ahi=calcAHI(first,last);
+	    rx.fl=calcFL(first,last);
             rx.mode=mode;
             rx.min=min;
             rx.max=max;
@@ -1181,11 +1199,12 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(tr("Pressure"));
         }
         QString tooltip;
-        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</td>%8</tr>")
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</td><td><b>%8</td>%9</tr>")
                   .arg(tr("First"))
                   .arg(tr("Last"))
                   .arg(tr("Days"))
                   .arg(ahitxt)
+		  .arg(tr("FL"))
                   .arg(tr("Machine"))
                   .arg(tr("Mode"))
                   .arg(tr("Pr. Rel."))
@@ -1261,13 +1280,14 @@ void MainWindow::on_summaryButton_clicked()
                 tooltipshow=QString("tooltip.show(\"%1\");").arg(tooltip);
                 tooltiphide="tooltip.hide();";
             }
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#eeeeee\"); %12' onmouseout='ChangeColor(this, \""+color+"\"); %13' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td>%11</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#eeeeee\"); %13' onmouseout='ChangeColor(this, \""+color+"\"); %14' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td><td>%11</td>%12</tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.days)
                     .arg(rx.ahi,0,'f',decimals)
+		    .arg(rx.fl,0,'f',decimals)
                     .arg(rx.machine->GetClass())
                     .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(presrel)

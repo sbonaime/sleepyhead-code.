@@ -6,6 +6,7 @@
 
 #include "common_gui.h"
 #include "qglobal.h"
+#include <unistd.h>
 
 #ifdef Q_WS_WIN32
 #include "windows.h"
