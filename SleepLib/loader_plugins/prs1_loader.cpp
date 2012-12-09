@@ -455,11 +455,15 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
 bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version)
 {
-    if (mach->SessionExists(sequence))
+    if (mach->SessionExists(sequence)) {
+    	qDebug() << "sessionexists exit";
         return false;
+    }
 
-    if (size<44-16)
+    if (size<44-16) {
+	qDebug() << "size exit";
         return false;
+    }
 
     Session *session=new Session(mach,sequence);
     session->really_set_first(qint64(timestamp)*1000L);
@@ -532,6 +536,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 
         duration=data[offset+0x14] | (data[0x15] << 8);
         if (!duration) {
+	    qDebug() << "!duration exit";
             delete session;
             return false;
         }
@@ -586,8 +591,10 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 }
 bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
 {
-    if (!new_sessions.contains(sequence))
-        return false;
+    if (!new_sessions.contains(sequence)) {
+        qDebug() << "contains squence exit";
+	return false;
+    }
     Session *session=new_sessions[sequence];
 
     ChannelID Codes[]={
@@ -648,9 +655,9 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
         code=buffer[pos++];
         if (code>=ncodes) {
             qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
-            qDebug() << "1: (" << int(lastcode ) << lastpos << ")";
-            qDebug() << "2: (" << int(lastcode2) << lastpos2 <<")";
-            qDebug() << "3: (" << int(lastcode3) << lastpos3 <<")";
+            qDebug() << "1: (" << int(lastcode ) << hex << lastpos << ")";
+            qDebug() << "2: (" << int(lastcode2) << hex << lastpos2 <<")";
+            qDebug() << "3: (" << int(lastcode3) << hex << lastpos3 <<")";
             return false;
         }
         if (code==0) {
@@ -767,8 +774,10 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             //tt-=delta;
             tt-=qint64(data[1])*1000L;
             if (!CSR) {
-                if (!(CSR=session->AddEventList(cpapcode,EVL_Event)))
+                if (!(CSR=session->AddEventList(cpapcode,EVL_Event))) {
+		    qDebug() << "!CSR addeventlist exit";
                     return false;
+		}
             }
             CSR->AddEvent(tt,data[0]);
             break;
@@ -797,8 +806,10 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             SNORE->AddEvent(t,data[2]=buffer[pos++]);   // 08=Snore
             if (data[2]>0) {
                 if (!VS) {
-                    if (!(VS=session->AddEventList(CPAP_VSnore,EVL_Event)))
+                    if (!(VS=session->AddEventList(CPAP_VSnore,EVL_Event))) {
+			qDebug() << "!VS eventlist exit";
                         return false;
+		    }
                 }
                 VS->AddEvent(t,0); //data[2]); // VSnore
             }
@@ -1152,6 +1163,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         header=&m_buffer[pos];
         if (header[0]!=PRS1_MAGIC_NUMBER) {
             if (chunk==0)
+	    	qDebug() << "Invalid magic number" << filename;
                 return false;
             break;
         }
@@ -1219,16 +1231,19 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         }
 
 
-        //qDebug() << "Loading" << filename << sequence << timestamp << size;
+        qDebug() << "Loading" << filename << sequence << timestamp << size;
         //if (ext==0) ParseCompliance(data,size);
         if (ext<=1) {
+	    qDebug() << "Call Parse Summary";
             ParseSummary(mach,sequence,timestamp,data,datasize,version);
         } else if (ext==2) {
             if (version==5) {
+	       qDebug() << "Call parse002v5";
                if (!Parse002v5(sequence,timestamp,data,datasize)) {
                    qDebug() << "in file: " << filename;
                }
             } else {
+	       qDebug() << "Call parse002";
                Parse002(sequence,timestamp,data,datasize);
             }
         } else if (ext==5) {
