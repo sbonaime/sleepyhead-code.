@@ -1186,6 +1186,12 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         return false;
 
     qint64 filesize=f.size();
+
+    if (filesize>max_load_buffer_size) {
+        qWarning() << "Waveform too big, increase max_load_buffer_size in PRS1Loader sourcecode" << filename;
+        return false;
+    }
+
     if (f.read((char *)m_buffer,filesize)<filesize) {
         qDebug() << "Couldn't read full file" << filename;
         return false;
