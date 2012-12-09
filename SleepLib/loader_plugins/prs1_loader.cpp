@@ -453,7 +453,7 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
 
 //};// __attribute__((packed));
 
-bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version)
+bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int family, int familyVersion)
 {
     if (mach->SessionExists(sequence)) {
     	qDebug() << "sessionexists exit";
@@ -473,15 +473,16 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     max=float(data[0x04])/10.0;
     int offset=0;
 
-    if (version==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
+    if (family==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
         offset=4;   // non zero adds 4 extra fields..
-    }
+    } else if (family == 0 && familyVersion >= 4)
+        offset=2;
 
     session->settings[CPAP_RampTime]=(int)data[offset+0x06]; // Minutes. Convert to seconds/hours here?
     session->settings[CPAP_RampPressure]=(EventDataType)data[offset+0x07]/10.0;
 
     if (max>0) { // Ignoring bipap until we see some more data during import
-        session->settings[CPAP_Mode]=(version==5) ? (int)MODE_ASV : (int)MODE_APAP;
+        session->settings[CPAP_Mode]=(family==5) ? (int)MODE_ASV : (int)MODE_APAP;
 
         session->settings[CPAP_PressureMin]=(EventDataType)min;
         session->settings[CPAP_PressureMax]=(EventDataType)max;
@@ -494,7 +495,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     if (data[offset+0x08] & 0x80) { // Flex Setting
         if (data[offset+0x08] & 0x08) {
             if (max>0) {
-                if (version==5) {
+                if (family==5) {
                     session->settings[CPAP_PresReliefType]=(int)PR_BIFLEX;
                 } else {
                     session->settings[CPAP_PresReliefType]=(int)PR_AFLEX;
@@ -508,16 +509,32 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 
 
     session->settings[CPAP_PresReliefSet]=(int)(data[offset+0x08] & 7);
-    session->settings[CPAP_HumidSetting]=(int)data[offset+0x09]&0x0f;
-    session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
     session->settings[PRS1_SysLock]=(data[offset+0x0a]&0x80)==0x80;
-    session->settings[PRS1_SysOneResistStat]=(data[offset+0x0a]&0x40)==0x40;
-    session->settings[PRS1_SysOneResistSet]=(int)data[offset+0x0a]&7;
     session->settings[PRS1_HoseDiam]=((data[offset+0x0a]&0x08)?"15mm":"22mm");
     session->settings[PRS1_AutoOff]=(data[offset+0x0c]&0x10)==0x10;
     session->settings[PRS1_MaskAlert]=(data[offset+0x0c]&0x08)==0x08;
     session->settings[PRS1_ShowAHI]=(data[offset+0x0c]&0x04)==0x04;
 
+    if (family == 0 && familyVersion >= 4) {
+        if ((data[offset+0x0a]&0x04)==0x04) // heated tubing off
+            session->settings[CPAP_HumidSetting]=(int)data[offset+0x09]&0x0f;
+        else
+            session->settings[CPAP_HumidSetting]=(int)(data[offset+0x09]&0x30)>>4;
+        session->settings[PRS1_SysOneResistSet]=(int)(data[offset+0x0b]&0x38)>>3;
+        /* These should be added to channels, if they are correct(?) */
+        /* for now, leave commented out                              */
+        /*
+        session->settings[PRS1_HeatedTubing]=(data[offset+0x0a]&0x04)!=0x04;
+        session->settings[PRS1_HeatedTubingConnected]=(data[offset+0x0b]&0x01)==0x01;
+        session->settings[PRS1_HeatedTubingTemp]=(int)(data[offset+0x09]&0x80)>>5
+            + (data[offset+0x0a]&0x03);
+        */
+    } else {
+        session->settings[CPAP_HumidSetting]=(int)data[offset+0x09]&0x0f;
+        session->settings[PRS1_HumidStatus]=(data[offset+0x09]&0x80)==0x80;
+        session->settings[PRS1_SysOneResistStat]=(data[offset+0x0a]&0x40)==0x40;
+        session->settings[PRS1_SysOneResistSet]=(int)data[offset+0x0a]&7;
+    }
 
     unsigned duration;
 
@@ -534,6 +551,8 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     } else {
         // 0X28 & 0X29 is length on r5
 
+        if (family == 0 && familyVersion >= 4)
+            offset += 12;
         duration=data[offset+0x14] | (data[offset+0x15] << 8);
         if (!duration) {
 	    qDebug() << "!duration exit";
@@ -557,7 +576,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         short medp=data[offset+0x19];
         short p90p=data[offset+0x18];
 
-        if (version<5) {
+        if (family<5) {
             if (minp>0) session->setMin(CPAP_Pressure,EventDataType(minp)*0.10);
             if (maxp>0) session->setMax(CPAP_Pressure,EventDataType(maxp)*0.10);
             if (medp>0) session->setWavg(CPAP_Pressure,EventDataType(medp)*0.10); // ??
@@ -892,7 +911,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
 }
 
-bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size)
+bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buffer, quint16 size, int family, int familyVersion)
 {
     if (!new_sessions.contains(sequence))
         return false;
@@ -955,6 +974,13 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
                 if (!(Code[1]=session->AddEventList(PRS1_01,EVL_Event))) return false;
             }
             Code[1]->AddEvent(t,0);
+            if (family == 0 && familyVersion >= 4) {
+                if (!PRESSURE) {
+                    PRESSURE=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
+                    if (!PRESSURE) return false;
+                }
+                PRESSURE->AddEvent(t,buffer[pos++]);
+            }
             break;
         case 0x02: // Pressure
             if (!PRESSURE) {
@@ -1046,6 +1072,9 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
                 }
                 VS2->AddEvent(t,data[1]);
             }
+
+            if (family == 0 && familyVersion >=4)
+                pos++;
             break;
         case 0x0e: // Unknown
             data[0]=((char *)buffer)[pos++];
@@ -1136,7 +1165,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
 bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 {
-    int sequence,version;
+    int sequence,family, familyVersion;
     quint32 timestamp;
     qint64 pos;
     unsigned char ext,sum, htype;
@@ -1175,7 +1204,8 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         size=(header[2] << 8) | header[1];
         htype=header[3]; // 00 = normal // 01=waveform // could be a bool?
         Q_UNUSED(htype);
-        version=header[4]; // == 5
+        family=header[4]; // == 5
+        familyVersion=header[5];
         ext=header[6];
         sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
         timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
@@ -1238,17 +1268,14 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         qDebug() << "Loading" << filename << sequence << timestamp << size;
         //if (ext==0) ParseCompliance(data,size);
         if (ext<=1) {
-	    qDebug() << "Call Parse Summary";
-            ParseSummary(mach,sequence,timestamp,data,datasize,version);
+            ParseSummary(mach,sequence,timestamp,data,datasize,family,familyVersion);
         } else if (ext==2) {
-            if (version==5) {
-	       qDebug() << "Call parse002v5 hl=" << hl;
+            if (family==5) {
                if (!Parse002v5(sequence,timestamp,data,datasize)) {
                    qDebug() << "in file: " << filename;
                }
             } else {
-	       qDebug() << "Call parse002";
-               Parse002(sequence,timestamp,data,datasize);
+               Parse002(sequence,timestamp,data,datasize, family, familyVersion);
             }
         } else if (ext==5) {
             //ParseWaveform(mach,sequence,timestamp,data,datasize,duration,num_signals,interleave,sample_format);

@@ -84,10 +84,10 @@ protected:
     //bool ParseWaveform(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, quint16 duration, quint16 num_signals, quint16 interleave, quint8 sample_format);
 
     //! \brief Parse a data chunk from the .000 (brick) and .001 (summary) files.
-    bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, char version);
+    bool ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int family, int familyVersion);
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a standard system one machine
-    bool Parse002(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+    bool Parse002(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int family, int familyVersion);
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
     bool Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
