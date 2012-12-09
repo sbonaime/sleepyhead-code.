@@ -736,13 +736,15 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
         case 0x08: // ???
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
-            if (!Code[10]) {
+            qDebug() << "Code 8 found at " << hex << pos-1 << " " << tt;
+	    if (!Code[10]) {
                 if (!(Code[10]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
 
             //????
             //data[1]=buffer[pos++]; // ???
             Code[10]->AddEvent(tt,data[0]);
+	    pos++;
             break;
         case 0x09: // ASV Codes
             //code=CPAP_FlowLimit;
@@ -785,10 +787,12 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
         case 0x0c:
             data[0]=buffer[pos++];
             tt-=qint64(data[0])*1000L; // Subtract Time Offset
+	    qDebug() << "Code 12 found at " << hex << pos-1 << " " << tt;
             if (!Code[8]) {
                 if (!(Code[8]=session->AddEventList(cpapcode,EVL_Event))) return false;
             }
             Code[8]->AddEvent(tt,data[0]);
+	    pos+=2;
             break;
 
         case 0x0d: // All the other ASV graph stuff.
@@ -1238,7 +1242,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
             ParseSummary(mach,sequence,timestamp,data,datasize,version);
         } else if (ext==2) {
             if (version==5) {
-	       qDebug() << "Call parse002v5";
+	       qDebug() << "Call parse002v5 hl=" << hl;
                if (!Parse002v5(sequence,timestamp,data,datasize)) {
                    qDebug() << "in file: " << filename;
                }
