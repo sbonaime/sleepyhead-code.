@@ -523,7 +523,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 
     // up to this point appears to becorrect for 0x01 & 0x00
     if (size<59) {
-        duration=data[offset+0x12] | (data[0x13] << 8);
+        duration=data[offset+0x12] | (data[offset+0x13] << 8);
         duration*=2;
         session->really_set_last(qint64(timestamp+duration)*1000L);
         if (max>0) {
@@ -534,7 +534,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     } else {
         // 0X28 & 0X29 is length on r5
 
-        duration=data[offset+0x14] | (data[0x15] << 8);
+        duration=data[offset+0x14] | (data[offset+0x15] << 8);
         if (!duration) {
 	    qDebug() << "!duration exit";
             delete session;
