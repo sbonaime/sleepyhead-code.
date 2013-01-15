@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>docs/sheep.png</file>
         <file>docs/index.html</file>
         <file>icons/sdcard.png</file>
         <file>icons/preferences.png</file>
@@ -43,5 +42,7 @@
         <file>icons/nographs.png</file>
         <file>icons/sheep.png</file>
         <file>docs/update_notes.html</file>
+        <file>docs/sheep.png</file>
+        <file>docs/sheep.jpg</file>
     </qresource>
 </RCC>

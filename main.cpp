@@ -72,23 +72,16 @@ void release_notes()
 
     // Language???
 
-    QFile f(":/docs/release_notes.html");
-    if (!f.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not access release notes";
-        return;
-    }
-    QTextStream ts(&f);
+    web.load(QUrl("qrc:/docs/release_notes.html"));
 
-    QString html=ts.readAll();
-    web.setHtml(html);
-
-    //web.load(QUrl("qrc:/docs/release_notes.html"));
     //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
     relnotes.setLayout(&layout);
     layout.insertWidget(0,&web,1);
     QPushButton okbtn(QObject::tr("&Ok, get on with it.."),&relnotes);
     relnotes.connect(&okbtn,SIGNAL(clicked()),SLOT(accept()));
     layout.insertWidget(1,&okbtn,1);
+    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
+
     relnotes.exec();
 }
 
@@ -101,17 +94,7 @@ void build_notes()
     relnotes.setWindowTitle("SleepyHead v"+FullVersionString+" Update");
     // Language???
 
-    QFile f(":/docs/update_notes.html");
-    if (!f.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not access update notes";
-        return;
-    }
-    QTextStream ts(&f);
-
-    QString html=ts.readAll();
-    web.setHtml(html);
-
-    //web.load(QUrl("qrc:/docs/update_notes.html"));
+    web.load(QUrl("qrc:/docs/update_notes.html"));
     //web.page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOn);
 
     relnotes.setLayout(&layout);
@@ -120,6 +103,8 @@ void build_notes()
     relnotes.connect(&okbtn,SIGNAL(clicked()),SLOT(accept()));
     layout.insertWidget(1,&okbtn,1);
     layout.setMargin(0);
+    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
+
     relnotes.setFixedSize(500,400);
     relnotes.exec();
 }
