@@ -76,6 +76,7 @@ Asia/Yakutsk=(GMT+09:00) Yakutsk
 Australia/Adelaide=(GMT+09:30) Adelaide
 Australia/Darwin=(GMT+09:30) Darwin
 Australia/Brisbane=(GMT+10:00) Brisbane
+Australia/Melbourne=(GMT+10:00) Melbourne
 Australia/Hobart=(GMT+10:00) Hobart
 Asia/Vladivostok=(GMT+10:00) Vladivostok
 Australia/Lord_Howe=(GMT+10:30) Lord Howe Island

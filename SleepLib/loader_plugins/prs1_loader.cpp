@@ -983,11 +983,24 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             }
             break;
         case 0x02: // Pressure
-            if (!PRESSURE) {
-                PRESSURE=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
-                if (!PRESSURE) return false;
+            if (family == 0 && familyVersion >= 4) {  // BiPAP Pressure
+                if (!EPAP) {
+                    if (!(EPAP=session->AddEventList(CPAP_EPAP,EVL_Event,0.1))) return false;
+                    if (!(IPAP=session->AddEventList(CPAP_IPAP,EVL_Event,0.1))) return false;
+                    if (!(PS=session->AddEventList(CPAP_PS,EVL_Event,0.1))) return false;
+                }
+                EPAP->AddEvent(t,data[0]=buffer[pos++]);
+                IPAP->AddEvent(t,data[1]=buffer[pos++]);
+                PS->AddEvent(t,data[1]-data[0]);
             }
-            PRESSURE->AddEvent(t,buffer[pos++]);
+            else {
+                if (!PRESSURE) {
+                    PRESSURE=session->AddEventList(CPAP_Pressure,EVL_Event,0.1);
+                    if (!PRESSURE) return false;
+                }
+
+                PRESSURE->AddEvent(t,buffer[pos++]);
+            }
             break;
         case 0x03: // BIPAP Pressure
             if (!EPAP) {
@@ -1215,6 +1228,8 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         ext=header[6];
         sequence=(header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
         timestamp=(header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
+
+        qDebug() << "family: " << family << " familyversion: " << familyVersion;
 
         if (ext==5) {
             duration=header[0xf] | header[0x10] << 8;    // block duration in seconds
