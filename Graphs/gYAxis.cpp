@@ -222,8 +222,12 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             GetTextExtent(fd,x,y);
 
             if (x>labelW) labelW=x;
-            h=height-ty;
+            h=(height-2)-ty;
             h+=yh;
+#ifndef Q_WS_MAC
+            // stupid pixel alignment rubbish, I really should be using floats..
+            h+=1;
+#endif
             if (h<0)
                 continue;
 
@@ -251,7 +255,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_TEXTURE_2D);
-        w.graphView()->drawTexture(QPoint(left,(top+height)-w.yAxisImage.height()+3),w.yAxisImageTex);
+        w.graphView()->drawTexture(QPoint(left,(top+height)-w.yAxisImage.height()+5),w.yAxisImageTex);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
 
