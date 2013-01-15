@@ -2164,7 +2164,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         //painter.beginNativePainting();
         //g->showTitle(false);
         int hhh=full_graph_height-normal_height;
-        QPixmap pm(virt_width,hhh); //full_graph_height=g->renderPixmap(virt_width,full_graph_height-normal_height,1);//fscale);
+        QPixmap pm=g->renderPixmap(virt_width,hhh,1);//fscale);
         //g->showTitle(true);
         //painter.endNativePainting();
         g->m_marginbottom=tmb;
