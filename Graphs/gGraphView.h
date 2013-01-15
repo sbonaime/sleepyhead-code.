@@ -548,7 +548,7 @@ public:
     float height() { return m_height; }
 
     //! \brief Set the height element. (relative to the total of all heights)
-    void setHeight(float height) { m_height=height; }
+    void setHeight(float height) { m_height=height; invalidate_VertTextCache=true;}
 
     int minHeight() { return m_min_height; }
     void setMinHeight(int height) { m_min_height=height; }
@@ -728,6 +728,9 @@ public:
     Layer * getLineChart();
     QRect m_lastbounds;
     QTimer * timer;
+    QImage titleImage;
+    GLuint titleImageTex;
+    bool invalidate_VertTextCache;
 
     //! \brief Returns a Vector reference containing all this graphs layers
     QVector<Layer *>  & layers() { return m_layers; }

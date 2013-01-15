@@ -1052,6 +1052,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
+    titleImage=QImage();
+    invalidate_VertTextCache=true;
 
     m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
@@ -1173,9 +1175,50 @@ void gGraph::paint(int originX, int originY, int width, int height)
     left=marginLeft(),right=marginRight(),top=marginTop(),bottom=marginBottom();
     int x=0,y=0;
     if (m_showTitle) {
-        GetTextExtent(title(),x,y,mediumfont);
-        int title_x=(float(y)*2);
-        renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
+        int title_x,yh;
+        if (titleImage.isNull()) {
+            // Render the title to a texture so we don't have to draw the vertical text every time..
+            GetTextExtent("Wy@",x,yh,mediumfont);
+            GetTextExtent(title(),x,y,mediumfont);
+
+            y=yh;
+            QPixmap tpm=QPixmap(x+4,y+4);
+
+            tpm.fill(Qt::transparent);
+            QPainter pmp(&tpm);
+
+            QBrush brush2(Qt::black);
+            pmp.setBrush(brush2);
+
+            pmp.setFont(*mediumfont);
+            pmp.drawText(2,y,title());
+            pmp.end();
+
+            titleImage=QGLWidget::convertToGLFormat(tpm.toImage().mirrored(false,true));
+            titleImageTex=m_graphview->bindTexture(titleImage);
+        }
+        y=titleImage.height();
+        x=titleImage.width(); //vertical text
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        title_x=y*2;
+
+        glEnable(GL_TEXTURE_2D);
+
+        glPushMatrix();
+        glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
+        glRotatef(-90,0,0,1);
+        m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
+
+        glPopMatrix();
+
+
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+
+        //renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
         left+=title_x;
     } else left=0;
 
@@ -1887,10 +1930,10 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     //sg->makeCurrent();
 
-    pm=sg->fboRenderPixmap(w,h);
+    pm=sg->renderPixmap(w,h,false);
     if (pm.isNull()) {
         // this one gives nags
-        pm=sg->renderPixmap(w,h,false);
+        pm=sg->fboRenderPixmap(w,h);
     } else if (pm.isNull()) { // not sure if this will work with printing
         qDebug() << "Had to use PixelBuffer for snapshots\n";
         pm=sg->pbRenderPixmap(w,h);
