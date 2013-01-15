@@ -35,6 +35,10 @@ extern MainWindow *mainwin;
 #endif
 
 
+// for profiling purposes, a count of lines drawn in a single frame
+int lines_drawn_this_frame=0;
+int quads_drawn_this_frame=0;
+
 bool _graph_init=false;
 
 QFont * defaultfont=NULL;
@@ -196,10 +200,14 @@ void gVertexBuffer::draw()
         }
         glLineWidth(size);
 
+        lines_drawn_this_frame+=m_cnt/2;
     } else if (m_type==GL_POINTS) {
         glPointSize(size);
     } else if (m_type==GL_POLYGON) {
         glPolygonMode(GL_BACK,GL_FILL);
+        lines_drawn_this_frame+=m_cnt/2;
+    } else if (m_type==GL_QUADS) {
+        quads_drawn_this_frame+=m_cnt/4;
     }
     if (m_scissor) {
         glScissor(s_x,s_y,s_width,s_height);
@@ -643,11 +651,16 @@ void GLFloatBuffer::draw()
             glLineStipple(1, 0xAAAA);
             glEnable(GL_LINE_STIPPLE);
         }
+        lines_drawn_this_frame+=m_cnt/2;
     } else if (m_type==GL_POINTS) {
         glPointSize(size);
     } else if (m_type==GL_POLYGON) {
         glPolygonMode(GL_BACK,GL_FILL);
+        lines_drawn_this_frame+=m_cnt/2;
+    } else if (m_type==GL_QUADS) {
+        quads_drawn_this_frame+=m_cnt/4;
     }
+
     if (m_scissor) {
         glScissor(s1,s2,s3,s4);
         glEnable(GL_SCISSOR_TEST);
@@ -660,6 +673,7 @@ void GLFloatBuffer::draw()
     //glColor4ub(200,128,95,200);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
+
 
     glDrawArrays(m_type, 0, m_cnt >> 1);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -786,12 +800,13 @@ void gToolTip::paint()     //actually paints it.
         rect.setHeight(h);
     }
 
+    lines_drawn_this_frame+=4;
+    quads_drawn_this_frame+=1;
+
     painter.drawRoundedRect(rect,5,5);
     painter.drawText(rect,Qt::AlignCenter,m_text);
 
     painter.end();
-
-
 
 }
 void gToolTip::timerDone()
@@ -2713,6 +2728,9 @@ bool gGraphView::renderGraphs()
     //int elapsed=time.elapsed();
     //QColor col=Qt::black;
 
+    lines_drawn_this_frame=0;
+    quads_drawn_this_frame=0;
+
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->drawGLBuf();
@@ -2940,7 +2958,7 @@ void gGraphView::paintGL()
             v+=ring[i];
         }
         double fps=v/double(rs);
-        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps)";
+        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads";
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;
