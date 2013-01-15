@@ -1053,7 +1053,9 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_lastx23=0;
 
     titleImage=QImage();
-    invalidate_VertTextCache=true;
+    yAxisImage=QImage();
+    yAxisImageTex=titleImageTex=0;
+    invalidate_yAxisImage=true;
 
     m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
@@ -1178,22 +1180,28 @@ void gGraph::paint(int originX, int originY, int width, int height)
         int title_x,yh;
         if (titleImage.isNull()) {
             // Render the title to a texture so we don't have to draw the vertical text every time..
-            GetTextExtent("Wy@",x,yh,mediumfont);
+
+            GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
+
             GetTextExtent(title(),x,y,mediumfont);
 
             y=yh;
             QPixmap tpm=QPixmap(x+4,y+4);
 
-            tpm.fill(Qt::transparent);
+            tpm.fill(Qt::transparent); //empty it
             QPainter pmp(&tpm);
 
-            QBrush brush2(Qt::black);
+            pmp.setRenderHint(QPainter::Antialiasing, true);
+
+            QBrush brush2(Qt::black); // text color
             pmp.setBrush(brush2);
 
             pmp.setFont(*mediumfont);
-            pmp.drawText(2,y,title());
+
+            pmp.drawText(2,y,title()); // draw from the bottom
             pmp.end();
 
+            // convert to QImage and bind to a texture for future use
             titleImage=QGLWidget::convertToGLFormat(tpm.toImage().mirrored(false,true));
             titleImageTex=m_graphview->bindTexture(titleImage);
         }
@@ -1207,16 +1215,17 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
         glEnable(GL_TEXTURE_2D);
 
+        // Rotate and draw vertical texture containing graph titles
         glPushMatrix();
         glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
         glRotatef(-90,0,0,1);
         m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
-
         glPopMatrix();
-
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
+
+        // All that to replace this little, but -hideously- slow line of text..
 
         //renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
         left+=title_x;
@@ -1228,8 +1237,6 @@ void gGraph::paint(int originX, int originY, int width, int height)
     lines()->add(0,originY,0,originY+height,col);
     lines()->add(left,originY,left,originY+height,col);
 #endif
-
-
     int tmp;
 
     left=0;

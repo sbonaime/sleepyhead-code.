@@ -548,7 +548,7 @@ public:
     float height() { return m_height; }
 
     //! \brief Set the height element. (relative to the total of all heights)
-    void setHeight(float height) { m_height=height; invalidate_VertTextCache=true;}
+    void setHeight(float height) { m_height=height; invalidate_yAxisImage=true;}
 
     int minHeight() { return m_min_height; }
     void setMinHeight(int height) { m_min_height=height; }
@@ -728,13 +728,17 @@ public:
     Layer * getLineChart();
     QRect m_lastbounds;
     QTimer * timer;
-    QImage titleImage;
-    GLuint titleImageTex;
-    bool invalidate_VertTextCache;
+    QImage titleImage,yAxisImage;
+    GLuint titleImageTex,yAxisImageTex;
+
+
+    // This gets set to true to force a redraw of the yAxis tickers when graphs are resized.
+    bool invalidate_yAxisImage;
 
     //! \brief Returns a Vector reference containing all this graphs layers
     QVector<Layer *>  & layers() { return m_layers; }
 
+    gGraphView * graphView() { return m_graphview; }
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
 protected:
     //void invalidate();
