@@ -955,7 +955,24 @@ public:
 
     //! \brief Trash all graph objects listed (without destroying Graph contents)
     void trashGraphs();
+
+    //! \brief Use a QGLFrameBufferObject to render to a pixmap
+    QPixmap fboRenderPixmap(int w,int h);
+
+    //! \brief Use a QGLPixelBuffer to render to a pixmap
+    QPixmap pbRenderPixmap(int w,int h);
+
 protected:
+    //! \brief Set up the OpenGL basics for the QGLWidget underneath
+    virtual void initializeGL();
+
+    //! \brief Resize the OpenGL ViewPort prior to redrawing
+    virtual void resizeGL(int width, int height);
+
+    //! \brief The heart of the OpenGL drawing code
+    virtual void paintGL();
+
+
     Day * m_day;
 
     //! \brief Calculates the sum of all graph heights
@@ -964,17 +981,11 @@ protected:
     //! \brief Calculates the sum of all graph heights, taking scaling into consideration
     float scaleHeight();
 
-    //! \brief Set up the OpenGL basics for the QGLWidget underneath
-    virtual void initializeGL();
 
-    //! \brief The heart of the OpenGL drawing code
-    virtual void paintGL();
 
     //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
     bool renderGraphs();
 
-    //! \brief Resize the OpenGL ViewPort prior to redrawing
-    virtual void resizeGL(int width, int height);
 
     //! \brief Update the OpenGL area when the screen is resized
     virtual void resizeEvent(QResizeEvent *);

@@ -11,6 +11,8 @@
 #include <QTimer>
 #include <QLabel>
 #include <QDir>
+#include <QGLPixelBuffer>
+#include <QGLFramebufferObject>
 #include "mainwindow.h"
 
 #include "Graphs/gYAxis.h"
@@ -1770,11 +1772,79 @@ Layer * gGraph::getLineChart()
     return NULL;
 }
 
+// QTBUG-24710 pixmaps might not be freeing properly..
+QPixmap gGraphView::pbRenderPixmap(int w,int h)
+{
+    QPixmap pm=QPixmap();
+    QGLFormat pbufferFormat = format();
+    QGLPixelBuffer pbuffer(w,h,pbufferFormat,this);
+
+   if (pbuffer.isValid()) {
+       pbuffer.makeCurrent();
+       resizeGL(w,h);
+       initializeGL();
+       paintGL();
+       QImage image=pbuffer.toImage();
+       pm=QPixmap::fromImage(image);
+       pbuffer.doneCurrent();
+   }
+   return pm;
+
+}
+
+//MW: ick globals, but I want a system wide framebuffer of decent proprotions..
+bool fbo_unsupported=false;
+QGLFramebufferObject *fbo=NULL;
+const int max_fbo_width=2048;
+const int max_fbo_height=2048;
+
+QPixmap gGraphView::fboRenderPixmap(int w,int h)
+{
+    QPixmap pm=QPixmap();
+
+    if (fbo_unsupported)
+        return pm;
+
+
+    if ((w > max_fbo_width) || (h > max_fbo_height)) {
+        qWarning() << "gGraphView::fboRenderPixmap called with dimensiopns exceeding maximum frame buffer object size";
+        return pm;
+    }
+
+    if (!fbo) {
+        fbo=new QGLFramebufferObject(max_fbo_width,max_fbo_height,QGLFramebufferObject::NoAttachment);
+    }
+
+    if (fbo && fbo->isValid()) {
+        makeCurrent();
+        if (fbo->bind()) {
+            initializeGL();
+            resizeGL(w,h);
+            paintGL();
+            glFlush();
+            //QImage img=grabFrameBuffer(true);
+            fbo->release();
+
+            // Copy just the section of the image (remember openGL draws from the bottom up)
+            pm=QPixmap::fromImage(fbo->toImage()).copy(0,max_fbo_height-h,w,h);
+            doneCurrent();
+        }
+    } else {
+        delete fbo;
+        fbo=NULL;
+        fbo_unsupported=true;
+    }
+
+    return pm;
+}
+
 QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 {
+    QPixmap pm=QPixmap();
 
     gGraphView *sg=mainwin->snapshotGraph();
-    if (!sg) return QPixmap();
+    if (!sg)
+        return QPixmap();
 
     QFont * _defaultfont=defaultfont;
     QFont * _mediumfont=mediumfont;
@@ -1815,8 +1885,18 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->setScaleY(1.0);
 
-    QPixmap pm=sg->renderPixmap(w,h,false);
+    //sg->makeCurrent();
 
+    pm=sg->fboRenderPixmap(w,h);
+    if (pm.isNull()) {
+        // this one gives nags
+        pm=sg->renderPixmap(w,h,false);
+    } else if (pm.isNull()) { // not sure if this will work with printing
+        qDebug() << "Had to use PixelBuffer for snapshots\n";
+        pm=sg->pbRenderPixmap(w,h);
+    }
+
+    //sg->doneCurrent();
     sg->trashGraphs();
     m_graphview=tgv;
 

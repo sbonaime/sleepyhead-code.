@@ -241,7 +241,9 @@ void MainWindow::Startup()
     // profile is a global variable set in main after login
     PROFILE.LoadMachineData();
 
-    SnapshotGraph=new gGraphView(this); //daily->graphView());
+    SnapshotGraph=new gGraphView(this,daily->graphView());
+
+    SnapshotGraph->setFormat(daily->graphView()->format());
     //SnapshotGraph->setMaximumSize(1024,512);
     //SnapshotGraph->setMinimumSize(1024,512);
     SnapshotGraph->hide();
@@ -1894,7 +1896,9 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             } else {
                 ebp=QPixmap(":/icons/smileyface.png");
             }
-            painter.drawPixmap(virt_width-piesize,bounds.height(),piesize,piesize,ebp);
+            if (!ebp.isNull()) {
+                painter.drawPixmap(virt_width-piesize,bounds.height(),piesize,piesize,ebp);
+            }
             getDaily()->eventBreakdownPie()->setShowTitle(true);
 
             cpapinfo+="\n\n";
@@ -2117,6 +2121,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             first=true;
             if (page > pages)
                 break;
+
             if (!printer->newPage()) {
                 qWarning("failed in flushing page to disk, disk full?");
                 break;
@@ -2155,14 +2160,19 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         int tmb=g->m_marginbottom;
         g->m_marginbottom=0;
 
-        //g->showTitle(false);
-        QPixmap pm=g->renderPixmap(virt_width,full_graph_height-normal_height,1);//fscale);
-        //g->showTitle(true);
 
+        //painter.beginNativePainting();
+        //g->showTitle(false);
+        int hhh=full_graph_height-normal_height;
+        QPixmap pm(virt_width,hhh); //full_graph_height=g->renderPixmap(virt_width,full_graph_height-normal_height,1);//fscale);
+        //g->showTitle(true);
+        //painter.endNativePainting();
         g->m_marginbottom=tmb;
         PROFILE.appearance->setAntiAliasing(aa_setting);
 
-        painter.drawPixmap(0,top,virt_width,full_graph_height-normal_height,pm);
+        if (!pm.isNull()) {
+            painter.drawPixmap(0,top,virt_width,full_graph_height-normal_height,pm);
+        }
         top+=full_graph_height;
 
         gcnt++;
