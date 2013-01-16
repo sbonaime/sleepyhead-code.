@@ -45,6 +45,12 @@ QFont * defaultfont=NULL;
 QFont * mediumfont=NULL;
 QFont * bigfont=NULL;
 
+//MW: ick globals, but I want a system wide framebuffer of decent proprotions..
+bool fbo_unsupported=false;
+QGLFramebufferObject *fbo=NULL;
+const int max_fbo_width=2048;
+const int max_fbo_height=2048;
+
 bool evil_intel_graphics_chip=false;
 
 extern QLabel * qstatus2;
@@ -117,6 +123,12 @@ void DoneGraphs()
         delete mediumfont;
         for (QHash<QString,QImage *>::iterator i=images.begin();i!=images.end();i++) {
             delete i.value();
+        }
+        if (fbo) { // Clear the frame buffer object
+            if (fbo->isBound()) fbo->release();
+            delete fbo;
+            fbo=NULL;
+            fbo_unsupported=true; // just in case shutdown order gets messed up
         }
         _graph_init=false;
     }
@@ -1856,12 +1868,6 @@ QPixmap gGraphView::pbRenderPixmap(int w,int h)
    return pm;
 
 }
-
-//MW: ick globals, but I want a system wide framebuffer of decent proprotions..
-bool fbo_unsupported=false;
-QGLFramebufferObject *fbo=NULL;
-const int max_fbo_width=2048;
-const int max_fbo_height=2048;
 
 QPixmap gGraphView::fboRenderPixmap(int w,int h)
 {
