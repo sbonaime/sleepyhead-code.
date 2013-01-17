@@ -2225,7 +2225,7 @@ void gGraphView::DrawTextQue()
 
         if (use_pixmap_cache) {
             // Generate the pixmap cache "key"
-            QString hstr=QString("%4:%5:%6").arg(q.text).arg(q.color.name()).arg(q.font->key());
+            QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias); // ? "T" : "F"
 
             QPixmap * pm=NULL;
 
@@ -3089,7 +3089,7 @@ void gGraphView::paintGL()
             v+=ring[i];
         }
         double fps=v/double(rs);
-        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings";
+        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings "+QString::number(pixmap_cache_size/1024.0,'f',1)+"Kb";
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;
