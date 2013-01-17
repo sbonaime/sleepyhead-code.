@@ -1206,7 +1206,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
     int x=0,y=0;
     if (m_showTitle) {
         int title_x,yh;
-        if (titleImage.isNull()) {
+/*        if (titleImage.isNull()) {
             // Render the title to a texture so we don't have to draw the vertical text every time..
 
             GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
@@ -1219,7 +1219,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
             tpm.fill(Qt::transparent); //empty it
             QPainter pmp(&tpm);
 
-            pmp.setRenderHint(QPainter::Antialiasing, true);
+            pmp.setRenderHint(QPainter::TextAntialiasing, true);
 
             QBrush brush2(Qt::black); // text color
             pmp.setBrush(brush2);
@@ -1254,8 +1254,16 @@ void gGraph::paint(int originX, int originY, int width, int height)
         glDisable(GL_BLEND);
 
         // All that to replace this little, but -hideously- slow line of text..
+       */
 
-        //renderText(title(),marginLeft()+title_x,originY+height/2,90,Qt::black,mediumfont);
+
+        GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
+        y=yh;
+        GetTextExtent(title(),x,y,mediumfont);
+        title_x=yh*2;
+
+
+        renderText(title(),marginLeft()+title_x+4,originY+height/2,90,Qt::black,mediumfont);
         left+=title_x;
     } else left=0;
 
@@ -2167,7 +2175,7 @@ gGraphView::~gGraphView()
 
 void gGraphView::DrawTextQue()
 {
-    const qint64 expire_after_ms=4000; // expire string pixmap after this many milliseconds
+    const qint64 expire_after_ms=4000; // expire string pixmaps after this many milliseconds
     const bool use_pixmap_cache=true;
     quint64 ti=0;
     int w,h;
@@ -2186,6 +2194,8 @@ void gGraphView::DrawTextQue()
                 expire.push_back(it.key());
             }
         }
+
+        // TODO: Don't bother expiring if less than a memory threshold is used..
         for (int i=0;i<expire.count();i++) {
             const QString key=expire.at(i);
             // unbind the texture
@@ -2240,6 +2250,10 @@ void gGraphView::DrawTextQue()
                 pm->fill(Qt::transparent);
 
                 painter.begin(pm);
+
+                // Hmmm.. Maybe I need to be able to turn this on/off?
+                painter.setRenderHint(QPainter::TextAntialiasing, true);
+
 
                 QBrush b(q.color);
                 painter.setBrush(b);
