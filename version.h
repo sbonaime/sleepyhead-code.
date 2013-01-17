@@ -13,7 +13,7 @@ const QString FullVersionString=QString().sprintf("%i.%i.%i-%i",major_version,mi
 
 const QString ReleaseStatus="beta";
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     const QString PlatformString="MacOSX";
 #elif defined(Q_WS_WIN32)
     const QString PlatformString="Win32";

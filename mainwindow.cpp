@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tabWidget->setCurrentIndex(1);
 
     // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     ui->action_Screenshot->setVisible(false);
 #endif
 
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->logText->hide();
     }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     PROFILE.appearance->setAntiAliasing(false);
 #endif
     ui->action_Link_Graph_Groups->setChecked(PROFILE.general->linkGroups());
@@ -233,7 +233,7 @@ void MainWindow::Notify(QString s,QString title,int ms)
 
 void MainWindow::Startup()
 {
-    qDebug() << PREF["AppName"].toString().toAscii()+" v"+VersionString.toAscii() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << PREF["AppName"].toString().toLatin1()+" v"+VersionString.toLatin1() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -316,7 +316,7 @@ void MainWindow::on_action_Import_Data_triggered()
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
 
-#if defined(Q_WS_MAC) && (QT_VERSION_CHECK(4,8,0) > QT_VERSION)
+#if defined(Q_OS_MAC) && (QT_VERSION_CHECK(4,8,0) > QT_VERSION)
         // Fix for tetragon, 10.6 barfs up Qt's custom dialog
         w.setOption(QFileDialog::DontUseNativeDialog,true);
 #else
@@ -1443,7 +1443,7 @@ void MainWindow::on_overviewButton_clicked()
 
 void MainWindow::on_webView_loadFinished(bool arg1)
 {
-    arg1=arg1;
+    Q_UNUSED(arg1);
     qprogress->hide();
     if (first_load) {
         QTimer::singleShot(0,this,SLOT(Startup()));
@@ -1567,7 +1567,7 @@ void MainWindow::on_action_Screenshot_triggered()
 }
 void MainWindow::DelayedScreenshot()
 {
-//#ifdef Q_WS_MAC
+//#ifdef Q_OS_MAC
 //    CGImageRef windowImage = CGWindowListCreateImage(imageBounds, singleWindowListOptions, windowID, imageOptions);
 //    originalPixmap = new QPixmap(QPixmap::fromMacCGImageRef(windowImage));
 
@@ -1740,7 +1740,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
     printer->setNumCopies(1);
     printer->setPageMargins(10,10,10,10,QPrinter::Millimeter);
     QPrintDialog dialog(printer);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     // QTBUG-17913
     QApplication::processEvents();
 #endif
@@ -2164,14 +2164,21 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         //painter.beginNativePainting();
         //g->showTitle(false);
         int hhh=full_graph_height-normal_height;
-        QPixmap pm=g->renderPixmap(virt_width,hhh,1);//fscale);
+        QPixmap pm2=g->renderPixmap(virt_width,hhh,1);
+        QImage pm=pm2.toImage();//fscale);
+        pm2.detach();
         //g->showTitle(true);
         //painter.endNativePainting();
         g->m_marginbottom=tmb;
         PROFILE.appearance->setAntiAliasing(aa_setting);
 
+
         if (!pm.isNull()) {
-            painter.drawPixmap(0,top,virt_width,full_graph_height-normal_height,pm);
+            painter.drawImage(0,top,pm);;
+
+
+
+            //painter.drawImage(0,top,virt_width,full_graph_height-normal_height,pm);
         }
         top+=full_graph_height;
 

@@ -193,7 +193,7 @@ void ExportCSV::on_exportButton_clicked()
             header+=sep+schema::channel[p90list[i]].label()+tr(" %1%").arg(percent,0,'f',0);
     }
     header+=newline;
-    file.write(header.toAscii());
+    file.write(header.toLatin1());
     QDate date=ui->startDate->date();
     Daily *daily=mainwin->getDaily();
     QDate daily_date=daily->getDate();
@@ -230,7 +230,7 @@ void ExportCSV::on_exportButton_clicked()
                 for (int i=0;i<p90list.size();i++)
                     data+=sep+QString::number(day->p90(p90list.at(i)));
                 data+=newline;
-                file.write(data.toAscii());
+                file.write(data.toLatin1());
 
             } else if (ui->rb1_Sessions->isChecked()) {
                 for (int i=0;i<day->size();i++) {
@@ -258,7 +258,7 @@ void ExportCSV::on_exportButton_clicked()
                     for (int j=0;j<p90list.size();j++)
                         data+=sep+QString::number(day->p90(p90list.at(j)));
                     data+=newline;
-                    file.write(data.toAscii());
+                    file.write(data.toLatin1());
                 }
             } else if (ui->rb1_details->isChecked()) {
                 QList<ChannelID> all=countlist;
@@ -280,7 +280,7 @@ void ExportCSV::on_exportButton_clicked()
                                     data+=sep+schema::channel[key].name();
                                     data+=sep+QString::number(ev->data(q),'f',2);
                                     data+=newline;
-                                    file.write(data.toAscii());
+                                    file.write(data.toLatin1());
                                 }
                             }
                         }

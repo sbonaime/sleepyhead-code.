@@ -10,7 +10,7 @@ void gStatsLine::paint(gGraph & w, int left, int top, int width, int height)
 {
     if (!m_visible) return;
     //if (m_empty) return;
-    height=height;
+    Q_UNUSED(height);
 
     int z=(width+gYAxis::Margin)/5;
     int p=left-gYAxis::Margin;

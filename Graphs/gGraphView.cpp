@@ -13,6 +13,7 @@
 #include <QDir>
 #include <QGLPixelBuffer>
 #include <QGLFramebufferObject>
+#include <QPixmapCache>
 #include "mainwindow.h"
 
 #include "Graphs/gYAxis.h"
@@ -22,7 +23,7 @@
 
 extern MainWindow *mainwin;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 #define USE_RENDERTEXT
 #include "OpenGL/glu.h"
 #else
@@ -1730,8 +1731,8 @@ void gGraph::DrawTextQue()
 // margin recalcs..
 void gGraph::resize(int width, int height)
 {
-    width=width;
-    height=height;
+    Q_UNUSED(width);
+    Q_UNUSED(height);
     //m_height=height;
     //m_width=width;
 }
@@ -1850,9 +1851,9 @@ Layer * gGraph::getLineChart()
 }
 
 // QTBUG-24710 pixmaps might not be freeing properly..
-QPixmap gGraphView::pbRenderPixmap(int w,int h)
+QImage gGraphView::pbRenderPixmap(int w,int h)
 {
-    QPixmap pm=QPixmap();
+    QImage pm=QImage();
     QGLFormat pbufferFormat = format();
     QGLPixelBuffer pbuffer(w,h,pbufferFormat,this);
 
@@ -1861,17 +1862,17 @@ QPixmap gGraphView::pbRenderPixmap(int w,int h)
        resizeGL(w,h);
        initializeGL();
        paintGL();
-       QImage image=pbuffer.toImage();
-       pm=QPixmap::fromImage(image);
+       pm=pbuffer.toImage();
+       //pm=QPixmap::fromImage(image);
        pbuffer.doneCurrent();
    }
    return pm;
 
 }
 
-QPixmap gGraphView::fboRenderPixmap(int w,int h)
+QImage gGraphView::fboRenderPixmap(int w,int h)
 {
-    QPixmap pm=QPixmap();
+    QImage pm=QImage();
 
     if (fbo_unsupported)
         return pm;
@@ -1897,7 +1898,7 @@ QPixmap gGraphView::fboRenderPixmap(int w,int h)
             fbo->release();
 
             // Copy just the section of the image (remember openGL draws from the bottom up)
-            pm=QPixmap::fromImage(fbo->toImage()).copy(0,max_fbo_height-h,w,h);
+            pm=fbo->toImage().copy(0,max_fbo_height-h,w,h);
             doneCurrent();
         }
     } else {
@@ -1957,14 +1958,15 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     sg->setScaleY(1.0);
 
     //sg->makeCurrent();
-
+#ifndef Q_OS_MAC
     pm=sg->renderPixmap(w,h,false);
+#endif
     if (pm.isNull()) {
         // this one gives nags
-        pm=sg->fboRenderPixmap(w,h);
+        pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
     } else if (pm.isNull()) { // not sure if this will work with printing
         qDebug() << "Had to use PixelBuffer for snapshots\n";
-        pm=sg->pbRenderPixmap(w,h);
+        pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
     }
 
     //sg->doneCurrent();
@@ -2086,6 +2088,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_button_down=m_graph_dragging=m_sizer_dragging=false;
     m_lastypos=m_lastxpos=0;
     m_horiz_travel=0;
+    pixmap_cache_size=0;
     this->setMouseTracking(true);
     m_emptytext=QObject::tr("No Data");
     InitGraphs();
@@ -2161,61 +2164,168 @@ gGraphView::~gGraphView()
     timer->stop();
     delete timer;
 }
+
 void gGraphView::DrawTextQue()
 {
-    glPushAttrib(GL_COLOR_BUFFER_BIT);
+    const qint64 expire_after_ms=4000; // expire string pixmap after this many milliseconds
+    const bool use_pixmap_cache=true;
+    quint64 ti=0;
     int w,h;
+    QHash<QString,myPixmapCache*>::iterator it;
     QPainter painter;
+    if (use_pixmap_cache) {
+        // Current time in milliseconds since epoch.
+        ti=QDateTime::currentDateTime().toMSecsSinceEpoch();
+
+
+        // Expire any strings not used
+        QList<QString> expire;
+
+        for (it=pixmap_cache.begin();it!=pixmap_cache.end();it++) {
+            if ((*it)->last_used < (ti-expire_after_ms)) {
+                expire.push_back(it.key());
+            }
+        }
+        for (int i=0;i<expire.count();i++) {
+            const QString key=expire.at(i);
+            // unbind the texture
+            deleteTexture(pixmap_cache[key]->textureID);
+            QPixmap *pm=pixmap_cache[key]->pixmap;
+            pixmap_cache_size-=pm->width() * pm->height() * (pm->depth()/8);
+            // free the pixmap
+            delete pixmap_cache[key]->pixmap;
+
+            // free the myPixmapCache object
+            delete pixmap_cache[key];
+
+            // pull the dead record from the cache.
+            pixmap_cache.remove(expire.at(i));
+        }
+
+    } else {
+        glPushAttrib(GL_COLOR_BUFFER_BIT);
+
 #ifndef USE_RENDERTEXT
-    painter.begin(this);
+        painter.begin(this);
 #endif
+    }
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
-#ifndef USE_RENDERTEXT
-        QBrush b(q.color);
-        painter.setBrush(b);
-        painter.setFont(*q.font);
-#endif
 
-        if (q.angle==0) {
-            qglColor(q.color);
+        if (use_pixmap_cache) {
+            // Generate the pixmap cache "key"
+            QString hstr=QString("%4:%5:%6").arg(q.text).arg(q.color.name()).arg(q.font->key());
 
-            // *********************************************************
-            // Holy crap this is slow
-            // The following line is responsible for 77% of drawing time
-            // *********************************************************
-#ifdef USE_RENDERTEXT
-            renderText(q.x,q.y,q.text,*q.font);
-#else
-            painter.drawText(q.x, q.y, q.text);
-#endif
+            QPixmap * pm=NULL;
+
+            //Random_note: test add to qmake for qt5 stuff DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040900
+
+            it=pixmap_cache.find(hstr);
+            myPixmapCache *pc=NULL;
+            if (it!=pixmap_cache.end()) {
+                pc=(*it);
+
+            } else {
+                //This is much slower than other text rendering methods, but caching more than makes up for the speed decrease.
+                pc=new myPixmapCache;
+                // not found.. create the image and store it in a cache
+                pc->last_used=ti; // set the last_used value.
+
+                QFontMetrics fm(*q.font);
+                QRect rect=fm.boundingRect(q.text);
+                w=rect.width();
+                h=rect.height();
+                pm=new QPixmap(w+4,h+4);
+                pm->fill(Qt::transparent);
+
+                painter.begin(pm);
+
+                QBrush b(q.color);
+                painter.setBrush(b);
+                painter.setFont(*q.font);
+                painter.drawText(2,h,q.text);
+                painter.end();
+
+                pc->pixmap=pm;
+                pixmap_cache_size+=pm->width()*pm->height()*(pm->depth()/8);
+                pc->textureID=bindTexture(*pm);
+                pixmap_cache[hstr]=pc;
+
+            }
+
+            if (pc) {
+                pc->last_used=ti;
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                glEnable(GL_TEXTURE_2D);
+                if (q.angle!=0) {
+                    glPushMatrix();
+                    glTranslatef(q.x-pc->pixmap->height()*2+4,q.y+pc->pixmap->width()/2+4, 0);
+                    glRotatef(-q.angle,0,0,1);
+                    drawTexture(QPoint(0,pc->pixmap->height()/2),pc->textureID);
+                    glPopMatrix();
+                    //glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
+                    //glRotatef(-90,0,0,1);
+                    //m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
+                } else {
+                    // TODO: setup for rotation if angle specified.
+                    drawTexture(QPoint(q.x,q.y-pc->pixmap->height()+4),pc->textureID);
+                }
+                glDisable(GL_TEXTURE_2D);
+                glDisable(GL_BLEND);
+            }
         } else {
-#ifdef USE_RENDERTEXT
-            painter.begin(this);
+
+#ifndef USE_RENDERTEXT
             QBrush b(q.color);
             painter.setBrush(b);
             painter.setFont(*q.font);
 #endif
-            w=painter.fontMetrics().width(q.text);
-            h=painter.fontMetrics().xHeight()+2;
 
-            painter.translate(q.x, q.y);
-            painter.rotate(-q.angle);
-            painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
-            painter.rotate(+q.angle);
-            painter.translate(-q.x, -q.y);
+            if (q.angle==0) {
+                qglColor(q.color);
+                // *********************************************************
+                // Holy crap this is slow
+                // The following line is responsible for 77% of drawing time
+                // *********************************************************
+
 #ifdef USE_RENDERTEXT
-            painter.end();
+                renderText(q.x,q.y,q.text,*q.font);
+#else
+                painter.drawText(q.x, q.y, q.text);
 #endif
+            } else {
+#ifdef USE_RENDERTEXT
+                painter.begin(this);
+                QBrush b(q.color);
+                painter.setBrush(b);
+                painter.setFont(*q.font);
+#endif
+                w=painter.fontMetrics().width(q.text);
+                h=painter.fontMetrics().xHeight()+2;
+
+                painter.translate(q.x, q.y);
+                painter.rotate(-q.angle);
+                painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
+                painter.rotate(+q.angle);
+                painter.translate(-q.x, -q.y);
+#ifdef USE_RENDERTEXT
+                painter.end();
+#endif
+           }
         }
         q.text.clear();
         //q.text.squeeze();
     }
+
+    if (!use_pixmap_cache) {
 #ifndef USE_RENDERTEXT
-    painter.end();
+        painter.end();
 #endif
-    glPopAttrib();
+        glPopAttrib();
+    }
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
 }
@@ -2964,7 +3074,7 @@ void gGraphView::paintGL()
             v+=ring[i];
         }
         double fps=v/double(rs);
-        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads";
+        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings";
         int w,h;
         GetTextExtent(ss,w,h);
         QColor col=Qt::white;

@@ -224,7 +224,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             if (x>labelW) labelW=x;
             h=(height-2)-ty;
             h+=yh;
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
             // stupid pixel alignment rubbish, I really should be using floats..
             h+=1;
 #endif

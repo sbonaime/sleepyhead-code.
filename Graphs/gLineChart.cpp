@@ -520,7 +520,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         gs <<= 1;
                     if (gs > j) {
                         qDebug() << "Would overflow line points.. increase default VertexBuffer size in gLineChart";
-                        siz=j >> square_plot ? 2 : 1;
+                        siz=(j >> square_plot) ? 2 : 1;
                         done=true; // end after this partial draw..
                     }
 

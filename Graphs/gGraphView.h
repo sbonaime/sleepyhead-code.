@@ -794,6 +794,18 @@ protected slots:
     void Timeout();
 };
 
+/*! \struct myPixmapCache
+    \brief My version of Pixmap cache with texture binding support
+
+ */
+struct myPixmapCache
+{
+    quint64 last_used;
+    QPixmap *pixmap;
+    GLuint textureID;
+};
+
+
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 
@@ -964,10 +976,10 @@ public:
     void trashGraphs();
 
     //! \brief Use a QGLFrameBufferObject to render to a pixmap
-    QPixmap fboRenderPixmap(int w,int h);
+    QImage fboRenderPixmap(int w,int h);
 
     //! \brief Use a QGLPixelBuffer to render to a pixmap
-    QPixmap pbRenderPixmap(int w,int h);
+    QImage pbRenderPixmap(int w,int h);
 
 protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
@@ -1079,6 +1091,11 @@ protected:
     QPoint m_mouse;
 
     QTime m_animationStarted;
+
+    // turn this into a struct later..
+    QHash<QString,myPixmapCache *> pixmap_cache;
+    qint32 pixmap_cache_size;
+
 
     //QVector<GLuint> texid;
 signals:

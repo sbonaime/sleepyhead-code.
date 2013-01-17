@@ -117,6 +117,7 @@ blockLayoutOffsets   {
 
 int MSeriesLoader::Open(QString & path,Profile *profile)
 {
+    Q_UNUSED(profile);
     // Until a smartcard reader is written, this is not an auto-scanner.. it just opens a block file..
 
     QFile file(path);
@@ -138,13 +139,13 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
     if (magic!=0x5249) { // "RI" Respironics Magic number
         return 0;
     }
-    quint8 cardtype=cardinfo[2];
-    quint8 cardver=cardinfo[3];
+    //quint8 cardtype=cardinfo[2];
+    //quint8 cardver=cardinfo[3];
 
     quint16 user_offset=(cardinfo[4] << 8) | cardinfo[5];
-    quint16 rx_offset=(cardinfo[8] << 8) | cardinfo[9];
+    //quint16 rx_offset=(cardinfo[8] << 8) | cardinfo[9];
     quint16 control_offset=(cardinfo[12] << 8) | cardinfo[13];
-    quint16 data_offset=(cardinfo[16] << 8) | cardinfo[17];
+    //quint16 data_offset=(cardinfo[16] << 8) | cardinfo[17];
 
 
     const char * userinfo=block.data()+user_offset;
@@ -164,7 +165,7 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
         qDebug() << "MSeries UserInfo block checksum failure" << path;
     }
 
-    const unsigned char * rxblock=(unsigned char *)block.data()+rx_offset;
+    //const unsigned char * rxblock=(unsigned char *)block.data()+rx_offset;
 
     unsigned char * controlblock=(unsigned char *)block.data()+control_offset;
     quint16 count=controlblock[0] << 8 | controlblock[1]; // number of control blocks
@@ -262,7 +263,7 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
                 u1=cb[0];
                 cb++;
 
-                if ((cb[0]==0xfe)) {
+                if (cb[0]==0xfe) {
                     u1=cb[0] << 8 | cb[1]; // fe 0a, followed by timestamp
                     cb+=2;
                     break; // start on the next timestamp
@@ -308,7 +309,7 @@ int MSeriesLoader::Open(QString & path,Profile *profile)
     } while (cb < endcard && !done);
 
     done=false;
-    bool first=true;
+    //bool first=true;
     quint8 exch;
     cnt=0;
     do {

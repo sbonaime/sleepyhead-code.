@@ -170,7 +170,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
     for (int i=0;i<flw.size();i++) {
         OpenFLW(mach,flw[i],profile);
     }
-    SessionID zz,sid,st;
+    SessionID zz,sid;//,st;
     float hours,dur,mins;
 
     qDebug() << "Last 20 Sessions";
@@ -205,7 +205,7 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
     QList<FPWaveChunk> chunks;
     for (QMap<int,QDate>::iterator dit=FLWDate.begin();dit!=FLWDate.end();dit++) {
         int k=dit.key();
-        QDate date=dit.value();
+        //QDate date=dit.value();
 //        QList<Session *> values = SessDate.values(date);
         for (int j=0;j<FLWTS[k].size();j++) {
 
@@ -247,11 +247,13 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
 
 bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 {
+    Q_UNUSED(mach);
+    Q_UNUSED(profile);
     QByteArray data;
     quint16 t1;
     quint32 ts;
     double ti;
-    qint8 b;
+    //qint8 b;
     EventList * flow=NULL, * pressure=NULL, *leak=NULL;
     QDateTime datetime;
     quint8 a1,a2;
@@ -397,7 +399,7 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
                 break;
             if (!((p2[0]==0xff) && (p2[1]==0xff))) {
                 if (count>0) {
-                    int i=5;
+                    //int i=5;
                 }
                 do {
                     while ((*p++ != 0xff) && (p < endbuf)) {
@@ -421,10 +423,10 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
             count++;
 
-            if (pr<0) {
-                quint16 z3=pr;
-                int i=5;
-            }
+            //if (pr<0) {
+                //quint16 z3=pr;
+               // int i=5;
+            //}
 
             if (leak) {
                 leak->AddEvent(ti,lkaj);
@@ -436,10 +438,10 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
             if (flow) {
                 qint16 tmp;
                 unsigned char * bb=(unsigned char *)buf;
-                char c;
-                if (len>50) {
-                    int i=5;
-                }
+                //char c;
+                //if (len>50) {
+                    //int i=5;
+                //}
 
                 EventDataType val;
                 for (int i=0;i<len;i++) {
@@ -536,7 +538,7 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
     in.setVersion(QDataStream::Qt_4_6);
     in.setByteOrder(QDataStream::LittleEndian);
 
-    quint16 t1,t2;
+    quint16 t1;//,t2;
     quint32 ts;
     //QByteArray line;
     unsigned char a1,a2, a3,a4, a5, p1, p2,  p3, p4, p5, j1, j2, j3 ,j4,j5,j6,j7, x1, x2;
@@ -642,6 +644,9 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
 
 bool FPIconLoader::OpenDetail(Machine * mach, QString filename, Profile * profile)
 {
+    Q_UNUSED(mach);
+    Q_UNUSED(profile);
+
     qDebug() << filename;
     QByteArray header;
     QFile file(filename);
@@ -664,7 +669,7 @@ bool FPIconLoader::OpenDetail(Machine * mach, QString filename, Profile * profil
 
     QByteArray index;
     index=file.read(0x800);
-    long size=index.size(),pos=0;
+    //long size=index.size(),pos=0;
     QDataStream in(index);
 
     in.setVersion(QDataStream::Qt_4_6);

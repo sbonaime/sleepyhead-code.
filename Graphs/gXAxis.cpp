@@ -165,7 +165,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (py<start_px) continue;
         lines->add(py,top,py,mintop);
     }
-    static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+    //static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
     int ms,m,h,s,d;
     qint64 j;

@@ -568,7 +568,7 @@ void FlowParser::flagEvents()
 
     double start=m_flow->first();
    // double sps=1000.0/m_rate;
-    double st,mt,et, dur;
+    double st,et, dur; //mt
     qint64 len;
 
     bool allowDuplicates=PROFILE.cpap->userEventDuplicates();
@@ -1042,7 +1042,7 @@ void zMaskProfile::scanPressure(Session * session)
     Pressure.clear();
 
     int prescnt=0;
-    EventStoreType pressure;
+    //EventStoreType pressure;
     if (session->eventlist.contains(CPAP_Pressure)) {
         prescnt=session->count(CPAP_Pressure);
         Pressure.reserve(prescnt);
@@ -1071,11 +1071,11 @@ void zMaskProfile::scanLeakList(EventList * el)
     EventStoreType * dptr=el->rawData();
     EventStoreType * eptr=dptr+count;
     quint32 * tptr=el->rawTime();
-    EventDataType gain=el->gain();
+    //EventDataType gain=el->gain();
 
     EventStoreType pressure,leak;
 
-    EventDataType fleak;
+    //EventDataType fleak;
     QMap<EventStoreType, EventDataType>::iterator pmin;
     qint64 ti;
     bool found;
@@ -1117,7 +1117,7 @@ void zMaskProfile::scanLeakList(EventList * el)
 //                }
 //            }
         } else {
-            int i=5;
+            //int i=5;
         }
     }
 
@@ -1163,7 +1163,7 @@ void zMaskProfile::updatePressureMin()
         nthi=floor(nth);
 
         sum1=0,sum2=0;
-        w1,w2=0;
+        w1=0,w2=0;
 
         EventDataType v1=0,v2;
 

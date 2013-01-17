@@ -115,7 +115,10 @@ int main(int argc, char *argv[])
 #ifdef Q_WS_X11
     XInitThreads();
 #endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
     QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
+#endif
 
     bool force_login_screen=false;
     QApplication a(argc, argv);
@@ -248,8 +251,12 @@ int main(int argc, char *argv[])
                                 PREF["Fonts_Application_Italic"].toBool()));
 
     qDebug() << "Selected" << QApplication::font().family();
-    qInstallMsgHandler(MyOutputHandler);
 
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//    qInstallMessageHandler(MyOutputHandler);
+//#else
+    qInstallMsgHandler(MyOutputHandler);
+//#endif
     MainWindow w;
     mainwin=&w;
 

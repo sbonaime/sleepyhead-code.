@@ -109,7 +109,7 @@ QDate Machine::AddSession(Session *s,Profile *p)
 
     sessionlist[s->session()]=s; // To make sure it get's saved later even if it's not wanted.
 
-    int drift=PROFILE.cpap->clockDrift();
+    //int drift=PROFILE.cpap->clockDrift();
 
     QDateTime d2=QDateTime::fromTime_t(s->first()/1000);
 
@@ -162,7 +162,7 @@ QDate Machine::AddSession(Session *s,Profile *p)
     dit=day.find(date);
     if (dit==day.end()) {
         //QString dstr=date.toString("yyyyMMdd");
-        //qDebug("Adding Profile Day %s",dstr.toAscii().data());
+        //qDebug("Adding Profile Day %s",dstr.toLatin1().data());
         dd=new Day(this);
         day[date]=dd;
         // Add this Day record to profile

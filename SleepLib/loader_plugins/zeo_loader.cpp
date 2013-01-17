@@ -133,7 +133,7 @@ int ZEOLoader::OpenFile(QString filename)
     QDateTime start_of_night, end_of_night, rise_time;
     SessionID sid;
 
-    const qint64 WindowSize=30000;
+    //const qint64 WindowSize=30000;
     qint64 st,tt;
     int stage;
 

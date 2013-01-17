@@ -91,12 +91,12 @@ bool EDFParser::Parse()
     bool ok;
     QString temp,temp2;
 
-    version=QString::fromAscii(header.version,8).toLong(&ok);
+    version=QString::fromLatin1(header.version,8).toLong(&ok);
     if (!ok)
         return false;
 
-    //patientident=QString::fromAscii(header.patientident,80);
-    recordingident=QString::fromAscii(header.recordingident,80); // Serial number is in here..
+    //patientident=QString::fromLatin1(header.patientident,80);
+    recordingident=QString::fromLatin1(header.recordingident,80); // Serial number is in here..
     int snp=recordingident.indexOf("SRN=");
     serialnumber.clear();
     /*char * idx=index(header.recordingident,'=');
@@ -112,7 +112,7 @@ bool EDFParser::Parse()
             break;
         serialnumber+=recordingident[i];
     }
-    QDateTime startDate=QDateTime::fromString(QString::fromAscii(header.datetime,16),"dd.MM.yyHH.mm.ss");
+    QDateTime startDate=QDateTime::fromString(QString::fromLatin1(header.datetime,16),"dd.MM.yyHH.mm.ss");
     //startDate.toTimeSpec(Qt::UTC);
     QDate d2=startDate.date();
     if (d2.year()<2000) {
@@ -128,18 +128,18 @@ bool EDFParser::Parse()
 
     //qDebug() << startDate.toString("yyyy-MM-dd HH:mm:ss");
 
-    num_header_bytes=QString::fromAscii(header.num_header_bytes,8).toLong(&ok);
+    num_header_bytes=QString::fromLatin1(header.num_header_bytes,8).toLong(&ok);
     if (!ok)
         return false;
-    //reserved44=QString::fromAscii(header.reserved,44);
-    num_data_records=QString::fromAscii(header.num_data_records,8).toLong(&ok);
+    //reserved44=QString::fromLatin1(header.reserved,44);
+    num_data_records=QString::fromLatin1(header.num_data_records,8).toLong(&ok);
     if (!ok)
         return false;
 
-    dur_data_record=QString::fromAscii(header.dur_data_records,8).toDouble(&ok)*1000.0;
+    dur_data_record=QString::fromLatin1(header.dur_data_records,8).toDouble(&ok)*1000.0;
     if (!ok)
         return false;
-    num_signals=QString::fromAscii(header.num_signals,4).toLong(&ok);
+    num_signals=QString::fromLatin1(header.num_signals,4).toLong(&ok);
     if (!ok)
         return false;
 
@@ -218,7 +218,7 @@ bool EDFParser::Open(QString name)
         datasize=filesize-EDFHeaderSize;
         if (datasize<0) return false;
         qDebug() << "Size of" << name << "uncompressed=" << filesize;
-        gzFile f=gzopen(name.toAscii(),"rb");
+        gzFile f=gzopen(name.toLatin1(),"rb");
         if (!f) {
             qDebug() << "EDFParser::Open() Couldn't open file" << name;
             return false;
@@ -478,9 +478,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
     QHash<qint16,QList<time_t> > daystarttimes;
     QHash<qint16,QList<time_t> > dayendtimes;
-    qint16 on,off;
-    qint16 o1[10],o2[10];
-    time_t st,et;
+    //qint16 on,off;
+    //qint16 o1[10],o2[10];
+    //time_t st,et;
     time_t time=stredf.startdate/1000L; // == 12pm on first day
 //    for (int i=0;i<days;i++) {
 //        EDFSignal *maskon=stredf.lookup["Mask On"];
@@ -636,7 +636,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     /////////////////////////////////////////////////////////////////////////////
     // Scan over file list and knock out of dayused list
     /////////////////////////////////////////////////////////////////////////////
-    int dn;
+    //int dn;
 //    for (QMap<SessionID,QStringList>::iterator si=sessfiles.begin();si!=sessfiles.end();si++) {
 //        sessionid=si.key();
 

@@ -196,7 +196,7 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 
         int value;
         qint64 weight;
-        qint64 tval;
+        //qint64 tval;
         if (timeweight) {
             for (QHash<EventStoreType, quint32>::iterator i=tei.value().begin();i!=tei.value().end();i++) {
                 value=i.key();

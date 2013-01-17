@@ -70,7 +70,7 @@ bool MachineLoader::compressFile(QString inpath, QString outpath)
         return false;
     }
     f.close();
-    gzFile gz=gzopen(outpath.toAscii(),"wb");
+    gzFile gz=gzopen(outpath.toLatin1(),"wb");
     //gzbuffer(gz,65536*2);
     if (!gz) {
         qDebug() << "compressFile() Couldn't open" << outpath <<"for writing";
