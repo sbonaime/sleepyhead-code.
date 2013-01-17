@@ -1970,8 +1970,8 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     pm=sg->renderPixmap(w,h,false);
 #endif
     if (pm.isNull()) {
-        // this one gives nags
         pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
+        // this one gives nags
     } else if (pm.isNull()) { // not sure if this will work with printing
         qDebug() << "Had to use PixelBuffer for snapshots\n";
         pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
@@ -2087,7 +2087,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
-    QGLWidget(parent,shared),
+    QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer),parent,shared),
     m_offsetY(0),m_offsetX(0),m_scaleY(1.0),m_scrollbar(NULL)
 {
     m_shared=shared;
@@ -3102,7 +3102,7 @@ void gGraphView::paintGL()
             v+=ring[i];
         }
         double fps=v/double(rs);
-        ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings "+QString::number(pixmap_cache_size/1024.0,'f',1)+"Kb";
+        ss="Debug Mode "+QString::number(fps,'f',1)+"fps "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings "+QString::number(pixmap_cache_size/1024.0,'f',1)+"Kb";
         int w,h;
         GetTextExtent(ss,w,h); // this uses tightBoundingRect, which is different on Mac than it is on Windows & Linux.
         QColor col=Qt::white;
