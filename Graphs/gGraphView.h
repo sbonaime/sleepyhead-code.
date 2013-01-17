@@ -960,6 +960,8 @@ public:
     QMutex dl_mutex;
 #endif
 
+
+
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day * day);
 
@@ -1033,6 +1035,11 @@ protected:
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *,int originX, int originY, int width, int height);
 
+
+    void setUsePixmapCache(bool b) { use_pixmap_cache=b; }
+
+    bool usePixmapCache() { return use_pixmap_cache; }
+
     //! \brief the list of graphs to draw this frame
     QList<gGraph *> m_drawlist;
 
@@ -1097,6 +1104,7 @@ protected:
     // turn this into a struct later..
     QHash<QString,myPixmapCache *> pixmap_cache;
     qint32 pixmap_cache_size;
+    bool use_pixmap_cache;
 
 
     //QVector<GLuint> texid;

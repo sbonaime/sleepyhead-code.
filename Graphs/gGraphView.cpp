@@ -2143,6 +2143,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_fadingIn=false;
     m_inAnimation=false;
     m_limbo=false;
+    use_pixmap_cache=true;
 }
 
 gGraphView::~gGraphView()
@@ -2179,15 +2180,13 @@ void gGraphView::DrawTextQue()
     const qint64 under_limit_cache_bonus=30000; // If under the limit, give a bonus to the millisecond timeout.
     const qint32 max_pixmap_cache=4*1048576;  // Maximum size of pixmap cache (it can grow over this, but only temporarily)
 
-    const bool use_pixmap_cache=true;
     quint64 ti=0,exptime=0;
     int w,h;
     QHash<QString,myPixmapCache*>::iterator it;
     QPainter painter;
-    if (use_pixmap_cache) {
+    if (usePixmapCache()) {
         // Current time in milliseconds since epoch.
         ti=QDateTime::currentDateTime().toMSecsSinceEpoch();
-
 
         if (pixmap_cache_size > max_pixmap_cache) { // comment this if block out to only cleanup when past the maximum cache size
             // Expire any strings not used
@@ -2225,23 +2224,19 @@ void gGraphView::DrawTextQue()
             }
         }
     }
-    //else {
+    else {
         glPushAttrib(GL_COLOR_BUFFER_BIT);
 
 #ifndef USE_RENDERTEXT
         painter.begin(this);
 #endif
-    //}
+    }
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
 
-#ifdef Q_OS_MAC
         // can do antialiased text via texture cache fine on mac
-        if (use_pixmap_cache) {
-#else
-        if (use_pixmap_cache && q.antialias) {
-#endif
+        if (usePixmapCache()) {
             // Generate the pixmap cache "key"
             QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias);
 
@@ -2352,12 +2347,12 @@ void gGraphView::DrawTextQue()
         //q.text.squeeze();
     }
 
-  //  if (!use_pixmap_cache) {
+    if (!usePixmapCache()) {
 #ifndef USE_RENDERTEXT
         painter.end();
 #endif
         glPopAttrib();
-  //  }
+    }
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
 }
@@ -3109,12 +3104,12 @@ void gGraphView::paintGL()
         double fps=v/double(rs);
         ss="Debug Mode "+QString::number(ms,'f',1)+"ms ("+QString::number(fps,'f',1)+"fps) "+QString::number(lines_drawn_this_frame,'f',0)+" lines "+QString::number(quads_drawn_this_frame,'f',0)+" quads "+QString::number(pixmap_cache.count(),'f',0)+" strings "+QString::number(pixmap_cache_size/1024.0,'f',1)+"Kb";
         int w,h;
-        GetTextExtent(ss,w,h);
+        GetTextExtent(ss,w,h); // this uses tightBoundingRect, which is different on Mac than it is on Windows & Linux.
         QColor col=Qt::white;
         quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col.rgba());
         quads->draw();
 #ifndef Q_OS_MAC
-        AddTextQue(ss,width()+7,w/2,90,col,defaultfont);
+        AddTextQue(ss,width()+7,w/2+4,90,col,defaultfont);
 #else
         AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
 #endif
