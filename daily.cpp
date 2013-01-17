@@ -957,7 +957,7 @@ void Daily::Load(QDate date)
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
 
     SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
-    const EventDataType maxperc=0.995;
+    const EventDataType maxperc=0.995F;
 
     QString midname;
     if (ST_mid==ST_WAVG) midname=tr("Avg");

@@ -672,7 +672,7 @@ void MainWindow::on_summaryButton_clicked()
     int cpapyeardays=PROFILE.countDays(MT_CPAP,cpapyear,lastcpap);
     int cpap6monthdays=PROFILE.countDays(MT_CPAP,cpap6month,lastcpap);
 
-    CPAPMode cpapmode=(CPAPMode)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
+    CPAPMode cpapmode=(CPAPMode)(int)p_profile->calcSettingsMax(CPAP_Mode,MT_CPAP,firstcpap,lastcpap);
 
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
 
@@ -944,9 +944,9 @@ void MainWindow::on_summaryButton_clicked()
                 ahi/=hours;
                 AHI.push_back(UsageData(date,ahi,hours));
 
-                prelief=(PRTypes)round(day->settings_wavg(CPAP_PresReliefType));
+                prelief=(PRTypes)(int)round(day->settings_wavg(CPAP_PresReliefType));
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
-                mode=(CPAPMode)round(day->settings_wavg(CPAP_Mode));
+                mode=(CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
                 mach=day->machine;
                 if (mode>=MODE_ASV) {
                     min=day->settings_min(CPAP_EPAP);

@@ -108,7 +108,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     if (mididx==2) ST_mid=ST_AVG;
 
     SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
-    const EventDataType maxperc=0.995;
+    const EventDataType maxperc=0.995F;
 
 
     US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);

@@ -174,7 +174,7 @@ void ExportCSV::on_exportButton_clicked()
     p90list.append(CPAP_Pressure);
     p90list.append(CPAP_IPAP);
     p90list.append(CPAP_EPAP);
-    EventDataType percent=0.90;
+    EventDataType percent=0.90F;
 
     // Not sure this section should be translateable.. :-/
     if (ui->rb1_details->isChecked()) {
