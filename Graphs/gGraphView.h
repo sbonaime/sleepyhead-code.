@@ -249,6 +249,8 @@ struct TextQue
     QColor color;
     //! \variable a pointer to the QFont to use to draw this text
     QFont *font;
+    //! \variable whether to use antialiasing to draw this text
+    bool antialias;
 };
 
 /*! \class MyScrollBar
@@ -578,7 +580,7 @@ public:
     void qglColor(QColor col);
 
     //! \brief Queues text for gGraphView object to draw it.
-    void renderText(QString text, int x,int y, float angle=0.0, QColor color=Qt::black, QFont *font=defaultfont);
+    void renderText(QString text, int x,int y, float angle=0.0, QColor color=Qt::black, QFont *font=defaultfont,bool antialias=true);
 
     //! \brief Rounds Y scale values to make them look nice.. Applies the Graph Preference min/max settings.
     void roundY(EventDataType &miny, EventDataType &maxy);
@@ -908,7 +910,7 @@ public:
     void selectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
-    void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont);
+    void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont, bool antialias=true);
 
     //! \brief Draw all Text in the text drawing queue, via QPainter
     void DrawTextQue();

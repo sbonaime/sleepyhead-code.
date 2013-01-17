@@ -145,7 +145,7 @@ void gSegmentChart::paint(gGraph & w,int left, int top, int width, int height)
                 QString a=m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 int x,y;
                 GetTextExtent(a,x,y);
-                w.renderText(a,tpx-(x/2.0),(tpy+y/2.0));
+                w.renderText(a,tpx-(x/2.0),(tpy+y/2.0),0,Qt::black,defaultfont,false); // antialiasing looks like crap here..
             }
 
             sum=q;

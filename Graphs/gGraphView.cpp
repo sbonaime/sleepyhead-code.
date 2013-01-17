@@ -1175,9 +1175,9 @@ void gGraph::qglColor(QColor col)
     m_graphview->qglColor(col);
 }
 
-void gGraph::renderText(QString text, int x,int y, float angle, QColor color, QFont *font)
+void gGraph::renderText(QString text, int x,int y, float angle, QColor color, QFont *font,bool antialias)
 {
-    m_graphview->AddTextQue(text,x,y,angle,color,font);
+    m_graphview->AddTextQue(text,x,y,angle,color,font,antialias);
 }
 
 void gGraph::paint(int originX, int originY, int width, int height)
@@ -2252,7 +2252,7 @@ void gGraphView::DrawTextQue()
                 painter.begin(pm);
 
                 // Hmmm.. Maybe I need to be able to turn this on/off?
-                painter.setRenderHint(QPainter::TextAntialiasing, true);
+                painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
 
 
                 QBrush b(q.color);
@@ -2344,7 +2344,7 @@ void gGraphView::DrawTextQue()
     m_textque_items=0;
 }
 
-void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor color, QFont * font)
+void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColor color, QFont * font,bool antialias)
 {
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.lock();
@@ -2362,6 +2362,7 @@ void gGraphView::AddTextQue(QString & text, short x, short y, float angle, QColo
     q.angle=angle;
     q.color=color;
     q.font=font;
+    q.antialias=antialias;
 }
 
 void gGraphView::addGraph(gGraph *g,short group)
