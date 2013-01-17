@@ -2243,7 +2243,7 @@ void gGraphView::DrawTextQue()
         if (use_pixmap_cache && q.antialias) {
 #endif
             // Generate the pixmap cache "key"
-            QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias); // ? "T" : "F"
+            QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias);
 
             QPixmap * pm=NULL;
 
@@ -3113,7 +3113,11 @@ void gGraphView::paintGL()
         QColor col=Qt::white;
         quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col.rgba());
         quads->draw();
+#ifndef Q_OS_MAC
+        AddTextQue(ss,width()+7,w/2,90,col,defaultfont);
+#else
         AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
+#endif
         DrawTextQue();
     }
 #endif
