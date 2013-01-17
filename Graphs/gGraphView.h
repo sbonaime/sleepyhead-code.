@@ -985,6 +985,12 @@ public:
     //! \brief Use a QGLPixelBuffer to render to a pixmap
     QImage pbRenderPixmap(int w,int h);
 
+    //! \brief Enable or disable the Text Pixmap Caching system (much faster on)
+    void setUsePixmapCache(bool b) { use_pixmap_cache=b; }
+
+    //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
+    bool usePixmapCache() { return use_pixmap_cache; }
+
 protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
     virtual void initializeGL();
@@ -1034,11 +1040,6 @@ protected:
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *,int originX, int originY, int width, int height);
-
-
-    void setUsePixmapCache(bool b) { use_pixmap_cache=b; }
-
-    bool usePixmapCache() { return use_pixmap_cache; }
 
     //! \brief the list of graphs to draw this frame
     QList<gGraph *> m_drawlist;
