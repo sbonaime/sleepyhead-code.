@@ -2176,8 +2176,11 @@ gGraphView::~gGraphView()
 void gGraphView::DrawTextQue()
 {
     const qint64 expire_after_ms=4000; // expire string pixmaps after this many milliseconds
+    const qint64 under_limit_cache_bonus=30000; // If under the limit, give a bonus to the millisecond timeout.
+    const qint32 max_pixmap_cache=4*1048576;  // Maximum size of pixmap cache (it can grow over this, but only temporarily)
+
     const bool use_pixmap_cache=true;
-    quint64 ti=0;
+    quint64 ti=0,exptime=0;
     int w,h;
     QHash<QString,myPixmapCache*>::iterator it;
     QPainter painter;
@@ -2186,44 +2189,59 @@ void gGraphView::DrawTextQue()
         ti=QDateTime::currentDateTime().toMSecsSinceEpoch();
 
 
-        // Expire any strings not used
-        QList<QString> expire;
+        if (pixmap_cache_size > max_pixmap_cache) { // comment this if block out to only cleanup when past the maximum cache size
+            // Expire any strings not used
+            QList<QString> expire;
 
-        for (it=pixmap_cache.begin();it!=pixmap_cache.end();it++) {
-            if ((*it)->last_used < (ti-expire_after_ms)) {
-                expire.push_back(it.key());
+            exptime=expire_after_ms;
+
+            // Uncomment the next line to allow better use of pixmap cache memory
+            //if (pixmap_cache_size < max_pixmap_cache) exptime+=under_limit_cache_bonus;
+
+            for (it=pixmap_cache.begin();it!=pixmap_cache.end();it++) {
+                if ((*it)->last_used < (ti-exptime)) {
+                    expire.push_back(it.key());
+                }
+            }
+
+
+            // TODO: Force expiry if over an upper memory threshold.. doesn't appear to be necessary.
+
+            for (int i=0;i<expire.count();i++) {
+                const QString key=expire.at(i);
+                // unbind the texture
+                myPixmapCache * pc=pixmap_cache[key];
+                deleteTexture(pc->textureID);
+                QPixmap *pm=pc->pixmap;
+                pixmap_cache_size-=pm->width() * pm->height() * (pm->depth()/8);
+                // free the pixmap
+                delete pc->pixmap;
+
+                // free the myPixmapCache object
+                delete pc;
+
+                // pull the dead record from the cache.
+                pixmap_cache.remove(key);
             }
         }
-
-        // TODO: Don't bother expiring if less than a memory threshold is used..
-        for (int i=0;i<expire.count();i++) {
-            const QString key=expire.at(i);
-            // unbind the texture
-            deleteTexture(pixmap_cache[key]->textureID);
-            QPixmap *pm=pixmap_cache[key]->pixmap;
-            pixmap_cache_size-=pm->width() * pm->height() * (pm->depth()/8);
-            // free the pixmap
-            delete pixmap_cache[key]->pixmap;
-
-            // free the myPixmapCache object
-            delete pixmap_cache[key];
-
-            // pull the dead record from the cache.
-            pixmap_cache.remove(expire.at(i));
-        }
-
-    } else {
+    }
+    //else {
         glPushAttrib(GL_COLOR_BUFFER_BIT);
 
 #ifndef USE_RENDERTEXT
         painter.begin(this);
 #endif
-    }
+    //}
     for (int i=0;i<m_textque_items;i++) {
         // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
 
+#ifdef Q_OS_MAC
+        // can do antialiased text via texture cache fine on mac
         if (use_pixmap_cache) {
+#else
+        if (use_pixmap_cache && q.antialias) {
+#endif
             // Generate the pixmap cache "key"
             QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias); // ? "T" : "F"
 
@@ -2249,7 +2267,7 @@ void gGraphView::DrawTextQue()
                 pm=new QPixmap(w+4,h+4);
                 pm->fill(Qt::transparent);
 
-                painter.begin(pm);
+                QPainter painter(pm);
 
                 // Hmmm.. Maybe I need to be able to turn this on/off?
                 painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
@@ -2334,12 +2352,12 @@ void gGraphView::DrawTextQue()
         //q.text.squeeze();
     }
 
-    if (!use_pixmap_cache) {
+  //  if (!use_pixmap_cache) {
 #ifndef USE_RENDERTEXT
         painter.end();
 #endif
         glPopAttrib();
-    }
+  //  }
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
 }
