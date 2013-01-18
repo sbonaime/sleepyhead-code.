@@ -1694,6 +1694,11 @@ void gGraph::wheelEvent(QWheelEvent * event)
 {
     //qDebug() << m_title << "Wheel" << event->x() << event->y() << event->delta();
     //int y=event->pos().y();
+    if (event->orientation() == Qt::Horizontal) {
+
+        return;
+    }
+
     int x=event->pos().x()-m_graphview->titleWidth;//(left+m_marginleft);
     if (event->delta()>0) {
         ZoomX(0.75,x);
@@ -3513,8 +3518,61 @@ void gGraphView::wheelEvent(QWheelEvent * event)
             py+=graphSpacer; // do we want the extra spacer down the bottom?
         }
     } else {
-        m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
-        m_tooltip->cancel();
+        // Vertical Scrolling
+        if (event->orientation()==Qt::Vertical) {
+            m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
+            m_tooltip->cancel();
+        } else {
+            //Horinontal Panning
+            gGraph *g=NULL;
+            int group=0;
+
+            // Pick the first valid graph in the primary group
+            for (int i=0;i<m_graphs.size();i++) {
+                if (m_graphs[i]->group()==group) {
+                    if (!m_graphs[i]->isEmpty() && m_graphs[i]->visible()) {
+                        g=m_graphs[i];
+                        break;
+                    }
+                }
+            }
+
+            if (!g) {
+                for (int i=0;i<m_graphs.size();i++) {
+                    if (!m_graphs[i]->isEmpty()) {
+                        g=m_graphs[i];
+                        group=g->group();
+                        break;
+                    }
+                }
+            }
+            if (!g) return;
+
+            double xx=(g->max_x-g->min_x);
+            double zoom=240.0;
+
+            int delta=event->delta();
+
+
+
+
+            if (delta > 0)
+                g->min_x-=(xx/zoom)*fabs(delta);
+            else
+                g->min_x+=(xx/zoom)*fabs(delta);
+
+            g->max_x=g->min_x+xx;
+            if (g->min_x < g->rmin_x) {
+                g->min_x=g->rmin_x;
+                g->max_x=g->rmin_x+xx;
+            }
+            if (g->max_x > g->rmax_x) {
+                g->max_x=g->rmax_x;
+                g->min_x=g->max_x-xx;
+            }
+
+            SetXBounds(g->min_x,g->max_x,group);
+        }
     }
 }
 
