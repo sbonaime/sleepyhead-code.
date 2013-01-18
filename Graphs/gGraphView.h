@@ -913,8 +913,12 @@ public:
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
     void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont, bool antialias=true);
 
-    //! \brief Draw all Text in the text drawing queue, via QPainter
+    //! \brief Draw all Text in the text drawing queue
     void DrawTextQue();
+
+    //! \brief Draw all text components using QPainter object painter
+    void DrawTextQue(QPainter &painter);
+
 
     //! \brief Returns number of graphs contained (whether they are visible or not)
     int size() { return m_graphs.size(); }

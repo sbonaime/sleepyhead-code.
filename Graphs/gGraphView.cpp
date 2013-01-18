@@ -1927,7 +1927,33 @@ Layer * gGraph::getLineChart()
     return NULL;
 }
 
-// QTBUG-24710 pixmaps might not be freeing properly..
+// Render all qued text via QPainter method
+void gGraphView::DrawTextQue(QPainter &painter)
+{
+    int w,h;
+    for (int i=0;i<m_textque_items;i++) {
+        TextQue &q = m_textque[i];
+        painter.setFont(*q.font);
+        painter.setBrush(q.color);
+        painter.setRenderHint(QPainter::TextAntialiasing,q.antialias);
+
+        if (q.angle==0) { // normal text
+          painter.drawText(q.x,q.y,q.text);
+        } else { // rotated text
+            w=painter.fontMetrics().width(q.text);
+            h=painter.fontMetrics().xHeight()+2;
+
+            painter.translate(q.x, q.y);
+            painter.rotate(-q.angle);
+            painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
+            painter.rotate(+q.angle);
+            painter.translate(-q.x, -q.y);
+        }
+        q.text.clear();
+    }
+    m_textque_items=0;
+}
+
 QImage gGraphView::pbRenderPixmap(int w,int h)
 {
     QImage pm=QImage();
@@ -1936,16 +1962,24 @@ QImage gGraphView::pbRenderPixmap(int w,int h)
 
    if (pbuffer.isValid()) {
        pbuffer.makeCurrent();
-       resizeGL(w,h);
        initializeGL();
-       paintGL();
+       resizeGL(w,h);
+       glClearColor(255,255,255,255);
+       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+       renderGraphs();
+       glFlush();
        pm=pbuffer.toImage();
-       //pm=QPixmap::fromImage(image);
        pbuffer.doneCurrent();
+       QPainter painter(&pm);
+       DrawTextQue(painter);
+       painter.end();
+
    }
    return pm;
 
 }
+
 
 QImage gGraphView::fboRenderPixmap(int w,int h)
 {
@@ -1961,7 +1995,7 @@ QImage gGraphView::fboRenderPixmap(int w,int h)
     }
 
     if (!fbo) {
-        fbo=new QGLFramebufferObject(max_fbo_width,max_fbo_height,QGLFramebufferObject::NoAttachment);
+        fbo=new QGLFramebufferObject(max_fbo_width,max_fbo_height,QGLFramebufferObject::Depth); //NoAttachment);
     }
 
     if (fbo && fbo->isValid()) {
@@ -1969,14 +2003,19 @@ QImage gGraphView::fboRenderPixmap(int w,int h)
         if (fbo->bind()) {
             initializeGL();
             resizeGL(w,h);
-            paintGL();
-            glFlush();
-            //QImage img=grabFrameBuffer(true);
-            fbo->release();
+            glClearColor(255,255,255,255);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // Copy just the section of the image (remember openGL draws from the bottom up)
+            renderGraphs(); // render graphs sans text
+            glFlush();
+            fbo->release();
             pm=fbo->toImage().copy(0,max_fbo_height-h,w,h);
             doneCurrent();
+
+            QPainter painter(&pm);
+            DrawTextQue(painter); //Just use this on mac to
+            painter.end();
+
         }
     } else {
         delete fbo;
@@ -2034,16 +2073,17 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->setScaleY(1.0);
 
-    //sg->makeCurrent();
+    // pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
+    sg->makeCurrent(); // has to be current for fbo creation
+
 #ifndef Q_OS_MAC
     // This doesn't work on Rich's Radeon boxen either
     // I'm suspiscious of this function on Radeon hardware.
-    pm=sg->renderPixmap(w,h,false);
+   // pm=sg->renderPixmap(w,h,false);
 #endif
-    if (pm.isNull()) {
-        pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
-        // this one gives nags
-    } else if (pm.isNull()) { // not sure if this will work with printing
+    pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
+
+    if (pm.isNull()) { // not sure if this will work with printing
         qDebug() << "Had to use PixelBuffer for snapshots\n";
         pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
     }
@@ -2160,7 +2200,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
-    QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer),parent,shared),
+    QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer | QGL::NoOverlay),parent,shared),
     m_offsetY(0),m_offsetX(0),m_scaleY(1.0),m_scrollbar(NULL)
 {
     m_shared=shared;
@@ -2388,10 +2428,11 @@ void gGraphView::DrawTextQue()
 
             if (pc) {
                 pc->last_used=ti;
+
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-                glEnable(GL_TEXTURE_2D);
+                //glEnable(GL_TEXTURE_2D);
                 if (q.angle!=0) {
                     glPushMatrix();
                     glTranslatef(q.x-pc->image.height()-(pc->image.height()/2),q.y+pc->image.width()/2 + pc->image.height()/2, 0);
@@ -2405,7 +2446,7 @@ void gGraphView::DrawTextQue()
                     // TODO: setup for rotation if angle specified.
                     drawTexture(QPoint(q.x,q.y-pc->image.height()+4),pc->textureID);
                 }
-                glDisable(GL_TEXTURE_2D);
+               // glDisable(GL_TEXTURE_2D);
                 glDisable(GL_BLEND);
             }
         } else {
@@ -2988,7 +3029,7 @@ bool gGraphView::renderGraphs()
     lines->draw();
 //    lines->setSize(linesize);
 
-    DrawTextQue();
+ //   DrawTextQue();
     m_tooltip->paint();
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
@@ -3185,9 +3226,9 @@ void gGraphView::paintGL()
                 // Then display the empty text message
             QColor col=Qt::black;
             AddTextQue(m_emptytext,(width()/2)-x/2,tp,0.0,col,bigfont);
-            DrawTextQue();
 
         }
+        DrawTextQue();
     }
 
 #ifdef DEBUG_EFFICIENCY
