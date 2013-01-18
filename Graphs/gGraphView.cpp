@@ -758,6 +758,7 @@ void gToolTip::display(QString text, int x, int y, int timeout)
     }
     timer->setSingleShot(true);
     timer->start(timeout);
+    m_invalidate=true;
 }
 
 void gToolTip::cancel()
@@ -769,57 +770,86 @@ void gToolTip::cancel()
 void gToolTip::paint()     //actually paints it.
 {
     if (!m_visible) return;
+
+    bool usepixmap=m_graphview->usePixmapCache();
     int x=m_pos.x();// - tw / 2;
     int y=m_pos.y();// - th;
 
-    /*GLBuffer * & lines=m_graphview->lines;
-    GLBuffer * & quads=m_graphview->quads;
-    QColor col(255,255,128,200);
-    quads->add(x,y,x,y+th,col);
-    quads->add(x+tw,y+th,x+tw,y,col);
+    if (!usepixmap | (usepixmap && m_invalidate)) {
 
-    QColor blk(0,0,0,255);
-    lines->add(x-1,y-1,x+tw+1,y-1,blk);
-    lines->add(x-1,y+th+1,x+tw+1,y+th+1,blk);
-    lines->add(x-1,y-1,x-1,y+th+1,blk);
-    lines->add(x+tw+1,y-1,x+tw+1,y+th+1,blk);
+        QPainter painter;
 
-    m_graphview->AddTextQue(m_text,x + m_spacer,y + m_spacer + th/2); */
+        painter.begin(m_graphview);
 
-    QPainter painter(m_graphview);
+        QRect br;
+        QRect rect(x,y,0,0);
+        painter.setFont(*defaultfont);
 
-    QRect br;
-    QRect rect(x,y,0,0);
-    painter.setFont(*defaultfont);
-    rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
-    int w=rect.width()+m_spacer*2;
-    int xx=rect.x()-m_spacer;
-    if (xx<0) xx=0;
-    rect.setLeft(xx);
-    rect.setTop(rect.y()-rect.height()/2);
-    rect.setWidth(w);
+        rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
 
-    //rect.setHeight(rect.height());
-    QBrush brush(QColor(255,255,128,200));
-    painter.setBrush(brush);
-    int z=rect.x()+rect.width();
-    if (z>m_graphview->width()-10) {
-        rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
-        rect.setRight(m_graphview->width()-2);
+        if (!usepixmap) {
+            int w=rect.width()+m_spacer*2;
+            int xx=rect.x()-m_spacer;
+            if (xx<0) xx=0;
+
+            rect.setLeft(xx);
+            rect.setTop(rect.y()-rect.height()/2);
+            rect.setWidth(w);
+
+
+            //rect.setHeight(rect.height());
+            int z=rect.x()+rect.width();
+            if (z>m_graphview->width()-10) {
+                rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
+                rect.setRight(m_graphview->width()-2);
+            }
+            int h=rect.height();
+            if (rect.y()<0) {
+                rect.setY(0);
+                rect.setHeight(h);
+            }
+        } else {
+            rect.setCoords(0,0,rect.width()+m_spacer*2,rect.height()+m_spacer*2);
+            painter.end();
+            if (!m_pixmap.isNull()) {
+                m_graphview->deleteTexture(m_textureID);
+            }
+            m_pixmap=QPixmap(rect.width()+2,rect.height()+2);
+            m_pixmap.fill(Qt::transparent);
+            painter.begin(&m_pixmap);
+        }
+
+        lines_drawn_this_frame+=4;
+        quads_drawn_this_frame+=1;
+
+        QBrush brush(QColor(255,255,128,200));
+        painter.setBrush(brush);
+
+        painter.drawRoundedRect(rect,5,5);
+        painter.setBrush(Qt::black);
+
+        painter.drawText(rect,Qt::AlignCenter,m_text);
+
+        painter.end();
+        if (usepixmap) {
+            m_textureID=m_graphview->bindTexture(m_pixmap);
+        }
     }
-    int h=rect.height();
-    if (rect.y()<0) {
-        rect.setY(0);
-        rect.setHeight(h);
+    if (usepixmap) {
+        x-=m_spacer+m_pixmap.width()/2;
+        y-=m_pixmap.height()/2;
+        if (y<0) y=0;
+        if ((x+m_pixmap.width()) > (m_graphview->width()-10)) x=m_graphview->width()-10 - m_pixmap.width();
+        if (usepixmap && !m_pixmap.isNull()) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_TEXTURE_2D);
+            m_graphview->drawTexture(QPoint(x,y),m_textureID);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
+        }
+
     }
-
-    lines_drawn_this_frame+=4;
-    quads_drawn_this_frame+=1;
-
-    painter.drawRoundedRect(rect,5,5);
-    painter.drawText(rect,Qt::AlignCenter,m_text);
-
-    painter.end();
 
 }
 void gToolTip::timerDone()

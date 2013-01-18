@@ -496,6 +496,9 @@ protected:
     QString m_text;
     bool m_visible;
     int m_spacer;
+    QPixmap m_pixmap;
+    GLuint m_textureID;
+    bool m_invalidate;
 protected slots:
 
     //! \brief Timeout to hide tooltip, and redraw without it.
