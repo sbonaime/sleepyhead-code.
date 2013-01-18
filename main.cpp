@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-    QGL::setPreferredPaintEngine(QPaintEngine::Blitter);
+    QGL::setPreferredPaintEngine(QPaintEngine::OpenGL);
 #endif
 
     bool force_login_screen=false;
