@@ -2073,21 +2073,24 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->setScaleY(1.0);
 
-    // pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
     sg->makeCurrent(); // has to be current for fbo creation
-
-#ifndef Q_OS_MAC
-    // This doesn't work on Rich's Radeon boxen either
-    // I'm suspiscious of this function on Radeon hardware.
-   // pm=sg->renderPixmap(w,h,false);
-#endif
+#ifdef Q_OS_WIN
+    if (pm.isNull()){
+        pm=sg->renderPixmap(w,h,false);
+    }
+    if (pm.isNull()) { // Works, but gives shader warnings
+        pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
+    }
+    if (pm.isNull()){ // crashes on mine, not sure what to do about it
+        pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
+    }
+#else
     pm=QPixmap::fromImage(sg->fboRenderPixmap(w,h));
-
     if (pm.isNull()) { // not sure if this will work with printing
         qDebug() << "Had to use PixelBuffer for snapshots\n";
         pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
     }
-
+#endif
     //sg->doneCurrent();
     sg->trashGraphs();
     m_graphview=tgv;
