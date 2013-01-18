@@ -247,7 +247,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 
         if (usepixmap) {
             painter.end();
-            m_textureID=w.graphView()->bindTexture(m_pixmap);
+            m_textureID=w.graphView()->bindTexture(m_pixmap,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
 
         }
         w.invalidate_xAxisImage=false;

@@ -847,7 +847,7 @@ void gToolTip::paint()     //actually paints it.
 
         painter.end();
         if (usepixmap) {
-            m_textureID=m_graphview->bindTexture(m_pixmap);
+            m_textureID=m_graphview->bindTexture(m_pixmap,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
             m_invalidate=false;
         }
     }
@@ -2338,7 +2338,7 @@ void gGraphView::DrawTextQue()
 
                 pc->pixmap=pm;
                 pixmap_cache_size+=pm->width()*pm->height()*(pm->depth()/8);
-                pc->textureID=bindTexture(*pm);
+                pc->textureID=bindTexture(*pm,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
                 pixmap_cache[hstr]=pc;
 
             }

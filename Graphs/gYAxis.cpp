@@ -250,7 +250,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             }
             paint.end();
             //yAxisImage=QGLWidget::convertToGLFormat(pixmap.toImage().mirrored(false,true));
-            yAxisImageTex=w.graphView()->bindTexture(yAxisImage);
+            yAxisImageTex=w.graphView()->bindTexture(yAxisImage,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
             w.invalidate_yAxisImage=false;
         }
 
