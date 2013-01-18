@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <QDebug>
+
 #include "gXAxis.h"
 
 const quint64 divisors[]={

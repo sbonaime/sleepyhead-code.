@@ -242,10 +242,16 @@ void MainWindow::Startup()
     PROFILE.LoadMachineData();
 
     SnapshotGraph=new gGraphView(this,daily->graphView());
-#ifndef Q_OS_MAC
+
+    // the following are platform overides for the UsePixmapCache preference settings
+#ifdef Q_OS_MAC
+    //Mac needs this to be able to offscreen render
+    SnapshotGraph->setUsePixmapCache(true);
+#else
     //Windows & Linux barfs when offscreen rendering with pixmap cached text
     SnapshotGraph->setUsePixmapCache(false);
 #endif
+
     SnapshotGraph->setFormat(daily->graphView()->format());
     //SnapshotGraph->setMaximumSize(1024,512);
     //SnapshotGraph->setMinimumSize(1024,512);

@@ -2177,6 +2177,13 @@ gGraphView::~gGraphView()
     delete timer;
 }
 
+bool gGraphView::usePixmapCache()
+{
+    //use_pixmap_cache is an overide setting
+    return use_pixmap_cache & PROFILE.appearance->usePixmapCaching();
+}
+
+
 void gGraphView::DrawTextQue()
 {
     const qint64 expire_after_ms=4000; // expire string pixmaps after this many milliseconds
@@ -3112,11 +3119,12 @@ void gGraphView::paintGL()
         quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col.rgba());
         quads->draw();
         //renderText(0,0,0,ss,*defaultfont);
+
+        int xx=3;
 #ifndef Q_OS_MAC
-        AddTextQue(ss,width()+7,w/2+4,90,col,defaultfont);
-#else
-        AddTextQue(ss,width()+3,w/2,90,col,defaultfont);
+        if (usePixmapCache()) xx+=4; else xx-=3;
 #endif
+        AddTextQue(ss,width()+xx,w/2,90,col,defaultfont);
         DrawTextQue();
     }
 #endif

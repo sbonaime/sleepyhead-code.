@@ -983,11 +983,11 @@ public:
     //! \brief Use a QGLPixelBuffer to render to a pixmap
     QImage pbRenderPixmap(int w,int h);
 
-    //! \brief Enable or disable the Text Pixmap Caching system (much faster on)
+    //! \brief Enable or disable the Text Pixmap Caching system preference overide
     void setUsePixmapCache(bool b) { use_pixmap_cache=b; }
 
     //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
-    bool usePixmapCache() { return use_pixmap_cache; }
+    bool usePixmapCache();
 
 protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath

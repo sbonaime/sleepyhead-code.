@@ -227,6 +227,7 @@ const QString STR_AS_GraphSnapshots="EnableGraphSnapshots";
 const QString STR_AS_Animations="AnimationsAndTransitions";
 const QString STR_AS_SquareWave="SquareWavePlots";
 const QString STR_AS_OverlayType="OverlayType";
+const QString STR_AS_UsePixmapCaching="UsePixmapCaching";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem="UnitSystem";
@@ -530,6 +531,7 @@ public:
         if (!m_profile->contains(STR_AS_GraphSnapshots)) (*m_profile)[STR_AS_GraphSnapshots]=true;
         if (!m_profile->contains(STR_AS_Animations)) (*m_profile)[STR_AS_Animations]=true;
         if (!m_profile->contains(STR_AS_SquareWave)) (*m_profile)[STR_AS_SquareWave]=false;
+        if (!m_profile->contains(STR_AS_UsePixmapCaching)) (*m_profile)[STR_AS_UsePixmapCaching]=true;
         if (!m_profile->contains(STR_AS_OverlayType)) (*m_profile)[STR_AS_OverlayType]=ODT_Bars;
     }
     ~AppearanceSettings() {}
@@ -544,6 +546,8 @@ public:
     bool graphSnapshots() { return (*m_profile)[STR_AS_GraphSnapshots].toBool(); }
     //! \brief Returns true if Graphical animations & Transitions will be drawn
     bool animations() { return (*m_profile)[STR_AS_Animations].toBool(); }
+    //! \brief Returns true if PixmapCaching acceleration will be used
+    bool usePixmapCaching() { return (*m_profile)[STR_AS_UsePixmapCaching].toBool(); }
     //! \brief Returns true if Square Wave plots are preferred (where possible)
     bool squareWavePlots() { return (*m_profile)[STR_AS_SquareWave].toBool(); }
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
@@ -557,6 +561,8 @@ public:
     void setGraphSnapshots(bool gs) { (*m_profile)[STR_AS_GraphSnapshots]=gs; }
     //! \brief Set to true if Graphical animations & Transitions will be drawn
     void setAnimations(bool anim) { (*m_profile)[STR_AS_Animations]=anim; }
+    //! \brief Set to true to use Pixmap Caching of Text and other graphics caching speedup techniques
+    void setUsePixmapCaching(bool b) { (*m_profile)[STR_AS_UsePixmapCaching]=b; }
     //! \brief Set whether or not to useSquare Wave plots (where possible)
     void setSquareWavePlots(bool sw) { (*m_profile)[STR_AS_SquareWave]=sw; }
     //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)

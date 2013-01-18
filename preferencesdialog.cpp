@@ -156,6 +156,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
     ui->maskDescription->setText(profile->cpap->maskDescription());
     ui->useAntiAliasing->setChecked(profile->appearance->antiAliasing());
+    ui->usePixmapCaching->setChecked(profile->appearance->usePixmapCaching());
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
     ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
     ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
@@ -344,6 +345,7 @@ bool PreferencesDialog::Save()
     }
 
     profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
+    profile->appearance->setUsePixmapCaching(ui->usePixmapCaching->isChecked());
     profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
     profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
