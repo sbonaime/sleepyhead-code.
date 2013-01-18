@@ -814,22 +814,22 @@ void gToolTip::paint()     //actually paints it.
                 rect.setY(0);
                 rect.setHeight(h);
             }
-            if (!m_pixmap.isNull()) {
+            if (!m_image.isNull()) {
                 m_graphview->deleteTexture(m_textureID);
                 m_textureID=0;
-                m_pixmap=QPixmap();
+                m_image=QImage();
                 m_invalidate=true;
             }
 
         } else {
             rect.setCoords(0,0,rect.width()+m_spacer*2,rect.height()+m_spacer*2);
             painter.end();
-            if (!m_pixmap.isNull()) {
+            if (!m_image.isNull()) {
                 m_graphview->deleteTexture(m_textureID);
             }
-            m_pixmap=QPixmap(rect.width()+2,rect.height()+2);
-            m_pixmap.fill(Qt::transparent);
-            painter.begin(&m_pixmap);
+            m_image=QImage(rect.width()+2,rect.height()+2,QImage::Format_ARGB32_Premultiplied);
+            m_image.fill(Qt::transparent);
+            painter.begin(&m_image);
         }
 
         lines_drawn_this_frame+=4;
@@ -839,7 +839,6 @@ void gToolTip::paint()     //actually paints it.
         brush.setStyle(Qt::SolidPattern);
         painter.setBrush(brush);
 
-
         painter.drawRoundedRect(rect,5,5);
         painter.setBrush(Qt::black);
 
@@ -847,17 +846,18 @@ void gToolTip::paint()     //actually paints it.
 
         painter.end();
         if (usepixmap) {
-            m_textureID=m_graphview->bindTexture(m_pixmap,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
+            m_image=QGLWidget::convertToGLFormat(m_image);
+            m_textureID=m_graphview->bindTexture(m_image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
             m_invalidate=false;
         }
     }
     if (usepixmap) {
-        x-=m_spacer+m_pixmap.width()/2;
-        y-=m_pixmap.height()/2;
+        x-=m_spacer+m_image.width()/2;
+        y-=m_image.height()/2;
         if (y<0) y=0;
         if (x<0) x=0;
-        if ((x+m_pixmap.width()) > (m_graphview->width()-10)) x=m_graphview->width()-10 - m_pixmap.width();
-        if (usepixmap && !m_pixmap.isNull()) {
+        if ((x+m_image.width()) > (m_graphview->width()-10)) x=m_graphview->width()-10 - m_image.width();
+        if (usepixmap && !m_image.isNull()) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_TEXTURE_2D);
@@ -2273,10 +2273,10 @@ void gGraphView::DrawTextQue()
                 // unbind the texture
                 myPixmapCache * pc=pixmap_cache[key];
                 deleteTexture(pc->textureID);
-                QPixmap *pm=pc->pixmap;
-                pixmap_cache_size-=pm->width() * pm->height() * (pm->depth()/8);
+                QImage & pm=pc->image;
+                pixmap_cache_size-=pm.width() * pm.height() * (pm.depth()/8);
                 // free the pixmap
-                delete pc->pixmap;
+                //delete pc->pixmap;
 
                 // free the myPixmapCache object
                 delete pc;
@@ -2302,7 +2302,7 @@ void gGraphView::DrawTextQue()
             // Generate the pixmap cache "key"
             QString hstr=QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(q.antialias);
 
-            QPixmap * pm=NULL;
+            QImage pm;
 
             //Random_note: test add to qmake for qt5 stuff DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040900
 
@@ -2321,24 +2321,32 @@ void gGraphView::DrawTextQue()
                 QRect rect=fm.boundingRect(q.text);
                 w=rect.width();
                 h=rect.height();
-                pm=new QPixmap(w+4,h+4);
-                pm->fill(Qt::transparent);
+                pm=QImage(w+4,h+4,QImage::Format_ARGB32_Premultiplied);
 
-                QPainter painter(pm);
+                pm.fill(Qt::transparent);
+
+                QPainter painter(&pm);
 
                 // Hmmm.. Maybe I need to be able to turn this on/off?
-                painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
 
 
                 QBrush b(q.color);
                 painter.setBrush(b);
+                //QFont font=*q.font;
+                //if (!q.antialias) {
+                //    q.font->setStyleStrategy(QFont::NoAntialias);
+                //} else q.font->setStyleStrategy(QFont::PreferAntialias);
+                //painter.setFont(font);
+
                 painter.setFont(*q.font);
+
+                painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
                 painter.drawText(2,h,q.text);
                 painter.end();
 
-                pc->pixmap=pm;
-                pixmap_cache_size+=pm->width()*pm->height()*(pm->depth()/8);
-                pc->textureID=bindTexture(*pm,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
+                pc->image=QGLWidget::convertToGLFormat(pm);
+                pixmap_cache_size+=pm.width()*pm.height()*(pm.depth()/8);
+                pc->textureID=bindTexture(pc->image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
                 pixmap_cache[hstr]=pc;
 
             }
@@ -2351,16 +2359,16 @@ void gGraphView::DrawTextQue()
                 glEnable(GL_TEXTURE_2D);
                 if (q.angle!=0) {
                     glPushMatrix();
-                    glTranslatef(q.x-pc->pixmap->height()*2+4,q.y+pc->pixmap->width()/2+4, 0);
+                    glTranslatef(q.x-pc->image.height()*2+4,q.y+pc->image.width()/2+4, 0);
                     glRotatef(-q.angle,0,0,1);
-                    drawTexture(QPoint(0,pc->pixmap->height()/2),pc->textureID);
+                    drawTexture(QPoint(0,pc->image.height()/2),pc->textureID);
                     glPopMatrix();
                     //glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
                     //glRotatef(-90,0,0,1);
                     //m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
                 } else {
                     // TODO: setup for rotation if angle specified.
-                    drawTexture(QPoint(q.x,q.y-pc->pixmap->height()+4),pc->textureID);
+                    drawTexture(QPoint(q.x,q.y-pc->image.height()+4),pc->textureID);
                 }
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_BLEND);

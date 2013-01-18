@@ -44,7 +44,7 @@ class gXAxis:public Layer
         qint64 tz_offset;
         float tz_hours;
 
-        QPixmap m_pixmap;
+        QImage m_image;
         GLuint m_textureID;
 };
 #endif // GXAXIS_H

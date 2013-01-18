@@ -496,7 +496,7 @@ protected:
     QString m_text;
     bool m_visible;
     int m_spacer;
-    QPixmap m_pixmap;
+    QImage m_image;
     GLuint m_textureID;
     bool m_invalidate;
 protected slots:
@@ -804,7 +804,7 @@ protected slots:
 struct myPixmapCache
 {
     quint64 last_used;
-    QPixmap *pixmap;
+    QImage image;
     GLuint textureID;
 };
 

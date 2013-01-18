@@ -112,8 +112,8 @@ class gYAxis:public Layer
         gVertexBuffer * lines;
         virtual bool mouseMoveEvent(QMouseEvent * event);
 
-        QPixmap yAxisImage;
-        GLuint yAxisImageTex;
+        QImage m_image;
+        GLuint m_textureID;
 
 };
 

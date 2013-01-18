@@ -59,9 +59,9 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             // Unbind any previous texture
             if (m_textureID) w.graphView()->deleteTexture(m_textureID);
 
-            m_pixmap=QPixmap(width+22,height+4);
-            m_pixmap.fill(Qt::transparent);
-            painter.begin(&m_pixmap);
+            m_image=QImage(width+22,height+4,QImage::Format_ARGB32_Premultiplied);
+            m_image.fill(Qt::transparent);
+            painter.begin(&m_image);
             painter.setPen(Qt::black);
         }
         double px,py;
@@ -247,17 +247,18 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 
         if (usepixmap) {
             painter.end();
-            m_textureID=w.graphView()->bindTexture(m_pixmap,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
+            m_image=QGLWidget::convertToGLFormat(m_image);
+            m_textureID=w.graphView()->bindTexture(m_image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
 
         }
         w.invalidate_xAxisImage=false;
     }
 
-    if (usepixmap && !m_pixmap.isNull()) {
+    if (usepixmap && !m_image.isNull()) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_TEXTURE_2D);
-        w.graphView()->drawTexture(QPoint(left-20,(top+height)-m_pixmap.height()+4),m_textureID);
+        w.graphView()->drawTexture(QPoint(left-20,(top+height)-m_image.height()+4),m_textureID);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
     }

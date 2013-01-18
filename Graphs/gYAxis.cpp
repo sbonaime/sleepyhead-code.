@@ -129,7 +129,7 @@ gYAxis::gYAxis(QColor col)
 {
     m_line_color=col;
     m_text_color=col;
-    yAxisImageTex=0;
+    m_textureID=0;
 
     m_yaxis_scale=1;
 }
@@ -145,9 +145,9 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     if (w.graphView()->usePixmapCache()) {
         if (w.invalidate_yAxisImage) {
 
-            if (!yAxisImage.isNull()) {
-                w.graphView()->deleteTexture(yAxisImageTex);
-                yAxisImage=QPixmap();
+            if (!m_image.isNull()) {
+                w.graphView()->deleteTexture(m_textureID);
+                m_image=QImage();
             }
 
 
@@ -170,10 +170,10 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             GetTextExtent(fd,x,y);
             yh=y;
 
-            yAxisImage=QPixmap(width,height+y+4);
+            m_image=QImage(width,height+y+4,QImage::Format_ARGB32_Premultiplied);
 
-            yAxisImage.fill(Qt::transparent);
-            QPainter paint(&yAxisImage);
+            m_image.fill(Qt::transparent);
+            QPainter paint(&m_image);
 
 
             double max_yticks=round(height / (y+14.0)); // plus spacing between lines
@@ -249,16 +249,16 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
                 }
             }
             paint.end();
-            //yAxisImage=QGLWidget::convertToGLFormat(pixmap.toImage().mirrored(false,true));
-            yAxisImageTex=w.graphView()->bindTexture(yAxisImage,GL_TEXTURE_2D,GL_RGBA,QGLContext::InvertedYBindOption);
+            m_image=QGLWidget::convertToGLFormat(m_image);
+            m_textureID=w.graphView()->bindTexture(m_image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
             w.invalidate_yAxisImage=false;
         }
 
-        if (!yAxisImage.isNull()) {
+        if (!m_image.isNull()) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_TEXTURE_2D);
-            w.graphView()->drawTexture(QPoint(left,(top+height)-yAxisImage.height()+5),yAxisImageTex);
+            w.graphView()->drawTexture(QPoint(left,(top+height)-m_image.height()+5),m_textureID);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
         }
