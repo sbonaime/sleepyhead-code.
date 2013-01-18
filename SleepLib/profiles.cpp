@@ -433,6 +433,7 @@ void Done()
     profiles.clear();
     delete p_pref;
     delete p_layout;
+    DestroyLoaders();
 }
 
 Profile *Get(QString name)

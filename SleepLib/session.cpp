@@ -29,6 +29,7 @@ const quint16 events_version=10;
 
 Session::Session(Machine * m,SessionID session)
 {
+    s_lonesession=false;
     if (!session) {
         session=m->CreateSessionID();
     }

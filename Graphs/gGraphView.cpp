@@ -896,6 +896,10 @@ Layer::~Layer()
     for (int i=0;i<mgl_buffers.size();i++) {
         delete mgl_buffers[i];
     }
+
+    for (int i=0;i<mv_buffers.size();i++) {
+        delete mv_buffers[i];
+    }
 }
 void Layer::drawGLBuf(float linesize)
 {
@@ -961,6 +965,8 @@ LayerGroup::LayerGroup() :
 }
 LayerGroup::~LayerGroup()
 {
+    for (int i=0;i<layers.size();i++)
+        delete layers[i];
 }
 bool LayerGroup::isEmpty()
 {
@@ -1111,7 +1117,16 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_visible(true)
 {
     m_min_height=60;
+    m_width=0;
+
     m_layers.clear();
+
+    f_miny=f_maxy=0;
+    rmin_x=rmin_y=0;
+    rmax_x=rmax_y=0;
+    max_x=max_y=0;
+    min_x=min_y=0;
+    rec_miny=rec_maxy=0;
 
     if (graphview) {
         graphview->addGraph(this,group);
@@ -1132,9 +1147,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
 
     m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
-    f_miny=f_maxy=0;
     m_enforceMinY=m_enforceMaxY=false;
-    rec_miny=rec_maxy=0;
     m_showTitle=true;
     m_printing=false;
 }
@@ -2023,6 +2036,8 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     //sg->makeCurrent();
 #ifndef Q_OS_MAC
+    // This doesn't work on Rich's Radeon boxen either
+    // I'm suspiscious of this function on Radeon hardware.
     pm=sg->renderPixmap(w,h,false);
 #endif
     if (pm.isNull()) {
@@ -2155,6 +2170,11 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_lastypos=m_lastxpos=0;
     m_horiz_travel=0;
     pixmap_cache_size=0;
+    m_minx=m_maxx=0;
+    m_day=NULL;
+    m_selected_graph=NULL;
+    cubetex=0;
+
     this->setMouseTracking(true);
     m_emptytext=QObject::tr("No Data");
     InitGraphs();
@@ -2201,6 +2221,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_fadingIn=false;
     m_inAnimation=false;
     m_limbo=false;
+    m_fadedir=false;
+    m_blockUpdates=false;
     use_pixmap_cache=true;
 }
 
@@ -2215,6 +2237,11 @@ gGraphView::~gGraphView()
     for (int i=0;i<m_graphs.size();i++) {
         delete m_graphs[i];
     }
+    QHash<QString,myPixmapCache *>::iterator it;
+    for (it=pixmap_cache.begin();it!=pixmap_cache.end();it++)
+        delete (*it);
+    pixmap_cache.clear();
+
     delete m_tooltip;
     m_graphs.clear();
     //delete vlines;
@@ -2622,7 +2649,7 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx,short group,bool refresh)
     int m=(xx/60000) % 60;
     int s=(xx/1000) % 60;
     int ms(xx % 1000);
-    QString str;
+    QString str="";
 
     if (d>1) {
         str.sprintf("%1.0f days",ceil(xx/86400000.0));

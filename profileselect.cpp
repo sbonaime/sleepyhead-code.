@@ -30,9 +30,12 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     int i=0;
     int sel=-1;
     QString name;
+
+    QIcon icon(":/icons/moon.png");
     for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         name=p.key();
-        QStandardItem *item=new QStandardItem(*new QIcon(":/icons/moon.png"),name);
+
+        QStandardItem *item=new QStandardItem(icon,name);
         if (PREF.contains(STR_GEN_Profile) && (name==PREF[STR_GEN_Profile].toString())) {
             sel=i;
         }
@@ -66,6 +69,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
 
 ProfileSelect::~ProfileSelect()
 {
+    delete model; // why is this not being cleaned up by Qt?
     delete popupMenu;
     delete ui;
 }
