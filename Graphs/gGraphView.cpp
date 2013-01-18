@@ -2743,7 +2743,7 @@ void gGraphView::renderSomethingFun(float alpha)
 
     glLoadIdentity();
 
-    glAlphaFunc(GL_GREATER,0.1);
+    glAlphaFunc(GL_GREATER,0.1F);
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_CULL_FACE);
     glDisable(GL_COLOR_MATERIAL);
@@ -2760,9 +2760,9 @@ void gGraphView::renderSomethingFun(float alpha)
         xx=sin(M_PI/180.0 * xpos)*2; // ((4.0/width()) * m_mouse.rx())-2.0;
         yy=cos(M_PI/180.0 * ypos)*2; //2-((4.0/height()) * m_mouse.ry());
         xpos+=1;
-        ypos+=1.32;
-        if (xpos > 360) xpos-=360.0;
-        if (ypos > 360) ypos-=360.0;
+        ypos+=1.32F;
+        if (xpos > 360) xpos-=360.0F;
+        if (ypos > 360) ypos-=360.0F;
     }
 
 
@@ -3140,7 +3140,7 @@ void gGraphView::paintGL()
     if (!m_inAnimation || (!m_fadingIn)) {
         // Not in animation sequence, draw graphs like normal
         if (bereallyannoying)
-            renderSomethingFun(0.7);
+            renderSomethingFun(0.7F);
 
         numgraphs=renderGraphs();
 
@@ -3573,9 +3573,9 @@ void gGraphView::wheelEvent(QWheelEvent * event)
 
 
             if (delta > 0)
-                g->min_x-=(xx/zoom)*fabs(delta);
+                g->min_x-=(xx/zoom)*(float)abs(delta);
             else
-                g->min_x+=(xx/zoom)*fabs(delta);
+                g->min_x+=(xx/zoom)*(float)abs(delta);
 
             g->max_x=g->min_x+xx;
             if (g->min_x < g->rmin_x) {
@@ -3662,11 +3662,11 @@ void gGraphView::keyPressEvent(QKeyEvent * event)
         }
         SetXBounds(g->min_x,g->max_x,group);
     } else if (event->key()==Qt::Key_Up) {
-        float zoom=0.75;
+        float zoom=0.75F;
         if (event->modifiers() & Qt::ControlModifier) zoom/=1.5;
         g->ZoomX(zoom,0); // zoom in.
     } else if (event->key()==Qt::Key_Down) {
-        float zoom=1.33;
+        float zoom=1.33F;
         if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;
         g->ZoomX(zoom,0);  // Zoom out
     }
