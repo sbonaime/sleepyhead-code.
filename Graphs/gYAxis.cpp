@@ -31,9 +31,9 @@ gXGrid::~gXGrid()
 }
 void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 {
-    gVertexBuffer * stippled, * lines;
-
     int x,y;
+
+    gVertexBuffer * stippled, * lines;
 
     EventDataType miny=w.min_y;
     EventDataType maxy=w.max_y;
@@ -129,6 +129,7 @@ gYAxis::gYAxis(QColor col)
 {
     m_line_color=col;
     m_text_color=col;
+    yAxisImageTex=0;
 
     m_yaxis_scale=1;
 }
@@ -142,9 +143,9 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
     if (w.graphView()->usePixmapCache()) {
         if (w.invalidate_yAxisImage) {
 
-            if (!w.yAxisImage.isNull()) {
-                w.graphView()->deleteTexture(w.yAxisImageTex);
-                w.yAxisImage=QImage();
+            if (!yAxisImage.isNull()) {
+                w.graphView()->deleteTexture(yAxisImageTex);
+                yAxisImage=QPixmap();
             }
 
 
@@ -167,10 +168,10 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             GetTextExtent(fd,x,y);
             yh=y;
 
-            QPixmap pixmap(width,height+y+4);
+            yAxisImage=QPixmap(width,height+y+4);
 
-            pixmap.fill(Qt::transparent);
-            QPainter paint(&pixmap);
+            yAxisImage.fill(Qt::transparent);
+            QPainter paint(&yAxisImage);
 
 
             double max_yticks=round(height / (y+14.0)); // plus spacing between lines
@@ -246,16 +247,16 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
                 }
             }
             paint.end();
-            w.yAxisImage=QGLWidget::convertToGLFormat(pixmap.toImage().mirrored(false,true));
-            w.yAxisImageTex=w.graphView()->bindTexture(w.yAxisImage);
+            //yAxisImage=QGLWidget::convertToGLFormat(pixmap.toImage().mirrored(false,true));
+            yAxisImageTex=w.graphView()->bindTexture(yAxisImage);
             w.invalidate_yAxisImage=false;
         }
 
-        if (!w.yAxisImage.isNull()) {
+        if (!yAxisImage.isNull()) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_TEXTURE_2D);
-            w.graphView()->drawTexture(QPoint(left,(top+height)-w.yAxisImage.height()+5),w.yAxisImageTex);
+            w.graphView()->drawTexture(QPoint(left,(top+height)-yAxisImage.height()+5),yAxisImageTex);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
         }

@@ -1080,10 +1080,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_selecting_area=m_blockzoom=false;
     m_lastx23=0;
 
-    titleImage=QImage();
-    yAxisImage=QImage();
-    yAxisImageTex=titleImageTex=0;
     invalidate_yAxisImage=true;
+    invalidate_xAxisImage=true;
 
     m_quad=new gVertexBuffer(64,GL_QUADS);
     m_quad->forceAntiAlias(true);
@@ -1994,6 +1992,7 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 // Sets a new Min & Max X clipping, refreshing the graph and all it's layers.
 void gGraph::SetXBounds(qint64 minx, qint64 maxx)
 {
+    invalidate_xAxisImage=true;
     min_x=minx;
     max_x=maxx;
 
@@ -2007,6 +2006,7 @@ int gGraph::flipY(int y)
 
 void gGraph::ResetBounds()
 {
+    invalidate_xAxisImage=true;
     min_x=MinX();
     max_x=MaxX();
     min_y=MinY();

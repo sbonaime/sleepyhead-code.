@@ -730,12 +730,10 @@ public:
     Layer * getLineChart();
     QRect m_lastbounds;
     QTimer * timer;
-    QImage titleImage,yAxisImage;
-    GLuint titleImageTex,yAxisImageTex;
-
 
     // This gets set to true to force a redraw of the yAxis tickers when graphs are resized.
     bool invalidate_yAxisImage;
+    bool invalidate_xAxisImage;
 
     //! \brief Returns a Vector reference containing all this graphs layers
     QVector<Layer *>  & layers() { return m_layers; }

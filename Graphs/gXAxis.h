@@ -43,5 +43,8 @@ class gXAxis:public Layer
         bool m_fadeout;
         qint64 tz_offset;
         float tz_hours;
+
+        QPixmap m_pixmap;
+        GLuint m_textureID;
 };
 #endif // GXAXIS_H
