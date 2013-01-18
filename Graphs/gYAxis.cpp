@@ -137,101 +137,225 @@ gYAxis::~gYAxis()
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
-    if (height<0) return;
-    if (height>2000) return;
-    int x,y;
-    int labelW=0;
+    int x,y,yh=0;
 
-    EventDataType miny=w.min_y;
-    EventDataType maxy=w.max_y;
+    if (w.graphView()->usePixmapCache()) {
+        if (w.invalidate_yAxisImage) {
 
-    if (miny<0) { // even it up if it's starts negative
-        miny=-MAX(fabs(miny),fabs(maxy));
-    }
+            if (!w.yAxisImage.isNull()) {
+                w.graphView()->deleteTexture(w.yAxisImageTex);
+                w.yAxisImage=QImage();
+            }
 
-    w.roundY(miny,maxy);
 
-    EventDataType dy=maxy-miny;
+            if (height<0) return;
+            if (height>2000) return;
 
-    static QString fd="0";
-    GetTextExtent(fd,x,y);
+            int labelW=0;
 
-    double max_yticks=round(height / (y+14.0)); // plus spacing between lines
+            EventDataType miny=w.min_y;
+            EventDataType maxy=w.max_y;
 
-    double mxy=MAX(fabs(maxy),fabs(miny));
-    double mny=miny;
-    if (miny<0) {
-        mny=-mxy;
-    }
+            if (miny<0) { // even it up if it's starts negative
+                miny=-MAX(fabs(miny),fabs(maxy));
+            }
 
-    double rxy=mxy-mny;
+            w.roundY(miny,maxy);
 
-    int myt;
-    bool fnd=false;
-    for (myt=max_yticks;myt>2;myt--) {
-        float v=rxy/float(myt);
-        if (v==int(v)) {
-            fnd=true;
-            break;
+            EventDataType dy=maxy-miny;
+            static QString fd="0";
+            GetTextExtent(fd,x,y);
+            yh=y;
+
+            QPixmap pixmap(width,height+y+4);
+
+            pixmap.fill(Qt::transparent);
+            QPainter paint(&pixmap);
+
+
+            double max_yticks=round(height / (y+14.0)); // plus spacing between lines
+
+            double mxy=MAX(fabs(maxy),fabs(miny));
+            double mny=miny;
+            if (miny<0) {
+                mny=-mxy;
+            }
+
+            double rxy=mxy-mny;
+
+            int myt;
+            bool fnd=false;
+            for (myt=max_yticks;myt>2;myt--) {
+                float v=rxy/float(myt);
+                if (v==int(v)) {
+                    fnd=true;
+                    break;
+                }
+            }
+            if (fnd) max_yticks=myt;
+            double yt=1/max_yticks;
+
+            double ymult=height/rxy;
+
+            double min_ytick=rxy*yt;
+
+            float ty,h;
+
+            if (min_ytick<=0) {
+                qDebug() << "min_ytick error in gYAxis::paint() in" << w.title();
+                return;
+            }
+            if (min_ytick>=1000000) {
+                min_ytick=100;
+            }
+
+            //lines=w.backlines();
+
+            for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
+                ty=(i - miny) * ymult;
+                if (dy<5) {
+                    fd=Format(i*m_yaxis_scale,2);
+                } else {
+                    fd=Format(i*m_yaxis_scale,1);
+                }
+
+                GetTextExtent(fd,x,y);
+
+                if (x>labelW) labelW=x;
+                h=(height-2)-ty;
+                h+=yh;
+    #ifndef Q_OS_MAC
+                // stupid pixel alignment rubbish, I really should be using floats..
+                h+=1;
+    #endif
+                if (h<0)
+                    continue;
+
+                paint.setBrush(Qt::black);
+                paint.drawText(width-8-x,h+y/2,fd);
+
+                paint.setPen(m_line_color);
+                paint.drawLine(width-4,h,width,h);
+
+                double z=(min_ytick/4)*ymult;
+                double g=h;
+                for (int i=0;i<3;i++) {
+                    g+=z;
+                    if (g>height+yh) break;
+                    paint.drawLine(width-3,g,width,g);
+                }
+            }
+            paint.end();
+            w.yAxisImage=QGLWidget::convertToGLFormat(pixmap.toImage().mirrored(false,true));
+            w.yAxisImageTex=w.graphView()->bindTexture(w.yAxisImage);
+            w.invalidate_yAxisImage=false;
         }
-    }
-    if (fnd) max_yticks=myt;
-    double yt=1/max_yticks;
 
-    double ymult=height/rxy;
-
-    double min_ytick=rxy*yt;
-
-
-    //if (dy>5) {
-    //    min_ytick=round(min_ytick);
-    //} else {
-
-    //}
-
-    float ty,h;
-
-    if (min_ytick<=0) {
-        qDebug() << "min_ytick error in gYAxis::paint() in" << w.title();
-        return;
-    }
-    if (min_ytick>=1000000) {
-        min_ytick=100;
-    }
-    lines=w.backlines();
-
-    GLuint line_color=m_line_color.rgba();
-    for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
-        ty=(i - miny) * ymult;
-        if (dy<5) {
-            fd=Format(i*m_yaxis_scale,2);
-        } else {
-            fd=Format(i*m_yaxis_scale,1);
+        if (!w.yAxisImage.isNull()) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_TEXTURE_2D);
+            w.graphView()->drawTexture(QPoint(left,(top+height)-w.yAxisImage.height()+5),w.yAxisImageTex);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
         }
 
-        GetTextExtent(fd,x,y); // performance bottleneck..
+    } else {
+        if (height<0) return;
+        if (height>2000) return;
+        int labelW=0;
 
-        if (x>labelW) labelW=x;
-        h=top+height-ty;
-        if (h<top) continue;
-        w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
+        EventDataType miny=w.min_y;
+        EventDataType maxy=w.max_y;
 
-        lines->add(left+width-4,h,left+width,h,line_color);
+        if (miny<0) { // even it up if it's starts negative
+            miny=-MAX(fabs(miny),fabs(maxy));
+        }
 
-        double z=(min_ytick/4)*ymult;
-        double g=h;
-        for (int i=0;i<3;i++) {
-            g+=z;
-            if (g>top+height) break;
-            lines->add(left+width-3,g,left+width,g,line_color);
+        w.roundY(miny,maxy);
+
+        EventDataType dy=maxy-miny;
+
+        static QString fd="0";
+        GetTextExtent(fd,x,y);
+
+        double max_yticks=round(height / (y+14.0)); // plus spacing between lines
+
+        double mxy=MAX(fabs(maxy),fabs(miny));
+        double mny=miny;
+        if (miny<0) {
+            mny=-mxy;
+        }
+
+        double rxy=mxy-mny;
+
+        int myt;
+        bool fnd=false;
+        for (myt=max_yticks;myt>2;myt--) {
+            float v=rxy/float(myt);
+            if (v==int(v)) {
+                fnd=true;
+                break;
+            }
+        }
+        if (fnd) max_yticks=myt;
+        double yt=1/max_yticks;
+
+        double ymult=height/rxy;
+
+        double min_ytick=rxy*yt;
+
+
+        //if (dy>5) {
+        //    min_ytick=round(min_ytick);
+        //} else {
+
+        //}
+
+        float ty,h;
+
+        if (min_ytick<=0) {
+            qDebug() << "min_ytick error in gYAxis::paint() in" << w.title();
+            return;
+        }
+        if (min_ytick>=1000000) {
+            min_ytick=100;
+        }
+        lines=w.backlines();
+
+        GLuint line_color=m_line_color.rgba();
+        for (double i=miny; i<=maxy+min_ytick-0.00001; i+=min_ytick) {
+            ty=(i - miny) * ymult;
+            if (dy<5) {
+                fd=Format(i*m_yaxis_scale,2);
+            } else {
+                fd=Format(i*m_yaxis_scale,1);
+            }
+
+            GetTextExtent(fd,x,y); // performance bottleneck..
+
+            if (x>labelW) labelW=x;
+            h=top+height-ty;
+            if (h<top) continue;
+            w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
+
+            lines->add(left+width-4,h,left+width,h,line_color);
+
+            double z=(min_ytick/4)*ymult;
+            double g=h;
+            for (int i=0;i<3;i++) {
+                g+=z;
+                if (g>top+height) break;
+                lines->add(left+width-3,g,left+width,g,line_color);
+                if (lines->full()) {
+                    qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
+                    break;
+                }
+            }
             if (lines->full()) {
                 qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
                 break;
             }
-        }
-        if (lines->full()) {
-            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<miny << "MaxY =" << maxy << "min_ytick=" <<min_ytick;
-            break;
         }
     }
 }
