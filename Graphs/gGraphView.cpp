@@ -771,7 +771,13 @@ void gToolTip::paint()     //actually paints it.
 {
     if (!m_visible) return;
 
+#ifdef Q_OS_MAC
+    // Using this solves the wavy text bug, but is a fraction slower
     bool usepixmap=m_graphview->usePixmapCache();
+#else
+    // Slower on Linux in this case..
+    bool usepixmap=false;
+#endif
     int x=m_pos.x();// - tw / 2;
     int y=m_pos.y();// - th;
 
@@ -808,6 +814,13 @@ void gToolTip::paint()     //actually paints it.
                 rect.setY(0);
                 rect.setHeight(h);
             }
+            if (!m_pixmap.isNull()) {
+                m_graphview->deleteTexture(m_textureID);
+                m_textureID=0;
+                m_pixmap=QPixmap();
+                m_invalidate=true;
+            }
+
         } else {
             rect.setCoords(0,0,rect.width()+m_spacer*2,rect.height()+m_spacer*2);
             painter.end();
@@ -823,7 +836,9 @@ void gToolTip::paint()     //actually paints it.
         quads_drawn_this_frame+=1;
 
         QBrush brush(QColor(255,255,128,200));
+        brush.setStyle(Qt::SolidPattern);
         painter.setBrush(brush);
+
 
         painter.drawRoundedRect(rect,5,5);
         painter.setBrush(Qt::black);
@@ -833,12 +848,14 @@ void gToolTip::paint()     //actually paints it.
         painter.end();
         if (usepixmap) {
             m_textureID=m_graphview->bindTexture(m_pixmap);
+            m_invalidate=false;
         }
     }
     if (usepixmap) {
         x-=m_spacer+m_pixmap.width()/2;
         y-=m_pixmap.height()/2;
         if (y<0) y=0;
+        if (x<0) x=0;
         if ((x+m_pixmap.width()) > (m_graphview->width()-10)) x=m_graphview->width()-10 - m_pixmap.width();
         if (usepixmap && !m_pixmap.isNull()) {
             glEnable(GL_BLEND);
