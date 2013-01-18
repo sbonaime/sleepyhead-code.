@@ -1737,6 +1737,9 @@ void gGraph::DrawTextQue()
 // margin recalcs..
 void gGraph::resize(int width, int height)
 {
+    invalidate_xAxisImage=true;
+    invalidate_yAxisImage=true;
+
     Q_UNUSED(width);
     Q_UNUSED(height);
     //m_height=height;
@@ -3108,6 +3111,7 @@ void gGraphView::paintGL()
         QColor col=Qt::white;
         quads->add(width()-m_graphs[0]->marginRight(),0,width()-m_graphs[0]->marginRight(),w,width(),w,width(),0,col.rgba());
         quads->draw();
+        //renderText(0,0,0,ss,*defaultfont);
 #ifndef Q_OS_MAC
         AddTextQue(ss,width()+7,w/2+4,90,col,defaultfont);
 #else
