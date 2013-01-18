@@ -1301,14 +1301,17 @@ void gGraph::paint(int originX, int originY, int width, int height)
         // All that to replace this little, but -hideously- slow line of text..
        */
 
+        QFontMetrics fm(*mediumfont);
 
-        GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
+        yh=fm.height();
+        //GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
         y=yh;
-        GetTextExtent(title(),x,y,mediumfont);
+        x=fm.width(title());
+        //GetTextExtent(title(),x,y,mediumfont);
         title_x=yh*2;
 
 
-        renderText(title(),marginLeft()+title_x+4,originY+height/2,90,Qt::black,mediumfont);
+        renderText(title(),marginLeft()+title_x+4,originY+height/2-y/2,90,Qt::black,mediumfont);
         left+=title_x;
     } else left=0;
 
@@ -2319,8 +2322,13 @@ void gGraphView::DrawTextQue()
 
                 QFontMetrics fm(*q.font);
                 QRect rect=fm.boundingRect(q.text);
-                w=rect.width();
-                h=rect.height();
+                w=fm.width(q.text);
+                h=fm.height();
+
+
+                rect.setWidth(w);
+                rect.setHeight(h);
+
                 pm=QImage(w+4,h+4,QImage::Format_ARGB32_Premultiplied);
 
                 pm.fill(Qt::transparent);
@@ -2359,7 +2367,7 @@ void gGraphView::DrawTextQue()
                 glEnable(GL_TEXTURE_2D);
                 if (q.angle!=0) {
                     glPushMatrix();
-                    glTranslatef(q.x-pc->image.height()*2+4,q.y+pc->image.width()/2+4, 0);
+                    glTranslatef(q.x-pc->image.height()-(pc->image.height()/2),q.y+pc->image.width()/2 + pc->image.height()/2, 0);
                     glRotatef(-q.angle,0,0,1);
                     drawTexture(QPoint(0,pc->image.height()/2),pc->textureID);
                     glPopMatrix();
@@ -3180,11 +3188,11 @@ void gGraphView::paintGL()
         quads->draw();
         //renderText(0,0,0,ss,*defaultfont);
 
-        int xx=3;
+   //     int xx=3;
 #ifndef Q_OS_MAC
-        if (usePixmapCache()) xx+=4; else xx-=3;
+     //   if (usePixmapCache()) xx+=4; else xx-=3;
 #endif
-        AddTextQue(ss,width()+xx,w/2,90,col,defaultfont);
+        AddTextQue(ss,width(),w/2,90,col,defaultfont);
         DrawTextQue();
     }
 #endif
