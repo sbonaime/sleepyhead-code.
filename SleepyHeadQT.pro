@@ -6,13 +6,8 @@
 
 QT += core gui opengl network xml
 
-contains(QT_MAJOR_VERSION,5) {
-    QT += webkitwidgets
-}
-
-!contains(QT_MAJOR_VERSION,5) {
-    QT += webkit
-}
+greaterThan(QT_MAJOR_VERSION,4): QT += widgets webkitwidgets
+lessThan(QT_MAJOR_VERSION,5): QT += webkit
 
 CONFIG += rtti
 

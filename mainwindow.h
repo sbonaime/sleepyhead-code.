@@ -298,6 +298,8 @@ private slots:
 
     void on_actionHelp_Support_Sleepyhead_Development_triggered();
 
+    void aboutBoxLinkClicked(const QUrl & url);
+
 private:
     void FreeSessions();
 

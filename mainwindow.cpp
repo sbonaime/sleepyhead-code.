@@ -923,11 +923,11 @@ void MainWindow::on_summaryButton_clicked()
     //EventDataType bestAHI=999.0, worstAHI=0;
     if (cpapdays>0) {
         QDate first,last=lastcpap;
-        CPAPMode mode,cmode=MODE_UNKNOWN;
-        EventDataType cmin=0,cmax=0,cmaxhi=0, min,max,maxhi;
-        Machine *mach,*lastmach=NULL;
-        PRTypes lastpr, prelief=PR_UNKNOWN;
-        short prelset, lastprelset=-1;
+        CPAPMode mode=MODE_UNKNOWN,cmode=MODE_UNKNOWN;
+        EventDataType cmin=0,cmax=0,cmaxhi=0, min=0,max=0,maxhi=0;
+        Machine *mach=NULL,*lastmach=NULL;
+        PRTypes lastpr=PR_UNKNOWN, prelief=PR_UNKNOWN;
+        short prelset=0, lastprelset=-1;
         QDate date=lastcpap;
         Day * day;
         bool lastchanged=false;
@@ -977,7 +977,7 @@ void MainWindow::on_summaryButton_clicked()
                         rx.last=last;
                         rx.days=days;
                         rx.ahi=calcAHI(first,last);
-			rx.fl=calcFL(first,last);
+                        rx.fl=calcFL(first,last);
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
@@ -1027,7 +1027,7 @@ void MainWindow::on_summaryButton_clicked()
             rx.last=last;
             rx.days=days;
             rx.ahi=calcAHI(first,last);
-	    rx.fl=calcFL(first,last);
+            rx.fl=calcFL(first,last);
             rx.mode=mode;
             rx.min=min;
             rx.max=max;
@@ -1482,54 +1482,50 @@ void MainWindow::on_webView_loadProgress(int progress)
     qprogress->setValue(progress);
 }
 
+void MainWindow::aboutBoxLinkClicked(const QUrl & url)
+{
+    QDesktopServices::openUrl(url);
+}
+
 void MainWindow::on_action_About_triggered()
 {
 
     QString gitrev=QString(GIT_REVISION);
     if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev;
 
-     QString msg=QString("<span style=\"color:#000000; font-weight:600; vertical-align:middle;\"><p><h1>SleepyHead v%1.%2.%3-%4 (%8)</h1></p><font size=+1><p>Build Date: %5 %6<br/>%7<br/>Data Folder: %9<hr>"
+//    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
+    QString msg=QString(
+"<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
+"<table width=100%><tr><td>"
+"<p><h1>SleepyHead v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>Build Date: %5 %6<br/>%7<br/>Data Folder: %9<hr>"
 "Copyright &copy;2012 Mark Watkins (jedimark) <br> \n"
-"<i>http://sleepyhead.sourceforge.net</i><br/>"
-"<i>http://twitter.com/jedimark64</i><br/>"
-"<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>"
 "This software is released under the GNU Public License v3.0<br>"
-"<p><i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.</i></p>"
+"<hr><p>SleepyHead Project Page: <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"
+"SleepyHead Wiki: <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"
+"Authors Twitter Feed: <a href=\"http://twitter.com/jedimark64\">http://twitter.com/jedimark64</a></p>"
+"</td><td><img src=\"qrc:/icons/Bob Strikes Back.png\" width=150px height=150px></td></tr><tr colspan><td colspan=2>"
+"<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>"
+"<hr><p><i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.</i></p>"
 "<p><i>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.</i></p>"
 "<p><i>The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software<br/>Use this software entirely at your own risk.</i></p>"
-"<hr><p><font color=\"blue\">If you find this free software to be of use, please consider supporting the development efforts by making a monetary donation to the Author</font></p>"
-"</font></span>").arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
+"<hr><p><font color=\"blue\">If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author</font></p>"
+"</font></td></tr></table></span>"
+                ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
+    //"</div></body>"
 
      QDialog aboutbox;
-     aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
+     aboutbox.setWindowTitle(QObject::tr("About a"));
 
 
      QVBoxLayout layout(&aboutbox);
 
-     QPixmap pix(":/icons/Bob Strikes Back.png");
+     QWebView webview(&aboutbox);
 
-     QTextDocument doc(this);
-     doc.setUndoRedoEnabled(false);
-     doc.setHtml(msg);
-     doc.setTextWidth(pix.width());
-     doc.setUseDesignMetrics(true);
+     webview.setHtml(msg);
+     webview.page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+     connect(&webview,SIGNAL(linkClicked(const QUrl &)),SLOT(aboutBoxLinkClicked(const QUrl &)));
 
-     doc.setDefaultTextOption(QTextOption(Qt::AlignCenter));
-
-     QPainter painter(&pix);
-     QBrush brush(QColor(255,255,255,192));
-     painter.fillRect(pix.rect(),brush);
-     painter.setRenderHint(QPainter::Antialiasing,true);
-     QRect rect;
-     //rect.setCoords(0,200,pix.width(),550);
-     doc.drawContents(&painter,rect);
-     //painter.drawText(rect,Qt::AlignCenter | Qt::TextWordWrap,msg);
-     painter.end();
-
-     QLabel img("hello",&aboutbox);
-     img.setPixmap(pix);
-     img.setScaledContents(true);
-     layout.insertWidget(0,&img,1);
+     layout.insertWidget(0,&webview,1);
 
      QHBoxLayout layout2(&aboutbox);
      layout.insertLayout(1,&layout2,1);
@@ -1548,6 +1544,9 @@ void MainWindow::on_action_About_triggered()
          QDesktopServices::openUrl(QUrl("http://sourceforge.net/p/sleepyhead/donate"));
         //spawn browser with paypal site.
      }
+
+     disconnect(&webview,SIGNAL(linkClicked(const QUrl &)),this,SLOT(aboutBoxLinkClicked(const QUrl &)));
+
 /*
     QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
     msgbox.setIconPixmap();
@@ -2266,10 +2265,10 @@ void packEventList(EventList *el, EventDataType minval=0)
 {
     if (el->count()<2) return;
     EventList nel(EVL_Waveform);
-    EventDataType t,lastt=0; //el->data(0);
-    qint64 ti;//=el->time(0);
+    EventDataType t=0,lastt=0; //el->data(0);
+    qint64 ti=0;//=el->time(0);
     //nel.AddEvent(ti,lastt);
-    bool f;
+    bool f=false;
     qint64 lasttime=0;
     EventDataType min=999,max=0;
     for (quint32 i=0;i<el->count();i++) {

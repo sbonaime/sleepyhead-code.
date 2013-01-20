@@ -1675,7 +1675,7 @@ void gGraph::mouseReleaseEvent(QMouseEvent * event)
 
             xmult=qq/double(w);
             if ((xx==qq) || (x==m_lastx23)) {
-                double zoom;
+                double zoom=1;
                 if (event->button() & Qt::RightButton) {
                     zoom=1.33;
                     if (event->modifiers() & Qt::ControlModifier) zoom*=1.5;

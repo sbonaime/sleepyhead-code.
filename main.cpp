@@ -5,7 +5,7 @@
 */
 
 //#include <QtPlugin>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QMessageBox>
 #include <QFontDatabase>
 #include <QStringList>
