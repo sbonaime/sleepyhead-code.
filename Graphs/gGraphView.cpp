@@ -142,7 +142,7 @@ void GetTextExtent(QString text, int & width, int & height, QFont *font)
     mut.lock();
 #endif
     QFontMetrics fm(*font);
-//#ifdef Q_WS_WIN32
+//#ifdef Q_OS_WIN32
     QRect r=fm.tightBoundingRect(text);
     width=r.width();
     height=r.height();

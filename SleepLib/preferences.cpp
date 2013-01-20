@@ -17,7 +17,7 @@ License: GPL
 #include <QDesktopServices>
 #include <QDebug>
 #include <QSettings>
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
 #include "windows.h"
 #include "lmcons.h"
 #endif
@@ -32,7 +32,7 @@ const QString & getUserName()
     if (userName.isEmpty()) {
         userName=QObject::tr("Windows User");
 
-#if defined (Q_WS_WIN32)
+#if defined (Q_OS_WIN32)
     #if defined(UNICODE)
     if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
         TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
@@ -60,9 +60,14 @@ QString GetAppRoot()
 
     QString HomeAppRoot=settings.value("Settings/AppRoot").toString();
 
-    // Should it go here: QDesktopServices::DataLocation ???
+#if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
+    const QString desktopFolder=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+#else
+    const QString desktopFolder=QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
+
     if (HomeAppRoot.isEmpty())
-        HomeAppRoot=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)+"/"+AppRoot;
+        HomeAppRoot=desktopFolder+"/"+AppRoot;
 
     return HomeAppRoot;
 }

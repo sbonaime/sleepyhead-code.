@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QFontMetrics>
+#include <QTextDocument>
 #include <cmath>
 
 // Custom loaders that don't autoscan..
@@ -430,7 +431,7 @@ QString htmlHeader()
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
-"<tr><td><img src='qrc:/icons/bob-v3.0.png' width=100px height=100px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
+"<tr><td><img src='qrc:/icons/bob-v3.0.png' width=140px height=140px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
 "</div>"
 "<hr/>");
 }
@@ -1487,16 +1488,72 @@ void MainWindow::on_action_About_triggered()
     QString gitrev=QString(GIT_REVISION);
     if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev;
 
-     QString msg=tr("<html><body><div align='center'><h2>SleepyHead v%1.%2.%3-%4 (%8)</h2>Build Date: %5 %6<br/>%7<br/>Data Folder: %9<hr>"
-"Copyright &copy;2011 Mark Watkins (jedimark) <br> \n"
-"<a href='http://sleepyhead.sourceforge.net'>http://sleepyhead.sourceforge.net</a> <hr>"
-"This software is released under the GNU Public License <br>"
-"<i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays."
-                    "</div></body></html>").arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
+     QString msg=QString("<span style=\"color:#000000; font-weight:600; vertical-align:middle;\"><p><h1>SleepyHead v%1.%2.%3-%4 (%8)</h1></p><font size=+1><p>Build Date: %5 %6<br/>%7<br/>Data Folder: %9<hr>"
+"Copyright &copy;2012 Mark Watkins (jedimark) <br> \n"
+"<i>http://sleepyhead.sourceforge.net</i><br/>"
+"<i>http://twitter.com/jedimark64</i><br/>"
+"<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>"
+"This software is released under the GNU Public License v3.0<br>"
+"<p><i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.</i></p>"
+"<p><i>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.</i></p>"
+"<p><i>The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software<br/>Use this software entirely at your own risk.</i></p>"
+"<hr><p><font color=\"blue\">If you find this free software to be of use, please consider supporting the development efforts by making a monetary donation to the Author</font></p>"
+"</font></span>").arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
+
+     QDialog aboutbox;
+     aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
+
+
+     QVBoxLayout layout(&aboutbox);
+
+     QPixmap pix(":/icons/Bob Strikes Back.png");
+
+     QTextDocument doc(this);
+     doc.setUndoRedoEnabled(false);
+     doc.setHtml(msg);
+     doc.setTextWidth(pix.width());
+     doc.setUseDesignMetrics(true);
+
+     doc.setDefaultTextOption(QTextOption(Qt::AlignCenter));
+
+     QPainter painter(&pix);
+     QBrush brush(QColor(255,255,255,192));
+     painter.fillRect(pix.rect(),brush);
+     painter.setRenderHint(QPainter::Antialiasing,true);
+     QRect rect;
+     //rect.setCoords(0,200,pix.width(),550);
+     doc.drawContents(&painter,rect);
+     //painter.drawText(rect,Qt::AlignCenter | Qt::TextWordWrap,msg);
+     painter.end();
+
+     QLabel img("hello",&aboutbox);
+     img.setPixmap(pix);
+     img.setScaledContents(true);
+     layout.insertWidget(0,&img,1);
+
+     QHBoxLayout layout2(&aboutbox);
+     layout.insertLayout(1,&layout2,1);
+     QPushButton okbtn(QObject::tr("&Close"),&aboutbox);
+     aboutbox.connect(&okbtn,SIGNAL(clicked()),SLOT(reject()));
+     layout2.insertWidget(1,&okbtn,1);
+
+     QPushButton donatebtn(QObject::tr("&Donate"),&aboutbox);
+     aboutbox.connect(&donatebtn,SIGNAL(clicked()),SLOT(accept())); //hack this button to use the accepted slot, so clicking x closes like it shouldß
+     layout2.insertWidget(1,&donatebtn,1);
+
+     QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
+
+
+     if (aboutbox.exec()==QDialog::Accepted) {
+         QDesktopServices::openUrl(QUrl("http://sourceforge.net/p/sleepyhead/donate"));
+        //spawn browser with paypal site.
+     }
+/*
     QMessageBox msgbox(QMessageBox::Information,tr("About SleepyHead"),"",QMessageBox::Ok,this);
+    msgbox.setIconPixmap();
     msgbox.setTextFormat(Qt::RichText);
     msgbox.setText(msg);
-    msgbox.exec();
+    msgbox.exec();*/
 }
 
 void MainWindow::on_actionDebug_toggled(bool checked)
@@ -2694,7 +2751,7 @@ void MainWindow::on_actionImport_ZEO_Data_triggered()
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
     w.setOption(QFileDialog::DontUseNativeDialog,true);
-    w.setFilters(QStringList("Zeo CSV File (*.csv)"));
+    w.setNameFilters(QStringList("Zeo CSV File (*.csv)"));
 
     ZEOLoader zeo;
     if (w.exec()==QFileDialog::Accepted) {
@@ -2716,7 +2773,7 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
     w.setOption(QFileDialog::DontUseNativeDialog,true);
-    w.setFilters(QStringList("M-Series data file (*.bin)"));
+    w.setNameFilters(QStringList("M-Series data file (*.bin)"));
 
     MSeriesLoader mseries;
     if (w.exec()==QFileDialog::Accepted) {

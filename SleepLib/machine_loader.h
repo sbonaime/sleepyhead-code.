@@ -12,7 +12,7 @@ License: GPL
 #include "profiles.h"
 #include "machine.h"
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 // Windows just needs the headers
 #include "../quazip/zlib.h"
 #else

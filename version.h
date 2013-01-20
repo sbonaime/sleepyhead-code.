@@ -15,7 +15,7 @@ const QString ReleaseStatus="beta";
 
 #ifdef Q_OS_MAC
     const QString PlatformString="MacOSX";
-#elif defined(Q_WS_WIN32)
+#elif defined(Q_OS_WIN32)
     const QString PlatformString="Win32";
 #elif defined(Q_WS_X11)
     const QString PlatformString="Linux";

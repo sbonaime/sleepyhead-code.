@@ -191,7 +191,7 @@ bool CMS50Loader::OpenSPORFile(QString path,Machine *mach,Profile *profile)
         QDate d2=date.date();
 
         if (d2.year()<2000) { // Nice to see CMS50 is Y2K friendly..
-            d2.setYMD(d2.year()+100,d2.month(),d2.day());
+            d2.setDate(d2.year()+100,d2.month(),d2.day());
             date.setDate(d2);
         }
         if (!date.isValid()) {

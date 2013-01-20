@@ -78,7 +78,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -405,7 +405,7 @@
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -416,7 +416,7 @@
           <x>0</x>
           <y>0</y>
           <width>163</width>
-          <height>524</height>
+          <height>532</height>
          </rect>
         </property>
         <property name="palette">
@@ -744,7 +744,7 @@
           <x>0</x>
           <y>0</y>
           <width>178</width>
-          <height>313</height>
+          <height>326</height>
          </rect>
         </property>
         <property name="palette">
@@ -1461,7 +1461,7 @@
           <x>0</x>
           <y>0</y>
           <width>178</width>
-          <height>313</height>
+          <height>326</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -1545,7 +1545,7 @@
      <x>0</x>
      <y>0</y>
      <width>554</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1854,7 +1854,7 @@
  <connections>
   <connection>
    <sender>actionE_xit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
@@ -1886,7 +1886,7 @@
   </connection>
   <connection>
    <sender>actionView_Daily</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>dailyButton</receiver>
    <slot>click()</slot>
    <hints>
@@ -1902,7 +1902,7 @@
   </connection>
   <connection>
    <sender>actionView_Overview</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>overviewButton</receiver>
    <slot>click()</slot>
    <hints>

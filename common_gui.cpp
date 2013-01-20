@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
 #include "windows.h"
 void sh_delay(int ms)
 {
@@ -46,7 +46,7 @@ Qt::DayOfWeek firstDayOfWeekFromLocale()
 #endif
 
 
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
 #include <dos.h>
 #endif
 

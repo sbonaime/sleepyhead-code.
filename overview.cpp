@@ -6,7 +6,7 @@
 
 #include <QCalendarWidget>
 #include <QTextCharFormat>
-#include <QSystemLocale>
+//#include <QSystemLocale>
 #include <QDebug>
 #include <QDateTimeEdit>
 #include <QCalendarWidget>

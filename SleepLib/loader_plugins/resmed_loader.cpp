@@ -116,7 +116,7 @@ bool EDFParser::Parse()
     //startDate.toTimeSpec(Qt::UTC);
     QDate d2=startDate.date();
     if (d2.year()<2000) {
-        d2.setYMD(d2.year()+100,d2.month(),d2.day());
+        d2.setDate(d2.year()+100,d2.month(),d2.day());
         startDate.setDate(d2);
     }
     if (!startDate.isValid()) {
