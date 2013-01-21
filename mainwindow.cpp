@@ -63,14 +63,15 @@ void MainWindow::Log(QString s)
 
     strlock.lock();
     // only do this in the main thread?
-    for (int i=0;i<logbuffer.size();i++)
+    for (int i=0;i<logbuffer.size();i++) {
         ui->logText->appendPlainText(logbuffer[i]);
+        fprintf(stderr,"%s\n",logbuffer[i].toLocal8Bit().constData());
+    }
     logbuffer.clear();
     strlock.unlock();
 
     //loglock.unlock();
 }
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -218,6 +219,7 @@ MainWindow::~MainWindow()
 
     // Shutdown and Save the current User profile
     Profiles::Done();
+
     mainwin=NULL;
     delete ui;
 }

@@ -34,27 +34,48 @@
 
 MainWindow *mainwin=NULL;
 
-void MyOutputHandler(QtMsgType type, const char *msg) {
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+void MyOutputHandler(QtMsgType type, const char *msgtxt) {
+#else
+void MyOutputHandler(QtMsgType type, const QMessageLogContext & context, const QString &msgtxt) {
+#endif
     if (!mainwin) {
+      //  qInstallMessageHandler(0);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+        fprintf(stderr,"Pre/Post: %s\n",msgtxt.toLocal8Bit().constData());
+#else
+        fprintf(stderr,"Pre/Post: %s\n",msgtxt);
+#endif
         return;
     }
 
+    QString msg,typestr;
     switch (type) {
-        case QtDebugMsg:
-            mainwin->Log(msg);
-            break;
         case QtWarningMsg:
-            mainwin->Log(QString("Warning: ")+msg);
+            typestr=QString("Warning: ");
             break;
         case QtFatalMsg:
-            mainwin->Log(QString("Fatal: ")+msg);
+            typestr=QString("Fatal: ");
             break;
         case QtCriticalMsg:
-            mainwin->Log(QString("Critical: ")+msg);
+            typestr=QString("Critical: ");
             break;
-            // Popup a messagebox
-            //abort();
+        default:
+            typestr=QString("Debug: ");
+            break;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    msg=typestr+msgtxt+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
+#else
+    msg=typestr+msgtxt;
+#endif
+    mainwin->Log(msg);
+
+    if (type==QtFatalMsg) {
+        abort();
+    }
+
     //loglock.unlock();
 }
 
@@ -252,9 +273,9 @@ int main(int argc, char *argv[])
 
     qDebug() << "Selected" << QApplication::font().family();
 
-#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
-//    qInstallMessageHandler(MyOutputHandler);
-//#else
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    qInstallMessageHandler(MyOutputHandler);
+#else
     qInstallMsgHandler(MyOutputHandler);
 #endif
     //#endif
