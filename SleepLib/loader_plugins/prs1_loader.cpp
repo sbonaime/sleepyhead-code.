@@ -947,11 +947,23 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
     //session->AddEventList(CPAP_VSnore, EVL_Event);
     //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
+    unsigned char lastcode3=0,lastcode2=0,lastcode=0;
+    int lastpos=0,startpos=0,lastpos2=0,lastpos3=0;
 
     for (pos=0;pos<size;) {
+        lastcode3=lastcode2;
+        lastcode2=lastcode;
+        lastcode=code;
+        lastpos3=lastpos2;
+        lastpos2=lastpos;
+        lastpos=startpos;
+        startpos=pos;
         code=buffer[pos++];
         if (code>0x12) {
-            qDebug() << "Illegal PRS1 code in" << sequence << hex << int(code) << " appeared at " << hex << pos;
+            qDebug() << "Illegal PRS1 code " << hex << int(code) << " appeared at " << hex << startpos;
+            qDebug() << "1: (" << hex << int(lastcode ) << hex << lastpos << ")";
+            qDebug() << "2: (" << hex << int(lastcode2) << hex << lastpos2 <<")";
+            qDebug() << "3: (" << hex << int(lastcode3) << hex << lastpos3 <<")";
             return false;
         }
         if (code!=0x12) {
@@ -968,6 +980,9 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
                 if (!(Code[0]=session->AddEventList(PRS1_00,EVL_Event))) return false;
             }
             Code[0]->AddEvent(t,buffer[pos++]);
+
+            if (family == 0 && familyVersion >=4)
+                pos++;
             break;
         case 0x01: // Unknown
             if (!Code[1]) {
