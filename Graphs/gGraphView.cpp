@@ -3284,7 +3284,7 @@ void gGraphView::setCubeImage(QImage *img)
     cubeimg.clear();
     cubeimg.push_back(img);
 
-    cubetex=bindTexture(*img);
+    //cubetex=bindTexture(*img);
     glBindTexture(GL_TEXTURE_2D,0);
 }
 

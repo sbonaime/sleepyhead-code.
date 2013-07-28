@@ -70,7 +70,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     GraphView=new gGraphView(ui->graphMainArea,shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    snapGV=new gGraphView(ui->graphMainArea);
+    snapGV=new gGraphView(GraphView); //ui->graphMainArea);
     snapGV->setMinimumSize(172,172);
     snapGV->hideSplitter();
     snapGV->hide();
