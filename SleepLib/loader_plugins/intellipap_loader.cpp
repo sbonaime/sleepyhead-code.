@@ -36,9 +36,6 @@ IntellipapLoader::IntellipapLoader()
 
 IntellipapLoader::~IntellipapLoader()
 {
-    for (QHash<QString,Machine *>::iterator i=MachList.begin(); i!=MachList.end(); i++) {
-        delete i.value();
-    }
 }
 
 int IntellipapLoader::Open(QString & path,Profile *profile)

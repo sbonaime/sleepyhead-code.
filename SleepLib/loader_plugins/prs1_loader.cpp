@@ -126,9 +126,6 @@ PRS1Loader::PRS1Loader()
 
 PRS1Loader::~PRS1Loader()
 {
-    for (QHash<QString,Machine *>::iterator i=PRS1List.begin(); i!=PRS1List.end(); i++) {
-        delete i.value();
-    }
 }
 Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
 {

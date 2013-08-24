@@ -36,9 +36,6 @@ MSeriesLoader::MSeriesLoader()
 
 MSeriesLoader::~MSeriesLoader()
 {
-    for (QHash<QString,Machine *>::iterator i=MachList.begin(); i!=MachList.end(); i++) {
-        delete i.value();
-    }
 }
 
 //struct MSeriesHeader {

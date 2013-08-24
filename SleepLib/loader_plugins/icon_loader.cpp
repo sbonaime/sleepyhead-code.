@@ -38,9 +38,6 @@ FPIconLoader::FPIconLoader()
 
 FPIconLoader::~FPIconLoader()
 {
-    for (QHash<QString,Machine *>::iterator i=MachList.begin(); i!=MachList.end(); i++) {
-        delete i.value();
-    }
 }
 
 int FPIconLoader::Open(QString & path,Profile *profile)
