@@ -22,7 +22,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gLineOverlay.h"
 
-#define SERIAL_DEBUG 1
+// #define SERIAL_DEBUG 1
 
 
 extern QLabel * qstatus2;
@@ -729,8 +729,9 @@ void CMS50Serial::ReadyRead()
 
                 pulse=(unsigned char)buffer.at(i+1) & 0x7f;
                 spo2=(unsigned char)buffer.at(i+2) & 0x7f;
+#if SERIAL_DEBUG
                 qDebug() << "Record: " << pulse << spo2;
-
+#endif
                 data.push_back(buffer.at(i));
                 data.push_back(buffer.at(i+1));
                 data.push_back(buffer.at(i+2));
