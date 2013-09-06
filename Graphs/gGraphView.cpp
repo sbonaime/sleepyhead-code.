@@ -730,7 +730,7 @@ gToolTip::gToolTip(gGraphView * graphview)
 
 gToolTip::~gToolTip()
 {
-    disconnect(timer,SLOT(timerDone()));
+    disconnect(timer,0,0,0);
     delete timer;
 }
 //void gToolTip::calcSize(QString text,int &w, int &h)
@@ -3765,14 +3765,15 @@ bool gGraphView::isEmpty()
 
 void gGraphView::refreshTimeout()
 {
-    redraw();
+    if (this->isVisible())
+        redraw();
 }
 void gGraphView::timedRedraw(int ms)
 {
-    if (timer->isActive())
-        timer->stop();
-    timer->setSingleShot(true);
-    timer->start(ms);
+    if (!timer->isActive()) {
+        timer->setSingleShot(true);
+        timer->start(ms);
+    }
 }
 void gGraphView::resetLayout()
 {

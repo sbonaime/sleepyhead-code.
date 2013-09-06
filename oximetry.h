@@ -135,6 +135,7 @@ public:
     virtual void addPulse(qint64 time, EventDataType pr);
     virtual void addSpO2(qint64 time, EventDataType o2);
     virtual void addPlethy(qint64 time, EventDataType pleth);
+    virtual void killTimers()=0;
 
 signals:
     void sessionCreated(Session *);
@@ -171,8 +172,10 @@ protected slots:
 
     //! \brief Override this to start the Import Timeout
     virtual void startImportTimeout()=0;
+    virtual void resetImportTimeout()=0;
 
 protected:
+
     //virtual void addEvents(EventDataType pr, EventDataType o2, EventDataType pleth=-1000000);
 
     //! \brief Pointer to current session object
@@ -202,8 +205,11 @@ protected:
 
     int m_callbacks;
     bool done_import;
+    bool started_import,started_reading,finished_import;
     QTimer *timer;
     EventDataType lasto2,lastpr;
+
+    QByteArray buffer;
 
 };
 
@@ -226,9 +232,14 @@ public:
     //! \brief Sends the 0xf5, 0xf5 data string to request devices serial recording
     virtual void requestData();
 
+    //! \brief Kill any CMS50 specific timers (used internally)
+    virtual void killTimers();
+
 protected:
     //! \brief CMS50 Time-out detection
     virtual void startImportTimeout();
+    virtual void resetImportTimeout();
+
 
     //! \brief Called on completion of data import, to convert bytearray into event data
     virtual void import_process();
@@ -240,13 +251,23 @@ protected:
     short failcnt;
 
     QByteArray data;
-    QVector<QDateTime> f2time;
+    QByteArray buffer;
+
+    QDateTime f2time;
     int datasize;
 
     int received_bytes;
     int import_fails;
 
     QTime imptime;
+
+    EventDataType plmin,plmax;
+    EventDataType o2min,o2max;
+    int plcnt,o2cnt;
+    qint64 lastpltime,lasto2time;
+    short lastpl,lasto2;
+    bool first;
+    QTimer *cms50timer,*cms50timer2;
 };
 
 namespace Ui {

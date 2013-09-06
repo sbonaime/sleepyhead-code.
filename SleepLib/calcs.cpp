@@ -1550,10 +1550,15 @@ int calcSPO2Drop(Session *session)
             cnt++;
         }
     }
-    qSort(med);
-    int midx=float(med.size())*0.90;
-    if (midx>med.size()-1) midx=med.size()-1;
-    EventDataType baseline=med[midx];
+    EventDataType baseline=0;
+    if (med.size()>0) {
+        qSort(med);
+
+        int midx=float(med.size())*0.90;
+        if (midx>med.size()-1) midx=med.size()-1;
+        if (midx<0) midx=0;
+        baseline=med[midx];
+    }
     session->settings[OXI_SPO2Drop]=baseline;
     //EventDataType baseline=round(tmp/EventDataType(cnt));
     EventDataType current;
