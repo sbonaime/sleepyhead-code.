@@ -219,6 +219,7 @@ protected:
     */
 class CMS50Serial:public SerialOximeter
 {
+     Q_OBJECT
 public:
     explicit CMS50Serial(QObject * parent,QString portname);
     virtual ~CMS50Serial();
@@ -253,7 +254,9 @@ protected:
     QByteArray data;
     QByteArray buffer;
 
-    QDateTime f2time;
+    QDateTime oxitime,cpaptime;
+
+    bool cms50dplus;
     int datasize;
 
     int received_bytes;

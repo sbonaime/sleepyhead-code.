@@ -188,7 +188,7 @@ void ExportCSV::on_exportButton_clicked()
         for (int i=0;i<countlist.size();i++)
             header+=sep+schema::channel[countlist[i]].label()+tr(" Count");
         for (int i=0;i<avglist.size();i++)
-            header+=sep+schema::channel[avglist[i]].label()+tr(" Avg");
+            header+=sep+schema::channel[avglist[i]].label()+" "+tr(" Avg");
         for (int i=0;i<p90list.size();i++)
             header+=sep+schema::channel[p90list[i]].label()+tr(" %1%").arg(percent,0,'f',0);
     }

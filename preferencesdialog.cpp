@@ -660,8 +660,8 @@ void PreferencesDialog::resetGraphModel()
     graphModel->setColumnCount(3);
     QStringList headers;
     headers.append(tr("Graph"));
-    headers.append(tr("Min"));
-    headers.append(tr("Max"));
+    headers.append(STR_TR_Min);
+    headers.append(STR_TR_Max);
     graphModel->setHorizontalHeaderLabels(headers);
     ui->graphView->setColumnWidth(0,250);
     ui->graphView->setColumnWidth(1,50);
@@ -815,7 +815,7 @@ void PreferencesDialog::on_createSDBackups_toggled(bool checked)
                 break;
             }
         }
-        if (haveS9 && QMessageBox::question(this,"This may not be a good idea","ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution). If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won't come back. If you need to conserve disk space, please remember to carry out manual backups. Are you sure you want to disable these backups?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+        if (haveS9 && QMessageBox::question(this,tr("This may not be a good idea"),tr("ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution).")+" "+tr("If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won't come back.")+" "+tr("If you need to conserve disk space, please remember to carry out manual backups.")+" "+tr("Are you sure you want to disable these backups?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
             ui->createSDBackups->setChecked(true);
             return;
         }

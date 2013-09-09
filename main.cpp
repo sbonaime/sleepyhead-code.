@@ -13,6 +13,8 @@
 #include <QPushButton>
 #include <QWebFrame>
 #include <QWebView>
+#include <QTranslator>
+#include <QDir>
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -87,7 +89,7 @@ void initialize()
 void release_notes()
 {
     QDialog relnotes;
-    relnotes.setWindowTitle(QObject::tr("SleepyHead Release Notes"));
+    relnotes.setWindowTitle(STR_TR_SleepyHead+" "+QObject::tr("Release Notes"));
     QVBoxLayout layout(&relnotes);
     QWebView web(&relnotes);
 
@@ -109,10 +111,10 @@ void release_notes()
 void build_notes()
 {
     QDialog relnotes;
-    relnotes.setWindowTitle(QObject::tr("SleepyHead Update Notes"));
+    relnotes.setWindowTitle(STR_TR_SleepyHead+" "+QObject::tr("SleepyHead Update Notes"));
     QVBoxLayout layout(&relnotes);
     QWebView web(&relnotes);
-    relnotes.setWindowTitle("SleepyHead v"+FullVersionString+" Update");
+    relnotes.setWindowTitle(STR_TR_SleepyHead+" v"+FullVersionString+QObject::tr(" Update"));
     // Language???
 
     web.load(QUrl("qrc:/docs/update_notes.html"));
@@ -157,7 +159,27 @@ int main(int argc, char *argv[])
         }
     }
 
-    a.setApplicationName("SleepyHead");
+    QDir dir(QCoreApplication::applicationDirPath()+"/Translations/");
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList("*.qm"));
+
+    qDebug() << "Available Translations";
+    QFileInfoList list=dir.entryInfoList();
+    for (int i=0;i<list.size();++i) {
+        QFileInfo fi=list.at(i);
+        qDebug() << fi.fileName();
+    }
+
+    QTranslator translator;
+    //
+    //QString transfile="sleepyhead_nl";
+    //qDebug() << "Loading" << QCoreApplication::applicationDirPath()+"/Translations/"+transfile;
+    //translator.load(transfile,QCoreApplication::applicationDirPath()+"/Translations");
+
+    translator.load("sleepyhead_"+QLocale::system().name(),QCoreApplication::applicationDirPath()+"/Translations");
+    a.installTranslator(&translator);
+
+    a.setApplicationName(STR_TR_SleepyHead);
     initialize();
 
 
@@ -174,7 +196,7 @@ int main(int argc, char *argv[])
     // Scan for user profiles
     Profiles::Scan();
     //qRegisterMetaType<Preference>("Preference");
-    PREF["AppName"]=QObject::tr("SleepyHead");
+    PREF["AppName"]=STR_TR_SleepyHead;
 
 
     // Skip login screen, unless asked not to on the command line
@@ -216,8 +238,8 @@ int main(int argc, char *argv[])
 
         // Show New User wizard..
     } else {
-        if (PREF.contains("VersionString")) {
-            QString V=PREF["VersionString"].toString();
+        if (PREF.contains(STR_PREF_VersionString)) {
+            QString V=PREF[STR_PREF_VersionString].toString();
 
             if (FullVersionString>V) {
                 QString V2=V.section("-",0,0);
@@ -245,7 +267,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    PREF["VersionString"]=FullVersionString;
+    PREF[STR_PREF_VersionString]=FullVersionString;
 
     p_profile=Profiles::Get(PREF[STR_GEN_Profile].toString());
 

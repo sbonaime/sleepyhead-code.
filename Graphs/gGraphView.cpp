@@ -2277,6 +2277,8 @@ gGraphView::~gGraphView()
     }
     delete masterlock;
 #endif
+
+    // Note: This will cause a crash if two graphs accidentally have the same name
     for (int i=0;i<m_graphs.size();i++) {
         delete m_graphs[i];
     }

@@ -183,6 +183,10 @@ FORMS    += \
     exportcsv.ui \
     UpdaterWindow.ui
 
+TRANSLATIONS += \
+    Translations/sleepyhead_nl.ts \
+    Translations/sleepyhead_fr.ts
+
 RESOURCES += \
     Resources.qrc
 
@@ -203,7 +207,11 @@ OTHER_FILES += \
     docs/changelog.txt \
     docs/update_notes.html
 
-
+mac {
+    TransFiles.files = Translations
+    TransFiles.path = Contents/MacOS
+    QMAKE_BUNDLE_DATA += TransFiles
+}
 
 
 

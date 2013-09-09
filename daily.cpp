@@ -91,29 +91,29 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     int default_height=PROFILE.appearance->graphHeight();
     SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
-    FRW=new gGraph(GraphView,tr("Flow Rate"),schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
+    FRW=new gGraph(GraphView,STR_TR_FlowRate,schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
 
 
     if (PROFILE.general->calculateRDI()) {
-        AHI=new gGraph(GraphView,tr("RDI"),schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
-    } else AHI=new gGraph(GraphView,tr("AHI"),schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+        AHI=new gGraph(GraphView,STR_TR_RDI,schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
+    } else AHI=new gGraph(GraphView,STR_TR_AHI,schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
 
-    MP=new gGraph(GraphView,tr("Mask Pressure"),schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
-    PRD=new gGraph(GraphView,tr("Pressure"),schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
-    LEAK=new gGraph(GraphView,tr("Leak"),schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
-    SNORE=new gGraph(GraphView,tr("Snore"),schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
-    RR=new gGraph(GraphView,tr("Resp. Rate"),schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
-    TV=new gGraph(GraphView,tr("Tidal Volume"),schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
-    MV=new gGraph(GraphView,tr("Minute Vent."),schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
-    //TgMV=new gGraph(GraphView,tr("Tgt. Min. Vent"),schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
-    FLG=new gGraph(GraphView,tr("Flow Limitation"),schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
-    PTB=new gGraph(GraphView,tr("Pat. Trig. Breath"),schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
-    RE=new gGraph(GraphView,tr("Resp. Event"),schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
-    TI=new gGraph(GraphView,tr("Insp. Time"),schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
-    TE=new gGraph(GraphView,tr("Exp. Time"),schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
-    IE=new gGraph(GraphView,tr("IE"),schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
+    MP=new gGraph(GraphView,STR_TR_MaskPressure,schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
+    PRD=new gGraph(GraphView,STR_TR_Pressure,schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
+    LEAK=new gGraph(GraphView,STR_TR_Leak,schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
+    SNORE=new gGraph(GraphView,STR_TR_Snore,schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
+    RR=new gGraph(GraphView,STR_TR_RespRate,schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
+    TV=new gGraph(GraphView,STR_TR_TidalVolume,schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
+    MV=new gGraph(GraphView,STR_TR_MinuteVent,schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
+    //TgMV=new gGraph(GraphView,STR_TR_TgtMinVent,schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
+    FLG=new gGraph(GraphView,STR_TR_FlowLimitation,schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
+    PTB=new gGraph(GraphView,STR_TR_PatTrigBreath,schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
+    RE=new gGraph(GraphView,STR_TR_RespEvent,schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
+    TI=new gGraph(GraphView,STR_TR_InspTime,schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
+    TE=new gGraph(GraphView,STR_TR_ExpTime,schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
+    IE=new gGraph(GraphView,STR_TR_IE,schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
 
-    STAGE=new gGraph(GraphView,tr("Sleep Stage"),schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
+    STAGE=new gGraph(GraphView,STR_TR_SleepStage,schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
     PULSE=new gGraph(GraphView,STR_TR_PulseRate,schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
     SPO2=new gGraph(GraphView,STR_TR_SpO2,schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
@@ -145,18 +145,18 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),tr("PB"),false,FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),tr("CA"),false)));
-    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),tr("OA"),true)));
-    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),tr("A"))));
-    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),tr("H"),true)));
-    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),tr("E"),false)));
-    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),tr("L"),false)));
-    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),tr("NRI"),false)));
-    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),tr("FL"))));
-    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),tr("RE"))));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),tr("VS"))));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),tr("VS2"))));
+    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),STR_TR_PB,false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),STR_TR_CA,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),STR_TR_OA,true)));
+    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),STR_TR_UA)));
+    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),STR_TR_H,true)));
+    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),STR_TR_EP,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),STR_TR_LE,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),STR_TR_NRI,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),STR_TR_FL)));
+    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),STR_TR_RE)));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),STR_TR_VS)));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),STR_TR_VS2)));
     if (PROFILE.cpap->userEventFlagging()) {
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
         fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
@@ -175,33 +175,33 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),tr("CSR"),FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),STR_TR_CSR,FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),tr("H")))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),tr("PR"),FT_Dot)));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),STR_TR_H))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),STR_TR_PP,FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),tr("P"),FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
     if (PROFILE.general->calculateRDI())
-        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE")))));
+        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA,QColor("gold"),STR_TR_RE))));
     else
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),tr("RE"))));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),STR_TR_RE)));
 
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),tr("A")))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),STR_TR_UA))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),tr("VS"))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),tr("OA")))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),tr("CA")))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),STR_TR_OA))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),STR_TR_CA))));
     if (PROFILE.cpap->userEventFlagging()) {
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3,QColor("brown"),tr("U3"),FT_Bar)));
     }
-    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),tr("O2"))));
-    //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),tr("PC"),FT_Dot)));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),STR_TR_O2)));
+    //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),STR_TR_PC,FT_Dot)));
 
     FRW->AddLayer(AddCPAP(los));
 
@@ -278,9 +278,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
     gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
-    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),tr("PD"),FT_Span))));
+    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),STR_TR_PC,FT_Span))));
     PULSE->AddLayer(AddOXI(los1));
-    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),tr("O2"),FT_Span))));
+    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),STR_TR_O2,FT_Span))));
     SPO2->AddLayer(AddOXI(los2));
 
     PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
@@ -333,7 +333,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         ui->weightSpinBox->setSuffix(STR_UNIT_KG);
     }
     GraphView->setCubeImage(images["nodata"]);
-    GraphView->setEmptyText(tr("No Data"));
+    GraphView->setEmptyText(STR_TR_NoData);
     previous_date=QDate();
 }
 
@@ -774,16 +774,16 @@ void Daily::Load(QDate date)
 
         if (mode==MODE_CPAP) {
             EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
-            html+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
+            html+=STR_TR_CPAP+" "+QString::number(min)+STR_UNIT_CMH2O;
         } else if (mode==MODE_APAP) {
             EventDataType min=cpap->settings_min(CPAP_PressureMin);
             EventDataType max=cpap->settings_max(CPAP_PressureMax);
-            html+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
+            html+=STR_TR_APAP+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
         } else if (mode==MODE_BIPAP) {
             EventDataType epap=cpap->settings_min(CPAP_EPAP);
             EventDataType ipap=cpap->settings_max(CPAP_IPAP);
             EventDataType ps=cpap->settings_max(CPAP_PS);
-            html+=tr("Bi-Level")+QString("<br/>EPAP: %1 IPAP: %2 %3<br/> PS: %4")
+            html+=STR_TR_BiLevel+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 %3<br/> "+STR_TR_PS+": %4")
                     .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
         }
         else if (mode==MODE_ASV) {
@@ -792,7 +792,7 @@ void Daily::Load(QDate date)
             EventDataType high=cpap->settings_max(CPAP_IPAPHi);
             EventDataType psl=cpap->settings_min(CPAP_PSMin);
             EventDataType psh=cpap->settings_max(CPAP_PSMax);
-            html+=tr("ASV")+QString("<br/>EPAP: %1 IPAP: %2 - %3 %4<br/> PS: %5 / %6")
+            html+=tr("ASV")+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 - %3 %4<br/> "+STR_TR_PS+": %5 / %6")
                     .arg(epap,0,'f',1)
                     .arg(low,0,'f',1)
                     .arg(high,0,'f',1)
@@ -800,12 +800,12 @@ void Daily::Load(QDate date)
                     .arg(psl,0,'f',1)
                     .arg(psh,0,'f',1);
         }
-        else html+=tr("Unknown");
+        else html+=STR_TR_Unknown;
         html+="</td></tr>\n";
 
 
         if (hours>0) {
-            html+="<tr><td align='center'><b>"+tr("Date")+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
+            html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
             int tt=qint64(cpap->total_time())/1000L;
             QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
             QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
@@ -826,10 +826,10 @@ void Daily::Load(QDate date)
         if (!isBrick && hours>0) {
             if (PROFILE.general->calculateRDI()) {
                 html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg("black").arg(tr("RDI")).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
+                        .arg("#F88017").arg("black").arg(STR_TR_RDI).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
             } else {
                 html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg("black").arg(tr("AHI")).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
+                        .arg("#F88017").arg("black").arg(STR_TR_AHI).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
             }
 
             if (cpap->machine->GetClass()==STR_MACH_ResMed || cpap->machine->GetClass()==STR_MACH_FPIcon) {
@@ -857,7 +857,7 @@ void Daily::Load(QDate date)
 
             if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                  .arg(schema::channel[CPAP_NRI].defaultColor().name()).arg("black").arg(tr("NRI")).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
+                  .arg(schema::channel[CPAP_NRI].defaultColor().name()).arg("black").arg(STR_TR_NRI).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
             }
             if (PROFILE.cpap->userEventFlagging()) {
                 EventDataType uf1=cpap->count(CPAP_UserFlag1) / cpap->hours();
@@ -874,7 +874,7 @@ void Daily::Load(QDate date)
             if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#ffff80").arg("black").arg(tr("RERA")).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
+                    .arg("#ffff80").arg("black").arg(STR_TR_RERA).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
                 if (mode>MODE_CPAP) {
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                         .arg("#404040").arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
@@ -893,7 +893,7 @@ void Daily::Load(QDate date)
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                .arg("#40c0c0").arg("black").arg(tr("Leak")).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
+                .arg("#40c0c0").arg("black").arg(STR_TR_Leak).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
 
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
                     .arg("#ff4040").arg("black").arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
@@ -970,11 +970,11 @@ void Daily::Load(QDate date)
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Statistics"));
         html+="<tr height='2'><td colspan=5><hr></td></tr>\n";
         html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
-                .arg(tr("Channel"))
-                .arg(tr("Min"))
+                .arg(STR_TR_Channel)
+                .arg(STR_TR_Min)
                 .arg(midname)
                 .arg(tr("%1%").arg(percentile*100,0,'f',0))
-                .arg(tr("Max"));
+                .arg(STR_TR_Max);
         ChannelID chans[]={
             CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
             CPAP_MinuteVent, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
@@ -1005,24 +1005,24 @@ void Daily::Load(QDate date)
                     med=cpap->percentile(code,0.5);
                     tmp=cpap->wavg(code);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>W-Avg: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
                     }
                 } else if (ST_mid==ST_WAVG) {
                     med=cpap->wavg(code);
                     tmp=cpap->percentile(code,0.5);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
                     }
                 } else if (ST_mid==ST_AVG) {
                     med=cpap->avg(code);
                     tmp=cpap->percentile(code,0.5);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
                     }
                 }
 
                 html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='black';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    //.arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+tr("RDI")+"<span class='classic'>"+
+                    //.arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+STR_TR_RDI+"<span class='classic'>"+
                     //.arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
                     .arg(schema::channel[code].label())
                     .arg(mn,0,'f',2)
@@ -1045,19 +1045,19 @@ void Daily::Load(QDate date)
                     med=oxi->percentile(code,0.5);
                     tmp=oxi->wavg(code);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>W-Avg: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
                     }
                 } else if (ST_mid==ST_WAVG) {
                     med=oxi->wavg(code);
                     tmp=oxi->percentile(code,0.5);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
                     }
                 } else if (ST_mid==ST_AVG) {
                     med=oxi->avg(code);
                     tmp=oxi->percentile(code,0.5);
                     if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>Median: %1").arg(tmp,0,'f',2);
+                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
                     }
                 }
 
@@ -1105,16 +1105,15 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=5><hr height=2></td></tr>";
         int i=cpap->settings_max(CPAP_PresReliefType);
         int j=cpap->settings_max(CPAP_PresReliefSet);
-        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : "None";
+        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
         html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
-                .arg(tr("Pr. Relief"))
+                .arg(STR_TR_PrRelief)
                 .arg(schema::channel[CPAP_PresReliefType].description())
                 .arg(flexstr);
         QString mclass=cpap->machine->GetClass();
         if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
             int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
-            html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
-                .arg(tr("Humidifier"))
+            html+=QString("<tr><td><a class='info' href='#'>"+STR_TR_Humidifier+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
                 .arg(schema::channel[CPAP_HumidSetting].description())
                 .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
         }
@@ -1125,19 +1124,14 @@ void Daily::Load(QDate date)
     if (cpap || oxi) {
         html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Session Information"));
+        html+=QString("<tr><td colspan=4 align=center><b>"+tr("Session Information")+"</b></td></tr>");
         html+="<tr><td colspan=5><hr/></td></tr>";
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
-        html+=QString("<tr><td align=left><b>%1</b></td><td><b>%2</b></td><td align=center><b>%3</b></td><td align=center><b>%4</b></td><td align=center><b>%5</b></td></tr>")
-            .arg(tr("SessionID"))
-            .arg(tr("On"))
-            .arg(tr("Date"))
-            .arg(tr("Start"))
-            .arg(tr("End"));
+        html+=QString("<tr><td align=left><b>"+tr("SessionID")+"</b></td><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td></tr>");
         if (cpap) {
-            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("CPAP Sessions"));
+            html+=QString("<tr><td align=left colspan=5><i>"+tr("CPAP Sessions")+"</i></td></tr>");
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -1145,7 +1139,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                tooltip=cpap->machine->GetClass()+"&nbsp;"+tr("CPAP")+"&nbsp;"+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=cpap->machine->GetClass()+"&nbsp;"+STR_TR_CPAP+"&nbsp;"+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
                 // tooltip needs to lookup language.. :-/
 
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
@@ -1167,7 +1161,7 @@ void Daily::Load(QDate date)
         }
 
         if (oxi) {
-            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("Oximetry Sessions"));
+            html+=QString("<tr><td align=left colspan=5><i>"+tr("Oximetry Sessions")+"</i></td></tr>");
             for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
                 fd=QDateTime::fromTime_t((*s)->first()/1000L);
                 ld=QDateTime::fromTime_t((*s)->last()/1000L);
@@ -1175,7 +1169,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                tooltip=oxi->machine->GetClass()+" "+tr("Oximeter")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=oxi->machine->GetClass()+" "+STR_TR_Oximeter+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
 
                 Session *sess=*s;
                 if (!sess->settings.contains(SESSION_ENABLED)) {
@@ -1712,7 +1706,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
         et2=et3;
     } else if (!day) return;
     if ((et<st2) || (st>et2)) {
-        mainwin->Notify("This bookmarked is in a currently disabled area..");
+        mainwin->Notify(tr("This bookmarked is in a currently disabled area.."));
         return;
     }
 
@@ -1730,7 +1724,7 @@ void Daily::on_addBookmarkButton_clicked()
     QDateTime d=QDateTime::fromTime_t(st/1000L);
     int row=ui->bookmarkTable->rowCount();
     ui->bookmarkTable->insertRow(row);
-    QTableWidgetItem *tw=new QTableWidgetItem("Bookmark at "+d.time().toString("HH:mm:ss"));
+    QTableWidgetItem *tw=new QTableWidgetItem(tr("Bookmark at %1").arg(d.time().toString("HH:mm:ss")));
     QTableWidgetItem *dw=new QTableWidgetItem(d.time().toString("HH:mm:ss"));
     dw->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     ui->bookmarkTable->setItem(row,0,dw);
@@ -1950,7 +1944,7 @@ void Daily::updateCube()
             GraphView->setCubeImage(images["nographs"]);
 
         } else {
-            GraphView->setEmptyText("No Data");
+            GraphView->setEmptyText(STR_TR_NoData);
             GraphView->setCubeImage(images["nodata"]);
         }
     } else {

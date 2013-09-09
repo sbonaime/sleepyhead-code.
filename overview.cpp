@@ -72,7 +72,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     GraphView=new gGraphView(ui->graphArea,m_shared);
     GraphView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    GraphView->setEmptyText("No Data");
+    GraphView->setEmptyText(STR_TR_NoData);
     GraphView->setCubeImage(images["nodata"]);
 
     // Create the custom scrollbar and attach to GraphView
@@ -92,13 +92,13 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     ChannelID ahicode=PROFILE.general->calculateRDI() ? CPAP_RDI : CPAP_AHI;
 
     if (ahicode==CPAP_RDI)
-        AHI=createGraph(tr("RDI"),"Respiratory\nDisturbance\nIndex");
+        AHI=createGraph(STR_TR_RDI,tr("Respiratory\nDisturbance\nIndex"));
     else
-        AHI=createGraph(tr("AHI"),tr("Apnea\nHypopnea\nIndex"));
+        AHI=createGraph(STR_TR_AHI,tr("Apnea\nHypopnea\nIndex"));
 
     UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
-    FL=createGraph(tr("Flow Limit"),tr("Flow Limit"));
+    FL=createGraph(STR_TR_FlowLimit,STR_TR_FlowLimit);
 
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
     int mididx=PROFILE.general->prefCalcMiddle();
@@ -112,28 +112,28 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
 
     US=createGraph(tr("Session Times"),tr("Session Times\n(hours)"),YT_Time);
-    PR=createGraph(STR_TR_Pressure,tr("Pressure\n(cmH2O)"));
-    SET=createGraph(tr("Settings"),("Settings"));
-    LK=createGraph(tr("Leaks"),tr("Unintentional Leaks\n(L/min)"));
-    TOTLK=createGraph(tr("Total Leaks"),tr("Total Leaks\n(L/min)"));
+    PR=createGraph(STR_TR_Pressure,STR_TR_Pressure+"\n("+STR_UNIT_CMH2O+")");
+    SET=createGraph(STR_TR_Settings,STR_TR_Settings);
+    LK=createGraph(STR_TR_Leaks,STR_TR_UnintentionalLeaks+"\n("+STR_UNIT_LPM+")");
+    TOTLK=createGraph(STR_TR_TotalLeaks,STR_TR_TotalLeaks+"\n("+STR_UNIT_LPM+")");
     NPB=createGraph(tr("% in PB"),tr("Periodic\nBreathing\n(% of night)"));
     if (ahicode==CPAP_RDI) {
         AHIHR=createGraph(tr("Peak RDI"),tr("Peak RDI\nShows RDI Clusters\n(RDI/hr)"));
     } else {
         AHIHR=createGraph(tr("Peak AHI"),tr("Peak AHI\nShows AHI Clusters\n(AHI/hr)"));
     }
-    RR=createGraph(tr("Resp. Rate"),tr("Respiratory\nRate\n(breaths/min)"));
-    TV=createGraph(tr("Tidal Volume"),tr("Tidal\nVolume\n(ml)"));
-    MV=createGraph(tr("Minute Vent."),tr("Minute\nVentilation\n(L/min)"));
-    TGMV=createGraph(tr("Target Vent."),tr("Target\nVentilation\n(L/min)"));
-    PTB=createGraph(tr("Pat. Trig. Br."),tr("Patient\nTriggered\nBreaths\n(%)"));
-    SES=createGraph(tr("Sessions"),tr("Sessions\n(count)"));
-    PULSE=createGraph(tr("Pulse Rate"),tr("Pulse Rate\n(bpm)"));
+    RR=createGraph(STR_TR_RespRate,tr("Respiratory\nRate\n(breaths/min)"));
+    TV=createGraph(STR_TR_TidalVolume,tr("Tidal\nVolume\n(ml)"));
+    MV=createGraph(STR_TR_MinuteVent,tr("Minute\nVentilation\n(L/min)"));
+    TGMV=createGraph(STR_TR_TargetVent,tr("Target\nVentilation\n(L/min)"));
+    PTB=createGraph(STR_TR_PatTrigBreath,tr("Patient\nTriggered\nBreaths\n(%)"));
+    SES=createGraph(STR_TR_Sessions,STR_TR_Sessions+tr("\n(count)"));
+    PULSE=createGraph(STR_TR_PulseRate,STR_TR_PulseRate+"\n("+STR_UNIT_BPM+")");
     SPO2=createGraph(STR_TR_SpO2,tr("Oxygen Saturation\n(%)"));
 
     WEIGHT=createGraph(STR_TR_Weight,STR_TR_Weight,YT_Weight);
     BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
-    ZOMBIE=createGraph(tr("Zombie"),tr("How you felt\n(0-10)"));
+    ZOMBIE=createGraph(STR_TR_Zombie,tr("How you felt\n(0-10)"));
 
     ahihr=new SummaryChart(tr("Events/Hr"),GT_LINE);
     ahihr->addSlice(ahicode,QColor("blue"),ST_MAX);
@@ -155,7 +155,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     zombie->addSlice(Journal_ZombieMeter,QColor("dark red"),ST_SETAVG);
     ZOMBIE->AddLayer(zombie);
 
-    pulse=new SummaryChart(tr("Pulse Rate"),GT_LINE);
+    pulse=new SummaryChart(STR_TR_PulseRate,GT_LINE);
     pulse->setMachineType(MT_OXIMETER);
     pulse->addSlice(OXI_Pulse,QColor("red"),ST_mid,0.5);
     pulse->addSlice(OXI_Pulse,QColor("pink"),ST_MIN);
@@ -173,7 +173,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     uc->addSlice(NoChannel,QColor("green"),ST_HOURS);
     UC->AddLayer(uc);
 
-    fl=new SummaryChart(tr("FL"),GT_BAR);
+    fl=new SummaryChart(STR_TR_FL,GT_BAR);
     fl->addSlice(CPAP_FlowLimit,QColor("brown"),ST_CPH);
     FL->AddLayer(fl);
 
@@ -182,14 +182,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     us->addSlice(NoChannel,QColor("blue"),ST_SESSIONS);
     US->AddLayer(us);
 
-    ses=new SummaryChart(tr("Sessions"),GT_LINE);
+    ses=new SummaryChart(STR_TR_Sessions,GT_LINE);
     ses->addSlice(NoChannel,QColor("blue"),ST_SESSIONS);
     SES->AddLayer(ses);
 
     if (ahicode==CPAP_RDI)
-        bc=new SummaryChart(tr("RDI"),GT_BAR);
+        bc=new SummaryChart(STR_TR_RDI,GT_BAR);
     else
-        bc=new SummaryChart(tr("AHI"),GT_BAR);
+        bc=new SummaryChart(STR_TR_AHI,GT_BAR);
     bc->addSlice(CPAP_Hypopnea,QColor("blue"),ST_CPH);
     bc->addSlice(CPAP_Apnea,QColor("dark green"),ST_CPH);
     bc->addSlice(CPAP_Obstructive,QColor("#40c0ff"),ST_CPH);
@@ -222,7 +222,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     tv->addSlice(CPAP_TidalVolume,QColor("green"),ST_max,maxperc);
     TV->AddLayer(tv);
 
-    mv=new SummaryChart(tr("L/m"),GT_LINE);
+    mv=new SummaryChart(STR_UNIT_LPM,GT_LINE);
     mv->addSlice(CPAP_MinuteVent,QColor("light blue"),ST_MIN);
     mv->addSlice(CPAP_MinuteVent,QColor("blue"),ST_mid,0.5);
     mv->addSlice(CPAP_MinuteVent,QColor("light green"),ST_PERC,percentile);
@@ -230,7 +230,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     MV->AddLayer(mv);
 
     // should merge...
-    tgmv=new SummaryChart(tr("L/m"),GT_LINE);
+    tgmv=new SummaryChart(STR_UNIT_LPM,GT_LINE);
     tgmv->addSlice(CPAP_TgMV,QColor("light blue"),ST_MIN);
     tgmv->addSlice(CPAP_TgMV,QColor("blue"),ST_mid,0.5);
     tgmv->addSlice(CPAP_TgMV,QColor("light green"),ST_PERC,percentile);
@@ -248,7 +248,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // Added in summarychart.. Slightly annoying..
     PR->AddLayer(pr);
 
-    lk=new SummaryChart(tr("Leaks"),GT_LINE);
+    lk=new SummaryChart(STR_TR_Leaks,GT_LINE);
     lk->addSlice(CPAP_Leak,QColor("light blue"),ST_mid,0.5);
     lk->addSlice(CPAP_Leak,QColor("dark grey"),ST_PERC,percentile);
     //lk->addSlice(CPAP_Leak,QColor("dark blue"),ST_WAVG);
@@ -256,7 +256,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //lk->addSlice(CPAP_Leak,QColor("dark yellow"));
     LK->AddLayer(lk);
 
-    totlk=new SummaryChart(tr("Total Leaks"),GT_LINE);
+    totlk=new SummaryChart(STR_TR_TotalLeaks,GT_LINE);
     totlk->addSlice(CPAP_LeakTotal,QColor("light blue"),ST_mid,0.5);
     totlk->addSlice(CPAP_LeakTotal,QColor("dark grey"),ST_PERC,percentile);
     totlk->addSlice(CPAP_LeakTotal,QColor("grey"),ST_max,maxperc);
@@ -579,7 +579,7 @@ void Overview::updateCube()
             GraphView->setCubeImage(images["nographs"]);
 
         } else {
-            GraphView->setEmptyText("No Data");
+            GraphView->setEmptyText(STR_TR_NoData);
             GraphView->setCubeImage(images["nodata"]);
         }
     } else {

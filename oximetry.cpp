@@ -455,7 +455,7 @@ void CMS50Serial::import_process()
         qDebug() << "User pushing import too many times in a row?";
         return;
     }
-    mainwin->getOximetry()->graphView()->setEmptyText("Processing...");
+    mainwin->getOximetry()->graphView()->setEmptyText(tr("Processing..."));
     mainwin->getOximetry()->graphView()->redraw();
 
     qDebug() << "CMS50 import complete. Processing" << data.size() << "bytes";
@@ -466,7 +466,36 @@ void CMS50Serial::import_process()
 
     EventList * pulse=(session->eventlist[OXI_Pulse][0]);
     EventList * spo2=(session->eventlist[OXI_SPO2][0]);
-    lasttime=f2time.toTime_t();
+
+    int d=abs(oxitime.secsTo(cpaptime));
+
+    QDateTime seltime=oxitime;
+
+    if (!cpaptime.isNull()) {
+        if (QMessageBox::question(mainwin,tr("Question"),tr("Did you remember to start your oximeter recording at exactly the same time you started your CPAP machine?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            if (!cms50dplus) {
+                // Oximeter has a clock.. Hopefully the user remembered to set their clock on the device..
+                QMessageBox::information(mainwin,"Information","That's ok, I will use the time provided by your oximeter, however it will sync better next time if you start your oximeter recording at the same time your CPAP machine starts up.\n(Please note: If you haven't set your oximeter clock you will have to manually edit this time before saving this oximetry session.)",QMessageBox::Ok);
+            } else {
+                //CMS50D+, and the user didn't start at the same time.. Kludge it because they likely turned it on around about the same time anyway.
+                QMessageBox::information(mainwin,"Information","It looks like your oximeter doesn't provide a valid start time, I'm going to set this oximetry session starting time to the CPAP starting time anyway.\nYou may have to adjust it manually if you remember the real start time before saving this session. (Also, did you remember to import todays CPAP data first?)",QMessageBox::Ok);
+                seltime=cpaptime;
+            }
+        } else {
+            // The best solution.. the user (hopefully) started both devices at the same time, so we pick the cpap sessions start time for optimal sync.
+            QMessageBox::information(mainwin,tr("Information"),tr("The most recent CPAP Session time has been selected as the start of your oximetry session.\nIf you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter."),QMessageBox::Ok);
+            seltime=cpaptime;
+        }
+    } else {
+        if (cms50dplus) {
+            // Worst case, CMS50D+ and no CPAP data.. the time is basically set to midnight the current day.
+            QMessageBox::information(mainwin,tr("Information"),tr("No valid start time was provided for this oximeter session. You will likely have to adjust your oximeter sessions start time before saving."),QMessageBox::Ok);
+        } else {
+            // No point nagging the user at all in this case.. they don't have any CPAP data loaded, so they are just using SleepyHead with the oximeter
+        }
+    }
+
+    lasttime=seltime.toTime_t();
     session->SetSessionID(lasttime);
     lasttime*=1000;
 
@@ -690,33 +719,37 @@ void CMS50Serial::ReadyRead()
                 started_import=true;
                 started_reading=false;
 
-                mainwin->getOximetry()->graphView()->setEmptyText("Please Wait, Importing...");
+                mainwin->getOximetry()->graphView()->setEmptyText(tr("Please Wait, Importing..."));
                 mainwin->getOximetry()->graphView()->timedRedraw(50);
 
-                if ((hour!=0) && (minute!=0)) { // CMS50E/F's have a realtime clock
-                    f2time=QDateTime(QDate::currentDate(),QTime(hour,minute));
-                    f2time=f2time.toTimeSpec(Qt::UTC);
-                    qDebug() << "Session start (according to CMS50)" << f2time << hex << buffer.at(i+1) << buffer.at(i+2) << ":" << dec << hour << minute ;
-                } else {
-                    // otherwise pick the first session of the last days data..
-                    Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
-                    if (day) {
-                        int ti=day->first()/1000L;
+                QDate oda=QDate::currentDate();
+                QTime oti=QTime(hour,minute); // Only CMS50E/F's have a realtime clock. CMS50D+ will set this to midnight
 
-                        f2time=QDateTime::fromTime_t(ti);
-                        qDebug() << "Guessing session starting from CPAP data" << f2time;
-                    }
+                cms50dplus=(hour==0) && (minute==0); // Either a CMS50D+ or it's really midnight, set a flag anyway for later to help choose the right sync time
 
-                    if (!f2time.isValid()) {
-                        // CMS50D+ are rather stupid.
-                        qDebug() << "Can't guess start time, defaulting to midnight" << f2time;
-                        f2time=QDateTime::currentDateTime();
-                        f2time.setTime(QTime(0,0,0));
-                        //f2time.addDays(-1);
-                    }
+                // If the oximeter record time is more than the current time, then assume it was from the day before
+                // Or should I use split time preference instead??? Foggy Confusements..
+                if (oti > QTime::currentTime())
+                    oda=oda.addDays(-1);
 
-                }
-                qDebug() << "Record Import:" << f2time;
+                oxitime=QDateTime(oda,oti);
+
+                // Convert it to UTC
+                oxitime=oxitime.toTimeSpec(Qt::UTC);
+
+                qDebug() << "Session start (according to CMS50)" << oxitime<< hex << buffer.at(i+1) << buffer.at(i+2) << ":" << dec << hour << minute ;
+
+                // As an alternative, pick the first session of the last days data..
+                Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
+                if (day) {
+                    int ti=day->first()/1000L;
+
+                    cpaptime=QDateTime::fromTime_t(ti);
+
+                    qDebug() << "Guessing session starting from CPAP data" << cpaptime;
+                } else cpaptime=QDateTime(); // null
+
+                qDebug() << "Record Import:" << oxitime << cpaptime;
                 i+=9;
             } else {
                 started_reading=true; // Sometimes errornous crap is sent after data rec header
@@ -884,11 +917,11 @@ void CMS50Serial::startImportTimeout()
                 m_mode=SO_WAIT;
                 cms50timer->stop();
                 emit(importAborted());
-                mainwin->getOximetry()->graphView()->setEmptyText("Import Failed");
+                mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed"));
                 mainwin->getOximetry()->graphView()->timedRedraw(50);
                 return;
             } else {
-                QString a="Waiting";
+                QString a=tr("Make Sure Oximeter is Ready");
                 for (int j=0;j<i;j++) a+=".";
                 mainwin->getOximetry()->graphView()->setEmptyText(a);
                 mainwin->getOximetry()->graphView()->timedRedraw(50);
@@ -1001,8 +1034,8 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     PLETHY->AddLayer(plethy);
 
-    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),"PD",FT_Span));
-    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),"O2",FT_Span));
+    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),STR_TR_PC,FT_Span));
+    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),STR_TR_O2,FT_Span));
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
     PULSE->setDay(day);
@@ -1312,8 +1345,8 @@ void Oximetry::on_ImportButton_clicked()
     PLETHY->setVisible(false);
     day->getSessions().clear();
     GraphView->setDay(day);
-    GraphView->setEmptyText("Make Sure Oximeter Is Ready");
-    GraphView->redraw();
+    //GraphView->setEmptyText(tr("Make Sure Oximeter is Ready"));
+    //GraphView->redraw();
 
     if (!oximeter->startImport()) {
         mainwin->Notify(tr("Oximeter Error\n\nThe device did not respond.. Make sure it's switched on."));
@@ -1426,7 +1459,7 @@ void Oximetry::spo2_changed(float o2)
 
 void Oximetry::on_saveButton_clicked()
 {
-    if (QMessageBox::question(this,"Keep This Recording?","Would you like to save this oximetery session?",QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
+    if (QMessageBox::question(this,tr("Keep This Recording?"),tr("Would you like to save this oximetery session?"),QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
         Session *session=oximeter->getSession();
 
         // Process???
@@ -1451,7 +1484,7 @@ void Oximetry::on_saveButton_clicked()
 
         mainwin->getDaily()->LoadDate(mainwin->getDaily()->getDate());
         mainwin->getOverview()->ReloadGraphs();
-        GraphView->setEmptyText("No Oximetry Data");
+        GraphView->setEmptyText(tr("No Oximetry Data"));
         GraphView->redraw();
     }
 }
@@ -1546,7 +1579,7 @@ bool Oximetry::openSPOFile(QString filename)
 
 bool Oximetry::openSPORFile(QString filename)
 {
-    //GraphView->setEmptyText("Please Wait");
+    //GraphView->setEmptyText(tr("Please Wait"));
     //GraphView->redraw();
     QFile f(filename);
     if (!f.open(QFile::ReadOnly)) return false;
@@ -1623,7 +1656,7 @@ bool Oximetry::openSPORFile(QString filename)
 void Oximetry::on_openButton_clicked()
 {
     if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry file will destroy the current session.\nWould you like to keep it?","Save","Destroy It","Cancel",0,2);
+        int res=QMessageBox::question(this,tr("Save Session?"),tr("Opening this oximetry file will destroy the current session.\nWould you like to keep it?"),tr("Save"),tr("Destroy It"),tr("Cancel"),0,2);
         if (res==0) {
             on_saveButton_clicked();
             return;
@@ -1633,7 +1666,7 @@ void Oximetry::on_openButton_clicked()
     } // else it's already saved.
 
     QString dir="";
-    QFileDialog fd(this,"Select an oximetry file",dir,"Oximetry Files (*.spo *.spoR)");
+    QFileDialog fd(this,tr("Select an oximetry file"),dir,tr("Oximetry Files (*.spo *.spoR)"));
     fd.setAcceptMode(QFileDialog::AcceptOpen);
     fd.setFileMode(QFileDialog::ExistingFile);
     if (fd.exec()!=QFileDialog::Accepted) return;
@@ -1647,7 +1680,7 @@ void Oximetry::on_openButton_clicked()
     else if (filename.toLower().endsWith(".spor")) r=openSPORFile(filename);
 
     if (!r) {
-        mainwin->Notify("Couldn't open oximetry file \""+filename+"\".");
+        mainwin->Notify(tr("Couldn't open oximetry file \"")+filename+"\".");
     }
     qDebug() << "opening" << filename;
 }
@@ -1678,7 +1711,7 @@ void Oximetry::on_dateEdit_dateTimeChanged(const QDateTime &date)
 void Oximetry::openSession(Session * session)
 {
     if (oximeter->getSession() && oximeter->getSession()->IsChanged()) {
-        int res=QMessageBox::question(this,"Save Session?","Opening this oximetry session will destroy the unsavedsession in the oximetry tab.\nWould you like to store it first?","Save","Destroy It","Cancel",0,2);
+        int res=QMessageBox::question(this,tr("Save Session?"),tr("Opening this oximetry session will destroy the unsavedsession in the oximetry tab.\nWould you like to store it first?"),tr("Save"),tr("Destroy It"),tr("Cancel"),0,2);
         if (res==0) {
             on_saveButton_clicked();
             return;

@@ -25,11 +25,15 @@
 #include <QProcess>
 #include <QFontMetrics>
 #include <QTextDocument>
+#include <QTranslator>
 #include <cmath>
 
 // Custom loaders that don't autoscan..
 #include <SleepLib/loader_plugins/zeo_loader.h>
+
+#ifndef REMSTAR_M_SUPPORT
 #include <SleepLib/loader_plugins/mseries_loader.h>
+#endif
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -84,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString version=FullVersionString;
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1 (Profile: %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+    this->setWindowTitle(tr("SleepyHead")+QString(" v%1 ("+tr("Profile")+": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
     // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
@@ -103,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qstatusbar=ui->statusbar;
     qprogress=new QProgressBar(this);
     qprogress->setMaximum(100);
-    qstatus2=new QLabel("Welcome",this);
+    qstatus2=new QLabel(tr("Welcome"),this);
     qstatus2->setFrameStyle(QFrame::Raised);
     qstatus2->setFrameShadow(QFrame::Sunken);
     qstatus2->setFrameShape(QFrame::Box);
@@ -149,13 +153,13 @@ MainWindow::MainWindow(QWidget *parent) :
         systray->show();
         systraymenu=new QMenu(this);
         systray->setContextMenu(systraymenu);
-        QAction *a=systraymenu->addAction("SleepyHead v"+VersionString);
+        QAction *a=systraymenu->addAction(STR_TR_SleepyHead+" v"+VersionString);
         a->setEnabled(false);
         systraymenu->addSeparator();
-        systraymenu->addAction("&About",this,SLOT(on_action_About_triggered()));
-        systraymenu->addAction("Check for &Updates",this,SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addAction(tr("&About"),this,SLOT(on_action_About_triggered()));
+        systraymenu->addAction(tr("Check for &Updates"),this,SLOT(on_actionCheck_for_Updates_triggered()));
         systraymenu->addSeparator();
-        systraymenu->addAction("E&xit",this,SLOT(close()));
+        systraymenu->addAction(tr("E&xit"),this,SLOT(close()));
     } else { // if not available, the messages will popup in the taskbar
         systray=NULL;
         systraymenu=NULL;
@@ -186,10 +190,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //"border-top-left-radius: 8px;"
     //"border-top-right-radius: 8px;"
 
-    QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>Loading...</h1></td></tr></table></body></HTML>";
+    QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"+tr("Loading...")+"</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
-    //ui->actionImport_RemStar_MSeries_Data->setVisible(false);
+
+#ifndef REMSTAR_M_SUPPORT
+    ui->actionImport_RemStar_MSeries_Data->setVisible(false);
+#endif
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -280,7 +287,7 @@ void MainWindow::Startup()
 void MainWindow::on_action_Import_Data_triggered()
 {
     if (m_inRecalculation) {
-        Notify("Access to Import has been blocked while recalculations are in progress.");
+        Notify(tr("Access to Import has been blocked while recalculations are in progress."));
         return;
 
     }
@@ -311,7 +318,7 @@ void MainWindow::on_action_Import_Data_triggered()
     if (importLocations.size()==0) {
         asknew=true;
     } else {
-        int res=QMessageBox::question(this,"Import from where?","Do you just want to Import from the usual (remembered) locations?\n","The Usual","New Location","Cancel",0,2);
+        int res=QMessageBox::question(this,tr("Import from where?"),tr("Do you just want to Import from the usual (remembered) locations?\n"),tr("The Usual"),tr("New Location"),tr("Cancel"),0,2);
         if (res==1) {
             asknew=true;
         }
@@ -380,7 +387,7 @@ void MainWindow::on_action_Import_Data_triggered()
         if (overview) overview->ReloadGraphs();
         on_summaryButton_clicked();
         if (daily) daily->ReloadGraphs();
-        if ((goodlocations.size()>0) && (QMessageBox::question(this,"Remember this Location?","Would you like to remember this import location for next time?\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
+        if ((goodlocations.size()>0) && (QMessageBox::question(this,tr("Remember this Location?"),tr("Would you like to remember this import location for next time?")+"\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
             for (int i=0;i<goodlocations.size();i++) {
                 importLocations.push_back(goodlocations[i]);
             }
@@ -433,7 +440,7 @@ QString htmlHeader()
 "</head>"
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
-"<tr><td><img src='qrc:/icons/bob-v3.0.png' width=140px height=140px><td valign=center align=center><h1>SleepyHead v"+VersionString+"</h1><i>This is a beta software and some functionality may not work as intended yet.<br/>Please report any bugs you find to SleepyHead's SourceForge page.</i></td></tr></table>"
+"<tr><td><img src='qrc:/icons/bob-v3.0.png' width=140px height=140px><td valign=center align=center><h1>"+QObject::tr("SleepyHead")+" v"+VersionString+"</h1><i>"+QObject::tr("This is a beta software and some functionality may not work as intended yet.")+"<br/>"+QObject::tr("Please report any bugs you find to SleepyHead's SourceForge page.")+"</i></td></tr></table>"
 "</div>"
 "<hr/>");
 }
@@ -670,7 +677,7 @@ void MainWindow::on_summaryButton_clicked()
     if (mach.size()==0) {
         html+="<table cellpadding=2 cellspacing=0 border=0 width=100% height=60%>";
         QString datacard;
-        html+="<tr><td align=center><h1>Please Import Some Data</h1><i>SleepyHead is pretty much useless without it.</i><br/><p>It might be a good idea to check preferences first,</br>as there are some options that affect import.</p><p>First import can take a few minutes.</p></td></tr></table>";
+        html+="<tr><td align=center><h1>"+tr("Please Import Some Data")+"</h1><i>"+tr("SleepyHead is pretty much useless without it.")+"</i><br/><p>"+tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")+"</p><p>"+tr("First import can take a few minutes.")+"</p></td></tr></table>";
         html+=htmlFooter();
         ui->summaryView->setHtml(html);
         return;
@@ -693,18 +700,18 @@ void MainWindow::on_summaryButton_clicked()
 
     QString ahitxt;
     if (PROFILE.general->calculateRDI()) {
-        ahitxt=tr("RDI");
+        ahitxt=STR_TR_RDI;
     } else {
-        ahitxt=tr("AHI");
+        ahitxt=STR_TR_AHI;
     }
 
     int decimals=2;
     html+="<div align=center>";
     html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
     if (cpapdays==0)  {
-        html+="<tr><td colspan=6 align=center>No CPAP Machine Data Imported</td></tr>";
+        html+="<tr><td colspan=6 align=center>"+tr("No CPAP Machine Data Imported")+"</td></tr>";
     } else {
-        html+=QString("<tr><td colspan=6 align=center><b>CPAP Statistics as of %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
+        html+=QString("<tr><td colspan=6 align=center><b>")+tr("CPAP Statistics as of")+QString(" %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
 
         if (cpap_machines.size()>0) {
            // html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("CPAP Summary"));
@@ -766,7 +773,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcMin(CPAP_EPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("%1% EPAP").arg(percentile*100.0,0,'f',0))
+                .arg(QString("%1% "+STR_TR_EPAP).arg(percentile*100.0,0,'f',0))
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_EPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
@@ -780,7 +787,7 @@ void MainWindow::on_summaryButton_clicked()
                 .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpap6month,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcMax(CPAP_IPAP,MT_CPAP,cpapyear,lastcpap),0,'f',decimals);
                 html+=QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
-                .arg(tr("%1% IPAP").arg(percentile*100.0,0,'f',0))
+                .arg(QString("%1% "+STR_TR_IPAP).arg(percentile*100.0,0,'f',0))
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapweek,lastcpap),0,'f',decimals)
                 .arg(p_profile->calcPercentile(CPAP_IPAP,percentile,MT_CPAP,cpapmonth,lastcpap),0,'f',decimals)
@@ -1117,34 +1124,34 @@ void MainWindow::on_summaryButton_clicked()
             CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->last);
 
             if (mode<MODE_APAP) { // is CPAP?
-                minstr="Pressure";
+                minstr=STR_TR_Pressure;
                 maxstr="";
-                modestr=tr("CPAP");
+                modestr=STR_TR_CPAP;
             } else if (mode<MODE_BIPAP) { // is AUTO?
-                minstr="Min";
-                maxstr="Max";
-                modestr=tr("APAP");
+                minstr=STR_TR_Min;
+                maxstr=STR_TR_Max;
+                modestr=STR_TR_APAP;
             } else if (mode<MODE_ASV) { // BIPAP
-                minstr="EPAP";
-                maxstr="IPAP";
-                modestr=tr("Bi-Level");
+                minstr=STR_TR_EPAP;
+                maxstr=STR_TR_IPAP;
+                modestr=STR_TR_BiLevel;
             } else {
-                minstr="EPAP";
-                maxstr="IPAPLo";
-                maxhistr="IPAPHi";
-                modestr=tr("ST/ASV");
+                minstr=STR_TR_EPAP;
+                maxstr=STR_TR_IPAPLo;
+                maxhistr=STR_TR_IPAPHi;
+                modestr=STR_TR_STASV;
 
             }
 
             recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
                     .arg(tr("Best RX Setting"));
-            recbox+=QString("<tr><td valign=top>Start<br/>End</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
+            recbox+=QString("<tr><td valign=top>")+STR_TR_Start+"<br/>"+STR_TR_End+QString("</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
                     .arg(tmpRX[ls]->first.toString(Qt::ISODate))
                     .arg(tmpRX[ls]->last.toString(Qt::ISODate))
                     .arg(tmpRX[ls]->first.toString(Qt::SystemLocaleShortDate))
                     .arg(tmpRX[ls]->last.toString(Qt::SystemLocaleShortDate));
             recbox+=QString("<tr><td><b>%1</b></td><td align=right><b>%2</b></td></tr>").arg(ahitxt).arg(tmpRX[ls]->ahi,0,'f',decimals);
-            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Mode")).arg(modestr);
+            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(STR_TR_Mode).arg(modestr);
             recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(minstr).arg(tmpRX[ls]->min,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxstr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[ls]->maxhi,0,'f',1).arg(STR_UNIT_CMH2O);
@@ -1154,33 +1161,33 @@ void MainWindow::on_summaryButton_clicked()
 
             mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[0]->first,tmpRX[0]->last);
             if (mode<MODE_APAP) { // is CPAP?
-                minstr="Pressure";
+                minstr=STR_TR_Pressure;
                 maxstr="";
-                modestr=tr("CPAP");
+                modestr=STR_TR_CPAP;
             } else if (mode<MODE_BIPAP) { // is AUTO?
-                minstr="Min";
-                maxstr="Max";
-                modestr=tr("APAP");
+                minstr=STR_TR_Min;
+                maxstr=STR_TR_Max;
+                modestr=STR_TR_APAP;
             } else if (mode<MODE_ASV) { // BIPAP or greater
-                minstr="EPAP";
-                maxstr="IPAP";
-                modestr=tr("Bi-Level");
+                minstr=STR_TR_EPAP;
+                maxstr=STR_TR_IPAP;
+                modestr=STR_TR_BiLevel;
             } else {
-                minstr="EPAP";
-                maxstr="IPAPLo";
-                maxhistr="IPAPHi";
-                modestr=tr("ST/ASV");
+                minstr=STR_TR_EPAP;
+                maxstr=STR_TR_IPAPLo;
+                maxhistr=STR_TR_IPAPHi;
+                modestr=STR_TR_STASV;
             }
 
             recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
                     .arg(tr("Worst RX Setting"));
-            recbox+=QString("<tr><td valign=top>Start<br/>End</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
+            recbox+=QString("<tr><td valign=top>")+STR_TR_Start+"<br/>"+STR_TR_End+QString("</td><td align=right><a href='overview=%1,%2'>%3<br/>%4</a></td></tr>")
                     .arg(tmpRX[0]->first.toString(Qt::ISODate))
                     .arg(tmpRX[0]->last.toString(Qt::ISODate))
                     .arg(tmpRX[0]->first.toString(Qt::SystemLocaleShortDate))
                     .arg(tmpRX[0]->last.toString(Qt::SystemLocaleShortDate));
             recbox+=QString("<tr><td><b>%1</b></td><td align=right><b>%2</b></td></tr>").arg(ahitxt).arg(tmpRX[0]->ahi,0,'f',decimals);
-            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(tr("Mode")).arg(modestr);
+            recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(STR_TR_Mode).arg(modestr);
             recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(minstr).arg(tmpRX[0]->min,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxstr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxstr).arg(tmpRX[0]->max,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[0]->maxhi,0,'f',1).arg(STR_UNIT_CMH2O);
@@ -1195,32 +1202,32 @@ void MainWindow::on_summaryButton_clicked()
         RXorder=true;
         qSort(rxchange.begin(),rxchange.end());*/
         html+="<div align=center>";
-        html+=QString("<br/><b>Changes to Prescription Settings</b>");
+        html+=QString("<br/><b>")+tr("Changes to Prescription Settings")+"</b>";
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
         QString extratxt;
 
         if (cpapmode>=MODE_ASV) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>")
-                .arg(tr("EPAP")).arg(tr("IPAPLo")).arg(tr("IPAPHi")).arg(tr("PS Min")).arg(tr("PS Max"));
+                .arg(STR_TR_EPAP).arg(STR_TR_IPAPLo).arg(STR_TR_IPAPHi).arg(tr("PS Min")).arg(tr("PS Max"));
         } else if (cpapmode>=MODE_BIPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td>")
-                .arg(tr("EPAP")).arg(tr("IPAP")).arg(tr("PS"));
+                .arg(STR_TR_EPAP).arg(STR_TR_IPAP).arg(STR_TR_PS);
         } else if (cpapmode>MODE_CPAP) {
             extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td>")
                 .arg(tr("Min Pres.")).arg(tr("Max Pres."));
         } else {
             extratxt=QString("<td><b>%1</b></td>")
-                .arg(tr("Pressure"));
+                .arg(STR_TR_Pressure);
         }
         QString tooltip;
         html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</td><td><b>%8</td>%9</tr>")
-                  .arg(tr("First"))
-                  .arg(tr("Last"))
+                  .arg(STR_TR_First)
+                  .arg(STR_TR_Last)
                   .arg(tr("Days"))
                   .arg(ahitxt)
 		  .arg(tr("FL"))
-                  .arg(tr("Machine"))
-                  .arg(tr("Mode"))
+                  .arg(STR_TR_Machine)
+                  .arg(STR_TR_Mode)
                   .arg(tr("Pr. Rel."))
                   .arg(extratxt);
 
@@ -1251,30 +1258,21 @@ void MainWindow::on_summaryButton_clicked()
                 extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
                         .arg(rx.max,0,'f',decimals).arg(rx.maxhi,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals).arg(rx.maxhi-rx.min,0,'f',decimals);
 
-                tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
-                        .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',decimals)
-                        .arg(percentile*100.0)
-                        .arg(rx.per2,0,'f',decimals)
-                        .arg(machstr)
-                        ;
+                tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_EPAP+
+                        QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals).arg(percentile*100.0)+
+                        STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             } else if (mode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>")
                        .arg(rx.max,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals);
-                tooltip=tr("%5 %1% EPAP=%2<br/>%3% IPAP=%4")
+                tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+
+                        STR_TR_EPAP+
+                        QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals)
                         .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',decimals)
-                        .arg(percentile*100.0)
-                        .arg(rx.per2,0,'f',decimals)
-                        .arg(machstr)
-                        ;
+                        +STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             } else if (mode>MODE_CPAP) {
                 extratxt=QString("<td>%1</td>").arg(rx.max,0,'f',decimals);
-                tooltip=tr("%3 %1% Pressure=%2")
-                        .arg(percentile*100.0)
-                        .arg(rx.per1,0,'f',decimals)
-                        .arg(machstr)
-                        ;
+                tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_Pressure+
+                        QString("=%2").arg(rx.per1,0,'f',decimals);
             } else {
                 if (cpapmode>MODE_CPAP) {
                     extratxt="<td>&nbsp;</td>";
@@ -1288,7 +1286,7 @@ void MainWindow::on_summaryButton_clicked()
             if (rx.prelset>0) {
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
                 presrel+=QString(" x%1").arg(rx.prelset);
-            } else presrel="None";
+            } else presrel=STR_TR_None;
             QString tooltipshow,tooltiphide;
             if (!tooltip.isEmpty()) {
                 tooltipshow=QString("tooltip.show(\"%1\");").arg(tooltip);
@@ -1311,19 +1309,19 @@ void MainWindow::on_summaryButton_clicked()
                     .arg(tooltiphide);
         }
         html+="</table>";
-        html+=QString("<i>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</i><br/>").arg(rxthresh);
+        html+=QString("<i>")+tr("The above has a threshold which excludes day counts less than %1 from the best/worst highlighting").arg(rxthresh)+QString("</i><br/>");
         html+="</div>";
 
     }
     if (mach.size()>0) {
         html+="<div align=center>";
 
-        html+=QString("<br/><b>Machine Information</b>");
+        html+=QString("<br/><b>")+tr("Machine Information")+"</b>";
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
         html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
-                      .arg(tr("Brand"))
-                      .arg(tr("Model"))
-                      .arg(tr("Serial"))
+                      .arg(STR_TR_Brand)
+                      .arg(STR_TR_Model)
+                      .arg(STR_TR_Serial)
                       .arg(tr("First Use"))
                       .arg(tr("Last Use"));
         Machine *m;
@@ -1499,24 +1497,24 @@ void MainWindow::on_action_About_triggered()
     QString msg=QString(
 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
 "<table width=100%><tr><td>"
-"<p><h1>SleepyHead v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>Build Date: %5 %6<br/>%7<br/>Data Folder: %9<hr>"
-"Copyright &copy;2012 Mark Watkins (jedimark) <br> \n"
-"This software is released under the GNU Public License v3.0<br>"
-"<hr><p>SleepyHead Project Page: <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"
-"SleepyHead Wiki: <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"
-"Authors Twitter Feed: <a href=\"http://twitter.com/jedimark64\">http://twitter.com/jedimark64</a></p>"
-"</td><td><img src=\"qrc:/icons/Bob Strikes Back.png\" width=150px height=150px></td></tr><tr colspan><td colspan=2>"
-"<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>"
-"<hr><p><i>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.</i></p>"
-"<p><i>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.</i></p>"
-"<p><i>The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software<br/>Use this software entirely at your own risk.</i></p>"
-"<hr><p><font color=\"blue\">If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author</font></p>"
+"<p><h1>"+tr("SleepyHead")+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder")+": %9<hr>"+
+tr("Copyright")+" &copy;2012 Mark Watkins (jedimark) <br> \n"+
+tr("This software is released under the GNU Public License v3.0<br>")+
+"<hr><p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
+tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"+
+tr("Authors Twitter Feed")+": <a href=\"http://twitter.com/jedimark64\">http://twitter.com/jedimark64</a></p>"+
+"</td><td><img src=\"qrc:/icons/Bob Strikes Back.png\" width=150px height=150px></td></tr><tr colspan><td colspan=2>"+
+tr("<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>")+
+"<hr><p><i>"+tr("This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.")+"</i></p>"
+"<p><i>"+tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.")+"</i></p>"
+"<p><i>"+tr("The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software<br/>Use this software entirely at your own risk.")+"</i></p>"
+"<hr><p><font color=\"blue\">"+tr("If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author")+"</font></p>"
 "</font></td></tr></table></span>"
-                ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
+).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(GetAppRoot());
     //"</div></body>"
 
      QDialog aboutbox;
-     aboutbox.setWindowTitle(QObject::tr("About a"));
+     aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
 
 
      QVBoxLayout layout(&aboutbox);
@@ -1576,7 +1574,7 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 void MainWindow::on_action_Preferences_triggered()
 {
     if (m_inRecalculation) {
-        mainwin->Notify("Access to Preferences has been blocked until recalculation completes.");
+        mainwin->Notify(tr("Access to Preferences has been blocked until recalculation completes."));
         return;
     }
     PreferencesDialog pd(this,p_profile);
@@ -1605,7 +1603,7 @@ void MainWindow::on_oximetryButton_clicked()
     bool first=false;
     if (!oximetry) {
         if (!PROFILE.oxi->oximetryEnabled()) {
-            if (QMessageBox::question(this,"Question","Do you have a CMS50[x] Oximeter?\nOne is required to use this section.",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+            if (QMessageBox::question(this,tr("Question"),tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
             PROFILE.oxi->setOximetryEnabled(true);
         }
         oximetry=new Oximetry(ui->tabWidget,daily->graphView());
@@ -1669,6 +1667,12 @@ void MainWindow::updatestatusBarMessage (const QString & text)
 
 void MainWindow::on_actionPrint_Report_triggered()
 {
+#ifdef Q_WS_MAC
+ #if ((QT_VERSION <= QT_VERSION_CHECK(5, 0, 0)) &&  (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)))
+    QMessageBox::information(this,tr("Printing Broken"),tr("Sorry.. Printing is currently broken on the Mac platform :-(\n\nWe are currently waiting on a Qt Library bugfix"),QMessageBox::Ok);
+    return;
+ #endif
+#endif
     if (ui->tabWidget->currentWidget()==overview) {
         PrintReport(overview->graphView(),STR_TR_Overview);
     } else if (ui->tabWidget->currentWidget()==daily) {
@@ -1779,7 +1783,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
         if (journal && journal->settings.contains(Bookmark_Start)) {
             book_start=journal->settings[Bookmark_Start].toList();
             if (book_start.size()>0) {
-                if (QMessageBox::question(this,tr("Bookmarks"),tr("Would you like to show bookmarked areas in this report?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+                if (QMessageBox::question(this,STR_TR_Bookmarks,tr("Would you like to show bookmarked areas in this report?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
                     print_bookmarks=true;
                 }
             }
@@ -1858,12 +1862,12 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
     int maxy=0;
     if (!PROFILE.user->firstName().isEmpty()) {
-        QString userinfo=tr("Name:\t %1, %2\n").arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName());
-        userinfo+=tr("DOB:\t%1\n").arg(PROFILE.user->DOB().toString(Qt::SystemLocaleShortDate));
-        if (!PROFILE.doctor->patientID().isEmpty()) userinfo+=tr("Patient ID:\t%1\n").arg(PROFILE.doctor->patientID());
-        userinfo+=tr("Phone:\t%1\n").arg(PROFILE.user->phone());
-        userinfo+=tr("Email:\t%1\n").arg(PROFILE.user->email());
-        if (!PROFILE.user->address().isEmpty()) userinfo+=tr("\nAddress:\n%1").arg(PROFILE.user->address());
+        QString userinfo=STR_TR_Name+QString(":\t %1, %2\n").arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName());
+        userinfo+=STR_TR_DOB+QString(":\t%1\n").arg(PROFILE.user->DOB().toString(Qt::SystemLocaleShortDate));
+        if (!PROFILE.doctor->patientID().isEmpty()) userinfo+=STR_TR_PatientID+QString(":\t%1\n").arg(PROFILE.doctor->patientID());
+        userinfo+=STR_TR_Phone+QString(":\t%1\n").arg(PROFILE.user->phone());
+        userinfo+=STR_TR_Email+QString(":\t%1\n").arg(PROFILE.user->email());
+        if (!PROFILE.user->address().isEmpty()) userinfo+="\n"+STR_TR_Address+QString(":\n%1").arg(PROFILE.user->address());
 
         QRectF bounds=painter.boundingRect(QRectF(0,top,virt_width,0),userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
         painter.drawText(bounds,userinfo,QTextOption(Qt::AlignLeft | Qt::AlignTop));
@@ -1884,29 +1888,29 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             int m=(tt/60)%60;
             int s=tt % 60;
 
-            cpapinfo+=tr("Mask Time: ")+QString().sprintf("%2i hours, %2i minutes, %2i seconds",h,m,s)+"\n";
-            cpapinfo+=tr("Bedtime: ")+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+" ";
-            cpapinfo+=tr("Wake-up: ")+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
+            cpapinfo+=STR_TR_MaskTime+tr(": %1 hours, %2 minutes, %3 seconds\n").arg(h).arg(m).arg(s);
+            cpapinfo+=STR_TR_BedTime+": "+QDateTime::fromTime_t(f).time().toString("HH:mm:ss")+" ";
+            cpapinfo+=STR_TR_WakeUp+": "+QDateTime::fromTime_t(l).time().toString("HH:mm:ss")+"\n\n";
             QString submodel;
-            cpapinfo+=tr("Machine: ");
+            cpapinfo+=STR_TR_Machine+": ";
             if (cpap->machine->properties.find(STR_PROP_SubModel)!=cpap->machine->properties.end())
                 submodel="\n"+cpap->machine->properties[STR_PROP_SubModel];
             cpapinfo+=cpap->machine->properties[STR_PROP_Brand]+" "+cpap->machine->properties[STR_PROP_Model]+submodel;
             CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
-            cpapinfo+=tr("\nMode: ");
+            cpapinfo+="\n"+STR_TR_Mode+": ";
 
             if (mode==MODE_CPAP) {
                 EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
-                cpapinfo+=tr("CPAP")+" "+QString::number(min)+STR_UNIT_CMH2O;
+                cpapinfo+=STR_TR_CPAP+" "+QString::number(min)+STR_UNIT_CMH2O;
             } else if (mode==MODE_APAP) {
                 EventDataType min=cpap->settings_min(CPAP_PressureMin);
                 EventDataType max=cpap->settings_max(CPAP_PressureMax);
-                cpapinfo+=tr("APAP")+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
+                cpapinfo+=STR_TR_APAP+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
             } else if (mode==MODE_BIPAP) {
                 EventDataType epap=cpap->settings_min(CPAP_EPAP);
                 EventDataType ipap=cpap->settings_max(CPAP_IPAP);
                 EventDataType ps=cpap->settings_max(CPAP_PS);
-                cpapinfo+=tr("Bi-Level")+QString("\nEPAP: %1 IPAP: %2 %3\nPS: %4")
+                cpapinfo+=STR_TR_BiLevel+QString("\n"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 %3\n"+STR_TR_PS+": %4")
                         .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
             }
             else if (mode==MODE_ASV) {
@@ -1915,7 +1919,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                 EventDataType high=cpap->settings_max(CPAP_IPAPHi);
                 EventDataType psl=cpap->settings_min(CPAP_PSMin);
                 EventDataType psh=cpap->settings_max(CPAP_PSMax);
-                cpapinfo+=tr("ASV")+QString("\nEPAP: %1 IPAP: %2 - %3 %4\nPS: %5 / %6")
+                cpapinfo+=STR_TR_ASV+QString("\n"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 - %3 %4\n"+STR_TR_PS+": %5 / %6")
                         .arg(epap,0,'f',1)
                         .arg(low,0,'f',1)
                         .arg(high,0,'f',1)
@@ -1923,7 +1927,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
                         .arg(psl,0,'f',1)
                         .arg(psh,0,'f',1);
             }
-            else cpapinfo+=tr("Unknown");
+            else cpapinfo+=STR_TR_Unknown;
 
             float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
             if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
@@ -1994,11 +1998,11 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
             if (journal) {
                 stats="";
                 if (journal->settings.contains(Journal_Weight))
-                    stats+=tr("Weight %1 ").arg(weightString(journal->settings[Journal_Weight].toDouble()));
+                    stats+=STR_TR_Weight+QString(" %1 ").arg(weightString(journal->settings[Journal_Weight].toDouble()));
                 if (journal->settings.contains(Journal_BMI))
-                    stats+=tr("BMI %1 ").arg(journal->settings[Journal_BMI].toDouble(),0,'f',2);
+                    stats+=STR_TR_BMI+QString(" %1 ").arg(journal->settings[Journal_BMI].toDouble(),0,'f',2);
                 if (journal->settings.contains(Journal_ZombieMeter))
-                    stats+=tr("Zombie %1/10 ").arg(journal->settings[Journal_ZombieMeter].toDouble(),0,'f',0);
+                    stats+=STR_TR_Zombie+QString(" %1/10 ").arg(journal->settings[Journal_ZombieMeter].toDouble(),0,'f',0);
 
                 if (!stats.isEmpty()) {
                     bounds=painter.boundingRect(QRectF(0,top+ttop,virt_width,0),stats,QTextOption(Qt::AlignHCenter));
@@ -2096,6 +2100,7 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
             }
         } else {
+            const QString EntireDay=tr("Entire Day");
             if (journal) {
                 if (journal->settings.contains(Bookmark_Start)) {
                     QVariantList st1=journal->settings[Bookmark_Start].toList();
@@ -2107,19 +2112,19 @@ void MainWindow::PrintReport(gGraphView *gv,QString name, QDate date)
 
 
                     if (cpap && flow && !flow->isEmpty() && flow->visible()) {
-                        labels.push_back("Entire Day");
+                        labels.push_back(EntireDay);
                         start.push_back(cpap->first());
                         end.push_back(cpap->last());
                         graphs.push_back(flow);
                     }
                     if (oxi && spo2 && !spo2->isEmpty() && spo2->visible()) {
-                        labels.push_back("Entire Day");
+                        labels.push_back(EntireDay);
                         start.push_back(oxi->first());
                         end.push_back(oxi->last());
                         graphs.push_back(spo2);
                     }
                     if (oxi && pulse && !pulse->isEmpty() && pulse->visible()) {
-                        labels.push_back("Entire Day");
+                        labels.push_back(EntireDay);
                         start.push_back(oxi->first());
                         end.push_back(oxi->last());
                         graphs.push_back(pulse);
@@ -2733,11 +2738,11 @@ void MainWindow::doReprocessEvents()
     qprogress->setVisible(false);
     m_inRecalculation=false;
     if (m_restartRequired) {
-        QMessageBox::information(this,"Restart Required",QString("Recalculations are complete, the application now needs to restart to display the changes."),QMessageBox::Ok);
+        QMessageBox::information(this,tr("Restart Required"),tr("Recalculations are complete, the application now needs to restart to display the changes."),QMessageBox::Ok);
         RestartApplication();
         return;
     } else {
-        Notify("Recalculations are now complete.","Task Completed");
+        Notify(tr("Recalculations are now complete."),tr("Task Completed"));
 
         FreeSessions();
         QDate current=daily->getDate();
@@ -2758,10 +2763,10 @@ void MainWindow::on_actionImport_ZEO_Data_triggered()
     if (w.exec()==QFileDialog::Accepted) {
         QString filename=w.selectedFiles()[0];
         if (!zeo.OpenFile(filename)) {
-            Notify("There was a problem opening ZEO File: "+filename);
+            Notify(tr("There was a problem opening ZEO File: ")+filename);
             return;
         }
-        Notify("Zeo CSV Import complete");
+        Notify(tr("Zeo CSV Import complete"));
         daily->LoadDate(daily->getDate());
     }
 
@@ -2770,6 +2775,7 @@ void MainWindow::on_actionImport_ZEO_Data_triggered()
 
 void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
 {
+#ifdef REMSTAR_M_SUPPORT
     QFileDialog w;
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
@@ -2780,12 +2786,13 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
     if (w.exec()==QFileDialog::Accepted) {
         QString filename=w.selectedFiles()[0];
         if (!mseries.Open(filename,p_profile)) {
-            Notify("There was a problem opening MSeries block File: "+filename);
+            Notify(tr("There was a problem opening MSeries block File: ")+filename);
             return;
         }
-        Notify("MSeries Import complete");
+        Notify(tr("MSeries Import complete"));
         daily->LoadDate(daily->getDate());
     }
+#endif
 }
 
 void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
