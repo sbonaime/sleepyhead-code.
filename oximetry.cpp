@@ -22,7 +22,7 @@
 #include "Graphs/gYAxis.h"
 #include "Graphs/gLineOverlay.h"
 
-// #define SERIAL_DEBUG 1
+#define SERIAL_DEBUG 1
 
 
 extern QLabel * qstatus2;
@@ -467,7 +467,7 @@ void CMS50Serial::import_process()
     EventList * pulse=(session->eventlist[OXI_Pulse][0]);
     EventList * spo2=(session->eventlist[OXI_SPO2][0]);
 
-    int d=abs(oxitime.secsTo(cpaptime));
+//    int d=abs(oxitime.secsTo(cpaptime));
 
     QDateTime seltime=oxitime;
 
@@ -611,9 +611,6 @@ void CMS50Serial::ReadyRead()
     bytes.resize(available);
     m_port->read(bytes.data(), bytes.size());
 
-    EventList * epulse=NULL;
-    EventList * espo2=NULL;
-
     if (m_mode==SO_WAIT) {
         killTimers();
        // Close();
@@ -644,16 +641,12 @@ void CMS50Serial::ReadyRead()
     }
     lastbytesize=available;
 
-    unsigned char c;
+    unsigned char c,bc=import_mode ? 0xf0 : 0x80;
     int i=0;
 
-    while ((i < available) && (((c=(unsigned char)bytes.at(i)) & 0x80)!=0x80)) {
-        if (buffer.length()==0) {
-            // Lost frame, there is no previous data, so ignore..
-            ++i;
-            continue;
-        }
-        if (((unsigned char)buffer.at(0)&0x80)==0x80) {
+
+    while ((i < available) && (((c=(unsigned char)bytes.at(i)) & bc)!=bc)) {
+        if (buffer.length()>0) {
             // If buffer is the start of a valid but short frame, add to it..
             buffer.append(c);
         }// otherwise dump these bytes, as they are corrupt.
@@ -673,85 +666,95 @@ void CMS50Serial::ReadyRead()
     i=0;
     short hour,minute;
     bool updated=false;
-    bool fixtime=false;
 
-    if (import_mode) {
-        epulse=(session->eventlist[OXI_Pulse][0]);
-        espo2=(session->eventlist[OXI_SPO2][0]);
-   }
+    QString zdata="";
+
+    int precbytes=received_bytes;
 
     while (i < available) {
-        c=buffer.at(i);
-        if ((c & 0xf0)==0xf0) {
-            if (c==0xf2) {  // Is this a record block header?
-                if ((i+9) >= available) {
-                    pkt_short=true;
+        c=(unsigned char)buffer.at(i);
+        if ((c & 0xf0)==0xf0) { // Record transmit trios all start with 0xf#
+            if ((i+3) >= available) {
+                pkt_short=true;
+                break;
+            }
 
-                    break;
+            if (!import_mode) { // Skip if live mode and the user bumped the upload button by mistake
+                i+=3;
+                continue;
+            }
+
+            imp_callbacks++;
+            if (!started_import) {
+                for (int j=0;j<3;j++) zdata+=QString().sprintf("%02X ",(unsigned char)buffer.at(i+j));
+                qDebug() << "Recieved Rec Header:" << zdata;
+                zdata="";
+            }
+
+            if (c==0xf2) { // Is this a 3 byte header trio? (there are 3 sets of these at start of record data)
+                if (!started_import) {  // Is this a record block header? Only need the first one
+
+                    hour=(unsigned char)buffer.at(i+1) & 0x7f;
+                    minute=(unsigned char)buffer.at(i+2) & 0x7f;
+
+                    qDebug() << QString("Receiving Oximeter transmission %1:%2").arg(hour).arg(minute);
+                    // set importing to true or whatever..
+
+                    finished_import=false;
+                    started_import=true;
+                    started_reading=false;
+
+                    killTimers();
+                    qDebug() << "Getting ready for import";
+                    mainwin->getOximetry()->graphView()->setEmptyText(tr("Please Wait, Importing..."));
+                    mainwin->getOximetry()->graphView()->timedRedraw(50);
+
+                    QDate oda=QDate::currentDate();
+                    QTime oti=QTime(hour,minute); // Only CMS50E/F's have a realtime clock. CMS50D+ will set this to midnight
+
+                    cms50dplus=(hour==0) && (minute==0); // Either a CMS50D+ or it's really midnight, set a flag anyway for later to help choose the right sync time
+
+                    // If the oximeter record time is more than the current time, then assume it was from the day before
+                    // Or should I use split time preference instead??? Foggy Confusements..
+                    if (oti > QTime::currentTime())
+                        oda=oda.addDays(-1);
+
+                    oxitime=QDateTime(oda,oti);
+
+                    // Convert it to UTC
+                    oxitime=oxitime.toTimeSpec(Qt::UTC);
+
+                    qDebug() << "Session start (according to CMS50)" << oxitime<< hex << buffer.at(i+1) << buffer.at(i+2) << ":" << dec << hour << minute ;
+
+                    // As an alternative, pick the first session of the last days data..
+                    Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
+                    if (day) {
+                        int ti=day->first()/1000L;
+
+                        cpaptime=QDateTime::fromTime_t(ti);
+
+                        qDebug() << "Guessing session starting from CPAP data" << cpaptime;
+                    } else cpaptime=QDateTime(); // null
+
+                    qDebug() << "Record Import:" << oxitime << cpaptime;
+
+                    cb_reset=1;
+
+                    // CMS50D+ needs an end timer because it just stops dead after uploading
+                    cms50timer2->singleShot(2000,this,SLOT(resetImportTimeout()));
                 }
-#ifdef SERIAL_DEBUG
-                QString zdata="RecHeader:";
-                for (int j=0;j<9;j++) zdata+=QString().sprintf("%02X",(unsigned char)buffer.at(i+j));
-                qDebug() << zdata;
-#endif
-
-                if (((unsigned char)buffer.at(i+3)!=c) || ((unsigned char)buffer.at(i+6)!=c)) {
-                    buffer.clear();
-                    qDebug() << "Dodgy CMS50X recording header, destroying buffer";
-                    cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
-                    break;
-                }
-
-                qDebug() << "Got Record Header:" << hex << buffer.at(i+1) << buffer.at(i+2);
-                hour=(unsigned char)buffer.at(i+1) & 0x7f;
-                minute=(unsigned char)buffer.at(i+2) & 0x7f;
-
-                if ((((unsigned char)buffer.at(i+4)&0x7f)!=hour) ||(((unsigned char)buffer.at(i+5)&0x7f)!=minute)) {
-                    qDebug() << "Non matching time2 in CMS50X recording header";
-                }
-                if ((((unsigned char)buffer.at(i+7)&0x7f)!=hour) ||(((unsigned char)buffer.at(i+8)&0x7f)!=minute)) {
-                    qDebug() << "Non matching time3 in CMS50X recording header";
-                }
-
-                // set importing to true or whatever..
-
-                finished_import=false;
-                started_import=true;
-                started_reading=false;
-
-                mainwin->getOximetry()->graphView()->setEmptyText(tr("Please Wait, Importing..."));
-                mainwin->getOximetry()->graphView()->timedRedraw(50);
-
-                QDate oda=QDate::currentDate();
-                QTime oti=QTime(hour,minute); // Only CMS50E/F's have a realtime clock. CMS50D+ will set this to midnight
-
-                cms50dplus=(hour==0) && (minute==0); // Either a CMS50D+ or it's really midnight, set a flag anyway for later to help choose the right sync time
-
-                // If the oximeter record time is more than the current time, then assume it was from the day before
-                // Or should I use split time preference instead??? Foggy Confusements..
-                if (oti > QTime::currentTime())
-                    oda=oda.addDays(-1);
-
-                oxitime=QDateTime(oda,oti);
-
-                // Convert it to UTC
-                oxitime=oxitime.toTimeSpec(Qt::UTC);
-
-                qDebug() << "Session start (according to CMS50)" << oxitime<< hex << buffer.at(i+1) << buffer.at(i+2) << ":" << dec << hour << minute ;
-
-                // As an alternative, pick the first session of the last days data..
-                Day *day=PROFILE.GetDay(PROFILE.LastDay(),MT_CPAP);
-                if (day) {
-                    int ti=day->first()/1000L;
-
-                    cpaptime=QDateTime::fromTime_t(ti);
-
-                    qDebug() << "Guessing session starting from CPAP data" << cpaptime;
-                } else cpaptime=QDateTime(); // null
-
-                qDebug() << "Record Import:" << oxitime << cpaptime;
-                i+=9;
+                i+=3;
             } else {
+                if (!started_import) {
+                    // Crap.. Missed the 0xf2 headers..
+                    m_mode=SO_WAIT;
+                    killTimers();
+                    emit(importAborted());
+                    mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed. Wait for oximeter and try again."));
+                    mainwin->Notify("Something went wrong with reading from the Oximeter.\nPlease wait for oximeter to finish tranmitting than try restarting import again.","Import Failed");
+                    mainwin->getOximetry()->graphView()->timedRedraw(50);
+                    break;
+                }
                 started_reading=true; // Sometimes errornous crap is sent after data rec header
 
                 // Recording import
@@ -762,9 +765,6 @@ void CMS50Serial::ReadyRead()
 
                 pulse=(unsigned char)buffer.at(i+1) & 0x7f;
                 spo2=(unsigned char)buffer.at(i+2) & 0x7f;
-#if SERIAL_DEBUG
-                qDebug() << "Record: " << pulse << spo2;
-#endif
                 data.push_back(buffer.at(i));
                 data.push_back(buffer.at(i+1));
                 data.push_back(buffer.at(i+2));
@@ -774,7 +774,7 @@ void CMS50Serial::ReadyRead()
             }
 
         } else if ((c & 0x80)==0x80) {
-            if (started_reading) { // (Sometimes errornous bytes get transfered after header)
+            if (import_mode && started_reading) { // (Sometimes errornous bytes get transfered after header)
                 qDebug() << "Stopped importing due to live data";
                 // We were importing, but now are done
 
@@ -786,6 +786,7 @@ void CMS50Serial::ReadyRead()
                 m_mode=SO_WAIT; // Temporarily pause until complete shutdown.
 
                 emit(importProcess());
+                break;
             }
             // Standard frame.. make sure theres the full 5 byte sequence
             if ((i+4) > available) {
@@ -806,12 +807,18 @@ void CMS50Serial::ReadyRead()
             }
 
 #if SERIAL_DEBUG
-            qDebug() << "Live: " << pulse << spo2 << pwave << pbeat;
+            //qDebug() << "Live: " << pulse << spo2 << pwave << pbeat;
 #endif
             // whatever depending on mode..
             i+=5;
         } else break;
     }
+
+
+#if SERIAL_DEBUG
+    if ((import_mode) && (received_bytes>precbytes))
+        qDebug() << "Received Bytes" << received_bytes-precbytes;// << ":" << zdata;
+#endif
 
     if (i>0) {
         // Trim any processed bytes from the buffer.
@@ -826,31 +833,17 @@ void CMS50Serial::ReadyRead()
             buffer.clear();
         }
     }
-    if (import_mode) {
-        // Stop any unnecessary timer callbacks
-        if (cms50timer->isActive()) cms50timer->stop();
-        if (cms50timer2->isActive()) cms50timer2->stop();
-
-        m_callbacks=0;
-        if (!started_import) { // Haven't started import process yet, CMS50D+ needs a send command
-           if (!finished_import)
-               cms50timer->singleShot(250,this,SLOT(startImportTimeout()));
-        } else {
-            // CMS50D+ needs an end timer because it just stops dead after uploading
-            if (!finished_import)
-                cms50timer2->singleShot(250,this,SLOT(resetImportTimeout()));
-        }
-    }
 
     if (updated)
         emit(dataChanged());
 }
 void CMS50Serial::resetDevice()
 {
-    m_port->flush();
+    qDebug() << "Sending reset code to CMS50 device";
+    //m_port->flush();
     static unsigned char b1[3]={0xf6,0xf6,0xf6};
     if (m_port->write((char *)b1,3)==-1) {
-        qDebug() << "Couldn't write closing bytes to CMS50";
+        qDebug() << "Couldn't write data reset bytes to CMS50";
     }
 }
 
@@ -858,6 +851,7 @@ void CMS50Serial::requestData()
 {
     static unsigned char b1[2]={0xf5,0xf5};
 
+    qDebug() << "Sending request code to CMS50 device";
     if (m_port->write((char *)b1,2)==-1) {
         qDebug() << "Couldn't write data request bytes to CMS50";
     }
@@ -873,82 +867,82 @@ bool CMS50Serial::startImport()
     started_import=false;
     started_reading=false;
     finished_import=false;
-    if (!m_opened && !Open(QextSerialPort::EventDriven))
-        return false;
+    killTimers();
 
     connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 
+    if (!m_opened && !Open(QextSerialPort::EventDriven))
+        return false;
+
+
     imptime.start();
 
+    imp_callbacks=0;
     m_callbacks=0;
+
+    cb_reset=0;
     import_fails=0;
     failcnt=0;
 
     // doesn't need to happen until process..
     createSession();
 
-    //requestData();
+#ifdef SERIAL_DEBUG
+    qDebug() << "Starting startImportTimer";
+#endif
+    startImportTimeout();
+
     return true;
 }
 
 void CMS50Serial::startImportTimeout()
 {
-    if ((m_mode==SO_WAIT)||(finished_import))
+    if ((m_mode==SO_WAIT)
+            ||finished_import
+            ||started_import)
         return;
 
-    // Make sure no other timer scheduled..
-    if (cms50timer->isActive())
-        cms50timer->stop();
+    // Wait until events really are jammed on the CMS50D+ before re-requesting data.
+    if (imp_callbacks==0) { // Frozen, but still hasn't started?
+        int elapsed=imptime.elapsed()/1000;
 
-    if (!started_import) {
-
-        // Wait until events really are jammed on the CMS50D+ before re-requesting data.
-
-        if (m_callbacks>0) {
-            m_callbacks=0;
-            // Try again later.. device still erronously dumping crap.
-
-            cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
+        if (elapsed>30) { // Give up after ~20 seconds
+            m_mode=SO_WAIT;
+            killTimers();
+            emit(importAborted());
+            mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed"));
+            mainwin->getOximetry()->graphView()->timedRedraw(50);
+            return;
         } else {
-            int i=imptime.elapsed()/1000;
-            //imptime.start();
+            QString a=tr("Set Oximeter to Upload");
+            for (int j=0;j<elapsed;j++) a+=".";
+            mainwin->getOximetry()->graphView()->setEmptyText(a);
+            mainwin->getOximetry()->graphView()->timedRedraw(50);
 
-            if (i>20) { // Give up after ~20 tries
-                m_mode=SO_WAIT;
-                cms50timer->stop();
-                emit(importAborted());
-                mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed"));
-                mainwin->getOximetry()->graphView()->timedRedraw(50);
-                return;
-            } else {
-                QString a=tr("Make Sure Oximeter is Ready");
-                for (int j=0;j<i;j++) a+=".";
-                mainwin->getOximetry()->graphView()->setEmptyText(a);
-                mainwin->getOximetry()->graphView()->timedRedraw(50);
-
-                // Note: Newer CMS50 devices transmit from user input
-                requestData();
-
-                // Set the callback again
-            }
-            cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
+            // Note: Newer CMS50 devices transmit from user input
+            requestData();
         }
-    }
 
+        // Schedule another callback to make sure it's started
+        cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
+    }
 }
 void CMS50Serial::resetImportTimeout()
 {
-    if (finished_import) return;
-    if (m_callbacks>0) {
+    if ((m_mode==SO_WAIT)||(finished_import))
+        return;
+
+    if (imp_callbacks!=cb_reset) {
         // Still receiving data.. reset timer
-        m_callbacks=0;
-        qDebug() << "reseting timer in resetImportTimeout()";
-        cms50timer2->singleShot(500,this,SLOT(resetImportTimeout()));
+        qDebug() << "Still receiving data in resetImportTimeout()";
+        if (cms50timer2->isActive())
+            cms50timer2->stop();
+        cms50timer2->singleShot(2000,this,SLOT(resetImportTimeout()));
     } else {
-        qDebug() << "no callbacks";
+        qDebug() << "Oximeter device stopped transmitting.. Transfer complete";
         // We were importing, but now are done
         if (!finished_import && (started_import && started_reading)) {
-            qDebug() << "resetting CMS50 device";
+            qDebug() << "Switching CMS50 back to live mode and finalizing import";
             // Turn back on live streaming so the end of capture can be dealt with
             cms50timer2->stop();
 
@@ -964,6 +958,7 @@ void CMS50Serial::resetImportTimeout()
         qDebug() << "Should CMS50 resetImportTimeout reach here?";
         // else what???
     }
+    cb_reset=imp_callbacks;
 }
 
 

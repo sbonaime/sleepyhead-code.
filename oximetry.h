@@ -203,7 +203,7 @@ protected:
     qint64 lasttime;
     bool import_mode;
 
-    int m_callbacks;
+    int m_callbacks,cb_start, cb_reset;
     bool done_import;
     bool started_import,started_reading,finished_import;
     QTimer *timer;
@@ -261,6 +261,8 @@ protected:
 
     int received_bytes;
     int import_fails;
+
+    int imp_callbacks;
 
     QTime imptime;
 
