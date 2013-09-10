@@ -1015,22 +1015,22 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
         g->AddLayer(new gXGrid());
     }
 
-    plethy=new gLineChart(OXI_Plethy,Qt::black,false,true);
+    plethy=new gLineChart(OXI_Plethy,COLOR_Plethy,false,true);
     plethy->SetDay(day);
 
     CONTROL->AddLayer(plethy); //new gLineChart(OXI_Plethysomogram));
 
 
-    pulse=new gLineChart(OXI_Pulse,Qt::red,true);
+    pulse=new gLineChart(OXI_Pulse,COLOR_Pulse,true);
     //pulse->SetDay(day);
 
-    spo2=new gLineChart(OXI_SPO2,Qt::blue,true);
+    spo2=new gLineChart(OXI_SPO2,COLOR_SPO2,true);
     //spo2->SetDay(day);
 
     PLETHY->AddLayer(plethy);
 
-    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),STR_TR_PC,FT_Span));
-    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),STR_TR_O2,FT_Span));
+    PULSE->AddLayer(lo1=new gLineOverlayBar(OXI_PulseChange,COLOR_PulseChange,STR_TR_PC,FT_Span));
+    SPO2->AddLayer(lo2=new gLineOverlayBar(OXI_SPO2Drop,COLOR_SPO2Drop,STR_TR_O2,FT_Span));
     PULSE->AddLayer(pulse);
     SPO2->AddLayer(spo2);
     PULSE->setDay(day);
@@ -1063,7 +1063,7 @@ Oximetry::Oximetry(QWidget *parent,gGraphView * shared) :
 
     // Stop both calendar drop downs highlighting weekends in red
     //QTextCharFormat format = ui->dateEdit->calendarWidget()->weekdayTextFormat(Qt::Saturday);
-    //format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    //format.setForeground(QBrush(COLOR_Text, Qt::SolidPattern));
     //ui->dateEdit->calendarWidget()->setWeekdayTextFormat(Qt::Saturday, format);
     //ui->dateEdit->calendarWidget()->setWeekdayTextFormat(Qt::Sunday, format);
     dont_update_date=false;
@@ -1084,6 +1084,7 @@ void Oximetry::on_RefreshPortsButton_clicked()
     int z=0;
     QString firstport;
     bool current_found=false;
+    const QString STR_USB="USB";
 
     // Windows build mixes these up
 #if defined(Q_OS_WIN32) || defined(Q_OS_MAC)
@@ -1093,14 +1094,14 @@ void Oximetry::on_RefreshPortsButton_clicked()
 #endif
     for (int i = 0; i < ports.size(); i++) {
         if (!ports.at(i).friendName.isEmpty()) {
-            if (ports.at(i).friendName.toUpper().contains("USB")) {
+            if (ports.at(i).friendName.toUpper().contains(STR_USB)) {
                 if (firstport.isEmpty()) firstport=ports.at(i). qesPORTNAME;
                 if (!portname.isEmpty() && ports.at(i).qesPORTNAME==portname) current_found=true;
                 ui->SerialPortsCombo->addItem(ports.at(i).qesPORTNAME);
                 z++;
             }
         } else { // Mac stuff.
-            if (ports.at(i).portName.toUpper().contains("USB") || ports.at(i).portName.toUpper().contains("SPO2")) {
+            if (ports.at(i).portName.toUpper().contains(STR_USB) || ports.at(i).portName.toUpper().contains("SPO2")) {
                 if (firstport.isEmpty()) firstport=ports.at(i).portName;
                 if (!portname.isEmpty() && ports.at(i).portName==portname) current_found=true;
                 ui->SerialPortsCombo->addItem(ports.at(i).portName);
@@ -1320,7 +1321,7 @@ void Oximetry::oximeter_running_check()
         oximeter->destroySession();
         day->getSessions().clear();
         ui->SerialPortsCombo->setEnabled(true);
-        qstatus->setText(tr("Ready"));
+        qstatus->setText(STR_TR_Ready);
         ui->ImportButton->setEnabled(true);
         ui->RunButton->setChecked(false);
         ui->saveButton->setEnabled(false);
@@ -1378,7 +1379,7 @@ void Oximetry::import_finished()
     // Hanging here.. :(
 
     ui->SerialPortsCombo->setEnabled(true);
-    qstatus->setText(tr("Ready"));
+    qstatus->setText(STR_TR_Ready);
     ui->ImportButton->setDisabled(false);
     ui->saveButton->setEnabled(true);
 

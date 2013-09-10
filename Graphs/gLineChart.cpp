@@ -630,7 +630,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 }
 
 
-AHIChart::AHIChart(const QColor col)
+AHIChart::AHIChart(QColor col)
 :Layer(NoChannel),m_color(col)
 {
     m_miny=m_maxy=0;

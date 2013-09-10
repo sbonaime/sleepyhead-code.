@@ -13,7 +13,7 @@
 class gXAxis:public Layer
 {
     public:
-        gXAxis(QColor col=QColor("black"),bool fadeout=true);
+        gXAxis(QColor col=Qt::black,bool fadeout=true);
         virtual ~gXAxis();
         virtual void paint(gGraph & w,int left,int top, int width, int height);
         static const int Margin=20; // How much room does this take up. (Bottom margin)

@@ -15,7 +15,7 @@
 class gShadowArea:public Layer
 {
     public:
-        gShadowArea(QColor shadow_color=QColor(40,40,40,40),QColor line_color=QColor("blue"));
+        gShadowArea(QColor shadow_color=QColor(40,40,40,40),QColor line_color=Qt::blue);
         virtual ~gShadowArea();
         virtual void paint(gGraph & w,int left, int top, int width, int height);
     protected:

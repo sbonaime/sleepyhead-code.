@@ -106,7 +106,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TV=new gGraph(GraphView,STR_TR_TidalVolume,schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
     MV=new gGraph(GraphView,STR_TR_MinuteVent,schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
     //TgMV=new gGraph(GraphView,STR_TR_TgtMinVent,schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
-    FLG=new gGraph(GraphView,STR_TR_FlowLimitation,schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
+    FLG=new gGraph(GraphView,STR_TR_FlowLimit,schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
     PTB=new gGraph(GraphView,STR_TR_PatTrigBreath,schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
     RE=new gGraph(GraphView,STR_TR_RespEvent,schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
     TI=new gGraph(GraphView,STR_TR_InspTime,schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
@@ -130,13 +130,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     GAHI=new gGraph(snapGV,tr("Breakdown"),tr("events"),172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
-    evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),tr("H"));
-    evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),tr("A"));
-    evseg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),tr("OA"));
-    evseg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),tr("CA"));
-    evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),tr("RE"));
-    evseg->AddSlice(CPAP_NRI,QColor(0x00,0x80,0x40,0xff),tr("NR"));
-    evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),tr("FL"));
+    evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
+    evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),STR_TR_UA);
+    evseg->AddSlice(CPAP_Obstructive,QColor(0x40,0xaf,0xbf,0xff),STR_TR_OA);
+    evseg->AddSlice(CPAP_ClearAirway,QColor(0xb2,0x54,0xcd,0xff),STR_TR_CA);
+    evseg->AddSlice(CPAP_RERA,QColor(0xff,0xff,0x80,0xff),STR_TR_RE);
+    evseg->AddSlice(CPAP_NRI,QColor(0x00,0x80,0x40,0xff),STR_TR_NR);
+    evseg->AddSlice(CPAP_FlowLimit,QColor(0x40,0x40,0x40,0xff),STR_TR_FL);
     //evseg->AddSlice(CPAP_UserFlag1,QColor(0x40,0x40,0x40,0xff),tr("UF"));
 
     GAHI->AddLayer(AddCPAP(evseg));
@@ -145,63 +145,63 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    fg->AddLayer((new gFlagsLine(CPAP_CSR,QColor("light green"),STR_TR_PB,false,FT_Span)));
-    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway,QColor("purple"),STR_TR_CA,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_Obstructive,QColor("#40c0ff"),STR_TR_OA,true)));
-    fg->AddLayer((new gFlagsLine(CPAP_Apnea,QColor("dark green"),STR_TR_UA)));
-    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea,QColor("blue"),STR_TR_H,true)));
-    fg->AddLayer((new gFlagsLine(CPAP_ExP,QColor("dark cyan"),STR_TR_EP,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag,QColor("dark blue"),STR_TR_LE,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_NRI,QColor("dark magenta"),STR_TR_NRI,false)));
-    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit,QColor("black"),STR_TR_FL)));
-    fg->AddLayer((new gFlagsLine(CPAP_RERA,QColor("gold"),STR_TR_RE)));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore,QColor("red"),STR_TR_VS)));
-    fg->AddLayer((new gFlagsLine(CPAP_VSnore2,QColor("red"),STR_TR_VS2)));
+    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB,false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
+    fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
+    fg->AddLayer((new gFlagsLine(CPAP_Hypopnea, COLOR_Hypopnea, STR_TR_H,true)));
+    fg->AddLayer((new gFlagsLine(CPAP_ExP, COLOR_ExP, STR_TR_EP,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_LeakFlag, COLOR_LeakFlag, STR_TR_LE,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_NRI, COLOR_NRI, STR_TR_NRI,false)));
+    fg->AddLayer((new gFlagsLine(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+    fg->AddLayer((new gFlagsLine(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
+    fg->AddLayer((new gFlagsLine(CPAP_VSnore2, COLOR_VibratorySnore, STR_TR_VS2)));
     if (PROFILE.cpap->userEventFlagging()) {
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1,QColor("yellow"),tr("UF1"))));
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2,QColor("green"),tr("UF2"))));
-        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3,QColor("brown"),tr("UF3"))));
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag1, COLOR_Yellow, STR_TR_UF1)));
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag2, COLOR_DarkGreen, STR_TR_UF2)));
+        fg->AddLayer((new gFlagsLine(CPAP_UserFlag3, COLOR_Brown, STR_TR_UF3)));
     }
-    //fg->AddLayer((new gFlagsLine(PRS1_0B,QColor("dark green"),tr("U0B"))));
+    //fg->AddLayer((new gFlagsLine(PRS1_0B,COLOR_DarkGreen,tr("U0B"))));
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
     SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
-    SF->AddLayer(new gXAxis(Qt::black,false),LayerBottom,0,20); //gXAxis::Margin);
+    SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
 
 
     gLineChart *l;
-    l=new gLineChart(CPAP_FlowRate,Qt::black,false,false);
+    l=new gLineChart(CPAP_FlowRate,COLOR_Black,false,false);
     gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR,QColor("light green"),STR_TR_CSR,FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR,FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,QColor("blue"),STR_TR_H))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,QColor("red"),STR_TR_PP,FT_Dot)));
-    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure,QColor("white"),tr("P"),FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,QColor("blue"),"0B",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,QColor("orange"),"10",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,QColor("dark red"),"0E",FT_Dot)));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,COLOR_Hypopnea,STR_TR_H))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
+    //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,COLOR_Orange,"10",FT_Dot)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
     if (PROFILE.general->calculateRDI())
-        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA,QColor("gold"),STR_TR_RE))));
+        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE))));
     else
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA,QColor("gold"),STR_TR_RE)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
 
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea,QColor("dark green"),STR_TR_UA))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore,QColor("red"),tr("VS"))));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit,QColor("black"),tr("FL"))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive,QColor("#40c0ff"),STR_TR_OA))));
-    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway,QColor("purple"),STR_TR_CA))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA))));
+    FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA))));
     if (PROFILE.cpap->userEventFlagging()) {
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1,QColor("yellow"),tr("U1"),FT_Bar)));
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2,QColor("orange"),tr("U2"),FT_Bar)));
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3,QColor("brown"),tr("U3"),FT_Bar)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag1, COLOR_Yellow, tr("U1"),FT_Bar)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
+        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
     }
-    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop,QColor("red"),STR_TR_O2)));
-    //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange,QColor("blue"),STR_TR_PC,FT_Dot)));
+    FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
+    //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Dot)));
 
     FRW->AddLayer(AddCPAP(los));
 
@@ -227,65 +227,65 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
 
     bool square=PROFILE.appearance->squareWavePlots();
-    gLineChart *pc=new gLineChart(CPAP_Pressure,QColor("dark green"),square);
+    gLineChart *pc=new gLineChart(CPAP_Pressure, COLOR_Pressure, square);
     PRD->AddLayer(AddCPAP(pc));
-    pc->addPlot(CPAP_EPAP,Qt::blue,square);
-    pc->addPlot(CPAP_IPAPLo,Qt::darkRed,square);
-    pc->addPlot(CPAP_IPAP,Qt::red,square);
-    pc->addPlot(CPAP_IPAPHi,Qt::darkRed,square);
+    pc->addPlot(CPAP_EPAP, COLOR_EPAP, square);
+    pc->addPlot(CPAP_IPAPLo, COLOR_IPAPLo, square);
+    pc->addPlot(CPAP_IPAP, COLOR_IPAP, square);
+    pc->addPlot(CPAP_IPAPHi, COLOR_IPAPHi, square);
 
     if (PROFILE.general->calculateRDI()) {
-        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI,QColor("light green"),square)));
+        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_RDI, COLOR_RDI, square)));
 //        AHI->AddLayer(AddCPAP(new AHIChart(QColor("#37a24b"))));
     } else {
-        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI,QColor("light green"),square)));
+        AHI->AddLayer(AddCPAP(new gLineChart(CPAP_AHI, COLOR_AHI, square)));
     }
 
-    gLineChart *lc=new gLineChart(CPAP_LeakTotal,Qt::darkYellow,square);
-    lc->addPlot(CPAP_Leak,Qt::darkMagenta,square);
-    lc->addPlot(CPAP_MaxLeak,Qt::darkRed,square);
+    gLineChart *lc=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
+    lc->addPlot(CPAP_Leak, COLOR_Leak, square);
+    lc->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
     LEAK->AddLayer(AddCPAP(lc));
-    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak,Qt::darkMagenta,square)));
-    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak,Qt::darkRed,square)));
-    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore,Qt::darkGray,true)));
+    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));
+    //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak, COLOR_MaxLeak,square)));
+    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
 
-    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB,Qt::gray,square)));
-    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure,Qt::blue,false)));
-    RR->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate,Qt::darkBlue,square)));
+    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
+    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
+    RR->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
 
     // Delete me!!
-//    lc->addPlot(CPAP_Test1,Qt::darkRed,square);
+//    lc->addPlot(CPAP_Test1, COLOR_DarkRed,square);
 
-    MV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent,Qt::cyan,square)));
-    lc->addPlot(CPAP_TgMV,Qt::darkCyan,square);
+    MV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, COLOR_MinuteVent, square)));
+    lc->addPlot(CPAP_TgMV,COLOR_TgMV,square);
 
-    TV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,Qt::magenta,square)));
-    //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
+    TV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,COLOR_TidalVolume,square)));
+    //lc->addPlot(CPAP_Test2,COLOR_DarkYellow,square);
 
 
 
-    //TV->AddLayer(AddCPAP(new gLineChart("TidalVolume2",Qt::magenta,square)));
-    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG,Qt::darkBlue,true)));
-    //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,Qt::magenta,true)));
-    IE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE,Qt::darkRed,square)));
-    TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te,Qt::darkGreen,square)));
-    TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti,Qt::darkBlue,square)));
-    //lc->addPlot(CPAP_Test2,Qt::darkYellow,square);
-    //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse,Qt::red,square)));
-    //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2,Qt::blue,square)));
+    //TV->AddLayer(AddCPAP(new gLineChart("TidalVolume2",COLOR_Magenta,square)));
+    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG, COLOR_FLG, true)));
+    //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,COLOR_Magenta,true)));
+    IE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, COLOR_IE, square)));
+    TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, COLOR_Te, square)));
+    TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, COLOR_Ti, square)));
+    //lc->addPlot(CPAP_Test2,COLOR:DarkYellow,square);
+    //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
+    //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, square)));
 
-    STAGE->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage,Qt::gray,true)));
+    STAGE->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, COLOR_SleepStage, true)));
 
     gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
     gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
-    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange,QColor("light gray"),STR_TR_PC,FT_Span))));
+    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
     PULSE->AddLayer(AddOXI(los1));
-    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop,QColor("light blue"),STR_TR_O2,FT_Span))));
+    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
     SPO2->AddLayer(AddOXI(los2));
 
-    PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse,Qt::red,square)));
-    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2,Qt::blue,true)));
-    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy,Qt::darkBlue,false)));
+    PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
+    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
+    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy, COLOR_Plethy,false)));
 
     PTB->setForceMaxY(100);
     SPO2->setForceMaxY(100);
@@ -298,7 +298,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->layout();
 
     QTextCharFormat format = ui->calendar->weekdayTextFormat(Qt::Saturday);
-    format.setForeground(QBrush(Qt::black, Qt::SolidPattern));
+    format.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     ui->calendar->setWeekdayTextFormat(Qt::Saturday, format);
     ui->calendar->setWeekdayTextFormat(Qt::Sunday, format);
 
@@ -552,19 +552,19 @@ void Daily::UpdateCalendarDay(QDate date)
     QTextCharFormat jourday;
     QTextCharFormat stageday;
 
-    cpaponly.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpaponly.setForeground(QBrush(COLOR_Blue, Qt::SolidPattern));
     cpaponly.setFontWeight(QFont::Normal);
-    cpapjour.setForeground(QBrush(Qt::blue, Qt::SolidPattern));
+    cpapjour.setForeground(QBrush(COLOR_Blue, Qt::SolidPattern));
     cpapjour.setFontWeight(QFont::Bold);
-    oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxiday.setForeground(QBrush(COLOR_Red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Normal);
-    oxicpap.setForeground(QBrush(Qt::red, Qt::SolidPattern));
+    oxicpap.setForeground(QBrush(COLOR_Red, Qt::SolidPattern));
     oxicpap.setFontWeight(QFont::Bold);
-    stageday.setForeground(QBrush(Qt::magenta, Qt::SolidPattern));
+    stageday.setForeground(QBrush(COLOR_Magenta, Qt::SolidPattern));
     stageday.setFontWeight(QFont::Bold);
-    jourday.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
+    jourday.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     jourday.setFontWeight(QFont::Bold);
-    nodata.setForeground(QBrush(QColor("black"), Qt::SolidPattern));
+    nodata.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     nodata.setFontWeight(QFont::Normal);
 
     bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
@@ -826,10 +826,10 @@ void Daily::Load(QDate date)
         if (!isBrick && hours>0) {
             if (PROFILE.general->calculateRDI()) {
                 html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg("black").arg(STR_TR_RDI).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
+                        .arg("#F88017").arg(COLOR_Text.name()).arg(STR_TR_RDI).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
             } else {
                 html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg("black").arg(STR_TR_AHI).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
+                        .arg("#F88017").arg(COLOR_Text.name()).arg(STR_TR_AHI).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
             }
 
             if (cpap->machine->GetClass()==STR_MACH_ResMed || cpap->machine->GetClass()==STR_MACH_FPIcon) {
@@ -838,32 +838,32 @@ void Daily::Load(QDate date)
             html+="<tr><td valign=top colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
 
             html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#4040ff").arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
+                    .arg(COLOR_Hypopnea.name()).arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
             if (cpap->machine->GetClass()==STR_MACH_ResMed) {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg("#208020").arg("black")
+                        .arg(COLOR_Apnea.name()).arg(COLOR_Text.name())
                         .arg(tr("Apnea")).arg(schema::channel[CPAP_Apnea].description()).arg(uai,0,'f',2).arg(CPAP_Apnea);
             }
             html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#40afbf").arg("black").arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
+                    .arg(COLOR_Obstructive.name()).arg(COLOR_Text.name()).arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
 
             if (cpap->machine->GetClass()==STR_MACH_FPIcon) {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#404040").arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
+                    .arg(COLOR_FlowLimit.name()).arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
             } else {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#b254cd").arg("black").arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
+                    .arg(COLOR_ClearAirway.name()).arg(COLOR_Text.name()).arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
             }
 
             if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                  .arg(schema::channel[CPAP_NRI].defaultColor().name()).arg("black").arg(STR_TR_NRI).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
+                  .arg(schema::channel[CPAP_NRI].defaultColor().name()).arg(COLOR_Text.name()).arg(STR_TR_NRI).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
             }
             if (PROFILE.cpap->userEventFlagging()) {
                 EventDataType uf1=cpap->count(CPAP_UserFlag1) / cpap->hours();
                 if (uf1>0)
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg("#e0e0e0").arg("black")
+                        .arg(COLOR_UserFlag1.name()).arg(COLOR_Text.name())
                         .arg(tr("User Flags"))
                         .arg(schema::channel[CPAP_UserFlag1].description())
                         .arg(uf1,0,'f',2).arg(CPAP_UserFlag1);
@@ -874,31 +874,31 @@ void Daily::Load(QDate date)
             if (cpap->machine->GetClass()==STR_MACH_PRS1) {
                 html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#ffff80").arg("black").arg(STR_TR_RERA).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
+                    .arg(COLOR_RERA.name()).arg(COLOR_Text.name()).arg(STR_TR_RERA).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
                 if (mode>MODE_CPAP) {
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg("#404040").arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
+                        .arg(COLOR_FlowLimit.name()).arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
 
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg("#ff4040").arg("black").arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
+                        .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
                 } else {
                     //html+="<tr bgcolor='#404040'><td colspan=2>&nbsp;</td></tr>";
                     html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg("#ff4040").arg("black").arg(tr("VSnore2")).arg(schema::channel[CPAP_VSnore2].description()).arg(cpap->count(CPAP_VSnore2)/cpap->hours(),0,'f',2).arg(CPAP_VSnore2);
+                        .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore2")).arg(schema::channel[CPAP_VSnore2].description()).arg(cpap->count(CPAP_VSnore2)/cpap->hours(),0,'f',2).arg(CPAP_VSnore2);
                 }
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                    .arg("#80ff80").arg("black").arg(tr("PB/CSR")).arg(schema::channel[CPAP_CSR].description()).arg(csr,0,'f',2).arg(CPAP_CSR);
+                        .arg(COLOR_CSR.name()).arg(COLOR_Text.name()).arg(tr("PB/CSR")).arg(schema::channel[CPAP_CSR].description()).arg(csr,0,'f',2).arg(CPAP_CSR);
 
                 html+="</table></td>";
             } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
                 html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                .arg("#40c0c0").arg("black").arg(STR_TR_Leak).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
+                .arg(COLOR_LeakFlag.name()).arg(COLOR_Text.name()).arg(STR_TR_Leak).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
 
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg("#ff4040").arg("black").arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
+                    .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                  .arg("#80ff80").arg("black").arg(tr("Exh&nbsp;Puff")).arg(schema::channel[CPAP_ExP].description()).arg(exp,0,'f',2).arg(CPAP_ExP);
+                  .arg(COLOR_ExP.name()).arg("white").arg(tr("Exh&nbsp;Puff")).arg(schema::channel[CPAP_ExP].description()).arg(exp,0,'f',2).arg(CPAP_ExP);
 
                 html+="</table></td>";
 
@@ -1021,7 +1021,7 @@ void Daily::Load(QDate date)
                     }
                 }
 
-                html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='black';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
                     //.arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+STR_TR_RDI+"<span class='classic'>"+
                     //.arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
                     .arg(schema::channel[code].label())
@@ -1455,7 +1455,7 @@ void Daily::on_JournalNotesFontsize_activated(int index)
 
 void Daily::on_JournalNotesColour_clicked()
 {
-    QColor col=QColorDialog::getColor(Qt::black,this,tr("Pick a Colour")); //,QColorDialog::NoButtons);
+    QColor col=QColorDialog::getColor(COLOR_Black,this,tr("Pick a Colour")); //,QColorDialog::NoButtons);
     if (!col.isValid()) return;
 
     QTextCursor cursor = ui->JournalNotes->textCursor();

@@ -12,8 +12,6 @@
 
 gFlagsGroup::gFlagsGroup()
 {
-    //static QColor col=Qt::black;
-
     addVertexBuffer(quads=new gVertexBuffer(512,GL_QUADS));
     addVertexBuffer(lines=new gVertexBuffer(20,GL_LINE_LOOP));
     quads->setAntiAlias(true);
@@ -72,13 +70,11 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     m_barh=float(height)/float(vis);
     float linetop=top;
 
-    static QColor col1=QColor(0xd0,0xff,0xd0,0xff);
-    static QColor col2=QColor(0xff,0xff,0xff,0xff);
-    QColor * barcol;
+    QColor barcol;
     for (int i=0;i<lvisible.size();i++) {
         // Alternating box color
-        if (i & 1) barcol=&col1; else barcol=&col2;
-        quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, barcol->rgba());
+        if (i & 1) barcol=COLOR_ALT_BG1; else barcol=COLOR_ALT_BG2;
+        quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, barcol.rgba());
 
         // Paint the actual flags
         lvisible[i]->paint(w,left,linetop,width,m_barh);
@@ -86,11 +82,10 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     }
 
     gVertexBuffer *outlines=w.lines();
-    QColor blk=Qt::black;
-    outlines->add(left-1, top, left-1, top+height, blk.rgba());
-    outlines->add(left-1, top+height, left+width,top+height, blk.rgba());
-    outlines->add(left+width,top+height, left+width, top,blk.rgba());
-    outlines->add(left+width, top, left-1, top, blk.rgba());
+    outlines->add(left-1, top, left-1, top+height, COLOR_Outline.rgba());
+    outlines->add(left-1, top+height, left+width,top+height, COLOR_Outline.rgba());
+    outlines->add(left+width,top+height, left+width, top,COLOR_Outline.rgba());
+    outlines->add(left+width, top, left-1, top, COLOR_Outline.rgba());
 
     //lines->add(left-1, top, left-1, top+height);
     //lines->add(left+width, top+height, left+width, top);

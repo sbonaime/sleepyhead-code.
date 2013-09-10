@@ -25,6 +25,7 @@ void sh_delay(int ms)
 #endif
 
 
+
 #if (QT_VERSION >= QT_VERSION_CHECK(4,8,0))
 // Qt 4.8 makes this a whole lot easier
 Qt::DayOfWeek firstDayOfWeekFromLocale()
@@ -80,6 +81,54 @@ Qt::DayOfWeek firstDayOfWeekFromLocale()
 #endif
     return firstDay;
 }
-
 #endif
+
+
+// Flag Colors
+QColor COLOR_Hypopnea=Qt::blue;
+QColor COLOR_Obstructive=COLOR_Aqua;
+QColor COLOR_Apnea=Qt::darkGreen;
+QColor COLOR_CSR=COLOR_LightGreen;
+QColor COLOR_ClearAirway=QColor("#b254cd");
+QColor COLOR_RERA=COLOR_Gold;
+QColor COLOR_VibratorySnore=QColor("#ff4040");
+QColor COLOR_FlowLimit=QColor("#404040");
+QColor COLOR_LeakFlag=QColor("#40c0c0"); //Qt::darkBlue;
+QColor COLOR_NRI=Qt::darkMagenta;
+QColor COLOR_ExP=Qt::darkCyan;
+QColor COLOR_PressurePulse=Qt::red;
+QColor COLOR_PulseChange=COLOR_LightGray;
+QColor COLOR_SPO2Drop=COLOR_LightBlue;
+QColor COLOR_UserFlag1=QColor("#e0e0e0");
+
+// Chart Colors
+QColor COLOR_EPAP=Qt::blue;
+QColor COLOR_IPAP=Qt::red;
+QColor COLOR_IPAPLo=Qt::darkRed;
+QColor COLOR_IPAPHi=Qt::darkRed;
+QColor COLOR_Plethy=Qt::darkBlue;
+QColor COLOR_Pulse=Qt::red;
+QColor COLOR_SPO2=Qt::blue;
+QColor COLOR_FlowRate=Qt::black;
+QColor COLOR_Pressure=Qt::darkGreen;
+QColor COLOR_RDI=COLOR_LightGreen;
+QColor COLOR_AHI=COLOR_LightGreen;
+QColor COLOR_Leak=COLOR_DarkMagenta;
+QColor COLOR_LeakTotal=COLOR_DarkYellow;
+QColor COLOR_MaxLeak=COLOR_DarkRed;
+QColor COLOR_Snore=COLOR_DarkGray;
+QColor COLOR_RespRate=COLOR_DarkBlue;
+QColor COLOR_MaskPressure=COLOR_Blue;
+QColor COLOR_PTB=COLOR_Gray;              //Patient Triggered Breathing
+QColor COLOR_MinuteVent=COLOR_Cyan;
+QColor COLOR_TgMV=COLOR_DarkCyan;
+QColor COLOR_TidalVolume=COLOR_Magenta;
+QColor COLOR_FLG=COLOR_DarkBlue;          // Flow Limitation Graph
+QColor COLOR_IE=COLOR_DarkRed;            // Inspiratory Expiratory Ratio
+QColor COLOR_Te=COLOR_DarkGreen;
+QColor COLOR_Ti=COLOR_DarkBlue;
+QColor COLOR_SleepStage=COLOR_Gray;
+
+
+
 

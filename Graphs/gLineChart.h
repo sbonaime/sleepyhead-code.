@@ -20,7 +20,7 @@ class AHIChart:public Layer
 {
 public:
     //! \brief Constructs an AHIChart object, with QColor col for the line plots.
-    AHIChart(const QColor col=QColor("black"));
+    AHIChart(QColor col=QColor("black"));
     ~AHIChart();
 
     //! \brief Draws the precalculated data to the Vertex buffers

@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <QString>
+#include <QColor>
 #include <QObject>
 #include "version.h"
 
@@ -133,10 +134,15 @@ const QString STR_TR_VS=QObject::tr("VS");      // Short form of Vibratory Snore
 const QString STR_TR_VS2=QObject::tr("VS2");    // Short form of Secondary Vibratory Snore (Some Philips Respironics Machines have two sources)
 const QString STR_TR_RERA=QObject::tr("RERA");  // Acronym for Respiratory Effort Related Arousal
 const QString STR_TR_PP=QObject::tr("PP");      // Short form for Pressure Pulse
+const QString STR_TR_P=QObject::tr("P");        // Short form for Pressure Event
 const QString STR_TR_RE=QObject::tr("RE");      // Short form of Respiratory Effort Related Arousal
+const QString STR_TR_NR=QObject::tr("NR");      // Short form of Non Responding event? (forgot sorry)
 const QString STR_TR_NRI=QObject::tr("NRI");    // Sorry I Forgot.. it's a flag on Intellipap machines
 const QString STR_TR_O2=QObject::tr("O2");      // SpO2 Desaturation
 const QString STR_TR_PC=QObject::tr("PC");      // Short form for Pulse Change
+const QString STR_TR_UF1=QObject::tr("UF1");      // Short form for User Flag 1
+const QString STR_TR_UF2=QObject::tr("UF2");      // Short form for User Flag 2
+const QString STR_TR_UF3=QObject::tr("UF3");      // Short form for User Flag 3
 
 
 
@@ -205,6 +211,7 @@ const QString STR_TR_WakeUp=QObject::tr("Wake-up");
 const QString STR_TR_MaskTime=QObject::tr("Mask Time");
 const QString STR_TR_Unknown=QObject::tr("Unknown");
 const QString STR_TR_None=QObject::tr("None");
+const QString STR_TR_Ready=QObject::tr("Ready");
 
 const QString STR_TR_First=QObject::tr("First");
 const QString STR_TR_Last=QObject::tr("Last");
@@ -220,7 +227,5 @@ const QString STR_TR_Average=QObject::tr("Average");
 const QString STR_TR_Median=QObject::tr("Median");
 const QString STR_TR_Avg=QObject::tr("Avg");        // Average
 const QString STR_TR_WAvg=QObject::tr("W-Avg");     // Weighted Average
-
-
 
 #endif // COMMON_H

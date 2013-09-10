@@ -65,7 +65,7 @@ class gYAxis:public Layer
 {
     public:
         //! \brief Construct a gYAxis object, with QColor col for tickers & text
-        gYAxis(QColor col=QColor("black"));
+        gYAxis(QColor col=Qt::black);
         virtual ~gYAxis();
 
         //! \brief Draw the horizontal tickers display
