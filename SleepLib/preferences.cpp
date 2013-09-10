@@ -67,7 +67,7 @@ QString GetAppRoot()
 #endif
 
     if (HomeAppRoot.isEmpty())
-        HomeAppRoot=desktopFolder+"/"+AppRoot;
+        HomeAppRoot=desktopFolder+QDir::separator()+AppRoot;
 
     return HomeAppRoot;
 }
@@ -91,10 +91,10 @@ Preferences::Preferences(QString name,QString filename)
     }
 
     if (filename.isEmpty()) {
-        p_filename=GetAppRoot()+"/"+p_name+xmlext;
+        p_filename=GetAppRoot()+QDir::separator()+p_name+xmlext;
     } else {
-        if (!filename.contains("/")) {
-            p_filename=GetAppRoot()+"/";
+        if (!filename.contains(QDir::separator())) {
+            p_filename=GetAppRoot()+QDir::separator();
         } else p_filename="";
 
         p_filename+=filename;

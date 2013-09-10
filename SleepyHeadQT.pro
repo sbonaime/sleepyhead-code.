@@ -185,7 +185,10 @@ FORMS    += \
 
 TRANSLATIONS += \
     Translations/sleepyhead_nl.ts \
-    Translations/sleepyhead_fr.ts
+    Translations/sleepyhead_fr.ts \
+    Translations/sleepyhead_se.ts \
+    Translations/sleepyhead_de.ts \
+    Translations/sleepyhead_es.ts
 
 RESOURCES += \
     Resources.qrc

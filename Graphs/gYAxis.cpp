@@ -142,8 +142,8 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     //Todo: clean this up as there is a lot of duplicate code between the sections
 
-    if (w.graphView()->usePixmapCache()) {
-        if (w.invalidate_yAxisImage) {
+    if (0) {//w.graphView()->usePixmapCache()) {
+/*        if (w.invalidate_yAxisImage) {
 
             if (!m_image.isNull()) {
                 w.graphView()->deleteTexture(m_textureID);
@@ -262,7 +262,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_BLEND);
         }
-
+*/
     } else {
         if (height<0) return;
         if (height>2000) return;
