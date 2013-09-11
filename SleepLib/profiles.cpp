@@ -50,10 +50,12 @@ Profile::Profile(QString path)
 {
     const QString xmlext=".xml";
     p_name=STR_GEN_Profile;
-    if (path.isEmpty()) p_path=GetAppRoot();
+    if (path.isEmpty())
+        p_path=GetAppRoot();
     else p_path=path;
     (*this)[STR_GEN_DataFolder]=p_path;
-    if (!p_path.endsWith("/")) p_path+="/";
+    if (!p_path.endsWith("/"))
+        p_path+="/";
     p_filename=p_path+p_name+xmlext;
     machlist.clear();
 
@@ -185,9 +187,12 @@ void Profile::ExtraLoad(QDomElement & root)
         //if (ml) {
         //   ml->CreateMachine
         //}
-        if (m_type==MT_CPAP) m=new CPAP(this,m_id);
-        else if (m_type==MT_OXIMETER) m=new Oximeter(this,m_id);
-        else if (m_type==MT_SLEEPSTAGE) m=new SleepStage(this,m_id);
+        if (m_type==MT_CPAP)
+            m=new CPAP(this,m_id);
+        else if (m_type==MT_OXIMETER)
+            m=new Oximeter(this,m_id);
+        else if (m_type==MT_SLEEPSTAGE)
+            m=new SleepStage(this,m_id);
         else {
             m=new Machine(this,m_id);
             m->SetType(m_type);
@@ -253,8 +258,10 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
         m_first=m_last=date;
         is_first_day=false;
     }
-    if (m_first>date) m_first=date;
-    if (m_last<date) m_last=date;
+    if (m_first>date)
+        m_first=date;
+    if (m_last<date)
+        m_last=date;
 
     // Check for any other machines of same type.. Throw an exception if one already exists.
     QList<Day *> & dl=daylist[date];
@@ -330,11 +337,13 @@ int Profile::Import(QString path)
     int c=0;
     qDebug() << "Importing " << path;
     path=path.replace("\\","/");
-    if (path.endsWith("/")) path.chop(1);
+    if (path.endsWith("/"))
+        path.chop(1);
 
     QList<MachineLoader *>loaders=GetLoaders();
     for (QList<MachineLoader *>::iterator i=loaders.begin(); i!=loaders.end(); i++) {
-        if (c+=(*i)->Open(path,this)) break;
+        if (c+=(*i)->Open(path,this))
+            break;
     }
     //qDebug() << "Import Done";
     return c;
@@ -376,7 +385,8 @@ QList<Machine *> Profile::GetMachines(MachineType t)
 Machine * Profile::GetMachine(MachineType t)
 {
     QList<Machine *>vec=GetMachines(t);
-    if (vec.size()==0) return NULL;
+    if (vec.size()==0)
+        return NULL;
     return vec[0];
 
 }
@@ -398,8 +408,10 @@ void Profile::RemoveSession(Session * sess)
                 qint64 first=0,last=0;
                 for (int i=0;i<day->getSessions().size();i++) {
                     Session & sess=*day->getSessions()[i];
-                    if (!first || first>sess.first()) first=sess.first();
-                    if (!last || last<sess.last()) last=sess.last();
+                    if (!first || first>sess.first())
+                        first=sess.first();
+                    if (!last || last<sess.last())
+                        last=sess.last();
                 }
                 // day->setFirst(first);
                 // day->setLast(last);
@@ -447,7 +459,8 @@ Profile *Create(QString name)
 {
     QString path=PREF.Get("{home}/Profiles/")+name;
     QDir dir(path);
-    if (!dir.exists(path)) dir.mkpath(path);
+    if (!dir.exists(path))
+        dir.mkpath(path);
     //path+="/"+name;
     Profile *prof=new Profile(path);
     prof->Open();
@@ -540,6 +553,10 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
         return 0;
     //end=LastDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
+
+
     int days=0;
     do {
         Day * day=GetGoodDay(date,mt);
@@ -554,9 +571,13 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
 
 EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double val=0;
     do {
@@ -570,8 +591,10 @@ EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QD
 }
 double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
 
     double val=0;
@@ -591,6 +614,8 @@ EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
     if (!end.isValid())
         end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double val=0;
     do {
@@ -604,9 +629,13 @@ EventDataType Profile::calcHours(MachineType mt, QDate start, QDate end)
 }
 EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double val=0;
     int cnt=0;
@@ -618,7 +647,8 @@ EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDat
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (!cnt) return 0;
+    if (!cnt)
+        return 0;
     return val/float(cnt);
 }
 EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDate end)
@@ -628,6 +658,8 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
     if (!end.isValid())
         end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double val=0,tmp,tmph,hours=0;
     do {
@@ -640,32 +672,42 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (!hours) return 0;
+    if (!hours)
+        return 0;
     val=val/hours;
     return val;
 }
 EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
+
 
     double min=99999999,tmp;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
             tmp=day->Min(code);
-            if (min>tmp) min=tmp;
+            if (min>tmp)
+                min=tmp;
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (min>=99999999) min=0;
+    if (min>=99999999)
+        min=0;
     return min;
 }
 EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
 
     double max=-99999999,tmp;
@@ -673,47 +715,61 @@ EventDataType Profile::calcMax(ChannelID code, MachineType mt, QDate start, QDat
         Day * day=GetGoodDay(date,mt);
         if (day) {
             tmp=day->Max(code);
-            if (max<tmp) max=tmp;
+            if (max<tmp)
+                max=tmp;
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (max<=-99999999) max=0;
+    if (max<=-99999999)
+        max=0;
     return max;
 }
 EventDataType Profile::calcSettingsMin(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double min=99999999,tmp;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
             tmp=day->settings_min(code);
-            if (min>tmp) min=tmp;
+            if (min>tmp)
+                min=tmp;
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (min>=99999999) min=0;
+    if (min>=99999999)
+        min=0;
     return min;
 }
 EventDataType Profile::calcSettingsMax(ChannelID code, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     double max=-99999999,tmp;
     do {
         Day * day=GetGoodDay(date,mt);
         if (day) {
             tmp=day->settings_max(code);
-            if (max<tmp) max=tmp;
+            if (max<tmp)
+                max=tmp;
         }
         date=date.addDays(1);
     } while (date<=end);
-    if (max<=-99999999) max=0;
+    if (max<=-99999999)
+        max=0;
     return max;
 }
 
@@ -726,10 +782,14 @@ struct CountSummary {
 
 EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, MachineType mt, QDate start, QDate end)
 {
-    if (!start.isValid()) start=LastGoodDay(mt);
-    if (!end.isValid()) end=LastGoodDay(mt);
+    if (!start.isValid())
+        start=LastGoodDay(mt);
+    if (!end.isValid())
+        end=LastGoodDay(mt);
 
     QDate date=start;
+    if (date.isNull())
+        return 0;
 
     QMap<EventDataType, qint64> wmap;
 
@@ -859,7 +919,8 @@ QDate Profile::FirstDay(MachineType mt)
 
     QDate d=m_first;
     do {
-        if (GetDay(d,mt)!=NULL) return d;
+        if (GetDay(d,mt)!=NULL)
+            return d;
         d=d.addDays(1);
     } while (d<=m_last);
     return m_last;
@@ -870,7 +931,8 @@ QDate Profile::LastDay(MachineType mt)
         return m_last;
     QDate d=m_last;
     do {
-        if (GetDay(d,mt)!=NULL) return d;
+        if (GetDay(d,mt)!=NULL)
+            return d;
         d=d.addDays(-1);
     } while (d>=m_first);
     return m_first;
@@ -886,7 +948,8 @@ QDate Profile::FirstGoodDay(MachineType mt)
     if (!d.isValid() || !l.isValid())
         return QDate();
     do {
-        if (GetGoodDay(d,mt)!=NULL) return d;
+        if (GetGoodDay(d,mt)!=NULL)
+            return d;
         d=d.addDays(1);
     } while (d<=l);
     return l; //m_last;
@@ -897,9 +960,11 @@ QDate Profile::LastGoodDay(MachineType mt)
         return FirstDay();
     QDate d=LastDay(mt);
     QDate f=FirstDay(mt);
-    if (!(d.isValid() && f.isValid())) return QDate();
+    if (!(d.isValid() && f.isValid()))
+        return QDate();
     do {
-        if (GetGoodDay(d,mt)!=NULL) return d;
+        if (GetGoodDay(d,mt)!=NULL)
+            return d;
         d=d.addDays(-1);
     } while (d>=f);
     return f; //m_first;
@@ -908,7 +973,8 @@ bool Profile::hasChannel(ChannelID code)
 {
     QDate d=LastDay();
     QDate f=FirstDay();
-    if (!(d.isValid() && f.isValid())) return false;
+    if (!(d.isValid() && f.isValid()))
+        return false;
     QMap<QDate,QList<Day *> >::iterator dit;
     bool found=false;
     do {
@@ -922,7 +988,8 @@ bool Profile::hasChannel(ChannelID code)
                 }
             }
         }
-        if (found) break;
+        if (found)
+            break;
         d=d.addDays(-1);
     } while (d>=f);
     return found;
