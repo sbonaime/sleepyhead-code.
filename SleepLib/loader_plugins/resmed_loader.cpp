@@ -1652,16 +1652,115 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 
 void ResInitModelMap()
 {
-    // Courtesy Troy Schultz
-    RMS9ModelMap[36001]="S9 Escape";
-    RMS9ModelMap[36002]="S9 Escape Auto";
-    RMS9ModelMap[36003]="S9 Elite";
-    RMS9ModelMap[36004]="S9 VPAP S";
-    RMS9ModelMap[36005]="S9 AutoSet";
-    RMS9ModelMap[36006]="S9 VPAP Auto";
-    RMS9ModelMap[36007]="S9 VPAP Adapt";
-    RMS9ModelMap[36008]="S9 VPAP ST";
-    RMS9ModelMap[36141]="S9 Escape";
+    const QString RMS9_STR_Escape="S9 Escape";
+    const QString RMS9_STR_EscapeAuto="S9 Escape Auto";
+    const QString RMS9_STR_Elite="S9 Elite";
+    const QString RMS9_STR_AutoSet="S9 AutoSet";
+    const QString RMS9_STR_AutoSetForHer="S9 AutoSet for Her";
+    const QString RMS9_STR_AutoSetCS="S9 AutoSet CS";
+    const QString RMS9_STR_AutoSet25="S9 AutoSet 25";
+    const QString RMS9_STR_VPAP_S="S9 VPAP S";
+    const QString RMS9_STR_VPAP_Auto="S9 VPAP Auto";
+    const QString RMS9_STR_VPAP_Adapt="S9 VPAP Adapt";
+    const QString RMS9_STR_VPAP_ST="S9 VPAP ST";
+    const QString RMS9_STR_VPAP_STA="S9 VPAP ST-A";
+    const QString RMS9_STR_VPAP_ST22="S9 VPAP ST 22";
+
+    // Escape Series
+    RMS9ModelMap[36001]=RMS9ModelMap[36011]=RMS9ModelMap[36021]=RMS9ModelMap[36141]=
+    RMS9ModelMap[36201]=RMS9ModelMap[36221]=RMS9ModelMap[36261]=RMS9ModelMap[36301]=
+    RMS9ModelMap[36361]=RMS9_STR_Escape;
+
+    // Escape Auto Series
+    RMS9ModelMap[36002]=RMS9ModelMap[36012]=RMS9ModelMap[36022]=RMS9ModelMap[36302]=
+    RMS9ModelMap[36362]=RMS9_STR_EscapeAuto;
+
+    // Elite Series
+    RMS9ModelMap[36003]=RMS9ModelMap[36013]=RMS9ModelMap[36023]=RMS9ModelMap[36103]=
+    RMS9ModelMap[36113]=RMS9ModelMap[36123]=RMS9ModelMap[36143]=RMS9ModelMap[36203]=
+    RMS9ModelMap[36223]=RMS9ModelMap[36243]=RMS9ModelMap[36263]=RMS9ModelMap[36303]=
+    RMS9ModelMap[36343]=RMS9ModelMap[36363]=RMS9_STR_Elite;
+
+    // AutoSet Series
+    RMS9ModelMap[36005]=RMS9ModelMap[36015]=RMS9ModelMap[36025]=RMS9ModelMap[36105]=
+    RMS9ModelMap[36115]=RMS9ModelMap[36125]=RMS9ModelMap[36145]=RMS9ModelMap[36205]=
+    RMS9ModelMap[36225]=RMS9ModelMap[36245]=RMS9ModelMap[36265]=RMS9ModelMap[36305]=
+    RMS9ModelMap[36325]=RMS9ModelMap[36345]=RMS9ModelMap[36365]=RMS9_STR_AutoSet;
+
+    // AutoSet CS Series
+    RMS9ModelMap[36100]=RMS9ModelMap[36110]=RMS9ModelMap[36120]=RMS9ModelMap[36140]=
+    RMS9ModelMap[36200]=RMS9ModelMap[36220]=RMS9ModelMap[36360]=RMS9_STR_AutoSetCS;
+
+    // AutoSet 25 Series
+    RMS9ModelMap[36106]=RMS9ModelMap[36116]=RMS9ModelMap[36126]=RMS9ModelMap[36146]=
+    RMS9ModelMap[36206]=RMS9ModelMap[36226]=RMS9ModelMap[36366]=RMS9_STR_AutoSet25;
+
+    // Girly "For Her" AutoSet Series
+    RMS9ModelMap[36065]=RMS9_STR_AutoSetForHer;
+
+    // VPAP S Series (+H5i +Climate Control)
+    RMS9ModelMap[36004]=RMS9ModelMap[36014]=RMS9ModelMap[36024]=RMS9ModelMap[36114]=
+    RMS9ModelMap[36124]=RMS9ModelMap[36144]=RMS9ModelMap[36204]=RMS9ModelMap[36224]=
+    RMS9ModelMap[36284]=RMS9ModelMap[36304]=RMS9_STR_VPAP_S;
+
+    // VPAP Auto Series (+H5i +Climate Control)
+    RMS9ModelMap[36006]=RMS9ModelMap[36016]=RMS9ModelMap[36026]=RMS9_STR_VPAP_Auto;
+
+    // VPAP Adapt Series (+H5i +Climate Control)
+    RMS9ModelMap[36007]=RMS9ModelMap[36017]=RMS9ModelMap[36027]=RMS9ModelMap[36367]=RMS9_STR_VPAP_Adapt;
+
+    // VPAP ST Series (+H5i +Climate Control)
+    RMS9ModelMap[36008]=RMS9ModelMap[36018]=RMS9ModelMap[36028]=RMS9ModelMap[36108]=
+    RMS9ModelMap[36148]=RMS9ModelMap[36208]=RMS9ModelMap[36228]=RMS9ModelMap[36368]=RMS9_STR_VPAP_ST;
+
+    // VPAP ST 22 Series
+    RMS9ModelMap[36118]=RMS9ModelMap[36128]=RMS9_STR_VPAP_ST22;
+
+    // VPAP ST-A Series
+    RMS9ModelMap[36039]=RMS9ModelMap[36159]=RMS9ModelMap[36169]=RMS9ModelMap[36379]=RMS9_STR_VPAP_STA;
+
+
+    //    36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203,
+    //    36223, 36243, 36263, 36303, 36343, 36363 S9 Elite Series
+    //    36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205,
+    //    36225, 36245, 36265, 36305, 36325, 36345, 36365 S9 AutoSet Series
+    //    36065 S9 AutoSet for Her
+    //    36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301,
+    //    36361 S9 Escape
+    //    36002, 36012, 36022, 36302, 36362 S9 Escape Auto
+    //    36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224,
+    //    36284, 36304 S9 VPAP S (+ H5i, + Climate Control)
+    //    36006, 36016, 36026 S9 VPAP AUTO (+ H5i, + Climate Control)
+
+//    36007, 36017, 36027, 36367
+//    S9 VPAP ADAPT (+ H5i, + Climate
+//    Control)
+//    36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 S9 VPAP ST (+ H5i, + Climate Control)
+//    36100, 36110, 36120, 36140, 36200, 36220, 36360 S9 AUTOSET CS
+//    36106, 36116, 36126, 36146, 36206, 36226, 36366 S9 AUTOSET 25
+//    36118, 36128 S9 VPAP ST 22
+//    36039, 36159, 36169, 36379 S9 VPAP ST-A
+//    24921, 24923, 24925, 24926, 24927 ResMed Power Station II (RPSII)
+//    33030 S8 Compact
+//    33001, 33007, 33013, 33036, 33060 S8 Escape
+//    33032 S8 Lightweight
+//    33033 S8 AutoScore
+//    33048, 33051, 33052, 33053, 33054, 33061 S8 Escape II
+//    33055 S8 Lightweight II
+//    33021 S8 Elite
+//    33039, 33045, 33062, 33072, 33073, 33074, 33075 S8 Elite II
+//    33044 S8 AutoScore II
+//    33105, 33112, 33126 S8 AutoSet (including Spirit & Vantage)
+//    33128, 33137 S8 Respond
+//    33129, 33141, 33150 S8 AutoSet II
+//    33136, 33143, 33144, 33145, 33146, 33147, 33148 S8 AutoSet Spirit II
+//    33138 S8 AutoSet C
+//    26101, 26121 VPAP Auto 25
+//    26119, 26120 VPAP S
+//    26110, 26122 VPAP ST
+//    26104, 26105, 26125, 26126 S8 Auto 25
+//    26102, 26103, 26106, 26107, 26108, 26109, 26123, 26127 VPAP IV
+//    26112, 26113, 26114, 26115, 26116, 26117, 26118, 26124 VPAP IV ST
 
 
     /* S8 Series
@@ -1710,7 +1809,8 @@ void ResInitModelMap()
 
     // Sad (oximetry)
     resmed_codes[OXI_Pulse].push_back("Pulse");
-    resmed_codes[OXI_Pulse].push_back("Puls");
+    resmed_codes[OXI_Pulse].push_back("Puls");                  // German
+    resmed_codes[OXI_Pulse].push_back("Pols");                  // Dutch
     resmed_codes[OXI_SPO2].push_back("SpO2");
 
     // Event annotations
@@ -1720,21 +1820,29 @@ void ResInitModelMap()
     resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
 
     resmed_codes[CPAP_Mode].push_back("Mode");
-    resmed_codes[CPAP_Mode].push_back("Modus");
-    resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
-    resmed_codes[RMS9_SetPressure].push_back("Set Pressure"); // Prescription
-    resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
+    resmed_codes[CPAP_Mode].push_back("Modus"); // Dutch & German
+
+    resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");    // German
+    resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");   // Dutch
+    resmed_codes[RMS9_SetPressure].push_back("Set Pressure");      // English - Prescription
+    resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");   // French
+
     resmed_codes[RMS9_EPR].push_back("EPR");
+
     resmed_codes[RMS9_EPRSet].push_back("EPR Level");
-    resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");
-    resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");             // French
+    resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");            // Dutch
+    resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");            // German
+
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
-    resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
-    resmed_codes[CPAP_PressureMax].push_back("Pression max.");
+    resmed_codes[CPAP_PressureMax].push_back("Max. Druck");       // German
+    resmed_codes[CPAP_PressureMax].push_back("Max druk");         // Dutch
+    resmed_codes[CPAP_PressureMax].push_back("Pression max.");    // French
 
     resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
-    resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
-    resmed_codes[CPAP_PressureMin].push_back("Pression min.");
+    resmed_codes[CPAP_PressureMin].push_back("Min. Druck");       // German
+    resmed_codes[CPAP_PressureMin].push_back("Min druk");         // Dutch
+    resmed_codes[CPAP_PressureMin].push_back("Pression min.");    // French
 
     // STR.edf
 }

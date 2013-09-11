@@ -256,64 +256,8 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../daily.cpp" line="133"/>
-        <source>H</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="134"/>
-        <source>A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="135"/>
-        <source>OA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="136"/>
-        <source>CA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="137"/>
-        <source>RE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="138"/>
-        <source>NR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="139"/>
-        <location filename="../daily.cpp" line="195"/>
-        <source>FL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="161"/>
-        <source>UF1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="162"/>
-        <source>UF2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="163"/>
-        <source>UF3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../daily.cpp" line="175"/>
         <source>Selection AHI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../daily.cpp" line="194"/>
-        <source>VS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2404,140 +2348,134 @@ Index</source>
     </message>
     <message>
         <location filename="../oximetry.cpp" line="1043"/>
-        <location filename="../oximetry.cpp" line="1482"/>
+        <location filename="../oximetry.cpp" line="1483"/>
         <source>No Oximetry Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1140"/>
+        <location filename="../oximetry.cpp" line="1141"/>
         <source>Oximetry live recording has been terminated due to timeout.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1149"/>
-        <location filename="../oximetry.cpp" line="1364"/>
+        <location filename="../oximetry.cpp" line="1150"/>
+        <location filename="../oximetry.cpp" line="1365"/>
         <source>&amp;Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1167"/>
-        <location filename="../oximetry.cpp" line="1654"/>
-        <location filename="../oximetry.cpp" line="1709"/>
+        <location filename="../oximetry.cpp" line="1168"/>
+        <location filename="../oximetry.cpp" line="1655"/>
+        <location filename="../oximetry.cpp" line="1710"/>
         <source>Save Session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1167"/>
+        <location filename="../oximetry.cpp" line="1168"/>
         <source>Creating a new oximetry session will destroy the old one.
 Would you like to save it first?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1167"/>
-        <location filename="../oximetry.cpp" line="1654"/>
-        <location filename="../oximetry.cpp" line="1709"/>
+        <location filename="../oximetry.cpp" line="1168"/>
+        <location filename="../oximetry.cpp" line="1655"/>
+        <location filename="../oximetry.cpp" line="1710"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1167"/>
-        <location filename="../oximetry.cpp" line="1654"/>
-        <location filename="../oximetry.cpp" line="1709"/>
+        <location filename="../oximetry.cpp" line="1168"/>
+        <location filename="../oximetry.cpp" line="1655"/>
+        <location filename="../oximetry.cpp" line="1710"/>
         <source>Destroy It</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1167"/>
-        <location filename="../oximetry.cpp" line="1654"/>
-        <location filename="../oximetry.cpp" line="1709"/>
+        <location filename="../oximetry.cpp" line="1168"/>
+        <location filename="../oximetry.cpp" line="1655"/>
+        <location filename="../oximetry.cpp" line="1710"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1177"/>
+        <location filename="../oximetry.cpp" line="1178"/>
         <source>Please Wait</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1194"/>
+        <location filename="../oximetry.cpp" line="1195"/>
         <source>Oximetry Error!
 
 Something is wrong with the device connection.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1230"/>
+        <location filename="../oximetry.cpp" line="1231"/>
         <source>&amp;Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1316"/>
+        <location filename="../oximetry.cpp" line="1317"/>
         <source>Oximeter Error
 
 The device has not responded.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1323"/>
-        <location filename="../oximetry.cpp" line="1381"/>
-        <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../oximetry.cpp" line="1327"/>
+        <location filename="../oximetry.cpp" line="1328"/>
         <source>Check Oximeter is Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1347"/>
+        <location filename="../oximetry.cpp" line="1348"/>
         <source>Oximeter Error
 
 The device did not respond.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1395"/>
+        <location filename="../oximetry.cpp" line="1396"/>
         <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1395"/>
+        <location filename="../oximetry.cpp" line="1396"/>
         <source>Oximeter Error!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1457"/>
+        <location filename="../oximetry.cpp" line="1458"/>
         <source>Keep This Recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1457"/>
+        <location filename="../oximetry.cpp" line="1458"/>
         <source>Would you like to save this oximetery session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1654"/>
+        <location filename="../oximetry.cpp" line="1655"/>
         <source>Opening this oximetry file will destroy the current session.
 Would you like to keep it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1664"/>
+        <location filename="../oximetry.cpp" line="1665"/>
         <source>Select an oximetry file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1664"/>
+        <location filename="../oximetry.cpp" line="1665"/>
         <source>Oximetry Files (*.spo *.spoR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1678"/>
+        <location filename="../oximetry.cpp" line="1679"/>
         <source>Couldn&apos;t open oximetry file &quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1709"/>
+        <location filename="../oximetry.cpp" line="1710"/>
         <source>Opening this oximetry session will destroy the unsavedsession in the oximetry tab.
 Would you like to store it first?</source>
         <translation type="unfinished"></translation>
@@ -3626,600 +3564,630 @@ Signed: Nasty Programmer</source>
     <name>QObject</name>
     <message>
         <location filename="../Graphs/gGraphView.cpp" line="2222"/>
-        <location filename="../SleepLib/common.h" line="182"/>
+        <location filename="../SleepLib/common.h" line="188"/>
         <source>No Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="52"/>
-        <location filename="../SleepLib/common.h" line="213"/>
+        <location filename="../SleepLib/common.h" line="53"/>
+        <location filename="../SleepLib/common.h" line="220"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="53"/>
-        <location filename="../SleepLib/common.h" line="214"/>
+        <location filename="../SleepLib/common.h" line="54"/>
+        <location filename="../SleepLib/common.h" line="221"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="82"/>
+        <location filename="../SleepLib/common.h" line="83"/>
         <source>cm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="83"/>
+        <location filename="../SleepLib/common.h" line="84"/>
         <source>&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="84"/>
+        <location filename="../SleepLib/common.h" line="85"/>
         <source>ft</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="85"/>
+        <location filename="../SleepLib/common.h" line="86"/>
         <source>lb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="86"/>
+        <location filename="../SleepLib/common.h" line="87"/>
         <source>oz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="87"/>
+        <location filename="../SleepLib/common.h" line="88"/>
         <source>Kg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="88"/>
+        <location filename="../SleepLib/common.h" line="89"/>
         <source>cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="89"/>
+        <location filename="../SleepLib/common.h" line="90"/>
         <source>Hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="91"/>
+        <location filename="../SleepLib/common.h" line="92"/>
         <source>bpm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="92"/>
+        <location filename="../SleepLib/common.h" line="93"/>
         <source>L/m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="94"/>
+        <location filename="../SleepLib/common.h" line="95"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="95"/>
+        <location filename="../SleepLib/common.h" line="96"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="97"/>
+        <location filename="../SleepLib/common.h" line="98"/>
         <source>BMI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="98"/>
+        <location filename="../SleepLib/common.h" line="99"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="99"/>
+        <location filename="../SleepLib/common.h" line="100"/>
         <source>Zombie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="100"/>
+        <location filename="../SleepLib/common.h" line="101"/>
         <source>Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="101"/>
+        <location filename="../SleepLib/common.h" line="102"/>
         <source>SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="102"/>
+        <location filename="../SleepLib/common.h" line="103"/>
         <source>Plethy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="103"/>
+        <location filename="../SleepLib/common.h" line="104"/>
         <source>Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="105"/>
+        <location filename="../SleepLib/common.h" line="106"/>
         <source>Daily</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="106"/>
+        <location filename="../SleepLib/common.h" line="107"/>
         <source>Overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="107"/>
+        <location filename="../SleepLib/common.h" line="108"/>
         <source>Oximetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="108"/>
+        <location filename="../SleepLib/common.h" line="109"/>
         <source>Oximeter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="109"/>
+        <location filename="../SleepLib/common.h" line="110"/>
         <source>Event Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="112"/>
+        <location filename="../SleepLib/common.h" line="113"/>
         <source>CPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="113"/>
+        <location filename="../SleepLib/common.h" line="114"/>
         <source>BiPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="114"/>
+        <location filename="../SleepLib/common.h" line="115"/>
         <source>Bi-Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="115"/>
+        <location filename="../SleepLib/common.h" line="116"/>
         <source>EPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="116"/>
+        <location filename="../SleepLib/common.h" line="117"/>
         <source>IPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="117"/>
+        <location filename="../SleepLib/common.h" line="118"/>
         <source>IPAPLo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="118"/>
+        <location filename="../SleepLib/common.h" line="119"/>
         <source>IPAPHi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="119"/>
+        <location filename="../SleepLib/common.h" line="120"/>
         <source>APAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="120"/>
+        <location filename="../SleepLib/common.h" line="121"/>
         <source>ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="121"/>
+        <location filename="../SleepLib/common.h" line="122"/>
         <source>ST/ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="123"/>
+        <location filename="../SleepLib/common.h" line="124"/>
         <source>Humidifier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="125"/>
+        <location filename="../SleepLib/common.h" line="126"/>
         <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="126"/>
+        <location filename="../SleepLib/common.h" line="127"/>
         <source>OA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="127"/>
+        <location filename="../SleepLib/common.h" line="128"/>
         <source>A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="128"/>
+        <location filename="../SleepLib/common.h" line="129"/>
         <source>CA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="129"/>
+        <location filename="../SleepLib/common.h" line="130"/>
         <source>FL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="130"/>
+        <location filename="../SleepLib/common.h" line="131"/>
         <source>LE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="131"/>
+        <location filename="../SleepLib/common.h" line="132"/>
         <source>EP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="132"/>
+        <location filename="../SleepLib/common.h" line="133"/>
         <source>VS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="133"/>
+        <location filename="../SleepLib/common.h" line="134"/>
         <source>VS2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="134"/>
+        <location filename="../SleepLib/common.h" line="135"/>
         <source>RERA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="135"/>
+        <location filename="../SleepLib/common.h" line="136"/>
         <source>PP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="136"/>
-        <source>RE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../SleepLib/common.h" line="137"/>
-        <source>NRI</source>
+        <source>P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="138"/>
-        <source>O2</source>
+        <source>RE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="139"/>
+        <source>NR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="140"/>
+        <source>NRI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="141"/>
+        <source>O2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="142"/>
         <source>PC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="143"/>
-        <source>PS</source>
+        <source>UF1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="144"/>
-        <source>AHI</source>
+        <source>UF2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="145"/>
-        <source>RDI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="146"/>
-        <source>AI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="147"/>
-        <source>HI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="148"/>
-        <source>UAI</source>
+        <source>UF3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="149"/>
-        <source>CAI</source>
+        <source>PS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="150"/>
-        <source>FLI</source>
+        <source>AHI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="151"/>
-        <source>REI</source>
+        <source>RDI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="152"/>
-        <source>EPI</source>
+        <source>AI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="153"/>
-        <source>ÇSR</source>
+        <source>HI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="154"/>
-        <source>PB</source>
+        <source>UAI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="155"/>
+        <source>CAI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="156"/>
+        <source>FLI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="157"/>
+        <source>REI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="158"/>
-        <source>IE</source>
+        <source>EPI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="159"/>
-        <source>Insp. Time</source>
+        <source>ÇSR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="160"/>
-        <source>Exp. Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="161"/>
-        <source>Resp. Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="162"/>
-        <source>Flow Limitation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="163"/>
-        <source>Flow Limit</source>
+        <source>PB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="164"/>
-        <source>Pat. Trig. Breath</source>
+        <source>IE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="165"/>
-        <source>Tgt. Min. Vent</source>
+        <source>Insp. Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="166"/>
-        <source>Target Vent.</source>
+        <source>Exp. Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="167"/>
-        <source>Minute Vent.</source>
+        <source>Resp. Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="168"/>
-        <source>Tidal Volume</source>
+        <source>Flow Limitation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="169"/>
-        <source>Resp. Rate</source>
+        <source>Flow Limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="170"/>
-        <source>Snore</source>
+        <source>Pat. Trig. Breath</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="171"/>
-        <source>Leak</source>
+        <source>Tgt. Min. Vent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="172"/>
-        <source>Leaks</source>
+        <source>Target Vent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="173"/>
-        <source>Total Leaks</source>
+        <source>Minute Vent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="174"/>
-        <source>Unintentional Leaks</source>
+        <source>Tidal Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="175"/>
-        <source>MaskPressure</source>
+        <source>Resp. Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="176"/>
-        <source>Flow Rate</source>
+        <source>Snore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="177"/>
-        <source>Sleep Stage</source>
+        <source>Leak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="178"/>
-        <source>Usage</source>
+        <source>Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="179"/>
-        <source>Sessions</source>
+        <source>Total Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="180"/>
-        <source>Pr. Relief</source>
+        <source>Unintentional Leaks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="181"/>
+        <source>MaskPressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="182"/>
+        <source>Flow Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="183"/>
-        <source>Bookmarks</source>
+        <source>Sleep Stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="184"/>
+        <source>Usage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="185"/>
+        <source>Sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="186"/>
+        <source>Pr. Relief</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="189"/>
+        <source>Bookmarks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="190"/>
         <location filename="../mainwindow.cpp" line="443"/>
         <source>SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="187"/>
+        <location filename="../SleepLib/common.h" line="193"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="188"/>
+        <location filename="../SleepLib/common.h" line="194"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="189"/>
+        <location filename="../SleepLib/common.h" line="195"/>
         <source>Brand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="190"/>
+        <location filename="../SleepLib/common.h" line="196"/>
         <source>Serial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="191"/>
+        <location filename="../SleepLib/common.h" line="197"/>
         <source>Machine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="192"/>
+        <location filename="../SleepLib/common.h" line="198"/>
         <source>Channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="193"/>
+        <location filename="../SleepLib/common.h" line="199"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="195"/>
+        <location filename="../SleepLib/common.h" line="201"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="196"/>
+        <location filename="../SleepLib/common.h" line="202"/>
         <source>DOB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="197"/>
+        <location filename="../SleepLib/common.h" line="203"/>
         <source>Phone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="198"/>
+        <location filename="../SleepLib/common.h" line="204"/>
         <source>Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="199"/>
+        <location filename="../SleepLib/common.h" line="205"/>
         <source>Email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="200"/>
+        <location filename="../SleepLib/common.h" line="206"/>
         <source>Patient ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="201"/>
+        <location filename="../SleepLib/common.h" line="207"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="203"/>
+        <location filename="../SleepLib/common.h" line="209"/>
         <source>Bedtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="204"/>
+        <location filename="../SleepLib/common.h" line="210"/>
         <source>Wake-up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="205"/>
+        <location filename="../SleepLib/common.h" line="211"/>
         <source>Mask Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="206"/>
+        <location filename="../SleepLib/common.h" line="212"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="207"/>
+        <location filename="../SleepLib/common.h" line="213"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="209"/>
-        <source>First</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="210"/>
-        <source>Last</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="211"/>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="212"/>
-        <source>End</source>
+        <location filename="../SleepLib/common.h" line="214"/>
+        <source>Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="216"/>
-        <source>Min</source>
+        <source>First</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="217"/>
-        <source>Max</source>
+        <source>Last</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="218"/>
+        <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="219"/>
+        <source>End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="223"/>
+        <source>Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="224"/>
+        <source>Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="226"/>
         <source>Average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="220"/>
+        <location filename="../SleepLib/common.h" line="227"/>
         <source>Median</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="221"/>
+        <location filename="../SleepLib/common.h" line="228"/>
         <source>Avg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="222"/>
+        <location filename="../SleepLib/common.h" line="229"/>
         <source>W-Avg</source>
         <translation type="unfinished"></translation>
     </message>
