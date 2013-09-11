@@ -1592,7 +1592,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             es.physical_maximum=es.physical_minimum=0;
             es.gain*=1000.0;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if ((es.label=="Leak") || (es.label.startsWith("Leck"))) {
+        } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk"))) {
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_dimension="L/M";
