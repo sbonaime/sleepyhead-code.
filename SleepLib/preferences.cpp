@@ -67,7 +67,7 @@ QString GetAppRoot()
 #endif
 
     if (HomeAppRoot.isEmpty())
-        HomeAppRoot=desktopFolder+QDir::separator()+AppRoot;
+        HomeAppRoot=desktopFolder+"/"+AppRoot;
 
     return HomeAppRoot;
 }
@@ -81,25 +81,22 @@ Preferences::Preferences()
 
 Preferences::Preferences(QString name,QString filename)
 {
-
-    const QString xmlext=".xml";
-
-    if (name.endsWith(xmlext)) {
+    if (name.endsWith(STR_ext_XML)) {
         p_name=name.section(".",0,0);
     } else {
         p_name=name;
     }
 
     if (filename.isEmpty()) {
-        p_filename=GetAppRoot()+QDir::separator()+p_name+xmlext;
+        p_filename=GetAppRoot()+"/"+p_name+STR_ext_XML;
     } else {
-        if (!filename.contains(QDir::separator())) {
-            p_filename=GetAppRoot()+QDir::separator();
+        if (!filename.contains("/")) {
+            p_filename=GetAppRoot()+"/";
         } else p_filename="";
 
         p_filename+=filename;
 
-        if (!p_filename.endsWith(xmlext)) p_filename+=xmlext;
+        if (!p_filename.endsWith(STR_ext_XML)) p_filename+=STR_ext_XML;
     }
 }
 
@@ -149,7 +146,7 @@ const QString Preferences::Get(QString name)
         } else if (ref.toLower()=="user") {
             temp+=getUserName();
         } else if (ref.toLower()=="sep") { // redundant in QT
-            temp+=QDir::separator();
+            temp+="/";
         } else {
             temp+=Get(ref);
         }
@@ -169,13 +166,13 @@ bool Preferences::Open(QString filename)
 
     QDomDocument doc(p_name);
     QFile file(p_filename);
-    qDebug() << "Scanning " << p_filename;
+    qDebug() << "Scanning " << QDir::toNativeSeparators(p_filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open" << p_filename;
+        qWarning() << "Could not open" << QDir::toNativeSeparators(p_filename);
         return false;
     }
     if (!doc.setContent(&file)) {
-        qWarning() << "Invalid XML Content in" << p_filename;
+        qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(p_filename);
         return false;
     }
     file.close();

@@ -128,18 +128,14 @@ public:
 
     void JumpDaily();
 
-    /*! \fn void PrintReport gGraphView *gv,QString name, QDate date=QDate::currentDate());
-        \brief Prepares a report using gGraphView object, and sends to a created QPrinter object
-        \param gGraphView *gv  GraphView Object containing which graph set to print
-        \param QString name   Report Title
-        \param QDate date
-        */
-    void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
-
     void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
 
     //! \brief Sets up recalculation of all event summaries and flags
     void reprocessEvents(bool restart=false);
+
+
+    //! \brief Internal function to set Records Box html from summary module
+    void setRecBoxHTML(QString html);
 
 public slots:
     //! \brief Recalculate all event summaries and flags

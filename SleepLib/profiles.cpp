@@ -48,15 +48,15 @@ Profile::Profile()
 Profile::Profile(QString path)
 :Preferences(),is_first_day(true)
 {
-    const QString xmlext=".xml";
     p_name=STR_GEN_Profile;
     if (path.isEmpty())
         p_path=GetAppRoot();
     else p_path=path;
     (*this)[STR_GEN_DataFolder]=p_path;
+    path=path.replace("\\","/");
     if (!p_path.endsWith("/"))
         p_path+="/";
-    p_filename=p_path+p_name+xmlext;
+    p_filename=p_path+p_name+STR_ext_XML;
     machlist.clear();
 
     doctor=NULL;
@@ -247,7 +247,6 @@ QDomElement Profile::ExtraSave(QDomDocument & doc)
 
 }
 
-#include <QMessageBox>
 void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     //date+=wxTimeSpan::Day();
     if (!day)  {
@@ -279,6 +278,7 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
     daylist[date].push_back(day);
 }
 
+// Get Day record if data available for date and machine type, and has enabled session data, else return NULL
 Day * Profile::GetGoodDay(QDate date,MachineType type)
 {
     Day *day=NULL;
@@ -363,8 +363,8 @@ MachineLoader * GetLoader(QString name)
 }
 
 
-QList<Machine *> Profile::GetMachines(MachineType t)
 // Returns a QVector containing all machine objects regisered of type t
+QList<Machine *> Profile::GetMachines(MachineType t)
 {
     QList<Machine *> vec;
     QHash<MachineID,Machine *>::iterator i;
@@ -912,6 +912,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     return v;
 }
 
+// Lookup first day record of the specified machine type, or return the first day overall if MT_UNKNOWN
 QDate Profile::FirstDay(MachineType mt)
 {
     if ((mt==MT_UNKNOWN) || (!m_last.isValid()) || (!m_first.isValid()))
@@ -925,6 +926,8 @@ QDate Profile::FirstDay(MachineType mt)
     } while (d<=m_last);
     return m_last;
 }
+
+// Lookup last day record of the specified machine type, or return the first day overall if MT_UNKNOWN
 QDate Profile::LastDay(MachineType mt)
 {
     if ((mt==MT_UNKNOWN) || (!m_last.isValid()) || (!m_first.isValid()))

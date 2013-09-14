@@ -3811,7 +3811,7 @@ const quint16 gvversion=0;
 
 void gGraphView::SaveSettings(QString title)
 {
-    QString filename=PROFILE.Get("{DataFolder}")+QDir::separator()+title.toLower()+".shg";
+    QString filename=PROFILE.Get("{DataFolder}/")+title.toLower()+".shg";
     QFile f(filename);
     f.open(QFile::WriteOnly);
     QDataStream out(&f);
@@ -3835,7 +3835,7 @@ void gGraphView::SaveSettings(QString title)
 
 bool gGraphView::LoadSettings(QString title)
 {
-    QString filename=PROFILE.Get("{DataFolder}")+QDir::separator()+title.toLower()+".shg";
+    QString filename=PROFILE.Get("{DataFolder}/")+title.toLower()+".shg";
     QFile f(filename);
     if (!f.exists()) return false;
 

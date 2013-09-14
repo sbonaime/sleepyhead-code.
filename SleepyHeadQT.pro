@@ -88,7 +88,9 @@ SOURCES += main.cpp\
     UpdaterWindow.cpp \
     SleepLib/common.cpp \
     SleepLib/loader_plugins/icon_loader.cpp \
-    SleepLib/loader_plugins/mseries_loader.cpp
+    SleepLib/loader_plugins/mseries_loader.cpp \
+    reports.cpp \
+    summary.cpp
 
 unix:SOURCES           += qextserialport/posix_qextserialport.cpp
 unix:!macx:SOURCES     += qextserialport/qextserialenumerator_unix.cpp
@@ -168,7 +170,9 @@ HEADERS  += \
     UpdaterWindow.h \
     SleepLib/common.h \
     SleepLib/loader_plugins/icon_loader.h \
-    SleepLib/loader_plugins/mseries_loader.h
+    SleepLib/loader_plugins/mseries_loader.h \
+    reports.h \
+    summary.h
 
 
 FORMS    += \

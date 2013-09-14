@@ -31,28 +31,38 @@ extern QProgressBar *qprogress;
 QHash<int,QString> RMS9ModelMap;
 QHash<ChannelID, QVector<QString> > resmed_codes;
 
+const QString STR_ext_TGT="tgt";
+const QString STR_ext_CRC="crc";
+const QString STR_ext_EDF="edf";
+const QString STR_ext_gz=".gz";
+
+
 // Looks up foreign language Signal names that match this channelID
 EDFSignal * EDFParser::lookupSignal(ChannelID ch)
 {
     QHash<ChannelID, QVector<QString> >::iterator ci;
     QHash<QString,EDFSignal *>::iterator jj;
     ci=resmed_codes.find(ch);
-    if (ci==resmed_codes.end()) return NULL;
+
+    if (ci==resmed_codes.end())
+        return NULL;
+
     for (int i=0;i<ci.value().size();i++) {
         jj=lookup.find(ci.value()[i]);
-        if (jj==lookup.end()) continue;
+        if (jj==lookup.end())
+            continue;
         return jj.value();
     }
+
     return NULL;
 }
+
 EDFSignal * EDFParser::lookupName(QString name)
 {
     QHash<QString,EDFSignal *>::iterator i=lookup.find(name);
     if (i!=lookup.end()) return i.value();
     return NULL;
 }
-
-
 
 EDFParser::EDFParser(QString name)
 {
@@ -114,6 +124,7 @@ bool EDFParser::Parse()
     }
     QDateTime startDate=QDateTime::fromString(QString::fromLatin1(header.datetime,16),"dd.MM.yyHH.mm.ss");
     //startDate.toTimeSpec(Qt::UTC);
+
     QDate d2=startDate.date();
     if (d2.year()<2000) {
         d2.setDate(d2.year()+100,d2.month(),d2.day());
@@ -207,7 +218,7 @@ bool EDFParser::Open(QString name)
 
     //Urk.. This needs fixing for VC++, as it doesn't have packed attribute type..
 
-    if (name.endsWith(".gz")) {
+    if (name.endsWith(STR_ext_gz)) {
         filename=name.mid(0,-3);
         QFile fi(name);
         fi.open(QFile::ReadOnly);
@@ -285,21 +296,17 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     m->properties[STR_PROP_BackupPath]=path+"Backup/";
 
     return m;
-
 }
 
 long event_cnt=0;
 
+const QString RMS9_STR_datalog="DATALOG";
+const QString RMS9_STR_idfile="Identification.";
+const QString RMS9_STR_strfile="STR.";
+
+
 int ResmedLoader::Open(QString & path,Profile *profile)
 {
-    const QString datalog="DATALOG";
-    const QString idfile="Identification.";
-    const QString strfile="STR.";
-
-    const QString ext_TGT="tgt";
-    const QString ext_CRC="crc";
-    const QString ext_EDF="edf";
-    const QString ext_gz=".gz";
 
     QString serial;                 // Serial number
     QString key,value;
@@ -309,16 +316,18 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
     QHash<QString,QString> idmap;   // Temporary properties hash
 
+    path=path.replace("\\","/");
+
     // Strip off end "/" if any
     if (path.endsWith("/"))
         path=path.section("/",0,-2);
 
     // Strip off DATALOG from path, and set newpath to the path contianing DATALOG
-    if (path.endsWith(datalog)) {
+    if (path.endsWith(RMS9_STR_datalog)) {
         newpath=path+"/";
         path=path.section("/",0,-2);
     } else {
-        newpath=path+"/"+datalog+"/";
+        newpath=path+"/"+RMS9_STR_datalog+"/";
     }
 
     // Add separator back
@@ -331,7 +340,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse Identification.tgt file (containing serial number and machine information)
     ///////////////////////////////////////////////////////////////////////////////////
-    filename=path+idfile+ext_TGT;
+    filename=path+RMS9_STR_idfile+STR_ext_TGT;
     QFile f(filename);
     // Abort if this file is dodgy..
     if (!f.exists() || !f.open(QIODevice::ReadOnly))
@@ -360,10 +369,10 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     }
 
     // Early check for STR.edf file, so we can early exit before creating faulty machine record.
-    QString strpath=path+strfile+ext_EDF;  // STR.edf file
+    QString strpath=path+RMS9_STR_strfile+STR_ext_EDF;  // STR.edf file
     f.setFileName(strpath);
     if (!f.exists()) { // No STR.edf.. Do we have a STR.edf.gz?
-        strpath+=ext_gz;
+        strpath+=STR_ext_gz;
         f.setFileName(strpath);
         if (!f.exists()) {
             qDebug() << "Missing STR.edf file";
@@ -405,7 +414,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     EDFParser stredf(strpath);
     if (!stredf.Parse()) {
-        qDebug() << "Faulty file" << strfile;
+        qDebug() << "Faulty file" << RMS9_STR_strfile;
         return 0;
     }
     if (stredf.serialnumber!=serial) {
@@ -423,20 +432,20 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     if (create_backups) {
         if (!dir.exists(backup_path)) {
-            if (!dir.mkpath(backup_path+datalog)) {
+            if (!dir.mkpath(backup_path+RMS9_STR_datalog)) {
                 qDebug() << "Could not create S9 backup directory :-/";
             }
         }
 
         // Copy Identification files to backup folder
-        QFile::copy(path+idfile+ext_TGT,backup_path+idfile+ext_TGT);
-        QFile::copy(path+idfile+ext_CRC,backup_path+idfile+ext_CRC);
+        QFile::copy(path+RMS9_STR_idfile+STR_ext_TGT,backup_path+RMS9_STR_idfile+STR_ext_TGT);
+        QFile::copy(path+RMS9_STR_idfile+STR_ext_CRC,backup_path+RMS9_STR_idfile+STR_ext_CRC);
 
         //copy STR files to backup folder
-        if (strpath.endsWith(ext_gz))  // Already compressed.
-            QFile::copy(strpath,backup_path+strfile+ext_EDF+ext_gz);
+        if (strpath.endsWith(STR_ext_gz))  // Already compressed.
+            QFile::copy(strpath,backup_path+RMS9_STR_strfile+STR_ext_EDF+STR_ext_gz);
         else { // Compress STR file to backup folder
-            QString strf=backup_path+strfile+ext_EDF;
+            QString strf=backup_path+RMS9_STR_strfile+STR_ext_EDF;
             if (QFile::exists(strf))
                 QFile::remove(strf);
 
@@ -557,9 +566,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             continue;
 
         // Accept only .edf and .edf.gz files
-        if (filename.right(4).toLower() != "."+ext_EDF) {
+        if (filename.right(4).toLower() != "."+STR_ext_EDF) {
 
-            if (filename.right(7).toLower() != "."+ext_EDF+ext_gz)
+            if (filename.right(7).toLower() != "."+STR_ext_EDF+STR_ext_gz)
                 continue;
             gz=true;
         } else gz=false;
@@ -604,7 +613,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         if (si!=sessfiles.end()) {
             // Ignore if already compressed version of the same file exists.. (just in case)
             if (!gz) {
-                if (si.value().contains(filename+ext_gz,Qt::CaseInsensitive))
+                if (si.value().contains(filename+STR_ext_gz,Qt::CaseInsensitive))
                     continue;
             } else {
                 QString str=filename;
@@ -1046,7 +1055,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 //        }
 
 //    }
-    backup_path+=datalog+"/";
+    backup_path+=RMS9_STR_datalog+"/";
 
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
@@ -1065,14 +1074,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         // Process EDF File List
         for (int i=0;i<si.value().size();++i) {
             filename=si.value()[i];
-            gz=(filename.right(3).toLower()==ext_gz);
+            gz=(filename.right(3).toLower()==STR_ext_gz);
             fullpath=newpath+filename;
 
             // Copy the EDF file to the backup folder
             if (create_backups) {
                 backupfile=backup_path+filename;
                 bool dobackup=true;
-                if (!gz && QFile::exists(backupfile+".gz")) {
+                if (!gz && QFile::exists(backupfile+STR_ext_gz)) {
                     dobackup=false;
                 } else if (QFile::exists(backupfile)) {
                     if (gz) {
@@ -1650,22 +1659,22 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     return true;
 }
 
+const QString RMS9_STR_Escape="S9 Escape";
+const QString RMS9_STR_EscapeAuto="S9 Escape Auto";
+const QString RMS9_STR_Elite="S9 Elite";
+const QString RMS9_STR_AutoSet="S9 AutoSet";
+const QString RMS9_STR_AutoSetForHer="S9 AutoSet for Her";
+const QString RMS9_STR_AutoSetCS="S9 AutoSet CS";
+const QString RMS9_STR_AutoSet25="S9 AutoSet 25";
+const QString RMS9_STR_VPAP_S="S9 VPAP S";
+const QString RMS9_STR_VPAP_Auto="S9 VPAP Auto";
+const QString RMS9_STR_VPAP_Adapt="S9 VPAP Adapt";
+const QString RMS9_STR_VPAP_ST="S9 VPAP ST";
+const QString RMS9_STR_VPAP_STA="S9 VPAP ST-A";
+const QString RMS9_STR_VPAP_ST22="S9 VPAP ST 22";
+
 void ResInitModelMap()
 {
-    const QString RMS9_STR_Escape="S9 Escape";
-    const QString RMS9_STR_EscapeAuto="S9 Escape Auto";
-    const QString RMS9_STR_Elite="S9 Elite";
-    const QString RMS9_STR_AutoSet="S9 AutoSet";
-    const QString RMS9_STR_AutoSetForHer="S9 AutoSet for Her";
-    const QString RMS9_STR_AutoSetCS="S9 AutoSet CS";
-    const QString RMS9_STR_AutoSet25="S9 AutoSet 25";
-    const QString RMS9_STR_VPAP_S="S9 VPAP S";
-    const QString RMS9_STR_VPAP_Auto="S9 VPAP Auto";
-    const QString RMS9_STR_VPAP_Adapt="S9 VPAP Adapt";
-    const QString RMS9_STR_VPAP_ST="S9 VPAP ST";
-    const QString RMS9_STR_VPAP_STA="S9 VPAP ST-A";
-    const QString RMS9_STR_VPAP_ST22="S9 VPAP ST 22";
-
     // Escape Series
     RMS9ModelMap[36001]=RMS9ModelMap[36011]=RMS9ModelMap[36021]=RMS9ModelMap[36141]=
     RMS9ModelMap[36201]=RMS9ModelMap[36221]=RMS9ModelMap[36261]=RMS9ModelMap[36301]=
@@ -1772,6 +1781,8 @@ void ResInitModelMap()
     RMS9ModelMap[33129]="S8 AutoSet II";
     */
 
+
+    // Translation lookup table for non-english machines
     resmed_codes[CPAP_FlowRate].push_back("Flow");
     resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
     resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pressure"); // vpap

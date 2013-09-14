@@ -225,7 +225,7 @@ bool Machine::Purge(int secret)
         bool ok;
         ext_s.toInt(&ok,10);
         if (ok) {
-            qDebug() << "Deleting " << fullpath;
+            qDebug() << "Deleting " << QDir::toNativeSeparators(fullpath);
             dir.remove(fullpath);
         } else could_not_kill++;
 
@@ -246,7 +246,7 @@ bool Machine::Load()
     QString path=profile->Get(properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_"+hexid();
 
     QDir dir(path);
-    qDebug() << "Loading " << path;
+    qDebug() << "Loading " << QDir::toNativeSeparators(path);
 
     if (!dir.exists() || !dir.isReadable())
         return false;

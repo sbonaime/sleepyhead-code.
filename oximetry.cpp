@@ -510,6 +510,11 @@ void CMS50Serial::import_process()
         a=data.at(i++); // low bits are supposedly the high bits of the heart rate? not here
         pl=((data.at(i++) & 0x7f) | ((a & 1) << 7)) & 0xff;
         o2=data.at(i++) & 0x7f;
+
+        // Faulty data..?
+        if (o2 < 50)
+            o2=0;
+
         if (pl!=0) {
             if (lastpl!=pl) {
                 if (lastpl==0 || !pulse) {

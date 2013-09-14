@@ -44,14 +44,16 @@ int FPIconLoader::Open(QString & path,Profile *profile)
 {
     QString newpath;
 
+    path=path.replace("\\","/");
+
     if (path.endsWith("/"))
         path.chop(1);
 
     QString dirtag="FPHCARE";
-    if (path.endsWith(QDir::separator()+dirtag)) {
+    if (path.endsWith("/"+dirtag)) {
         newpath=path;
     } else {
-        newpath=path+QDir::separator()+dirtag;
+        newpath=path+"/"+dirtag;
     }
 
     newpath+="/ICON/";

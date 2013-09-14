@@ -44,12 +44,14 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     // Check for DV5MFirm.bin?
     QString newpath;
 
+    path=path.replace("\\","/");
+
     QString dirtag="SL";
-    if (path.endsWith(QDir::separator()+dirtag)) {
+    if (path.endsWith("/"+dirtag)) {
         return 0;
         //newpath=path;
     } else {
-        newpath=path+QDir::separator()+dirtag;
+        newpath=path+"/"+dirtag;
     }
 
     QString filename;
@@ -57,7 +59,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     //////////////////////////
     // Parse the Settings File
     //////////////////////////
-    filename=newpath+QDir::separator()+"SET1";
+    filename=newpath+"/SET1";
     QFile f(filename);
     if (!f.exists()) return 0;
     f.open(QFile::ReadOnly);
@@ -141,7 +143,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     // Parse the Session Index
     //////////////////////////
     unsigned char buf[27];
-    filename=newpath+QDir::separator()+"U";
+    filename=newpath+"/U";
     f.setFileName(filename);
     if (!f.exists()) return 0;
 
@@ -171,7 +173,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     //////////////////////////
     // Parse the Session Data
     //////////////////////////
-    filename=newpath+QDir::separator()+"L";
+    filename=newpath+"/L";
     f.setFileName(filename);
     if (!f.exists()) return 0;
 

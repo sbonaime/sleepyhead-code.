@@ -165,15 +165,20 @@ bool isdigit(QChar c)
     if ((c>='0') && (c<='9')) return true;
     return false;
 }
+
+const QString PR_STR_PSeries="P-Series";
+
 int PRS1Loader::Open(QString & path,Profile *profile)
 {
-    QString newpath,pseries="P-Series";
-    qDebug() << "PRS1Loader::Open path=" << newpath;
-    if (path.endsWith(QDir::separator()+pseries)) {
+    QString newpath;
+    path=path.replace("\\","/");
+
+    if (path.endsWith("/"+PR_STR_PSeries)) {
         newpath=path;
     } else {
-        newpath=path+QDir::separator()+pseries;
+        newpath=path+"/"+PR_STR_PSeries;
     }
+    qDebug() << "PRS1Loader::Open path=" << newpath;
 
     QDir dir(newpath);
 
@@ -218,11 +223,12 @@ int PRS1Loader::Open(QString & path,Profile *profile)
         QString s=*sn;
         m=CreateMachine(s,profile);
         try {
-            if (m) OpenMachine(m,newpath+QDir::separator()+(*sn),profile);
+            if (m)
+                OpenMachine(m,newpath+"/"+(*sn),profile);
         } catch(OneTypePerDay e) {
             profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(s));
-            QMessageBox::warning(NULL,"Import Error","This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",QMessageBox::Ok);
+            QMessageBox::warning(NULL,QObject::tr("Import Error"),QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),QMessageBox::Ok);
             delete m;
         }
     }
@@ -297,7 +303,8 @@ int PRS1Loader::OpenMachine(Machine *m,QString path,Profile *profile)
         } else if (filename.toLower()=="properties.txt") {
             ParseProperties(m,fi.canonicalFilePath());
         } else if (filename.toLower()=="e") {
-            // don't really give a crap about .004 files yet.
+            // Error files..
+            // Reminder: I have been given some info about these. should check it over.
         }
     }
 
@@ -1298,14 +1305,14 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         }
 
 
-        qDebug() << "Loading" << filename << sequence << timestamp << size;
+        qDebug() << "Loading" << QDir::toNativeSeparators(filename) << sequence << timestamp << size;
         //if (ext==0) ParseCompliance(data,size);
         if (ext<=1) {
             ParseSummary(mach,sequence,timestamp,data,datasize,family,familyVersion);
         } else if (ext==2) {
             if (family==5) {
                if (!Parse002v5(sequence,timestamp,data,datasize)) {
-                   qDebug() << "in file: " << filename;
+                   qDebug() << "in file: " << QDir::toNativeSeparators(filename);
                }
             } else {
                Parse002(sequence,timestamp,data,datasize, family, familyVersion);

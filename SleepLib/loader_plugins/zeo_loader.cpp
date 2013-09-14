@@ -38,14 +38,16 @@ int ZEOLoader::Open(QString & path,Profile *profile)
 
     // Could Scan the ZEO folder for a list of CSVs
 
-    if (path.toLower().endsWith(QDir::separator()+dirtag)) {
+    path=path.replace("\\","/");
+
+    if (path.toLower().endsWith("/"+dirtag)) {
         return 0;
         //newpath=path;
     } else {
-        newpath=path+QDir::separator()+dirtag.toUpper();
+        newpath=path+"/"+dirtag.toUpper();
     }
 
-    QString filename;
+    //QString filename;
 
     // ZEO folder structure detection stuff here.
 
