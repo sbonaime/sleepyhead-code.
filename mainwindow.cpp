@@ -1668,8 +1668,8 @@ void MainWindow::updatestatusBarMessage (const QString & text)
 void MainWindow::on_actionPrint_Report_triggered()
 {
 #ifdef Q_WS_MAC
- #if ((QT_VERSION <= QT_VERSION_CHECK(5, 0, 0)) &&  (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)))
-    QMessageBox::information(this,tr("Printing Broken"),tr("Sorry.. Printing is currently broken on the Mac platform :-(\n\nWe are currently waiting on a Qt Library bugfix"),QMessageBox::Ok);
+ #if ((QT_VERSION <= QT_VERSION_CHECK(4, 8, 4)))
+    QMessageBox::information(this,tr("Printing Disabled"),tr("Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt"),QMessageBox::Ok);
     return;
  #endif
 #endif

@@ -51,6 +51,8 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 
     QPainter painter; // Only need this for pixmap caching
 
+    // pixmap caching screws font size when printing
+
     bool usepixmap=w.graphView()->usePixmapCache(); // Whether or not to use pixmap caching
 
     if (!usepixmap || (usepixmap && w.invalidate_xAxisImage)) {

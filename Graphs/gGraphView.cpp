@@ -2034,6 +2034,9 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
     if (!sg)
         return QPixmap();
 
+    // Pixmap caching screws up font sizes when printing
+    sg->setUsePixmapCache(false);
+
     QFont * _defaultfont=defaultfont;
     QFont * _mediumfont=mediumfont;
     QFont * _bigfont=bigfont;
