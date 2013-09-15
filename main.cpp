@@ -214,7 +214,6 @@ int main(int argc, char *argv[])
     qDebug() << "Available Translations";
     QFileInfoList list=dir.entryInfoList();
     QString language=PREF[STR_PREF_Language].toString();
-    bool langok=false;
 
     QString langfile,langname;
 
@@ -238,16 +237,17 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (langfile.isEmpty()) {
+    if (language.isEmpty()) {
         langsel.connect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
 
         langsel.exec();
         langsel.disconnect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
-        langfile=lang_combo.currentText();
-        PREF[STR_PREF_Language]=langfile;
+        langname=lang_combo.currentText();
+        langfile=lang_combo.itemData(lang_combo.currentIndex()).toString();
+        PREF[STR_PREF_Language]=langname;
     }
 
-    qDebug() << "Loading Translation" << langfile;
+    qDebug() << "Loading " << langname << " Translation" << langfile;
     QTranslator translator;
 
     translator.load(langfile,QCoreApplication::applicationDirPath()+"/Translations");

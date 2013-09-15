@@ -612,7 +612,7 @@ void MainWindow::on_action_About_triggered()
     QString msg=QString(
 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
 "<table width=100%><tr><td>"
-"<p><h1>"+tr("SleepyHead")+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder")+": %9<hr>"+
+"<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr>"+
 tr("Copyright")+" &copy;2012 Mark Watkins (jedimark) <br> \n"+
 tr("This software is released under the GNU Public License v3.0<br>")+
 "<hr><p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
@@ -1095,7 +1095,8 @@ void MainWindow::RestartApplication(bool force_login)
         args << "-p";
         if (force_login) args << "-l";
         if (QProcess::startDetached(apppath,args)) {
-            QApplication::instance()->exit();
+            ::exit(0);
+            //QApplication::instance()->exit();
         } else QMessageBox::warning(this,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
 #endif
 }
