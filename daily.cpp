@@ -1096,7 +1096,7 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
         html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
-        html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2);
+        html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2); // CHECKME: Should this value be wavg OXI_SPO2 isntead?
     }
 
     if (cpap && cpap->hasEnabledSessions()) {

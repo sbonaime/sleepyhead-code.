@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="se_NO">
+<TS version="2.0" language="nl_NL">
 <context>
     <name>CMS50Serial</name>
     <message>
@@ -36,22 +36,22 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="709"/>
+        <location filename="../oximetry.cpp" line="714"/>
         <source>Please Wait, Importing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="753"/>
+        <location filename="../oximetry.cpp" line="758"/>
         <source>Import Failed. Wait for oximeter and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="913"/>
+        <location filename="../oximetry.cpp" line="918"/>
         <source>Import Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="917"/>
+        <location filename="../oximetry.cpp" line="922"/>
         <source>Set Oximeter to Upload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -203,7 +203,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../daily.ui" line="671"/>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bladwijzers</translation>
     </message>
     <message>
         <location filename="../daily.ui" line="677"/>
@@ -243,6 +243,11 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../daily.ui" line="824"/>
         <source>Drop down this list to show/hide available graphs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../daily.cpp" line="1203"/>
+        <source>Sleep Stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -495,11 +500,6 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../daily.cpp" line="1203"/>
-        <source>Sleep Stage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../daily.cpp" line="1226"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
         <translation type="unfinished"></translation>
@@ -565,7 +565,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../exportcsv.ui" line="60"/>
         <source>Daily</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dagelijks</translation>
     </message>
     <message>
         <location filename="../exportcsv.ui" line="85"/>
@@ -757,10 +757,10 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <name>MainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="26"/>
-        <location filename="../mainwindow.cpp" line="91"/>
-        <location filename="../mainwindow.cpp" line="1500"/>
+        <location filename="../mainwindow.cpp" line="93"/>
+        <location filename="../mainwindow.cpp" line="615"/>
         <source>SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation>SlaapKop</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="94"/>
@@ -805,12 +805,12 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../mainwindow.ui" line="578"/>
         <source>Daily</source>
-        <translation type="unfinished"></translation>
+        <translation>Dagelijks</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="607"/>
         <source>Overview</source>
-        <translation type="unfinished"></translation>
+        <translation>Overzicht</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="636"/>
@@ -830,12 +830,12 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../mainwindow.ui" line="822"/>
         <source>&amp;Bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Bladwijzer</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1475"/>
         <source>&amp;Records</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Archief</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1559"/>
@@ -855,7 +855,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../mainwindow.ui" line="1605"/>
         <source>&amp;Data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Gegevens</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1609"/>
@@ -880,18 +880,18 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../mainwindow.ui" line="1645"/>
         <source>&amp;Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Voorkeuren</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1650"/>
         <source>&amp;Profiles</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Profiel</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1655"/>
-        <location filename="../mainwindow.cpp" line="162"/>
+        <location filename="../mainwindow.cpp" line="164"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Uitgaan</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1660"/>
@@ -942,7 +942,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../mainwindow.ui" line="1700"/>
         <source>&amp;About SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Over SlaapKop</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1708"/>
@@ -966,7 +966,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1729"/>
-        <location filename="../mainwindow.cpp" line="160"/>
+        <location filename="../mainwindow.cpp" line="162"/>
         <source>Check for &amp;Updates</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1076,621 +1076,292 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="91"/>
-        <source>Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="110"/>
-        <source>Welcome</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="159"/>
-        <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="193"/>
-        <source>Loading...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="247"/>
+        <location filename="../mainwindow.cpp" line="249"/>
         <source>Loading Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="290"/>
+        <location filename="../mainwindow.cpp" line="375"/>
+        <source>Importing Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="93"/>
+        <source>Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="112"/>
+        <source>Welcome</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="161"/>
+        <source>&amp;About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="195"/>
+        <source>Loading...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="292"/>
         <source>Access to Import has been blocked while recalculations are in progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="323"/>
         <source>Import from where?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="323"/>
         <source>Do you just want to Import from the usual (remembered) locations?
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="323"/>
         <source>The Usual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="323"/>
         <source>New Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="323"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="373"/>
-        <source>Importing Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="390"/>
+        <location filename="../mainwindow.cpp" line="392"/>
         <source>Remember this Location?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="390"/>
+        <location filename="../mainwindow.cpp" line="392"/>
         <source>Would you like to remember this import location for next time?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="680"/>
-        <source>Please Import Some Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="680"/>
-        <source>SleepyHead is pretty much useless without it.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="680"/>
-        <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="680"/>
-        <source>First import can take a few minutes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="712"/>
-        <source>No CPAP Machine Data Imported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="714"/>
-        <source>CPAP Statistics as of</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="720"/>
-        <source>No CPAP data available.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="722"/>
-        <source>%1 day of CPAP Data, on %2.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="724"/>
-        <source>%1 days of CPAP Data, between %2 and %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Most Recent</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Last 7 Days</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Last 30 Days</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Last 6 months</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="728"/>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <source>Last Year</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="739"/>
-        <source>RERA Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="749"/>
-        <source>Flow Limit Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="760"/>
-        <source>Hours per Night</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="769"/>
-        <source>Min EPAP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="783"/>
-        <source>Max IPAP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="798"/>
-        <source>Average Pressure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="805"/>
-        <source>%1% Pressure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="813"/>
-        <source>Pressure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="829"/>
-        <source>Average %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="836"/>
-        <source>%1% %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="850"/>
-        <source>Oximetry Summary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="852"/>
-        <source>%1 day of Oximetry Data, on %2.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="854"/>
-        <source>%1 days of Oximetry Data, between %2 and %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="868"/>
-        <source>Average SpO2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="875"/>
-        <source>Minimum SpO2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="882"/>
-        <source>SpO2 Events / Hour</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="889"/>
-        <source>% of time in SpO2 Events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="896"/>
-        <source>Average Pulse Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="903"/>
-        <source>Minimum Pulse Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="910"/>
-        <source>Maximum Pulse Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="917"/>
-        <source>Pulse Change Events / Hour</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1082"/>
-        <source>Usage Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1083"/>
         <source>Total Days</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Totaal dagen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1085"/>
         <source>Compliant Days</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Naleving dagen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1092"/>
-        <source>Days AHI &amp;gt;5.0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1096"/>
-        <source>Best&amp;nbsp;%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1105"/>
         <source>Worst&amp;nbsp;%1</source>
+        <translation type="obsolete">Slechtst&amp;nbsp;%1</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="407"/>
+        <source>Import Problem
+
+Couldn&apos;t find any new Machine Data at the locations given</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1147"/>
-        <source>Best RX Setting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1183"/>
-        <source>Worst RX Setting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1205"/>
-        <source>Changes to Prescription Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1211"/>
-        <source>PS Min</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1211"/>
-        <source>PS Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1217"/>
-        <source>Min Pres.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1217"/>
-        <source>Max Pres.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1226"/>
-        <source>Days</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1228"/>
-        <source>FL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1231"/>
-        <source>Pr. Rel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1312"/>
-        <source>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1319"/>
-        <source>Machine Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1325"/>
-        <source>First Use</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <source>Last Use</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1474"/>
-        <source>Loading</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1500"/>
+        <location filename="../mainwindow.cpp" line="615"/>
         <source>Build Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1500"/>
+        <location filename="../mainwindow.cpp" line="615"/>
         <source>Data Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="616"/>
         <source>Copyright</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1502"/>
+        <location filename="../mainwindow.cpp" line="617"/>
         <source>This software is released under the GNU Public License v3.0&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="618"/>
         <source>SleepyHead Project Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1504"/>
+        <location filename="../mainwindow.cpp" line="619"/>
         <source>SleepyHead Wiki</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1505"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>Authors Twitter Feed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="622"/>
         <source>&lt;p&gt;The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1508"/>
+        <location filename="../mainwindow.cpp" line="623"/>
         <source>This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1509"/>
+        <location filename="../mainwindow.cpp" line="624"/>
         <source>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1510"/>
+        <location filename="../mainwindow.cpp" line="625"/>
         <source>The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software&lt;br/&gt;Use this software entirely at your own risk.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1511"/>
+        <location filename="../mainwindow.cpp" line="626"/>
         <source>If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1577"/>
+        <location filename="../mainwindow.cpp" line="685"/>
         <source>Access to Preferences has been blocked until recalculation completes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1606"/>
+        <location filename="../mainwindow.cpp" line="714"/>
         <source>Question</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1606"/>
+        <location filename="../mainwindow.cpp" line="714"/>
         <source>Do you have a CMS50[x] Oximeter?
 One is required to use this section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1672"/>
-        <source>Printing Broken</source>
+        <location filename="../mainwindow.cpp" line="784"/>
+        <source>Printing Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1672"/>
-        <source>Sorry.. Printing is currently broken on the Mac platform :-(
-
-We are currently waiting on a Qt Library bugfix</source>
+        <location filename="../mainwindow.cpp" line="784"/>
+        <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1773"/>
-        <source>There are no graphs visible to print</source>
+        <location filename="../mainwindow.cpp" line="1388"/>
+        <source>Restart Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1786"/>
-        <source>Would you like to show bookmarked areas in this report?</source>
+        <location filename="../mainwindow.cpp" line="1388"/>
+        <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1823"/>
-        <source>This make take some time to complete..
-Please don&apos;t touch anything until it&apos;s done.</source>
+        <location filename="../mainwindow.cpp" line="1392"/>
+        <source>Recalculations are now complete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1823"/>
-        <source>Printing %1 Report</source>
+        <location filename="../mainwindow.cpp" line="1392"/>
+        <source>Task Completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1855"/>
-        <source>%1 Report</source>
+        <location filename="../mainwindow.cpp" line="1413"/>
+        <source>There was a problem opening ZEO File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1891"/>
-        <source>: %1 hours, %2 minutes, %3 seconds
-</source>
+        <location filename="../mainwindow.cpp" line="1416"/>
+        <source>Zeo CSV Import complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1955"/>
-        <source>RDI	%1
-</source>
+        <location filename="../mainwindow.cpp" line="1436"/>
+        <source>There was a problem opening MSeries block File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1957"/>
-        <source>AHI	%1
-</source>
+        <location filename="../mainwindow.cpp" line="1439"/>
+        <source>MSeries Import complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1984"/>
-        <source>AI=%1 HI=%2 CAI=%3 </source>
-        <translation type="unfinished"></translation>
+        <source>Pr. Rel.</source>
+        <translation type="obsolete">Drukontlastings</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1986"/>
-        <source>REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</source>
-        <translation type="unfinished"></translation>
+        <source>Brand</source>
+        <translation type="obsolete">Merk</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1990"/>
-        <source>UAI=%1 </source>
-        <translation type="unfinished"></translation>
+        <source>Model</source>
+        <translation type="obsolete">Ser</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1992"/>
-        <source>NRI=%1 LKI=%2 EPI=%3</source>
-        <translation type="unfinished"></translation>
+        <source>Serial</source>
+        <translation type="obsolete">Volgnummer</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2043"/>
-        <source>Reporting from %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <location filename="../mainwindow.cpp" line="589"/>
+        <source>Loading</source>
+        <translation type="unfinished">Het Laden</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2049"/>
-        <source>Reporting data goes here</source>
-        <translation type="unfinished"></translation>
+        <source>About SleepyHead</source>
+        <translation type="obsolete">Over SlaapKop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2088"/>
-        <source>Entire Day&apos;s Flow Waveform</source>
-        <translation type="unfinished"></translation>
+        <source>Bookmarks</source>
+        <translation type="obsolete">Bladwijzers</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2103"/>
-        <source>Entire Day</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2205"/>
-        <source>SleepyHead v%1 - http://sleepyhead.sourceforge.net</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2210"/>
-        <source>Page %1 of %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2436"/>
-        <location filename="../mainwindow.cpp" line="2452"/>
+        <location filename="../mainwindow.cpp" line="1083"/>
+        <location filename="../mainwindow.cpp" line="1099"/>
         <source>Gah!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2436"/>
-        <location filename="../mainwindow.cpp" line="2452"/>
+        <location filename="../mainwindow.cpp" line="1083"/>
+        <location filename="../mainwindow.cpp" line="1099"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2509"/>
+        <location filename="../mainwindow.cpp" line="1156"/>
         <source>Are you sure?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2509"/>
+        <location filename="../mainwindow.cpp" line="1156"/>
         <source>Are you sure you want to purge all CPAP data for the following machine:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2681"/>
+        <location filename="../mainwindow.cpp" line="1317"/>
+        <source>Performance will be degraded during these recalculations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1317"/>
+        <source>Recalculating Indices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>Loading Event Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2683"/>
-        <location filename="../mainwindow.cpp" line="2731"/>
+        <location filename="../mainwindow.cpp" line="1330"/>
+        <location filename="../mainwindow.cpp" line="1378"/>
         <source>Recalculating Summaries</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2741"/>
-        <source>Restart Required</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2741"/>
-        <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2745"/>
-        <source>Recalculations are now complete.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2745"/>
-        <source>Task Completed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2766"/>
-        <source>There was a problem opening ZEO File: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2769"/>
-        <source>Zeo CSV Import complete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2789"/>
-        <source>There was a problem opening MSeries block File: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="2792"/>
-        <source>MSeries Import complete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1704,12 +1375,12 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../newprofile.ui" line="52"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Taal</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="63"/>
         <source>English</source>
-        <translation type="unfinished"></translation>
+        <translation>Engels</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="71"/>
@@ -1764,12 +1435,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../newprofile.ui" line="144"/>
         <source>User Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruikersinformatie</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="167"/>
         <source>User Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruikersnaam</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="186"/>
@@ -1799,7 +1470,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../newprofile.ui" line="266"/>
         <source>Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Land</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="285"/>
@@ -1819,12 +1490,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../newprofile.ui" line="368"/>
         <source>First Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Voornaam</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="378"/>
         <source>Last Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Achternaam</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="388"/>
@@ -1834,22 +1505,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../newprofile.ui" line="404"/>
         <source>Gender</source>
-        <translation type="unfinished"></translation>
+        <translation>Geslacht</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="417"/>
         <source>Male</source>
-        <translation type="unfinished"></translation>
+        <translation>Man</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="422"/>
         <source>Female</source>
-        <translation type="unfinished"></translation>
+        <translation>Vrouw</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="438"/>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Lengte</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="480"/>
@@ -1952,7 +1623,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../newprofile.ui" line="868"/>
         <source>SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SlaapKop</translation>
     </message>
     <message>
         <location filename="../newprofile.ui" line="883"/>
@@ -2101,13 +1772,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../overview.cpp" line="95"/>
-        <source>Respiratory
-Disturbance
-Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../overview.cpp" line="97"/>
         <source>Apnea
 Hypopnea
@@ -2134,6 +1798,13 @@ Index</source>
         <location filename="../overview.cpp" line="114"/>
         <source>Session Times
 (hours)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../overview.cpp" line="95"/>
+        <source>Respiratory
+Disturbance
+Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2173,6 +1844,12 @@ Shows AHI Clusters
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../overview.cpp" line="130"/>
+        <source>
+(count)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../overview.cpp" line="125"/>
         <source>Respiratory
 Rate
@@ -2206,12 +1883,6 @@ Ventilation
 Triggered
 Breaths
 (%)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../overview.cpp" line="130"/>
-        <source>
-(count)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2342,140 +2013,140 @@ Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1001"/>
+        <location filename="../oximetry.cpp" line="1006"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1043"/>
-        <location filename="../oximetry.cpp" line="1483"/>
+        <location filename="../oximetry.cpp" line="1048"/>
+        <location filename="../oximetry.cpp" line="1488"/>
         <source>No Oximetry Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1141"/>
+        <location filename="../oximetry.cpp" line="1146"/>
         <source>Oximetry live recording has been terminated due to timeout.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1150"/>
-        <location filename="../oximetry.cpp" line="1365"/>
+        <location filename="../oximetry.cpp" line="1155"/>
+        <location filename="../oximetry.cpp" line="1370"/>
         <source>&amp;Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1168"/>
-        <location filename="../oximetry.cpp" line="1655"/>
-        <location filename="../oximetry.cpp" line="1710"/>
+        <location filename="../oximetry.cpp" line="1173"/>
+        <location filename="../oximetry.cpp" line="1660"/>
+        <location filename="../oximetry.cpp" line="1715"/>
         <source>Save Session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1168"/>
+        <location filename="../oximetry.cpp" line="1173"/>
         <source>Creating a new oximetry session will destroy the old one.
 Would you like to save it first?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1168"/>
-        <location filename="../oximetry.cpp" line="1655"/>
-        <location filename="../oximetry.cpp" line="1710"/>
+        <location filename="../oximetry.cpp" line="1173"/>
+        <location filename="../oximetry.cpp" line="1660"/>
+        <location filename="../oximetry.cpp" line="1715"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1168"/>
-        <location filename="../oximetry.cpp" line="1655"/>
-        <location filename="../oximetry.cpp" line="1710"/>
+        <location filename="../oximetry.cpp" line="1173"/>
+        <location filename="../oximetry.cpp" line="1660"/>
+        <location filename="../oximetry.cpp" line="1715"/>
         <source>Destroy It</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1168"/>
-        <location filename="../oximetry.cpp" line="1655"/>
-        <location filename="../oximetry.cpp" line="1710"/>
+        <location filename="../oximetry.cpp" line="1173"/>
+        <location filename="../oximetry.cpp" line="1660"/>
+        <location filename="../oximetry.cpp" line="1715"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1178"/>
+        <location filename="../oximetry.cpp" line="1183"/>
         <source>Please Wait</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1195"/>
+        <location filename="../oximetry.cpp" line="1200"/>
         <source>Oximetry Error!
 
 Something is wrong with the device connection.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1231"/>
+        <location filename="../oximetry.cpp" line="1236"/>
         <source>&amp;Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1317"/>
+        <location filename="../oximetry.cpp" line="1322"/>
         <source>Oximeter Error
 
 The device has not responded.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1328"/>
+        <location filename="../oximetry.cpp" line="1333"/>
         <source>Check Oximeter is Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1348"/>
+        <location filename="../oximetry.cpp" line="1353"/>
         <source>Oximeter Error
 
 The device did not respond.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1396"/>
+        <location filename="../oximetry.cpp" line="1401"/>
         <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1396"/>
+        <location filename="../oximetry.cpp" line="1401"/>
         <source>Oximeter Error!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1458"/>
+        <location filename="../oximetry.cpp" line="1463"/>
         <source>Keep This Recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1458"/>
+        <location filename="../oximetry.cpp" line="1463"/>
         <source>Would you like to save this oximetery session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1655"/>
+        <location filename="../oximetry.cpp" line="1660"/>
         <source>Opening this oximetry file will destroy the current session.
 Would you like to keep it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1665"/>
+        <location filename="../oximetry.cpp" line="1670"/>
         <source>Select an oximetry file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1665"/>
+        <location filename="../oximetry.cpp" line="1670"/>
         <source>Oximetry Files (*.spo *.spoR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1679"/>
+        <location filename="../oximetry.cpp" line="1684"/>
         <source>Couldn&apos;t open oximetry file &quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../oximetry.cpp" line="1710"/>
+        <location filename="../oximetry.cpp" line="1715"/>
         <source>Opening this oximetry session will destroy the unsavedsession in the oximetry tab.
 Would you like to store it first?</source>
         <translation type="unfinished"></translation>
@@ -3396,26 +3067,6 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../preferencesdialog.cpp" line="692"/>
-        <source>N/A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../preferencesdialog.cpp" line="723"/>
-        <source>Oximetry Graphs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../preferencesdialog.cpp" line="755"/>
-        <source>Confirmation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../preferencesdialog.cpp" line="755"/>
-        <source>Are you sure you want to reset your graph preferences to the defaults?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../preferencesdialog.cpp" line="818"/>
         <source>This may not be a good idea</source>
         <translation type="unfinished"></translation>
@@ -3438,6 +3089,26 @@ Would you like do this now?</source>
     <message>
         <location filename="../preferencesdialog.cpp" line="818"/>
         <source>Are you sure you want to disable these backups?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../preferencesdialog.cpp" line="692"/>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../preferencesdialog.cpp" line="723"/>
+        <source>Oximetry Graphs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../preferencesdialog.cpp" line="755"/>
+        <source>Confirmation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../preferencesdialog.cpp" line="755"/>
+        <source>Are you sure you want to reset your graph preferences to the defaults?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3563,21 +3234,9 @@ Signed: Nasty Programmer</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../Graphs/gGraphView.cpp" line="2222"/>
+        <location filename="../Graphs/gGraphView.cpp" line="2225"/>
         <location filename="../SleepLib/common.h" line="188"/>
         <source>No Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="53"/>
-        <location filename="../SleepLib/common.h" line="220"/>
-        <source>On</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="54"/>
-        <location filename="../SleepLib/common.h" line="221"/>
-        <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3641,6 +3300,18 @@ Signed: Nasty Programmer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../SleepLib/common.h" line="53"/>
+        <location filename="../SleepLib/common.h" line="220"/>
+        <source>On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="54"/>
+        <location filename="../SleepLib/common.h" line="221"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../SleepLib/common.h" line="98"/>
         <source>BMI</source>
         <translation type="unfinished"></translation>
@@ -3671,33 +3342,8 @@ Signed: Nasty Programmer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/common.h" line="104"/>
-        <source>Pressure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="106"/>
-        <source>Daily</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="107"/>
-        <source>Overview</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="108"/>
-        <source>Oximetry</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../SleepLib/common.h" line="109"/>
         <source>Oximeter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="110"/>
-        <source>Event Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4033,13 +3679,7 @@ Signed: Nasty Programmer</source>
     <message>
         <location filename="../SleepLib/common.h" line="189"/>
         <source>Bookmarks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../SleepLib/common.h" line="190"/>
-        <location filename="../mainwindow.cpp" line="443"/>
-        <source>SleepyHead</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bladwijzers</translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="193"/>
@@ -4049,17 +3689,17 @@ Signed: Nasty Programmer</source>
     <message>
         <location filename="../SleepLib/common.h" line="194"/>
         <source>Model</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ser</translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="195"/>
         <source>Brand</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Merk</translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="196"/>
         <source>Serial</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Volgnummer</translation>
     </message>
     <message>
         <location filename="../SleepLib/common.h" line="197"/>
@@ -4192,41 +3832,66 @@ Signed: Nasty Programmer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../SleepLib/common.h" line="104"/>
+        <source>Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="106"/>
+        <source>Daily</source>
+        <translation type="unfinished">Dagelijks</translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="107"/>
+        <source>Overview</source>
+        <translation type="unfinished">Overzicht</translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="108"/>
+        <source>Oximetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/common.h" line="110"/>
+        <source>Event Flags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../SleepLib/preferences.cpp" line="33"/>
         <source>Windows User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="103"/>
+        <location filename="../SleepLib/profiles.cpp" line="105"/>
         <source>Software changes have been made that require the reimporting of the following machines data:
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="105"/>
+        <location filename="../SleepLib/profiles.cpp" line="107"/>
         <source>I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="106"/>
+        <location filename="../SleepLib/profiles.cpp" line="108"/>
         <source>Would you like me to purge this data this for you so you can run the new version?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="108"/>
+        <location filename="../SleepLib/profiles.cpp" line="110"/>
         <source>Machine Database Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="112"/>
+        <location filename="../SleepLib/profiles.cpp" line="114"/>
         <source>Purge Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SleepLib/profiles.cpp" line="112"/>
+        <location filename="../SleepLib/profiles.cpp" line="114"/>
         <source>Sorry, I could not purge this data, which means this version of SleepyHead can&apos;t start.. SleepyHead&apos;s Data folder needs to be removed manually
 
 This folder currently resides at the following location:
@@ -4234,50 +3899,36 @@ This folder currently resides at the following location:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="92"/>
+        <location filename="../main.cpp" line="94"/>
         <source>Release Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="103"/>
-        <location filename="../main.cpp" line="125"/>
+        <location filename="../main.cpp" line="105"/>
+        <location filename="../main.cpp" line="127"/>
         <source>&amp;Ok, get on with it..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="114"/>
+        <location filename="../main.cpp" line="116"/>
         <source>SleepyHead Update Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="117"/>
+        <location filename="../main.cpp" line="119"/>
         <source> Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="443"/>
-        <source>This is a beta software and some functionality may not work as intended yet.</source>
-        <translation type="unfinished"></translation>
+        <location filename="../main.cpp" line="198"/>
+        <source>Language</source>
+        <translation type="unfinished">Taal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="443"/>
-        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1517"/>
-        <source>About SleepyHead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1532"/>
-        <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1536"/>
-        <source>&amp;Donate</source>
-        <translation type="unfinished"></translation>
+        <location filename="../SleepLib/common.h" line="190"/>
+        <location filename="../summary.cpp" line="45"/>
+        <source>SleepyHead</source>
+        <translation type="unfinished">SlaapKop</translation>
     </message>
     <message>
         <location filename="../preferencesdialog.cpp" line="24"/>
@@ -4305,8 +3956,148 @@ This folder currently resides at the following location:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../summary.cpp" line="46"/>
+        <source>This is a beta software and some functionality may not work as intended yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="47"/>
+        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="632"/>
+        <source>About SleepyHead</source>
+        <translation type="unfinished">Over SlaapKop</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="647"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="651"/>
+        <source>&amp;Donate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../quazip/quazipfile.cpp" line="172"/>
         <source>ZIP/UNZIP API error %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
+        <source>Import Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
+        <source>This Machine Record cannot be imported in this profile.
+The Day records overlap with already existing content.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="35"/>
+        <source>There are no graphs visible to print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="48"/>
+        <source>Would you like to show bookmarked areas in this report?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="85"/>
+        <source>This make take some time to complete..
+Please don&apos;t touch anything until it&apos;s done.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="85"/>
+        <source>Printing %1 Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="117"/>
+        <source>%1 Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="153"/>
+        <source>: %1 hours, %2 minutes, %3 seconds
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="217"/>
+        <source>RDI	%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="219"/>
+        <source>AHI	%1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="246"/>
+        <source>AI=%1 HI=%2 CAI=%3 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="248"/>
+        <source>REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="252"/>
+        <source>UAI=%1 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="254"/>
+        <source>NRI=%1 LKI=%2 EPI=%3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="305"/>
+        <source>Reporting from %1 to %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="311"/>
+        <source>Reporting data goes here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="350"/>
+        <source>Entire Day&apos;s Flow Waveform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="355"/>
+        <source>Current Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="365"/>
+        <source>Entire Day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="467"/>
+        <source>SleepyHead v%1 - http://sleepyhead.sourceforge.net</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="472"/>
+        <source>Page %1 of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../reports.cpp" line="530"/>
+        <source>SleepyHead has finished sending the job to the printer.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4320,6 +4111,295 @@ This folder currently resides at the following location:
     <message>
         <location filename="../report.ui" line="27"/>
         <source>about:blank</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Summary</name>
+    <message>
+        <location filename="../summary.cpp" line="252"/>
+        <source>Please Import Some Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="252"/>
+        <source>SleepyHead is pretty much useless without it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="252"/>
+        <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="252"/>
+        <source>First import can take a few minutes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="283"/>
+        <source>No CPAP Machine Data Imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="285"/>
+        <source>CPAP Statistics as of</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="291"/>
+        <source>No CPAP data available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="293"/>
+        <source>%1 day of CPAP Data, on %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="295"/>
+        <source>%1 days of CPAP Data, between %2 and %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Most Recent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Last 7 Days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Last 30 Days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Last 6 months</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="299"/>
+        <location filename="../summary.cpp" line="429"/>
+        <source>Last Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="310"/>
+        <source>RERA Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="320"/>
+        <source>Flow Limit Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="331"/>
+        <source>Hours per Night</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="340"/>
+        <source>Min EPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="354"/>
+        <source>Max IPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="369"/>
+        <source>Average Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="376"/>
+        <source>%1% Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="384"/>
+        <source>Pressure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="400"/>
+        <source>Average %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="407"/>
+        <source>%1% %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="421"/>
+        <source>Oximetry Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="423"/>
+        <source>%1 day of Oximetry Data, on %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="425"/>
+        <source>%1 days of Oximetry Data, between %2 and %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="439"/>
+        <source>Average SpO2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="446"/>
+        <source>Minimum SpO2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="453"/>
+        <source>SpO2 Events / Hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="460"/>
+        <source>% of time in SpO2 Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="467"/>
+        <source>Average Pulse Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="474"/>
+        <source>Minimum Pulse Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="481"/>
+        <source>Maximum Pulse Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="488"/>
+        <source>Pulse Change Events / Hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="653"/>
+        <source>Usage Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="654"/>
+        <source>Total Days</source>
+        <translation type="unfinished">Totaal dagen</translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="656"/>
+        <source>Compliant Days</source>
+        <translation type="unfinished">Naleving dagen</translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="663"/>
+        <source>Days AHI &amp;gt;5.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="667"/>
+        <source>Best&amp;nbsp;%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="676"/>
+        <source>Worst&amp;nbsp;%1</source>
+        <translation type="unfinished">Slechtst&amp;nbsp;%1</translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="718"/>
+        <source>Best RX Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="754"/>
+        <source>Worst RX Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="776"/>
+        <source>Changes to Prescription Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="782"/>
+        <source>PS Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="782"/>
+        <source>PS Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="788"/>
+        <source>Min Pres.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="788"/>
+        <source>Max Pres.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="797"/>
+        <source>Days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="799"/>
+        <source>FL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="802"/>
+        <source>Pr. Rel.</source>
+        <translation type="unfinished">Drukontlastings</translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="883"/>
+        <source>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="890"/>
+        <source>Machine Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="896"/>
+        <source>First Use</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../summary.cpp" line="897"/>
+        <source>Last Use</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

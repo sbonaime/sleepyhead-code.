@@ -173,7 +173,6 @@ void NewProfile::on_nextButton_clicked()
             profile->doctor->setPhone(ui->doctorPhoneEdit->text());
             profile->doctor->setEmail(ui->doctorEmailEdit->text());
             profile->doctor->setPatientID(ui->doctorPatientIDEdit->text());
-            profile->user->setLanguage(ui->languageCombo->currentText());
             profile->user->setTimeZone(ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString());
             profile->user->setCountry(ui->countryCombo->currentText());
             profile->user->setDaylightSaving(ui->DSTcheckbox->isChecked());

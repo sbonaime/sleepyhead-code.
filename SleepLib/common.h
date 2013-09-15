@@ -75,6 +75,8 @@ const QString STR_MACH_CMS50="CMS50";
 const QString STR_MACH_ZEO="Zeo";
 
 const QString STR_PREF_VersionString="VersionString";
+const QString STR_PREF_Language="Language";
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Commonly used translatable text strings

@@ -885,6 +885,8 @@ void packEventList(EventList *el, EventDataType minval=0)
     bool f=false;
     qint64 lasttime=0;
     EventDataType min=999,max=0;
+
+
     for (quint32 i=0;i<el->count();i++) {
         t=el->data(i);
         ti=el->time(i);
@@ -971,6 +973,43 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
                     invalid.push_back(e.key());
                 } else {
                     // Valid event
+
+
+//                    // Clean up outliers at start of eventlist chunks
+//                    EventDataType baseline=sess->wavg(OXI_SPO2);
+//                    if (e.key()==OXI_SPO2) {
+//                        const int o2start_threshold=10000; // seconds since start of event
+
+//                        EventDataType zz;
+//                        int ii;
+
+//                        // Trash suspect outliers in the first o2start_threshold milliseconds
+//                        for (int j=0;j<e.value().size();j++) {
+//                            EventList *ev=e.value()[j];
+//                            if ((ev->count() <= (unsigned)discard_threshold))
+//                                continue;
+
+//                            qint64 ti=ev->time(0);
+
+//                            zz=-1;
+//                            // Peek o2start_threshold ms ahead and grab the value
+//                            for (ii=0;ii<ev->count();ii++) {
+//                                if (((ev->time(ii)-ti) > o2start_threshold)) {
+//                                    zz=ev->data(ii);
+//                                    break;
+//                                }
+//                            }
+//                            if (zz<0)
+//                                continue;
+//                            // Trash any suspect outliers
+//                            for (int i=0;i<ii;i++) {
+//                                if (ev->data(i) < baseline) { //(zz-10)) {
+
+//                                    ev->getData()[i]=0;
+//                                }
+//                            }
+//                        }
+//                    }
                     QVector<EventList *> newlist;
                     for (int i=0;i<e.value().size();i++)  {
                         if (e.value()[i]->count() > (unsigned)discard_threshold) {
@@ -1014,7 +1053,8 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
         Machine *m=machines[i];
         m->Save();
     }
-    getDaily()->ReloadGraphs();
+    getDaily()->LoadDate(getDaily()->getDate());
+    //getDaily()->ReloadGraphs();
     getOverview()->ReloadGraphs();
 }
 
@@ -1274,7 +1314,7 @@ void MainWindow::doReprocessEvents()
     Day *day;
     //FlowParser flowparser;
 
-    mainwin->Notify("Performance will be degraded during these recalculations.","Recalculating Indices");
+    mainwin->Notify(tr("Performance will be degraded during these recalculations."),tr("Recalculating Indices"));
 
     // For each day in history
     int daycount=first.daysTo(date);
@@ -1414,4 +1454,13 @@ void MainWindow::on_actionHelp_Support_Sleepyhead_Development_triggered()
     QDesktopServices().openUrl(url);
 //    ui->webView->load(url);
 //    ui->tabWidget->setCurrentWidget(ui->helpTab);
+}
+
+void MainWindow::on_actionChange_Language_triggered()
+{
+    PREF.Erase(STR_PREF_Language);
+    PROFILE.Save();
+    PREF.Save();
+
+    RestartApplication(true);
 }

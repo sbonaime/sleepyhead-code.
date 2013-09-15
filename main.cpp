@@ -15,6 +15,8 @@
 #include <QWebView>
 #include <QTranslator>
 #include <QDir>
+#include <QComboBox>
+#include <QPushButton>
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -159,30 +161,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    QDir dir(QCoreApplication::applicationDirPath()+"/Translations/");
-    dir.setFilter(QDir::Files);
-    dir.setNameFilters(QStringList("*.qm"));
-
-    qDebug() << "Available Translations";
-    QFileInfoList list=dir.entryInfoList();
-    for (int i=0;i<list.size();++i) {
-        QFileInfo fi=list.at(i);
-        qDebug() << fi.fileName();
-    }
-
-    QTranslator translator;
-    //
-    //QString transfile="sleepyhead_nl";
-    //qDebug() << "Loading" << QCoreApplication::applicationDirPath()+"/Translations/"+transfile;
-    //translator.load(transfile,QCoreApplication::applicationDirPath()+"/Translations");
-
-    translator.load("sleepyhead_"+QLocale::system().name(),QCoreApplication::applicationDirPath()+"/Translations");
-    a.installTranslator(&translator);
-
-    a.setApplicationName(STR_TR_SleepyHead);
-    initialize();
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Register Importer Modules
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,8 +174,7 @@ int main(int argc, char *argv[])
     // Scan for user profiles
     Profiles::Scan();
     //qRegisterMetaType<Preference>("Preference");
-    PREF["AppName"]=STR_TR_SleepyHead;
-
+    PREF["AppName"]=STR_TR_SleepyHead;    
 
     // Skip login screen, unless asked not to on the command line
     bool skip_login=PREF.ExistsAndTrue(STR_GEN_SkipLogin);
@@ -212,6 +189,74 @@ int main(int argc, char *argv[])
     if (!PREF.contains(STR_PREF_AllowEarlyUpdates)) {
         PREF[STR_PREF_AllowEarlyUpdates]=false;
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Language Selection
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    QDialog langsel(NULL,Qt::CustomizeWindowHint|Qt::WindowTitleHint);
+    langsel.setWindowTitle(QObject::tr("Language"));
+
+    QHBoxLayout lang_layout(&langsel);
+
+    QComboBox lang_combo(&langsel);
+    QPushButton lang_okbtn("->",&langsel);
+
+    lang_layout.addWidget(&lang_combo,1);
+    lang_layout.addWidget(&lang_okbtn);
+
+    QString transdir=QCoreApplication::applicationDirPath()+"/Translations/";
+    QDir dir(transdir);
+    qDebug() << "Scanning \"" << transdir << "\" for translations";
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList("*.qm"));
+
+    qDebug() << "Available Translations";
+    QFileInfoList list=dir.entryInfoList();
+    QString language=PREF[STR_PREF_Language].toString();
+    bool langok=false;
+
+    QString langfile,langname;
+
+    // Fake english for now..
+    lang_combo.addItem("English","English.en_US.qm");
+
+    // Scan translation directory
+    for (int i=0;i<list.size();++i) {
+        QFileInfo fi=list.at(i);
+        langname=fi.fileName().section('.',0,0);
+
+        lang_combo.addItem(langname,fi.fileName());
+        qDebug() << "Found Translation" << QDir::toNativeSeparators(fi.fileName());
+    }
+
+    for (int i=0;i<lang_combo.count();i++) {
+        langname=lang_combo.itemText(i);
+        if (langname==language) {
+            langfile=lang_combo.itemData(i).toString();
+            break;
+        }
+    }
+
+    if (langfile.isEmpty()) {
+        langsel.connect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
+
+        langsel.exec();
+        langsel.disconnect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
+        langfile=lang_combo.currentText();
+        PREF[STR_PREF_Language]=langfile;
+    }
+
+    qDebug() << "Loading Translation" << langfile;
+    QTranslator translator;
+
+    translator.load(langfile,QCoreApplication::applicationDirPath()+"/Translations");
+    a.installTranslator(&translator);
+
+    a.setApplicationName(STR_TR_SleepyHead);
+    initialize();
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..

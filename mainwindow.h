@@ -296,6 +296,8 @@ private slots:
 
     void aboutBoxLinkClicked(const QUrl & url);
 
+    void on_actionChange_Language_triggered();
+
 private:
     void FreeSessions();
 

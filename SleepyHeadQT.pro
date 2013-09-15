@@ -188,11 +188,11 @@ FORMS    += \
     UpdaterWindow.ui
 
 TRANSLATIONS += \
-    Translations/sleepyhead_nl.ts \
-    Translations/sleepyhead_fr.ts \
-    Translations/sleepyhead_se.ts \
-    Translations/sleepyhead_de.ts \
-    Translations/sleepyhead_es.ts
+    Translations/Nederlands.nl_NL.ts \
+    Translations/Francais.fr.ts \
+    Translations/Svenska.se.ts \
+    Translations/Deutsch.de_DE.ts \
+    Translations/Espaniol.es.ts
 
 RESOURCES += \
     Resources.qrc
@@ -214,11 +214,36 @@ OTHER_FILES += \
     docs/changelog.txt \
     docs/update_notes.html
 
+
+win32 {
+    CONFIG(debug, debug|release) {
+        DDIR = $$OUT_PWD/debug/Translations
+    }
+    CONFIG(release, debug|release) {
+        DDIR = $$OUT_PWD/release/Translations
+    }
+    DDIR ~= s,/,\\,g
+   # install_trans.path = $$DDIR/Translations
+   # install_trans.files = $$PWD/Translations/*.qm
+   # INSTALLS += install_trans
+
+    TRANS_FILES += $$PWD/Translations/*.qm
+    TRANS_FILES_WIN = $${TRANS_FILES}
+    TRANS_FILES_WIN ~= s,/,\\,g
+
+    system(mkdir $$quote($$DDIR))
+
+    for(FILE,TRANS_FILES_WIN){
+        system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
+    }
+}
+
 mac {
     TransFiles.files = Translations
     TransFiles.path = Contents/MacOS
     QMAKE_BUNDLE_DATA += TransFiles
 }
+
 
 
 

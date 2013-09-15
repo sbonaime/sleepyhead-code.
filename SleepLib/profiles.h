@@ -176,7 +176,6 @@ const QString STR_UI_Country="Country";
 const QString STR_UI_Height="Height";
 const QString STR_UI_Gender="Gender";
 const QString STR_UI_TimeZone="TimeZone";
-const QString STR_UI_Language="Language";
 const QString STR_UI_DST="DST";
 
 // OxiSettings Strings
@@ -298,7 +297,6 @@ public:
         if (!m_profile->contains(STR_UI_Height)) (*m_profile)[STR_UI_Height]=0.0;
         if (!m_profile->contains(STR_UI_Gender)) (*m_profile)[STR_UI_Gender]=(int)GenderNotSpecified;
         if (!m_profile->contains(STR_UI_TimeZone)) (*m_profile)[STR_UI_TimeZone]=QString();
-        if (!m_profile->contains(STR_UI_Language)) (*m_profile)[STR_UI_Language]="English";
         if (!m_profile->contains(STR_UI_DST)) (*m_profile)[STR_UI_DST]=false;
 
     }
@@ -317,7 +315,6 @@ public:
     const QString country() { return (*m_profile)[STR_UI_Country].toString(); }
     Gender gender() { return (Gender)(*m_profile)[STR_UI_Gender].toInt(); }
     const QString timeZone() { return (*m_profile)[STR_UI_TimeZone].toString(); }
-    const QString language() { return (*m_profile)[STR_UI_Language].toString(); }
     bool daylightSaving() { return (*m_profile)[STR_UI_DST].toBool(); }
 
     void setDOB(QDate date) { (*m_profile)[STR_UI_DOB]=date; }
@@ -331,7 +328,6 @@ public:
     void setCountry(QString country) { (*m_profile)[STR_UI_Country]=country; }
     void setGender(Gender g) { (*m_profile)[STR_UI_Gender]=(int)g; }
     void setTimeZone(QString tz) { (*m_profile)[STR_UI_TimeZone]=tz; }
-    void setLanguage(QString language) { (*m_profile)[STR_UI_Language]=language; }
     void setDaylightSaving(bool ds) { (*m_profile)[STR_UI_DST]=ds; }
 
     bool hasPassword() {
