@@ -612,17 +612,21 @@ void MainWindow::on_action_About_triggered()
     QString msg=QString(
 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
 "<table width=100%><tr><td>"
-"<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr>"+
-tr("Copyright")+" &copy;2012 Mark Watkins (jedimark) <br> \n"+
-tr("This software is released under the GNU Public License v3.0<br>")+
+"<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr/>"+
+tr("Copyright")+" &copy;2012 Mark Watkins (jedimark) <br/> \n"+
+tr("This software is released under the GNU Public License v3.0<br/>")+
 "<hr><p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
 tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"+
 tr("Authors Twitter Feed")+": <a href=\"http://twitter.com/jedimark64\">http://twitter.com/jedimark64</a></p>"+
 "</td><td><img src=\"qrc:/icons/Bob Strikes Back.png\" width=150px height=150px></td></tr><tr colspan><td colspan=2>"+
 tr("<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>")+
-"<hr><p><i>"+tr("This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.")+"</i></p>"
-"<p><i>"+tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices. This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.")+"</i></p>"
-"<p><i>"+tr("The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software<br/>Use this software entirely at your own risk.")+"</i></p>"
+"<hr><p><i>"+tr("This software comes with absolutely no warranty, either express of implied.")+" "+
+tr("It comes with no guarantee of fitness for any particular purpose.")+" "+
+tr("No guarantees are made regarding the accuracy of any data this program displays.")+"</i></p>"
+"<p><i>"+tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.")+
+tr("This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.")+"</i></p>"
+"<p><i>"+tr("The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")+"<br/>"+
+tr("Use this software entirely at your own risk.")+"</i></p>"
 "<hr><p><font color=\"blue\">"+tr("If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author")+"</font></p>"
 "</font></td></tr></table></span>"
 ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(QDir::toNativeSeparators(GetAppRoot()));
@@ -681,6 +685,8 @@ void MainWindow::on_action_Reset_Graph_Layout_triggered()
 
 void MainWindow::on_action_Preferences_triggered()
 {
+    //MW: TODO: This will crash if attempted to enter while still loading..
+
     if (m_inRecalculation) {
         mainwin->Notify(tr("Access to Preferences has been blocked until recalculation completes."));
         return;
@@ -718,6 +724,10 @@ void MainWindow::on_oximetryButton_clicked()
         ui->tabWidget->insertTab(3,oximetry,STR_TR_Oximetry);
         first=true;
     }
+
+    // MW: Instead, how about starting a direct import?
+    oximetry->serialImport();
+
     ui->tabWidget->setCurrentWidget(oximetry);
     if (!first) oximetry->RedrawGraphs();
     qstatus2->setText(STR_TR_Oximetry);
@@ -764,7 +774,7 @@ void MainWindow::DelayedScreenshot()
     a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".jpg";
     qDebug() << "Saving screenshot to" << a;
     if (pixmap.save(a)) {
-        Notify("There was an error saving screenshot to file \""+QDir::toNativeSeparators(a)+"\"");
+        Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     }
 }
 

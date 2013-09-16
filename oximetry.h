@@ -11,7 +11,9 @@
 #include <QGLContext>
 #include <QHBoxLayout>
 #include <QSplitter>
-#include <qextserialport/qextserialport.h>
+#include <QMessageBox>
+#include <QMutex>
+#include <3rdparty/qextserialport/src/qextserialport.h>
 
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
@@ -128,6 +130,7 @@ public:
     //! \brief Returns the serial ports stop bits setting
     StopBitsType stopBits() { return m_stopbits; }
 
+    bool isImporting() { return import_mode; }
 
     EventList * Pulse() { return pulse; }
     EventList * Spo2() { return spo2; }
@@ -210,7 +213,7 @@ protected:
     EventDataType lasto2,lastpr;
 
     QByteArray buffer;
-
+    QMutex modeLock;
 };
 
 /*! \class CMS50Serial
@@ -226,6 +229,9 @@ public:
 
     //! \brief Start the serial parts of Import mode.
     virtual bool startImport();
+
+    //! \brief Stop the serial parts of Import mode.
+    virtual void stopImport();
 
     //! \brief Sends the 0xf6,0xf6,0xf6 data string to the serial port to start live mode again
     virtual void resetDevice();
@@ -303,9 +309,13 @@ public:
     //! \brief Loads and displays a session containing oximetry data into into the Oximetry module
     void openSession(Session * session);
 
+    //! \brief Initiate an automated serial import
+    void serialImport();
+    QMessageBox *connectDeviceMsgBox;
+
 private slots:
     //! \brief Scans the list of serial ports and detects any oximetry devices
-    void on_RefreshPortsButton_clicked();
+    void on_RefreshPortsButton_clicked();    
 
     //! \brief Start or Stop live view mode
     void on_RunButton_toggled(bool checked); // Live mode button
@@ -352,6 +362,9 @@ private slots:
     //! \brief Reset the datetime to what was set when first loaded
     void on_resetTimeButton_clicked();
 
+    void timeout_CheckPorts();
+    void cancel_CheckPorts(QAbstractButton*);
+
 private:
     //! \brief Imports a .spo file
     bool openSPOFile(QString filename);
@@ -365,6 +378,7 @@ private:
     void updateGraphs();
     Ui::Oximetry *ui;
 
+    bool cancel_Import;
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
