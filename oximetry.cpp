@@ -12,7 +12,7 @@
 #include "oximetry.h"
 #include "ui_oximetry.h"
 #include "common_gui.h"
-#include "qextserialport/qextserialenumerator.h"
+#include "3rdparty/qextserialport/src/qextserialenumerator.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
 #include "SleepLib/calcs.h"
@@ -55,7 +55,6 @@ SerialOximeter::SerialOximeter(QObject * parent,QString oxiname, QString portnam
     connect(timer,SIGNAL(timeout()),this,SLOT(Timeout()));
     import_mode=false;
     m_mode=SO_WAIT;
-
 }
 
 SerialOximeter::~SerialOximeter()
@@ -405,8 +404,12 @@ Session *SerialOximeter::createSession(QDateTime date)
 
 bool SerialOximeter::startLive()
 {
+    modeLock.lock();
     import_mode=false;
+    killTimers();
     m_mode=SO_LIVE;
+    modeLock.unlock();
+
     lastpr=lasto2=0;
     buffer.clear();
 
@@ -418,8 +421,10 @@ bool SerialOximeter::startLive()
 
 void SerialOximeter::stopLive()
 {
+    modeLock.lock();
     if (timer->isActive()) timer->stop();
     m_mode=SO_WAIT;
+    modeLock.unlock();
     if (session) {
         compactAll();
         calcSPO2Drop(session);
@@ -607,8 +612,10 @@ void CMS50Serial::import_process()
 
 void CMS50Serial::ReadyRead()
 {
+    modeLock.lock();
     if (m_mode==SO_OFF)
         return;
+
     static int lastbytesize=0;
 
     QByteArray bytes;
@@ -619,8 +626,10 @@ void CMS50Serial::ReadyRead()
     if (m_mode==SO_WAIT) {
         killTimers();
        // Close();
+        modeLock.unlock();
         return;
     }
+    modeLock.unlock();
 
     m_callbacks++;
     if (!import_mode) {
@@ -711,6 +720,16 @@ void CMS50Serial::ReadyRead()
 
                     killTimers();
                     qDebug() << "Getting ready for import";
+
+                    // Hide the connect message box
+                    if (mainwin->getOximetry()->connectDeviceMsgBox) {
+                        //mainwin->getOximetry()->connectDeviceMsgBox->setText("Transfering Oximetry data from device");
+                        mainwin->getOximetry()->disconnect(mainwin->getOximetry()->connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),mainwin->getOximetry(),SLOT(cancel_CheckPorts()));
+                        mainwin->getOximetry()->close();
+                        delete mainwin->getOximetry()->connectDeviceMsgBox;
+                        mainwin->getOximetry()->connectDeviceMsgBox=NULL;
+                    }
+
                     mainwin->getOximetry()->graphView()->setEmptyText(tr("Please Wait, Importing..."));
                     mainwin->getOximetry()->graphView()->timedRedraw(50);
 
@@ -867,18 +886,14 @@ bool CMS50Serial::startImport()
     buffer.clear();
     data.clear();
 
+    killTimers();
+    modeLock.lock();
+
     m_mode=SO_IMPORT;
     import_mode=true;
     started_import=false;
     started_reading=false;
     finished_import=false;
-    killTimers();
-
-    connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
-
-    if (!m_opened && !Open(QextSerialPort::EventDriven))
-        return false;
-
 
     imptime.start();
 
@@ -888,6 +903,15 @@ bool CMS50Serial::startImport()
     cb_reset=0;
     import_fails=0;
     failcnt=0;
+
+    connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
+
+    modeLock.unlock();
+
+    if (!m_opened && !Open(QextSerialPort::EventDriven)) {
+        return false;
+    }
+
 
     // doesn't need to happen until process..
     createSession();
@@ -900,13 +924,29 @@ bool CMS50Serial::startImport()
     return true;
 }
 
+void CMS50Serial::stopImport()  // Silently stops import dead
+{
+    disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
+
+    modeLock.lock();
+    m_mode=SO_OFF;
+//    killTimers();
+    started_import=false;
+    import_mode=false;
+    finished_import=false;
+    modeLock.unlock();
+}
+
 void CMS50Serial::startImportTimeout()
 {
-    if ((m_mode==SO_WAIT)
+    modeLock.lock();
+    if ((m_mode==SO_WAIT) || (m_mode==SO_OFF)
             ||finished_import
-            ||started_import)
-        return;
+            ||started_import) {
 
+        modeLock.unlock();
+        return;
+    }
     // Wait until events really are jammed on the CMS50D+ before re-requesting data.
     if (imp_callbacks==0) { // Frozen, but still hasn't started?
         int elapsed=imptime.elapsed()/1000;
@@ -914,16 +954,18 @@ void CMS50Serial::startImportTimeout()
         if (elapsed>30) { // Give up after ~20 seconds
             m_mode=SO_WAIT;
             killTimers();
+            modeLock.unlock();
             emit(importAborted());
             mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed"));
             mainwin->getOximetry()->graphView()->timedRedraw(50);
             return;
         } else {
+            modeLock.unlock();
             QString a=tr("Set Oximeter to Upload");
             for (int j=0;j<elapsed;j++) a+=".";
             mainwin->getOximetry()->graphView()->setEmptyText(a);
             mainwin->getOximetry()->graphView()->timedRedraw(50);
-
+            modeLock.lock();
             // Note: Newer CMS50 devices transmit from user input
             requestData();
         }
@@ -931,11 +973,15 @@ void CMS50Serial::startImportTimeout()
         // Schedule another callback to make sure it's started
         cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
     }
+    modeLock.unlock();
 }
 void CMS50Serial::resetImportTimeout()
 {
-    if ((m_mode==SO_WAIT)||(finished_import))
+    modeLock.lock();
+    if ((m_mode==SO_WAIT)||(finished_import)) {
+        modeLock.unlock();
         return;
+    }
 
     if (imp_callbacks!=cb_reset) {
         // Still receiving data.. reset timer
@@ -958,12 +1004,14 @@ void CMS50Serial::resetImportTimeout()
             m_mode=SO_WAIT; // Temporarily pause until complete shutdown.
 
             emit(importProcess());
+            modeLock.unlock();
             return;
         }
         qDebug() << "Should CMS50 resetImportTimeout reach here?";
         // else what???
     }
     cb_reset=imp_callbacks;
+    modeLock.unlock();
 }
 
 
@@ -1130,6 +1178,81 @@ void Oximetry::on_RefreshPortsButton_clicked()
     }
     oximeter->setPortName(portname);
 }
+void Oximetry::serialImport()
+{
+    connect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
+    connect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
+    connect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
+    PLETHY->setVisible(false);
+    day->getSessions().clear();
+    GraphView->setDay(day);
+    //GraphView->setEmptyText(tr("Make Sure Oximeter is Ready"));
+    //GraphView->redraw();
+
+    cancel_Import=false;
+    QTimer::singleShot(100,this,SLOT(timeout_CheckPorts()));
+    connectDeviceMsgBox=new QMessageBox(QMessageBox::Information,tr("Connect Oximeter"),tr("Please connect oximeter device"),
+                                        QMessageBox::Cancel);
+    connect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts(QAbstractButton*)));
+    connectDeviceMsgBox->setModal(false);
+    connectDeviceMsgBox->show();
+    QApplication::processEvents();
+}
+
+void Oximetry::cancel_CheckPorts(QAbstractButton*b)
+{
+    qDebug() << "cancel_CheckPorts()";
+    cancel_Import=true;
+
+    disconnect(connectDeviceMsgBox,0,0,0);//SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts()));
+    disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
+    disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
+    disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
+
+    connectDeviceMsgBox->close();
+    delete connectDeviceMsgBox;
+    connectDeviceMsgBox=NULL;
+
+
+    if (oximeter->isImporting())
+        oximeter->stopImport();
+}
+
+void Oximetry::timeout_CheckPorts()
+{
+    if (cancel_Import) {
+        return;
+    }
+    if (portname=="") {
+        qDebug() << "restarting timeout_CheckPorts()";
+        on_RefreshPortsButton_clicked();
+        if (portname=="") {
+            QTimer::singleShot(1000,this,SLOT(timeout_CheckPorts()));
+            return;
+        }
+    }
+
+    qDebug() << "Calling oximeter->startImport()";
+    if (!oximeter->startImport()) {
+        QTimer::singleShot(1000,this,SLOT(timeout_CheckPorts()));
+        return;
+    }
+    qDebug() << "Success at oximeter->startImport()";
+
+    disconnect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts(QAbstractButton*)));
+    connectDeviceMsgBox->close();
+    delete connectDeviceMsgBox;
+
+    //connectDeviceMsgBox=NULL;
+    connectDeviceMsgBox=new QMessageBox(QMessageBox::Information,tr("Device Connected"),tr("Please make sure Oximeter device is in upload mode."),
+                                        QMessageBox::Cancel);
+    connectDeviceMsgBox->setModal(false);
+    connect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts(QAbstractButton*)));
+    connectDeviceMsgBox->show();
+    QApplication::processEvents();
+    //mainwin->Notify(tr("Please make sure Oximeter device is in upload mode."),tr("Device Connected"));
+}
+
 void Oximetry::RedrawGraphs()
 {
     GraphView->redraw();
@@ -1373,13 +1496,18 @@ void Oximetry::on_ImportButton_clicked()
 
 void Oximetry::import_finished()
 {
+    if (connectDeviceMsgBox) {
+        connectDeviceMsgBox->close();
+        disconnect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts()));
+        delete connectDeviceMsgBox;
+        connectDeviceMsgBox=NULL;
+    }
 
     disconnect(oximeter,SIGNAL(importComplete(Session*)),this,SLOT(import_complete(Session*)));
     disconnect(oximeter,SIGNAL(importAborted()),this,SLOT(import_aborted()));
     disconnect(oximeter,SIGNAL(updateProgress(float)),this,SLOT(update_progress(float)));
     oximeter->disconnect(oximeter,SIGNAL(importProcess()),0,0);
 
-//    oximeter->killTimers();
 //    oximeter->Close();
     // Hanging here.. :(
 

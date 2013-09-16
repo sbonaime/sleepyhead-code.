@@ -13,8 +13,8 @@
 #include <QDesktopWidget>
 
 #include "SleepLib/profiles.h"
-#include "quazip/quazip.h"
-#include "quazip/quazipfile.h"
+#include "3rdparty/quazip-0.5.1/quazip/quazip.h"
+#include "3rdparty/quazip-0.5.1/quazip/quazipfile.h"
 #include "UpdaterWindow.h"
 #include "ui_UpdaterWindow.h"
 #include "version.h"
