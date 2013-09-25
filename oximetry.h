@@ -213,7 +213,6 @@ protected:
     EventDataType lasto2,lastpr;
 
     QByteArray buffer;
-    QMutex modeLock;
 };
 
 /*! \class CMS50Serial

@@ -404,11 +404,9 @@ Session *SerialOximeter::createSession(QDateTime date)
 
 bool SerialOximeter::startLive()
 {
-    modeLock.lock();
     import_mode=false;
     killTimers();
     m_mode=SO_LIVE;
-    modeLock.unlock();
 
     lastpr=lasto2=0;
     buffer.clear();
@@ -421,10 +419,8 @@ bool SerialOximeter::startLive()
 
 void SerialOximeter::stopLive()
 {
-    modeLock.lock();
     if (timer->isActive()) timer->stop();
     m_mode=SO_WAIT;
-    modeLock.unlock();
     if (session) {
         compactAll();
         calcSPO2Drop(session);
@@ -612,7 +608,6 @@ void CMS50Serial::import_process()
 
 void CMS50Serial::ReadyRead()
 {
-    modeLock.lock();
     if (m_mode==SO_OFF)
         return;
 
@@ -626,10 +621,8 @@ void CMS50Serial::ReadyRead()
     if (m_mode==SO_WAIT) {
         killTimers();
        // Close();
-        modeLock.unlock();
         return;
     }
-    modeLock.unlock();
 
     m_callbacks++;
     if (!import_mode) {
@@ -887,7 +880,6 @@ bool CMS50Serial::startImport()
     data.clear();
 
     killTimers();
-    modeLock.lock();
 
     m_mode=SO_IMPORT;
     import_mode=true;
@@ -906,12 +898,9 @@ bool CMS50Serial::startImport()
 
     connect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 
-    modeLock.unlock();
-
     if (!m_opened && !Open(QextSerialPort::EventDriven)) {
         return false;
     }
-
 
     // doesn't need to happen until process..
     createSession();
@@ -928,23 +917,19 @@ void CMS50Serial::stopImport()  // Silently stops import dead
 {
     disconnect(this,SIGNAL(importProcess()),this,SLOT(import_process()));
 
-    modeLock.lock();
     m_mode=SO_OFF;
 //    killTimers();
     started_import=false;
     import_mode=false;
     finished_import=false;
-    modeLock.unlock();
 }
 
 void CMS50Serial::startImportTimeout()
 {
-    modeLock.lock();
     if ((m_mode==SO_WAIT) || (m_mode==SO_OFF)
             ||finished_import
             ||started_import) {
 
-        modeLock.unlock();
         return;
     }
     // Wait until events really are jammed on the CMS50D+ before re-requesting data.
@@ -954,18 +939,15 @@ void CMS50Serial::startImportTimeout()
         if (elapsed>30) { // Give up after ~20 seconds
             m_mode=SO_WAIT;
             killTimers();
-            modeLock.unlock();
             emit(importAborted());
             mainwin->getOximetry()->graphView()->setEmptyText(tr("Import Failed"));
             mainwin->getOximetry()->graphView()->timedRedraw(50);
             return;
         } else {
-            modeLock.unlock();
             QString a=tr("Set Oximeter to Upload");
             for (int j=0;j<elapsed;j++) a+=".";
             mainwin->getOximetry()->graphView()->setEmptyText(a);
             mainwin->getOximetry()->graphView()->timedRedraw(50);
-            modeLock.lock();
             // Note: Newer CMS50 devices transmit from user input
             requestData();
         }
@@ -973,13 +955,10 @@ void CMS50Serial::startImportTimeout()
         // Schedule another callback to make sure it's started
         cms50timer->singleShot(1000,this,SLOT(startImportTimeout()));
     }
-    modeLock.unlock();
 }
 void CMS50Serial::resetImportTimeout()
 {
-    modeLock.lock();
     if ((m_mode==SO_WAIT)||(finished_import)) {
-        modeLock.unlock();
         return;
     }
 
@@ -1004,14 +983,12 @@ void CMS50Serial::resetImportTimeout()
             m_mode=SO_WAIT; // Temporarily pause until complete shutdown.
 
             emit(importProcess());
-            modeLock.unlock();
             return;
         }
         qDebug() << "Should CMS50 resetImportTimeout reach here?";
         // else what???
     }
     cb_reset=imp_callbacks;
-    modeLock.unlock();
 }
 
 
@@ -1194,9 +1171,8 @@ void Oximetry::serialImport()
     connectDeviceMsgBox=new QMessageBox(QMessageBox::Information,tr("Connect Oximeter"),tr("Please connect oximeter device"),
                                         QMessageBox::Cancel);
     connect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts(QAbstractButton*)));
-    connectDeviceMsgBox->setModal(false);
-    connectDeviceMsgBox->show();
-    QApplication::processEvents();
+    connectDeviceMsgBox->exec();
+//    QApplication::processEvents();
 }
 
 void Oximetry::cancel_CheckPorts(QAbstractButton*b)
@@ -1246,10 +1222,8 @@ void Oximetry::timeout_CheckPorts()
     //connectDeviceMsgBox=NULL;
     connectDeviceMsgBox=new QMessageBox(QMessageBox::Information,tr("Device Connected"),tr("Please make sure Oximeter device is in upload mode."),
                                         QMessageBox::Cancel);
-    connectDeviceMsgBox->setModal(false);
     connect(connectDeviceMsgBox,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(cancel_CheckPorts(QAbstractButton*)));
-    connectDeviceMsgBox->show();
-    QApplication::processEvents();
+    connectDeviceMsgBox->exec();
     //mainwin->Notify(tr("Please make sure Oximeter device is in upload mode."),tr("Device Connected"));
 }
 

@@ -54,6 +54,7 @@ if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc")
 include(3rdparty/qextserialport/src/qextserialport.pri)
 include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
 
+#include(SleepLib2/sleeplib.pri)
 
 SOURCES += main.cpp\
     SleepLib/machine.cpp \
