@@ -13,7 +13,8 @@
 #include <QSplitter>
 #include <QMessageBox>
 #include <QMutex>
-#include <3rdparty/qextserialport/src/qextserialport.h>
+
+#include "qextserialport/src/qextserialport.h"
 
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"

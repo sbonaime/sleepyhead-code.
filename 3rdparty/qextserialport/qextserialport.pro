@@ -70,6 +70,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QESP_LIB_BASENAME = qextserialport
 }
 TARGET = $$qextLibraryName($$QESP_LIB_BASENAME)
+
 VERSION = 1.2.0
 
 # generate feature file by qmake based on this *.in file.
@@ -77,7 +78,7 @@ QMAKE_SUBSTITUTES += extserialport.prf.in
 OTHER_FILES += extserialport.prf.in
 
 # for make docs
-include(doc/doc.pri)
+#include(doc/doc.pri)
 
 # for make install
 win32:!qesp_static {

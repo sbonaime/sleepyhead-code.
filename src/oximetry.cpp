@@ -9,10 +9,11 @@
 #include <QCalendarWidget>
 #include <QTextCharFormat>
 
+#include "qextserialport/src/qextserialenumerator.h"
+
 #include "oximetry.h"
 #include "ui_oximetry.h"
 #include "common_gui.h"
-#include "3rdparty/qextserialport/src/qextserialenumerator.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
 #include "SleepLib/calcs.h"

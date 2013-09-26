@@ -5,6 +5,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 !win32:VERSION = 1.0.0
 
+INCLUDEPATH += $$[QT_INSTALL_PREFIX]/../src/qtbase/src/3rdparty/zlib
+
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC
 
