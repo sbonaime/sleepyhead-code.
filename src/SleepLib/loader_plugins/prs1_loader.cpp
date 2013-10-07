@@ -623,7 +623,8 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     ChannelID Codes[]={
         PRS1_00, PRS1_01, CPAP_Pressure, CPAP_EPAP, CPAP_PressurePulse, CPAP_Obstructive,
         CPAP_ClearAirway, CPAP_Hypopnea, PRS1_08,  CPAP_FlowLimit, PRS1_0A, CPAP_CSR,
-        PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F, PRS1_10,
+        PRS1_0C, CPAP_VSnore, PRS1_0E, PRS1_0F,
+        PRS1_10, // Large leak apparently
         CPAP_LeakTotal, PRS1_12
     };
 
