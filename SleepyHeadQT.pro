@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS = 3rdparty src
+SUBDIRS = 3rdparty sleepyhead
 
 CONFIG += ordered
 
@@ -9,6 +9,8 @@ TRANSLATIONS += \
     Translations/Francais.fr.ts \
     Translations/Svenska.se.ts \
     Translations/Deutsch.de_DE.ts \
-    Translations/Espaniol.es.ts
+    Translations/Espaniol.es.ts \
+    Translations/Bulgarian.bg.ts
 
-src.depends = 3rdparty
+
+sleepyhead.depends = 3rdparty
