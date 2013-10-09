@@ -327,7 +327,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////////////////
     // Respiratory Rate setup
     /////////////////////////////////////////////////////////////////////////////////
-    EventDataType minrr,maxrr;
+    EventDataType minrr=0,maxrr=0;
     EventList * RR=NULL;
     quint32 * rr_tptr=NULL;
     EventStoreType * rr_dptr=NULL;
@@ -368,11 +368,11 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////////////////
     // Tidal Volume setup
     /////////////////////////////////////////////////////////////////////////////////
-    EventList * TV;
-    EventDataType mintv, maxtv, tv;
+    EventList * TV=NULL;
+    EventDataType mintv=0, maxtv=0, tv=0;
     double val1, val2;
-    quint32 * tv_tptr;
-    EventStoreType * tv_dptr;
+    quint32 * tv_tptr=NULL;
+    EventStoreType * tv_dptr=NULL;
     int tv_count=0;
     if (calcTv) {
         TV=m_session->AddEventList(CPAP_TidalVolume,EVL_Event);

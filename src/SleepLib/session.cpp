@@ -1044,7 +1044,7 @@ double Session::rangeSum(ChannelID id, qint64 first,qint64 last)
     qint64 t,start;
     EventStoreType * dptr, * eptr;
     quint32 * tptr;
-    int cnt,idx;
+    int cnt,idx=0;
 
     qint64 rate;
     for (int i=0;i < evec.size();i++) {
@@ -1338,7 +1338,7 @@ EventDataType Session::percentile(ChannelID id,EventDataType percent)
 
     EventStoreType * dptr, * sptr, *eptr;
 
-    int tt=0,cnt;
+    int tt=0,cnt=0;
     for (int i=0;i<size;i++) {
         EventList & ev=*evec[i];
         cnt=ev.count();

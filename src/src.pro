@@ -230,9 +230,15 @@ else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lquazip
 INCLUDEPATH += $$PWD/../3rdparty/quazip
 DEPENDPATH += $$PWD/../3rdparty/quazip
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
-else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+greaterThan(QT_MAJOR_VERSION,4) {
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
+    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+} else {
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
+    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+}
 
 INCLUDEPATH += $$PWD/../3rdparty/qextserialport
 DEPENDPATH += $$PWD/../3rdparty/qextserialport
