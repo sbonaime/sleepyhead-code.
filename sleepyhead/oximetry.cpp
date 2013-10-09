@@ -13,7 +13,7 @@
 #ifdef USE_BUNDLED_LIBS
 #include "src/qextserialenumerator.h"
 #else
-#include <qextserialport/qextserialenumerator.h>
+#include <qextserialenumerator.h>
 #endif
 
 #include "oximetry.h"
