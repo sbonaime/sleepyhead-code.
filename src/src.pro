@@ -187,7 +187,8 @@ TRANSLATIONS += \
     ../Translations/Francais.fr.ts \
     ../Translations/Svenska.se.ts \
     ../Translations/Deutsch.de_DE.ts \
-    ../Translations/Espaniol.es.ts
+    ../Translations/Espaniol.es.ts \
+    ../Translations/Bulgarian.bg.ts
 
 win32 {
     CONFIG(debug, debug|release) {
