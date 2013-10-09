@@ -31,6 +31,7 @@ zip.h
 
 SOURCES += *.c *.cpp
 
+PREFIX = /usr/local
 unix:!symbian {
     headers.path=$$PREFIX/include/quazip
     headers.files=$$HEADERS
@@ -39,6 +40,8 @@ unix:!symbian {
 
 	OBJECTS_DIR=.obj
 	MOC_DIR=.moc
+
+    LIBS += -lz
 	
 }
 

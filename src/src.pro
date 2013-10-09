@@ -8,7 +8,7 @@ QT += core gui opengl network xml
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets
-} else {
+} else { # qt4
     QT += webkit
 }
 
@@ -41,8 +41,8 @@ unix:!macx:LIBS        += -lX11 -lz -lGLU
 
 macx {
   SOURCES          +=
-  LIBS             += -framework IOKit -framework CoreFoundation -lz
-  ICON              = icons/iconfile.icns
+  LIBS             += -lz
+  ICON              = ../icons/iconfile.icns
 }
 
 win32 {
@@ -182,13 +182,6 @@ OTHER_FILES += \
     docs/update_notes.html \
     qextserialport/qextserialport.pri
 
-TRANSLATIONS += \
-    ../Translations/Nederlands.nl_NL.ts \
-    ../Translations/Francais.fr.ts \
-    ../Translations/Svenska.se.ts \
-    ../Translations/Deutsch.de_DE.ts \
-    ../Translations/Espaniol.es.ts
-
 win32 {
     CONFIG(debug, debug|release) {
         DDIR = $$OUT_PWD/debug/Translations
@@ -210,30 +203,36 @@ win32 {
 }
 
 mac {
-    TransFiles.files = ../Translations
-    TransFiles.path = Contents/MacOS
+    TransFiles.files = $$files(../Translations/*.qm)
+    TransFiles.path = Contents/Resources/Translations
     QMAKE_BUNDLE_DATA += TransFiles
+
+# Precopy some frameworks
+#    LibFiles.files = $$OUT_PWD/../3rdparty/qextserialport/qextserialport.framework
+#    LibFiles.path = Contents/Frameworks
+#    QMAKE_BUNDLE_DATA += LibFiles
+
+#CONFIG(release, debug|release) {
+#    TmpFiles.files = $$files($$OUT_PWD/../3rdparty/quazip/quazip/libquazip.1.dylib) \
+#    $$files($$OUT_PWD/../3rdparty/qextserialport/libqextserialport.1.dylib)
+#} else: CONFIG(debug, debug|release) {
+#    TmpFiles.files = $$files($$OUT_PWD/../3rdparty/quazip/quazip/libquazip.1.dylib) \
+#    $$files($$OUT_PWD/../3rdparty/qextserialport/libqextserialport_debug.1.dylib)
+#}
+#    TmpFiles.path = Contents/Frameworks
+#    QMAKE_BUNDLE_DATA += TmpFiles
 }
-
-
-INCLUDEPATH += src \
-../3rdparty \
-../3rdparty/quazip
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
-else:unix: LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/ -lquazip
+else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lquazip
 
-DEPENDPATH += $$PWD/../3rdparty/quazip/quazip
+INCLUDEPATH += $$PWD/../3rdparty/quazip
+DEPENDPATH += $$PWD/../3rdparty/quazip
 
-greaterThan(QT_MAJOR_VERSION,4) {
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPortd
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd
-    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lQt5ExtSerialPortd
-} else {
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialportd
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialportd
-    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialportd
-}
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
+else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+
 INCLUDEPATH += $$PWD/../3rdparty/qextserialport
 DEPENDPATH += $$PWD/../3rdparty/qextserialport

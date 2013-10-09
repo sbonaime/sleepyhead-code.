@@ -4,7 +4,7 @@
 # CONFIG += qesp_static
 
 # Uncomment following line if you want to build framework for mac
-# macx:CONFIG += qesp_mac_framework
+#macx:CONFIG += qesp_mac_framework
 
 # Uncomment following line if you want to enable udev for linux
 # linux*:CONFIG += qesp_linux_udev
@@ -70,7 +70,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QESP_LIB_BASENAME = qextserialport
 }
 TARGET = $$qextLibraryName($$QESP_LIB_BASENAME)
-
 VERSION = 1.2.0
 
 # generate feature file by qmake based on this *.in file.
@@ -78,7 +77,7 @@ QMAKE_SUBSTITUTES += extserialport.prf.in
 OTHER_FILES += extserialport.prf.in
 
 # for make docs
-#include(doc/doc.pri)
+include(doc/doc.pri)
 
 # for make install
 win32:!qesp_static {

@@ -9,7 +9,7 @@
 #include <QCalendarWidget>
 #include <QTextCharFormat>
 
-#include "qextserialport/src/qextserialenumerator.h"
+#include "src/qextserialenumerator.h"
 
 #include "oximetry.h"
 #include "ui_oximetry.h"

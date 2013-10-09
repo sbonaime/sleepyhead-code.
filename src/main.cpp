@@ -205,7 +205,11 @@ int main(int argc, char *argv[])
     lang_layout.addWidget(&lang_combo,1);
     lang_layout.addWidget(&lang_okbtn);
 
+#ifdef Q_WS_MAC
+    QString transdir=QCoreApplication::applicationDirPath()+"/Contents/Resources/Translations/";
+#else
     QString transdir=QCoreApplication::applicationDirPath()+"/Translations/";
+#endif
     QDir dir(transdir);
     qDebug() << "Scanning \"" << transdir << "\" for translations";
     dir.setFilter(QDir::Files);

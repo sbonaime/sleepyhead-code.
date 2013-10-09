@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include <QMutex>
 
-#include "qextserialport/src/qextserialport.h"
+#include "src/qextserialport.h"
 
 #include "SleepLib/profiles.h"
 #include "SleepLib/day.h"
