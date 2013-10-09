@@ -40,7 +40,6 @@ else:DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
 unix:!macx:LIBS        += -lX11 -lz -lGLU
 
 macx {
-  SOURCES          +=
   LIBS             += -lz
   ICON              = ../icons/iconfile.icns
 }
@@ -54,6 +53,10 @@ if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc")
    DEFINES += BUILD_WITH_MSVC=1
 }
 
+
+win32:CONFIG += use_bundled_libs
+
+use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -243,6 +246,6 @@ greaterThan(QT_MAJOR_VERSION,4) {
 }
 
 use_bundled_libs {
-    INCLUDEPATH += $$PWD/../3rdparty/qextserialport/src
-    DEPENDPATH += $$PWD/../3rdparty/qextserialport/src
+    INCLUDEPATH += $$PWD/../3rdparty/qextserialport
+    DEPENDPATH += $$PWD/../3rdparty/qextserialport
 }

@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 
-CONFIG -= use_bundled_libs
 
 # Need them for windows..
 win32:CONFIG += use_bundled_libs
+else:CONFIG -= use_bundled_libs
 
 use_bundled_libs {
     SUBDIRS = 3rdparty
