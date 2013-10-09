@@ -206,39 +206,43 @@ mac {
     TransFiles.files = $$files(../Translations/*.qm)
     TransFiles.path = Contents/Resources/Translations
     QMAKE_BUNDLE_DATA += TransFiles
-
-# Precopy some frameworks
-#    LibFiles.files = $$OUT_PWD/../3rdparty/qextserialport/qextserialport.framework
-#    LibFiles.path = Contents/Frameworks
-#    QMAKE_BUNDLE_DATA += LibFiles
-
-#CONFIG(release, debug|release) {
-#    TmpFiles.files = $$files($$OUT_PWD/../3rdparty/quazip/quazip/libquazip.1.dylib) \
-#    $$files($$OUT_PWD/../3rdparty/qextserialport/libqextserialport.1.dylib)
-#} else: CONFIG(debug, debug|release) {
-#    TmpFiles.files = $$files($$OUT_PWD/../3rdparty/quazip/quazip/libquazip.1.dylib) \
-#    $$files($$OUT_PWD/../3rdparty/qextserialport/libqextserialport_debug.1.dylib)
-#}
-#    TmpFiles.path = Contents/Frameworks
-#    QMAKE_BUNDLE_DATA += TmpFiles
 }
+
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
-else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lquazip
+else:unix {
+    use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+    LIBS += -lquazip
+}
 
-INCLUDEPATH += $$PWD/../3rdparty/quazip
-DEPENDPATH += $$PWD/../3rdparty/quazip
+use_bundled_libs {
+    INCLUDEPATH += $$PWD/../3rdparty/quazip
+    DEPENDPATH += $$PWD/../3rdparty/quazip
+} else {
+    INCLUDEPATH += /usr/include
+    INCLUDEPATH += /usr/local/include
+}
 
 greaterThan(QT_MAJOR_VERSION,4) {
+
     win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
-    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+    else:unix{
+        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+        LIBS += -lqextserialport
+    }
+
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
-    else:unix: LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/ -lqextserialport
+    else:unix {
+        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+        LIBS += -lqextserialport
+    }
 }
 
-INCLUDEPATH += $$PWD/../3rdparty/qextserialport
-DEPENDPATH += $$PWD/../3rdparty/qextserialport
+use_bundled_libs {
+    INCLUDEPATH += $$PWD/../3rdparty/qextserialport/src
+    DEPENDPATH += $$PWD/../3rdparty/qextserialport/src
+}

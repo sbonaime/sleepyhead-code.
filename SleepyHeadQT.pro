@@ -1,8 +1,20 @@
 TEMPLATE = subdirs
 
-SUBDIRS = 3rdparty sleepyhead
+CONFIG -= use_bundled_libs
 
-CONFIG += ordered
+# Need them for windows..
+win32:CONFIG += use_bundled_libs
+
+use_bundled_libs {
+    SUBDIRS = 3rdparty
+}
+
+SUBDIRS += sleepyhead
+
+use_bundled_libs {
+    CONFIG += ordered
+    sleepyhead.depends = 3rdparty
+}
 
 TRANSLATIONS += \
     Translations/Nederlands.nl_NL.ts \
@@ -13,4 +25,3 @@ TRANSLATIONS += \
     Translations/Bulgarian.bg.ts
 
 
-sleepyhead.depends = 3rdparty
