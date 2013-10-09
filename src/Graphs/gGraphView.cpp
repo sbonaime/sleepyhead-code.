@@ -2317,7 +2317,7 @@ bool gGraphView::usePixmapCache()
 void gGraphView::DrawTextQue()
 {
     const qint64 expire_after_ms=4000; // expire string pixmaps after this many milliseconds
-    const qint64 under_limit_cache_bonus=30000; // If under the limit, give a bonus to the millisecond timeout.
+    //const qint64 under_limit_cache_bonus=30000; // If under the limit, give a bonus to the millisecond timeout.
     const qint32 max_pixmap_cache=4*1048576;  // Maximum size of pixmap cache (it can grow over this, but only temporarily)
 
     quint64 ti=0,exptime=0;

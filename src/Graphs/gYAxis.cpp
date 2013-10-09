@@ -138,7 +138,7 @@ gYAxis::~gYAxis()
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
-    int x,y,yh=0;
+    int x,y;//,yh=0;
 
     //Todo: clean this up as there is a lot of duplicate code between the sections
 

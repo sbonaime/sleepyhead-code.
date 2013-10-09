@@ -1176,7 +1176,7 @@ void Oximetry::serialImport()
 //    QApplication::processEvents();
 }
 
-void Oximetry::cancel_CheckPorts(QAbstractButton*b)
+void Oximetry::cancel_CheckPorts(QAbstractButton*)
 {
     qDebug() << "cancel_CheckPorts()";
     cancel_Import=true;

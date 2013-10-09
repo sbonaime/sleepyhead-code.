@@ -498,7 +498,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 total_events+=cnt;
                 QString st=schema::channel[code].description();
                 if (st.isEmpty())  {
-                    st="Fixme %1"+code;
+                    st=QString("Fixme %1").arg(code);
                 }
                 st+=" ";
                 if (cnt==1) st+=tr("%1 event").arg(cnt);
