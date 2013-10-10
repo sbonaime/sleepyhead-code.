@@ -19,6 +19,7 @@ else:!use_bundled_libs:CONFIG += extserialport
 
 use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
 
+
 #static {
 #    CONFIG += static
 #    QTPLUGIN += qsvg qgif qpng
@@ -231,27 +232,6 @@ use_bundled_libs {
     DEPENDPATH += /usr/local/include/quazip
 }
 
-#greaterThan(QT_MAJOR_VERSION,4) {
-
-#    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
-#    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
-#    else:unix{
-#        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
-#        LIBS += -lqextserialport
-#    }
-
-#} else {
-#    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
-#    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
-#    else:unix {
-#        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
-#        LIBS += -lqextserialport
-#    }
-#}
-
-#use_bundled_libs {
-#}
-
 use_bundled_libs: {
     greaterThan(QT_MAJOR_VERSION,4) {
         win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
@@ -266,11 +246,5 @@ use_bundled_libs: {
     INCLUDEPATH += $$PWD/../3rdparty/qextserialport
     DEPENDPATH += $$PWD/../3rdparty/qextserialport
 } else {
-    mac: LIBS += -framework qextserialport
-    else:unix: LIBS += -lqextserialport
-
-    INCLUDEPATH += /usr/local/include
-    INCLUDEPATH += /usr/include
-    DEPENDPATH += /usr/local/include/QtExtSerialPort
-    DEPENDPATH += /usr/include/QtExtSerialPort
+    CONFIG += extserialport
 }
