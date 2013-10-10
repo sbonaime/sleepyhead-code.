@@ -16,6 +16,8 @@
 #include <QScrollBar>
 #include <QSpacerItem>
 #include <QWebFrame>
+#include <QLabel>
+
 #include <cmath>
 //#include <QPrinter>
 //#include <QProgressBar>
@@ -62,6 +64,23 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->setContentsMargins(0,0,0,0);
+
+    sessbar=new SessionBar(this);
+
+    const bool sessbar_under_graphs=false;
+    if (sessbar_under_graphs) {
+        ui->sessionBarLayout->addWidget(sessbar,1);
+    } else {
+        QLabel *label=new QLabel("The session bar could go here instead??",this);
+        label->setAlignment(Qt::AlignCenter);
+        ui->sessionBarLayout->addWidget(label,1);
+        ui->splitter->insertWidget(2,sessbar);
+        sessbar->setMaximumHeight(sessbar->height());
+        sessbar->setMinimumHeight(sessbar->height());
+    }
+    sessbar->setMouseTracking(true);
+
+    connect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
     ui->graphMainArea->setLayout(layout);
     //ui->graphMainArea->setLayout(layout);
 
@@ -340,6 +359,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 Daily::~Daily()
 {
     GraphView->SaveSettings("Daily");
+    disconnect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
 
     disconnect(ui->webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
     // Save any last minute changes..
@@ -351,6 +371,17 @@ Daily::~Daily()
     delete icon_on;
     delete icon_off;
 }
+
+void Daily::doToggleSession(Session * sess)
+{
+   // sess->StoreSummary();
+    Day *day=PROFILE.GetDay(previous_date,MT_CPAP);
+    if (day) {
+        day->machine->Save();
+        this->LoadDate(previous_date);
+    }
+}
+
 void Daily::Link_clicked(const QUrl &url)
 {
     QString code=url.toString().section("=",0,0).toLower();
@@ -1515,8 +1546,25 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 void Daily::UpdateCPAPGraphs(Day *day)
 {
     //if (!day) return;
+    QColor cols[]={
+        QColor("gold"),
+        QColor("light blue"),
+        QColor("light green"),
+        QColor("purple"),
+        QColor("red"),
+    };
+    const int maxcolors=sizeof(cols)/sizeof(QColor);
     if (day) {
         day->OpenEvents();
+        QVector<Session *>::iterator i;
+        sessbar->clear();
+        int c=0;
+        for (i=day->begin();i!=day->end();++i) {
+            Session * s=*i;
+            sessbar->add(s, cols[c % maxcolors]);
+            c++;
+        }
+        sessbar->update();
     }
     for (QList<Layer *>::iterator g=CPAPData.begin();g!=CPAPData.end();g++) {
         (*g)->SetDay(day);

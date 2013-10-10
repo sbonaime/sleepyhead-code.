@@ -25,6 +25,7 @@
 #include "Graphs/gGraphView.h"
 
 #include "Graphs/gLineChart.h"
+#include "sessionbar.h"
 
 namespace Ui {
     class Daily;
@@ -222,6 +223,7 @@ private slots:
 
     void on_weightSpinBox_valueChanged(double arg1);
 
+    void doToggleSession(Session *);
 protected:
 
 private:
@@ -283,6 +285,7 @@ private:
     void UpdateOXIGraphs(Day *day);
     void UpdateSTAGEGraphs(Day *day);
 
+
     Ui::Daily *ui;
     QDate previous_date;
     QMenu *show_graph_menu;
@@ -293,6 +296,8 @@ private:
     QLabel *emptyToggleArea;
     QIcon * icon_on;
     QIcon * icon_off;
+
+    SessionBar * sessbar;
 
     bool ZombieMeterMoved;
     bool BookmarksChanged;

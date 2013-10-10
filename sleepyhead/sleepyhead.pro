@@ -109,7 +109,8 @@ SOURCES += main.cpp\
     SleepLib/loader_plugins/icon_loader.cpp \
     SleepLib/loader_plugins/mseries_loader.cpp \
     reports.cpp \
-    summary.cpp
+    summary.cpp \
+    sessionbar.cpp
 
 HEADERS  += \
     SleepLib/machine.h \
@@ -154,7 +155,8 @@ HEADERS  += \
     SleepLib/loader_plugins/icon_loader.h \
     SleepLib/loader_plugins/mseries_loader.h \
     reports.h \
-    summary.h
+    summary.h \
+    sessionbar.h
 
 
 FORMS    += \
@@ -170,7 +172,7 @@ FORMS    += \
     UpdaterWindow.ui
 
 RESOURCES += \
-    ../Resources.qrc
+    Resources.qrc
 
 OTHER_FILES += \
     docs/index.html \
@@ -182,13 +184,12 @@ OTHER_FILES += \
     docs/startup_tips.txt \
     docs/countries.txt \
     docs/tz.txt \
-    LICENSE.txt \
+    ../LICENSE.txt \
     docs/tooltips.css \
     docs/script.js \
-    update.xml \
+    ../update.xml \
     docs/changelog.txt \
-    docs/update_notes.html \
-    qextserialport/qextserialport.pri
+    docs/update_notes.html
 
 win32 {
     CONFIG(debug, debug|release) {
