@@ -17,7 +17,8 @@
 #ifdef USE_BUNDLED_LIBS
 #include "src/qextserialport.h"
 #else
-#include <QtExtSerialPort/qextserialport.h>
+
+#include <qextserialport.h>
 #endif
 
 #include "SleepLib/profiles.h"

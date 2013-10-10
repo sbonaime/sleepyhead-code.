@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS = quazip qextserialport
+SUBDIRS = quazip
+SUBDIRS = qextserialport
 
 CONFIG += ordered
-

@@ -14,6 +14,11 @@ greaterThan(QT_MAJOR_VERSION,4) {
 
 CONFIG += rtti
 
+win32:CONFIG += use_bundled_libs
+else:!use_bundled_libs:CONFIG += extserialport
+
+use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
+
 #static {
 #    CONFIG += static
 #    QTPLUGIN += qsvg qgif qpng
@@ -53,10 +58,6 @@ if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc")
    DEFINES += BUILD_WITH_MSVC=1
 }
 
-
-win32:CONFIG += use_bundled_libs
-
-use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -211,11 +212,12 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
 else:unix {
-    use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+    use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/quazip/
+    else:QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
+
     LIBS += -lquazip
 }
 
@@ -225,27 +227,50 @@ use_bundled_libs {
 } else {
     INCLUDEPATH += /usr/include
     INCLUDEPATH += /usr/local/include
+    DEPENDPATH += /usr/include/quazip
+    DEPENDPATH += /usr/local/include/quazip
 }
 
-greaterThan(QT_MAJOR_VERSION,4) {
+#greaterThan(QT_MAJOR_VERSION,4) {
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
-    else:unix{
-        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
-        LIBS += -lqextserialport
+#    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
+#    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
+#    else:unix{
+#        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+#        LIBS += -lqextserialport
+#    }
+
+#} else {
+#    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
+#    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
+#    else:unix {
+#        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
+#        LIBS += -lqextserialport
+#    }
+#}
+
+#use_bundled_libs {
+#}
+
+use_bundled_libs: {
+    greaterThan(QT_MAJOR_VERSION,4) {
+        win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
+        else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
+        else:unix:CONFIG(release, debug|release): LIBS += -lQt5ExtSerialPort1
+        else:unix:CONFIG(debug, debug|release): LIBS += -lQt5ExtSerialPortd1
+    } else {
+        win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
+        else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
+        else:unix: LIBS += -lqextserialport
     }
-
-} else {
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
-    else:unix {
-        use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/qextserialport/
-        LIBS += -lqextserialport
-    }
-}
-
-use_bundled_libs {
     INCLUDEPATH += $$PWD/../3rdparty/qextserialport
     DEPENDPATH += $$PWD/../3rdparty/qextserialport
+} else {
+    mac: LIBS += -framework qextserialport
+    else:unix: LIBS += -lqextserialport
+
+    INCLUDEPATH += /usr/local/include
+    INCLUDEPATH += /usr/include
+    DEPENDPATH += /usr/local/include/QtExtSerialPort
+    DEPENDPATH += /usr/include/QtExtSerialPort
 }

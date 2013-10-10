@@ -4,7 +4,7 @@
 # CONFIG += qesp_static
 
 # Uncomment following line if you want to build framework for mac
-#macx:CONFIG += qesp_mac_framework
+macx:CONFIG += qesp_mac_framework
 
 # Uncomment following line if you want to enable udev for linux
 # linux*:CONFIG += qesp_linux_udev
