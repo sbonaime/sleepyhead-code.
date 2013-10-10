@@ -43,7 +43,10 @@ else:DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
 exists(.git):DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
 else:DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
 
-unix:!macx:LIBS        += -lX11 -lz -lGLU
+unix:!macx {
+    LIBS        += -lX11 -lz -lGLU
+    DEFINES         += _TTY_POSIX_
+}
 
 macx {
   LIBS             += -lz
@@ -226,10 +229,10 @@ use_bundled_libs {
     INCLUDEPATH += $$PWD/../3rdparty/quazip
     DEPENDPATH += $$PWD/../3rdparty/quazip
 } else {
-    INCLUDEPATH += /usr/include
     INCLUDEPATH += /usr/local/include
-    DEPENDPATH += /usr/include/quazip
+    INCLUDEPATH += /usr/include
     DEPENDPATH += /usr/local/include/quazip
+    DEPENDPATH += /usr/include/quazip
 }
 
 use_bundled_libs: {
