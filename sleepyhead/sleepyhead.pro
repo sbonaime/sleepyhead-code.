@@ -50,7 +50,7 @@ unix:!macx {
 
 macx {
   LIBS             += -lz
-  ICON              = ../icons/iconfile.icns
+  ICON              = icons/iconfile.icns
 }
 
 win32 {
