@@ -271,46 +271,6 @@
        <property name="movable">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="details">
-        <attribute name="title">
-         <string>Details</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QWebView" name="webView">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="cursor">
-            <cursorShape>IBeamCursor</cursorShape>
-           </property>
-           <property name="url">
-            <url>
-             <string>about:blank</string>
-            </url>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="events">
         <attribute name="title">
          <string>Events</string>
@@ -838,7 +798,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="sessionBarLayout" stretch="">
+           <layout class="QHBoxLayout" name="sessionBarLayout">
             <property name="sizeConstraint">
              <enum>QLayout::SetMaximumSize</enum>
             </property>
@@ -882,13 +842,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>

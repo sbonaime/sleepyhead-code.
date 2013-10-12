@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui opengl network xml
+QT += core gui opengl network xml uitools
 
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += widgets webkitwidgets

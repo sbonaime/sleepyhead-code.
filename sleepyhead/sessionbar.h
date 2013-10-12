@@ -12,13 +12,13 @@ typedef qint64 SegType;
 
 class SBSeg {
 public:
-    SBSeg() { session=NULL; color=QColor(); highlight=false; }
-    SBSeg(Session * sess, QColor col) { session=sess; color=col; highlight=false; }
-    SBSeg(const SBSeg & a) { session=a.session; color=a.color; highlight=a.highlight; }
+    SBSeg();
+    SBSeg(Session * sess, QColor col);
+//    SBSeg(const SBSeg & a);
 
-    Session * session;
     QColor color;
     bool highlight;
+    Session * session;
 };
 
 
@@ -27,6 +27,9 @@ class SessionBar : public QWidget
     Q_OBJECT
 public:
     SessionBar(QWidget *parent = 0);
+//    // Q_DECLARE_METATYPE requires a copy-constructor
+  //  SessionBar(const SessionBar &);
+
     virtual ~SessionBar();
     void clear() { segments.clear(); }
     void add(Session * sess, QColor col) { if (sess) segments.push_back(SBSeg(sess,col)); }
@@ -39,11 +42,12 @@ protected:
     void paintEvent(QPaintEvent * event);
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
-
-    QList<SBSeg> segments;
     SegType min();
     SegType max();
+
+    QList<SBSeg> segments;
     QTimer timer;
 };
+//Q_DECLARE_METATYPE(SessionBar)
 
 #endif

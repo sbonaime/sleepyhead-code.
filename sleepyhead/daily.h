@@ -18,6 +18,8 @@
 #include <QtOpenGL/QGLContext>
 #include <QScrollBar>
 #include <QTableWidgetItem>
+#include <QWebView>
+#include <QWebPage>
 #include "Graphs/gSummaryChart.h"
 
 #include <SleepLib/profiles.h>
@@ -30,6 +32,25 @@
 namespace Ui {
     class Daily;
 }
+
+class MyWebPage:public QWebPage
+{
+Q_OBJECT
+public:
+    MyWebPage(QObject *parent = 0);
+protected:
+    QObject *createPlugin(const QString & classid, const QUrl & url, const QStringList & paramNames, const QStringList & paramValues);
+};
+
+class MyWebView:public QWebView
+{
+   Q_OBJECT
+   private:
+      MyWebPage m_page;
+   public:
+      MyWebView(QWidget *parent = 0);
+};
+
 
 
 class MainWindow;
@@ -102,6 +123,7 @@ public:
         \returns gGraph * object containing this chart
         */
     gGraph * eventBreakdownPie() { return GAHI; }
+    QWidget * sessionBar() { return sessbar; }
 private slots:
 
     /*! \fn on_calendar_currentPageChanged(int year, int month);
@@ -298,6 +320,8 @@ private:
     QIcon * icon_off;
 
     SessionBar * sessbar;
+
+    MyWebView * webView;
 
     bool ZombieMeterMoved;
     bool BookmarksChanged;
