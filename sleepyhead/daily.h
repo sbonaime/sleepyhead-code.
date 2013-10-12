@@ -320,6 +320,7 @@ private:
     QIcon * icon_off;
 
     SessionBar * sessbar;
+    QLabel * dateDisplay;
 
     MyWebView * webView;
 

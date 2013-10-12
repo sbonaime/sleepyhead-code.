@@ -66,13 +66,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->setMargin(0);
     layout->setContentsMargins(0,0,0,0);
 
+    dateDisplay=new QLabel("",this);
+    dateDisplay->setAlignment(Qt::AlignCenter);
+    dateDisplay->setTextFormat(Qt::RichText);
+    ui->sessionBarLayout->addWidget(dateDisplay,1);
+
 //    const bool sessbar_under_graphs=false;
 //    if (sessbar_under_graphs) {
 //        ui->sessionBarLayout->addWidget(sessbar,1);
 //    } else {
-//        QLabel *label=new QLabel("The session bar could go here instead??",this);
-//        label->setAlignment(Qt::AlignCenter);
-//        ui->sessionBarLayout->addWidget(label,1);
 //        ui->splitter->insertWidget(2,sessbar);
 //        sessbar->setMaximumHeight(sessbar->height());
 //        sessbar->setMinimumHeight(sessbar->height());
@@ -728,6 +730,7 @@ MyWebView::MyWebView(QWidget *parent):
 
 void Daily::Load(QDate date)
 {
+    dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     static Day * lastcpapday=NULL;
     previous_date=date;
     Day *cpap=PROFILE.GetDay(date,MT_CPAP);
