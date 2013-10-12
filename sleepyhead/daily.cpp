@@ -1323,15 +1323,18 @@ void Daily::Load(QDate date)
     QVector<Session *>::iterator i;
 
     // WebView trashes it without asking.. :(
-    sessbar=new SessionBar(this);
-    sessbar->setMouseTracking(true);
-    connect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
-    int c=0;
-    for (i=cpap->begin();i!=cpap->end();++i) {
-        Session * s=*i;
-        sessbar->add(s, cols[c % maxcolors]);
-        c++;
-    }
+    if (cpap) {
+        sessbar=new SessionBar(this);
+        sessbar->setMouseTracking(true);
+        connect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
+        int c=0;
+
+        for (i=cpap->begin();i!=cpap->end();++i) {
+            Session * s=*i;
+            sessbar->add(s, cols[c % maxcolors]);
+            c++;
+        }
+    } else sessbar=NULL;
     //sessbar->update();
 
     webView->setHtml(html);
