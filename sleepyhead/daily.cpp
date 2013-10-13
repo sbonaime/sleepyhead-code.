@@ -1233,7 +1233,6 @@ void Daily::Load(QDate date)
                         .arg((*s)->session())
                         .arg(tooltip)
                         .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
-                             //sprintf("%ih %im %is",h,m,s1))
                         .arg((b ? "on" : "off"))
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
@@ -1250,7 +1249,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                tooltip=oxi->machine->GetClass()+" "+STR_TR_Oximeter+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=oxi->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
 
                 Session *sess=*s;
                 if (!sess->settings.contains(SESSION_ENABLED)) {
@@ -1260,10 +1259,10 @@ void Daily::Load(QDate date)
 
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
-                html+=QString("<tr><td align=left><a class=info href='oxi=%1'>%3<span>%2</span></a></td><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                html+=QString("<tr><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='oxi=%1'>%3<span>%2</span></a></td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
-                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
                         .arg((b ? "on" : "off"))
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
@@ -1279,7 +1278,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                tooltip=stage->machine->GetClass()+" "+tr("Sleep Stage")+" "+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=stage->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
 
                 Session *sess=*s;
                 if (!sess->settings.contains(SESSION_ENABLED)) {
@@ -1289,16 +1288,14 @@ void Daily::Load(QDate date)
 
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
                 corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
-                html+=QString("<tr><td align=left><a class=info href='stage=%1'>%3<span>%2</span></a></td><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                html+=QString("<tr><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='stage=%1'>%3<span>%2</span></a></td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
-                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
                         .arg((b ? "on" : "off"))
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
                         .arg(ld.toString("HH:mm"));
-                //tmp.sprintf(("<tr><td align=left><a href='stage=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
-                //html+=tmp;
             }
         }
         if (corrupted_waveform) {
