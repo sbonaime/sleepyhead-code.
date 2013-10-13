@@ -142,6 +142,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
     PULSE=new gGraph(GraphView,STR_TR_PulseRate,schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
     SPO2=new gGraph(GraphView,STR_TR_SpO2,schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
+    INTPULSE=new gGraph(GraphView,tr("Int. Pulse"),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
+    INTSPO2=new gGraph(GraphView,tr("Int. SpO2"),schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
     PLETHY=new gGraph(GraphView,STR_TR_Plethy,schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
@@ -225,13 +227,15 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag2, COLOR_Orange, tr("U2"),FT_Bar)));
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_UserFlag3, COLOR_Brown, tr("U3"),FT_Bar)));
     }
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
+
     FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2)));
     //FRW->AddLayer(AddOXI(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Dot)));
 
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE };
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE, INTSPO2, INTPULSE};
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -296,8 +300,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, COLOR_Te, square)));
     TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, COLOR_Ti, square)));
     //lc->addPlot(CPAP_Test2,COLOR:DarkYellow,square);
-    //INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
-    //INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, square)));
 
     STAGE->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, COLOR_SleepStage, true)));
 
@@ -312,8 +314,20 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
     PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy, COLOR_Plethy,false)));
 
+    gLineOverlaySummary *los3=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    gLineOverlaySummary *los4=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+
+    INTPULSE->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
+    INTPULSE->AddLayer(AddCPAP(los3));
+    INTSPO2->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
+    INTSPO2->AddLayer(AddCPAP(los4));
+    INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
+    INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
+
+
     PTB->setForceMaxY(100);
     SPO2->setForceMaxY(100);
+    INTSPO2->setForceMaxY(100);
 
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
