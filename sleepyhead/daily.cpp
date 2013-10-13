@@ -1229,10 +1229,10 @@ void Daily::Load(QDate date)
                     sess->settings[SESSION_ENABLED]=true;
                 }
                 bool b=sess->settings[SESSION_ENABLED].toBool();
-                html+=QString("<tr><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td></tr>")
+                html+=QString("<tr onClick=\"document.location.href = 'cpap=%1';\"><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
-                        .arg(QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1))
+                        .arg(QString().sprintf("%ih %im %is",h,m,s1))
                         .arg((b ? "on" : "off"))
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
@@ -1267,9 +1267,7 @@ void Daily::Load(QDate date)
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
                         .arg(ld.toString("HH:mm"));
-                //tmp.sprintf(("<tr><td align=left><a href='oxi=%i' title='"+tooltip+"'>%08i</a></td><td align=center>"+fd.date().toString(Qt::SystemLocaleShortDate)+"</td><td align=center>"+fd.toString("HH:mm ")+"</td><td align=center>"+ld.toString("HH:mm")+"</td></tr>").toLatin1(),(*s)->session(),(*s)->session());
-                //html+=tmp;
-            }
+             }
         }
         if (stage) {
             html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("Sleep Stage Sessions"));
