@@ -16,6 +16,7 @@
 #include <QScrollBar>
 #include <QSpacerItem>
 #include <QWebFrame>
+#include <QFontMetrics>
 #include <QLabel>
 
 #include <cmath>
@@ -1194,20 +1195,21 @@ void Daily::Load(QDate date)
         html+="<tr><td colspan=5><hr/></td></tr>";
         html+=QString("<tr><td colspan=5 align=center><b>"+tr("Session Information")+"</b></td></tr>");
         html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+        QFontMetrics FM(webView->font());
+        QRect r=FM.boundingRect('@');
         html+=QString("<tr><td colspan=5 align=center>"
-        "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=40 width=100%")+"></object>";
-                "<script>"
-                "sessbar.show();"
-                "</script>"
-                //                   "sessionbar.setGridVisible(true);"
-                //                   "calendar.setCurrentPage(1985, 5);"
-        "</td></tr>"
-                ;
+        "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=%1 width=100%></object>"
+        "<script>"
+        "sessbar.show();"
+        "</script>"
+        "</td></tr>").arg(r.height()*3,0,10);
+        html+="<tr><td colspan=5 align=center>&nbsp; </td></tr>"
+;
 
         QDateTime fd,ld;
         bool corrupted_waveform=false;
         QString tooltip;
-        html+=QString("<tr><td align=left><b>"+tr("SessionID")+"</b></td><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td></tr>");
+        html+=QString("<tr><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td><td align=left><b>"+tr("Duration")+"</b></td></tr>");
         if (cpap) {
             html+=QString("<tr><td align=left colspan=5><i>"+tr("CPAP Sessions")+"</i></td></tr>");
             for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
@@ -1217,7 +1219,7 @@ void Daily::Load(QDate date)
                 int h=len/3600;
                 int m=(len/60) % 60;
                 int s1=len % 60;
-                tooltip=cpap->machine->GetClass()+"&nbsp;"+STR_TR_CPAP+"&nbsp;"+QString().sprintf("%2ih,&nbsp;%2im,&nbsp;%2is",h,m,s1);
+                tooltip=cpap->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
                 // tooltip needs to lookup language.. :-/
 
                 QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
@@ -1227,10 +1229,10 @@ void Daily::Load(QDate date)
                     sess->settings[SESSION_ENABLED]=true;
                 }
                 bool b=sess->settings[SESSION_ENABLED].toBool();
-                html+=QString("<tr><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td></tr>")
+                html+=QString("<tr><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td></tr>")
                         .arg((*s)->session())
                         .arg(tooltip)
-                        .arg((*s)->session(),8,10,QChar('0'))
+                        .arg(QString().sprintf("%2ih&nbsp;%2im&nbsp;%2is",h,m,s1))
                         .arg((b ? "on" : "off"))
                         .arg(fd.date().toString(Qt::SystemLocaleShortDate))
                         .arg(fd.toString("HH:mm"))
@@ -1310,9 +1312,6 @@ void Daily::Load(QDate date)
     QColor cols[]={
         QColor("gold"),
         QColor("light blue"),
-        QColor("light green"),
-        QColor("purple"),
-        QColor("red"),
     };
     const int maxcolors=sizeof(cols)/sizeof(QColor);
     QVector<Session *>::iterator i;
