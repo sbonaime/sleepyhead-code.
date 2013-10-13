@@ -22,7 +22,7 @@ Copyright: (c)2011 Mark Watkins
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int resmed_data_version=5;
+const int resmed_data_version=6;
 //
 //********************************************************************************************
 
