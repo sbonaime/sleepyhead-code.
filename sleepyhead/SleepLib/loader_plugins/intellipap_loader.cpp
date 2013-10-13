@@ -21,8 +21,6 @@ Intellipap::Intellipap(Profile *p,MachineID id)
     :CPAP(p,id)
 {
     m_class=intellipap_class_name;
-    properties[STR_PROP_Brand]="DeVilbiss";
-    properties[STR_PROP_Model]=STR_MACH_Intellipap;
 }
 
 Intellipap::~Intellipap()
@@ -136,6 +134,7 @@ int IntellipapLoader::Open(QString & path,Profile *profile)
     for (QHash<QString,QString>::iterator i=set1.begin();i!=set1.end();i++) {
         mach->properties[i.key()]=i.value();
     }
+    mach->properties[STR_PROP_Model]=STR_MACH_Intellipap+" "+mach->properties[STR_PROP_ModelNumber];
 
     f.close();
 
@@ -383,16 +382,24 @@ Machine *IntellipapLoader::CreateMachine(QString serial,Profile *profile)
     QList<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
     QList<Machine *>::iterator i;
+    Machine *m=NULL;
     for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==intellipap_class_name) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             MachList[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
+            m=*i;
             break;
         }
     }
-    if (found) return *i;
+    if (!found) {
+        m=new Intellipap(profile,0);
+    }
+    m->properties[STR_PROP_Brand]="DeVilbiss";
+    m->properties[STR_PROP_Series]=STR_MACH_Intellipap;
 
-    Machine *m=new Intellipap(profile,0);
+    if (found)
+        return m;
+
 
     MachList[serial]=m;
     profile->AddMachine(m);

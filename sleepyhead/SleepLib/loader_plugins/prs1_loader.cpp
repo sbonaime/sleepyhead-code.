@@ -99,9 +99,6 @@ crc_t CRC16(const unsigned char *data, size_t data_len)
 PRS1::PRS1(Profile *p,MachineID id):CPAP(p,id)
 {
     m_class=prs1_class_name;
-    properties[STR_PROP_Brand]="Philips Respironics";
-    properties[STR_PROP_Model]="System One";
-
 }
 PRS1::~PRS1()
 {
@@ -136,17 +133,25 @@ Machine *PRS1Loader::CreateMachine(QString serial,Profile *profile)
     QList<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
     QList<Machine *>::iterator i;
+    Machine *m=NULL;
+
     for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==STR_MACH_PRS1) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             PRS1List[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
+            m=*i;
             break;
         }
     }
-    if (found) return *i;
+    if (!found) {
+        m=new PRS1(profile,0);
+    }
+    m->properties[STR_PROP_Brand]="Philips Respironics";
+    m->properties[STR_PROP_Series]="System One";
 
-    //assert(PRS1List.find(serial)==PRS1List.end())
-    Machine *m=new PRS1(profile,0);
+    if (found) {
+        return m;
+    }
 
     PRS1List[serial]=m;
     profile->AddMachine(m);
@@ -262,7 +267,7 @@ bool PRS1Loader::ParseProperties(Machine *m,QString filename)
     int i=pt.toInt(&ok,16);
     if (ok) {
         if (ModelMap.find(i)!=ModelMap.end()) {
-            m->properties[STR_PROP_SubModel]=ModelMap[i];
+            m->properties[STR_PROP_Model]=ModelMap[i];
         }
     }
     if (prop["SerialNumber"]!=m->properties[STR_PROP_Serial]) {

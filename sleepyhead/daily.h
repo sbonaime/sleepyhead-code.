@@ -287,6 +287,14 @@ private:
     void updateCube();
     void updateGraphCombo();
 
+    QString getSessionInformation(Day * cpap, Day * oxi, Day * stage);
+    QString getMachineSettings(Day * cpap);
+    QString getStatisticsInfo(Day * cpap, Day * oxi);
+    QString getCPAPInformation(Day * cpap);
+    QString getOximeterInformation(Day * oxi);
+    QString getEventBreakdown(Day * cpap);
+    QString getSleepTime(Day * cpap, Day * oxi);
+
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF, *THPR,
            *PLETHY,*TI,*TE, *RE, *IE, *AHI, *RDI, *STAGE; //*TgMV,

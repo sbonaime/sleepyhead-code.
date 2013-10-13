@@ -271,24 +271,31 @@ Machine *ResmedLoader::CreateMachine(QString serial,Profile *profile)
     QList<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
     QList<Machine *>::iterator i;
+    Machine *m=NULL;
     for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==resmed_class_name) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             ResmedList[serial]=*i; //static_cast<CPAP *>(*i);
             found=true;
+            m=*i;
             break;
         }
     }
-    if (found) return *i;
+    if (!found) {
+        m=new CPAP(profile,0);
+    }
+
+    m->properties[STR_PROP_Brand]=STR_MACH_ResMed;
+    m->properties[STR_PROP_Series]="S9";
+    if (found)
+        return m;
 
     qDebug() << "Create ResMed Machine" << serial;
-    Machine *m=new CPAP(profile,0);
     m->SetClass(resmed_class_name);
 
     ResmedList[serial]=m;
     profile->AddMachine(m);
 
     m->properties[STR_PROP_Serial]=serial;
-    m->properties[STR_PROP_Brand]=STR_MACH_ResMed;
     m->properties[STR_PROP_DataVersion]=QString::number(resmed_data_version);
 
     QString path="{"+STR_GEN_DataFolder+"}/"+m->GetClass()+"_"+serial+"/";
@@ -405,7 +412,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         if (i.key()=="PCD") { // Lookup Product Code for real model string
             bool ok;
             int j=i.value().toInt(&ok);
-            if (ok) m->properties[STR_PROP_Model]=RMS9ModelMap[j];
+            if (ok)
+                m->properties[STR_PROP_Model]=RMS9ModelMap[j];
         }
     }
 
@@ -1151,8 +1159,9 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             sess->SetChanged(true);
             qint64 dif=sess->first()-stredf.startdate;
             int dn=dif/86400000L;
+            int mode;
+            EventDataType prset, prmode;
             if (dn<days) {
-                int mode;
                 sig=stredf.lookupSignal(CPAP_Mode);
                 if (sig) {
                     mode=sig->data[dn];
@@ -1163,12 +1172,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
-                    sess->settings[CPAP_PresReliefMode]=EventDataType(sig->data[dn])*sig->gain;
+                    prmode=EventDataType(sig->data[dn])*sig->gain;
+                    sess->settings[CPAP_PresReliefMode]=prmode;
                 }
 
                 sig=stredf.lookupSignal(RMS9_EPRSet);
                 if (sig)  {
-                    sess->settings[CPAP_PresReliefSet]=EventDataType(sig->data[dn])*sig->gain;
+                    prset=EventDataType(sig->data[dn])*sig->gain;
+                    sess->settings[CPAP_PresReliefSet]=prset;
                 }
 
 

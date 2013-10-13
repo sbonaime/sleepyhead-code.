@@ -57,6 +57,7 @@ const QString STR_PREF_AllowEarlyUpdates="AllowEarlyUpdates";
 
 const QString STR_PROP_Brand="Brand";
 const QString STR_PROP_Model="Model";
+const QString STR_PROP_Series="Series";
 const QString STR_PROP_ModelNumber="ModelNumber";
 const QString STR_PROP_SubModel="SubModel";
 const QString STR_PROP_Serial="Serial";

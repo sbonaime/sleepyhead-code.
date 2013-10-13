@@ -721,12 +721,359 @@ MyWebView::MyWebView(QWidget *parent):
 }
 
 
+QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage)
+{
+    QString html;
+    QList<Day *> list;
+    if (cpap) list.push_back(cpap);
+    if (oxi) list.push_back(oxi);
+    if (stage) list.push_back(stage);
+
+    if (list.isEmpty())
+        return html;
+
+    html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+    html+=QString("<tr><td colspan=5 align=center><b>"+tr("Session Information")+"</b></td></tr>");
+    html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+    QFontMetrics FM(*defaultfont);
+    QRect r=FM.boundingRect('@');
+    if (cpap) {
+        html+=QString("<tr><td colspan=5 align=center>"
+        "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=%1 width=100%></object>"
+//        "<script>"
+//        "sessbar.show();"
+//        "</script>"
+        "</td></tr>").arg(r.height()*3,0,10);
+        html+="<tr><td colspan=5 align=center>&nbsp; </td></tr>";
+    }
+
+
+    QDateTime fd,ld;
+    bool corrupted_waveform=false;
+    QString tooltip;
+
+    html+=QString("<tr><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td><td align=left><b>"+tr("Duration")+"</b></td></tr>");
+    QList<Day *>::iterator di;
+    QString type;
+
+    for (di=list.begin();di!=list.end();di++) {
+        Day * day=*di;
+        html+="<tr><td align=left colspan=5><i>";
+        switch (day->machine_type()) {
+        case MT_CPAP: type="cpap";
+            html+=tr("CPAP Sessions");
+            break;
+        case MT_OXIMETER: type="oxi";
+            html+=tr("Oximetery Sessions");
+            break;
+        case MT_SLEEPSTAGE: type="stage";
+            html+=tr("Sleep Stage Sessions");
+            break;
+        default:
+            type="unknown";
+            html+=tr("Unknown Session");
+            break;
+        }
+        html+="</i></td></tr>\n";
+        for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+
+            if ((day->machine_type()==MT_CPAP) &&
+                ((*s)->settings.find(CPAP_BrokenWaveform)!=(*s)->settings.end()))
+                    corrupted_waveform=true;
+
+            fd=QDateTime::fromTime_t((*s)->first()/1000L);
+            ld=QDateTime::fromTime_t((*s)->last()/1000L);
+            int len=(*s)->length()/1000L;
+            int h=len/3600;
+            int m=(len/60) % 60;
+            int s1=len % 60;
+            tooltip=day->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
+            // tooltip needs to lookup language.. :-/
+
+            Session *sess=*s;
+            if (!sess->settings.contains(SESSION_ENABLED)) {
+                sess->settings[SESSION_ENABLED]=true;
+            }
+            bool b=sess->settings[SESSION_ENABLED].toBool();
+            html+=QString("<tr onClick=\"document.location.href = '"+type+"=%1';\">"
+                          "<td width=26><a href='toggle"+type+"session=%1'>"
+                          "<img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='"+type+"=%1'>%3<span>%2</span></a></td></tr>")
+                    .arg((*s)->session())
+                    .arg(tooltip)
+                    .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
+                    .arg((b ? "on" : "off"))
+                    .arg(fd.date().toString(Qt::SystemLocaleShortDate))
+                    .arg(fd.toString("HH:mm"))
+                    .arg(ld.toString("HH:mm"));
+        }
+    }
+
+    if (corrupted_waveform) {
+        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
+    }
+    html+="</table>";
+    return html;
+}
+
+QString Daily::getMachineSettings(Day * cpap) {
+    QString html;
+    if (cpap && cpap->hasEnabledSessions()) {
+        html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
+        html+="<tr><td colspan=5>&nbsp;</td></tr>";
+        int i=cpap->settings_max(CPAP_PresReliefType);
+        int j=cpap->settings_max(CPAP_PresReliefSet);
+        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
+        html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                .arg(STR_TR_PrRelief)
+                .arg(schema::channel[CPAP_PresReliefType].description())
+                .arg(flexstr);
+        QString mclass=cpap->machine->GetClass();
+        if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
+            int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
+            html+=QString("<tr><td><a class='info' href='#'>"+STR_TR_Humidifier+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
+                .arg(schema::channel[CPAP_HumidSetting].description())
+                .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
+        }
+        html+="</table>";
+        html+="<hr/>\n";
+    }
+    return html;
+}
+
+QString Daily::getOximeterInformation(Day * oxi)
+{
+    QString html;
+    if (oxi && oxi->hasEnabledSessions()) {
+        html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
+        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+        html+="<tr><td colspan=5 align=center>"+oxi->machine->properties[STR_PROP_Brand]+" "+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
+        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
+        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
+        html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2); // CHECKME: Should this value be wavg OXI_SPO2 isntead?
+        html+="</table>\n";
+        html+="<hr/>\n";
+    }
+    return html;
+}
+
+QString Daily::getCPAPInformation(Day * cpap)
+{
+    QString html;
+    if (!cpap)
+        return html;
+
+    QString brand=cpap->machine->properties[STR_PROP_Brand];
+    QString series=cpap->machine->properties[STR_PROP_Series];
+    QString model=cpap->machine->properties[STR_PROP_Model];
+    QString number=cpap->machine->properties[STR_PROP_ModelNumber];
+
+    html="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+
+    html+="<tr><td colspan=4 align=center><a class=info2 href='#'>"+model+"<span>";
+    QString tooltip=(brand+"\n"+series+" "+number+"\n"+cpap->machine->properties[STR_PROP_Serial]);
+    tooltip=tooltip.replace(" ","&nbsp;");
+
+
+    html+=tooltip;
+    html+="</span></td></tr>\n";
+    CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
+    html+="<tr><td colspan=4 align=center>"+tr("PAP Setting")+": <b>";
+
+    if (mode==MODE_CPAP) {
+        EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
+        html+=STR_TR_CPAP+" "+QString::number(min)+STR_UNIT_CMH2O;
+    } else if (mode==MODE_APAP) {
+        EventDataType min=cpap->settings_min(CPAP_PressureMin);
+        EventDataType max=cpap->settings_max(CPAP_PressureMax);
+        html+=STR_TR_APAP+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
+    } else if (mode==MODE_BIPAP) {
+        EventDataType epap=cpap->settings_min(CPAP_EPAP);
+        EventDataType ipap=cpap->settings_max(CPAP_IPAP);
+        EventDataType ps=cpap->settings_max(CPAP_PS);
+        html+=STR_TR_BiLevel+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 %3<br/> "+STR_TR_PS+": %4")
+                .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
+    }
+    else if (mode==MODE_ASV) {
+        EventDataType epap=cpap->settings_min(CPAP_EPAP);
+        EventDataType low=cpap->settings_min(CPAP_IPAPLo);
+        EventDataType high=cpap->settings_max(CPAP_IPAPHi);
+        EventDataType psl=cpap->settings_min(CPAP_PSMin);
+        EventDataType psh=cpap->settings_max(CPAP_PSMax);
+        html+=tr("ASV")+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 - %3 %4<br/> "+STR_TR_PS+": %5 / %6")
+                .arg(epap,0,'f',1)
+                .arg(low,0,'f',1)
+                .arg(high,0,'f',1)
+                .arg(STR_UNIT_CMH2O)
+                .arg(psl,0,'f',1)
+                .arg(psh,0,'f',1);
+    }
+    else html+=STR_TR_Unknown;
+    html+="</b></td></tr>\n";
+    html+="</table>\n";
+  //  html+="<hr/>\n";
+    return html;
+}
+
+
+QString Daily::getStatisticsInfo(Day * cpap,Day * oxi)
+{
+
+    QList<Day *> list;
+
+    list.push_back(cpap);
+    list.push_back(oxi);
+
+
+    int mididx=PROFILE.general->prefCalcMiddle();
+    SummaryType ST_mid;
+    if (mididx==0) ST_mid=ST_PERC;
+    if (mididx==1) ST_mid=ST_WAVG;
+    if (mididx==2) ST_mid=ST_AVG;
+
+    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
+
+    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
+    const EventDataType maxperc=0.995F;
+
+    QString midname;
+    if (ST_mid==ST_WAVG) midname=tr("Avg");
+    else if (ST_mid==ST_AVG) midname=tr("Avg");
+    else if (ST_mid==ST_PERC) midname=tr("Med");
+
+    QString html;
+
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Statistics"));
+    html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
+            .arg(STR_TR_Channel)
+            .arg(STR_TR_Min)
+            .arg(midname)
+            .arg(tr("%1%").arg(percentile*100,0,'f',0))
+            .arg(STR_TR_Max);
+
+    ChannelID chans[]={
+        CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
+        CPAP_MinuteVent, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
+        CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
+        CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
+    };
+    int numchans=sizeof(chans)/sizeof(ChannelID);
+    int ccnt=0;
+    EventDataType tmp,med,perc,mx,mn;
+
+    QList<Day *>::iterator di;
+
+    for (di=list.begin();di!=list.end();di++) {
+        Day * day=*di;
+
+        if (!day)
+            continue;
+
+        for (int i=0;i<numchans;i++) {
+
+            ChannelID code=chans[i];
+
+            if (!day->channelHasData(code))
+                continue;
+
+            QString tooltip=schema::channel[code].description();
+
+            if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
+
+            if (ST_max==ST_MAX) {
+                mx=day->Max(code);
+            } else {
+                mx=day->percentile(code,maxperc);
+            }
+
+            mn=day->Min(code);
+            perc=day->percentile(code,percentile);
+
+            if (ST_mid==ST_PERC) {
+                med=day->percentile(code,0.5);
+                tmp=day->wavg(code);
+                if (tmp>0 || mx==0) {
+                    tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
+                }
+            } else if (ST_mid==ST_WAVG) {
+                med=day->wavg(code);
+                tmp=day->percentile(code,0.5);
+                if (tmp>0 || mx==0) {
+                    tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
+                }
+            } else if (ST_mid==ST_AVG) {
+                med=day->avg(code);
+                tmp=day->percentile(code,0.5);
+                if (tmp>0 || mx==0) {
+                    tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
+                }
+            }
+
+            html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
+                .arg(schema::channel[code].label())
+                .arg(mn,0,'f',2)
+                .arg(med,0,'f',2)
+                .arg(perc,0,'f',2)
+                .arg(mx,0,'f',2)
+                .arg(tooltip);
+            ccnt++;
+        }
+    }
+    if (GraphView->isEmpty() && (ccnt>0)) {
+        html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+        html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
+    }
+    html+="</table>\n";
+    html+="<hr/>\n";
+    return html;
+}
+
+QString Daily::getEventBreakdown(Day * cpap)
+{
+    QString html;
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+
+    html+="</table>";
+    return html;
+}
+
+QString Daily::getSleepTime(Day * cpap, Day * oxi)
+{
+    QString html;
+
+    Day * day=NULL;
+    if (cpap && cpap->hours()>0)
+        day=cpap;
+    else if (oxi && oxi->hours()>0)
+        day=oxi;
+    else
+        return html;
+    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
+    int tt=qint64(day->total_time())/1000L;
+    QDateTime date=QDateTime::fromTime_t(day->first()/1000L);
+    QDateTime date2=QDateTime::fromTime_t(day->last()/1000L);
+
+    int h=tt/3600;
+    int m=(tt/60)%60;
+    int s=tt % 60;
+    html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n")
+            .arg(date.date().toString(Qt::SystemLocaleShortDate))
+            .arg(date.toString("HH:mm"))
+            .arg(date2.toString("HH:mm"))
+            .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
+    html+="</table>\n";
+//    html+="<hr/>";
+
+    return html;
+}
+
+
 void Daily::Load(QDate date)
 {
-    static int calls=0;
-
-    calls++;
-    qDebug() << "in Load()" << date << calls;
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     static Day * lastcpapday=NULL;
     previous_date=date;
@@ -768,8 +1115,7 @@ void Daily::Load(QDate date)
             "}"
     "--></script>"
     "</head>"
-    "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>"
-    "<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+    "<body leftmargin=0 rightmargin=0 topmargin=0 marginwidth=0 marginheight=0>";
     QString tmp;
 
     UpdateOXIGraphs(oxi);
@@ -795,11 +1141,7 @@ void Daily::Load(QDate date)
     bool isBrick=false;
 
     updateGraphCombo();
-    int mididx=PROFILE.general->prefCalcMiddle();
-    SummaryType ST_mid;
-    if (mididx==0) ST_mid=ST_PERC;
-    if (mididx==1) ST_mid=ST_WAVG;
-    if (mididx==2) ST_mid=ST_AVG;
+
 
     if (cpap) {
         float hours=cpap->hours();
@@ -833,77 +1175,27 @@ void Daily::Load(QDate date)
         //float p90=cpap->p90(CPAP_Pressure);
         //eap90=cpap->p90(CPAP_EPAP);
         //iap90=cpap->p90(CPAP_IPAP);
-        QString submodel; //=tr("Unknown Model");
-
-        //html+="<tr><td colspan=4 align=center><i>"+tr("Machine Information")+"</i></td></tr>\n";
-        if (cpap->machine->properties.find(STR_PROP_SubModel)!=cpap->machine->properties.end())
-            submodel=" <br/>"+cpap->machine->properties[STR_PROP_SubModel];
-        html+="<tr><td colspan=4 align=center><b>"+cpap->machine->properties[STR_PROP_Brand]+"</b> <br>"+cpap->machine->properties[STR_PROP_Model]+" "+cpap->machine->properties[STR_PROP_ModelNumber]+submodel+"</td></tr>\n";
-        if (PROFILE.general->showSerialNumbers()) {
-            html+="<tr><td colspan=4 align=center>"+cpap->machine->properties[STR_PROP_Serial]+"</td></tr>\n";
-        }
-        CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
-        html+="<tr><td colspan=4 align=center>Mode: ";
-
-        if (mode==MODE_CPAP) {
-            EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
-            html+=STR_TR_CPAP+" "+QString::number(min)+STR_UNIT_CMH2O;
-        } else if (mode==MODE_APAP) {
-            EventDataType min=cpap->settings_min(CPAP_PressureMin);
-            EventDataType max=cpap->settings_max(CPAP_PressureMax);
-            html+=STR_TR_APAP+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
-        } else if (mode==MODE_BIPAP) {
-            EventDataType epap=cpap->settings_min(CPAP_EPAP);
-            EventDataType ipap=cpap->settings_max(CPAP_IPAP);
-            EventDataType ps=cpap->settings_max(CPAP_PS);
-            html+=STR_TR_BiLevel+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 %3<br/> "+STR_TR_PS+": %4")
-                    .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
-        }
-        else if (mode==MODE_ASV) {
-            EventDataType epap=cpap->settings_min(CPAP_EPAP);
-            EventDataType low=cpap->settings_min(CPAP_IPAPLo);
-            EventDataType high=cpap->settings_max(CPAP_IPAPHi);
-            EventDataType psl=cpap->settings_min(CPAP_PSMin);
-            EventDataType psh=cpap->settings_max(CPAP_PSMax);
-            html+=tr("ASV")+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 - %3 %4<br/> "+STR_TR_PS+": %5 / %6")
-                    .arg(epap,0,'f',1)
-                    .arg(low,0,'f',1)
-                    .arg(high,0,'f',1)
-                    .arg(STR_UNIT_CMH2O)
-                    .arg(psl,0,'f',1)
-                    .arg(psh,0,'f',1);
-        }
-        else html+=STR_TR_Unknown;
-        html+="</td></tr>\n";
-
-
-        if (hours>0) {
-            html+="<tr><td align='center'><b>"+STR_TR_Date+"</b></td><td align='center'><b>"+tr("Sleep")+"</b></td><td align='center'><b>"+tr("Wake")+"</b></td><td align='center'><b>"+STR_UNIT_Hours+"</b></td></tr>";
-            int tt=qint64(cpap->total_time())/1000L;
-            QDateTime date=QDateTime::fromTime_t(cpap->first()/1000L);
-            QDateTime date2=QDateTime::fromTime_t(cpap->last()/1000L);
-
-            int h=tt/3600;
-            int m=(tt/60)%60;
-            int s=tt % 60;
-            html+=QString("<tr><td align='center'>%1</td><td align='center'>%2</td><td align='center'>%3</td><td align='center'>%4</td></tr>\n"
-                "<tr><td colspan=4 align=center><hr></td></tr>\n")
-                    .arg(date.date().toString(Qt::SystemLocaleShortDate))
-                    .arg(date.toString("HH:mm"))
-                    .arg(date2.toString("HH:mm"))
-                    .arg(QString().sprintf("%02i:%02i:%02i",h,m,s));
-        }
 
         QString cs;
 
         if (!isBrick && hours>0) {
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+            ChannelID ahichan=CPAP_AHI;
+            QString ahiname=STR_TR_AHI;
             if (PROFILE.general->calculateRDI()) {
-                html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg(COLOR_Text.name()).arg(STR_TR_RDI).arg(schema::channel[CPAP_RDI].description()).arg(ahi,0,'f',2);
-            } else {
-                html+=QString("<tr><td bgcolor='%1' align=center colspan=4><font size=+2 color='%2'><a class=info2 href='#'><font size=+2><b>%3</b></font><span>%4</span></a> <b>%5</b></font></td></tr>\n")
-                        .arg("#F88017").arg(COLOR_Text.name()).arg(STR_TR_AHI).arg(schema::channel[CPAP_AHI].description()).arg(ahi,0,'f',2);
+                ahichan=CPAP_RDI;
+                ahiname=STR_TR_RDI;
             }
+            html+="<tr>";
+            html+=QString("<td colspan=4 bgcolor='%1' align=center><a class=info2 href='#'><font size=+4 color='%2'><b>%3</b></font><span>%4</span></a> &nbsp; <font size=+4 color='%2'><b>%5</b></font></td>\n")
+                        .arg("#F88017").arg(COLOR_Text.name()).arg(ahiname).arg(schema::channel[ahichan].description()).arg(ahi,0,'f',2);
+            html+="</tr>\n";
+            html+="</table>\n";
+            html+=getCPAPInformation(cpap);
+            html+=getSleepTime(cpap,oxi);
+
+
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 
             if (cpap->machine->GetClass()==STR_MACH_ResMed || cpap->machine->GetClass()==STR_MACH_FPIcon) {
                 cs="4 width='70%' align=center>";
@@ -985,11 +1277,11 @@ void Daily::Load(QDate date)
             if ((hours > 0) && PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
                 if ((oai+hi+cai+uai+rei+fli)>0) {
                     html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-                    html+="<tr><td colspan=5 align=center><hr/></td></tr>";
+                    //html+="<tr><td colspan=5 align=center><hr/></td></tr>";
                     html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     GAHI->setShowTitle(false);
 
-                    QPixmap pixmap=GAHI->renderPixmap(150,150,false);
+                    QPixmap pixmap=GAHI->renderPixmap(160,160,false);
                     if (!pixmap.isNull()) {
                         QByteArray byteArray;
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
@@ -1004,8 +1296,10 @@ void Daily::Load(QDate date)
                 }
             }
 
+            html+="</table>\n";
 
-        } else { // machine is a brick
+        } else {
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
             if (!isBrick) {
                 html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
                 if (cpap->size()>0) {
@@ -1015,298 +1309,38 @@ void Daily::Load(QDate date)
                     html+="<tr><td colspan='5' align='center'><b><h2>"+tr("Impossibly short session")+"</h2></b></td></tr>";
                     html+="<tr><td colspan='5' align='center'><i>"+tr("Zero hours??")+"</i></td></tr>\n";
                 }
-            } else {
+            } else { // machine is a brick
                 html+="<tr><td colspan='5' align='center'><b><h2>"+tr("BRICK :(")+"</h2></b></td></tr>";
-                html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine does not record data.")+"</i></td></tr>\n";
+                html+="<tr><td colspan='5' align='center'><i>"+tr("Sorry, your machine only provides compliance data.")+"</i></td></tr>\n";
                 html+="<tr><td colspan='5' align='center'><i>"+tr("Complain to your Equipment Provider!")+"</i></td></tr>\n";
             }
             html+="<tr><td colspan='5'>&nbsp;</td></tr>\n";
+            html+="</table>\n";
         }
-        html+="</table>";
+        html+="<hr/>\n";
 
     } // if (!CPAP)
-    html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
-
-    float percentile=PROFILE.general->prefCalcPercentile()/100.0;
-
-    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
-    const EventDataType maxperc=0.995F;
-
-    QString midname;
-    if (ST_mid==ST_WAVG) midname=tr("Avg");
-    else if (ST_mid==ST_AVG) midname=tr("Avg");
-    else if (ST_mid==ST_PERC) midname=tr("Med");
+    else html+=getSleepTime(cpap,oxi);
 
     if ((cpap && !isBrick && (cpap->hours()>0)) || oxi) {
-       // html+="<tr height='2'><td colspan=5>&nbsp;</td></tr>\n";
 
-        html+="<tr height='2'><td colspan=5><hr></td></tr>\n";
-        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Statistics"));
-        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td></tr>")
-                .arg(STR_TR_Channel)
-                .arg(STR_TR_Min)
-                .arg(midname)
-                .arg(tr("%1%").arg(percentile*100,0,'f',0))
-                .arg(STR_TR_Max);
-        ChannelID chans[]={
-            CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
-            CPAP_MinuteVent, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
-            CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
-            CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
-        };
-        int numchans=sizeof(chans)/sizeof(ChannelID);
-        //int suboffset=0;
-        int ccnt=0;
-        EventDataType tmp,med,perc,mx,mn;
-        for (int i=0;i<numchans;i++) {
-
-            ChannelID code=chans[i];
-
-            if (cpap && cpap->channelHasData(code)) {
-                //if (code==CPAP_LeakTotal) suboffset=PROFILEIntentionalLeak"].toDouble(); else suboffset=0;
-                QString tooltip=schema::channel[code].description();
-                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                if (ST_max==ST_MAX) {
-                    mx=cpap->Max(code);
-                } else {
-                    mx=cpap->percentile(code,maxperc);
-                }
-                mn=cpap->Min(code);
-                perc=cpap->percentile(code,percentile);
-
-                if (ST_mid==ST_PERC) {
-                    med=cpap->percentile(code,0.5);
-                    tmp=cpap->wavg(code);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
-                    }
-                } else if (ST_mid==ST_WAVG) {
-                    med=cpap->wavg(code);
-                    tmp=cpap->percentile(code,0.5);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                    }
-                } else if (ST_mid==ST_AVG) {
-                    med=cpap->avg(code);
-                    tmp=cpap->percentile(code,0.5);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                    }
-                }
-
-                html+=QString("<tr><td align=left class='info' onmouseover=\"style.color='blue';\" onmouseout=\"style.color='"+COLOR_Text.name()+"';\">%1<span>%6</span></td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    //.arg(QString("<a class='info' href='graph=%1'>%3<span>%2</span></a>")  //<a class='tooltip' href='#'>"+STR_TR_RDI+"<span class='classic'>"+
-                    //.arg(QString::number(code)).arg(tooltip).arg(schema::channel[code].label()))
-                    .arg(schema::channel[code].label())
-                    .arg(mn,0,'f',2)
-                    .arg(med,0,'f',2)
-                    .arg(perc,0,'f',2)
-                    .arg(mx,0,'f',2)
-                    .arg(tooltip);
-                ccnt++;
-            }
-            if (oxi && oxi->channelHasData(code)) {
-                QString tooltip=schema::channel[code].description();
-                if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
-                //wavg=oxi->wavg(code);
-                mx=oxi->Max(code);
-                mn=oxi->Min(code);
-                perc=oxi->percentile(code,percentile);
-                //med=oxi->percentile(code,0.5);
-
-                if (ST_mid==ST_PERC) {
-                    med=oxi->percentile(code,0.5);
-                    tmp=oxi->wavg(code);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_WAvg+": %1").arg(tmp,0,'f',2);
-                    }
-                } else if (ST_mid==ST_WAVG) {
-                    med=oxi->wavg(code);
-                    tmp=oxi->percentile(code,0.5);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                    }
-                } else if (ST_mid==ST_AVG) {
-                    med=oxi->avg(code);
-                    tmp=oxi->percentile(code,0.5);
-                    if (tmp>0 || mx==0) {
-                        tooltip+=QString("<br/>"+STR_TR_Median+": %1").arg(tmp,0,'f',2);
-                    }
-                }
-
-
-//                if ((med>0 && wavg>0) || (med==0)) {
-//                    tooltip+=QString("<br/>Avg: %1").arg(wavg,0,'f',2);
-//                }
-
-                html+=QString("<tr><td align=left>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td></tr>")
-                    .arg(QString("<a class=info href='graph=%1'>%2<span>%3</span></a>")
-                        .arg(QString::number(code)).arg(schema::channel[code].label()).arg(tooltip))
-                    .arg(mn,0,'f',2)
-                    .arg(med,0,'f',2)
-                    .arg(perc,0,'f',2)
-                    .arg(mx,0,'f',2);
-                ccnt++;
-            }
-        }
-        if (GraphView->isEmpty() && (ccnt>0)) {
-            html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
-            html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("<b>Please Note:</b> This day just contains summary data, only limited information is available ."));
-        }
+        html+=getStatisticsInfo(cpap,oxi);
     } else {
         if (cpap && cpap->hours()==0) {
         } else {
-            html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>";
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+            html+="<tr><td colspan=5 align=center><i>"+tr("No data available")+"</i></td></tr>\n";
             html+="<tr><td colspan=5>&nbsp;</td></tr>\n";
+            html+="</table>\n";
+            html+="<hr/>\n";
         }
 
     }
-    if (oxi && oxi->hasEnabledSessions()) {
-        html+="<tr><td colspan=5 align=center><hr/></td></tr>";
-        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>\n").arg(tr("Oximeter Information"));
-        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+="<tr><td colspan=5 align=center>"+oxi->machine->properties[STR_PROP_Brand]+" "+oxi->machine->properties[STR_PROP_Model]+"</td></tr>\n";
-        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("SpO2 Desaturations")).arg(oxi->count(OXI_SPO2Drop)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_SPO2Drop)/3600.0),0,'f',2);
-        html+=QString("<tr><td colspan=5 align=center>%1: %2 (%3)\%</td></tr>").arg(tr("Pulse Change events")).arg(oxi->count(OXI_PulseChange)).arg((100.0/oxi->hours()) * (oxi->sum(OXI_PulseChange)/3600.0),0,'f',2);
-        html+=QString("<tr><td colspan=5 align=center>%1: %2\%</td></tr>").arg(tr("SpO2 Baseline Used")).arg(oxi->settings_wavg(OXI_SPO2Drop),0,'f',2); // CHECKME: Should this value be wavg OXI_SPO2 isntead?
-    }
 
-    if (cpap && cpap->hasEnabledSessions()) {
-        html+="<tr><td colspan=5><hr height=2></td></tr>";
-        html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
-        html+="<tr><td colspan=5>&nbsp;</td></tr>";
-        int i=cpap->settings_max(CPAP_PresReliefType);
-        int j=cpap->settings_max(CPAP_PresReliefSet);
-        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
-        html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
-                .arg(STR_TR_PrRelief)
-                .arg(schema::channel[CPAP_PresReliefType].description())
-                .arg(flexstr);
-        QString mclass=cpap->machine->GetClass();
-        if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
-            int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
-            html+=QString("<tr><td><a class='info' href='#'>"+STR_TR_Humidifier+"<span>%1</span></a></td><td colspan=4>%2</td></tr>")
-                .arg(schema::channel[CPAP_HumidSetting].description())
-                .arg(humid==0 ? STR_GEN_Off : "x"+QString::number(humid));
-        }
+    html+=getOximeterInformation(oxi);
+    html+=getMachineSettings(cpap);
+    html+=getSessionInformation(cpap,oxi,stage);
 
-    }
-    html+="</table>";
-
-    if (cpap || oxi) {
-        html+="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-        html+="<tr><td colspan=5><hr/></td></tr>";
-        html+=QString("<tr><td colspan=5 align=center><b>"+tr("Session Information")+"</b></td></tr>");
-        html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-        QFontMetrics FM(webView->font());
-        QRect r=FM.boundingRect('@');
-        html+=QString("<tr><td colspan=5 align=center>"
-        "<object type=\"application/x-qt-plugin\" classid=\"SessionBar\" name=\"sessbar\" height=%1 width=100%></object>"
-        "<script>"
-        "sessbar.show();"
-        "</script>"
-        "</td></tr>").arg(r.height()*3,0,10);
-        html+="<tr><td colspan=5 align=center>&nbsp; </td></tr>"
-;
-
-        QDateTime fd,ld;
-        bool corrupted_waveform=false;
-        QString tooltip;
-        html+=QString("<tr><td><b>"+STR_TR_On+"</b></td><td align=center><b>"+STR_TR_Date+"</b></td><td align=center><b>"+STR_TR_Start+"</b></td><td align=center><b>"+STR_TR_End+"</b></td><td align=left><b>"+tr("Duration")+"</b></td></tr>");
-        if (cpap) {
-            html+=QString("<tr><td align=left colspan=5><i>"+tr("CPAP Sessions")+"</i></td></tr>");
-            for (QVector<Session *>::iterator s=cpap->begin();s!=cpap->end();s++) {
-                fd=QDateTime::fromTime_t((*s)->first()/1000L);
-                ld=QDateTime::fromTime_t((*s)->last()/1000L);
-                int len=(*s)->length()/1000L;
-                int h=len/3600;
-                int m=(len/60) % 60;
-                int s1=len % 60;
-                tooltip=cpap->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
-                // tooltip needs to lookup language.. :-/
-
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
-                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
-                Session *sess=*s;
-                if (!sess->settings.contains(SESSION_ENABLED)) {
-                    sess->settings[SESSION_ENABLED]=true;
-                }
-                bool b=sess->settings[SESSION_ENABLED].toBool();
-                html+=QString("<tr onClick=\"document.location.href = 'cpap=%1';\"><td width=26><a href='togglecpapsession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='cpap=%1'>%3<span>%2</span></a></td></tr>")
-                        .arg((*s)->session())
-                        .arg(tooltip)
-                        .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
-                        .arg((b ? "on" : "off"))
-                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
-                        .arg(fd.toString("HH:mm"))
-                        .arg(ld.toString("HH:mm"));
-            }
-        }
-
-        if (oxi) {
-            html+=QString("<tr><td align=left colspan=5><i>"+tr("Oximetry Sessions")+"</i></td></tr>");
-            for (QVector<Session *>::iterator s=oxi->begin();s!=oxi->end();s++) {
-                fd=QDateTime::fromTime_t((*s)->first()/1000L);
-                ld=QDateTime::fromTime_t((*s)->last()/1000L);
-                int len=(*s)->length()/1000L;
-                int h=len/3600;
-                int m=(len/60) % 60;
-                int s1=len % 60;
-                tooltip=oxi->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
-
-                Session *sess=*s;
-                if (!sess->settings.contains(SESSION_ENABLED)) {
-                    sess->settings[SESSION_ENABLED]=true;
-                }
-                bool b=sess->settings[SESSION_ENABLED].toBool();
-
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
-                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
-                html+=QString("<tr><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='oxi=%1'>%3<span>%2</span></a></td></tr>")
-                        .arg((*s)->session())
-                        .arg(tooltip)
-                        .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
-                        .arg((b ? "on" : "off"))
-                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
-                        .arg(fd.toString("HH:mm"))
-                        .arg(ld.toString("HH:mm"));
-             }
-        }
-        if (stage) {
-            html+=QString("<tr><td align=left colspan=5><i>%1</i></td></tr>").arg(tr("Sleep Stage Sessions"));
-            for (QVector<Session *>::iterator s=stage->begin();s!=stage->end();s++) {
-                fd=QDateTime::fromTime_t((*s)->first()/1000L);
-                ld=QDateTime::fromTime_t((*s)->last()/1000L);
-                int len=(*s)->length()/1000L;
-                int h=len/3600;
-                int m=(len/60) % 60;
-                int s1=len % 60;
-                tooltip=stage->machine->GetClass()+QString(":#%1").arg((*s)->session(),8,10,QChar('0'));
-
-                Session *sess=*s;
-                if (!sess->settings.contains(SESSION_ENABLED)) {
-                    sess->settings[SESSION_ENABLED]=true;
-                }
-                bool b=sess->settings[SESSION_ENABLED].toBool();
-
-                QHash<ChannelID,QVariant>::iterator i=(*s)->settings.find(CPAP_BrokenWaveform);
-                corrupted_waveform=(i!=(*s)->settings.end()) && i.value().toBool();
-                html+=QString("<tr><td width=26><a href='toggleoxisession=%1'><img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='stage=%1'>%3<span>%2</span></a></td></tr>")
-                        .arg((*s)->session())
-                        .arg(tooltip)
-                        .arg(QString("%1h %2m %3s").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s1,2,10,QChar('0')))
-                        .arg((b ? "on" : "off"))
-                        .arg(fd.date().toString(Qt::SystemLocaleShortDate))
-                        .arg(fd.toString("HH:mm"))
-                        .arg(ld.toString("HH:mm"));
-            }
-        }
-        if (corrupted_waveform) {
-            html+=QString("<tr><td colspan=5 align=center><i>%1</i></td></tr>").arg(tr("One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly."));
-        }
-        html+="</table><br/>";
-    }
     html+="</body></html>";
 
     QColor cols[]={

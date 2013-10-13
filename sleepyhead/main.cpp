@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Register Importer Modules
     ////////////////////////////////////////////////////////////////////////////////////////////
+    initialize();
     PRS1Loader::Register();
     CMS50Loader::Register();
     //ZEOLoader::Register(); // Use outside of directory importer..
@@ -258,7 +259,6 @@ int main(int argc, char *argv[])
     a.installTranslator(&translator);
 
     a.setApplicationName(STR_TR_SleepyHead);
-    initialize();
 
 
 

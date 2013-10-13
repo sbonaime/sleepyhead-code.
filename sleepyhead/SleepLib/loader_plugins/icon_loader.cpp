@@ -23,8 +23,6 @@ FPIcon::FPIcon(Profile *p,MachineID id)
     :CPAP(p,id)
 {
     m_class=fpicon_class_name;
-    properties[STR_PROP_Brand]="Fisher & Paykel";
-    properties[STR_PROP_Model]=STR_MACH_FPIcon;
 }
 
 FPIcon::~FPIcon()
@@ -289,6 +287,10 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
     htxt >> serial;
     htxt >> model;
     htxt >> type;
+
+    if (mach->properties[STR_PROP_Model].isEmpty()) {
+        mach->properties[STR_PROP_Model]=model+" "+type;
+    }
 
     fname.chop(4);
     QString num=fname.right(4);
@@ -793,16 +795,24 @@ Machine *FPIconLoader::CreateMachine(QString serial,Profile *profile)
     QList<Machine *> ml=profile->GetMachines(MT_CPAP);
     bool found=false;
     QList<Machine *>::iterator i;
+    Machine *m;
     for (i=ml.begin(); i!=ml.end(); i++) {
         if (((*i)->GetClass()==fpicon_class_name) && ((*i)->properties[STR_PROP_Serial]==serial)) {
             MachList[serial]=*i;
             found=true;
+            m=*i;
             break;
         }
     }
-    if (found) return *i;
+    if (!found) {
+        m=new FPIcon(profile,0);
+    }
+    m->properties[STR_PROP_Brand]="Fisher & Paykel";
+    m->properties[STR_PROP_Series]=STR_MACH_FPIcon;
+    m->properties[STR_PROP_Model]=STR_MACH_FPIcon;
+    if (found)
+        return m;
 
-    Machine *m=new FPIcon(profile,0);
 
     MachList[serial]=m;
     profile->AddMachine(m);
