@@ -17,7 +17,6 @@
 #include <QSpacerItem>
 #include <QWebFrame>
 #include <QLabel>
-#include <QtUiTools/QUiLoader>
 
 #include <cmath>
 //#include <QPrinter>
@@ -702,19 +701,12 @@ QObject *MyWebPage::createPlugin(const QString &classid, const QUrl &url, const 
 {
     Q_UNUSED(paramNames)
     Q_UNUSED(paramValues)
-   // Create the widget using QUiLoader.
-   // This means that the widgets don't need to be registered
-   // with the meta object system.
-   // On the other hand, non-gui objects can't be created this
-   // way. When we'd like to create non-visual objects in
-   // Html to use them via JavaScript, we'd use a different
-   // mechanism than this.
+
     if (classid=="SessionBar") {
         return mainwin->getDaily()->sessionBar();
     }
-    QUiLoader loader;
-//   int i=5;
-    return loader.createWidget(classid, view());
+    qDebug() << "Request for unknown MyWebPage plugin";
+    return new QWidget();
 }
 
 MyWebView::MyWebView(QWidget *parent):
