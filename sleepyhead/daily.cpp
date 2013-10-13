@@ -723,6 +723,10 @@ MyWebView::MyWebView(QWidget *parent):
 
 void Daily::Load(QDate date)
 {
+    static int calls=0;
+
+    calls++;
+    qDebug() << "in Load()" << date << calls;
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     static Day * lastcpapday=NULL;
     previous_date=date;

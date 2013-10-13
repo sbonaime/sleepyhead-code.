@@ -418,10 +418,11 @@ public:
         if (!m_profile->contains(STR_CS_UserEventFlagging)) (*m_profile)[STR_CS_UserEventFlagging]=false;
         if (!m_profile->contains(STR_CS_AHIWindow)) (*m_profile)[STR_CS_AHIWindow]=60.0;
         if (!m_profile->contains(STR_CS_AHIReset)) (*m_profile)[STR_CS_AHIReset]=false;
-        if (!m_profile->contains(STR_CS_ClockDrift)) (*m_profile)[STR_CS_ClockDrift]=(int)0;
+        if (!m_profile->contains(STR_CS_ClockDrift)) (*m_profile)[STR_CS_ClockDrift]=m_clock_drift=(int)0;
+        else m_clock_drift=(*m_profile)[STR_CS_ClockDrift].toInt();
     }
 
-    ~CPAPSettings() {}
+    ~CPAPSettings() { }
 
     void setProfile(Profile *p) { m_profile=p; }
 
@@ -444,7 +445,7 @@ public:
     double AHIWindow() { return (*m_profile)[STR_CS_AHIWindow].toDouble(); }
     bool AHIReset() { return (*m_profile)[STR_CS_AHIReset].toBool(); }
     bool userEventFlagging() { return (*m_profile)[STR_CS_UserEventFlagging].toBool(); }
-    int clockDrift() { return (*m_profile)[STR_CS_ClockDrift].toInt(); }
+    int clockDrift() { return m_clock_drift; }
 
     //Setters
     void setMode(CPAPMode mode) { (*m_profile)[STR_CS_PrescribedMode]=(int)mode; }
@@ -465,9 +466,11 @@ public:
     void setAHIReset(bool reset) { (*m_profile)[STR_CS_AHIReset]=reset; }
     void setUserEventFlagging(bool flagging) { (*m_profile)[STR_CS_UserEventFlagging]=flagging; }
     void setUserEventDuplicates(bool dup) { (*m_profile)[STR_CS_UserEventDuplicates]=dup; }
-    void setClockDrift(int seconds) { (*m_profile)[STR_CS_ClockDrift]=(int)seconds; }
+    void setClockDrift(int seconds) { (*m_profile)[STR_CS_ClockDrift]=m_clock_drift=(int)seconds; }
 
     Profile *m_profile;
+
+    int m_clock_drift;
 };
 
 /*! \class ImportSettings

@@ -282,8 +282,11 @@ void Profile::AddDay(QDate date,Day *day,MachineType mt) {
 Day * Profile::GetGoodDay(QDate date,MachineType type)
 {
     Day *day=NULL;
-    if (daylist.find(date)!=daylist.end()) {
-        for (QList<Day *>::iterator di=daylist[date].begin();di!=daylist[date].end();di++) {
+
+    QMap<QDate,QList<Day *> >::iterator dli=daylist.find(date);
+    if (dli!=daylist.end()) {
+
+        for (QList<Day *>::iterator di=(*dli).begin();di!=(*dli).end();di++) {
 
             if (type==MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
                 day=(*di);
@@ -792,6 +795,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
         return 0;
 
     QMap<EventDataType, qint64> wmap;
+    QMap<EventDataType, qint64>::iterator wmi;
 
     QHash<ChannelID,QHash<EventStoreType, EventStoreType> >::iterator vsi;
     QHash<ChannelID,QHash<EventStoreType, quint32> >::iterator tsi;
@@ -827,10 +831,11 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                             value=EventDataType(k.key())*gain;
 
                             SN+=weight;
-                            if (wmap.contains(value)) {
-                                wmap[value]+=weight;
-                            } else  {
+                            wmi=wmap.find(value);
+                            if (wmi==wmap.end()) {
                                 wmap[value]=weight;
+                            } else {
+                                wmi.value()+=weight;
                             }
                         }
                     } else {
@@ -839,10 +844,11 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
                             value=EventDataType(k.key())*gain;
 
                             SN+=weight;
-                            if (wmap.contains(value)) {
-                                wmap[value]+=weight;
-                            } else  {
+                            wmi=wmap.find(value);
+                            if (wmi==wmap.end()) {
                                 wmap[value]=weight;
+                            } else {
+                                wmi.value()+=weight;
                             }
                         }
                     }
@@ -854,10 +860,10 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
     QVector<ValueCount> valcnt;
 
     // Build sorted list of value/counts
-    for (QMap<EventDataType, qint64>::iterator n=wmap.begin();n!=wmap.end();n++) {
+    for (wmi=wmap.begin();wmi!=wmap.end();wmi++) {
         ValueCount vc;
-        vc.value=n.key();
-        vc.count=n.value();
+        vc.value=wmi.key();
+        vc.count=wmi.value();
         vc.p=0;
         valcnt.push_back(vc);
     }
