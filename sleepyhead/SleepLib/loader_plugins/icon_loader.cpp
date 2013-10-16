@@ -391,10 +391,31 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
         sess=sit.value();
         qDebug() << filenum << ":" << date << sess->session() << ":" << sess->hours()*60.0;
     } else {
-        sess=new Session(mach,ts);
-        sess->set_first(ti);
-        newsess=true;
-        qDebug() << filenum << ":" << date << "couldn't find matching session for" << ts;
+        qint64 k=-1;
+        Session * s1=NULL;
+        sess=NULL;
+        for (sit=Sessions.begin();sit!=Sessions.end();sit++) {
+            s1=sit.value();
+            qint64 z=qAbs(s1->first()-ti);
+            if (z<3600000) {
+                if ((k<0) || (k>z)) {
+                    k=z;
+                    sess=s1;
+                }
+            }
+        }
+        if (sess) {
+            sess->set_first(ti);
+            sess->setFirst(CPAP_FlowRate,ti);
+            sess->setFirst(CPAP_MaskPressure,ti);
+        } else {
+            sess=new Session(mach,ts);
+            sess->set_first(ti);
+            sess->setFirst(CPAP_FlowRate,ti);
+            sess->setFirst(CPAP_MaskPressure,ti);
+            newsess=true;
+            qDebug() << filenum << ":" << date << "couldn't find matching session for" << ts;
+        }
     }
 
     const int samples_per_block=50;
@@ -455,7 +476,9 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
     } while (!((buf[0]==0xff) && (buf[1]==0x7f)));
 
 
-    if (sess && (st==sess->first())) {
+    if (sess) {
+        sess->setLast(CPAP_FlowRate,ti);
+        sess->setLast(CPAP_MaskPressure,ti);
         sess->eventlist[CPAP_FlowRate].push_back(flow);
         sess->eventlist[CPAP_Leak].push_back(leak);
         sess->eventlist[CPAP_MaskPressure].push_back(pressure);
