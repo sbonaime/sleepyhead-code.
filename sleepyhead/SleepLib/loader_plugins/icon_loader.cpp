@@ -622,8 +622,8 @@ bool FPIconLoader::OpenSummary(Machine * mach,QString filename, Profile * profil
             //sess->setCount(CPAP_,j5);
             if (p1!=p2) {
                 sess->settings[CPAP_Mode]=(int)MODE_APAP;
-                sess->settings[CPAP_PressureMin]=p4/10.0;
-                sess->settings[CPAP_PressureMax]=p3/10.0;
+                sess->settings[CPAP_PressureMin]=p3/10.0;
+                sess->settings[CPAP_PressureMax]=p4/10.0;
             } else {
                 sess->settings[CPAP_Mode]=(int)MODE_CPAP;
                 sess->settings[CPAP_Pressure]=p1/10.0;
