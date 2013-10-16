@@ -70,7 +70,7 @@ void MyOutputHandler(QtMsgType type, const QMessageLogContext & context, const Q
             break;
     }
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    msg=typestr+msgtxt+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
+    msg=typestr+msgtxt;//+QString(" (%1:%2, %3)").arg(context.file).arg(context.line).arg(context.function);
 #else
     msg=typestr+msgtxt;
 #endif

@@ -75,16 +75,18 @@ public:
     static void Register();
 
 protected:
+    QDateTime readFPDateTime(quint8 * data);
+
     QString last;
     QHash<QString,Machine *> MachList;
     QMap<SessionID, Session *> Sessions;
     QMultiMap<QDate,Session *> SessDate;
-    QMap<int,QList<EventList *> > FLWMapFlow;
-    QMap<int,QList<EventList *> > FLWMapLeak;
-    QMap<int,QList<EventList *> > FLWMapPres;
-    QMap<int,QList<qint64> > FLWDuration;
-    QMap<int,QList<qint64> > FLWTS;
-    QMap<int,QDate> FLWDate;
+    //QMap<int,QList<EventList *> > FLWMapFlow;
+    //QMap<int,QList<EventList *> > FLWMapLeak;
+    //QMap<int,QList<EventList *> > FLWMapPres;
+    //QMap<int,QList<qint64> > FLWDuration;
+    //QMap<int,QList<qint64> > FLWTS;
+    //QMap<int,QDate> FLWDate;
 
     unsigned char * m_buffer;
 };
