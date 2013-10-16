@@ -23,16 +23,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -61,20 +52,17 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
          <widget class="QToolButton" name="prevDayButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -89,6 +77,22 @@
           </property>
           <property name="toolTip">
            <string>Go to the previous day</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
           </property>
           <property name="text">
            <string>Prev</string>
@@ -111,7 +115,7 @@
         <item>
          <widget class="QToolButton" name="calButton">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -133,6 +137,23 @@
           </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QToolButton {
+border: 2px solid #dddddd;
+border-radius: 10px;
+background: transparent;
+}
+
+QToolButton:hover {
+border: 2px solid #456789;
+border-radius: 10px;
+}
+
+QToolButton:pressed {
+border: 2px solid #456789;
+border-radius: 10px;
+}</string>
           </property>
           <property name="text">
            <string>...</string>
@@ -156,6 +177,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="nextDayButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -173,6 +200,22 @@
           </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
           </property>
           <property name="text">
            <string>Next</string>
@@ -194,6 +237,12 @@
         </item>
         <item>
          <widget class="QToolButton" name="todayButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -208,6 +257,22 @@
           </property>
           <property name="toolTip">
            <string>Go to the most recent day with data records</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="Resources.qrc">
@@ -242,6 +307,64 @@
          <height>0</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">#qt_calendar_nextmonth {
+ background: transparent;
+ border-radius: 8px;
+}
+
+#qt_calendar_nextmonth:hover {
+	border: 2px solid #456789;
+}
+
+#qt_calendar_nextmonth:pressed {
+	border: 2px solid #456789;
+    background: #89abcd;
+}
+
+#qt_calendar_prevmonth {
+ background: transparent;
+  border-radius: 8px;
+}
+
+#qt_calendar_prevmonth:hover {
+	border: 2px solid #456789;
+}
+
+#qt_calendar_prevmonth:pressed {
+	border: 2px solid #456789;
+    background: #89abcd;
+}
+
+#qt_calendar_monthbutton {
+  background: transparent;
+ border: 2px solid transparent;
+  border-radius: 8px;
+}
+
+#qt_calendar_monthbutton:hover {
+	border: 2px solid #456789;
+}
+
+#qt_calendar_monthbutton:pressed {
+	border: 2px solid #456789;
+    background: #89abcd;
+}
+
+#qt_calendar_yearbutton {
+  background: transparent;
+ border-radius: 8px;
+}
+
+#qt_calendar_yearbutton:hover {
+	border: 2px solid #456789;
+}
+
+#qt_calendar_yearbutton:pressed {
+	border: 2px solid #456789;
+    background: #89abcd;
+}</string>
+       </property>
        <property name="firstDayOfWeek">
         <enum>Qt::Monday</enum>
        </property>
@@ -266,7 +389,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -279,16 +402,7 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
@@ -317,16 +431,7 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <property name="leftMargin">
-            <number>4</number>
-           </property>
-           <property name="topMargin">
-            <number>4</number>
-           </property>
-           <property name="rightMargin">
-            <number>4</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>4</number>
            </property>
            <item>
@@ -383,16 +488,7 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
+         <property name="margin">
           <number>0</number>
          </property>
          <item>
@@ -459,6 +555,9 @@
            </item>
            <item>
             <widget class="QToolButton" name="JournalNotesColour">
+             <property name="styleSheet">
+              <string notr="true">color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.166 rgba(255, 255, 0, 255), stop:0.333 rgba(0, 255, 0, 255), stop:0.5 rgba(0, 255, 255, 255), stop:0.666 rgba(0, 0, 255, 255), stop:0.833 rgba(255, 0, 255, 255), stop:1 rgba(255, 0, 0, 255))</string>
+             </property>
              <property name="text">
               <string>Color</string>
              </property>
@@ -466,6 +565,11 @@
            </item>
            <item>
             <widget class="QToolButton" name="JournalNotesItalic">
+             <property name="font">
+              <font>
+               <italic>true</italic>
+              </font>
+             </property>
              <property name="text">
               <string> i </string>
              </property>
@@ -476,6 +580,11 @@
            </item>
            <item>
             <widget class="QToolButton" name="JournalNotesUnderline">
+             <property name="font">
+              <font>
+               <underline>true</underline>
+              </font>
+             </property>
              <property name="text">
               <string>u</string>
              </property>
@@ -483,6 +592,12 @@
            </item>
            <item>
             <widget class="QToolButton" name="JournalNotesBold">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>B</string>
              </property>
@@ -586,6 +701,25 @@
               </item>
               <item row="1" column="0" colspan="8">
                <widget class="QSlider" name="ZombieMeter">
+                <property name="styleSheet">
+                 <string notr="true">QSlider::groove:horizontal  {
+    border: 1px solid #999999;
+    border-radius: 4px;
+    height: 8px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff6060, stop:1 #60ff60);
+    margin: 2px 0; 
+  
+}
+
+QSlider::handle:horizontal  {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+    border: 1px solid #5c5c5c;
+    width: 18px;
+    margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+    border-radius: 3px;
+}
+</string>
+                </property>
                 <property name="maximum">
                  <number>10</number>
                 </property>
@@ -685,8 +819,17 @@
          <string>Bookmarks</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <property name="margin">
+          <number>4</number>
+         </property>
          <item>
           <widget class="QPushButton" name="addBookmarkButton">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="text">
             <string>Add Bookmark</string>
            </property>
@@ -776,6 +919,22 @@
             <property name="toolTip">
              <string>Zoom fully out</string>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
+            </property>
             <property name="text">
              <string>100%</string>
             </property>
@@ -789,11 +948,30 @@
             <property name="toolTip">
              <string>Reset the graph heights to uniform sizes</string>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
+            </property>
             <property name="text">
              <string>Reset</string>
             </property>
             <property name="autoRaise">
              <bool>true</bool>
+            </property>
+            <property name="arrowType">
+             <enum>Qt::NoArrow</enum>
             </property>
            </widget>
           </item>
@@ -806,14 +984,33 @@
           </item>
           <item>
            <widget class="QToolButton" name="toggleGraphs">
+            <property name="styleSheet">
+             <string notr="true">QToolButton {
+ background: transparent;
+ border-radius: 8px;
+ border: 2px solid transparent;
+}
+
+QToolButton:hover {
+ border: 2px solid #456789;
+}
+
+QToolButton:pressed {
+ border: 2px solid #456789;
+ background-color: #89abcd;
+}</string>
+            </property>
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonIconOnly</enum>
+            </property>
             <property name="autoRaise">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="arrowType">
              <enum>Qt::DownArrow</enum>
@@ -830,6 +1027,21 @@
             </property>
             <property name="toolTip">
              <string>Drop down this list to show/hide available graphs.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="frame">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

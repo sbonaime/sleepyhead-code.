@@ -177,20 +177,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->summaryView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
     ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    ui->toolBox->setStyleSheet(
-                               "QToolBox::tab {"
-                               "background: #6789ab;"
-                               "color: lightGray;}"
-                               "QToolBox { icon-size: 32px; }"
-                               "QToolBox::tab:selected {"
-                               "font: bold;"
-                               "background: #9090ee;"
-                               "color: white; }"
-                               );
-
-    //"font-weight: bold; "
-    //"border-top-left-radius: 8px;"
-    //"border-top-right-radius: 8px;"
 
     QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"+tr("Loading...")+"</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
