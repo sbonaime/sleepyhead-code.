@@ -1206,13 +1206,13 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         sess->settings[CPAP_Mode]=MODE_BIPAP;
 
                     EventDataType tmp,epap=0,ipap=0;
-                    if (stredf.lookup.contains("EPAP")) {
-                        sig=stredf.lookup["EPAP"];
+                    if (stredf.lookup.contains("Min EPAP")) {
+                        sig=stredf.lookup["Min EPAP"];
                         epap=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_EPAP]=epap;
                     }
-                    if (stredf.lookup.contains("IPAP")) {
-                        sig=stredf.lookup["IPAP"];
+                    if (stredf.lookup.contains("Max IPAP")) {
+                        sig=stredf.lookup["Max IPAP"];
                         ipap=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_IPAP]=ipap;
                     }

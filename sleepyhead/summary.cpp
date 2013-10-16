@@ -104,10 +104,11 @@ struct RXChange
         last=copy.last;
         days=copy.days;
         ahi=copy.ahi;
-    fl=copy.fl;
+        fl=copy.fl;
         mode=copy.mode;
         min=copy.min;
         max=copy.max;
+        ps=copy.ps;
         maxhi=copy.maxhi;
         machine=copy.machine;
         per1=copy.per1;
@@ -125,6 +126,7 @@ struct RXChange
     CPAPMode mode;
     EventDataType min;
     EventDataType max;
+    EventDataType ps;
     EventDataType maxhi;
     EventDataType per1;
     EventDataType per2;
@@ -135,7 +137,7 @@ struct RXChange
     short highlight;
 };
 
-enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_maxhi, RX_per1, RX_per2, RX_weighted };
+enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_ps, RX_maxhi, RX_per1, RX_per2, RX_weighted };
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
 
@@ -151,6 +153,7 @@ bool operator<(const RXChange & c1, const RXChange & c2) {
         case RX_mode: return comp1->mode < comp2->mode;
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
+        case RX_ps:   return comp1->ps < comp2->ps;
         case RX_maxhi: return comp1->maxhi < comp2->maxhi;
         case RX_per1:  return comp1->per1 < comp2->per1;
         case RX_per2:  return comp1->per2 < comp2->per2;
@@ -165,6 +168,7 @@ bool operator<(const RXChange & c1, const RXChange & c2) {
         case RX_mode: return comp1->mode > comp2->mode;
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
+        case RX_ps:   return comp1->ps > comp2->ps;
         case RX_maxhi: return comp1->maxhi > comp2->maxhi;
         case RX_per1:  return comp1->per1 > comp2->per1;
         case RX_per2:  return comp1->per2 > comp2->per2;
@@ -184,6 +188,7 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode < comp2->mode;
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
+        case RX_ps:   return comp1->ps < comp2->ps;
         case RX_maxhi: return comp1->maxhi < comp2->maxhi;
         case RX_per1:  return comp1->per1 < comp2->per1;
         case RX_per2:  return comp1->per2 < comp2->per2;
@@ -198,6 +203,7 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode > comp2->mode;
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
+        case RX_ps:  return comp1->ps > comp2->ps;
         case RX_maxhi: return comp1->maxhi > comp2->maxhi;
         case RX_per1:  return comp1->per1 > comp2->per1;
         case RX_per2:  return comp1->per2 > comp2->per2;
@@ -504,7 +510,7 @@ QString Summary::GenerateHTML()
     if (cpapdays>0) {
         QDate first,last=lastcpap;
         CPAPMode mode=MODE_UNKNOWN,cmode=MODE_UNKNOWN;
-        EventDataType cmin=0,cmax=0,cmaxhi=0, min=0,max=0,maxhi=0;
+        EventDataType cmin=0,cmax=0, cps=0, cmaxhi=0, min=0,max=0,maxhi=0,ps=0;
         Machine *mach=NULL,*lastmach=NULL;
         PRTypes lastpr=PR_UNKNOWN, prelief=PR_UNKNOWN;
         short prelset=0, lastprelset=-1;
@@ -542,13 +548,14 @@ QString Summary::GenerateHTML()
                 } else if (mode>=MODE_BIPAP) {
                     min=day->settings_min(CPAP_EPAP);
                     max=day->settings_max(CPAP_IPAP);
+                    ps=day->settings_max(CPAP_PS);
                 } else if (mode>=MODE_APAP) {
                     min=day->settings_min(CPAP_PressureMin);
                     max=day->settings_max(CPAP_PressureMax);
                 } else {
                     min=day->settings_min(CPAP_Pressure);
                 }
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (mach!=lastmach) || (prelset!=lastprelset))  {
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (ps!=cps) || (mach!=lastmach) || (prelset!=lastprelset))  {
                     if ((cmode!=MODE_UNKNOWN) && (lastmach!=NULL)) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -561,6 +568,7 @@ QString Summary::GenerateHTML()
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
+                        rx.ps=ps;
                         rx.maxhi=cmaxhi;
                         rx.prelief=lastpr;
                         rx.prelset=lastprelset;
@@ -582,6 +590,7 @@ QString Summary::GenerateHTML()
                     cmode=mode;
                     cmin=min;
                     cmax=max;
+                    cps=ps;
                     cmaxhi=maxhi;
                     lastpr=prelief;
                     lastprelset=prelset;
@@ -611,6 +620,7 @@ QString Summary::GenerateHTML()
             rx.mode=mode;
             rx.min=min;
             rx.max=max;
+            rx.ps=ps;
             rx.maxhi=maxhi;
             rx.prelief=prelief;
             rx.prelset=prelset;
@@ -834,7 +844,7 @@ QString Summary::GenerateHTML()
                         STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             } else if (mode>=MODE_BIPAP) {
                 extratxt=QString("<td>%1</td><td>%2</td>")
-                       .arg(rx.max,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals);
+                       .arg(rx.max,0,'f',decimals).arg(rx.ps,0,'f',decimals);
                 tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+
                         STR_TR_EPAP+
                         QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals)
