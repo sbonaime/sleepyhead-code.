@@ -44,5 +44,6 @@
         <file>docs/update_notes.html</file>
         <file>docs/sheep.png</file>
         <file>icons/Bob Strikes Back.png</file>
+        <file>docs/intro.html</file>
     </qresource>
 </RCC>

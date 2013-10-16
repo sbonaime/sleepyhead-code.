@@ -80,6 +80,7 @@ NewProfile::NewProfile(QWidget *parent) :
     ui->dataFolderPath->setText(GetAppRoot());
 
 
+    ui->textBrowser->setSource(QUrl("qrc:/docs/intro.html"));
 }
 
 NewProfile::~NewProfile()
@@ -92,12 +93,13 @@ void NewProfile::on_nextButton_clicked()
     const QString xmlext=".xml";
 
     QSettings settings("Jedimark", "SleepyHead");
-    if (!ui->agreeCheckbox->isChecked())
-        return;
 
     int index=ui->stackedWidget->currentIndex();
     switch(index) {
     case 0:
+        if (!ui->agreeCheckbox->isChecked())
+            return;
+
         settings.setValue("Settings/AppRoot", ui->dataFolderPath->text());
         p_pref->setFilename(ui->dataFolderPath->text()+"/"+p_pref->name()+xmlext);
         p_pref->setPath(ui->dataFolderPath->text());

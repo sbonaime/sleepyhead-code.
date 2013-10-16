@@ -4,54 +4,54 @@
 <context>
     <name>CMS50Serial</name>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="460"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="465"/>
         <source>Processing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="477"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="482"/>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vraag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="477"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="482"/>
         <source>Did you remember to start your oximeter recording at exactly the same time you started your CPAP machine?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="488"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="494"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="493"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="499"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="488"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="493"/>
         <source>The most recent CPAP Session time has been selected as the start of your oximetry session.
 If you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="494"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="499"/>
         <source>No valid start time was provided for this oximeter session. You will likely have to adjust your oximeter sessions start time before saving.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="727"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="732"/>
         <source>Please Wait, Importing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="771"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="776"/>
         <source>Import Failed. Wait for oximeter and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="944"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="949"/>
         <source>Import Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="948"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="953"/>
         <source>Set Oximeter to Upload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -61,478 +61,785 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../sleepyhead/daily.ui" line="20"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Staat bovenaan het venster hierboven</translatorcomment>
+        <translation type="unfinished">Pagina</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="73"/>
+        <location filename="../sleepyhead/daily.ui" line="91"/>
         <source>Go to the previous day</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ga naar de vorige dag met gegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="76"/>
+        <location filename="../sleepyhead/daily.ui" line="94"/>
         <source>Prev</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niet gezien</translatorcomment>
+        <translation>Vorige dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="114"/>
+        <location filename="../sleepyhead/daily.ui" line="132"/>
         <source>Show or hide the calender</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kalender aan/uit zetten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="120"/>
-        <location filename="../sleepyhead/daily.ui" line="802"/>
+        <location filename="../sleepyhead/daily.ui" line="138"/>
+        <location filename="../sleepyhead/daily.ui" line="810"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="154"/>
+        <location filename="../sleepyhead/daily.ui" line="172"/>
         <source>Go to the next day</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ga naar de volgende dag met gegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="160"/>
+        <location filename="../sleepyhead/daily.ui" line="178"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niet gezien</translatorcomment>
+        <translation>Volgende</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="192"/>
+        <location filename="../sleepyhead/daily.ui" line="210"/>
         <source>Go to the most recent day with data records</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: compacter</translatorcomment>
+        <translation type="unfinished">Ga naar de laatste dag met gegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="258"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Details</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="280"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niet gezien</translatorcomment>
+        <translation type="obsolete">about:blank</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="289"/>
+        <location filename="../sleepyhead/daily.ui" line="276"/>
         <source>Events</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Zou &apos;Apneus&apos; niet beter zijn dan Gebeurtenissen&apos;? Want dat is wat hier geteld wordt en het past beter op de ruimte van het tabje.
+AK: Nee, er zijn ook andere gebeurtenissen: snurken, RERA, enz. Misschien &apos;evenementen&apos; of &apos;incidenten&apos;?</translatorcomment>
+        <translation>Incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="330"/>
+        <location filename="../sleepyhead/daily.ui" line="335"/>
         <source>View Size</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Onder INCIDENTEN
+Misschien is &apos;Zoomniveau&apos; beter?</translatorcomment>
+        <translation type="unfinished">Beeldgrootte</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="375"/>
-        <location filename="../sleepyhead/daily.ui" line="705"/>
+        <location filename="../sleepyhead/daily.ui" line="380"/>
+        <location filename="../sleepyhead/daily.ui" line="719"/>
         <source>Notes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Is compacter, past beter op tabje
+In verband met de koppeling met Bladwijzers, lijkt me &apos;Notities&apos; beter.</translatorcomment>
+        <translation type="unfinished">Notities</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="398"/>
+        <location filename="../sleepyhead/daily.ui" line="412"/>
         <source>Journal</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: is gebruikelijker</translatorcomment>
+        <translation>Dagboek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="431"/>
+        <location filename="../sleepyhead/daily.ui" line="445"/>
         <source>Small</source>
-        <translation type="unfinished"></translation>
+        <translation>Klein</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="436"/>
+        <location filename="../sleepyhead/daily.ui" line="450"/>
         <source>Medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Medium</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="441"/>
+        <location filename="../sleepyhead/daily.ui" line="455"/>
         <source>Big</source>
-        <translation type="unfinished"></translation>
+        <translation>Groot</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="449"/>
+        <location filename="../sleepyhead/daily.ui" line="463"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kleur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="456"/>
+        <location filename="../sleepyhead/daily.ui" line="470"/>
         <source> i </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.ui" line="459"/>
-        <source>Ctrl+I</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.ui" line="466"/>
-        <source>u</source>
-        <translation type="unfinished"></translation>
+        <translation> i </translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.ui" line="473"/>
+        <source>Ctrl+I</source>
+        <translatorcomment>Toetsenbord combinatie voor cursief</translatorcomment>
+        <translation>Ctrl+I</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.ui" line="480"/>
+        <source>u</source>
+        <translation>u</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.ui" line="487"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="476"/>
+        <location filename="../sleepyhead/daily.ui" line="490"/>
         <source>Ctrl+B</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Toetsenbord combinatie voor vet</translatorcomment>
+        <translation>Ctrl+B</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="533"/>
+        <location filename="../sleepyhead/daily.ui" line="547"/>
         <source>Zombie</source>
-        <translation type="unfinished"></translation>
+        <translation>Zombie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="546"/>
+        <location filename="../sleepyhead/daily.ui" line="560"/>
         <source>I&apos;m feeling...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ik voel me ...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="562"/>
+        <location filename="../sleepyhead/daily.ui" line="576"/>
         <source>Weight</source>
-        <translation type="unfinished"></translation>
+        <translation>Gewicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="617"/>
+        <location filename="../sleepyhead/daily.ui" line="631"/>
         <source>Awesome</source>
-        <translation type="unfinished"></translation>
+        <translation>Fantastisch</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="655"/>
+        <location filename="../sleepyhead/daily.ui" line="669"/>
         <source>B.M.I.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>zonder puntjes?</translatorcomment>
+        <translation>BMI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="671"/>
+        <location filename="../sleepyhead/daily.ui" line="685"/>
         <source>Bookmarks</source>
-        <translation type="unfinished">Bladwijzers</translation>
+        <translation>Bladwijzers</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="677"/>
+        <location filename="../sleepyhead/daily.ui" line="691"/>
         <source>Add Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>Bladwijzer toevoegen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="700"/>
+        <location filename="../sleepyhead/daily.ui" line="714"/>
         <source>Starts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: er wordt een punt in de tijd mee aangegeven vanaf wanneer je opmerkingen wilt plaatsen</translatorcomment>
+        <translation type="unfinished">Vanaf</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="713"/>
+        <location filename="../sleepyhead/daily.ui" line="727"/>
         <source>Remove Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>Bladwijzer verwijderen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="763"/>
+        <location filename="../sleepyhead/daily.ui" line="777"/>
         <source>Zoom fully out</source>
-        <translation type="unfinished"></translation>
+        <translation>Volledig uitzoomen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="766"/>
+        <location filename="../sleepyhead/daily.ui" line="780"/>
         <source>100%</source>
-        <translation type="unfinished"></translation>
+        <translation>100%</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="776"/>
+        <location filename="../sleepyhead/daily.ui" line="790"/>
         <source>Reset the graph heights to uniform sizes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maak de grafiekhoogtes weer gelijk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="779"/>
+        <location filename="../sleepyhead/daily.ui" line="793"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Reset hoogtes</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="824"/>
+        <location filename="../sleepyhead/daily.ui" line="832"/>
         <source>Drop down this list to show/hide available graphs.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: In het Engels ook nogal omslachtig
+AK: Wellicht &apos;beschikbare&apos; ook weglaten, is verwarrend, want de eerste is gelijk een (belangrijke) keuze</translatorcomment>
+        <translation>Toon/verberg grafieken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1203"/>
+        <source>Flow Rate</source>
+        <translatorcomment>AK: Afgekort wegens ruimtegebrek</translatorcomment>
+        <translation type="obsolete">Stroomsnelh.</translation>
+    </message>
+    <message>
+        <source>RDI</source>
+        <translatorcomment>WJG: Wat is RDI?
+AK: Respiratory Disturbance Index, iets van Respironics</translatorcomment>
+        <translation type="obsolete">RDI</translation>
+    </message>
+    <message>
+        <source>AHI</source>
+        <translation type="obsolete">AHI</translation>
+    </message>
+    <message>
+        <source>Mask Pressure</source>
+        <translation type="obsolete">Maskerdruk</translation>
+    </message>
+    <message>
+        <source>Pressure</source>
+        <translation type="obsolete">Druk</translation>
+    </message>
+    <message>
+        <source>Leak</source>
+        <translation type="obsolete">Lek</translation>
+    </message>
+    <message>
+        <source>Snore</source>
+        <translation type="obsolete">Snurken</translation>
+    </message>
+    <message>
+        <source>Resp. Rate</source>
+        <translatorcomment>Afgekort wegens ruimtegebrek</translatorcomment>
+        <translation type="obsolete">Ademtempo</translation>
+    </message>
+    <message>
+        <source>Tidal Volume</source>
+        <translation type="obsolete">Teugvolume</translation>
+    </message>
+    <message>
+        <source>Minute Vent.</source>
+        <translation type="obsolete">Minuutventilatie</translation>
+    </message>
+    <message>
+        <source>Flow Limitation</source>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Stroombeperk.</translation>
+    </message>
+    <message>
+        <source>Pat. Trig. Breath</source>
+        <translatorcomment>WJG: te lang, past niet
+AK: Heeel moeilijk!</translatorcomment>
+        <translation type="obsolete">Pat. Veroorz. Ademh.</translation>
+    </message>
+    <message>
+        <source>Resp. Event</source>
+        <translatorcomment>WJG: Zie &apos;event&apos;
+AK: zie mijn opmerking bij &apos;event&apos;</translatorcomment>
+        <translation type="obsolete">Incident</translation>
+    </message>
+    <message>
+        <source>Insp. Time</source>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Inademtijd</translation>
+    </message>
+    <message>
+        <source>Exp. Time</source>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Uitademtijd</translation>
+    </message>
+    <message>
+        <source>IE</source>
+        <translatorcomment>WJG: wat is IE?
+AK: Bij een BIPAP Verhouding Inhalatie- Exhalatietijd, dus I/E</translatorcomment>
+        <translation type="obsolete">I/E</translation>
+    </message>
+    <message>
         <source>Sleep Stage</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Slaapfase</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="131"/>
+        <location filename="../sleepyhead/daily.cpp" line="158"/>
         <source>Breakdown</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Niet gezien</translatorcomment>
+        <translation>Verdeling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="131"/>
+        <location filename="../sleepyhead/daily.cpp" line="158"/>
         <source>events</source>
-        <translation type="unfinished"></translation>
+        <translation>incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="175"/>
+        <source>H</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">H</translation>
+    </message>
+    <message>
+        <source>A</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">A</translation>
+    </message>
+    <message>
+        <source>OA</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">OA</translation>
+    </message>
+    <message>
+        <source>CA</source>
+        <translatorcomment>Letters in de cirkelgrafiek
+CA is Clear Airway, wat gelijk staat met Centrale Apneu</translatorcomment>
+        <translation type="obsolete">CA</translation>
+    </message>
+    <message>
+        <source>RE</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">RE</translation>
+    </message>
+    <message>
+        <source>NR</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">NR</translation>
+    </message>
+    <message>
+        <source>FL</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">FL</translation>
+    </message>
+    <message>
+        <source>PB</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">PB</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">E</translation>
+    </message>
+    <message>
+        <source>L</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">L</translation>
+    </message>
+    <message>
+        <source>NRI</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">NRI</translation>
+    </message>
+    <message>
+        <source>VS</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">VS</translation>
+    </message>
+    <message>
+        <source>VS2</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">VS2</translation>
+    </message>
+    <message>
+        <source>UF1</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">UF1</translation>
+    </message>
+    <message>
+        <source>UF2</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">UF2</translation>
+    </message>
+    <message>
+        <source>UF3</source>
+        <translatorcomment>Letters in de cirkelgrafiek</translatorcomment>
+        <translation type="obsolete">UF3</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="202"/>
         <source>Selection AHI</source>
-        <translation type="unfinished"></translation>
+        <translation>Selectie AHI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="199"/>
+        <source>CSR</source>
+        <translation type="obsolete">CSR</translation>
+    </message>
+    <message>
+        <source>PR</source>
+        <translation type="obsolete">PR</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="226"/>
         <source>U1</source>
-        <translation type="unfinished"></translation>
+        <translation>U1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="200"/>
+        <location filename="../sleepyhead/daily.cpp" line="227"/>
         <source>U2</source>
-        <translation type="unfinished"></translation>
+        <translation>U2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="201"/>
+        <location filename="../sleepyhead/daily.cpp" line="228"/>
         <source>U3</source>
-        <translation type="unfinished"></translation>
+        <translation>U3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="279"/>
-        <location filename="../sleepyhead/daily.cpp" line="280"/>
+        <source>O2</source>
+        <translation type="obsolete">O2</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="306"/>
+        <location filename="../sleepyhead/daily.cpp" line="307"/>
+        <location filename="../sleepyhead/daily.cpp" line="317"/>
+        <location filename="../sleepyhead/daily.cpp" line="318"/>
         <source>Events/hour</source>
-        <translation type="unfinished"></translation>
+        <translation>Incidenten/uur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="408"/>
+        <source>PD</source>
+        <translation type="obsolete">PD</translation>
+    </message>
+    <message>
+        <source>No Data</source>
+        <translation type="obsolete">Geen gegevens</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="459"/>
         <source>No %1 events are recorded this day</source>
-        <translation type="unfinished"></translation>
+        <translation>Er zijn vandaag geen %1 incidenten geweest</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="504"/>
+        <location filename="../sleepyhead/daily.cpp" line="555"/>
         <source>%1 event</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 incident</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="505"/>
+        <location filename="../sleepyhead/daily.cpp" line="556"/>
         <source>%1 events</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="676"/>
+        <location filename="../sleepyhead/daily.cpp" line="1110"/>
         <source>Oximetry data exists for this day, however it&apos;s timestamps are too different, so the Graphs will not be linked.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: spelling oxymetrie (zie Van Dale)
+AK: mee eens</translatorcomment>
+        <translation>Oxymetriegegevens beschikbaar, maar de tijden verschillen teveel: de grafieken worden niet verbonden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="736"/>
+        <location filename="../sleepyhead/daily.cpp" line="1165"/>
         <source>No Graphs :(</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen grafieken :(</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="795"/>
+        <source>CPAP</source>
+        <translation type="obsolete">CPAP</translation>
+    </message>
+    <message>
+        <source>APAP</source>
+        <translation type="obsolete">APAP</translation>
+    </message>
+    <message>
+        <source>Bi-Level</source>
+        <translation type="obsolete">BiPAP</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="919"/>
         <source>ASV</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Adaptieve ventilatie-instelling ASI?
+AK: Hmmm ASV=Adaptive Servo-Ventilation
+Maar het is een vierde soort apparaat, tegen Centrale Apneus</translatorcomment>
+        <translation type="unfinished">ASV</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="808"/>
+        <source>Unknown</source>
+        <translation type="obsolete">Onbekend</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="obsolete">Datum</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1069"/>
         <source>Sleep</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="808"/>
+        <location filename="../sleepyhead/daily.cpp" line="1069"/>
         <source>Wake</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Einde</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="841"/>
+        <location filename="../sleepyhead/daily.cpp" line="1220"/>
         <source>Hypopnea</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hypopneu (H)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="845"/>
+        <location filename="../sleepyhead/daily.cpp" line="1224"/>
         <source>Apnea</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Onbekende apneu (A)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="848"/>
+        <location filename="../sleepyhead/daily.cpp" line="1227"/>
         <source>Obstructive</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: nee,Obstructieve  is bijv.nw. bij apneu
+Toch ief, staat in de tabel</translatorcomment>
+        <translation type="unfinished">Obstructieve apneu (OA)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="852"/>
-        <location filename="../sleepyhead/daily.cpp" line="880"/>
+        <location filename="../sleepyhead/daily.cpp" line="1231"/>
+        <location filename="../sleepyhead/daily.cpp" line="1259"/>
         <source>Flow Limit</source>
+        <translatorcomment>AK: Inderdaad, bedoeld wordt een herkende vermindering in luchtstroom, hij gebruikt Flow Limit en -Limitation door elkaar</translatorcomment>
+        <translation type="unfinished">Stroombeperking (FL)</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1234"/>
+        <source>Clear Airway</source>
+        <translation type="unfinished">Open luchtweg of Centrale apneu (CA)</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1246"/>
+        <source>User Flags</source>
+        <translation type="unfinished">Gebruikers vlag (UF)</translation>
+    </message>
+    <message>
+        <source>RERA</source>
+        <translation type="obsolete">RERA (RE)</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1262"/>
+        <location filename="../sleepyhead/daily.cpp" line="1278"/>
+        <source>VSnore</source>
+        <translation type="unfinished">VSnore (VS)</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1266"/>
+        <source>VSnore2</source>
+        <translation>VSnore2</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1269"/>
+        <source>PB/CSR</source>
+        <translation type="unfinished">PA(PB)/CSR</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1280"/>
+        <source>Exh&amp;nbsp;Puff</source>
+        <translation>Exh&amp;nbsp;Pufje</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1295"/>
+        <source>Event Breakdown</source>
+        <translation type="unfinished">Verdeling incidenten</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1320"/>
+        <source>Sessions all off!</source>
+        <translatorcomment>Niet gevonden</translatorcomment>
+        <translation>Alle sessies uit!</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1321"/>
+        <source>Sessions exist for this day but are switched off.</source>
+        <translation>Er zijn wel sessies, maar die staan uit.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1323"/>
+        <source>Impossibly short session</source>
+        <translation>Onmogelijk korte sessie</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1324"/>
+        <source>Zero hours??</source>
+        <translation>Nul uren???</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1327"/>
+        <source>BRICK :(</source>
+        <translatorcomment>Arie: Als er niets uit komt is het echt fout
+Volgens mij zit er een foutje in deze string: dat eerste ( hoort er niet in dacht ik...
+Oh, dat is een smiley   ;-)</translatorcomment>
+        <translation>BAKSTEEN :(</translation>
+    </message>
+    <message>
+        <source>Sorry, your machine does not record data.</source>
+        <translatorcomment>WJG: machine = groter; apparaat gebruikelijker voor dit soort toestellen (zie Van Dale - apparaat, waarbij beademingsapparaat genoemd wordt</translatorcomment>
+        <translation type="obsolete">Sorry, je apparaat bewaart geen gegevens.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1329"/>
+        <source>Complain to your Equipment Provider!</source>
+        <translation>Klaag bij je leverancier!</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="956"/>
+        <location filename="../sleepyhead/daily.cpp" line="957"/>
+        <source>Avg</source>
+        <translation>Gem.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="958"/>
+        <source>Med</source>
+        <translation>Med.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="963"/>
+        <source>Statistics</source>
+        <translation>Statistieken</translation>
+    </message>
+    <message>
+        <source>Channel</source>
+        <translation type="obsolete">Kanaal</translation>
+    </message>
+    <message>
+        <source>Min</source>
+        <translation type="obsolete">Min.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="968"/>
+        <source>%1%</source>
+        <translation>%1%</translation>
+    </message>
+    <message>
+        <source>Max</source>
+        <translation type="obsolete">Max.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1041"/>
+        <source>&lt;b&gt;Please Note:&lt;/b&gt; This day just contains summary data, only limited information is available .</source>
+        <translation>&lt;b&gt;Let op:&lt;/b&gt; Deze dag heeft alleen overzichtsgegevens; alleen beperkte informatie dus.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1346"/>
+        <source>No data available</source>
+        <translation>Geen gegevens beschikbaar</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="863"/>
+        <source>Oximeter Information</source>
+        <translation>Oxymeterinformatie</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="145"/>
+        <source>Int. Pulse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="855"/>
-        <source>Clear Airway</source>
+        <location filename="../sleepyhead/daily.cpp" line="146"/>
+        <source>Int. SpO2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="769"/>
+        <source>Duration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="781"/>
+        <source>Oximetery Sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="788"/>
+        <source>Unknown Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="867"/>
-        <source>User Flags</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="883"/>
-        <location filename="../sleepyhead/daily.cpp" line="899"/>
-        <source>VSnore</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="887"/>
-        <source>VSnore2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="890"/>
-        <source>PB/CSR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="901"/>
-        <source>Exh&amp;nbsp;Puff</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="915"/>
-        <source>Event Breakdown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="939"/>
-        <source>Sessions all off!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="940"/>
-        <source>Sessions exist for this day but are switched off.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="942"/>
-        <source>Impossibly short session</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="943"/>
-        <source>Zero hours??</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
-        <source>BRICK :(</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="947"/>
-        <source>Sorry, your machine does not record data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="948"/>
-        <source>Complain to your Equipment Provider!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="963"/>
-        <location filename="../sleepyhead/daily.cpp" line="964"/>
-        <source>Avg</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="965"/>
-        <source>Med</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="970"/>
-        <source>Statistics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="976"/>
-        <source>%1%</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1081"/>
-        <source>&lt;b&gt;Please Note:&lt;/b&gt; This day just contains summary data, only limited information is available .</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1086"/>
-        <source>No data available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1093"/>
-        <source>Oximeter Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1097"/>
         <source>SpO2 Desaturations</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: hoofdletter D?</translatorcomment>
+        <translation type="unfinished">SpO2 desaturaties</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1098"/>
+        <location filename="../sleepyhead/daily.cpp" line="868"/>
         <source>Pulse Change events</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Oei! Bedoeld worden plotselinge, kortdurende wijzigingen in de polsslag. Maar hoe maak je dat kort?</translatorcomment>
+        <translation>Polsslag incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1099"/>
+        <location filename="../sleepyhead/daily.cpp" line="869"/>
         <source>SpO2 Baseline Used</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: hoofdletter B?</translatorcomment>
+        <translation type="unfinished">SpO2 basislijn gebruikt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1104"/>
+        <location filename="../sleepyhead/daily.cpp" line="836"/>
         <source>Machine Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Apparaatinstellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1127"/>
+        <source>Pr. Relief</source>
+        <translation type="obsolete">Drukvermindering</translation>
+    </message>
+    <message>
+        <source>Humidifier</source>
+        <translation type="obsolete">Bevochtiger</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="750"/>
         <source>Session Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessie-informatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1132"/>
         <source>SessionID</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Sessienummer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1134"/>
+        <source>On</source>
+        <translatorcomment>is een schakelaar, beneuwd of het past...</translatorcomment>
+        <translation type="obsolete">aan/uit</translation>
+    </message>
+    <message>
+        <source>Start</source>
+        <translation type="obsolete">Start</translation>
+    </message>
+    <message>
+        <source>End</source>
+        <translation type="obsolete">Einde</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="778"/>
         <source>CPAP Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">CPAP-sessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1164"/>
         <source>Oximetry Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Oxymetriesessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1195"/>
+        <source>Oximeter</source>
+        <translation type="obsolete">Oxymeter</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="784"/>
         <source>Sleep Stage Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation>Slaapfasesessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1226"/>
+        <location filename="../sleepyhead/daily.cpp" line="826"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
+        <translatorcomment>WJG: tikfout</translatorcomment>
+        <translation>Een of meer golfvormgegevens had foutieve brongegevens. Sommige kunnen niet goed aansluiten.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="897"/>
+        <source>PAP Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1458"/>
+        <location filename="../sleepyhead/daily.cpp" line="1328"/>
+        <source>Sorry, your machine only provides compliance data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1608"/>
         <source>Pick a Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies een kleur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1709"/>
+        <location filename="../sleepyhead/daily.cpp" line="1859"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1727"/>
+        <location filename="../sleepyhead/daily.cpp" line="1877"/>
         <source>Bookmark at %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1937"/>
+        <location filename="../sleepyhead/daily.cpp" line="2087"/>
         <source>Show all graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Toon alle grafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1943"/>
+        <location filename="../sleepyhead/daily.cpp" line="2093"/>
         <source>No Graphs On!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle grafieken staan uit!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1954"/>
+        <location filename="../sleepyhead/daily.cpp" line="2104"/>
         <source>Hide all graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Verberg alle grafieken</translation>
     </message>
 </context>
 <context>
@@ -540,217 +847,223 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="14"/>
         <source>Export as CSV</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exporteer naar .csv bestand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="24"/>
         <source>Dates:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Periode:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="37"/>
         <source>Resolution:</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolutie:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="46"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Details</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="53"/>
         <source>Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessies</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="60"/>
         <source>Daily</source>
-        <translation type="unfinished">Dagelijks</translation>
+        <translation>Dagelijks</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="85"/>
         <source>Filename:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestandsnaam:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="107"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuleren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="114"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporteren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="131"/>
         <source>Start:</source>
-        <translation type="unfinished"></translation>
+        <translation>Start:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="154"/>
         <source>End:</source>
-        <translation type="unfinished"></translation>
+        <translation>Einde:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="192"/>
         <source>Quick Range:</source>
-        <translation type="unfinished"></translation>
+        <translation>Snelkeuze:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="200"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="54"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="108"/>
         <source>Most Recent Day</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: zie ook bij Daily</translatorcomment>
+        <translation type="unfinished">Meest recente dag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="205"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="111"/>
         <source>Last Week</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen week</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="210"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="114"/>
         <source>Last Fortnight</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen twee weken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="215"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="117"/>
         <source>Last Month</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen maand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="220"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="120"/>
         <source>Last 6 Months</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen halfjaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="225"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="123"/>
         <source>Last Year</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Bij vorig jaar denk ik nu aan 2012. Bedoeld wordt een jaar voor gisteren.... Dat is toch afgelopen jaar?</translatorcomment>
+        <translation>Afgelopen jaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="230"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="105"/>
         <source>Everything</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="235"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="94"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Zelf kiezen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.ui" line="248"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="67"/>
         <source>SleepyHead_</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead_</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="70"/>
         <source>Details_</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Details_</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="71"/>
         <source>Sessions_</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Engels is meervoud
+AK: Wat betekent het streepje erachter?
+Het zit in de bestandsnaam, het streepje is een spatie</translatorcomment>
+        <translation type="unfinished">Sessies_</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="72"/>
         <source>Summary_</source>
-        <translation type="unfinished"></translation>
+        <translation>Overzicht_</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="77"/>
         <source>Select file to export to</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies exportbestand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="77"/>
         <source>CSV Files (*.csv)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>bestandstype</translatorcomment>
+        <translation>CSV bestanden (*.csv)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="181"/>
         <source>DateTime</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum-Tijd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="181"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>Session</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="181"/>
         <source>Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Incident</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="181"/>
         <source>Data/Duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Gegevens/duur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <source>Session Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Aantal sessies</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>End</source>
-        <translation type="unfinished"></translation>
+        <translation>Einde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>Total Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Totale tijdsduur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="184"/>
         <location filename="../sleepyhead/exportcsv.cpp" line="186"/>
         <source>AHI</source>
-        <translation type="unfinished"></translation>
+        <translation>AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="189"/>
         <source> Count</source>
-        <translation type="unfinished"></translation>
+        <translation> Aantal</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="191"/>
         <source> Avg</source>
-        <translation type="unfinished"></translation>
+        <translation> Gem.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/exportcsv.cpp" line="193"/>
         <source> %1%</source>
-        <translation type="unfinished"></translation>
+        <translation> %1%</translation>
     </message>
 </context>
 <context>
@@ -759,24 +1072,28 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <location filename="../sleepyhead/mainwindow.ui" line="26"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="93"/>
         <source>SleepyHead</source>
-        <translation>SlaapKop</translation>
+        <translatorcomment>AK: Ik ben van mening dat we de naam niet moeten vertalen</translatorcomment>
+        <translation>SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="103"/>
         <source>&amp;Statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Statistieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="125"/>
         <location filename="../sleepyhead/mainwindow.ui" line="1496"/>
         <location filename="../sleepyhead/mainwindow.ui" line="1584"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="140"/>
         <source>&amp;Help Browser</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Volgens mij brengt dit je naar: &quot;Over SleepyHead&quot;.
+20/9 WJG: is dat niet gewoon wat er helemaal boven in de menubalk staat,ongeacht waar je in het programma bent?
+AK: klopt</translatorcomment>
+        <translation type="unfinished">&amp;Over SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="208"/>
@@ -784,22 +1101,23 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <location filename="../sleepyhead/mainwindow.ui" line="248"/>
         <location filename="../sleepyhead/mainwindow.ui" line="1441"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="297"/>
         <source>qrc:/docs/index.html</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>geen idee!</translatorcomment>
+        <translation>qrc:/docs/index.html</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="548"/>
         <source>&amp;Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Navigatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="565"/>
         <source>Statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Statistieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="605"/>
@@ -814,265 +1132,279 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="663"/>
         <source>Oximetry</source>
-        <translation type="unfinished"></translation>
+        <translation>Oxymetrie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="698"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gegevens
+importeren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="733"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Over SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="849"/>
         <source>&amp;Bookmarks</source>
-        <translation type="unfinished">&amp;Bladwijzer</translation>
+        <translatorcomment>AK: Beter B&amp;ladwijzers en &amp;Bestand</translatorcomment>
+        <translation>B&amp;ladwijzers</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1520"/>
         <source>&amp;Records</source>
-        <translation type="unfinished">&amp;Archief</translation>
+        <translation type="unfinished">&amp;Erelijst</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1613"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Onderstreepte letter kan geen B zijn, is al gebruikt bij Bladwijzers
+AK: Dan zou ik het andersom doen: B&amp;ladwijzers</translatorcomment>
+        <translation>&amp;Bestand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1628"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Weergave</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1645"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Help</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1661"/>
         <source>&amp;Data</source>
-        <translation type="unfinished">&amp;Gegevens</translation>
+        <translation>&amp;Gegevens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1665"/>
         <source>&amp;Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Ge&amp;avanceerd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1669"/>
         <source>&amp;Purge CPAP Data</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: W is al gebruikt bij Weergave</translatorcomment>
+        <translation>Wis &amp;CPAP gegevens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1693"/>
         <source>&amp;Import Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Gegevens &amp;importeren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1696"/>
         <source>Shift+F2</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift+F2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1701"/>
         <source>&amp;Preferences</source>
-        <translation type="unfinished">&amp;Voorkeuren</translation>
+        <translatorcomment>WJG: i is al gebruikt bij Gegevens importeren</translatorcomment>
+        <translation>I&amp;nstellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1706"/>
         <source>&amp;Profiles</source>
-        <translation type="unfinished">&amp;Profiel</translation>
+        <translation>&amp;Profielen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1711"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="164"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished">&amp;Uitgaan</translation>
+        <translation>E&amp;xit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1716"/>
         <source>View &amp;Daily</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: aangepast na compilatie</translatorcomment>
+        <translation type="unfinished">&amp;Dagweergave</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1719"/>
         <source>F5</source>
-        <translation type="unfinished"></translation>
+        <translation>F5</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1724"/>
         <source>View &amp;Overview</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Overzichtpagina</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1727"/>
         <source>F6</source>
-        <translation type="unfinished"></translation>
+        <translation>F6</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1732"/>
         <source>View &amp;Welcome</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Om de al gebruikte W te omzeilen
+AK: Waar staat dat Welkomst-/Startscherm???
+20/9 WJG: Goeie vraag, waarschijnlijk dateert dat nog uit een oudere versie en heeft Mark dat niet opgeruimd?</translatorcomment>
+        <translation variants="yes">
+            <lengthvariant>&amp;Welkomstscherm</lengthvariant>
+            <lengthvariant>&amp;Startscherm</lengthvariant>
+        </translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1735"/>
         <location filename="../sleepyhead/mainwindow.ui" line="1876"/>
         <source>F4</source>
-        <translation type="unfinished"></translation>
+        <translation>F4</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1740"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1743"/>
         <source>Ctrl+Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Tab</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1751"/>
         <source>Use &amp;AntiAliasing</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik &amp;AntiAliasing</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1756"/>
         <source>&amp;About SleepyHead</source>
-        <translation type="unfinished">&amp;Over SlaapKop</translation>
+        <translatorcomment>WJG: O is al gebruikt</translatorcomment>
+        <translation>Over &amp;SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1764"/>
         <source>&amp;Fullscreen Toggle</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Volledig scherm aan/uit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1767"/>
         <source>F11</source>
-        <translation type="unfinished"></translation>
+        <translation>F11</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1775"/>
         <source>Show Debug Pane</source>
-        <translation type="unfinished"></translation>
+        <translation>Foutopsporingsvenster</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1780"/>
         <source>&amp;Reset Graph Layout</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Reset alle grafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1785"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="162"/>
         <source>Check for &amp;Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoek naar &amp;updates</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1790"/>
         <source>Take &amp;Screenshot</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schermopname maken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1793"/>
         <source>F12</source>
-        <translation type="unfinished"></translation>
+        <translation>F12</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1798"/>
         <source>View O&amp;ximetry</source>
-        <translation type="unfinished"></translation>
+        <translation>O&amp;xymetrievenster</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1801"/>
         <source>F7</source>
-        <translation type="unfinished"></translation>
+        <translation>F7</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1806"/>
         <source>Print &amp;Report</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rapport afdrukken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1811"/>
         <source>&amp;Edit Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Profiel &amp;aanpassen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1819"/>
         <source>&amp;Link Graph Groups</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafiekgroepen &amp;koppelen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1824"/>
         <source>Exp&amp;ort</source>
-        <translation type="unfinished"></translation>
+        <translation>Exp&amp;orteer</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1829"/>
         <source>Online Users &amp;Guide</source>
-        <translation type="unfinished"></translation>
+        <translation>Online &amp;gebruiksaanwijzing</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1834"/>
         <source>&amp;Frequently Asked Questions</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;FAQ</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1839"/>
         <source>&amp;Rebuild Oximetry Indices</source>
-        <translation type="unfinished"></translation>
+        <translation>Oxymetrie-indexen &amp;herstellen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1844"/>
         <source>Change &amp;User</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ander &amp;profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1849"/>
         <source>&amp;Current Selected Day</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Geselecteerde dag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1854"/>
         <source>All data for current CPAP machine</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle gegevens van dit apparaat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1865"/>
         <source>Right &amp;Sidebar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Rechter zijbalk aan/uit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1868"/>
         <source>F8</source>
-        <translation type="unfinished"></translation>
+        <translation>F8</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1873"/>
         <source>View S&amp;ummary</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Statistiekpagina</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1881"/>
         <source>Import &amp;ZEO Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Importeer &amp;ZEO gegevens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1886"/>
         <source>Import RemStar &amp;MSeries Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Importeer RemStar &amp;M-series gegevens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1891"/>
         <source>&amp;Support Sleepyhead Development</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Help bij ontwikkeling SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1896"/>
         <source>Sleep Disorder Terms &amp;Glossary</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Woordenlijst slaapaandoeningen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="1901"/>
@@ -1082,12 +1414,469 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="249"/>
         <source>Loading Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Gegevens laden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="375"/>
         <source>Importing Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Gegevens importeren</translation>
+    </message>
+    <message>
+        <source>RDI</source>
+        <translation type="obsolete">RDI</translation>
+    </message>
+    <message>
+        <source>AHI</source>
+        <translation type="obsolete">AHI</translation>
+    </message>
+    <message>
+        <source>No CPAP data available.</source>
+        <translation type="obsolete">Geen CPAP-gegevens beschikbaar.</translation>
+    </message>
+    <message>
+        <source>%1 day of CPAP Data, on %2.</source>
+        <translation type="obsolete">Dag %1 van CPAP-gegevens, op %2.</translation>
+    </message>
+    <message>
+        <source>%1 days of CPAP Data, between %2 and %3</source>
+        <translation type="obsolete">%1 dagen met CPAP-gegevens, tussen %2 en %3</translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation type="obsolete">Details</translation>
+    </message>
+    <message>
+        <source>Most Recent</source>
+        <translation type="obsolete">Laatste ingelezen dag</translation>
+    </message>
+    <message>
+        <source>Last 7 Days</source>
+        <translatorcomment>WJG: hoeft niet per se een week te zijn?</translatorcomment>
+        <translation type="obsolete">Afgelopen 7 dagen</translation>
+    </message>
+    <message>
+        <source>Last 30 Days</source>
+        <translation type="obsolete">Afgelopen 30 dagen</translation>
+    </message>
+    <message>
+        <source>Last 6 months</source>
+        <translation type="obsolete">Afgelopen 6 maanden</translation>
+    </message>
+    <message>
+        <source>Last Year</source>
+        <translatorcomment>AK: Zie mijn eerdere opmerking</translatorcomment>
+        <translation type="obsolete">Afgelopen jaar</translation>
+    </message>
+    <message>
+        <source>RERA Index</source>
+        <translation type="obsolete">RERA-index</translation>
+    </message>
+    <message>
+        <source>Flow Limit Index</source>
+        <translatorcomment>En wat wordt de afkorting?
+AK: SBI</translatorcomment>
+        <translation type="obsolete">Stroom Beperking Index
+(FLI)</translation>
+    </message>
+    <message>
+        <source>Hours per Night</source>
+        <translation type="obsolete">Uren per nacht</translation>
+    </message>
+    <message>
+        <source>Min EPAP</source>
+        <translation type="obsolete">Min. EPAP</translation>
+    </message>
+    <message>
+        <source>%1% EPAP</source>
+        <translation type="obsolete">%1% EPAP</translation>
+    </message>
+    <message>
+        <source>Max IPAP</source>
+        <translation type="obsolete">Max. IPAP</translation>
+    </message>
+    <message>
+        <source>%1% IPAP</source>
+        <translation type="obsolete">%1% IPAP</translation>
+    </message>
+    <message>
+        <source>Average Pressure</source>
+        <translation type="obsolete">Gemiddelde druk</translation>
+    </message>
+    <message>
+        <source>%1% Pressure</source>
+        <translation type="obsolete">%1% Druk</translation>
+    </message>
+    <message>
+        <source>Pressure</source>
+        <translation type="obsolete">Druk</translation>
+    </message>
+    <message>
+        <source>Average %1</source>
+        <translation type="obsolete">Gemiddelde %1</translation>
+    </message>
+    <message>
+        <source>%1% %2</source>
+        <translation type="obsolete">%1% %2</translation>
+    </message>
+    <message>
+        <source>Oximetry Summary</source>
+        <translation type="obsolete">Oxymetrie overzicht</translation>
+    </message>
+    <message>
+        <source>%1 day of Oximetry Data, on %2.</source>
+        <translation type="obsolete">%1 dag van oxymetriegegevens, op %2</translation>
+    </message>
+    <message>
+        <source>%1 days of Oximetry Data, between %2 and %3</source>
+        <translation type="obsolete">%1 dagen van oxymetrie-gegevens, tussen %2 en %3</translation>
+    </message>
+    <message>
+        <source>Average SpO2</source>
+        <translation type="obsolete">Gemiddelde SpO2</translation>
+    </message>
+    <message>
+        <source>Minimum SpO2</source>
+        <translation type="obsolete">Minimum SpO2</translation>
+    </message>
+    <message>
+        <source>SpO2 Events / Hour</source>
+        <translatorcomment>Dit zijn echt geen apneus, hoor...</translatorcomment>
+        <translation type="obsolete">SpO2 incidenten per uur</translation>
+    </message>
+    <message>
+        <source>% of time in SpO2 Events</source>
+        <translation type="obsolete">Tijd in SpO2 incidenten</translation>
+    </message>
+    <message>
+        <source>Average Pulse Rate</source>
+        <translation type="obsolete">Gemiddelde polsslag</translation>
+    </message>
+    <message>
+        <source>Minimum Pulse Rate</source>
+        <translation type="obsolete">Minumum polsslag</translation>
+    </message>
+    <message>
+        <source>Maximum Pulse Rate</source>
+        <translation type="obsolete">Maximum polsslag</translation>
+    </message>
+    <message>
+        <source>Pulse Change Events / Hour</source>
+        <translatorcomment>Het gaat om veranderingen als incident</translatorcomment>
+        <translation type="obsolete">Polsslagincidenten per uur</translation>
+    </message>
+    <message>
+        <source>Usage Information</source>
+        <translatorcomment>Dit staat onder &quot;records&quot;</translatorcomment>
+        <translation type="obsolete">Gebruiksinformatie</translation>
+    </message>
+    <message>
+        <source>Total Days</source>
+        <translation type="obsolete">Totaal aantal dagen</translation>
+    </message>
+    <message>
+        <source>Compliant Days</source>
+        <translation type="obsolete">Therapietrouw-dagen</translation>
+    </message>
+    <message>
+        <source>Days AHI &amp;gt;5.0</source>
+        <translation type="obsolete">Dagen met AHI &amp;gt 5,0</translation>
+    </message>
+    <message>
+        <source>Best&amp;nbsp;%1</source>
+        <translation type="obsolete">Beste &amp;nbsp;%1</translation>
+    </message>
+    <message>
+        <source>Worst&amp;nbsp;%1</source>
+        <translation type="obsolete">Slechtste &amp;nbsp;%1</translation>
+    </message>
+    <message>
+        <source>CPAP</source>
+        <translation type="obsolete">CPAP</translation>
+    </message>
+    <message>
+        <source>APAP</source>
+        <translation type="obsolete">APAP</translation>
+    </message>
+    <message>
+        <source>Bi-Level</source>
+        <translation type="obsolete">BiPAP</translation>
+    </message>
+    <message>
+        <source>ST/ASV</source>
+        <translatorcomment>Adaptieve ventilatie-instelling ASI?</translatorcomment>
+        <translation type="obsolete">ST/ASV</translation>
+    </message>
+    <message>
+        <source>Best RX Setting</source>
+        <translation type="obsolete">Beste Rx instelling</translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="obsolete">Modus</translation>
+    </message>
+    <message>
+        <source>Worst RX Setting</source>
+        <translation type="obsolete">Slechtste Rx instelling</translation>
+    </message>
+    <message>
+        <source>EPAP</source>
+        <translation type="obsolete">EPAP</translation>
+    </message>
+    <message>
+        <source>IPAPLo</source>
+        <translation type="obsolete">IPAP laag</translation>
+    </message>
+    <message>
+        <source>IPAPHi</source>
+        <translation type="obsolete">IPAP hoog</translation>
+    </message>
+    <message>
+        <source>PS Min</source>
+        <translation type="obsolete">PS min.</translation>
+    </message>
+    <message>
+        <source>PS Max</source>
+        <translation type="obsolete">PS max.</translation>
+    </message>
+    <message>
+        <source>IPAP</source>
+        <translation type="obsolete">IPAP</translation>
+    </message>
+    <message>
+        <source>PS</source>
+        <translation type="obsolete">PS</translation>
+    </message>
+    <message>
+        <source>Min Pres.</source>
+        <translation type="obsolete">Min. druk</translation>
+    </message>
+    <message>
+        <source>Max Pres.</source>
+        <translation type="obsolete">Max. druk</translation>
+    </message>
+    <message>
+        <source>First</source>
+        <translation type="obsolete">Eerste dag</translation>
+    </message>
+    <message>
+        <source>Last</source>
+        <translation type="obsolete">Laatste dag</translation>
+    </message>
+    <message>
+        <source>Days</source>
+        <translation type="obsolete">Dagen</translation>
+    </message>
+    <message>
+        <source>FL</source>
+        <translation type="obsolete">FL</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation type="obsolete">Apparaat</translation>
+    </message>
+    <message>
+        <source>Pr. Rel.</source>
+        <translation type="obsolete">Drukvermindering</translation>
+    </message>
+    <message>
+        <source>%5 %1% EPAP=%2&lt;br/&gt;%3% IPAP=%4</source>
+        <translation type="obsolete">%5 %1% EPAP=%2&lt;br/&gt;%3% IPAP=%4</translation>
+    </message>
+    <message>
+        <source>%3 %1% Pressure=%2</source>
+        <translation type="obsolete">%3 %1% Druk=%2</translation>
+    </message>
+    <message>
+        <source>Brand</source>
+        <translation type="obsolete">Merk</translation>
+    </message>
+    <message>
+        <source>Model</source>
+        <translation type="obsolete">Type</translation>
+    </message>
+    <message>
+        <source>Serial</source>
+        <translation type="obsolete">Serienummer</translation>
+    </message>
+    <message>
+        <source>First Use</source>
+        <translation type="obsolete">Eerste gebruik</translation>
+    </message>
+    <message>
+        <source>Last Use</source>
+        <translation type="obsolete">Laatste gebruik</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="589"/>
+        <source>Loading</source>
+        <translation>Laden...</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;body&gt;&lt;div align=&apos;center&apos;&gt;&lt;h2&gt;SleepyHead v%1.%2.%3-%4 (%8)&lt;/h2&gt;Build Date: %5 %6&lt;br/&gt;%7&lt;br/&gt;Data Folder: %9&lt;hr&gt;Copyright &amp;copy;2011 Mark Watkins (jedimark) &lt;br&gt; 
+&lt;a href=&apos;http://sleepyhead.sourceforge.net&apos;&gt;http://sleepyhead.sourceforge.net&lt;/a&gt; &lt;hr&gt;This software is released under the GNU Public License &lt;br&gt;&lt;i&gt;This software comes with absolutely no warranty, either express of implied. It comes with no guarantee of fitness for any particular purpose. No guarantees are made regarding the accuracy of any data this program displays.&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translatorcomment>WJG: juridische terminologie aangepast. Klopt de Nederlandse downloadsite?
+AK: De site wijzigt niet, is een algemene verwijzing. De vertaling wordt tzt in het standaard programma opgenomen, als taalkeuze.</translatorcomment>
+        <translation type="obsolete">&lt;html&gt;&lt;body&gt;&lt;div align=&apos;center&apos;&gt;&lt;h2&gt;SleepyHead v%1.%2.%3-%4 (%8)&lt;/h2&gt;Build Date: %5 %6&lt;br/&gt;%7&lt;br/&gt;Data Folder: %9&lt;hr&gt;Copyright &amp;copy;2011 Mark Watkins (jedimark) &lt;br&gt; 
+&lt;a href=&apos;http://sleepyhead.sourceforge.net&apos;&gt;http://sleepyhead.sourceforge.net&lt;/a&gt; &lt;hr&gt;Deze software is vrijgegeven onder de GNU Public License &lt;br&gt; &lt;i&gt; Deze software sluit elke vorm van aansprakelijkheid uit, zowel expliciet als impliciet. Het wordt geleverd zonder waarborg voor geschiktheid voor een bepaald doel. Er zijn geen garanties met betrekking tot de juistheid van de gegevens die dit programma toont.&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>About SleepyHead</source>
+        <translation type="obsolete">Over SleepyHead</translation>
+    </message>
+    <message>
+        <source>There are no graphs visible to print</source>
+        <translation type="obsolete">Geen zichtbare grafieken om af te drukken</translation>
+    </message>
+    <message>
+        <source>Bookmarks</source>
+        <translation type="obsolete">Bladwijzers</translation>
+    </message>
+    <message>
+        <source>Would you like to show bookmarked areas in this report?</source>
+        <translation type="obsolete">Wil je gebieden met bladwijzer in dit rapport tonen?</translation>
+    </message>
+    <message>
+        <source>This make take some time to complete..
+Please don&apos;t touch anything until it&apos;s done.</source>
+        <translation type="obsolete">Dit kan even duren...
+Alsjeblieft niets aanraken tot ik klaar ben!</translation>
+    </message>
+    <message>
+        <source>Printing %1 Report</source>
+        <translation type="obsolete">Rapport %1 afdrukken</translation>
+    </message>
+    <message>
+        <source>%1 Report</source>
+        <translation type="obsolete">%1 Rapport</translation>
+    </message>
+    <message>
+        <source>Name:	 %1, %2
+</source>
+        <translation type="obsolete">Naam:		 %1, %2
+</translation>
+    </message>
+    <message>
+        <source>DOB:	%1
+</source>
+        <translation type="obsolete">Geboortedatum:		%1
+</translation>
+    </message>
+    <message>
+        <source>Patient ID:	%1
+</source>
+        <translation type="obsolete">Patientnr.:		%1
+</translation>
+    </message>
+    <message>
+        <source>Phone:	%1
+</source>
+        <translation type="obsolete">Telefoon:		%1
+</translation>
+    </message>
+    <message>
+        <source>Email:	%1
+</source>
+        <translation type="obsolete">E-mail:		%1
+</translation>
+    </message>
+    <message>
+        <source>
+Address:
+%1</source>
+        <translation type="obsolete">
+Adres:
+%1</translation>
+    </message>
+    <message>
+        <source>Mask Time: </source>
+        <translation type="obsolete">Maskertijd: </translation>
+    </message>
+    <message>
+        <source>Bedtime: </source>
+        <translation type="obsolete">Gaan slapen:</translation>
+    </message>
+    <message>
+        <source>Wake-up: </source>
+        <translation type="obsolete">Opgestaan: </translation>
+    </message>
+    <message>
+        <source>Machine: </source>
+        <translation type="obsolete">Apparaaat: </translation>
+    </message>
+    <message>
+        <source>
+Mode: </source>
+        <translation type="obsolete">
+Modus: </translation>
+    </message>
+    <message>
+        <source>ASV</source>
+        <translatorcomment>Adaptieve ventilatie-instelling ASI?</translatorcomment>
+        <translation type="obsolete">ASV</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="obsolete">Onbekend</translation>
+    </message>
+    <message>
+        <source>RDI	%1
+</source>
+        <translation type="obsolete">RDI	%1
+</translation>
+    </message>
+    <message>
+        <source>AHI	%1
+</source>
+        <translation type="obsolete">AHI	%1
+</translation>
+    </message>
+    <message>
+        <source>AI=%1 HI=%2 CAI=%3 </source>
+        <translation type="obsolete">AI=%1 HI=%2 CAI=%3 </translation>
+    </message>
+    <message>
+        <source>REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</source>
+        <translation type="obsolete">REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</translation>
+    </message>
+    <message>
+        <source>UAI=%1 </source>
+        <translation type="obsolete">UAI=%1 </translation>
+    </message>
+    <message>
+        <source>NRI=%1 LKI=%2 EPI=%3</source>
+        <translation type="obsolete">NRI=%1 LKI=%2 EPI=%3</translation>
+    </message>
+    <message>
+        <source>Weight %1 </source>
+        <translation type="obsolete">Gewicht %1</translation>
+    </message>
+    <message>
+        <source>BMI %1 </source>
+        <translation type="obsolete">BMI %1 </translation>
+    </message>
+    <message>
+        <source>Zombie %1/10 </source>
+        <translation type="obsolete">Zombie %1/10 </translation>
+    </message>
+    <message>
+        <source>Reporting from %1 to %2</source>
+        <translation type="obsolete">Rapport van %1 tot %2</translation>
+    </message>
+    <message>
+        <source>Reporting data goes here</source>
+        <translation type="obsolete">De rapportgegevens komen hier</translation>
+    </message>
+    <message>
+        <source>Entire Day&apos;s Flow Waveform</source>
+        <translation type="obsolete">Flow golfvorm hele dag</translation>
+    </message>
+    <message>
+        <source>SleepyHead v%1 - http://sleepyhead.sourceforge.net</source>
+        <translation type="obsolete">SleepyHead v%1 - http://sleepyhead.sourceforge.net</translation>
+    </message>
+    <message>
+        <source>Page %1 of %2</source>
+        <translation type="obsolete">Pagina %1 van %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="93"/>
@@ -1138,7 +1927,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="323"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Annuleren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="392"/>
@@ -1149,18 +1938,6 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <location filename="../sleepyhead/mainwindow.cpp" line="392"/>
         <source>Would you like to remember this import location for next time?</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Days</source>
-        <translation type="obsolete">Totaal dagen</translation>
-    </message>
-    <message>
-        <source>Compliant Days</source>
-        <translation type="obsolete">Naleving dagen</translation>
-    </message>
-    <message>
-        <source>Worst&amp;nbsp;%1</source>
-        <translation type="obsolete">Slechtst&amp;nbsp;%1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="407"/>
@@ -1175,8 +1952,18 @@ Couldn&apos;t find any new Machine Data at the locations given</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="615"/>
+        <source>Data Folder Location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="616"/>
         <source>Copyright</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="617"/>
+        <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1197,16 +1984,6 @@ Couldn&apos;t find any new Machine Data at the locations given</source>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="622"/>
         <source>&lt;p&gt;The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="615"/>
-        <source>Data Folder Location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="617"/>
-        <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1257,7 +2034,7 @@ Couldn&apos;t find any new Machine Data at the locations given</source>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="720"/>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vraag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="720"/>
@@ -1281,9 +2058,54 @@ One is required to use this section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1093"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1110"/>
+        <source>Gah!</source>
+        <translation>Bah!</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1093"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1110"/>
+        <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
+        <translation>Als je dit kunt lezen, heeft het herstartcommando niet gewerkt. Je zult het handmatig moeten doen.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1167"/>
+        <source>Are you sure?</source>
+        <translation>Weet je het zeker?</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1167"/>
+        <source>Are you sure you want to purge all CPAP data for the following machine:
+</source>
+        <translation>Weet je zeker dat je alle CPAP-gegevens wilt wissen van het volgende apparaat:
+</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1328"/>
+        <source>Performance will be degraded during these recalculations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1328"/>
+        <source>Recalculating Indices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1339"/>
+        <source>Loading Event Data</source>
+        <translation>Incidenten laden</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1341"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1389"/>
+        <source>Recalculating Summaries</source>
+        <translation>Opnieuw berekenen</translation>
+    </message>
+    <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1399"/>
         <source>Restart Required</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Opnieuw starten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="1399"/>
@@ -1320,86 +2142,13 @@ One is required to use this section.</source>
         <source>MSeries Import complete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Pr. Rel.</source>
-        <translation type="obsolete">Drukontlastings</translation>
-    </message>
-    <message>
-        <source>Brand</source>
-        <translation type="obsolete">Merk</translation>
-    </message>
-    <message>
-        <source>Model</source>
-        <translation type="obsolete">Ser</translation>
-    </message>
-    <message>
-        <source>Serial</source>
-        <translation type="obsolete">Volgnummer</translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="589"/>
-        <source>Loading</source>
-        <translation type="unfinished">Het Laden</translation>
-    </message>
-    <message>
-        <source>About SleepyHead</source>
-        <translation type="obsolete">Over SlaapKop</translation>
-    </message>
-    <message>
-        <source>Bookmarks</source>
-        <translation type="obsolete">Bladwijzers</translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1093"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1110"/>
-        <source>Gah!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1093"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1110"/>
-        <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1167"/>
-        <source>Are you sure?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1167"/>
-        <source>Are you sure you want to purge all CPAP data for the following machine:
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1328"/>
-        <source>Performance will be degraded during these recalculations.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1328"/>
-        <source>Recalculating Indices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1339"/>
-        <source>Loading Event Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1341"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1389"/>
-        <source>Recalculating Summaries</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>NewProfile</name>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="14"/>
         <source>Edit User Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Wijzig gebruikersprofiel</translation>
     </message>
     <message>
         <source>Language</source>
@@ -1407,27 +2156,73 @@ One is required to use this section.</source>
     </message>
     <message>
         <source>English</source>
-        <translation type="obsolete">Engels</translation>
+        <translation type="obsolete">English</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="65"/>
         <source>Data Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestandsmap</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="72"/>
         <source>Shows the directory where SleepyHead data will be stored. </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De gegevens van SleepyHead worden in deze map opgeslagen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="55"/>
         <source>Click here to choose where to store SleepyHead data.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Dit is een hulptekst, mag lang zijn.
+20/9 WJG: op zich met de redenatie eens, al ben ik er ook voor om hulpteksten zo compact en duidelijk mogelijk te houden.</translatorcomment>
+        <translation type="unfinished">Kies hier waar SleepyHead gegevens opslaat.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="58"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Welcome to SleepyHead&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This software is being designed to help you review data related to your CPAP treatment.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;It&apos;s intended as merely a data viewer, and not a substitute for competent medical guidance from your Doctor.  &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This software has been released freely under the &lt;a href=&quot;qrc:/LICENSE.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;GNU Public License&lt;/span&gt;&lt;/a&gt;, and comes with no warranty, and without ANY claims to fitness for any purpose.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Accuracy of any data displayed is not and can not be guaranteed. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Any reports generated are for PERSONAL USE ONLY, and not fit for compliance purposes.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The author will not be held liable for &lt;span style=&quot; text-decoration: underline;&quot;&gt;anything&lt;/span&gt; related to the use or misuse of this software. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Use at your own risk. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This software is copyright ©2011 Mark Watkins &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Welkom bij SleepyHead&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dit programma is ontworpen als hulp bij het beoordelen van de gegevens over je CPAP behandeling.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Het is voornamelijk bedoeld om gegevens te bekijken en absoluut geen vervanging van de  medische begeleiding door je arts.  &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Deze software is vrijelijk uitgegeven onder de &lt;a href=&quot;qrc:/LICENSE.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;GNU Public License&lt;/span&gt;&lt;/a&gt;, en wordt geleverd zonder garantie en zonder enige aanspraak op geschiktheid voor welk doel dan ook.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;De juistheid van alle weergegeven gegevens is niet en kan niet worden gegarandeerd. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Ieder gegenereerd rapport is voor EIGEN GEBRUIK en is niet geschikt om de naleving te beoordelen.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;De auteur kan niet verantwoordelijk worden gehouden voor &lt;span style=&quot; text-decoration: underline;&quot;&gt;alles&lt;/span&gt; dat is gerelateerd aan het gebruik of misbruik van deze programmatuur. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Gebruik op eigen risico. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Auteursrecht software ©2011 Mark Watkins &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="81"/>
@@ -1457,7 +2252,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="111"/>
         <source>I agree to all the conditions above.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ik ga akkoord met bovengenoemde voorwaarden.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="137"/>
@@ -1467,32 +2262,34 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="160"/>
         <source>User Name</source>
-        <translation>Gebruikersnaam</translation>
+        <translation>Naam gebruiker</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="179"/>
         <source>Keep the kids out.. Nothing more.. This isn&apos;t meant to be uber security.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Mooi gevonden!</translatorcomment>
+        <translation type="unfinished">Hou de kinderen erbuiten... niets meer of minder... 
+Dit is GEEN ECHTE BEVEILIGING.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="182"/>
         <source>Password Protect Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Wachtwoordbeveiliging van het profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="197"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Wachtwoord</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="211"/>
         <source>...twice...</source>
-        <translation type="unfinished"></translation>
+        <translation>... nog eens ...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="238"/>
         <source>Locale Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Landinstellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="268"/>
@@ -1502,17 +2299,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="287"/>
         <source>TimeZone</source>
-        <translation type="unfinished"></translation>
+        <translation>Tijdzone</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="326"/>
         <source>DST Zone</source>
-        <translation type="unfinished"></translation>
+        <translation>Zomertijd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="355"/>
         <source>Personal Information (for reports)</source>
-        <translation type="unfinished"></translation>
+        <translation>Persoonlijke informatie (voor rapporten)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="379"/>
@@ -1527,12 +2324,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="399"/>
         <source>D.O.B.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Geboortedatum</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="415"/>
         <source>Gender</source>
-        <translation>Geslacht</translation>
+        <translation type="unfinished">Geslacht</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="428"/>
@@ -1552,157 +2349,167 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="500"/>
         <source>metric</source>
-        <translation type="unfinished"></translation>
+        <translation>metrisch</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="505"/>
         <source>archiac</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: is grapje van de maker
+AK: Ik heb het nu ook door!</translatorcomment>
+        <translation>archaïsch</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="518"/>
         <source>Contact Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Contactinformatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="545"/>
         <location filename="../sleepyhead/newprofile.ui" line="827"/>
         <source>Address</source>
-        <translation type="unfinished"></translation>
+        <translation>Adres</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="562"/>
         <location filename="../sleepyhead/newprofile.ui" line="858"/>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="572"/>
         <location filename="../sleepyhead/newprofile.ui" line="848"/>
         <source>Phone</source>
-        <translation type="unfinished"></translation>
+        <translation>Telefoon</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="617"/>
         <source>CPAP Treatment Information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Informatie over de behandeling</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="644"/>
         <source>Date Diagnosed</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum diagnose</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="658"/>
         <source>Untreated AHI</source>
-        <translation type="unfinished"></translation>
+        <translation>Onbehandelde AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="672"/>
         <source>CPAP Mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: klopt dit wel, want Bi-level en APAP zijn in feite geen CPAP-soorten, toch? Ik geef maar wat alternatieven, ook spreekt het wel voor zich en zou je ook &apos;Soort CPAP&apos; kunnen laten staan.
+20/9 WJG: Soort apparaat lijkt me prima!</translatorcomment>
+        <translation type="unfinished" variants="yes">
+            <lengthvariant>Soort apparaat</lengthvariant>
+            <lengthvariant>Methode</lengthvariant>
+            <lengthvariant>Modus</lengthvariant>
+        </translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="680"/>
         <source>CPAP</source>
-        <translation type="unfinished"></translation>
+        <translation>CPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="685"/>
         <source>APAP</source>
-        <translation type="unfinished"></translation>
+        <translation>APAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="690"/>
         <source>Bi-Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Bi-level</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="695"/>
         <source>ASV</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Adaptieve ventilatie-instelling ASI?</translatorcomment>
+        <translation>ASV</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="703"/>
         <source>RX Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Voorgeschreven druk</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="756"/>
         <source>Doctors / Clinic Information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Specialist/ziekenhuis</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="783"/>
         <source>Doctors Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Specialist</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="800"/>
         <source>Practice Name</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: zou dit niet bedoeld worden? Bij het adres wordt wel duidelijk welk ziekenhuis het is. Bij mij is de behandeling bij &apos;Longziekten&apos;, misschien heet dat bij een ander ziekenhuis anders?</translatorcomment>
+        <translation>Afdeling</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="810"/>
         <source>Patient ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Patient-ID</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="906"/>
         <source>SleepyHead</source>
-        <translation type="unfinished">SlaapKop</translation>
+        <translation>SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="921"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekstlabel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="976"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Annuleren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="986"/>
         <source>&amp;Back</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Terug</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.ui" line="996"/>
         <location filename="../sleepyhead/newprofile.cpp" line="210"/>
         <location filename="../sleepyhead/newprofile.cpp" line="218"/>
         <source>&amp;Next</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Volgende</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="52"/>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies land</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="110"/>
         <source>Empty Username</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen gebruikernaam</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="118"/>
         <source>Passwords don&apos;t match</source>
-        <translation type="unfinished"></translation>
+        <translation>Wachtwoorden komen niet overeen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="141"/>
         <source>Profile Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Profielwijzigingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="141"/>
         <source>Accept and save this information?</source>
-        <translation type="unfinished"></translation>
+        <translation>Opslaan?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="208"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Einde</translation>
     </message>
 </context>
 <context>
@@ -1710,122 +2517,169 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../sleepyhead/overview.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulier</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="59"/>
         <source>Range:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bereik:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="73"/>
         <source>Last Week</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen week</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="78"/>
         <source>Last Two Weeks</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen twee weken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="83"/>
         <source>Last Month</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen maand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="88"/>
         <source>Last Two Months</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen twee maanden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="93"/>
         <source>Last Three Months</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen drie maanden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="98"/>
         <source>Last 6 Months</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen halfjaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="103"/>
         <source>Last Year</source>
-        <translation type="unfinished"></translation>
+        <translation>Afgelopen jaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="108"/>
         <source>Everything</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="113"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Zelf kiezen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="121"/>
         <source>Start:</source>
-        <translation type="unfinished"></translation>
+        <translation>Start:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="144"/>
         <source>End:</source>
-        <translation type="unfinished"></translation>
+        <translation>Einde:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="167"/>
         <source>Reset view to selected date range</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: is wat preciezer, als het past</translatorcomment>
+        <translation>Herstel naar geselecteerd datumbereik</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="170"/>
         <location filename="../sleepyhead/overview.ui" line="197"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="194"/>
         <source>Toggle Graph Visibility</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafieken aan/uit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="213"/>
         <source>Drop down to see list of graphs to switch on/off.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lijst met grafieken om aan/uit te zetten.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.ui" line="217"/>
         <source>Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafieken</translation>
+    </message>
+    <message>
+        <source>RDI</source>
+        <translation type="obsolete">RDI</translation>
+    </message>
+    <message>
+        <source>AHI</source>
+        <translation type="obsolete">AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="97"/>
         <source>Apnea
 Hypopnea
 Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Apneu
+Hypopneu
+Index</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="99"/>
         <source>Usage</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="99"/>
         <source>Usage
 (hours)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik
+(uren)</translation>
+    </message>
+    <message>
+        <source>Flow Limit</source>
+        <translation type="obsolete">Stroombeperking</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="114"/>
         <source>Session Times</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessietijden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="114"/>
         <source>Session Times
 (hours)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessietijden
+(uren)</translation>
+    </message>
+    <message>
+        <source>Pressure
+(cmH2O)</source>
+        <translation type="obsolete">Druk
+(cmWK)</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="obsolete">Instellingen</translation>
+    </message>
+    <message>
+        <source>Leaks</source>
+        <translation type="obsolete">Maskerlek</translation>
+    </message>
+    <message>
+        <source>Unintentional Leaks
+(L/min)</source>
+        <translation type="obsolete">Maskerlek
+(l/min)</translation>
+    </message>
+    <message>
+        <source>Total Leaks</source>
+        <translation type="obsolete">Totale lek</translation>
+    </message>
+    <message>
+        <source>Total Leaks
+(L/min)</source>
+        <translation type="obsolete">Totale lek
+(l/min)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="95"/>
@@ -1837,38 +2691,52 @@ Index</source>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="119"/>
         <source>% in PB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: moet dat niet &apos;periodieke ademhaling zijn, zie volgende item
+AK: Discussie</translatorcomment>
+        <translation type="unfinished">% in PB</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="119"/>
         <source>Periodic
 Breathing
 (% of night)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: wat wordt er eigenlijk precies mee bedoeld? Gaat het hier om de reguliere/normale ademhaling, d.w.z. zonder ademstops? Dan zou je &apos;periodiek beter door &apos;Reguliere&apos; of &apos;Normale&apos; kunnen vervangen.
+AK: Het is een oscillerende ademhaling, mss is &quot;Cyclische&quot; beter?
+20/9: Dat zou dan beter zijn.</translatorcomment>
+        <translation type="unfinished">Periodieke ademhaling
+(% van de nacht)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="121"/>
         <source>Peak RDI</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Deze niet vertalen? Respiratory Disturbance Index...</translatorcomment>
+        <translation type="unfinished">Piek RDI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="121"/>
         <source>Peak RDI
 Shows RDI Clusters
 (RDI/hr)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: zo&apos;n spellingsdingetje met streepjes en al dan niet aan elkaar schrijven.
+AK: Deze niet vertalen? Respiratory Disturbance Index...
+20/9 WJG: Als dat gangbaar is om het onvertaald te gebruiken, dan inderdaad laten.</translatorcomment>
+        <translation type="unfinished">Piek RDI, maakt
+RDI-clusters zichtbaar
+(RDI/uur)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="123"/>
         <source>Peak AHI</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Piek-AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="123"/>
         <source>Peak AHI
 Shows AHI Clusters
 (AHI/hr)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Piek-AHI, maakt
+AHI-clusters zichtbaar
+(AHI/uur)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="130"/>
@@ -1877,32 +2745,70 @@ Shows AHI Clusters
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Resp. Rate</source>
+        <translatorcomment>WJG: afgebroken vanwege beschikbare ruimte</translatorcomment>
+        <translation type="obsolete">Ademtempo</translation>
+    </message>
+    <message>
         <location filename="../sleepyhead/overview.cpp" line="125"/>
         <source>Respiratory
 Rate
 (breaths/min)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: afbreeksreepje</translatorcomment>
+        <translation type="unfinished">Ademtempo
+(per minuut)</translation>
+    </message>
+    <message>
+        <source>Tidal Volume</source>
+        <translation type="obsolete">Teugvolume</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="126"/>
         <source>Tidal
 Volume
 (ml)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: maar misschien past het ook wel zonder afbreking
+AK: Ik zie het nergens...
+20/9 WJG: Als je met je cursor over de grafiek Tidal Vulume beweegt en op de grafiektitel gaat staan, zie je een geel hulptekstje verschijnen (is bij al die grafieken het geval). De breedte van die gele balonnetjes past zich aan de tekst aan - tot op zekere hoogte.</translatorcomment>
+        <translation type="unfinished">Teugvolume
+(ml)</translation>
+    </message>
+    <message>
+        <source>Minute Vent.</source>
+        <translatorcomment>WJG: ik weet niet precies wat er getoond wordt, ik ken de waarden niet, maar &apos;minuutventitlatie&apos; lijkt me niet goed. &apos;Minute&apos; kan in het Engels ook &apos;zeer klein, miniem&apos; betekenen,  misschien moet het eerder in die richting gezocht worden, in plaats van met tijdeenheden?
+AK: Nee, het is The average minute ventilation (tidal volume x rate).
+Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Minuutventilatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="127"/>
         <source>Minute
 Ventilation
 (L/min)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: zie vorige</translatorcomment>
+        <translation type="unfinished">Minuutventilatie
+(l/min)</translation>
+    </message>
+    <message>
+        <source>Target Vent.</source>
+        <translatorcomment>WJG: zit een beetje met het woord &apos;ventialtie&apos;. Kan ook &apos;verversing&apos; zijn. Mijn kennis van het lezen van deze grafiek schiet me hier echter te kort.
+AK: Ik zie het nergens staan...
+20/9 WJG: Is de een na onderste keuze in het dropdown menuutje rechtsonder</translatorcomment>
+        <translation type="obsolete">Doelventilatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="128"/>
         <source>Target
 Ventilation
 (L/min)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: zie vorige</translatorcomment>
+        <translation type="unfinished">Doelventilatie
+(l/min)</translation>
+    </message>
+    <message>
+        <source>Pat. Trig. Br.</source>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="obsolete">Pat. geact. teugen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="129"/>
@@ -1910,71 +2816,113 @@ Ventilation
 Triggered
 Breaths
 (%)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: als dit past is dit &apos;meer&apos; Nederlands</translatorcomment>
+        <translation type="unfinished">Patient geactiveerde ademhaling
+(%)</translation>
+    </message>
+    <message>
+        <source>Sessions</source>
+        <translation type="obsolete">Sessies</translation>
+    </message>
+    <message>
+        <source>Sessions
+(count)</source>
+        <translation type="obsolete">Sessies
+(aantal)</translation>
+    </message>
+    <message>
+        <source>Pulse Rate</source>
+        <translation type="obsolete">Polsslag</translation>
+    </message>
+    <message>
+        <source>Pulse Rate
+(bpm)</source>
+        <translation type="obsolete">Polsslag
+(per minuut)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="132"/>
         <source>Oxygen Saturation
 (%)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zuurstofsaturatie
+(%)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="135"/>
         <source>Body
 Mass
 Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Body Mass Index</translation>
+    </message>
+    <message>
+        <source>Zombie</source>
+        <translation type="obsolete">Zombie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="136"/>
         <source>How you felt
 (0-10)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hoe je je voelde
+(0-10)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="138"/>
         <source>Events/Hr</source>
-        <translation type="unfinished"></translation>
+        <translation>Incidenten/uur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="153"/>
         <source>Zombie Meter</source>
-        <translation type="unfinished"></translation>
+        <translation>Zombie-meter</translation>
+    </message>
+    <message>
+        <source>FL</source>
+        <translation type="obsolete">FL</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="210"/>
         <source>breaths/min</source>
-        <translation type="unfinished"></translation>
+        <translation>teugen/min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="218"/>
         <source>L/b</source>
-        <translation type="unfinished"></translation>
+        <translation>l/teug</translation>
+    </message>
+    <message>
+        <source>L/m</source>
+        <translation type="obsolete">l/min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="240"/>
         <source>%PTB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: patiënt-geactiveerde teugen? Of betekent PTB hier iets anders dan patient triggered breaths
+AK: Ik zie het nergens...
+Even afwachten</translatorcomment>
+        <translation type="unfinished">% PTB</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="267"/>
         <source>% PB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: ? zie vorige
+AK: Cyclische ademhaling kan niet: CA is al Centrale Apneu...</translatorcomment>
+        <translation type="unfinished">% PA
+(PB)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="572"/>
         <source>Show all graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle grafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="578"/>
         <source>No Graphs On!</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafieken staan uit!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/overview.cpp" line="587"/>
         <source>Hide all graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Verberg alle grafieken</translation>
     </message>
 </context>
 <context>
@@ -1982,221 +2930,235 @@ Index</source>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulier</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="65"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="72"/>
         <source>d/MM/yy h:mm:ss AP</source>
-        <translation type="unfinished"></translation>
+        <translation>dd/MM/jj uu:mm:ss AP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="79"/>
         <source>R&amp;eset</source>
-        <translation type="unfinished"></translation>
+        <translation>R&amp;eset</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="102"/>
         <source>SpO2</source>
-        <translation type="unfinished"></translation>
+        <translation>SpO2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="181"/>
         <source>Pulse</source>
-        <translation type="unfinished"></translation>
+        <translation>Pols</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="260"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="271"/>
         <source>&amp;Open .spo/R File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Open SpO/R bestand</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="278"/>
         <source>Serial &amp;Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Seriële &amp;import</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="291"/>
         <source>&amp;Start Live</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Start live</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="305"/>
         <source>Serial Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Seriële poort</translation>
     </message>
     <message>
         <location filename="../sleepyhead/oximetry.ui" line="322"/>
         <source>&amp;Rescan Ports</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Herscan poorten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1032"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1037"/>
         <source>Control</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: Ik heb geen oxymeter, kan in SleepyHead niet kijken wat hier bedoeld wordt. &apos;Control&apos; kan verschillende betekenissen hebben: beheren en checken (contoleren)</translatorcomment>
+        <translation>Control</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1074"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1591"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1079"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1596"/>
         <source>No Oximetry Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen oxymetriegegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1172"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1177"/>
         <source>Connect Oximeter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1172"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1177"/>
         <source>Please connect oximeter device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1224"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1229"/>
         <source>Device Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1224"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1229"/>
         <source>Please make sure Oximeter device is in upload mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1244"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1249"/>
         <source>Oximetry live recording has been terminated due to timeout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oxymetrie live-opname is beëindigd vanwege time-out.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1253"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1468"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1258"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1473"/>
         <source>&amp;Start</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Save Session?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessie opslaan?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
         <source>Creating a new oximetry session will destroy the old one.
 Would you like to save it first?</source>
-        <translation type="unfinished"></translation>
+        <translation>Een nieuwe oxymetriesessie zal de oude wissen.
+Wilt u de oude eerst opslaan?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Opslaan</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Destroy It</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wissen!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1281"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1286"/>
         <source>Please Wait</source>
-        <translation type="unfinished"></translation>
+        <translation>Even geduld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1298"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1303"/>
         <source>Oximetry Error!
 
 Something is wrong with the device connection.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oxymetriefout!
+
+Er ging iets fout bij de aansluiting.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1334"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1339"/>
         <source>&amp;Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Stop</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1420"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1425"/>
         <source>Oximeter Error
 
 The device has not responded.. Make sure it&apos;s switched on.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1431"/>
-        <source>Check Oximeter is Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1451"/>
-        <source>Oximeter Error
+        <translation type="unfinished">Oxymetriefout!
 
-The device did not respond.. Make sure it&apos;s switched on.</source>
-        <translation type="unfinished"></translation>
+Het apparaat reageerde niet... staat het wel aan?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1504"/>
-        <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1504"/>
-        <source>Oximeter Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1566"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1571"/>
         <source>Keep This Recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1566"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1571"/>
         <source>Would you like to save this oximetery session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
         <source>Opening this oximetry file will destroy the current session.
 Would you like to keep it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1773"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1778"/>
         <source>Select an oximetry file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1773"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1778"/>
         <source>Oximetry Files (*.spo *.spoR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1787"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1792"/>
         <source>Couldn&apos;t open oximetry file &quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Opening this oximetry session will destroy the unsavedsession in the oximetry tab.
 Would you like to store it first?</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ready</source>
+        <translation type="obsolete">Klaar</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/oximetry.cpp" line="1436"/>
+        <source>Check Oximeter is Ready</source>
+        <translatorcomment>WJG: spelling</translatorcomment>
+        <translation>Controleer of de oxymeter aan staat</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/oximetry.cpp" line="1456"/>
+        <source>Oximeter Error
+
+The device did not respond.. Make sure it&apos;s switched on.</source>
+        <translatorcomment>WJG: ik vermoed een inconsistentie bij de naker van het programma (zie vertaling twee regels hierboven): de werkwoordtijden zijn verschillend, maar de bedoeling zal hetzelfde zijn.</translatorcomment>
+        <translation>Oxymetriefout!
+
+Het apparaat reageerde niet... staat het wel aan?</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/oximetry.cpp" line="1509"/>
+        <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
+        <translation type="unfinished">Controleer of de oxymeter aan staat en op gegevensoverdracht is ingesteld</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/oximetry.cpp" line="1509"/>
+        <source>Oximeter Error!</source>
+        <translation>Oxymeterfout!</translation>
     </message>
 </context>
 <context>
@@ -2204,39 +3166,39 @@ Would you like to store it first?</source>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="23"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Instellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="49"/>
         <source>&amp;Import</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Importeer</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="61"/>
         <source>Session Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sessie-instellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="84"/>
         <source>Combine Close Sessions </source>
-        <translation type="unfinished"></translation>
+        <translation>Combineer nabije sessies</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="94"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="179"/>
         <source>Minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Minuten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="114"/>
         <source>Multiple sessions closer together than this value will be kept on the same day.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Tijd tussen sessies die tot dezelfde dag gerekend moeten worden.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="169"/>
         <source>Ignore Short Sessions</source>
-        <translation type="unfinished"></translation>
+        <translation>Negeer korte sessies</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="193"/>
@@ -2246,32 +3208,37 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Cantarell&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Sessions shorter in duration than this will not be displayed&lt;span style=&quot; font-style:italic;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-style:italic;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Cantarell&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Kortere sessies worden niet weergegeven&lt;span style=&quot; font-style:italic;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-style:italic;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="234"/>
         <source>Day Split Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Volgende dag start om </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="244"/>
         <source>Sessions starting before this time will go to the previous calendar day.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sessies die voor dit tijdstip startten horen bij de vorige dag.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="264"/>
         <source>Keep session data in memory to speed up revisiting days.</source>
-        <translation type="unfinished"></translation>
+        <translation>Houd sessiegegevens in geheugen voor hogere snelheid.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="267"/>
         <source>Cache Session Data (uses more system memory)</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache sessiegegevens (kost meer geheugen)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="292"/>
         <source>Session Storage Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opties voor sessie-opslag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="316"/>
@@ -2282,24 +3249,38 @@ and graph data older than 30 days..
 
 Sleepyhead can keep a copy of this data if you ever need to reinstall. 
 (Highly recomended, unless your short on disk space or don&apos;t care about the graph data)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: kleine spellingsdingetjes, o.a. de twee hoofdletters in SleepyHead; die Mark is zelf niet altijd consistent, maar het is dan ook geen linguïst
+AK: &lt;grin&gt;</translatorcomment>
+        <translation>Dit zorgt voor een back-up van de SD-kaart voor ResMed-apparaten,
+
+ResMed apparaten verwijderen hoge resolutie-gegevens ouder dan 7 dagen,
+en grafiekgegevens die ouder zijn dan 30 dagen..
+
+SleepyHead kan een kopie van deze gegevens bewaren voor na een herinstallatie.
+(Sterk aanbevolen, tenzij je weinig schijfruimte hebt of niets om grafiekgegevens geeft)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="325"/>
         <source>Create SD Card Backups during Import (only for ResMed so far, highly recommended)</source>
-        <translation type="unfinished"></translation>
+        <translation>Maak tijdens importeren een back-up van de SD-kaart (alleen nog voor ResMed, sterk aan te bevelen)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="332"/>
         <source>This makes SleepyHead&apos;s data take around half as much space.
 But it makes import and day changing take longer.. 
 If you&apos;ve got a new computer with a small solid state disk, this is a good option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: iets te kort door de bocht in de eerste regel, want de opslag wordt niet langzamer (dat kan ook niet), maar de processen gaan trager
+AK: In SSD zit al een disk, dus niet nog eens schijf... En het is niet eens een schijf ;-))
+20/9 WJG: De facto heb je natuurlijk gelijk, alleen wordt er in de volksmond wel over een schijf gesproken.
+AK: Dank je! Je hebt gelijk...</translatorcomment>
+        <translation>De grootte van de opslag wordt gehalveerd,
+maar maakt het importeren en verwerken trager.
+Als je een nieuwe computer met SSD hebt, is dit een goede keuze.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="337"/>
         <source>Compress Session Data (makes SleepyHead data smaller, but day changing slower.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprimeer sessiegegevens (minder opslagruimte, maar tragere verwerking).</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="344"/>
@@ -2309,17 +3290,22 @@ which is common on Mac &amp; Linux platforms..
 
 SleepyHead can import from this compressed backup directory natively.. 
 To use with ResScan will require the .gz files to be uncompressed first..</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Comprimeer ResMed (EDF) back-ups om schijfruimte te besparen.
+Back-ups van EDF bestanden worden opgeslagen in het gz-formaat,
+dat veel gebruikt wordt op Mac &amp; Linux-systemen ..
+
+SleepyHead kan hier rechtstreeks uit importeren,
+maar voor ResScan moeten de .gz-bestanden eerst uitgepakt worden.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="352"/>
         <source>Compress SD Card Backups (slower first import, but makes backups smaller)</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprimeer SD-kaartback-ups (langzamere eerste import, maar minder opslagruimte nodig)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="364"/>
         <source>The following options affect the amount of disk space SleepyHead uses, and all have an effect on how long import takes.</source>
-        <translation type="unfinished"></translation>
+        <translation>De volgende opties hebben effect op de gebruikte schijfruimte en op de snelheid van importeren.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="374"/>
@@ -2328,83 +3314,91 @@ To use with ResScan will require the .gz files to be uncompressed first..</sourc
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Changing SD Backup compression options doesn&apos;t automatically recompress backup data.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Wijzigen van SD-backupcompressie comprimeert de back-upgegevens niet automatisch opnieuw.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="405"/>
         <source>&amp;CPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Masker en apparaat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="423"/>
         <source>CPAP Mask Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informatie over het  masker</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="450"/>
         <source>Mask Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Soort masker</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="457"/>
         <source>Generic mask type. Select the one that&apos;s closest to your mask.</source>
-        <translation type="unfinished"></translation>
+        <translation>Algemeen maskertype. Kies wat het beste overeenkomt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="475"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Beschrijving</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="482"/>
         <source>The name of your mask, or at least the name you call it.</source>
-        <translation type="unfinished"></translation>
+        <translation>De naam van het masker, of zoals je het noemt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="495"/>
         <source>Method of unintentional leaks calculation if not provided by your machine.
 Note: Statistical Model is experimental.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: spreken we de gebruiker met &apos;u&apos; of &apos;je&apos; aan? Vaak tutoyeer je, wat gezien de luchtige toon van de teksten ook mijn voorkeur heeft. Denk dat de hele vertaling nog een keer hierop nagelopen moet worden.</translatorcomment>
+        <translation type="unfinished">Wijze van berekening vanmaskerlekkage , als het apparaat dat niet zelf doet.
+Opmerking: statistisch model is experimenteel.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="500"/>
         <source>Mask Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Masker lekprofiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="505"/>
         <source>Statistical Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Statistisch model</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="519"/>
         <source>Leak calcs</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Lekkage?
+20/9 WJG: Nergens anders wordt &apos;lekkage&apos; gebruikt - al zou dat wel een beter woord zijn</translatorcomment>
+        <translation type="unfinished">Berekening lekkage</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="532"/>
         <source>Started Using</source>
-        <translation type="unfinished"></translation>
+        <translation>Start gebruik</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="545"/>
         <source>The date you started using this mask</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De datum waarop je het masker in gebruik nam</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="561"/>
         <source>Leak Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Masker lekprofiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="575"/>
         <source>Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Druk</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="580"/>
         <source>Leak</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lekkage</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="593"/>
@@ -2413,76 +3407,101 @@ Note: Statistical Model is experimental.</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:normal;&quot;&gt;Note: &lt;/span&gt;Leak profiles currently does not work yet..&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:normal;&quot;&gt;Let op: &lt;/span&gt;Het onderstaande werkt nog niet...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="622"/>
         <source>Shows Respiratory Disturbance Index instead of Apnea/Hypopnea Index (RDI=AHI + RERA)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: is voor RDI geen Nederlandse vertaling? Is natuurlijk het probleem met veel van die afkortingen.
+AK: Mss later?</translatorcomment>
+        <translation>Toont Respiratory Disturbance Index ipv Apneu / Hypopneu Index (RDI = AHI + RERA)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="625"/>
         <source>Use RDI instead of AHI (PRS1 only)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik RDI in plaats van AHI (alleen bij PRS1)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="632"/>
         <source>Don&apos;t show any compliance information</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: lastige. Ik denk dat het hier gaat om het al dan niet opvolgen van het gebruik. Gaat hier om het aantal uren dat je het masker per nacht gebruikt. Compliance is naleving in de zin van wetten, maar voor ander gebruik zeg je wat anders. &apos;Opvolgen&apos; is er een voor, maar ik vind dat het allemaal niet zo lekker past. Kortom, hier ben ik niet helemaal uit.
+AK: Compliantie is al gebruikelijk,therapietrouw is dè uitdrukking</translatorcomment>
+        <translation type="unfinished">Toon geen  informatie over therapietrouw</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="635"/>
         <source>Show Compliance</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Het gaat om de juridische term...
+20/9 WJG: Dat lijkt me wat sterk... Er zijn toch geen wettelijke sancties verbonden aan het al dan niet gebruiken van je masker?
+AK: Zie hier boven</translatorcomment>
+        <translation type="unfinished">Laat therapietrouw zien</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="656"/>
         <source>Regard days with under this usage as &quot;incompliant&quot;. 4 hours is usually considered compliant.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>WJG: bij gebrek aan beter, maar &apos;niet-compliant&apos; en &apos;compliant&apos; zijn geen termen die je in Van Dale tegenkomt
+Als ze het maar begrijpen, klachten mogen </translatorcomment>
+        <translation type="unfinished">Beschouw dagen met minder gebruik als &quot;niet-therapietrouw&quot;. 4 uur wordt meestal als &quot;therapietrouw&quot; beschouwd .</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="659"/>
         <source> hours</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> uren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="681"/>
         <source>as over</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">indien meer dan </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="688"/>
         <source>of usage per night</source>
-        <translation type="unfinished"></translation>
+        <translation>gebruik per nacht</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="698"/>
         <source>Enable/disable experimental event flagging enhancements. 
 It allows detecting borderline events, and some the machine missed.
 This option must be enabled before import, otherwise a purge is required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zet experimentele incidentmarkeringen aan of uit.
+Dat detecteert incidenten &apos;op het randje&apos; en door het apparaat gemiste incidenten.
+Deze optie moet worden aangezet vóór het importeren, anders eerst alles wissen...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="703"/>
         <source>Custom User Event Flagging</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Het is een keuze van de gebruiker...
+20/9 WJG: Oké, maar dan moet het streepje weg.</translatorcomment>
+        <translation type="unfinished">Aangepaste gebruikers markering</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="733"/>
         <source>Flow Restriction</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>AK: Inderdaad, afsluiting is 0%, hier kan je kiezen,
+Debietreductie
+Debietbeperking
+Stroombeperking
+Debietbegrenzing
+Doorstroombeperking</translatorcomment>
+        <translation type="unfinished">Debietreductie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="746"/>
         <source>Percentage of restriction in airflow from the median value. 
 A value of 20% works well for detecting apneas. </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentage van de vermindering van de luchtstroom ten opzichte van de mediane waarde.
+Een waarde van 20% werkt goed voor het opsporen van apneus.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="750"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1201"/>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="784"/>
@@ -2491,12 +3510,17 @@ A value of 20% works well for detecting apneas. </source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Custom flagging is an experimental method of detecting events missed by the machine. They are &lt;span style=&quot; text-decoration: underline;&quot;&gt;not&lt;/span&gt; included in AHI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:italic;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Aangepast markeren is een experimentele werkwijze voor het detecteren van incidenten die zijn gemist door het apparaat. Ze worden &lt;span style=&quot; text-decoration: underline;&quot;&gt;niet &lt;/ span&gt; opgenomen in de AHI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="801"/>
         <source>Duration of airflow restriction</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: Vanaf hier weer verder gegaan</translatorcomment>
+        <translation type="unfinished">Duur van de vermindering van de luchtstroom</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="804"/>
@@ -2504,204 +3528,217 @@ p, li { white-space: pre-wrap; }
         <location filename="../sleepyhead/preferencesdialog.ui" line="1259"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1282"/>
         <source>s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> s</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="817"/>
         <source>Event Duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Tijdsduur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="824"/>
         <source>Allow duplicates near machine events.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: Maar ik kan deze tekst niet terugvinden op het tabblad CPAP van Preferences
+AK: inderdaad, vreemd</translatorcomment>
+        <translation type="unfinished">Sta duplicaten naast machinegebeurtenissen toe.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="834"/>
         <source>AHI/Hour Graph Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Instelling grafiek AHI/uur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="858"/>
         <source>Window</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: past beter in het schermpje en is ook wel duidelijk. Ik kan deze instelling overigens niet wijzigen</translatorcomment>
+        <translation type="unfinished">Tijdsduur </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="865"/>
         <source>Adjusts the amount of data considered for each point in the AHI/Hour graph.
 Defaults to 60 minutes.. Highly recommend it&apos;s left at this value.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Regelt de hoeveelheid gegevens die worden beschouwd voor elk punt in de grafiek AHI/uur.
+Staat standaard op 60 minuten. Sterk aanbevolen het op deze waarde te laten staan,
+anders is het geen AHI/uur meer.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="869"/>
         <source> minutes</source>
-        <translation type="unfinished"></translation>
+        <translation> minuten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="885"/>
         <source>Reset the counter to zero at beginning of each (time) window.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zet de teller op nul aan het begin van elke perioder.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="888"/>
         <source>Zero Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Telkens op nul zetten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="917"/>
         <source>CPAP Clock Drift</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Correctie afwijking klok CPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="924"/>
         <source>Don&apos;t touch this unless you know your CPAP clock is out.
 Try to sync it to your PC&apos;s clock (which should be synced to a timeserver)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: beslissing nemen over aanspreekpersoon en dat consistent doorvoeren</translatorcomment>
+        <translation type="unfinished">Wijzig dit niet, tenzij je zeker weet dat de klok van je CPAP fout staat.
+Probeer hem eerst te syncroniseren met de klok van de PC ( niet mogelijk voor PRS1).</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="928"/>
         <source> seconds</source>
-        <translation type="unfinished"></translation>
+        <translation> seconden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="947"/>
         <source>&amp;Events</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Deze tab zie ik niet...</translatorcomment>
+        <translation type="unfinished">&amp;Incidenten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="968"/>
         <source>Not entirely sure if this will get to live or not..</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: Mooi compact</translatorcomment>
+        <translation>Onzeker of dit ooit gaat werken..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="988"/>
         <source>Show</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="996"/>
         <source>Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Kleur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1004"/>
         <source>Event</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Staat in: Instellingen-Grafieken</translatorcomment>
+        <translation type="unfinished">Incident</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1009"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1018"/>
         <source>Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1032"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoeken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1039"/>
         <source>Filters the graph list. Simply start typing the name of the graph your looking for.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Filtert de grafiek lijst. Gewoon beginnen met het typen van de naam van de grafiek je zoekt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1063"/>
         <source>&amp;Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Standaardinstellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1070"/>
         <source>Double click on the (Y-axis) min/max values to edit them</source>
-        <translation type="unfinished"></translation>
+        <translation>Dubbelklik op de min/max waarden om de Y-as te wijzigen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1081"/>
         <source>&amp;Oximetry</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Oxymetrie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1093"/>
         <source>Use Oximetry</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gebruikte oxymeter</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1123"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1137"/>
         <source>Contec CMS50</source>
-        <translation type="unfinished"></translation>
+        <translation>Contec CMS50</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1142"/>
         <source>Overpriced ResMed S9 Oximeter</source>
-        <translation type="unfinished"></translation>
+        <translation>(Te dure) ResMed S9 oxymeter</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1156"/>
         <source>Tries to forces the oximetry data to link with CPAP when possible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dwingt de oxymetergegevens te koppelen met de CPAP, indien mogelijk.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1159"/>
         <source>Link Oximetry and CPAP graphs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Koppel oxymeter met andere grafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1179"/>
         <source>Flag changes in oximetry stats</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Markeer veranderingen in oxymeterstatistieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1191"/>
         <source>SPO2</source>
-        <translation type="unfinished"></translation>
+        <translation>SpO2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1198"/>
         <source>Percentage drop in oxygen saturation</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: Zuurstof wellicht niet echt nodig?</translatorcomment>
+        <translation type="unfinished">Percentage daling van zuurstofsaturatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1220"/>
         <source>Pulse</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>209/ WJG: Als &apos;t past</translatorcomment>
+        <translation type="unfinished">Polsslag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1227"/>
         <source>Sudden change in Pulse Rate of at least this amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Plotselinge verandering in polsslag van tenminste deze hoeveelheid</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1230"/>
         <source> bpm</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: slagen per minuut</translatorcomment>
+        <translation type="unfinished"> per minuut</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1243"/>
         <source>Minimum duration of drop in oxygen saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimale duur van de verlaging</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1256"/>
         <source>Minimum duration of pulse change event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimale duur van de verandering.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1269"/>
         <source>Discard chunks under</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Verwaarloos als korter dan </translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1279"/>
         <source>Small chunks of oximetry data under this amount will be discarded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kortdurende oxymetrie-incidenten worden verwaarloosd.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1311"/>
@@ -2721,162 +3758,196 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Syncing Oximetry and CPAP Data&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;CMS50 data imported from SpO2Review (from .spoR files) or the serial import method does &lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;not&lt;/span&gt; have the correct timestamp needed to sync.&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Live view mode (using a serial cable) is one way to acheive an accurate sync on CMS50 oximeters, but does not counter for CPAP clock drift.&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you start your Oximeters recording mode at &lt;span style=&quot; font-style:italic;&quot;&gt;exactly &lt;/span&gt;the same time you start your CPAP machine, you can now also achieve sync. &lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The serial import process takes the starting time from last nights first CPAP session. (Remember to import your CPAP data first!)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translatorcomment>20/9 WJG: Iets met koppeltekens gedaan en u in je veranderd</translatorcomment>
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Synchronisatie van oximetrie- en CPAP-gegevens&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;De geïmporteerde gegevens van de CMS50 uit SpO2Review (dus uit .spoR bestanden) zowel als de seriële import methode hebben &lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;niet&lt;/span&gt; de correcte tijdsaanduiding die voor synchronisatie nodig is.&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Live view-modus (met een seriële kabel) is een manier om een ​​nauwkeurige synchronisatie op CMS50 oxymeters te bereiken, maar houdt geen rekening met de verlopende CPAP klok.&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Als de opname van de oxymeter &lt;span style=&quot; font-style:italic;&quot;&gt; precies &lt;/span&gt; tegelijk met de CPAP wordt gestart,is er ook synchronisatie bereikt. &lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Het proces van  seriële import neemt de starttijd van de eerste CPAP sessie van de afgelopen nacht. (Vergeet niet om eerst de CPAP gegevens te importeren!)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1331"/>
         <source>&amp;General</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Algemeen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1343"/>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1813"/>
         <source>General Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Algemene instellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1355"/>
         <source>Daily view navigation buttons will skip over days without data records</source>
-        <translation type="unfinished"></translation>
+        <translation>De navigatieknoppen slaan de dagen zonder gegevens over</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1358"/>
         <source>Skip over Empty Days</source>
-        <translation type="unfinished"></translation>
+        <translation>Sla lege dagen over</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1365"/>
         <source>Allow use of multiple CPU cores where available to improve performance. 
 Mainly affects the importer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik meerdere CPU-cores voor betere prestaties.
+Werkt vooral bij importeren.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1369"/>
         <source>Enable Multithreading</source>
-        <translation type="unfinished"></translation>
+        <translation>Multithreading inschakelen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1376"/>
         <source>Bypass the login screen and load the most recent User Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Sla het inlogscherm over en laad het meest recente gebruikersprofiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1379"/>
         <source>Skip Login Screen</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sla login-scherm over</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1398"/>
         <source>Changes to the following settings needs a restart, but not a recalc.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wijzigingen in de volgende instellingen werken pas na een herstart, geen herberekening nodig.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1401"/>
         <source>Preferred Calculation Methods</source>
-        <translation type="unfinished"></translation>
+        <translation>Voorkeur berekeningsmethoden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1428"/>
         <source>Middle Calculations</source>
-        <translation type="unfinished"></translation>
+        <translation>Gemiddelden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1435"/>
         <source>Upper Percentile</source>
-        <translation type="unfinished"></translation>
+        <translation>Bovenste percentiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1442"/>
         <source>For consistancy, ResMed users should use 95% here,
 as this is the only value available on summary-only days.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: koppelteken en extra woorje</translatorcomment>
+        <translation type="unfinished">Voor consistentie moeten ResMed-gebruikers hier 95% instellen,
+want dit is de enige waarde die beschikbaar is op de dagen met alleen een samenvatting.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1456"/>
         <source>Median is recommended for ResMed users.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mediaan wordt aanbevolen voor ResMed-gebruikers.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1460"/>
         <source>Median</source>
-        <translation type="unfinished"></translation>
+        <translation>Mediaan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1465"/>
         <source>Weighted Average</source>
-        <translation type="unfinished"></translation>
+        <translation>Gewogen gemiddelde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1470"/>
         <source>Normal Average</source>
-        <translation type="unfinished"></translation>
+        <translation>Normaal gemiddelde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1490"/>
         <source>ResMed users probably should use 99th Percentile for visual consistency.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: koppelteken en Van Dale zegt &apos;het&apos; tegen percentiel</translatorcomment>
+        <translation type="unfinished">ResMed-gebruikers moeten waarschijnlijk het 99e percentiel gebruiken voor visuele consistentie.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1494"/>
         <source>True Maximum</source>
-        <translation type="unfinished"></translation>
+        <translation>Ware maximum</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1499"/>
         <source>99% Percentile</source>
-        <translation type="unfinished"></translation>
+        <translation>99% percentiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1507"/>
         <source>Maximum Calcs</source>
-        <translation type="unfinished"></translation>
+        <translation>Berekening maximum</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1524"/>
         <source>Import Locations</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: spelling</translatorcomment>
+        <translation type="unfinished">Importlocaties</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1555"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Toevoegen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1562"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1603"/>
         <source>Automatically Check For Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch controleren op updates</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1620"/>
         <source>Check for new version every</source>
-        <translation type="unfinished"></translation>
+        <translation>Controleer elke</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1627"/>
         <source>Sourceforge hosts this project for free.. Please be considerate of their resources..</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sourceforge hosts dit project gratis .. Maak er zorgvuldig gebruik van..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1643"/>
         <source>days.</source>
-        <translation type="unfinished"></translation>
+        <translation>dagen.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1708"/>
         <source>&amp;Check for Updates now</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu &amp;controleren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1731"/>
         <source>Last Checked For Updates: </source>
-        <translation type="unfinished"></translation>
+        <translation>Laatste controle:</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1744"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tekstlabel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1766"/>
@@ -2887,58 +3958,65 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If your interested in helping test new features and bugfixes early, click here.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;But please be warned this will sometimes mean breaky code..&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: aanpsreekvorm</translatorcomment>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Als je geïnteresseerd bent in het helpen testen van nieuwe features en bugfixes, klik hier.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maar wees gewaarschuwd: dit zal soms vastlopers betekenen!!&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1775"/>
         <source>I want to try experimental and test builds (Advanced users only please.)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ik wil experimentele en testupdates proberen (s.v.p. alleen gevorderde gebruikers!)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1799"/>
         <source>&amp;Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Uiterlijk</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1825"/>
         <source>Overlay Flags</source>
-        <translation type="unfinished"></translation>
+        <translation>Markeringen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1838"/>
         <source>The visual method of displaying waveform overlay flags.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De visuele methode voor het tonen van markeringen in golfvormgrafieken.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1843"/>
         <source>Standard Bars</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standaardbalken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1848"/>
         <source>Top &amp; Bottom Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Onder en boven</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1856"/>
         <source>Graph Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafiekhoogte</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1869"/>
         <source>Default display height of graphs in pixels</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standaardhoogte grafieken in pixels</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1901"/>
         <source>How long you want the tooltips to stay visible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoe lang moeten de tooltips zichtbaar blijven?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1929"/>
         <source>Tooltip Timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Tooltip timeout</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1948"/>
@@ -2947,22 +4025,26 @@ Certain plots look more attractive with this on.
 This also affects printed reports.
 
 Try it and see if you like it.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Anti-aliasing strijkt de grafieken glad.
+Sommige grafieken zien er dan mooier uit.
+Dit is ook van invloed op afgedrukte rapporten.
+
+Probeer het en kijk of je het leuk vindt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1955"/>
         <source>Use Anti-Aliasing</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebruik Anti-aliasing</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1962"/>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zorgt ervoor dat sommige grafieken  er hoekiger uitzien.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1965"/>
         <source>Square Wave Plots</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hoekige golfgrafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1972"/>
@@ -2971,12 +4053,17 @@ The Event Breakdown PIE chart uses this method, as does
 the printing code.
 Unfortunately some older computers/versions of Qt can cause
 this application to be unstable with this feature enabled.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: ietsje duidelijker en past beter in het hulptekstje</translatorcomment>
+        <translation type="unfinished">Toont grafieken als &quot;screenshots&quot;.
+Het cirkeldiagram van de incidentgrafiek maakt hiervan gebruik, 
+net als de afdrukcode.
+Helaas veroorzaken sommige oudere computers en versies van Qt
+dat hierdoor deze toepassing instabiel wordt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1979"/>
         <source>Show event breakdown pie chart</source>
-        <translation type="unfinished"></translation>
+        <translation>Toon cirkeldiagram</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="1986"/>
@@ -2996,94 +4083,97 @@ p, li { white-space: pre-wrap; }
         <location filename="../sleepyhead/preferencesdialog.ui" line="2000"/>
         <source>Turn on/off the spinning &quot;context&quot; cube.
 It really doesn&apos;t use that much resources.. :)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zet de ronddraaiende kubus aan.
+Gebruikt echt niet zoveel geheugen... :)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2004"/>
         <source>Animations &amp;&amp; Fancy Stuff</source>
-        <translation type="unfinished"></translation>
+        <translation>Animaties en grappige dingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2022"/>
         <source>Application Fonts</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekstinstellingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2057"/>
         <source>Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Lettertype</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2076"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Grootte</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2095"/>
         <source>Bold  </source>
-        <translation type="unfinished"></translation>
+        <translation>Vet</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2117"/>
         <source>Italic</source>
-        <translation type="unfinished"></translation>
+        <translation>Cursief</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2130"/>
         <source>Application</source>
-        <translation type="unfinished"></translation>
+        <translation>Toepassing</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2194"/>
         <source>Graph Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafiektekst</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2255"/>
         <source>Graph Titles</source>
-        <translation type="unfinished"></translation>
+        <translation>Gafiektitels</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2316"/>
         <source>Big  Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Grote tekst</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2377"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Details</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2428"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Annuleren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.ui" line="2435"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="47"/>
         <source>Nasal Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuskussens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="337"/>
         <source>Data Reindex Required</source>
-        <translation type="unfinished"></translation>
+        <translation>Gegevens opnieuw indexeren</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="337"/>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Herindexering van de gegevens is nodig. Dit kan een paar minuten duren.
+
+Weet je zeker dat je deze wijzigingen wilt doorvoeren?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="342"/>
         <source>Restart Required</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Opnieuw starten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="342"/>
@@ -3091,27 +4181,29 @@ Are you sure you want to make these changes?</source>
 in order for these changes to come into effect.
 
 Would you like do this now?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Een of meer wijzigingen vereisen dat SleepyHead opnieuw start, opdat deze veranderingen in werking treden.
+
+Wil je dit nu doen?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="531"/>
         <source>Add this Location to the Import List</source>
-        <translation type="unfinished"></translation>
+        <translation>Voeg deze locatie toe aan de importlijst</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="649"/>
         <source>Daily Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Dagelijkse grafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="650"/>
         <source>Overview Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation>Overzichtgrafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="662"/>
         <source>Graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafiek</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="818"/>
@@ -3139,24 +4231,32 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Min</source>
+        <translation type="obsolete">Min.</translation>
+    </message>
+    <message>
+        <source>Max</source>
+        <translation type="obsolete">Max.</translation>
+    </message>
+    <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="692"/>
         <source>N/A</source>
-        <translation type="unfinished"></translation>
+        <translation>nvt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="723"/>
         <source>Oximetry Graphs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oxymetriegrafieken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="755"/>
         <source>Confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation>Bevestiging</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="755"/>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Weet je zeker dat je de grafieken opnieuw wilt instellen op standaardwaarden?</translation>
     </message>
 </context>
 <context>
@@ -3164,778 +4264,796 @@ Would you like do this now?</source>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="14"/>
         <source>Select Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="33"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Afsluiten</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="53"/>
         <source>New Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieuw profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.ui" line="60"/>
         <source>&amp;Select User</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Selecteer profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="64"/>
         <source>Open Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Open profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="65"/>
         <source>Edit Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Wijzig profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="67"/>
         <source>Delete Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Wis profiel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="91"/>
         <location filename="../sleepyhead/profileselect.cpp" line="139"/>
         <source>Enter Password for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Geef wachtwoord voor %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="106"/>
         <location filename="../sleepyhead/profileselect.cpp" line="154"/>
         <location filename="../sleepyhead/profileselect.cpp" line="236"/>
         <source>Incorrect Password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Verkeerd wachtwoord</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="108"/>
         <source>You entered the password wrong too many times.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Je hebtt te vaak een verkeerd wachtwoord getypt.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="125"/>
         <location filename="../sleepyhead/profileselect.cpp" line="126"/>
         <location filename="../sleepyhead/profileselect.cpp" line="127"/>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Vraag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="125"/>
         <source>Are you sure you want to trash the profile &quot;%1&quot;?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Weet je zeker dat profiel &quot;%1&quot; moet worden gewist?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="126"/>
         <source>Double Checking:
 
 Do you really want &quot;%1&quot; profile to be obliterated?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Echt waar: Wil je echt profiel %1 WISSEN?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="127"/>
         <source>Okay, I am about to totally OBLITERATE the profile &quot;%1&quot; and all it&apos;s contained data..
 
 Don&apos;t say you weren&apos;t warned. :-p</source>
-        <translation type="unfinished"></translation>
+        <translation>OK, ik ga nu het profiel en al de gegevens van &quot;%1&quot;vernietigen.. 
+
+Zeg niet dat je het niet wist... ;-p</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="131"/>
         <source>WTH???</source>
-        <translation type="unfinished"></translation>
+        <translation>Hè????</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="131"/>
         <source>If you can read this you need to delete this profile directory manually (It&apos;s under %1)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Als je dit leest, moet je de profielmap handmatig verwijderen (Hij heet: %1)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="156"/>
         <source>Meheh... If your trying to delete because you forgot the password, your going the wrong way about it. Read the docs.
 
 Signed: Nasty Programmer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hehe... Als je het profiel wilt wissen omdat je het wachtwoord vergeten bent, doe je iets verkeerd: Lees de documentatie.
+
+Ondertekend: Vervelende programmeur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="166"/>
         <source>Whoops.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oeps.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="166"/>
         <source>There was an error deleting the profile directory.. You need to manually remove %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Er ging iets mis bij het wissen. Je moet zelf de map %1 verwijderen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="223"/>
         <source>Enter Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Geef wachtwoord</translation>
     </message>
     <message>
         <location filename="../sleepyhead/profileselect.cpp" line="238"/>
         <source>You entered an Incorrect Password too many times. Exiting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Je typte te vaak een verkeerd wachtwoord. 
+Het programma wordt nu afgesloten!</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2225"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="190"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="191"/>
         <source>No Data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="85"/>
-        <source>cm</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Geen gegevens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="86"/>
-        <source>&quot;</source>
-        <translation type="unfinished"></translation>
+        <source>cm</source>
+        <translation>cm</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="87"/>
-        <source>ft</source>
-        <translation type="unfinished"></translation>
+        <source>&quot;</source>
+        <translation type="unfinished">inch</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="88"/>
-        <source>lb</source>
-        <translation type="unfinished"></translation>
+        <source>ft</source>
+        <translation>ft</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="89"/>
-        <source>oz</source>
-        <translation type="unfinished"></translation>
+        <source>lb</source>
+        <translation>lb</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="90"/>
-        <source>Kg</source>
-        <translation type="unfinished"></translation>
+        <source>oz</source>
+        <translation>oz</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="91"/>
-        <source>cmH2O</source>
-        <translation type="unfinished"></translation>
+        <source>Kg</source>
+        <translation>kg</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="92"/>
-        <source>Hours</source>
-        <translation type="unfinished"></translation>
+        <source>cmH2O</source>
+        <translation>cmWK</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="94"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="93"/>
+        <source>Hours</source>
+        <translation>Uren</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="95"/>
         <source>bpm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="95"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="96"/>
         <source>L/m</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="97"/>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">l/min</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="98"/>
+        <source>Error</source>
+        <translation>Fout</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="99"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Waarschuwing</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="53"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="222"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="223"/>
         <source>On</source>
-        <translation type="unfinished"></translation>
+        <translation>Aan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="54"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="223"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="224"/>
         <source>Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="100"/>
-        <source>BMI</source>
-        <translation type="unfinished"></translation>
+        <translation>Uit</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="101"/>
-        <source>Weight</source>
-        <translation type="unfinished"></translation>
+        <source>BMI</source>
+        <translation>BMI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="102"/>
-        <source>Zombie</source>
-        <translation type="unfinished"></translation>
+        <source>Weight</source>
+        <translation>Gewicht</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="103"/>
-        <source>Pulse Rate</source>
-        <translation type="unfinished"></translation>
+        <source>Zombie</source>
+        <translation type="unfinished">Zombie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="104"/>
-        <source>SpO2</source>
-        <translation type="unfinished"></translation>
+        <source>Pulse Rate</source>
+        <translatorcomment>20/9 WJG: overal gebruiken we polsslag - moeten we daar eigenlijk niet hartslag van maken? Dat lijkt me eigenlijk beter...
+Toch maar niet (nog)</translatorcomment>
+        <translation type="unfinished">Polsslag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="105"/>
+        <source>SpO2</source>
+        <translation>SpO2</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="106"/>
         <source>Plethy</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>20/9 WJG: Wat is dat?
+AK: Het kwam me bekend voor:
+plethy definition, meaning, English dictionary, synonym, see also &apos;plethora&apos;,plethoric&apos;,plenty&apos;,pleat&apos;, Reverso dictionary, English definition, English vocabulary.
+DAT HAD JIJ TOCH MOETEN WETEN?
+Plethysmos = toename
+http://www.apneaboard.com/forums/Thread-CMS50D--3956
+</translatorcomment>
+        <translation>Plethy</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="111"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="112"/>
         <source>Oximeter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="115"/>
-        <source>CPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oxymeter</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="116"/>
+        <source>CPAP</source>
+        <translation type="unfinished">CPAP</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="117"/>
         <source>BiPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="117"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="118"/>
         <source>Bi-Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="118"/>
-        <source>EPAP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="119"/>
-        <source>IPAP</source>
-        <translation type="unfinished"></translation>
+        <source>EPAP</source>
+        <translation type="unfinished">EPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="120"/>
-        <source>IPAPLo</source>
-        <translation type="unfinished"></translation>
+        <source>IPAP</source>
+        <translation type="unfinished">IPAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="121"/>
-        <source>IPAPHi</source>
-        <translation type="unfinished"></translation>
+        <source>IPAPLo</source>
+        <translation type="unfinished">IPAP laag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="122"/>
-        <source>APAP</source>
-        <translation type="unfinished"></translation>
+        <source>IPAPHi</source>
+        <translation type="unfinished">IPAP hoog</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="123"/>
-        <source>ASV</source>
-        <translation type="unfinished"></translation>
+        <source>APAP</source>
+        <translation type="unfinished">APAP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="124"/>
+        <source>ASV</source>
+        <translation type="unfinished">ASV</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="125"/>
         <source>ST/ASV</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ST/ASV</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="126"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="127"/>
         <source>Humidifier</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="128"/>
-        <source>H</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bevochtiger</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="129"/>
-        <source>OA</source>
-        <translation type="unfinished"></translation>
+        <source>H</source>
+        <translation type="unfinished">H</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="130"/>
-        <source>A</source>
-        <translation type="unfinished"></translation>
+        <source>OA</source>
+        <translation type="unfinished">OA</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="131"/>
-        <source>CA</source>
-        <translation type="unfinished"></translation>
+        <source>A</source>
+        <translation type="unfinished">A</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="132"/>
-        <source>FL</source>
-        <translation type="unfinished"></translation>
+        <source>CA</source>
+        <translation type="unfinished">CA</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="133"/>
+        <source>FL</source>
+        <translation type="unfinished">FL</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="134"/>
         <source>LE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="134"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="135"/>
         <source>EP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="135"/>
-        <source>VS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="136"/>
-        <source>VS2</source>
-        <translation type="unfinished"></translation>
+        <source>VS</source>
+        <translation type="unfinished">VS</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="137"/>
-        <source>RERA</source>
-        <translation type="unfinished"></translation>
+        <source>VS2</source>
+        <translation type="unfinished">VS2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="138"/>
+        <source>RERA</source>
+        <translation type="unfinished">RERA (RE)</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="139"/>
         <source>PP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="139"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="140"/>
         <source>P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="140"/>
-        <source>RE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="141"/>
-        <source>NR</source>
-        <translation type="unfinished"></translation>
+        <source>RE</source>
+        <translation type="unfinished">RE</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="142"/>
-        <source>NRI</source>
-        <translation type="unfinished"></translation>
+        <source>NR</source>
+        <translation type="unfinished">NR</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="143"/>
-        <source>O2</source>
-        <translation type="unfinished"></translation>
+        <source>NRI</source>
+        <translation type="unfinished">NRI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="144"/>
+        <source>O2</source>
+        <translation type="unfinished">O2</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="145"/>
         <source>PC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="145"/>
-        <source>UF1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="146"/>
-        <source>UF2</source>
-        <translation type="unfinished"></translation>
+        <source>UF1</source>
+        <translation type="unfinished">UF1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="147"/>
-        <source>UF3</source>
-        <translation type="unfinished"></translation>
+        <source>UF2</source>
+        <translation type="unfinished">UF2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="151"/>
-        <source>PS</source>
-        <translation type="unfinished"></translation>
+        <location filename="../sleepyhead/SleepLib/common.h" line="148"/>
+        <source>UF3</source>
+        <translation type="unfinished">UF3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="152"/>
-        <source>AHI</source>
-        <translation type="unfinished"></translation>
+        <source>PS</source>
+        <translation type="unfinished">PS</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="153"/>
-        <source>RDI</source>
-        <translation type="unfinished"></translation>
+        <source>AHI</source>
+        <translation type="unfinished">AHI</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="154"/>
+        <source>RDI</source>
+        <translation type="unfinished">RDI</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="155"/>
         <source>AI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="155"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="156"/>
         <source>HI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="156"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="157"/>
         <source>UAI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="157"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="158"/>
         <source>CAI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="158"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="159"/>
         <source>FLI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="159"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="160"/>
         <source>REI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="160"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="161"/>
         <source>EPI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="161"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="162"/>
         <source>ÇSR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="162"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="163"/>
         <source>PB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="166"/>
-        <source>IE</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PB</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="167"/>
-        <source>Insp. Time</source>
-        <translation type="unfinished"></translation>
+        <source>IE</source>
+        <translation type="unfinished">I/E</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="168"/>
-        <source>Exp. Time</source>
-        <translation type="unfinished"></translation>
+        <source>Insp. Time</source>
+        <translation type="unfinished">Inademtijd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="169"/>
-        <source>Resp. Event</source>
-        <translation type="unfinished"></translation>
+        <source>Exp. Time</source>
+        <translation type="unfinished">Uitademtijd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="170"/>
-        <source>Flow Limitation</source>
-        <translation type="unfinished"></translation>
+        <source>Resp. Event</source>
+        <translation type="unfinished">Incident</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="171"/>
+        <source>Flow Limitation</source>
+        <translation type="unfinished">Stroombeperk.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="172"/>
         <source>Flow Limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="172"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="173"/>
         <source>Pat. Trig. Breath</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pat. Veroorz. Ademh.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="173"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="174"/>
         <source>Tgt. Min. Vent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="174"/>
-        <source>Target Vent.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="175"/>
-        <source>Minute Vent.</source>
-        <translation type="unfinished"></translation>
+        <source>Target Vent.</source>
+        <translation type="unfinished">Doelventilatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="176"/>
-        <source>Tidal Volume</source>
-        <translation type="unfinished"></translation>
+        <source>Minute Vent.</source>
+        <translation type="unfinished">Minuutventilatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="177"/>
-        <source>Resp. Rate</source>
-        <translation type="unfinished"></translation>
+        <source>Tidal Volume</source>
+        <translation type="unfinished">Teugvolume</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="178"/>
-        <source>Snore</source>
-        <translation type="unfinished"></translation>
+        <source>Resp. Rate</source>
+        <translation type="unfinished">Ademtempo</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="179"/>
+        <source>Snore</source>
+        <translation type="unfinished">Snurken</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="180"/>
         <source>Leak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="180"/>
-        <source>Leaks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="181"/>
-        <source>Total Leaks</source>
-        <translation type="unfinished"></translation>
+        <source>Leaks</source>
+        <translation type="unfinished">Maskerlek</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="182"/>
+        <source>Total Leaks</source>
+        <translation type="unfinished">Totale lek</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="183"/>
         <source>Unintentional Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="183"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="184"/>
         <source>MaskPressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="184"/>
-        <source>Flow Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="185"/>
-        <source>Sleep Stage</source>
-        <translation type="unfinished"></translation>
+        <source>Flow Rate</source>
+        <translation>Stroomsnelheid</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="186"/>
-        <source>Usage</source>
-        <translation type="unfinished"></translation>
+        <source>Sleep Stage</source>
+        <translation type="unfinished">Slaapfase</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="187"/>
-        <source>Sessions</source>
-        <translation type="unfinished"></translation>
+        <source>Usage</source>
+        <translation type="unfinished">Gebruik</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="188"/>
-        <source>Pr. Relief</source>
-        <translation type="unfinished"></translation>
+        <source>Sessions</source>
+        <translation type="unfinished">Sessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="191"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="189"/>
+        <source>Pr. Relief</source>
+        <translation type="unfinished">Drukvermindering</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="192"/>
         <source>Bookmarks</source>
         <translation type="unfinished">Bladwijzers</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="195"/>
-        <source>Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="196"/>
-        <source>Model</source>
-        <translation type="unfinished">Ser</translation>
+        <source>Mode</source>
+        <translation type="unfinished">Modus</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="197"/>
+        <source>Model</source>
+        <translation type="unfinished">Type</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="198"/>
         <source>Brand</source>
         <translation type="unfinished">Merk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="198"/>
-        <source>Serial</source>
-        <translation type="unfinished">Volgnummer</translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="199"/>
-        <source>Machine</source>
-        <translation type="unfinished"></translation>
+        <source>Serial</source>
+        <translation type="unfinished">Serienummer</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="200"/>
-        <source>Channel</source>
-        <translation type="unfinished"></translation>
+        <source>Machine</source>
+        <translation type="unfinished">Apparaat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="201"/>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <source>Channel</source>
+        <translation type="unfinished">Kanaal</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="203"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="202"/>
+        <source>Settings</source>
+        <translation type="unfinished">Instellingen</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="204"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="204"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="205"/>
         <source>DOB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="205"/>
-        <source>Phone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="206"/>
-        <source>Address</source>
-        <translation type="unfinished"></translation>
+        <source>Phone</source>
+        <translation type="unfinished">Telefoon</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="207"/>
-        <source>Email</source>
-        <translation type="unfinished"></translation>
+        <source>Address</source>
+        <translation type="unfinished">Adres</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="208"/>
-        <source>Patient ID</source>
-        <translation type="unfinished"></translation>
+        <source>Email</source>
+        <translation type="unfinished">E-mail</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="209"/>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
+        <source>Patient ID</source>
+        <translation type="unfinished">Patient-ID</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="211"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="210"/>
+        <source>Date</source>
+        <translation type="unfinished">Datum</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="212"/>
         <source>Bedtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="212"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="213"/>
         <source>Wake-up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="213"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="214"/>
         <source>Mask Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="214"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="215"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Onbekend</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="215"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="216"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="216"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="217"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="218"/>
-        <source>First</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Klaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="219"/>
-        <source>Last</source>
-        <translation type="unfinished"></translation>
+        <source>First</source>
+        <translation type="unfinished">Eerste dag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="220"/>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
+        <source>Last</source>
+        <translation type="unfinished">Laatste dag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="221"/>
-        <source>End</source>
-        <translation type="unfinished"></translation>
+        <source>Start</source>
+        <translation type="unfinished">Start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="225"/>
-        <source>Min</source>
-        <translation type="unfinished"></translation>
+        <location filename="../sleepyhead/SleepLib/common.h" line="222"/>
+        <source>End</source>
+        <translation type="unfinished">Einde</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="226"/>
-        <source>Max</source>
-        <translation type="unfinished"></translation>
+        <source>Min</source>
+        <translation type="unfinished">Min.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="228"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="227"/>
+        <source>Max</source>
+        <translation type="unfinished">Max.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="229"/>
         <source>Average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="229"/>
-        <source>Median</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="230"/>
-        <source>Avg</source>
-        <translation type="unfinished"></translation>
+        <source>Median</source>
+        <translation type="unfinished">Mediaan</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="231"/>
+        <source>Avg</source>
+        <translation type="unfinished">Gem.</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="232"/>
         <source>W-Avg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="106"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="107"/>
         <source>Pressure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="108"/>
-        <source>Daily</source>
-        <translation type="unfinished">Dagelijks</translation>
+        <translation>Druk</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="109"/>
-        <source>Overview</source>
-        <translation type="unfinished">Overzicht</translation>
+        <source>Daily</source>
+        <translation>Dagelijks</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="110"/>
-        <source>Oximetry</source>
-        <translation type="unfinished"></translation>
+        <source>Overview</source>
+        <translation>Overzicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="112"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="111"/>
+        <source>Oximetry</source>
+        <translation>Oxymetrie</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.h" line="113"/>
         <source>Event Flags</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Markeringen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/preferences.cpp" line="33"/>
         <source>Windows User</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Windows-gebruiker</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="105"/>
         <source>Software changes have been made that require the reimporting of the following machines data:
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Door een wijziging in het programma moeten de volgende gegevens van het apparaat opnieuw worden opgehaald:
+
+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="107"/>
         <source>I can automatically purge this data for you, or you can cancel now and continue to run in a previous version.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Ik kan automatisch deze gegevens wissen, tenzij je nu afbreekt en de oude versie blijft gebruiken.
+
+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="108"/>
         <source>Would you like me to purge this data this for you so you can run the new version?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wil je dat ik de gegevens voor je wis zodat je de nieuwe versie kunt gaan gebruiken?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="110"/>
         <source>Machine Database Changes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wijzigingen in de gegevens van het apparaat</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="114"/>
         <source>Purge Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Wissen mislukt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/profiles.cpp" line="114"/>
@@ -3943,23 +5061,30 @@ Signed: Nasty Programmer</source>
 
 This folder currently resides at the following location:
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sorry, ik kon de gegevens niet wissen, deze versie van SleepyHead kan daardoor niet starten.
+De map met gegevens van SleepyHead moet je zelf wissen.
+
+De map vind je op:</translation>
+    </message>
+    <message>
+        <source>SleepyHead Release Notes</source>
+        <translation type="obsolete">SleepyHead versie-opmerkingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="94"/>
         <source>Release Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Versie-opmerkingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="105"/>
         <location filename="../sleepyhead/main.cpp" line="127"/>
         <source>&amp;Ok, get on with it..</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK, laten we beginnen..</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="116"/>
         <source>SleepyHead Update Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead update-opmerkingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="119"/>
@@ -3967,55 +5092,56 @@ This folder currently resides at the following location:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/main.cpp" line="198"/>
+        <location filename="../sleepyhead/main.cpp" line="199"/>
         <source>Language</source>
         <translation type="unfinished">Taal</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="192"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="193"/>
         <location filename="../sleepyhead/summary.cpp" line="45"/>
         <source>SleepyHead</source>
-        <translation type="unfinished">SlaapKop</translation>
+        <translation>SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="24"/>
         <source>Unspecified</source>
-        <translation type="unfinished"></translation>
+        <translation>Niet gespecificeerd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="25"/>
         <source>Nasal Pillows</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuskussens</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="26"/>
         <source>Hybrid F/F Mask</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hybride volgelaatsmasker</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="27"/>
         <source>Nasal Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Neustussenstuk</translation>
     </message>
     <message>
         <location filename="../sleepyhead/preferencesdialog.cpp" line="28"/>
         <source>Full-Face Mask</source>
+        <translation>Volgelaatsmasker</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="236"/>
+        <source>Import Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="46"/>
-        <source>This is a beta software and some functionality may not work as intended yet.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="47"/>
-        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="236"/>
+        <source>This Machine Record cannot be imported in this profile.
+The Day records overlap with already existing content.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="636"/>
         <source>About SleepyHead</source>
-        <translation type="unfinished">Over SlaapKop</translation>
+        <translation type="unfinished">Over SleepyHead</translation>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.cpp" line="651"/>
@@ -4028,41 +5154,31 @@ This folder currently resides at the following location:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
-        <source>Import Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
-        <source>This Machine Record cannot be imported in this profile.
-The Day records overlap with already existing content.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/reports.cpp" line="35"/>
         <source>There are no graphs visible to print</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Geen zichtbare grafieken om af te drukken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="48"/>
         <source>Would you like to show bookmarked areas in this report?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wil je gebieden met bladwijzer in dit rapport tonen?</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="85"/>
         <source>This make take some time to complete..
 Please don&apos;t touch anything until it&apos;s done.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dit kan even duren...
+Alsjeblieft niets aanraken tot ik klaar ben!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="85"/>
         <source>Printing %1 Report</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rapport %1 afdrukken</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="117"/>
         <source>%1 Report</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 Rapport</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="153"/>
@@ -4074,48 +5190,50 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <location filename="../sleepyhead/reports.cpp" line="217"/>
         <source>RDI	%1
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RDI	%1
+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="219"/>
         <source>AHI	%1
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AHI	%1
+</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="246"/>
         <source>AI=%1 HI=%2 CAI=%3 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AI=%1 HI=%2 CAI=%3 </translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="248"/>
         <source>REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="252"/>
         <source>UAI=%1 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">UAI=%1 </translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="254"/>
         <source>NRI=%1 LKI=%2 EPI=%3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">NRI=%1 LKI=%2 EPI=%3</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="305"/>
         <source>Reporting from %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rapport van %1 tot %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="311"/>
         <source>Reporting data goes here</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De rapportgegevens komen hier</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="350"/>
         <source>Entire Day&apos;s Flow Waveform</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Flow golfvorm hele dag</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="355"/>
@@ -4130,16 +5248,26 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="467"/>
         <source>SleepyHead v%1 - http://sleepyhead.sourceforge.net</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SleepyHead v%1 - http://sleepyhead.sourceforge.net</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="472"/>
         <source>Page %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pagina %1 van %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/reports.cpp" line="530"/>
         <source>SleepyHead has finished sending the job to the printer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="46"/>
+        <source>This is a beta software and some functionality may not work as intended yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="47"/>
+        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4282,7 +5410,7 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../3rdparty/quazip/quazip/quazipfile.cpp" line="217"/>
         <source>ZIP/UNZIP API error %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout bij in/uitpakken van %1</translation>
     </message>
 </context>
 <context>
@@ -4290,301 +5418,302 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/report.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulier</translation>
     </message>
     <message>
         <location filename="../sleepyhead/report.ui" line="27"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
 </context>
 <context>
     <name>Summary</name>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>Please Import Some Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>SleepyHead is pretty much useless without it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>First import can take a few minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="283"/>
+        <location filename="../sleepyhead/summary.cpp" line="289"/>
         <source>No CPAP Machine Data Imported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="285"/>
+        <location filename="../sleepyhead/summary.cpp" line="291"/>
         <source>CPAP Statistics as of</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="291"/>
+        <location filename="../sleepyhead/summary.cpp" line="297"/>
         <source>No CPAP data available.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Geen CPAP-gegevens beschikbaar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="293"/>
+        <location filename="../sleepyhead/summary.cpp" line="299"/>
         <source>%1 day of CPAP Data, on %2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dag %1 van CPAP-gegevens, op %2.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="295"/>
+        <location filename="../sleepyhead/summary.cpp" line="301"/>
         <source>%1 days of CPAP Data, between %2 and %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 dagen met CPAP-gegevens, tussen %2 en %3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Details</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Most Recent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laatste ingelezen dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 7 Days</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Afgelopen 7 dagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 30 Days</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Afgelopen 30 dagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 6 months</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Afgelopen 6 maanden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last Year</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Afgelopen jaar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="310"/>
+        <location filename="../sleepyhead/summary.cpp" line="316"/>
         <source>RERA Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">RERA-index</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="320"/>
+        <location filename="../sleepyhead/summary.cpp" line="326"/>
         <source>Flow Limit Index</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stroom Beperking Index
+(FLI)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="331"/>
+        <location filename="../sleepyhead/summary.cpp" line="337"/>
         <source>Hours per Night</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uren per nacht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="340"/>
+        <location filename="../sleepyhead/summary.cpp" line="346"/>
         <source>Min EPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min. EPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="354"/>
+        <location filename="../sleepyhead/summary.cpp" line="360"/>
         <source>Max IPAP</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Max. IPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="369"/>
+        <location filename="../sleepyhead/summary.cpp" line="375"/>
         <source>Average Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gemiddelde druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="376"/>
+        <location filename="../sleepyhead/summary.cpp" line="382"/>
         <source>%1% Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1% Druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="384"/>
+        <location filename="../sleepyhead/summary.cpp" line="390"/>
         <source>Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="400"/>
+        <location filename="../sleepyhead/summary.cpp" line="406"/>
         <source>Average %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gemiddelde %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="407"/>
+        <location filename="../sleepyhead/summary.cpp" line="413"/>
         <source>%1% %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1% %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="421"/>
+        <location filename="../sleepyhead/summary.cpp" line="427"/>
         <source>Oximetry Summary</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Oxymetrie overzicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="423"/>
+        <location filename="../sleepyhead/summary.cpp" line="429"/>
         <source>%1 day of Oximetry Data, on %2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 dag van oxymetriegegevens, op %2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="425"/>
+        <location filename="../sleepyhead/summary.cpp" line="431"/>
         <source>%1 days of Oximetry Data, between %2 and %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 dagen van oxymetrie-gegevens, tussen %2 en %3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="439"/>
+        <location filename="../sleepyhead/summary.cpp" line="445"/>
         <source>Average SpO2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gemiddelde SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="446"/>
+        <location filename="../sleepyhead/summary.cpp" line="452"/>
         <source>Minimum SpO2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Minimum SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="453"/>
+        <location filename="../sleepyhead/summary.cpp" line="459"/>
         <source>SpO2 Events / Hour</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">SpO2 incidenten per uur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="460"/>
+        <location filename="../sleepyhead/summary.cpp" line="466"/>
         <source>% of time in SpO2 Events</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tijd in SpO2 incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="467"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Average Pulse Rate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gemiddelde polsslag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="474"/>
+        <location filename="../sleepyhead/summary.cpp" line="480"/>
         <source>Minimum Pulse Rate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Minumum polsslag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="481"/>
+        <location filename="../sleepyhead/summary.cpp" line="487"/>
         <source>Maximum Pulse Rate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Maximum polsslag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="488"/>
+        <location filename="../sleepyhead/summary.cpp" line="494"/>
         <source>Pulse Change Events / Hour</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="653"/>
-        <source>Usage Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="654"/>
-        <source>Total Days</source>
-        <translation type="unfinished">Totaal dagen</translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="656"/>
-        <source>Compliant Days</source>
-        <translation type="unfinished">Naleving dagen</translation>
+        <translation type="unfinished">Polsslagincidenten per uur</translation>
     </message>
     <message>
         <location filename="../sleepyhead/summary.cpp" line="663"/>
+        <source>Usage Information</source>
+        <translation type="unfinished">Gebruiksinformatie</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="664"/>
+        <source>Total Days</source>
+        <translation type="unfinished">Totaal aantal dagen</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="666"/>
+        <source>Compliant Days</source>
+        <translation type="unfinished">Therapietrouw-dagen</translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="673"/>
         <source>Days AHI &amp;gt;5.0</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dagen met AHI &amp;gt 5,0</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="667"/>
+        <location filename="../sleepyhead/summary.cpp" line="677"/>
         <source>Best&amp;nbsp;%1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beste &amp;nbsp;%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="676"/>
+        <location filename="../sleepyhead/summary.cpp" line="686"/>
         <source>Worst&amp;nbsp;%1</source>
-        <translation type="unfinished">Slechtst&amp;nbsp;%1</translation>
+        <translation type="unfinished">Slechtste &amp;nbsp;%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="718"/>
+        <location filename="../sleepyhead/summary.cpp" line="728"/>
         <source>Best RX Setting</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beste Rx instelling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="754"/>
+        <location filename="../sleepyhead/summary.cpp" line="764"/>
         <source>Worst RX Setting</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Slechtste Rx instelling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="776"/>
+        <location filename="../sleepyhead/summary.cpp" line="786"/>
         <source>Changes to Prescription Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="782"/>
+        <location filename="../sleepyhead/summary.cpp" line="792"/>
         <source>PS Min</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PS min.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="782"/>
+        <location filename="../sleepyhead/summary.cpp" line="792"/>
         <source>PS Max</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">PS max.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="788"/>
+        <location filename="../sleepyhead/summary.cpp" line="798"/>
         <source>Min Pres.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Min. druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="788"/>
+        <location filename="../sleepyhead/summary.cpp" line="798"/>
         <source>Max Pres.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Max. druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="797"/>
+        <location filename="../sleepyhead/summary.cpp" line="807"/>
         <source>Days</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dagen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="799"/>
+        <location filename="../sleepyhead/summary.cpp" line="809"/>
         <source>FL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">FL</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="802"/>
+        <location filename="../sleepyhead/summary.cpp" line="812"/>
         <source>Pr. Rel.</source>
-        <translation type="unfinished">Drukontlastings</translation>
+        <translation type="unfinished">Drukvermindering</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="883"/>
+        <location filename="../sleepyhead/summary.cpp" line="893"/>
         <source>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="890"/>
+        <location filename="../sleepyhead/summary.cpp" line="900"/>
         <source>Machine Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="896"/>
+        <location filename="../sleepyhead/summary.cpp" line="906"/>
         <source>First Use</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eerste gebruik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="897"/>
+        <location filename="../sleepyhead/summary.cpp" line="907"/>
         <source>Last Use</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Laatste gebruik</translation>
     </message>
 </context>
 <context>
@@ -4592,251 +5721,253 @@ Please don&apos;t touch anything until it&apos;s done.</source>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="14"/>
         <source>SleepyHead Updater</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead Updater</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="51"/>
         <source>A new version of $APP is available</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een nieuwe versie van $APP</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="97"/>
         <source>Version Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Versie-informatie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="108"/>
         <source>Release Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Versie-opmerkingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="121"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="130"/>
         <source>Build Notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Build-opmerkingen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="174"/>
         <source>Maybe &amp;Later</source>
-        <translation type="unfinished"></translation>
+        <translation>Misschien &amp;later</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="194"/>
         <source>&amp;Upgrade Now</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu &amp;upgraden</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="220"/>
         <source>Please wait while updates are downloaded and installed...</source>
-        <translation type="unfinished"></translation>
+        <translation>Wacht even tot de updates zijn gedownload en geïnstalleerd...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="234"/>
         <source>Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Updates</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="265"/>
         <source>Component</source>
-        <translation type="unfinished"></translation>
+        <translation>Onderdeel</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="270"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Versie</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="275"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Grootte</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="280"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Voortgang</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="289"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="317"/>
         <source>Downloading &amp; Installing Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestanden worden gedownload en geïnstalleerd</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.ui" line="337"/>
         <source>&amp;Finished</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Klaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="83"/>
         <source>Checking for SleepyHead Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoeken naar updates</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="97"/>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="150"/>
         <source>Requesting </source>
-        <translation type="unfinished"></translation>
+        <translation>Aanvragen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="157"/>
         <source>Saving as </source>
-        <translation type="unfinished"></translation>
+        <translation>Opslaan als </translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="177"/>
         <source>XML update structure parsed cleanly</source>
-        <translation type="unfinished"></translation>
+        <translation>XML updatestructuur werd juist ontleed</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="197"/>
         <source>No updates were found for your platform.</source>
-        <translation type="unfinished"></translation>
+        <translation>Er zijn geen updates gevonden.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="197"/>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="230"/>
         <source>SleepyHead Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead Updates</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="230"/>
         <source>No new updates were found for your platform.</source>
-        <translation type="unfinished"></translation>
+        <translation>Er zijn geen nieuwe updates gevonden.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="245"/>
         <source>SleepyHead v%1, codename &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>SleepyHead v%1, codename &quot;%2&quot;</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="247"/>
         <source>platform notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Opmerkingen over het platform</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="251"/>
         <source>A new version of SleepyHead is available!</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een nieuwe versie van SleepyHead beschikbaar!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="252"/>
         <source>Shiny new &lt;b&gt;v%1&lt;/b&gt; is available. You&apos;re running old and busted v%2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Er is en splinternieuwe &lt;b&gt;v%1&lt;/b&gt; beschikbaar. Jij werkt nog met de versleten versie %2</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="255"/>
         <source>An update for SleepyHead is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een update voor SleepyHead.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="256"/>
         <source>Version &lt;b&gt;%1&lt;/b&gt; is available. You&apos;re currently running v%1</source>
-        <translation type="unfinished"></translation>
+        <translation>Versie &lt;b&gt;%1&lt;/b&gt; is beschikbaar. Je gebruikt nu versie %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="265"/>
         <source>SleepyHead v%1 build notes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Opmerkingen over SleepyHead versie %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="267"/>
         <source>Update to QtLibs (v%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Update naar QTlibs (versie %1)</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="275"/>
         <source>There was an error parsing the XML Update file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Er is een fout opgetreden tijdens het ontleden van het bijgewerkte XML-bestand.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="293"/>
         <source>%1 bytes received</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 bytes ontvangen</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="321"/>
         <source>Redirected to </source>
-        <translation type="unfinished"></translation>
+        <translation>Doorgestuurd naar </translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="332"/>
         <source>File size mismatch for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestandsgrootte van %1 klopt niet</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="342"/>
         <source>File integrity check failed for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout in bestandsintegriteit van %1</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="370"/>
         <source>Extracting </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Uitpakken </translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="419"/>
         <source>You might need to reinstall manually. Sorry :(</source>
-        <translation type="unfinished"></translation>
+        <translation>Wellicht opnieuw installeren?! Sorry ;-((</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="419"/>
         <source>Ugh.. Something went wrong with unzipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>Oef! Er ging iets fout bij het uitpakken.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="429"/>
         <source>Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Mislukt</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="448"/>
         <source>Download Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Download klaar</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="452"/>
         <source>There was an error completing a network request:
 
 (</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Er was een fout bij een netwerkverzoek:
+
+:(</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="489"/>
         <source>Update Complete!</source>
-        <translation type="unfinished"></translation>
+        <translation>Update klaar!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="491"/>
         <source>Updates Complete. SleepyHead needs to restart now, click Finished to do so.</source>
-        <translation type="unfinished"></translation>
+        <translation>Klaar met updaten. SleepyHead moet opnieuw worden opgestart, klik op Afsluiten.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="494"/>
         <source>Update Failed :(</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Update mislukt :(</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="496"/>
         <source>Download Error. Sorry, try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout met downloaden. Probeer het later nog eens.</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="512"/>
         <source>Downloading &amp; Installing Updates...</source>
-        <translation type="unfinished"></translation>
+        <translation>Updates downloaden en installeren...</translation>
     </message>
     <message>
         <location filename="../sleepyhead/UpdaterWindow.cpp" line="513"/>
         <source>Please wait while downloading and installing updates.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wacht even terwijl we downloaden en installeren.</translation>
     </message>
 </context>
 </TS>

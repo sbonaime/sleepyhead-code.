@@ -189,7 +189,8 @@ OTHER_FILES += \
     docs/script.js \
     ../update.xml \
     docs/changelog.txt \
-    docs/update_notes.html
+    docs/update_notes.html \
+    docs/intro.html
 
 win32 {
     CONFIG(debug, debug|release) {

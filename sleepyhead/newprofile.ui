@@ -32,18 +32,6 @@
          </property>
          <widget class="QWidget" name="welcomePage">
           <layout class="QVBoxLayout" name="verticalLayout_8">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <property name="topMargin">
-            <number>5</number>
-           </property>
-           <property name="rightMargin">
-            <number>5</number>
-           </property>
-           <property name="bottomMargin">
-            <number>5</number>
-           </property>
            <item>
             <layout class="QGridLayout" name="gridLayout_3">
              <property name="spacing">
@@ -77,28 +65,13 @@
            </item>
            <item>
             <widget class="QTextBrowser" name="textBrowser">
-             <property name="html">
-              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt; font-weight:600; font-style:italic;&quot;&gt;Welcome to SleepyHead&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;This software is being designed to help you review data related to your CPAP treatment.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;It's intended as merely a data viewer, and not a substitute for competent medical guidance from your Doctor.  &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;This software has been released freely under the &lt;/span&gt;&lt;a href=&quot;qrc:/LICENSE.txt&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt; text-decoration: underline; color:#0000ff;&quot;&gt;GNU Public License&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;, and comes with no warranty, and without ANY claims to fitness for any purpose.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;Accuracy of any data displayed is not and can not be guaranteed. &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;Any reports generated are for PERSONAL USE ONLY, and not fit for compliance purposes.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;The author will not be held liable for &lt;/span&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt; text-decoration: underline;&quot;&gt;anything&lt;/span&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt; related to the use or misuse of this software. &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;Use at your own risk. &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans'; font-size:10pt;&quot;&gt;This software is copyright ©2011 Mark Watkins &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <property name="autoFormatting">
+              <set>QTextEdit::AutoNone</set>
+             </property>
+             <property name="source">
+              <url>
+               <string>qrc:/docs/intro.html</string>
+              </url>
              </property>
              <property name="openExternalLinks">
               <bool>true</bool>
@@ -106,11 +79,28 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="agreeCheckbox">
-             <property name="text">
-              <string>I agree to all the conditions above.</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QCheckBox" name="agreeCheckbox">
+               <property name="text">
+                <string>I agree to all the conditions above.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

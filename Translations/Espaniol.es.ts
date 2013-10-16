@@ -4,54 +4,54 @@
 <context>
     <name>CMS50Serial</name>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="460"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="465"/>
         <source>Processing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="477"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="482"/>
         <source>Question</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="477"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="482"/>
         <source>Did you remember to start your oximeter recording at exactly the same time you started your CPAP machine?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="488"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="494"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="493"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="499"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="488"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="493"/>
         <source>The most recent CPAP Session time has been selected as the start of your oximetry session.
 If you forgot to import todays CPAP data first, go and do that now, then import again from your oximeter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="494"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="499"/>
         <source>No valid start time was provided for this oximeter session. You will likely have to adjust your oximeter sessions start time before saving.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="727"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="732"/>
         <source>Please Wait, Importing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="771"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="776"/>
         <source>Import Failed. Wait for oximeter and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="944"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="949"/>
         <source>Import Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="948"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="953"/>
         <source>Set Oximeter to Upload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64,473 +64,480 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="73"/>
+        <location filename="../sleepyhead/daily.ui" line="91"/>
         <source>Go to the previous day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="76"/>
+        <location filename="../sleepyhead/daily.ui" line="94"/>
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="114"/>
+        <location filename="../sleepyhead/daily.ui" line="132"/>
         <source>Show or hide the calender</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="120"/>
-        <location filename="../sleepyhead/daily.ui" line="802"/>
+        <location filename="../sleepyhead/daily.ui" line="138"/>
+        <location filename="../sleepyhead/daily.ui" line="810"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="154"/>
+        <location filename="../sleepyhead/daily.ui" line="172"/>
         <source>Go to the next day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="160"/>
+        <location filename="../sleepyhead/daily.ui" line="178"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="192"/>
+        <location filename="../sleepyhead/daily.ui" line="210"/>
         <source>Go to the most recent day with data records</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="258"/>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.ui" line="280"/>
-        <source>about:blank</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.ui" line="289"/>
+        <location filename="../sleepyhead/daily.ui" line="276"/>
         <source>Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="330"/>
+        <location filename="../sleepyhead/daily.ui" line="335"/>
         <source>View Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="375"/>
-        <location filename="../sleepyhead/daily.ui" line="705"/>
+        <location filename="../sleepyhead/daily.ui" line="380"/>
+        <location filename="../sleepyhead/daily.ui" line="719"/>
         <source>Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="398"/>
+        <location filename="../sleepyhead/daily.ui" line="412"/>
         <source>Journal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="431"/>
+        <location filename="../sleepyhead/daily.ui" line="445"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="436"/>
+        <location filename="../sleepyhead/daily.ui" line="450"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="441"/>
+        <location filename="../sleepyhead/daily.ui" line="455"/>
         <source>Big</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="449"/>
+        <location filename="../sleepyhead/daily.ui" line="463"/>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="456"/>
+        <location filename="../sleepyhead/daily.ui" line="470"/>
         <source> i </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="459"/>
+        <location filename="../sleepyhead/daily.ui" line="473"/>
         <source>Ctrl+I</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="466"/>
+        <location filename="../sleepyhead/daily.ui" line="480"/>
         <source>u</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="473"/>
+        <location filename="../sleepyhead/daily.ui" line="487"/>
         <source>B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="476"/>
+        <location filename="../sleepyhead/daily.ui" line="490"/>
         <source>Ctrl+B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="533"/>
+        <location filename="../sleepyhead/daily.ui" line="547"/>
         <source>Zombie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="546"/>
+        <location filename="../sleepyhead/daily.ui" line="560"/>
         <source>I&apos;m feeling...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="562"/>
+        <location filename="../sleepyhead/daily.ui" line="576"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="617"/>
+        <location filename="../sleepyhead/daily.ui" line="631"/>
         <source>Awesome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="655"/>
+        <location filename="../sleepyhead/daily.ui" line="669"/>
         <source>B.M.I.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="671"/>
+        <location filename="../sleepyhead/daily.ui" line="685"/>
         <source>Bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="677"/>
+        <location filename="../sleepyhead/daily.ui" line="691"/>
         <source>Add Bookmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="700"/>
+        <location filename="../sleepyhead/daily.ui" line="714"/>
         <source>Starts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="713"/>
+        <location filename="../sleepyhead/daily.ui" line="727"/>
         <source>Remove Bookmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="763"/>
+        <location filename="../sleepyhead/daily.ui" line="777"/>
         <source>Zoom fully out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="766"/>
+        <location filename="../sleepyhead/daily.ui" line="780"/>
         <source>100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="776"/>
+        <location filename="../sleepyhead/daily.ui" line="790"/>
         <source>Reset the graph heights to uniform sizes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="779"/>
+        <location filename="../sleepyhead/daily.ui" line="793"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.ui" line="824"/>
+        <location filename="../sleepyhead/daily.ui" line="832"/>
         <source>Drop down this list to show/hide available graphs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="131"/>
+        <location filename="../sleepyhead/daily.cpp" line="158"/>
         <source>Breakdown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="131"/>
+        <location filename="../sleepyhead/daily.cpp" line="158"/>
         <source>events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="175"/>
+        <location filename="../sleepyhead/daily.cpp" line="202"/>
         <source>Selection AHI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="199"/>
+        <location filename="../sleepyhead/daily.cpp" line="226"/>
         <source>U1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="200"/>
+        <location filename="../sleepyhead/daily.cpp" line="227"/>
         <source>U2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="201"/>
+        <location filename="../sleepyhead/daily.cpp" line="228"/>
         <source>U3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="279"/>
-        <location filename="../sleepyhead/daily.cpp" line="280"/>
+        <location filename="../sleepyhead/daily.cpp" line="306"/>
+        <location filename="../sleepyhead/daily.cpp" line="307"/>
+        <location filename="../sleepyhead/daily.cpp" line="317"/>
+        <location filename="../sleepyhead/daily.cpp" line="318"/>
         <source>Events/hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="408"/>
+        <location filename="../sleepyhead/daily.cpp" line="459"/>
         <source>No %1 events are recorded this day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="504"/>
+        <location filename="../sleepyhead/daily.cpp" line="555"/>
         <source>%1 event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="505"/>
+        <location filename="../sleepyhead/daily.cpp" line="556"/>
         <source>%1 events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="676"/>
+        <location filename="../sleepyhead/daily.cpp" line="1110"/>
         <source>Oximetry data exists for this day, however it&apos;s timestamps are too different, so the Graphs will not be linked.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="736"/>
+        <location filename="../sleepyhead/daily.cpp" line="1165"/>
         <source>No Graphs :(</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="795"/>
+        <location filename="../sleepyhead/daily.cpp" line="919"/>
         <source>ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="808"/>
+        <location filename="../sleepyhead/daily.cpp" line="145"/>
+        <source>Int. Pulse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="146"/>
+        <source>Int. SpO2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="769"/>
+        <source>Duration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="781"/>
+        <source>Oximetery Sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="788"/>
+        <source>Unknown Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="897"/>
+        <source>PAP Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1069"/>
         <source>Sleep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="808"/>
+        <location filename="../sleepyhead/daily.cpp" line="1069"/>
         <source>Wake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="841"/>
+        <location filename="../sleepyhead/daily.cpp" line="1220"/>
         <source>Hypopnea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="845"/>
+        <location filename="../sleepyhead/daily.cpp" line="1224"/>
         <source>Apnea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="848"/>
+        <location filename="../sleepyhead/daily.cpp" line="1227"/>
         <source>Obstructive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="852"/>
-        <location filename="../sleepyhead/daily.cpp" line="880"/>
+        <location filename="../sleepyhead/daily.cpp" line="1231"/>
+        <location filename="../sleepyhead/daily.cpp" line="1259"/>
         <source>Flow Limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="855"/>
+        <location filename="../sleepyhead/daily.cpp" line="1234"/>
         <source>Clear Airway</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="867"/>
+        <location filename="../sleepyhead/daily.cpp" line="1246"/>
         <source>User Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="883"/>
-        <location filename="../sleepyhead/daily.cpp" line="899"/>
+        <location filename="../sleepyhead/daily.cpp" line="1262"/>
+        <location filename="../sleepyhead/daily.cpp" line="1278"/>
         <source>VSnore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="887"/>
+        <location filename="../sleepyhead/daily.cpp" line="1266"/>
         <source>VSnore2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="890"/>
+        <location filename="../sleepyhead/daily.cpp" line="1269"/>
         <source>PB/CSR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="901"/>
+        <location filename="../sleepyhead/daily.cpp" line="1280"/>
         <source>Exh&amp;nbsp;Puff</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="915"/>
+        <location filename="../sleepyhead/daily.cpp" line="1295"/>
         <source>Event Breakdown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="939"/>
+        <location filename="../sleepyhead/daily.cpp" line="1320"/>
         <source>Sessions all off!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="940"/>
+        <location filename="../sleepyhead/daily.cpp" line="1321"/>
         <source>Sessions exist for this day but are switched off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="942"/>
+        <location filename="../sleepyhead/daily.cpp" line="1323"/>
         <source>Impossibly short session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="943"/>
+        <location filename="../sleepyhead/daily.cpp" line="1324"/>
         <source>Zero hours??</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="946"/>
+        <location filename="../sleepyhead/daily.cpp" line="1327"/>
         <source>BRICK :(</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="947"/>
-        <source>Sorry, your machine does not record data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="948"/>
+        <location filename="../sleepyhead/daily.cpp" line="1329"/>
         <source>Complain to your Equipment Provider!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="963"/>
-        <location filename="../sleepyhead/daily.cpp" line="964"/>
+        <location filename="../sleepyhead/daily.cpp" line="956"/>
+        <location filename="../sleepyhead/daily.cpp" line="957"/>
         <source>Avg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="965"/>
+        <location filename="../sleepyhead/daily.cpp" line="958"/>
         <source>Med</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="970"/>
+        <location filename="../sleepyhead/daily.cpp" line="963"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="976"/>
+        <location filename="../sleepyhead/daily.cpp" line="968"/>
         <source>%1%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1081"/>
+        <location filename="../sleepyhead/daily.cpp" line="1041"/>
         <source>&lt;b&gt;Please Note:&lt;/b&gt; This day just contains summary data, only limited information is available .</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1086"/>
+        <location filename="../sleepyhead/daily.cpp" line="1346"/>
         <source>No data available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1093"/>
+        <location filename="../sleepyhead/daily.cpp" line="863"/>
         <source>Oximeter Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1097"/>
+        <location filename="../sleepyhead/daily.cpp" line="867"/>
         <source>SpO2 Desaturations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1098"/>
+        <location filename="../sleepyhead/daily.cpp" line="868"/>
         <source>Pulse Change events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1099"/>
+        <location filename="../sleepyhead/daily.cpp" line="869"/>
         <source>SpO2 Baseline Used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1104"/>
+        <location filename="../sleepyhead/daily.cpp" line="836"/>
         <source>Machine Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1127"/>
+        <location filename="../sleepyhead/daily.cpp" line="750"/>
         <source>Session Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1132"/>
-        <source>SessionID</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1134"/>
+        <location filename="../sleepyhead/daily.cpp" line="778"/>
         <source>CPAP Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1164"/>
-        <source>Oximetry Sessions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1195"/>
+        <location filename="../sleepyhead/daily.cpp" line="784"/>
         <source>Sleep Stage Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1203"/>
-        <source>Sleep Stage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/daily.cpp" line="1226"/>
+        <location filename="../sleepyhead/daily.cpp" line="826"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1458"/>
+        <location filename="../sleepyhead/daily.cpp" line="1328"/>
+        <source>Sorry, your machine only provides compliance data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/daily.cpp" line="1608"/>
         <source>Pick a Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1709"/>
+        <location filename="../sleepyhead/daily.cpp" line="1859"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1727"/>
+        <location filename="../sleepyhead/daily.cpp" line="1877"/>
         <source>Bookmark at %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1937"/>
+        <location filename="../sleepyhead/daily.cpp" line="2087"/>
         <source>Show all graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1943"/>
+        <location filename="../sleepyhead/daily.cpp" line="2093"/>
         <source>No Graphs On!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1954"/>
+        <location filename="../sleepyhead/daily.cpp" line="2104"/>
         <source>Hide all graphs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1996,160 +2003,160 @@ Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1032"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1037"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1074"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1591"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1079"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1596"/>
         <source>No Oximetry Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1172"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1177"/>
         <source>Connect Oximeter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1172"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1177"/>
         <source>Please connect oximeter device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1224"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1229"/>
         <source>Device Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1224"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1229"/>
         <source>Please make sure Oximeter device is in upload mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1244"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1249"/>
         <source>Oximetry live recording has been terminated due to timeout.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1253"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1468"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1258"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1473"/>
         <source>&amp;Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Save Session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
         <source>Creating a new oximetry session will destroy the old one.
 Would you like to save it first?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Destroy It</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1271"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1276"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1281"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1286"/>
         <source>Please Wait</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1298"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1303"/>
         <source>Oximetry Error!
 
 Something is wrong with the device connection.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1334"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1339"/>
         <source>&amp;Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1420"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1425"/>
         <source>Oximeter Error
 
 The device has not responded.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1431"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1436"/>
         <source>Check Oximeter is Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1451"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1456"/>
         <source>Oximeter Error
 
 The device did not respond.. Make sure it&apos;s switched on.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1504"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1509"/>
         <source>Please make sure your oximeter is switched on, and in the right mode to transmit data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1504"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1509"/>
         <source>Oximeter Error!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1566"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1571"/>
         <source>Keep This Recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1566"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1571"/>
         <source>Would you like to save this oximetery session?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1763"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1768"/>
         <source>Opening this oximetry file will destroy the current session.
 Would you like to keep it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1773"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1778"/>
         <source>Select an oximetry file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1773"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1778"/>
         <source>Oximetry Files (*.spo *.spoR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1787"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1792"/>
         <source>Couldn&apos;t open oximetry file &quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/oximetry.cpp" line="1818"/>
+        <location filename="../sleepyhead/oximetry.cpp" line="1823"/>
         <source>Opening this oximetry session will destroy the unsavedsession in the oximetry tab.
 Would you like to store it first?</source>
         <translation type="unfinished"></translation>
@@ -3238,640 +3245,640 @@ Signed: Nasty Programmer</source>
     <name>QObject</name>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2225"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="190"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="191"/>
         <source>No Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="53"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="222"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="223"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/common.h" line="54"/>
-        <location filename="../sleepyhead/SleepLib/common.h" line="223"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="224"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="85"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="86"/>
         <source>cm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="86"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="87"/>
         <source>&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="87"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="88"/>
         <source>ft</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="88"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="89"/>
         <source>lb</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="89"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="90"/>
         <source>oz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="90"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="91"/>
         <source>Kg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="91"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="92"/>
         <source>cmH2O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="92"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="93"/>
         <source>Hours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="94"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="95"/>
         <source>bpm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="95"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="96"/>
         <source>L/m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="97"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="98"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="98"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="99"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="100"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="101"/>
         <source>BMI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="101"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="102"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="102"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="103"/>
         <source>Zombie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="103"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="104"/>
         <source>Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="104"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="105"/>
         <source>SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="105"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="106"/>
         <source>Plethy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="106"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="107"/>
         <source>Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="108"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="109"/>
         <source>Daily</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="109"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="110"/>
         <source>Overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="110"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="111"/>
         <source>Oximetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="111"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="112"/>
         <source>Oximeter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="112"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="113"/>
         <source>Event Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="115"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="116"/>
         <source>CPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="116"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="117"/>
         <source>BiPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="117"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="118"/>
         <source>Bi-Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="118"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="119"/>
         <source>EPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="119"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="120"/>
         <source>IPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="120"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="121"/>
         <source>IPAPLo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="121"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="122"/>
         <source>IPAPHi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="122"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="123"/>
         <source>APAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="123"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="124"/>
         <source>ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="124"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="125"/>
         <source>ST/ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="126"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="127"/>
         <source>Humidifier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="128"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="129"/>
         <source>H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="129"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="130"/>
         <source>OA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="130"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="131"/>
         <source>A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="131"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="132"/>
         <source>CA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="132"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="133"/>
         <source>FL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="133"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="134"/>
         <source>LE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="134"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="135"/>
         <source>EP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="135"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="136"/>
         <source>VS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="136"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="137"/>
         <source>VS2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="137"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="138"/>
         <source>RERA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="138"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="139"/>
         <source>PP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="139"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="140"/>
         <source>P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="140"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="141"/>
         <source>RE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="141"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="142"/>
         <source>NR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="142"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="143"/>
         <source>NRI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="143"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="144"/>
         <source>O2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="144"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="145"/>
         <source>PC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="145"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="146"/>
         <source>UF1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="146"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="147"/>
         <source>UF2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="147"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="148"/>
         <source>UF3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="151"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="152"/>
         <source>PS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="152"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="153"/>
         <source>AHI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="153"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="154"/>
         <source>RDI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="154"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="155"/>
         <source>AI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="155"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="156"/>
         <source>HI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="156"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="157"/>
         <source>UAI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="157"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="158"/>
         <source>CAI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="158"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="159"/>
         <source>FLI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="159"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="160"/>
         <source>REI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="160"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="161"/>
         <source>EPI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="161"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="162"/>
         <source>ÇSR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="162"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="163"/>
         <source>PB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="166"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="167"/>
         <source>IE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="167"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="168"/>
         <source>Insp. Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="168"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="169"/>
         <source>Exp. Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="169"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="170"/>
         <source>Resp. Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="170"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="171"/>
         <source>Flow Limitation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="171"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="172"/>
         <source>Flow Limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="172"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="173"/>
         <source>Pat. Trig. Breath</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="173"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="174"/>
         <source>Tgt. Min. Vent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="174"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="175"/>
         <source>Target Vent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="175"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="176"/>
         <source>Minute Vent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="176"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="177"/>
         <source>Tidal Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="177"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="178"/>
         <source>Resp. Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="178"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="179"/>
         <source>Snore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="179"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="180"/>
         <source>Leak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="180"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="181"/>
         <source>Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="181"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="182"/>
         <source>Total Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="182"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="183"/>
         <source>Unintentional Leaks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="183"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="184"/>
         <source>MaskPressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="184"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="185"/>
         <source>Flow Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="185"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="186"/>
         <source>Sleep Stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="186"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="187"/>
         <source>Usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="187"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="188"/>
         <source>Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="188"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="189"/>
         <source>Pr. Relief</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="191"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="192"/>
         <source>Bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="192"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="193"/>
         <location filename="../sleepyhead/summary.cpp" line="45"/>
         <source>SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="195"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="196"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="196"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="197"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="197"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="198"/>
         <source>Brand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="198"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="199"/>
         <source>Serial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="199"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="200"/>
         <source>Machine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="200"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="201"/>
         <source>Channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="201"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="202"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="203"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="204"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="204"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="205"/>
         <source>DOB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="205"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="206"/>
         <source>Phone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="206"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="207"/>
         <source>Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="207"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="208"/>
         <source>Email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="208"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="209"/>
         <source>Patient ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="209"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="210"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="211"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="212"/>
         <source>Bedtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="212"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="213"/>
         <source>Wake-up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="213"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="214"/>
         <source>Mask Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="214"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="215"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="215"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="216"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="216"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="217"/>
         <source>Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="218"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="219"/>
         <source>First</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="219"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="220"/>
         <source>Last</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="220"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="221"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="221"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="222"/>
         <source>End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="225"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="226"/>
         <source>Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="226"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="227"/>
         <source>Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="228"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="229"/>
         <source>Average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="229"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="230"/>
         <source>Median</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="230"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="231"/>
         <source>Avg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.h" line="231"/>
+        <location filename="../sleepyhead/SleepLib/common.h" line="232"/>
         <source>W-Avg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="236"/>
         <source>Import Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="231"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="236"/>
         <source>This Machine Record cannot be imported in this profile.
 The Day records overlap with already existing content.</source>
         <translation type="unfinished"></translation>
@@ -3940,7 +3947,7 @@ This folder currently resides at the following location:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/main.cpp" line="198"/>
+        <location filename="../sleepyhead/main.cpp" line="199"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4257,288 +4264,288 @@ Please don&apos;t touch anything until it&apos;s done.</source>
 <context>
     <name>Summary</name>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>Please Import Some Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>SleepyHead is pretty much useless without it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="252"/>
+        <location filename="../sleepyhead/summary.cpp" line="258"/>
         <source>First import can take a few minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="283"/>
+        <location filename="../sleepyhead/summary.cpp" line="289"/>
         <source>No CPAP Machine Data Imported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="285"/>
+        <location filename="../sleepyhead/summary.cpp" line="291"/>
         <source>CPAP Statistics as of</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="291"/>
+        <location filename="../sleepyhead/summary.cpp" line="297"/>
         <source>No CPAP data available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="293"/>
+        <location filename="../sleepyhead/summary.cpp" line="299"/>
         <source>%1 day of CPAP Data, on %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="295"/>
+        <location filename="../sleepyhead/summary.cpp" line="301"/>
         <source>%1 days of CPAP Data, between %2 and %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Most Recent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 7 Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 30 Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last 6 months</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="299"/>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="435"/>
         <source>Last Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="310"/>
+        <location filename="../sleepyhead/summary.cpp" line="316"/>
         <source>RERA Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="320"/>
+        <location filename="../sleepyhead/summary.cpp" line="326"/>
         <source>Flow Limit Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="331"/>
+        <location filename="../sleepyhead/summary.cpp" line="337"/>
         <source>Hours per Night</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="340"/>
+        <location filename="../sleepyhead/summary.cpp" line="346"/>
         <source>Min EPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="354"/>
+        <location filename="../sleepyhead/summary.cpp" line="360"/>
         <source>Max IPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="369"/>
+        <location filename="../sleepyhead/summary.cpp" line="375"/>
         <source>Average Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="376"/>
+        <location filename="../sleepyhead/summary.cpp" line="382"/>
         <source>%1% Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="384"/>
+        <location filename="../sleepyhead/summary.cpp" line="390"/>
         <source>Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="400"/>
+        <location filename="../sleepyhead/summary.cpp" line="406"/>
         <source>Average %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="407"/>
+        <location filename="../sleepyhead/summary.cpp" line="413"/>
         <source>%1% %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="421"/>
+        <location filename="../sleepyhead/summary.cpp" line="427"/>
         <source>Oximetry Summary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="423"/>
+        <location filename="../sleepyhead/summary.cpp" line="429"/>
         <source>%1 day of Oximetry Data, on %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="425"/>
+        <location filename="../sleepyhead/summary.cpp" line="431"/>
         <source>%1 days of Oximetry Data, between %2 and %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="439"/>
+        <location filename="../sleepyhead/summary.cpp" line="445"/>
         <source>Average SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="446"/>
+        <location filename="../sleepyhead/summary.cpp" line="452"/>
         <source>Minimum SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="453"/>
+        <location filename="../sleepyhead/summary.cpp" line="459"/>
         <source>SpO2 Events / Hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="460"/>
+        <location filename="../sleepyhead/summary.cpp" line="466"/>
         <source>% of time in SpO2 Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="467"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Average Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="474"/>
+        <location filename="../sleepyhead/summary.cpp" line="480"/>
         <source>Minimum Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="481"/>
+        <location filename="../sleepyhead/summary.cpp" line="487"/>
         <source>Maximum Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="488"/>
+        <location filename="../sleepyhead/summary.cpp" line="494"/>
         <source>Pulse Change Events / Hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="653"/>
+        <location filename="../sleepyhead/summary.cpp" line="663"/>
         <source>Usage Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="654"/>
+        <location filename="../sleepyhead/summary.cpp" line="664"/>
         <source>Total Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="656"/>
+        <location filename="../sleepyhead/summary.cpp" line="666"/>
         <source>Compliant Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="663"/>
+        <location filename="../sleepyhead/summary.cpp" line="673"/>
         <source>Days AHI &amp;gt;5.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="667"/>
+        <location filename="../sleepyhead/summary.cpp" line="677"/>
         <source>Best&amp;nbsp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="676"/>
+        <location filename="../sleepyhead/summary.cpp" line="686"/>
         <source>Worst&amp;nbsp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="718"/>
+        <location filename="../sleepyhead/summary.cpp" line="728"/>
         <source>Best RX Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="754"/>
+        <location filename="../sleepyhead/summary.cpp" line="764"/>
         <source>Worst RX Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="776"/>
+        <location filename="../sleepyhead/summary.cpp" line="786"/>
         <source>Changes to Prescription Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="782"/>
+        <location filename="../sleepyhead/summary.cpp" line="792"/>
         <source>PS Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="782"/>
+        <location filename="../sleepyhead/summary.cpp" line="792"/>
         <source>PS Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="788"/>
+        <location filename="../sleepyhead/summary.cpp" line="798"/>
         <source>Min Pres.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="788"/>
+        <location filename="../sleepyhead/summary.cpp" line="798"/>
         <source>Max Pres.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="797"/>
+        <location filename="../sleepyhead/summary.cpp" line="807"/>
         <source>Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="799"/>
+        <location filename="../sleepyhead/summary.cpp" line="809"/>
         <source>FL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="802"/>
+        <location filename="../sleepyhead/summary.cpp" line="812"/>
         <source>Pr. Rel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="883"/>
+        <location filename="../sleepyhead/summary.cpp" line="893"/>
         <source>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="890"/>
+        <location filename="../sleepyhead/summary.cpp" line="900"/>
         <source>Machine Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="896"/>
+        <location filename="../sleepyhead/summary.cpp" line="906"/>
         <source>First Use</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="897"/>
+        <location filename="../sleepyhead/summary.cpp" line="907"/>
         <source>Last Use</source>
         <translation type="unfinished"></translation>
     </message>
