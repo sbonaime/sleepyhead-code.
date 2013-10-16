@@ -423,11 +423,11 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
     // F&P Overwrites this file, not appends to it.
     flow=new EventList(EVL_Waveform,1.0,0,0,0,rate);
-    leak=new EventList(EVL_Event,1.0,0,0,0,rate*double(samples_per_block)); // 1 per second
+    //leak=new EventList(EVL_Event,1.0,0,0,0,rate*double(samples_per_block)); // 1 per second
     pressure=new EventList(EVL_Event,0.01,0,0,0,rate*double(samples_per_block)); // 1 per second
 
     flow->setFirst(ti);
-    leak->setFirst(ti);
+    //leak->setFirst(ti);
     pressure->setFirst(ti);
 
     qint16 pr;
@@ -453,9 +453,12 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
         // The Pressure and lkaj codes are before the end of block marker
         p-=3;
-        pr=p[0] << 8 | p[1];
+        pr=p[1] << 8 | p[0];
         lkaj=p[2];
         int i=0;
+
+        pressure->AddEvent(ti,pr);
+        //leak->AddEvent(ti,lkaj);
 
         do {
             tmp=buf[1] << 8 | buf[0];
@@ -480,7 +483,7 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
         sess->setLast(CPAP_FlowRate,ti);
         sess->setLast(CPAP_MaskPressure,ti);
         sess->eventlist[CPAP_FlowRate].push_back(flow);
-        sess->eventlist[CPAP_Leak].push_back(leak);
+       // sess->eventlist[CPAP_Leak].push_back(leak);
         sess->eventlist[CPAP_MaskPressure].push_back(pressure);
     }
     if (newsess)
