@@ -41,9 +41,9 @@ exists(../.git):{
     DEFINES += GIT_BRANCH=\\\"$$system(git rev-parse --abbrev-ref HEAD)\\\"
     DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
 
-    equals(GIT_BRANCH,"unstable"):DEFINES += UNSTABLE_BUILD
+    equals($$system(git rev-parse --abbrev-ref HEAD),"unstable"):DEFINES += UNSTABLE_BUILD
 
-}else{
+} else {
     DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
     DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
 }

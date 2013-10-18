@@ -592,7 +592,7 @@ void MainWindow::on_action_About_triggered()
 {
 
     QString gitrev=QString(GIT_REVISION);
-    if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev;
+    if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev+" ("+QString(GIT_BRANCH)+" branch)";
 
 //    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
     QString msg=QString(
