@@ -39,8 +39,8 @@ TEMPLATE = app
 exists(../.git):{
 
     GIT_BRANCH=$$system(git rev-parse --abbrev-ref HEAD)
-    DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\"
-    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\"
+    DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
+    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
 
     contains(GIT_BRANCH,"unstable"):DEFINES += UNSTABLE_BUILD
 
