@@ -42,9 +42,14 @@ QString htmlHeader()
 "<body leftmargin=0 topmargin=0 rightmargin=0>"
 "<div align=center><table cellpadding=3 cellspacing=0 border=0>"
 "<tr><td><img src='qrc:/icons/bob-v3.0.png' width=140px height=140px><td valign=center align=center><h1>"+
-QObject::tr("SleepyHead")+" v"+VersionString+"</h1><i>"+
+STR_TR_SleepyHeadVersion+"</h1><i>"+
+#ifdef UNSTABLE_BUILD
+QObject::tr("This is an unstable build so expect the possibility things will go wrong.")+"<br/>"+
+QObject::tr("Please report bugs you find here to SleepyHead's developer mailing list.")+
+#else
 QObject::tr("This is a beta software and some functionality may not work as intended yet.")+"<br/>"+
 QObject::tr("Please report any bugs you find to SleepyHead's SourceForge page.")+
+#endif
 "</i></td></tr></table>"
 "</div>"
 "<hr/>");

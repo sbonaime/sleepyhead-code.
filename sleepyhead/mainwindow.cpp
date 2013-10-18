@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString version=FullVersionString;
     if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
-    this->setWindowTitle(tr("SleepyHead")+QString(" v%1 ("+tr("Profile")+": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+    this->setWindowTitle(STR_TR_SleepyHead+QString(" v%1 ("+tr("Profile")+": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
     // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent) :
     first_load=true;
 
     // Using the dirty registry here. :(
-    QSettings settings("Jedimark", "SleepyHead");
+    QSettings settings(getDeveloperName(), getAppName());
 
     // Load previous Window geometry
     this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
@@ -193,8 +193,8 @@ MainWindow::~MainWindow()
     if (systray) delete systray;
 
     // Save current window position
-        QSettings settings("Jedimark", "SleepyHead");
-        settings.setValue("MainWindow/geometry", saveGeometry());
+    QSettings settings(getDeveloperName(), getAppName());
+    settings.setValue("MainWindow/geometry", saveGeometry());
 
     if (daily) {
         daily->close();
@@ -231,7 +231,7 @@ void MainWindow::Notify(QString s,QString title,int ms)
 
 void MainWindow::Startup()
 {
-    qDebug() << PREF["AppName"].toString().toLatin1()+" v"+VersionString.toLatin1() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -599,7 +599,7 @@ void MainWindow::on_action_About_triggered()
 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
 "<table width=100%><tr><td>"
 "<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr/>"+
-tr("Copyright")+" &copy;2012 Mark Watkins (jedimark) <br/> \n"+
+tr("Copyright")+" &copy;2013 Mark Watkins (jedimark) <br/> \n"+
 tr("This software is released under the GNU Public License v3.0<br/>")+
 "<hr><p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
 tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"+

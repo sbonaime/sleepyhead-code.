@@ -22,6 +22,7 @@ License: GPL
 #include "lmcons.h"
 #endif
 
+#include "common.h"
 #include "preferences.h"
 
 const QString & getUserName()
@@ -56,7 +57,7 @@ const QString & getUserName()
 
 QString GetAppRoot()
 {
-    QSettings settings("Jedimark", "SleepyHead");
+    QSettings settings(getDeveloperName(), getAppName());
 
     QString HomeAppRoot=settings.value("Settings/AppRoot").toString();
 
@@ -67,7 +68,7 @@ QString GetAppRoot()
 #endif
 
     if (HomeAppRoot.isEmpty())
-        HomeAppRoot=desktopFolder+"/"+AppRoot;
+        HomeAppRoot=desktopFolder+"/"+getDefaultAppRoot();
 
     return HomeAppRoot;
 }
@@ -179,7 +180,7 @@ bool Preferences::Open(QString filename)
 
 
     QDomElement root=doc.documentElement();
-    if (root.tagName() != AppName) {
+    if (root.tagName() != STR_AppName) {
         return false;
     }
 
@@ -273,7 +274,7 @@ bool Preferences::Save(QString filename)
 
     QDomDocument doc(p_name);
 
-    QDomElement droot = doc.createElement(AppName);
+    QDomElement droot = doc.createElement(STR_AppName);
     doc.appendChild( droot );
 
     QDomElement root=doc.createElement(p_name);

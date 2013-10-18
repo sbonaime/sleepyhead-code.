@@ -8,10 +8,15 @@ const int minor_version=9;
 const int revision_number=4;
 const int release_number=0;
 
-const QString VersionString=QString().sprintf("%i.%i.%i",major_version,minor_version,revision_number);
-const QString FullVersionString=QString().sprintf("%i.%i.%i-%i",major_version,minor_version,revision_number,release_number);
 
+#ifdef UNSTABLE_BUILD
+const QString ReleaseStatus="unstable";
+#else
 const QString ReleaseStatus="beta";
+#endif
+
+const QString VersionString=QString().sprintf("%i.%i.%i",major_version,minor_version,revision_number);
+const QString FullVersionString=QString().sprintf("%i.%i.%i-%i",major_version,minor_version,revision_number,release_number)+" "+ReleaseStatus;
 
 #ifdef Q_OS_MAC
     const QString PlatformString="MacOSX";

@@ -9,6 +9,33 @@
 
 #include "profiles.h"
 
+// Used by internal settings
+
+
+const QString getDeveloperName()
+{
+    return STR_DeveloperName;
+}
+
+const QString getAppName()
+{
+    QString name=STR_AppName;
+#ifdef UNSTABLE_BUILD
+    name+=STR_Unstable;
+#endif
+    return name;
+}
+
+const QString getDefaultAppRoot()
+{
+    QString approot=STR_AppRoot;
+#ifdef UNSTABLE_BUILD
+    approot+=STR_Unstable;
+#endif
+    return approot;
+}
+
+
 qint64 timezoneOffset() {
     static bool ok=false;
     static qint64 _TZ_offset=0;

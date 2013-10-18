@@ -39,6 +39,17 @@ QString weightString(float kg, UnitSystem us=US_Undefined);
 //! \brief Mercilessly trash a directory
 bool removeDir(const QString & path);
 
+
+#ifdef UNSTABLE_BUILD
+const QString STR_Unstable="-Unstable";
+#else
+const QString STR_Unstable="";
+#endif
+
+const QString getAppName();
+const QString getDeveloperName();
+const QString getDefaultAppRoot();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Preference Name Strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +89,9 @@ const QString STR_MACH_ZEO="Zeo";
 const QString STR_PREF_VersionString="VersionString";
 const QString STR_PREF_Language="Language";
 
+const QString STR_AppName="SleepyHead";
+const QString STR_DeveloperName="Jedimark";
+const QString STR_AppRoot="SleepyHeadData";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Commonly used translatable text strings

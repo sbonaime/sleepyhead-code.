@@ -19,7 +19,6 @@ else:!use_bundled_libs:CONFIG += extserialport
 
 use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
 
-
 #static {
 #    CONFIG += static
 #    QTPLUGIN += qsvg qgif qpng
@@ -37,11 +36,19 @@ TEMPLATE = app
 
 # GIT_VERSION = $$system(git describe --tags --long --abbrev=6 --dirty="*")
 
-exists(.git):DEFINES += GIT_BRANCH=\\\"$$system(git rev-parse --abbrev-ref HEAD)\\\"
-else:DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
+exists(../.git):{
 
-exists(.git):DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
-else:DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
+    DEFINES += GIT_BRANCH=\\\"$$system(git rev-parse --abbrev-ref HEAD)\\\"
+    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
+
+    equals(GIT_BRANCH,"unstable"):DEFINES += UNSTABLE_BUILD
+
+}else{
+    DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
+    DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
+}
+
+
 
 unix:!macx {
     LIBS        += -lX11 -lz -lGLU

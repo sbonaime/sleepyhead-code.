@@ -17,10 +17,6 @@ License: GPL
 #include <QDomDocument>
 #include <map>
 
-
-const QString AppName="SleepyHead"; // Outer tag of XML files
-const QString AppRoot="SleepyHeadData";    // The Folder Name
-
 const QString STR_ext_XML=".xml";
 
 extern QString GetAppRoot(); //returns app root path plus trailing path separator.
