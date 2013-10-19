@@ -76,10 +76,6 @@ NewProfile::NewProfile(QWidget *parent) :
     ui->AppTitle->setText("SleepyHead v"+VersionString);
     ui->releaseStatus->setText(ReleaseStatus);
 
-    ui->dataFolderPath->setReadOnly(true);
-    ui->dataFolderPath->setText(GetAppRoot());
-
-
     ui->textBrowser->setSource(QUrl("qrc:/docs/intro.html"));
 }
 
@@ -99,12 +95,6 @@ void NewProfile::on_nextButton_clicked()
     case 0:
         if (!ui->agreeCheckbox->isChecked())
             return;
-
-        settings.setValue("Settings/AppRoot", ui->dataFolderPath->text());
-        p_pref->setFilename(ui->dataFolderPath->text()+"/"+p_pref->name()+xmlext);
-        p_pref->setPath(ui->dataFolderPath->text());
-        p_layout->setFilename(ui->dataFolderPath->text()+"/"+p_layout->name()+xmlext);
-        p_layout->setPath(ui->dataFolderPath->text());
         // Reload Preferences object
         break;
     case 1:
@@ -338,7 +328,6 @@ void NewProfile::on_passwordEdit2_editingFinished()
     m_passwordHashed=false;
 }
 
-
 void NewProfile::on_heightCombo_currentIndexChanged(int index)
 {
     if (index==0) {
@@ -360,20 +349,5 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         int inches=v % 12;
         ui->heightEdit->setValue(feet);
         ui->heightEdit2->setValue(inches);
-    }
-}
-
-void NewProfile::on_dataFolderButton_clicked()
-{
-    QFileDialog fd(this);
-    QString filename;
-    fd.setFileMode(QFileDialog::Directory);
-    fd.setOption(QFileDialog::ShowDirsOnly,true);
-
-    fd.setAcceptMode(QFileDialog::AcceptSave);
-    if (fd.exec()==QFileDialog::Accepted) {
-        filename=fd.selectedFiles()[0];
-        ui->dataFolderPath->setText(filename);
-        //ui->dataFolderPath->setEnabled(true);
     }
 }

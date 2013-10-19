@@ -17,6 +17,8 @@
 #include <QDir>
 #include <QComboBox>
 #include <QPushButton>
+#include <QSettings>
+#include <QFileDialog>
 
 #include "SleepLib/schema.h"
 #include "mainwindow.h"
@@ -134,6 +136,15 @@ void build_notes()
     relnotes.exec();
 }
 
+void sDelay(int s)
+{
+    // QThread::msleep() is exposed in Qt5
+#ifdef Q_OS_WIN32
+            Sleep(s*1000);
+#else
+            sleep(s);
+#endif
+}
 
 int main(int argc, char *argv[])
 {
@@ -146,18 +157,141 @@ int main(int argc, char *argv[])
 #endif
 
     bool force_login_screen=false;
+    bool force_data_dir=false;
+
     QApplication a(argc, argv);
     QStringList args=QCoreApplication::arguments();
 
     for (int i=1;i<args.size();i++) {
         if (args[i]=="-l") force_login_screen=true;
-        if (args[i]=="-p") {
-#ifdef Q_OS_WIN32
-            Sleep(1000);
+        else if (args[i]=="-d") force_data_dir=true;
+        else if (args[i]=="-p") {
+            sDelay(1);
+        }
+    }
+
+    QSettings settings(getDeveloperName(),getAppName());
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Language Selection
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    QDialog langsel(NULL,Qt::CustomizeWindowHint|Qt::WindowTitleHint);
+    langsel.setWindowTitle(QObject::tr("Language"));
+
+    QHBoxLayout lang_layout(&langsel);
+
+    QComboBox lang_combo(&langsel);
+    QPushButton lang_okbtn("->",&langsel);
+
+    lang_layout.addWidget(&lang_combo,1);
+    lang_layout.addWidget(&lang_okbtn);
+
+#ifdef Q_WS_MAC
+    QString transdir=QDir::cleanPath(QCoreApplication::applicationDirPath()+"/../Resources/Translations/");
 #else
-            sleep(1);
+    const QString transdir=QCoreApplication::applicationDirPath()+"/Translations/";
 #endif
 
+    QDir dir(transdir);
+    qDebug() << "Scanning \"" << transdir << "\" for translations";
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList("*.qm"));
+
+    qDebug() << "Available Translations";
+    QFileInfoList list=dir.entryInfoList();
+    QString language=settings.value("Settings/Language").toString();
+
+    language="";
+
+    QString langfile,langname;
+
+    // Fake english for now..
+    lang_combo.addItem("English","English.en_US.qm");
+
+    // Scan translation directory
+    for (int i=0;i<list.size();++i) {
+        QFileInfo fi=list.at(i);
+        langname=fi.fileName().section('.',0,0);
+
+        lang_combo.addItem(langname,fi.fileName());
+        qDebug() << "Found Translation" << QDir::toNativeSeparators(fi.fileName());
+    }
+
+    for (int i=0;i<lang_combo.count();i++) {
+        langname=lang_combo.itemText(i);
+        if (langname==language) {
+            langfile=lang_combo.itemData(i).toString();
+            break;
+        }
+    }
+
+    if (language.isEmpty()) {
+        langsel.connect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
+
+        langsel.exec();
+        langsel.disconnect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
+        langname=lang_combo.currentText();
+        langfile=lang_combo.itemData(lang_combo.currentIndex()).toString();
+        settings.setValue("Settings/Language",langname);
+    }
+
+    qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
+    QTranslator translator;
+
+    translator.load(langfile,transdir);
+
+    a.installTranslator(&translator);
+
+    a.setApplicationName(STR_TR_SleepyHead);
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Datafolder location Selection
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool change_data_dir=force_data_dir;
+
+    bool havefolder=false;
+    if (!settings.contains("Settings/AppRoot")) {
+        change_data_dir=true;
+    } else {
+        QDir dir(GetAppRoot());
+        if (!dir.exists())
+            change_data_dir=true;
+        else havefolder=true;
+    }
+
+    if (!havefolder && !force_data_dir) {
+        if (QMessageBox::question(NULL,QObject::tr("Question"),QObject::tr("No SleepyHead data folder was found.\n\nWould you like SleepyHead to use the default location for storing it's data?\n\n")+GetAppRoot(),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+            settings.setValue("Settings/AppRoot",GetAppRoot());
+            change_data_dir=false;
+        }
+    }
+
+retry_directory:
+    if (change_data_dir) {
+        QString datadir=QFileDialog::getExistingDirectory(NULL,QObject::tr("Choose or create new folder for Sleepyhead data"),GetAppRoot(),QFileDialog::ShowDirsOnly);
+        if (datadir.isEmpty()) {
+            if (!havefolder) {
+               QMessageBox::information(NULL,QObject::tr("Exiting"),QObject::tr("As you did not select a data folder, SleepyHead will exit.\n\nNext time you run, you will be asked again."));
+               return 0;
+            } else {
+                QMessageBox::information(NULL,QObject::tr("No Directory"),QObject::tr("You did not select a directory.\n\nSleepyHead will now start with your old one.\n\n")+GetAppRoot(),QMessageBox::Ok);
+            }
+        } else {
+            QDir dir(datadir);
+            QFile file(datadir+"/Preferences.xml");
+            if (!file.exists()) {
+                if (dir.count() > 2) {
+                    // Not a new directory.. nag the user.
+                    if (QMessageBox::question(NULL,QObject::tr("Warning"),QObject::tr("The folder you chose is not empty, nor does it already contain valid SleepyHead data.\n\nAre you sure you want to use this folder?\n\n")+datadir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+                        goto retry_directory;
+                    }
+                }
+            }
+
+            settings.setValue("Settings/AppRoot",datadir);
+            qDebug() << "Changing data folder to" << datadir;
         }
     }
 
@@ -192,73 +326,6 @@ int main(int argc, char *argv[])
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    // Language Selection
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    QDialog langsel(NULL,Qt::CustomizeWindowHint|Qt::WindowTitleHint);
-    langsel.setWindowTitle(QObject::tr("Language"));
-
-    QHBoxLayout lang_layout(&langsel);
-
-    QComboBox lang_combo(&langsel);
-    QPushButton lang_okbtn("->",&langsel);
-
-    lang_layout.addWidget(&lang_combo,1);
-    lang_layout.addWidget(&lang_okbtn);
-
-#ifdef Q_WS_MAC
-    QString transdir=QCoreApplication::applicationDirPath()+"/Contents/Resources/Translations/";
-#else
-    QString transdir=QCoreApplication::applicationDirPath()+"/Translations/";
-#endif
-    QDir dir(transdir);
-    qDebug() << "Scanning \"" << transdir << "\" for translations";
-    dir.setFilter(QDir::Files);
-    dir.setNameFilters(QStringList("*.qm"));
-
-    qDebug() << "Available Translations";
-    QFileInfoList list=dir.entryInfoList();
-    QString language=PREF[STR_PREF_Language].toString();
-
-    QString langfile,langname;
-
-    // Fake english for now..
-    lang_combo.addItem("English","English.en_US.qm");
-
-    // Scan translation directory
-    for (int i=0;i<list.size();++i) {
-        QFileInfo fi=list.at(i);
-        langname=fi.fileName().section('.',0,0);
-
-        lang_combo.addItem(langname,fi.fileName());
-        qDebug() << "Found Translation" << QDir::toNativeSeparators(fi.fileName());
-    }
-
-    for (int i=0;i<lang_combo.count();i++) {
-        langname=lang_combo.itemText(i);
-        if (langname==language) {
-            langfile=lang_combo.itemData(i).toString();
-            break;
-        }
-    }
-
-    if (language.isEmpty()) {
-        langsel.connect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
-
-        langsel.exec();
-        langsel.disconnect(&lang_okbtn,SIGNAL(clicked()),&langsel, SLOT(close()));
-        langname=lang_combo.currentText();
-        langfile=lang_combo.itemData(lang_combo.currentIndex()).toString();
-        PREF[STR_PREF_Language]=langname;
-    }
-
-    qDebug() << "Loading " << langname << " Translation" << langfile;
-    QTranslator translator;
-
-    translator.load(langfile,QCoreApplication::applicationDirPath()+"/Translations");
-    a.installTranslator(&translator);
-
-    a.setApplicationName(STR_TR_SleepyHead);
 
 
 

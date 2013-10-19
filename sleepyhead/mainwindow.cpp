@@ -1054,7 +1054,7 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
     getOverview()->ReloadGraphs();
 }
 
-void MainWindow::RestartApplication(bool force_login)
+void MainWindow::RestartApplication(bool force_login,bool change_datafolder)
 {
     QString apppath;
 #ifdef Q_OS_MAC
@@ -1073,6 +1073,7 @@ void MainWindow::RestartApplication(bool force_login)
 
 
         if (force_login) args << "-l";
+        if (change_datafolder) args << "-d";
 
         if (QProcess::startDetached("/usr/bin/open",args)) {
             QApplication::instance()->exit();
@@ -1090,6 +1091,7 @@ void MainWindow::RestartApplication(bool force_login)
         QStringList args;
         args << "-p";
         if (force_login) args << "-l";
+        if (change_datafolder) args << "-d";
         if (QProcess::startDetached(apppath,args)) {
             ::exit(0);
             //QApplication::instance()->exit();
@@ -1455,9 +1457,18 @@ void MainWindow::on_actionHelp_Support_Sleepyhead_Development_triggered()
 
 void MainWindow::on_actionChange_Language_triggered()
 {
-    PREF.Erase(STR_PREF_Language);
+    QSettings *settings=new QSettings(getDeveloperName(),getAppName());
+    settings->remove("Settings/Language");
+    delete settings;
     PROFILE.Save();
     PREF.Save();
 
     RestartApplication(true);
+}
+
+void MainWindow::on_actionChange_Data_Folder_triggered()
+{
+    PROFILE.Save();
+    PREF.Save();
+    RestartApplication(false,true);
 }

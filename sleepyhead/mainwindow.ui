@@ -448,7 +448,7 @@ QToolBox::tab:selected  {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-16</y>
+          <y>0</y>
           <width>165</width>
           <height>514</height>
          </rect>
@@ -2075,6 +2075,7 @@ border-radius: 10px;
     <addaction name="actionExp_ort"/>
     <addaction name="separator"/>
     <addaction name="actionChange_User"/>
+    <addaction name="actionChange_Data_Folder"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
@@ -2354,6 +2355,11 @@ border-radius: 10px;
   <action name="actionChange_Language">
    <property name="text">
     <string>Change &amp;Language</string>
+   </property>
+  </action>
+  <action name="actionChange_Data_Folder">
+   <property name="text">
+    <string>Change &amp;Data Folder</string>
    </property>
   </action>
  </widget>
