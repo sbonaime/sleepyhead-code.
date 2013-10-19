@@ -71,8 +71,8 @@ void InitGraphs()
             PREF["Fonts_Graph_Italic"]=false;
         }
         if (!PREF.contains("Fonts_Title_Name")) {
-            PREF["Fonts_Title_Name"]="Serif";
-            PREF["Fonts_Title_Size"]=11;
+            PREF["Fonts_Title_Name"]="Sans Serif";
+            PREF["Fonts_Title_Size"]=14;
             PREF["Fonts_Title_Bold"]=true;
             PREF["Fonts_Title_Italic"]=false;
         }

@@ -601,18 +601,21 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         ////////////////////////////////////////////////////////////////////
         // Draw Legends on the top line
         ////////////////////////////////////////////////////////////////////
+
+        QFontMetrics fm(*defaultfont);
+        int bw=fm.xHeight();
+        int bh=fm.height()/1.5;
+
         if ((codepoints>0)) { //(m_codes.size()>1) &&
             QString text=schema::channel[code].label();
             int wid,hi;
             GetTextExtent(text,wid,hi);
             legendx-=wid;
             w.renderText(text,legendx,top-4);
-            int bw=GetXHeight();
-            legendx-=bw/2;
 
-            int tp=top-5-bw/2;
-            w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_colors[gi].rgba());
-            legendx-=hi+bw/2;
+            int tp=top-5-bh/2;
+            w.quads()->add(legendx-bw,tp+bh/2,legendx,tp+bh/2,legendx,tp-bh/2,legendx-bw,tp-bh/2,m_colors[gi].rgba());
+            legendx-=bw*2;
         }
     }
     if (!total_points) { // No Data?

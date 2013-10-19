@@ -570,6 +570,10 @@ jumpnext:
     QString a,b;
     int x,y;
 
+    QFontMetrics fm(*defaultfont);
+    int bw=fm.xHeight();
+    int bh=fm.height()/1.5;
+
     bool ishours=false;
     int good=0;
     for (int j=0;j<m_codes.size();j++) {
@@ -635,12 +639,11 @@ jumpnext:
         GetTextExtent(a,wid,hi);
         legendx-=wid;
         w.renderText(a,legendx,top-4);
-        int bw=GetXHeight();
-        legendx-=bw/2;
+      //  legendx-=bw/2;
 
-        int tp=top-5-bw/2;
-        w.quads()->add(legendx-bw,tp+bw/2,legendx,tp+bw/2,legendx,tp-bw/2,legendx-bw,tp-bw/2,m_colors[j].rgba());
-        legendx-=hi+bw/2;
+        int tp=top-5-bh/2;
+        w.quads()->add(legendx-bw,tp+bh/2,legendx,tp+bh/2,legendx,tp-bh/2,legendx-bw,tp-bh/2,m_colors[j].rgba());
+        legendx-=bw*2;
 
 
         //lines->add(px,py,px+20,py,m_colors[j]);
@@ -652,8 +655,8 @@ jumpnext:
             float val=total_val/float(total_hours);
             a=m_label+"="+QString::number(val,'f',2)+" ";
             GetTextExtent(a,x,y);
-            legendx-=20+x;
-            w.renderText(a,legendx+24,py+1);
+            legendx-=x;
+            w.renderText(a,legendx,py+1);
         }
     }
 
