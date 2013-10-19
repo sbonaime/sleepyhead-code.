@@ -571,8 +571,8 @@ jumpnext:
     int x,y;
 
     QFontMetrics fm(*defaultfont);
-    int bw=fm.xHeight();
-    int bh=fm.height()/1.5;
+    int bw=fm.width('X');
+    int bh=fm.height()/1.8;
 
     bool ishours=false;
     int good=0;

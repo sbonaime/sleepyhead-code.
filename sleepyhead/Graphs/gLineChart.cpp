@@ -603,8 +603,8 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         ////////////////////////////////////////////////////////////////////
 
         QFontMetrics fm(*defaultfont);
-        int bw=fm.xHeight();
-        int bh=fm.height()/1.5;
+        int bw=fm.width('X');
+        int bh=fm.height()/1.8;
 
         if ((codepoints>0)) { //(m_codes.size()>1) &&
             QString text=schema::channel[code].label();
