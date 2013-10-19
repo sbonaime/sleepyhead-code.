@@ -340,7 +340,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             if (x>labelW) labelW=x;
             h=top+height-ty;
             if (h<top) continue;
-            w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color);
+            w.renderText(fd,left+width-8-x,(h+(y/2.0)),0,m_text_color,defaultfont);
 
             lines->add(left+width-4,h,left+width,h,line_color);
 

@@ -65,6 +65,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             m_image.fill(Qt::transparent);
             painter.begin(&m_image);
             painter.setPen(Qt::black);
+            painter.setFont(*defaultfont);
         }
         double px,py;
 
@@ -229,7 +230,7 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             if (m_utcfix)
                 tx+=step_pixels/2.0;
             if ((tx+x)<(left+width)) {
-                if (!usepixmap) w.renderText(tmpstr,tx,texttop);
+                if (!usepixmap) w.renderText(tmpstr,tx,texttop,0,Qt::black,defaultfont);
                 else painter.drawText(tx-left+20,texttop-top,tmpstr);
             }
             py=px;
