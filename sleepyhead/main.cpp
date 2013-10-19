@@ -201,8 +201,6 @@ int main(int argc, char *argv[])
     QFileInfoList list=dir.entryInfoList();
     QString language=settings.value("Settings/Language").toString();
 
-    language="";
-
     QString langfile,langname;
 
     // Fake english for now..
