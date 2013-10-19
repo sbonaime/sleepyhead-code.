@@ -478,8 +478,46 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->really_set_first(qint64(timestamp)*1000L);
     EventDataType max,min;
 
-    min=float(data[0x03])/10.0;
-    max=float(data[0x04])/10.0;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ASV Codes (Family 5) Recheck 17/10/2013
+    // These are all confirmed off Encore reports
+
+    //cpapmax=EventDataType(data[0x02])/10.0;   // Max Pressure in ASV machines
+    //minepap=EventDataType(data[0x03])/10.0;   // Min EPAP
+    //maxepap=EventDataType(data[0x04])/10.0;   // Max EPAP
+    //minps=EventDataType(data[0x05])/10.0      // Min Pressure Support
+    //maxps=EventDataType(data[0x06])/10.0      // Max Pressure Support
+
+    //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
+
+    //epap90=EventDataType(data[0x21])/10.0;    // EPAP 90%
+    //epapavg=EventDataType(data[0x22])/10.0;   // EPAP Average
+    //ps90=EventDataType(data[0x23])/10.0;      // Pressure Support 90%
+    //psavg=EventDataType(data[0x24])/10.0;     // Pressure Support Average
+
+    //TODO: minpb=data[0x] | data[0x] << 8;           // Minutes in PB
+    //TODO: minleak=data[0x] | data[0x] << 8;         // Minutes in Large Leak
+    //TODO: oa_cnt=data[0x] | data[0x] << 8;          // Obstructive events count
+
+    //ca_cnt=data[0x2d] | data[0x2e] << 8;      // Clear Airway Events count
+    //h_cnt=data[0x2f] | data[0x30] << 8;       // Hypopnea events count
+    //fl_cnt=data[0x33] | data[0x34] << 8;      // Flow Limitation events count
+
+    //avg_leak=EventDataType(data[0x35]);       // Average Leak
+    //avgptb=EventDataType(data[0x36]);         // Average Patient Triggered Breaths %
+    //avgbreathrate=EventDataType(data[0x37]);  // Average Breaths Per Minute
+    //avgminvent=EventDataType(data[0x38]);     // Average Minute Ventilation
+    //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+    min=float(data[0x03])/10.0;   // Min EPAP
+    max=float(data[0x04])/10.0;   // Max EPAP
     int offset=0;
 
     if (family==5) { //data[0x05]!=0) { // This is a time value for ASV stuff
@@ -558,10 +596,11 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
             //session->setWavg(CPAP_Pressure,min);
         }
     } else {
-        // 0X28 & 0X29 is length on r5
 
+        // 0X28 & 0X29 is length on r5
         if (family == 0 && familyVersion >= 4)
             offset += 12;
+
         duration=data[offset+0x14] | (data[offset+0x15] << 8);
         if (!duration) {
 	    qDebug() << "!duration exit";
