@@ -630,7 +630,7 @@ public:
 namespace Profiles
 {
 
-extern QHash<QString,Profile *> profiles;
+extern QMap<QString,Profile *> profiles;
 void Scan(); // Initialize and load Profile
 void Done(); // Save all Profile objects and clear list
 

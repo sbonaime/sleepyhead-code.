@@ -32,7 +32,7 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     QString name;
 
     QIcon icon(":/icons/moon.png");
-    for (QHash<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
+    for (QMap<QString,Profile *>::iterator p=Profiles::profiles.begin();p!=Profiles::profiles.end();p++) {
         name=p.key();
 
         QStandardItem *item=new QStandardItem(icon,name);

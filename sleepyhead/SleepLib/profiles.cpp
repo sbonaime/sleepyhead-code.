@@ -434,14 +434,14 @@ QString SHA1(QString pass)
 namespace Profiles
 {
 
-QHash<QString,Profile *> profiles;
+QMap<QString,Profile *> profiles;
 
 void Done()
 {
     PREF.Save();
     LAYOUT.Save();
     // Only save the open profile..
-    for (QHash<QString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
+    for (QMap<QString,Profile *>::iterator i=profiles.begin(); i!=profiles.end(); i++) {
         i.value()->Save();
         delete i.value();
     }
