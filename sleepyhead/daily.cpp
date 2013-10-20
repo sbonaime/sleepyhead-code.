@@ -1172,25 +1172,10 @@ void Daily::Load(QDate date)
 
         modestr=schema::channel[CPAP_Mode].m_options[mode];
 
-        float ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
+        EventDataType ahi=(cpap->count(CPAP_Obstructive)+cpap->count(CPAP_Hypopnea)+cpap->count(CPAP_ClearAirway)+cpap->count(CPAP_Apnea));
         if (PROFILE.general->calculateRDI()) ahi+=cpap->count(CPAP_RERA);
         ahi/=hours;
-        float csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0);
-        float uai=cpap->count(CPAP_Apnea)/hours;
-        float oai=cpap->count(CPAP_Obstructive)/hours;
-        float hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours;
-        float cai=cpap->count(CPAP_ClearAirway)/hours;
-        float rei=cpap->count(CPAP_RERA)/hours;
-        float fli=cpap->count(CPAP_FlowLimit)/hours;
-        float nri=cpap->count(CPAP_NRI)/hours;
-        float lki=cpap->count(CPAP_LeakFlag)/hours;
-        float exp=cpap->count(CPAP_ExP)/hours;
-
-        //float p90=cpap->p90(CPAP_Pressure);
-        //eap90=cpap->p90(CPAP_EPAP);
-        //iap90=cpap->p90(CPAP_IPAP);
-
-        QString cs;
+        EventDataType csr,uai,oai,hi,cai,rei,fli,nri,lki,vs,vs2,exp,lk2;
 
         if (!isBrick && hours>0) {
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
@@ -1208,105 +1193,65 @@ void Daily::Load(QDate date)
             html+=getCPAPInformation(cpap);
             html+=getSleepTime(cpap,oxi);
 
+            struct ChannelInfo {
+                ChannelID id;
+                QString name;
+                QColor color;
+                QColor color2;
+                EventDataType value;
+            };
+            ChannelInfo chans[]={
+                { CPAP_Hypopnea,    tr("Hypopnea"),             COLOR_Hypopnea,     Qt::white, hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours },
+                { CPAP_Obstructive, tr("Obstructive Apnea"),    COLOR_Obstructive,  Qt::black, oai=cpap->count(CPAP_Obstructive)/hours },
+                { CPAP_Apnea,       tr("Unclassified Apnea"),   COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
+                { CPAP_ClearAirway, tr("Clear Airway Apnea"),   COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
+                { CPAP_NRI,         tr("Non Responding Event"), COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
+                { CPAP_FlowLimit,   tr("Flow Limitation"),      COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
+                { CPAP_ExP,         tr("Expiratory Puff"),      COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
+                { CPAP_RERA,        tr("Respiratory Effort Related Arousal"), COLOR_RERA, Qt::black, rei=cpap->count(CPAP_RERA)/hours },
+                { CPAP_VSnore,      tr("Vibratory Snore"),      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
+                { CPAP_VSnore2,     tr("Vibratory Snore"),      COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
+                { CPAP_LeakFlag,    tr("Large Leak"),           COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
+                { PRS1_10,          tr("Large Leak"),           COLOR_LeakFlag,     Qt::black, lk2=cpap->count(PRS1_10)/hours },
+                { CPAP_CSR,         tr("Periodic Breathing / CSR %"), COLOR_CSR,      Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
+            };
+            int numchans=sizeof(chans)/sizeof(ChannelInfo);
 
             html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+            for (int i=0;i<numchans;i++) {
+                if (!cpap->channelHasData(chans[i].id))
+                    continue;
+                if ((cpap->machine->GetClass()==STR_MACH_PRS1) && (chans[i].id==CPAP_VSnore))
+                    continue;
+                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
+                        .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(chans[i].value,0,'f',2).arg(chans[i].id);
 
-            if (cpap->machine->GetClass()==STR_MACH_ResMed || cpap->machine->GetClass()==STR_MACH_FPIcon) {
-                cs="4 width='70%' align=center>";
-            } else cs="2 width='50%'>";
-            html+="<tr><td valign=top colspan="+cs+"<table cellspacing=0 cellpadding=1 border=0 width='100%'>";
-
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_Hypopnea.name()).arg("white").arg(tr("Hypopnea")).arg(schema::channel[CPAP_Hypopnea].description()).arg(hi,0,'f',2).arg(CPAP_Hypopnea);
-            if (cpap->machine->GetClass()==STR_MACH_ResMed) {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg(COLOR_Apnea.name()).arg(COLOR_Text.name())
-                        .arg(tr("Apnea")).arg(schema::channel[CPAP_Apnea].description()).arg(uai,0,'f',2).arg(CPAP_Apnea);
+                // keep in case tooltips are needed
+                //html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
+                // .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(schema::channel[chans[i].id].description()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
             }
-            html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_Obstructive.name()).arg(COLOR_Text.name()).arg(tr("Obstructive")).arg(schema::channel[CPAP_Obstructive].description()).arg(oai,0,'f',2).arg(CPAP_Obstructive);
+            html+="</table>";
 
-            if (cpap->machine->GetClass()==STR_MACH_FPIcon) {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_FlowLimit.name()).arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
-            } else {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_ClearAirway.name()).arg(COLOR_Text.name()).arg(tr("Clear Airway")).arg(schema::channel[CPAP_ClearAirway].description()).arg(cai,0,'f',2).arg(CPAP_ClearAirway);
-            }
-
-            if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                  .arg(schema::channel[CPAP_NRI].defaultColor().name()).arg(COLOR_Text.name()).arg(STR_TR_NRI).arg(schema::channel[CPAP_NRI].description()).arg(nri,0,'f',2).arg(CPAP_NRI);
-            }
-            if (PROFILE.cpap->userEventFlagging()) {
-                EventDataType uf1=cpap->count(CPAP_UserFlag1) / cpap->hours();
-                if (uf1>0)
-                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg(COLOR_UserFlag1.name()).arg(COLOR_Text.name())
-                        .arg(tr("User Flags"))
-                        .arg(schema::channel[CPAP_UserFlag1].description())
-                        .arg(uf1,0,'f',2).arg(CPAP_UserFlag1);
-            }
-
-            html+="</table></td>";
-
-            if (cpap->machine->GetClass()==STR_MACH_PRS1) {
-                html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_RERA.name()).arg(COLOR_Text.name()).arg(STR_TR_RERA).arg(schema::channel[CPAP_RERA].description()).arg(rei,0,'f',2).arg(CPAP_RERA);
-                if (mode>MODE_CPAP) {
-                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg(COLOR_FlowLimit.name()).arg("white").arg(tr("Flow Limit")).arg(schema::channel[CPAP_FlowLimit].description()).arg(fli,0,'f',2).arg(CPAP_FlowLimit);
-
-                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
-                } else {
-                    //html+="<tr bgcolor='#404040'><td colspan=2>&nbsp;</td></tr>";
-                    html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                        .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore2")).arg(schema::channel[CPAP_VSnore2].description()).arg(cpap->count(CPAP_VSnore2)/cpap->hours(),0,'f',2).arg(CPAP_VSnore2);
-                }
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                        .arg(COLOR_CSR.name()).arg(COLOR_Text.name()).arg(tr("PB/CSR")).arg(schema::channel[CPAP_CSR].description()).arg(csr,0,'f',2).arg(CPAP_CSR);
-
-                html+="</table></td>";
-            } else if (cpap->machine->GetClass()==STR_MACH_Intellipap) {
-                html+="<td colspan=2 valign=top><table cellspacing=0 cellpadding=1 border=0 width='100%'>";
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                .arg(COLOR_LeakFlag.name()).arg(COLOR_Text.name()).arg(STR_TR_Leak).arg(schema::channel[CPAP_LeakFlag].description()).arg(lki,0,'f',2).arg(CPAP_LeakFlag);
-
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")
-                    .arg(COLOR_VibratorySnore.name()).arg(COLOR_Text.name()).arg(tr("VSnore")).arg(schema::channel[CPAP_VSnore].description()).arg(cpap->count(CPAP_VSnore)/cpap->hours(),0,'f',2).arg(CPAP_VSnore);
-                html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info2 href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5%</font></b></td></tr>\n")
-                  .arg(COLOR_ExP.name()).arg("white").arg(tr("Exh&nbsp;Puff")).arg(schema::channel[CPAP_ExP].description()).arg(exp,0,'f',2).arg(CPAP_ExP);
-
-                html+="</table></td>";
-
-            }
-            html+="</tr>";
-
-            // Note, this may not be a problem since Qt bug 13622 was discovered
-            // as it only relates to text drawing, which the Pie chart does not do
-            // ^^ Scratch that.. pie now includes text..
-
+            html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
+            // Show Event Breakdown pie chart
             if ((hours > 0) && PROFILE.appearance->graphSnapshots()) {  // AHI Pie Chart
                 if ((oai+hi+cai+uai+rei+fli)>0) {
-                    html+="<tr><td colspan=5 align=center>&nbsp;</td></tr>";
-                    //html+="<tr><td colspan=5 align=center><hr/></td></tr>";
-                    html+=QString("<tr><td colspan=4 align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
+                    html+="<tr><td align=center>&nbsp;</td></tr>";
+                    html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     GAHI->setShowTitle(false);
 
-                    QPixmap pixmap=GAHI->renderPixmap(160,160,false);
+                    QPixmap pixmap=GAHI->renderPixmap(155,155,false);
                     if (!pixmap.isNull()) {
                         QByteArray byteArray;
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                         buffer.open(QIODevice::WriteOnly);
                         pixmap.save(&buffer, "PNG");
-                        html += "<tr><td colspan=4 align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
                     } else {
-                        html += "<tr><td colspan=4 align=center>Unable to display Pie Chart on this system</td></tr>\n";
+                        html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }
                 } else {
-                    html += "<tr><td colspan=4 align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
+                    html += "<tr><td align=center><img src=\"qrc:/docs/0.0.gif\"></td></tr>\n";
                 }
             }
 

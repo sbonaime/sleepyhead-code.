@@ -40,7 +40,7 @@ box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 5px 5px rgba(0, 
 }
 
 a:link, a:visited { color: inherit; text-decoration: none; font-weight: normal;}
-a:hover { background-color: inherit; color: blue; text-decoration:none; font-weight: normal; }
+a:hover { background-color: inherit; color: #ff8888; text-decoration:none; font-weight: bold; }
 
 #text {margin:50px auto; width:500px}
 .hotspot {color:#900; padding-bottom:1px; border-bottom:1px dotted #900; cursor:pointer}
