@@ -239,6 +239,7 @@ int main(int argc, char *argv[])
     translator.load(langfile,transdir);
 
     a.installTranslator(&translator);
+    initializeStrings(); // Important, call this AFTER translator is installed.
 
     a.setApplicationName(STR_TR_SleepyHead);
 

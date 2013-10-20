@@ -50,6 +50,9 @@ const QString getAppName();
 const QString getDeveloperName();
 const QString getDefaultAppRoot();
 
+void initializeStrings();
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Preference Name Strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,152 +100,152 @@ const QString STR_AppRoot="SleepyHeadData";
 // Commonly used translatable text strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-const QString STR_UNIT_CM=QObject::tr("cm");
-const QString STR_UNIT_INCH=QObject::tr("\"");
-const QString STR_UNIT_FOOT=QObject::tr("ft");
-const QString STR_UNIT_POUND=QObject::tr("lb");
-const QString STR_UNIT_OUNCE=QObject::tr("oz");
-const QString STR_UNIT_KG=QObject::tr("Kg");
-const QString STR_UNIT_CMH2O=QObject::tr("cmH2O");
-const QString STR_UNIT_Hours=QObject::tr("Hours");
+extern QString STR_UNIT_CM;
+extern QString STR_UNIT_INCH;
+extern QString STR_UNIT_FOOT;
+extern QString STR_UNIT_POUND;
+extern QString STR_UNIT_OUNCE;
+extern QString STR_UNIT_KG;
+extern QString STR_UNIT_CMH2O;
+extern QString STR_UNIT_Hours;
+extern QString STR_UNIT_BPM;       // Beats per Minute
+extern QString STR_UNIT_LPM;       // Litres per Minute
 
-const QString STR_UNIT_BPM=QObject::tr("bpm");          // Beats per Minute
-const QString STR_UNIT_LPM=QObject::tr("L/m");          // Litres per Minute
+extern QString STR_MESSAGE_ERROR;
+extern QString STR_MESSAGE_WARNING;
 
-const QString STR_MESSAGE_ERROR=QObject::tr("Error");
-const QString STR_MESSAGE_WARNING=QObject::tr("Warning");
+extern QString STR_TR_BMI;         // Short form of Body Mass Index
+extern QString STR_TR_Weight;
+extern QString STR_TR_Zombie;
+extern QString STR_TR_PulseRate;   // Pulse / Heart rate
+extern QString STR_TR_SpO2;
+extern QString STR_TR_Plethy;      // Plethysomogram
+extern QString STR_TR_Pressure;
 
-const QString STR_TR_BMI=QObject::tr("BMI");                // Short form of Body Mass Index
-const QString STR_TR_Weight=QObject::tr("Weight");
-const QString STR_TR_Zombie=QObject::tr("Zombie");
-const QString STR_TR_PulseRate=QObject::tr("Pulse Rate");   // Pulse / Heart rate
-const QString STR_TR_SpO2=QObject::tr("SpO2");
-const QString STR_TR_Plethy=QObject::tr("Plethy");          // Plethysomogram
-const QString STR_TR_Pressure=QObject::tr("Pressure");
+extern QString STR_TR_Daily;
+extern QString STR_TR_Overview;
+extern QString STR_TR_Oximetry;
 
-const QString STR_TR_Daily=QObject::tr("Daily");
-const QString STR_TR_Overview=QObject::tr("Overview");
-const QString STR_TR_Oximetry=QObject::tr("Oximetry");
-const QString STR_TR_Oximeter=QObject::tr("Oximeter");
-const QString STR_TR_EventFlags=QObject::tr("Event Flags");
+extern QString STR_TR_Oximeter;
+extern QString STR_TR_EventFlags;
 
 // Machine type names.
-const QString STR_TR_CPAP=QObject::tr("CPAP");      // Constant Positive Airway Pressure
-const QString STR_TR_BIPAP=QObject::tr("BiPAP");    // Bi-Level Positive Airway Pressure
-const QString STR_TR_BiLevel=QObject::tr("Bi-Level"); // Another name for BiPAP
-const QString STR_TR_EPAP=QObject::tr("EPAP");      // Expiratory Positive Airway Pressure
-const QString STR_TR_IPAP=QObject::tr("IPAP");      // Inspiratory Positive Airway Pressure
-const QString STR_TR_IPAPLo=QObject::tr("IPAPLo");  // Inspiratory Positive Airway Pressure, Low
-const QString STR_TR_IPAPHi=QObject::tr("IPAPHi");  // Inspiratory Positive Airway Pressure, High
-const QString STR_TR_APAP=QObject::tr("APAP");      // Automatic Positive Airway Pressure
-const QString STR_TR_ASV=QObject::tr("ASV");        // Assisted Servo Ventilator
-const QString STR_TR_STASV=QObject::tr("ST/ASV");
+extern QString STR_TR_CPAP;    // Constant Positive Airway Pressure
+extern QString STR_TR_BIPAP;   // Bi-Level Positive Airway Pressure
+extern QString STR_TR_BiLevel; // Another name for BiPAP
+extern QString STR_TR_EPAP;    // Expiratory Positive Airway Pressure
+extern QString STR_TR_IPAP;    // Inspiratory Positive Airway Pressure
+extern QString STR_TR_IPAPLo;  // Inspiratory Positive Airway Pressure, Low
+extern QString STR_TR_IPAPHi;  // Inspiratory Positive Airway Pressure, High
+extern QString STR_TR_APAP;    // Automatic Positive Airway Pressure
+extern QString STR_TR_ASV;     // Assisted Servo Ventilator
+extern QString STR_TR_STASV;
 
-const QString STR_TR_Humidifier=QObject::tr("Humidifier");
+extern QString STR_TR_Humidifier;
 
-const QString STR_TR_H=QObject::tr("H");        // Short form of Hypopnea
-const QString STR_TR_OA=QObject::tr("OA");      // Short form of Obstructive Apnea
-const QString STR_TR_UA=QObject::tr("A");       // Short form of Unspecified Apnea
-const QString STR_TR_CA=QObject::tr("CA");      // Short form of Clear Airway Apnea
-const QString STR_TR_FL=QObject::tr("FL");      // Short form of Flow Limitation
-const QString STR_TR_LE=QObject::tr("LE");      // Short form of Leak Event
-const QString STR_TR_EP=QObject::tr("EP");      // Short form of Expiratory Puff
-const QString STR_TR_VS=QObject::tr("VS");      // Short form of Vibratory Snore
-const QString STR_TR_VS2=QObject::tr("VS2");    // Short form of Secondary Vibratory Snore (Some Philips Respironics Machines have two sources)
-const QString STR_TR_RERA=QObject::tr("RERA");  // Acronym for Respiratory Effort Related Arousal
-const QString STR_TR_PP=QObject::tr("PP");      // Short form for Pressure Pulse
-const QString STR_TR_P=QObject::tr("P");        // Short form for Pressure Event
-const QString STR_TR_RE=QObject::tr("RE");      // Short form of Respiratory Effort Related Arousal
-const QString STR_TR_NR=QObject::tr("NR");      // Short form of Non Responding event? (forgot sorry)
-const QString STR_TR_NRI=QObject::tr("NRI");    // Sorry I Forgot.. it's a flag on Intellipap machines
-const QString STR_TR_O2=QObject::tr("O2");      // SpO2 Desaturation
-const QString STR_TR_PC=QObject::tr("PC");      // Short form for Pulse Change
-const QString STR_TR_UF1=QObject::tr("UF1");      // Short form for User Flag 1
-const QString STR_TR_UF2=QObject::tr("UF2");      // Short form for User Flag 2
-const QString STR_TR_UF3=QObject::tr("UF3");      // Short form for User Flag 3
+extern QString STR_TR_H;       // Short form of Hypopnea
+extern QString STR_TR_OA;      // Short form of Obstructive Apnea
+extern QString STR_TR_UA;      // Short form of Unspecified Apnea
+extern QString STR_TR_CA;      // Short form of Clear Airway Apnea
+extern QString STR_TR_FL;      // Short form of Flow Limitation
+extern QString STR_TR_LE;      // Short form of Leak Event
+extern QString STR_TR_EP;      // Short form of Expiratory Puff
+extern QString STR_TR_VS;      // Short form of Vibratory Snore
+extern QString STR_TR_VS2;     // Short form of Secondary Vibratory Snore (Some Philips Respironics Machines have two sources)
+extern QString STR_TR_RERA;    // Acronym for Respiratory Effort Related Arousal
+extern QString STR_TR_PP;      // Short form for Pressure Pulse
+extern QString STR_TR_P;       // Short form for Pressure Event
+extern QString STR_TR_RE;      // Short form of Respiratory Effort Related Arousal
+extern QString STR_TR_NR;      // Short form of Non Responding event? (forgot sorry)
+extern QString STR_TR_NRI;     // Sorry I Forgot.. it's a flag on Intellipap machines
+extern QString STR_TR_O2;      // SpO2 Desaturation
+extern QString STR_TR_PC;      // Short form for Pulse Change
+extern QString STR_TR_UF1;     // Short form for User Flag 1
+extern QString STR_TR_UF2;     // Short form for User Flag 2
+extern QString STR_TR_UF3;     // Short form for User Flag 3
 
 
 
-const QString STR_TR_PS=QObject::tr("PS");      // Short form of Pressure Support
-const QString STR_TR_AHI=QObject::tr("AHI");    // Short form of Apnea Hypopnea Index
-const QString STR_TR_RDI=QObject::tr("RDI");    // Short form of Respiratory Distress Index
-const QString STR_TR_AI=QObject::tr("AI");      // Short form of Apnea Index
-const QString STR_TR_HI=QObject::tr("HI");      // Short form of Hypopnea Index
-const QString STR_TR_UAI=QObject::tr("UAI");    // Short form of Uncatagorized Apnea Index
-const QString STR_TR_CAI=QObject::tr("CAI");    // Short form of Clear Airway Index
-const QString STR_TR_FLI=QObject::tr("FLI");    // Short form of Flow Limitation Index
-const QString STR_TR_REI=QObject::tr("REI");    // Short form of RERA Index
-const QString STR_TR_EPI=QObject::tr("EPI");    // Short form of Expiratory Puff Index
-const QString STR_TR_CSR=QObject::tr("ÇSR");    // Short form of Cheyne Stokes Respiration
-const QString STR_TR_PB=QObject::tr("PB");      // Short form of Periodic Breathing
+extern QString STR_TR_PS;     // Short form of Pressure Support
+extern QString STR_TR_AHI;    // Short form of Apnea Hypopnea Index
+extern QString STR_TR_RDI;    // Short form of Respiratory Distress Index
+extern QString STR_TR_AI;     // Short form of Apnea Index
+extern QString STR_TR_HI;     // Short form of Hypopnea Index
+extern QString STR_TR_UAI;    // Short form of Uncatagorized Apnea Index
+extern QString STR_TR_CAI;    // Short form of Clear Airway Index
+extern QString STR_TR_FLI;    // Short form of Flow Limitation Index
+extern QString STR_TR_REI;    // Short form of RERA Index
+extern QString STR_TR_EPI;    // Short form of Expiratory Puff Index
+extern QString STR_TR_CSR;    // Short form of Cheyne Stokes Respiration
+extern QString STR_TR_PB;     // Short form of Periodic Breathing
 
 
 // Graph Titles
-const QString STR_TR_IE=QObject::tr("IE");      // Inspiratory Expiratory Ratio
-const QString STR_TR_InspTime=QObject::tr("Insp. Time");    // Inspiratory Time
-const QString STR_TR_ExpTime=QObject::tr("Exp. Time");      // Expiratory Time
-const QString STR_TR_RespEvent=QObject::tr("Resp. Event");    // Respiratory Event
-const QString STR_TR_FlowLimitation=QObject::tr("Flow Limitation");
-const QString STR_TR_FlowLimit=QObject::tr("Flow Limit");
-const QString STR_TR_PatTrigBreath=QObject::tr("Pat. Trig. Breath"); // Patient Triggered Breath
-const QString STR_TR_TgtMinVent=QObject::tr("Tgt. Min. Vent");        // Target Minute Ventilation
-const QString STR_TR_TargetVent=QObject::tr("Target Vent.");          // Target Ventilation
-const QString STR_TR_MinuteVent=QObject::tr("Minute Vent."); // Minute Ventilation
-const QString STR_TR_TidalVolume=QObject::tr("Tidal Volume");
-const QString STR_TR_RespRate=QObject::tr("Resp. Rate");    // Respiratory Rate
-const QString STR_TR_Snore=QObject::tr("Snore");
-const QString STR_TR_Leak=QObject::tr("Leak");
-const QString STR_TR_Leaks=QObject::tr("Leaks");
-const QString STR_TR_TotalLeaks=QObject::tr("Total Leaks");
-const QString STR_TR_UnintentionalLeaks=QObject::tr("Unintentional Leaks");
-const QString STR_TR_MaskPressure=QObject::tr("MaskPressure");
-const QString STR_TR_FlowRate=QObject::tr("Flow Rate");
-const QString STR_TR_SleepStage=QObject::tr("Sleep Stage");
-const QString STR_TR_Usage=QObject::tr("Usage");
-const QString STR_TR_Sessions=QObject::tr("Sessions");
-const QString STR_TR_PrRelief=QObject::tr("Pr. Relief"); // Pressure Relief
+extern QString STR_TR_IE;              // Inspiratory Expiratory Ratio
+extern QString STR_TR_InspTime;        // Inspiratory Time
+extern QString STR_TR_ExpTime;         // Expiratory Time
+extern QString STR_TR_RespEvent;       // Respiratory Event
+extern QString STR_TR_FlowLimitation;
+extern QString STR_TR_FlowLimit;
+extern QString STR_TR_PatTrigBreath;   // Patient Triggered Breath
+extern QString STR_TR_TgtMinVent;      // Target Minute Ventilation
+extern QString STR_TR_TargetVent;      // Target Ventilation
+extern QString STR_TR_MinuteVent;      // Minute Ventilation
+extern QString STR_TR_TidalVolume;
+extern QString STR_TR_RespRate;        // Respiratory Rate
+extern QString STR_TR_Snore;
+extern QString STR_TR_Leak;
+extern QString STR_TR_Leaks;
+extern QString STR_TR_TotalLeaks;
+extern QString STR_TR_UnintentionalLeaks;
+extern QString STR_TR_MaskPressure;
+extern QString STR_TR_FlowRate;
+extern QString STR_TR_SleepStage;
+extern QString STR_TR_Usage;
+extern QString STR_TR_Sessions;
+extern QString STR_TR_PrRelief; // Pressure Relief
 
-const QString STR_TR_NoData=QObject::tr("No Data");
-const QString STR_TR_Bookmarks=QObject::tr("Bookmarks");
-const QString STR_TR_SleepyHead=QObject::tr("SleepyHead");
-const QString STR_TR_SleepyHeadVersion=STR_TR_SleepyHead+" v"+VersionString;
+extern QString STR_TR_NoData;
+extern QString STR_TR_Bookmarks;
+extern QString STR_TR_SleepyHead;
+extern QString STR_TR_SleepyHeadVersion;
 
-const QString STR_TR_Mode=QObject::tr("Mode");
-const QString STR_TR_Model=QObject::tr("Model");
-const QString STR_TR_Brand=QObject::tr("Brand");
-const QString STR_TR_Serial=QObject::tr("Serial");
-const QString STR_TR_Machine=QObject::tr("Machine");
-const QString STR_TR_Channel=QObject::tr("Channel");
-const QString STR_TR_Settings=QObject::tr("Settings");
+extern QString STR_TR_Mode;
+extern QString STR_TR_Model;
+extern QString STR_TR_Brand;
+extern QString STR_TR_Serial;
+extern QString STR_TR_Machine;
+extern QString STR_TR_Channel;
+extern QString STR_TR_Settings;
 
-const QString STR_TR_Name=QObject::tr("Name");
-const QString STR_TR_DOB=QObject::tr("DOB");    // Date of Birth
-const QString STR_TR_Phone=QObject::tr("Phone");
-const QString STR_TR_Address=QObject::tr("Address");
-const QString STR_TR_Email=QObject::tr("Email");
-const QString STR_TR_PatientID=QObject::tr("Patient ID");
-const QString STR_TR_Date=QObject::tr("Date");
+extern QString STR_TR_Name;
+extern QString STR_TR_DOB;    // Date of Birth
+extern QString STR_TR_Phone;
+extern QString STR_TR_Address;
+extern QString STR_TR_Email;
+extern QString STR_TR_PatientID;
+extern QString STR_TR_Date;
 
-const QString STR_TR_BedTime=QObject::tr("Bedtime");
-const QString STR_TR_WakeUp=QObject::tr("Wake-up");
-const QString STR_TR_MaskTime=QObject::tr("Mask Time");
-const QString STR_TR_Unknown=QObject::tr("Unknown");
-const QString STR_TR_None=QObject::tr("None");
-const QString STR_TR_Ready=QObject::tr("Ready");
+extern QString STR_TR_BedTime;
+extern QString STR_TR_WakeUp;
+extern QString STR_TR_MaskTime;
+extern QString STR_TR_Unknown;
+extern QString STR_TR_None;
+extern QString STR_TR_Ready;
 
-const QString STR_TR_First=QObject::tr("First");
-const QString STR_TR_Last=QObject::tr("Last");
-const QString STR_TR_Start=QObject::tr("Start");
-const QString STR_TR_End=QObject::tr("End");
-const QString STR_TR_On=QObject::tr("On");
-const QString STR_TR_Off=QObject::tr("Off");
+extern QString STR_TR_First;
+extern QString STR_TR_Last;
+extern QString STR_TR_Start;
+extern QString STR_TR_End;
+extern QString STR_TR_On;
+extern QString STR_TR_Off;
 
-const QString STR_TR_Min=QObject::tr("Min");    // Minimum
-const QString STR_TR_Max=QObject::tr("Max");    // Maximum
+extern QString STR_TR_Min;    // Minimum
+extern QString STR_TR_Max;    // Maximum
 
-const QString STR_TR_Average=QObject::tr("Average");
-const QString STR_TR_Median=QObject::tr("Median");
-const QString STR_TR_Avg=QObject::tr("Avg");        // Average
-const QString STR_TR_WAvg=QObject::tr("W-Avg");     // Weighted Average
+extern QString STR_TR_Average;
+extern QString STR_TR_Median;
+extern QString STR_TR_Avg;    // Short form of Average
+extern QString STR_TR_WAvg;   // Short form of Weighted Average
 
 #endif // COMMON_H
