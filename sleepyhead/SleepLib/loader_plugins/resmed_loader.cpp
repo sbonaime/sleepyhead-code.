@@ -449,20 +449,38 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         QFile::copy(path+RMS9_STR_idfile+STR_ext_TGT,backup_path+RMS9_STR_idfile+STR_ext_TGT);
         QFile::copy(path+RMS9_STR_idfile+STR_ext_CRC,backup_path+RMS9_STR_idfile+STR_ext_CRC);
 
+        QDateTime dts=QDateTime::fromMSecsSinceEpoch(stredf.startdate);
+        dir.mkpath(backup_path+"STR_Backup");
+        QString strmonthly=backup_path+"STR_Backup/STR-"+dts.toString("yyyyMM")+"."+STR_ext_EDF;
+
         //copy STR files to backup folder
-        if (strpath.endsWith(STR_ext_gz))  // Already compressed.
+        if (strpath.endsWith(STR_ext_gz)) { // Already compressed. Don't bother decompressing..
             QFile::copy(strpath,backup_path+RMS9_STR_strfile+STR_ext_EDF+STR_ext_gz);
-        else { // Compress STR file to backup folder
+        } else { // Compress STR file to backup folder
             QString strf=backup_path+RMS9_STR_strfile+STR_ext_EDF;
+
+            // Copy most recent to STR.edf
             if (QFile::exists(strf))
                 QFile::remove(strf);
+
+            if (QFile::exists(strf+STR_ext_gz))
+                QFile::remove(strf+STR_ext_gz);
 
             compress_backups ?
                 compressFile(strpath,strf)
             :
                 QFile::copy(strpath,strf);
+
+        }
+        // Keep one STR.edf backup every month
+        if (!QFile::exists(strmonthly) && !QFile::exists(strmonthly+".gz")) {
+            compress_backups ?
+                compressFile(strpath,strmonthly)
+            :
+                QFile::copy(strpath,strmonthly);
         }
 
+        // Meh..
         QFile::copy(path+"STR.crc",backup_path+"STR.crc");
     }
 
@@ -551,95 +569,120 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     // Open DATALOG file and build list of session files
     ///////////////////////////////////////////////////////////////////////////////////
 
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    dir.setSorting(QDir::Name);
+    QStringList dirs;
+    dirs.push_back(newpath);
+    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
     QFileInfoList flist=dir.entryInfoList();
+    bool ok;
+    for (int i=0;i<flist.size();i++) {
+        QFileInfo fi=flist.at(i);
+        filename=fi.fileName();
+        if (filename.length()==4) {
+            filename.toInt(&ok);
+            if (ok) {
+                dirs.push_back(fi.canonicalFilePath());
+            }
+        }
+    }
 
     QString datestr;
     SessionID sessionid;
     QDateTime date;
-    int size=flist.size();
-
-    sessfiles.clear();
+    QString fullname;
     bool gz;
-
+    int size;
     QMap<SessionID,QStringList>::iterator si;
 
-    // For each file in flist...
-    for (int i=0;i<size;i++) {
-        QFileInfo fi=flist.at(i);
-        filename=fi.fileName();
+    sessfiles.clear();
 
-        // Forget about it if it can't be read.
-        if (!fi.isReadable())
-            continue;
+    for (int dc=0;dc<dirs.size();dc++) {
 
-        // Accept only .edf and .edf.gz files
-        if (filename.right(4).toLower() != "."+STR_ext_EDF) {
+        dir.setPath(dirs.at(dc));
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+        dir.setSorting(QDir::Name);
+        flist=dir.entryInfoList();
 
-            if (filename.right(7).toLower() != "."+STR_ext_EDF+STR_ext_gz)
+        size=flist.size();
+
+
+        // For each file in flist...
+        for (int i=0;i<size;i++) {
+            QFileInfo fi=flist.at(i);
+            filename=fi.fileName();
+
+            // Forget about it if it can't be read.
+            if (!fi.isReadable())
                 continue;
-            gz=true;
-        } else gz=false;
 
-        // Extract the session date out of the filename
-        datestr=filename.section("_",0,1);
+            // Accept only .edf and .edf.gz files
+            if (filename.right(4).toLower() != "."+STR_ext_EDF) {
 
-        // Take the filename's date, and
-        date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
-        date=date.toUTC();
+                if (filename.right(7).toLower() != "."+STR_ext_EDF+STR_ext_gz)
+                    continue;
+                gz=true;
+            } else gz=false;
 
-        // Skip file if dates invalid, the filename is clearly wrong..
-        if (!date.isValid())
-            continue;
+            fullname=fi.canonicalFilePath();
 
-        // convert this date to UNIX epoch to form the sessionID
-        sessionid=date.toTime_t();
+            // Extract the session date out of the filename
+            datestr=filename.section("_",0,1);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // Resmed bugs up on the session filenames.. More than these 3 seconds
+            // Take the filename's date, and
+            date=QDateTime::fromString(datestr,"yyyyMMdd_HHmmss");
+            date=date.toUTC();
 
-        // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
-        // and provide firmware updates for free to your customers.
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        si=sessfiles.find(sessionid);
+            // Skip file if dates invalid, the filename is clearly wrong..
+            if (!date.isValid())
+                continue;
 
-        if (si==sessfiles.end()) {
-            // Scan 3 seconds either way for sessions..
-            for (int j=1;j<3;j++) {
+            // convert this date to UNIX epoch to form the sessionID
+            sessionid=date.toTime_t();
 
-                if ((si=sessfiles.find(sessionid+j)) != sessfiles.end()) {
-                    sessionid+=j;
-                    break;
-                } else if ((si=sessfiles.find(sessionid-j)) != sessfiles.end()) {
-                    sessionid-=j;
-                    break;
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            // Resmed bugs up on the session filenames.. More than these 3 seconds
+
+            // Moral of the story, when writing firmware and saving in batches, use the same datetimes,
+            // and provide firmware updates for free to your customers.
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            si=sessfiles.find(sessionid);
+
+            if (si==sessfiles.end()) {
+                // Scan 3 seconds either way for sessions..
+                for (int j=1;j<3;j++) {
+
+                    if ((si=sessfiles.find(sessionid+j)) != sessfiles.end()) {
+                        sessionid+=j;
+                        break;
+                    } else if ((si=sessfiles.find(sessionid-j)) != sessfiles.end()) {
+                        sessionid-=j;
+                        break;
+                    }
                 }
             }
-        }
 
-        // Push current filename to ordered-by-sessionid list
-        if (si!=sessfiles.end()) {
-            // Ignore if already compressed version of the same file exists.. (just in case)
-            if (!gz) {
-                if (si.value().contains(filename+STR_ext_gz,Qt::CaseInsensitive))
-                    continue;
+            // Push current filename to ordered-by-sessionid list
+            if (si!=sessfiles.end()) {
+                // Ignore if already compressed version of the same file exists.. (just in case)
+                if (!gz) {
+                    if (si.value().contains(fullname+STR_ext_gz,Qt::CaseInsensitive))
+                        continue;
+                } else {
+                    QString str=fullname;
+                    str.chop(3);
+                    if (si.value().contains(str,Qt::CaseInsensitive))
+                        continue;
+                }
+
+                si.value().push_back(fullname);
             } else {
-                QString str=filename;
-                str.chop(3);
-                if (si.value().contains(str,Qt::CaseInsensitive))
-                    continue;
+                sessfiles[sessionid].push_back(fullname);
             }
 
-            si.value().push_back(filename);
-        } else {
-            sessfiles[sessionid].push_back(filename);
-        }
-
-        if ((i % 10)==0) {
-            // Update the progress bar
-            if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
-            QApplication::processEvents();
+            if ((i % 20)==0) {
+                // Update the progress bar
+                if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
+                QApplication::processEvents();
+            }
         }
     }
 
@@ -1066,6 +1109,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 //    }
     backup_path+=RMS9_STR_datalog+"/";
 
+    QString backupfile,backfile, crcfile, yearstr, bkuppath;
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
     /////////////////////////////////////////////////////////////////////////////
@@ -1078,20 +1122,28 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
         // Create the session
         sess=new Session(m,sessionid);
-        QString fullpath,backupfile,backfile, crcfile;
 
         // Process EDF File List
         for (int i=0;i<si.value().size();++i) {
-            filename=si.value()[i];
+            fullname=si.value()[i];
+            filename=fullname.section("/",-1);
             gz=(filename.right(3).toLower()==STR_ext_gz);
-            fullpath=newpath+filename;
+
+
+            yearstr=filename.left(4);
+            bkuppath=backup_path;
+            int year=yearstr.toInt(&ok,10);
+            if (ok) {
+                bkuppath+=yearstr+"/";
+                dir.mkpath(bkuppath);
+            }
 
             // Copy the EDF file to the backup folder
             if (create_backups) {
-                backupfile=backup_path+filename;
+                backupfile=bkuppath+filename;
                 bool dobackup=true;
                 if (!gz && QFile::exists(backupfile+STR_ext_gz)) {
-                    dobackup=false;
+                    dobackup=false; // gzipped edf.. assume it's already a backup
                 } else if (QFile::exists(backupfile)) {
                     if (gz) {
                         // don't bother, it's already there and compressed.
@@ -1109,12 +1161,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 if (dobackup) {
                     if (!gz) {
                         compress_backups ?
-                            compressFile(fullpath, backupfile)
+                            compressFile(fullname, backupfile)
                         :
-                            QFile::copy(fullpath, backupfile);
+                            QFile::copy(fullname, backupfile);
                     } else {
                         // already compressed, just copy it.
-                        QFile::copy(fullpath, backupfile);
+                        QFile::copy(fullname, backupfile);
                     }
                 }
 
@@ -1124,12 +1176,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     backfile=filename.replace(".edf.gz",".crc",Qt::CaseInsensitive);
                 }
 
-                backupfile=backup_path+backfile;
+                backupfile=bkuppath+backfile;
                 crcfile=newpath+backfile;
                 QFile::copy(crcfile, backupfile);
             }
 
-            EDFParser edf(fullpath);
+            EDFParser edf(fullname);
 
             // Parse the actual file
             if (!edf.Parse())
@@ -1151,42 +1203,59 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             if (qprogress) qprogress->setValue(10.0+(float(cnt)/float(size)*90.0));
             QApplication::processEvents();
         }
+        int mode=0;
+        EventDataType prset=0, prmode=0;
+        qint64 dif;
+        int dn;
 
         if (!sess) continue;
         if (!sess->first()) {
             delete sess;
             continue;
         } else {
+
             sess->SetChanged(true);
 
-            qint64 dif=sess->first()-stredf.startdate;
+            dif=sess->first()-stredf.startdate;
 
-            int dn=dif/86400000L;
-            int mode;
-            EventDataType prset, prmode;
-            if (dn<days) {
+            dn=dif/86400000L;
+            if (dn>=days-2) {
+                int i=5;
+            }
+            if ((dn>=0) && (dn<days)) {
                 sig=stredf.lookupSignal(CPAP_Mode);
                 if (sig) {
                     mode=sig->data[dn];
                 } else mode=0;
 
+
+
                 sess->settings[CPAP_PresReliefType]=PR_EPR;
 
+                // Ramp, Fulltime
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
                     prmode=EventDataType(sig->data[dn])*sig->gain;
-                    if (prmode>sig->physical_maximum) {
+                    // Off,
+                    if (prmode<0) {
+                        // Kaart's data has -1 here.. Not sure what it means.
+                        prmode=0;
+                    } else if (prmode > sig->physical_maximum) {
                         int i=5;
+                        prmode=sig->physical_maximum;
                     }
+                    // My VPAP (using EasyBreathe) and JM's Elite (using none) have 0
                     sess->settings[CPAP_PresReliefMode]=prmode;
                 }
 
                 sig=stredf.lookupSignal(RMS9_EPRSet);
                 if (sig)  {
                     prset=EventDataType(sig->data[dn])*sig->gain;
-                    if (prset>sig->physical_maximum) {
-                        int i=5;
+                    if (prset > sig->physical_maximum) {
+                        prset=sig->physical_maximum;
+                    } else if (prset < sig->physical_minimum) {
+                        prset=sig->physical_minimum;
                     }
                     sess->settings[CPAP_PresReliefSet]=prset;
                 }
@@ -1275,13 +1344,30 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             // The following only happens when the STR.edf file is not up to date..
             // This will only happen when the user fails to back up their SDcard properly.
             // Basically takes a guess.
+            bool dodgy=false;
             if (!sess->settings.contains(CPAP_Mode)) {
                 //The following is a lame assumption if 50th percentile == max, then it's CPAP
-                EventDataType p50=sess->percentile(CPAP_Pressure,0.50);
                 EventDataType max=sess->Max(CPAP_Pressure);
-                if (max==p50) {
+                EventDataType p50=sess->percentile(CPAP_Pressure,0.60);
+                EventDataType p502=sess->percentile(CPAP_MaskPressure,0.60);
+                p50=qMax(p50, p502);
+                if (max==0) {
+                    dodgy=true;
+                } else if (qAbs(max-p50)<1.8) {
+                    max=round(max*10.0)/10.0;
                     sess->settings[CPAP_Mode]=MODE_CPAP;
-                    sess->settings[CPAP_PressureMin]=p50;
+                    if (max<1) {
+                        int i=5;
+                    }
+                    sess->settings[CPAP_PressureMin]=max;
+                    EventDataType epr=round(sess->Max(CPAP_EPAP)*10.0)/10.0;
+                    int i=max-epr;
+                    sess->settings[CPAP_PresReliefType]=PR_EPR;
+                    prmode=(i>0) ? 0 : 1;
+                    sess->settings[CPAP_PresReliefMode]=prmode;
+                    sess->settings[CPAP_PresReliefSet]=i;
+
+
                 } else {
                     // It's not cpap, so just take the highest setting for this machines history.
                     // This may fail if the missing str data is at the beginning of a fresh import.
@@ -1296,7 +1382,8 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             //Rather than take a dodgy guess, EPR settings can take a hit, and this data can simply be missed..
 
             // Add the session to the machine & profile objects
-            m->AddSession(sess,profile);
+            //if (!dodgy)
+                m->AddSession(sess,profile);
         }
     }
 
@@ -1811,7 +1898,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
             code=CPAP_Pressure; //TherapyPressure;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Insp Pressure") {
-            code=CPAP_IPAP; //TherapyPressure;
+            code=CPAP_IPAP;
             sess->settings[CPAP_Mode]=MODE_BIPAP;
             a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if ((es.label=="MV") || (es.label=="VM")){

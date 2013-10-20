@@ -510,12 +510,6 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     //avg_tidalvol=EventDataType(data[0x39])*10.0;  // Average Tidal Volume
     //////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
     min=float(data[0x03])/10.0;   // Min EPAP
     max=float(data[0x04])/10.0;   // Max EPAP
     int offset=0;
