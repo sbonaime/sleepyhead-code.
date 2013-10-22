@@ -173,7 +173,7 @@ QDate Machine::AddSession(Session *s,Profile *p)
     dd->AddSession(s);
 
     if (combine_next_day) {
-        for (QVector<Session *>::iterator i=nextday.value()->begin();i!=nextday.value()->end();i++) {
+        for (QList<Session *>::iterator i=nextday.value()->begin();i!=nextday.value()->end();i++) {
             dd->AddSession(*i);
         }
         QMap<QDate,QList<Day *> >::iterator nd=p->daylist.find(date.addDays(1));

@@ -17,8 +17,8 @@ Day::Day(Machine *m)
 }
 Day::~Day()
 {
-    QVector<Session *>::iterator s;
-    for (s=sessions.begin();s!=sessions.end();s++) {
+    QList<Session *>::iterator s;
+    for (s=sessions.begin();s!=sessions.end();++s) {
         delete (*s);
     }
 
@@ -55,7 +55,7 @@ void Day::AddSession(Session *s)
 EventDataType Day::settings_sum(ChannelID code)
 {
     EventDataType val=0;
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -72,7 +72,7 @@ EventDataType Day::settings_max(ChannelID code)
 {
     EventDataType val=0,tmp;
 
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -91,7 +91,7 @@ EventDataType Day::settings_min(ChannelID code)
     bool fir=true;
     // Cache this?
 
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -115,7 +115,7 @@ EventDataType Day::settings_avg(ChannelID code)
     EventDataType val=0;
 
     int cnt=0;
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
@@ -132,7 +132,7 @@ EventDataType Day::settings_avg(ChannelID code)
 EventDataType Day::settings_wavg(ChannelID code)
 {
     double s0=0,s1=0,s2=0,tmp;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
         Session & sess=*(*s);
@@ -164,7 +164,7 @@ EventDataType Day::percentile(ChannelID code,EventDataType percentile)
 //    }
     // Cache this calculation?
 
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
 
     QHash<EventStoreType, qint64> wmap;
 
@@ -289,7 +289,7 @@ EventDataType Day::avg(ChannelID code)
     double val=0;
     // Cache this?
     int cnt=0;
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
 
     // Don't assume sessions are in order.
     for (s=sessions.begin();s!=sessions.end();s++) {
@@ -309,7 +309,7 @@ EventDataType Day::sum(ChannelID code)
 {
     // Cache this?
     EventDataType val=0;
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
 
     for (s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
@@ -326,7 +326,7 @@ EventDataType Day::wavg(ChannelID code)
 {
     double s0=0,s1=0,s2=0;
     qint64 d;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
         Session & sess=*(*s);
@@ -354,7 +354,7 @@ qint64 Day::total_time()
 
     //range.reserve(size()*2);
 
-    for (QVector<Session *>::iterator s=begin();s!=end();s++) {
+    for (QList<Session *>::iterator s=begin();s!=end();s++) {
         if (!(*s)->enabled()) continue;
 
         Session & sess=*(*s);
@@ -390,7 +390,7 @@ qint64 Day::total_time()
 bool Day::hasEnabledSessions()
 {
     bool b=false;
-    for (QVector<Session *>::iterator s=begin();s!=end();s++) {
+    for (QList<Session *>::iterator s=begin();s!=end();s++) {
         if ((*s)->enabled()) {
             b=true;
             break;
@@ -404,7 +404,7 @@ bool Day::hasEnabledSessions()
     double val=0;
     int cnt=0;
 
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         Session & sess=*(*s);
         if (sess.eventlist.find(code)!=sess.eventlist.end()) {
             val+=sess.percentile(code,percent);
@@ -421,7 +421,7 @@ qint64 Day::first(ChannelID code)
     qint64 date=0;
     qint64 tmp;
 
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
         tmp=(*s)->first(code);
         if (!tmp) continue;
@@ -439,7 +439,7 @@ qint64 Day::last(ChannelID code)
     qint64 date=0;
     qint64 tmp;
 
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
         tmp=(*s)->last(code);
         if (!tmp) continue;
@@ -456,7 +456,7 @@ EventDataType Day::Min(ChannelID code)
     EventDataType min=0;
     EventDataType tmp;
     bool first=true;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
         if (!(*s)->m_min.contains(code))
@@ -475,7 +475,7 @@ EventDataType Day::Min(ChannelID code)
 bool Day::hasData(ChannelID code, SummaryType type)
 {
     bool has=false;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
         Session *sess=*s;
         switch(type) {
@@ -529,7 +529,7 @@ EventDataType Day::Max(ChannelID code)
     EventDataType max=0;
     EventDataType tmp;
     bool first=true;
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
 
         if (!(*s)->m_max.contains(code)) continue;
@@ -641,7 +641,7 @@ bool Day::channelHasData(ChannelID id)
 
 void Day::OpenEvents()
 {
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
 
     for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->OpenEvents();
@@ -649,7 +649,7 @@ void Day::OpenEvents()
 }
 void Day::CloseEvents()
 {
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
 
     for (s=sessions.begin();s!=sessions.end();s++) {
         (*s)->TrashEvents();
@@ -661,7 +661,7 @@ qint64 Day::first()
     qint64 date=0;
     qint64 tmp;
 
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
         tmp=(*s)->first();
         if (!tmp) continue;
@@ -681,7 +681,7 @@ qint64 Day::last()
     qint64 date=0;
     qint64 tmp;
 
-    for (QVector<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
         if (!(*s)->enabled()) continue;
         tmp=(*s)->last();
         if (!tmp) continue;
@@ -693,4 +693,11 @@ qint64 Day::last()
     }
     return date;
 //    return d_last;
+}
+
+void Day::removeSession(Session * sess)
+{
+    if (sessions.removeAll(sess)<1) {
+        int i=5;
+    }
 }

@@ -810,7 +810,7 @@ EventDataType Profile::calcPercentile(ChannelID code, EventDataType percent, Mac
         Day * day=GetGoodDay(date,mt);
         if (day) {
             for (int i=0;i<day->size();i++) {
-                for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+                for (QList<Session *>::iterator s=day->begin();s!=day->end();s++) {
                     if (!(*s)->enabled())
                         continue;
 

@@ -117,9 +117,9 @@ public:
     Session *operator [](int i) { return sessions[i]; }
 
     //! \brief Return the first session as a QVector<Session*>::iterator
-    QVector<Session *>::iterator begin() { return sessions.begin(); }
+    QList<Session *>::iterator begin() { return sessions.begin(); }
     //! \brief Return the end session record as a QVector<Session*>::iterator
-    QVector<Session *>::iterator end() { return sessions.end(); }
+    QList<Session *>::iterator end() { return sessions.end(); }
 
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
     int find(Session * sess) { return sessions.indexOf(sess); }
@@ -138,7 +138,7 @@ public:
     void CloseEvents();
 
     //! \brief Returns this days sessions list
-    QVector<Session *> & getSessions() { return sessions; }
+    QList<Session *> & getSessions() { return sessions; }
 
     //! \brief Returns true if this Day contains loaded Event Data for this channel.
     bool channelExists(ChannelID id);
@@ -152,9 +152,11 @@ public:
     //! \brief Returns true if this day contains the supplied settings Channel id
     bool settingExists(ChannelID id);
 
+    void removeSession(Session * sess);
+
 protected:
     //! \brief A Vector containing all sessions for this day
-    QVector<Session *> sessions;
+    QList<Session *> sessions;
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     //qint64 d_first,d_last;
 private:

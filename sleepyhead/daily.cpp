@@ -54,6 +54,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ZombieMeterMoved=false;
     BookmarksChanged=false;
 
+    lastcpapday=NULL;
+
     QList<int> a;
     a.push_back(300);
     a.push_back(this->width()-300);
@@ -80,6 +82,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //        sessbar->setMinimumHeight(sessbar->height());
 //    }
 
+    sessbar=NULL;
 
     webView=new MyWebView(this);
 
@@ -514,7 +517,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
     bool userflags=p_profile->cpap->userEventFlagging();
 
     qint64 drift=0, clockdrift=PROFILE.cpap->clockDrift()*1000L;
-    for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+    for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
         if (!(*s)->enabled()) continue;
 
         QHash<ChannelID,QVector<EventList *> >::iterator m;
@@ -789,7 +792,7 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage)
             break;
         }
         html+="</i></td></tr>\n";
-        for (QVector<Session *>::iterator s=day->begin();s!=day->end();s++) {
+        for (QList<Session *>::iterator s=day->begin();s!=day->end();++s) {
 
             if ((day->machine_type()==MT_CPAP) &&
                 ((*s)->settings.find(CPAP_BrokenWaveform)!=(*s)->settings.end()))
@@ -1088,16 +1091,22 @@ QString Daily::getSleepTime(Day * cpap, Day * oxi)
 
 void Daily::Load(QDate date)
 {
+    if (sessbar) {
+        sessbar->clear();
+        sessbar->deleteLater();
+        sessbar=NULL;
+    }
+
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
-    static Day * lastcpapday=NULL;
     previous_date=date;
     Day *cpap=PROFILE.GetDay(date,MT_CPAP);
     Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
     Day *stage=PROFILE.GetDay(date,MT_SLEEPSTAGE);
 
     if (!PROFILE.session->cacheSessions()) {
+        // Getting trashed on purge last day...
         if (lastcpapday && (lastcpapday!=cpap)) {
-            for (QVector<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();s++) {
+            for (QList<Session *>::iterator s=lastcpapday->begin();s!=lastcpapday->end();++s) {
                 (*s)->TrashEvents();
             }
         }
@@ -1307,7 +1316,7 @@ void Daily::Load(QDate date)
         QColor("light blue"),
     };
     const int maxcolors=sizeof(cols)/sizeof(QColor);
-    QVector<Session *>::iterator i;
+    QList<Session *>::iterator i;
 
     // WebView trashes it without asking.. :(
     if (cpap) {
@@ -1456,6 +1465,12 @@ void Daily::UnitsChanged()
     }
 }
 
+void Daily::clearLastDay()
+{
+    lastcpapday=NULL;
+}
+
+
 void Daily::Unload(QDate date)
 {
     Session *journal=GetJournalSession(date);
@@ -1600,7 +1615,7 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
     Day *journal=PROFILE.GetDay(date,MT_JOURNAL);
     if (!journal)
         return NULL; //CreateJournalSession(date);
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     s=journal->begin();
     if (s!=journal->end())
         return *s;

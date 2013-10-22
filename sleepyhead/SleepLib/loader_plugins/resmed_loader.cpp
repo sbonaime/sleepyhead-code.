@@ -480,7 +480,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 QFile::copy(strpath,strmonthly);
         }
 
-        // Meh..
+        // Meh.. these can be calculated if ever needed for ResScan SDcard export
         QFile::copy(path+"STR.crc",backup_path+"STR.crc");
     }
 
@@ -614,13 +614,14 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             if (!fi.isReadable())
                 continue;
 
-            // Accept only .edf and .edf.gz files
-            if (filename.right(4).toLower() != "."+STR_ext_EDF) {
-
-                if (filename.right(7).toLower() != "."+STR_ext_EDF+STR_ext_gz)
-                    continue;
+            if (filename.endsWith(STR_ext_gz)) {
+                filename.chop(3);
                 gz=true;
             } else gz=false;
+
+            // Accept only .edf and .edf.gz files
+            if (filename.right(4).toLower() != "."+STR_ext_EDF)
+                continue;
 
             fullname=fi.canonicalFilePath();
 
@@ -660,29 +661,33 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                 }
             }
 
+            fullname=backup(fullname, backup_path);
+
             // Push current filename to ordered-by-sessionid list
             if (si!=sessfiles.end()) {
                 // Ignore if already compressed version of the same file exists.. (just in case)
-                if (!gz) {
-                    if (si.value().contains(fullname+STR_ext_gz,Qt::CaseInsensitive))
-                        continue;
-                } else {
-                    QString str=fullname;
-                    str.chop(3);
-                    if (si.value().contains(str,Qt::CaseInsensitive))
-                        continue;
-                }
 
-                si.value().push_back(fullname);
+                bool skip=false;
+                // check for any other versions of the same file.
+                for (int i=0;i<si.value().size();i++) {
+                    QString st=si.value().at(i).section("/",-1);
+                    if (st.endsWith(STR_ext_gz))
+                        st.chop(3);
+
+                    if (st==filename)
+                        skip=true;
+                }
+                if (!skip)
+                    si.value().push_back(fullname);
             } else {
                 sessfiles[sessionid].push_back(fullname);
             }
 
-            if ((i % 20)==0) {
+          //  if ((i % 10)==0) {
                 // Update the progress bar
                 if (qprogress) qprogress->setValue((float(i+1)/float(size)*10.0));
                 QApplication::processEvents();
-            }
+          //  }
         }
     }
 
@@ -1123,6 +1128,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
         // Create the session
         sess=new Session(m,sessionid);
 
+        QString oldbkfile;
         // Process EDF File List
         for (int i=0;i<si.value().size();++i) {
             fullname=si.value()[i];
@@ -1130,56 +1136,64 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             gz=(filename.right(3).toLower()==STR_ext_gz);
 
 
-            yearstr=filename.left(4);
-            bkuppath=backup_path;
-            int year=yearstr.toInt(&ok,10);
-            if (ok) {
-                bkuppath+=yearstr+"/";
-                dir.mkpath(bkuppath);
-            }
+//            yearstr=filename.left(4);
+//            bkuppath=backup_path;
+//            int year=yearstr.toInt(&ok,10);
+//            if (ok) {
+//                bkuppath+=yearstr+"/";
+//                dir.mkpath(bkuppath);
+//            }
 
-            // Copy the EDF file to the backup folder
-            if (create_backups) {
-                backupfile=bkuppath+filename;
-                bool dobackup=true;
-                if (!gz && QFile::exists(backupfile+STR_ext_gz)) {
-                    dobackup=false; // gzipped edf.. assume it's already a backup
-                } else if (QFile::exists(backupfile)) {
-                    if (gz) {
-                        // don't bother, it's already there and compressed.
-                        dobackup=false;
-                    } else {
-                        // non compressed file is there..
-                        if (compress_backups) {
-                            // remove old edf file, as we are writing a compressed one
-                            QFile::remove(backupfile);
-                        } else { // don't bother copying it.
-                            dobackup=false;
-                        }
-                    }
-                }
-                if (dobackup) {
-                    if (!gz) {
-                        compress_backups ?
-                            compressFile(fullname, backupfile)
-                        :
-                            QFile::copy(fullname, backupfile);
-                    } else {
-                        // already compressed, just copy it.
-                        QFile::copy(fullname, backupfile);
-                    }
-                }
+//            // Copy the EDF file to the backup folder
+//            if (create_backups) {
+//                oldbkfile=backup_path+filename;
+//                backupfile=bkuppath+filename;
 
-                if (!gz) {
-                    backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
-                } else {
-                    backfile=filename.replace(".edf.gz",".crc",Qt::CaseInsensitive);
-                }
+//                bool dobackup=true;
 
-                backupfile=bkuppath+backfile;
-                crcfile=newpath+backfile;
-                QFile::copy(crcfile, backupfile);
-            }
+//                if (QFile::exists(oldbkfile+STR_ext_gz))
+//                    QFile::remove(oldbkfile+STR_ext_gz);
+//                if (QFile::exists(oldbkfile))
+//                    QFile::remove(oldbkfile);
+
+//                if (!gz && QFile::exists(backupfile+STR_ext_gz)) {
+//                    dobackup=false; // gzipped edf.. assume it's already a backup
+//                } else if (QFile::exists(backupfile)) {
+//                    if (gz) {
+//                        // don't bother, it's already there and compressed.
+//                        dobackup=false;
+//                    } else {
+//                        // non compressed file is there..
+//                        if (compress_backups) {
+//                            // remove old edf file, as we are writing a compressed one
+//                            QFile::remove(backupfile);
+//                        } else { // don't bother copying it.
+//                            dobackup=false;
+//                        }
+//                    }
+//                }
+//                if (dobackup) {
+//                    if (!gz) {
+//                        compress_backups ?
+//                            compressFile(fullname, backupfile)
+//                        :
+//                            QFile::copy(fullname, backupfile);
+//                    } else {
+//                        // already compressed, just copy it.
+//                        QFile::copy(fullname, backupfile);
+//                    }
+//                }
+
+//                if (!gz) {
+//                    backfile=filename.replace(".edf",".crc",Qt::CaseInsensitive);
+//                } else {
+//                    backfile=filename.replace(".edf.gz",".crc",Qt::CaseInsensitive);
+//                }
+
+//                backupfile=bkuppath+backfile;
+//                crcfile=newpath+backfile;
+//                QFile::copy(crcfile, backupfile);
+//            }
 
             EDFParser edf(fullname);
 
@@ -1617,6 +1631,74 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     qDebug() << "Total Events " << event_cnt;
     return 1;
 }
+
+QString ResmedLoader::backup(QString fullname, QString backup_path, bool compress)
+{
+    QString filename,yearstr,newname,oldname;
+    bool ok, gz=(fullname.right(3).toLower()==STR_ext_gz);
+
+    filename=fullname.section("/",-1);
+
+    if (gz)
+        filename.chop(3);
+
+    yearstr=filename.left(4);
+    yearstr.toInt(&ok,10);
+
+
+    if (!ok) {
+        qDebug() << "Invalid EDF filename given to ResMedLoader::backup()";
+        return "";
+    }
+
+    newname=backup_path+RMS9_STR_datalog+"/"+yearstr;
+    QDir dir;
+    dir.mkpath(newname);
+    newname+="/"+filename;
+
+    QString tmpname=newname;
+
+    if (compress)
+        newname+=STR_ext_gz;
+
+    // First make sure the correct backup exists.
+    if (!QFile::exists(newname)) {
+        if (compress) {
+            gz ?
+                QFile::copy(fullname,newname)       // Already compressed.. copy it to the right location
+            :
+                compressFile(fullname,newname);
+        } else {
+            // dont really care if it's compressed and not meant to be, leave it that way
+            QFile::copy(fullname,newname);
+        }
+    } // else backup already exists...
+
+    // Now the correct backup is in place, we can trash any
+    if (compress) {
+        // Remove any uncompressed duplicate
+        if (QFile::exists(tmpname))
+            QFile::remove(tmpname);
+    } else {
+        // Delete the non compressed copy and choose it instead.
+        if (QFile::exists(tmpname+STR_ext_gz)) {
+            QFile::remove(tmpname);
+            newname=tmpname+STR_ext_gz;
+        }
+
+    }
+
+    // Remove any traces from old backup directory structure
+    oldname=backup_path+RMS9_STR_datalog+"/"+filename;
+    if (QFile::exists(oldname))
+        QFile::remove(oldname);
+
+    if (QFile::exists(oldname+STR_ext_gz))
+        QFile::remove(oldname+STR_ext_gz);
+
+    return newname;
+}
+
 
 bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
 {

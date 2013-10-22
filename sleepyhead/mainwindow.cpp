@@ -1113,11 +1113,12 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
     Machine *m;
     if (day) {
         m=day->machine;
-        QString path=PROFILE.Get("{"+STR_GEN_DataFolder+"}/")+m->GetClass()+"_"+m->hexid()+"/";
+        QString path=PROFILE.Get("{"+STR_GEN_DataFolder+"}/")+m->GetClass()+"_"+m->properties[STR_PROP_Serial]+"/";
 
-        QVector<Session *>::iterator s;
+        QList<Session *>::iterator s;
 
-        for (s=day->begin();s!=day->end();s++) {
+        QList<Session *> list;
+        for (s=day->begin();s!=day->end();++s) {
             SessionID id=(*s)->session();
             QString filename0=path+QString().sprintf("%08lx.000",id);
             QString filename1=path+QString().sprintf("%08lx.001",id);
@@ -1125,8 +1126,19 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             qDebug() << "Removing" << filename1;
             QFile::remove(filename0);
             QFile::remove(filename1);
+
+            list.push_back(*s);
             m->sessionlist.erase(m->sessionlist.find(id)); // remove from machines session list
         }
+        m->day.erase(m->day.find(date));
+        for (int i=0;i<list.size();i++) {
+            Session * sess=list.at(i);
+            day->removeSession(sess);
+            delete sess;
+        }
+
+
+
         QList<Day *> & dl=PROFILE.daylist[date];
         QList<Day *>::iterator it;//=dl.begin();
         for (it=dl.begin();it!=dl.end();it++) {
@@ -1138,7 +1150,8 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             delete day;
         }
     }
-    getDaily()->ReloadGraphs();
+    getDaily()->clearLastDay();
+    getDaily()->LoadDate(date);
 }
 
 void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()

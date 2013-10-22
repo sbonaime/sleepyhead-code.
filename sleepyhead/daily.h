@@ -124,6 +124,8 @@ public:
         */
     gGraph * eventBreakdownPie() { return GAHI; }
     QWidget * sessionBar() { return sessbar; }
+
+    void clearLastDay();
 private slots:
 
     /*! \fn on_calendar_currentPageChanged(int year, int month);
@@ -331,6 +333,8 @@ private:
     QLabel * dateDisplay;
 
     MyWebView * webView;
+    Day * lastcpapday;
+
 
     bool ZombieMeterMoved;
     bool BookmarksChanged;

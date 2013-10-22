@@ -149,7 +149,7 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     qint64 clockdrift=qint64(PROFILE.cpap->clockDrift()) * 1000L;
     qint64 drift=0;
 
-    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
+    for (QList<Session *>::iterator s=m_day->begin();s!=m_day->end(); s++) {
         if (!(*s)->enabled())
             continue;
         drift=((*s)->machine()->GetType()==MT_CPAP) ? clockdrift : 0;

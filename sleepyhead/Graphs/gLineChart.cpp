@@ -723,7 +723,7 @@ void AHIChart::SetDay(Day *d)
 
     if (!d) return;
     m_miny=9999;
-    QVector<Session *>::iterator s;
+    QList<Session *>::iterator s;
     qint64 first=d->first();
     qint64 last=d->last();
     qint64 f;

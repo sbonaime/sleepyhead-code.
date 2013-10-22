@@ -60,7 +60,7 @@ public:
     bool SearchEvent(ChannelID code, qint64 time, qint64 dist=15000);
 
     //! \brief Return the sessionID
-    const SessionID & session() {
+    inline const SessionID & session() {
         return s_session;
     }
 

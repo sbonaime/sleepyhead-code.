@@ -37,7 +37,7 @@ void gSegmentChart::SetDay(Day *d)
     if (!m_day) return;
     for (int c=0;c<m_codes.size();c++) {
         m_values[c]=0;
-        for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+        for (QList<Session *>::iterator s=m_day->begin();s!=m_day->end();++s) {
             if (!(*s)->enabled())  continue;
 
             int cnt=(*s)->count(m_codes[c]);
@@ -213,7 +213,7 @@ void gTAPGraph::SetDay(Day *d)
     //bool changed;
     EventDataType gain=1,offset=0;
     QHash<ChannelID,QVector<EventList *> >::iterator ei;
-    for (QVector<Session *>::iterator s=m_day->begin();s!=m_day->end();s++) {
+    for (QList<Session *>::iterator s=m_day->begin();s!=m_day->end();++s) {
         if (!(*s)->enabled())  continue;
 
         if ((ei=(*s)->eventlist.find(m_code))==(*s)->eventlist.end()) continue;
