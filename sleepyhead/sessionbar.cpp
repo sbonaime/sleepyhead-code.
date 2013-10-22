@@ -169,7 +169,7 @@ void SessionBar::paintEvent(QPaintEvent *)
 
     SegType mn=min();
     SegType mx=max();
-    if (mx > mn)
+    if (mx < mn)
         return;
 
     SegType total=mx-mn;
