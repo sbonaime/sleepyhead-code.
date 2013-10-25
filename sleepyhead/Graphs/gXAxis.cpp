@@ -48,6 +48,13 @@ gXAxis::~gXAxis()
 void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
     Q_UNUSED(height)
+    QString months[]={
+        QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),
+        QObject::tr("Jul"), QObject::tr("Aug"), QObject::tr("Sep"), QObject::tr("Oct"), QObject::tr("Nov"),QObject::tr("Dec")
+    };
+    //static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+
+
 
     QPainter painter; // Only need this for pixmap caching
 
@@ -193,7 +200,6 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             else
                 lines->add(py,top,py,mintop);
         }
-        //static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
         int ms,m,h,s,d;
         qint64 j;
@@ -214,7 +220,12 @@ void gXAxis::paint(gGraph & w,int left,int top, int width, int height)
             if (fitmode==0) {
                 d=(j/1000);
                 QDateTime dt=QDateTime::fromTime_t(d).toUTC();
-                tmpstr=dt.toString("MMM dd");
+                QDate date=dt.date();
+                // SLOW SLOW SLOW!!! On Mac especially, this function is pathetically slow.
+                //dt.toString("MMM dd");
+
+                // Doing it this way instead because it's MUUUUUUCH faster
+                tmpstr=QString("%1 %2").arg(months[date.month()-1]).arg(date.day());
             //} else if (fitmode==0) {
     //            tmpstr=QString("%1 %2:%3").arg(dow[d]).arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0'));
             } else if (fitmode==1) { // minute
