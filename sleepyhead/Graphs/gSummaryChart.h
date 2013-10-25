@@ -95,16 +95,16 @@ class SummaryChart:public Layer
         float tz_hours;
 
         //! \brief Key was pressed that effects this layer
-        virtual bool keyPressEvent(QKeyEvent * event);
+        virtual bool keyPressEvent(QKeyEvent * event,gGraph * graph);
 
         //! \brief Mouse moved over this layers area (shows the hover-over tooltips here)
-        virtual bool mouseMoveEvent(QMouseEvent * event);
+        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
 
         //! \brief Mouse Button was pressed over this area
-        virtual bool mousePressEvent(QMouseEvent * event);
+        virtual bool mousePressEvent(QMouseEvent * event,gGraph * graph);
 
         //! \brief Mouse Button was released over this area. (jumps to daily view here)
-        virtual bool mouseReleaseEvent(QMouseEvent * event);
+        virtual bool mouseReleaseEvent(QMouseEvent * event,gGraph * graph);
 };
 
 

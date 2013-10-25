@@ -709,15 +709,20 @@ QString formatTime(EventDataType v, bool show_seconds=false, bool duration=false
         return QString().sprintf("%i:%02i%s",h,m,pm);
 }
 
-bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
+bool SummaryChart::mouseMoveEvent(QMouseEvent *event,gGraph * graph)
 {
-    int x=event->x()-l_left;
-    int y=event->y()-l_top;
-    if ((x<0 || y<0 || x>l_width || y>l_height)) {
+    int x=event->x();
+    int y=event->y();
+
+    if (!m_rect.contains(x,y)) {
+//    if ((x<0 || y<0 || x>l_width || y>l_height)) {
         hl_day=-1;
         //graph->timedRedraw(2000);
         return false;
     }
+
+    x-=m_rect.left();
+    y-=m_rect.top();
 
     double xx=l_maxx-l_minx;
 
@@ -739,8 +744,8 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
 
         QHash<short,EventDataType> & valhash=d.value();
 
-        x+=gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
-        int y=event->y()+rtop-15;
+        x+=m_rect.left(); //gYAxis::Margin+gGraphView::titleWidth; //graph->m_marginleft+
+        int y=event->y()-m_rect.top()+rtop-15;
         //QDateTime dt1=QDateTime::fromTime_t(hl_day*86400).toLocalTime();
         QDateTime dt2=QDateTime::fromTime_t(hl_day*86400).toUTC();
 
@@ -858,7 +863,7 @@ bool SummaryChart::mouseMoveEvent(QMouseEvent *event)
     return false;
 }
 
-bool SummaryChart::mousePressEvent(QMouseEvent * event)
+bool SummaryChart::mousePressEvent(QMouseEvent * event,gGraph * graph)
 {
     if (event->modifiers() & Qt::ShiftModifier) {
         //qDebug() << "Jump to daily view?";
@@ -868,7 +873,7 @@ bool SummaryChart::mousePressEvent(QMouseEvent * event)
     return false;
 }
 
-bool SummaryChart::keyPressEvent(QKeyEvent * event)
+bool SummaryChart::keyPressEvent(QKeyEvent * event,gGraph * graph)
 {
     Q_UNUSED(event)
     //qDebug() << "Summarychart Keypress";
@@ -877,11 +882,11 @@ bool SummaryChart::keyPressEvent(QKeyEvent * event)
 
 #include "mainwindow.h"
 extern MainWindow *mainwin;
-bool SummaryChart::mouseReleaseEvent(QMouseEvent * event)
+bool SummaryChart::mouseReleaseEvent(QMouseEvent * event,gGraph * graph)
 {
     if (event->modifiers() & Qt::ShiftModifier) {
         if (hl_day<0) {
-            mouseMoveEvent(event);
+            mouseMoveEvent(event,graph);
         }
         if (hl_day>0) {
             QDateTime d=QDateTime::fromTime_t(hl_day*86400).toUTC();
