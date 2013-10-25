@@ -160,12 +160,11 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
     }*/
 
     if (w.zoomY()==0) {
-        miny=m_physminy;
-        maxy=m_physmaxy;
+        miny=m_physminy, maxy=m_physmaxy;
     } else {
         miny=w.min_y, maxy=w.max_y;
-        w.roundY(miny,maxy);
     }
+    w.roundY(miny,maxy);
 
     double xx=maxx-minx;
     double xmult=double(width)/xx;
@@ -698,12 +697,17 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
 
     EventDataType miny,maxy;
     double minx,maxx;
-    miny=w.min_y, maxy=w.max_y;
 
     maxx=w.max_x, minx=w.min_x;
 
     // hmmm.. subtract_offset..
 
+    if (w.zoomY()==0) {
+        miny=w.physMinY();
+        maxy=w.physMaxY();
+    } else {
+        miny=w.min_y, maxy=w.max_y;
+    }
     w.roundY(miny,maxy);
 
     double xx=maxx-minx;

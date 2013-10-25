@@ -48,6 +48,8 @@ void SummaryChart::SetDay(Day * nullday)
     m_goodcodes.clear();
     m_miny=999999999;
     m_maxy=-999999999;
+    m_physmaxy=0;
+    m_physminy=0;
     m_minx=0;
     m_maxx=0;
 
@@ -107,6 +109,7 @@ void SummaryChart::SetDay(Day * nullday)
     }
     int suboffset;
     SummaryType type;
+    bool first=true;
 
     for (QMap<QDate,QList<Day *> >::iterator d=PROFILE.daylist.begin();d!=PROFILE.daylist.end();d++) {
         tt=QDateTime(d.key(),QTime(0,0,0),Qt::UTC).toTime_t();
@@ -144,10 +147,16 @@ void SummaryChart::SetDay(Day * nullday)
 
                     m_times[dn][s]=tmp2;
 
-                    if (tmp2 < m_miny)
+                    if (first) {
                         m_miny=tmp2;
-                    if (tmp2+tmp > m_maxy)
                         m_maxy=tmp2+tmp;
+                        first=false;
+                    } else {
+                        if (tmp2 < m_miny)
+                            m_miny=tmp2;
+                        if (tmp2+tmp > m_maxy)
+                            m_maxy=tmp2+tmp;
+                    }
                 }
                 if (total>0) {
                     m_days[dn]=day;
@@ -248,7 +257,8 @@ void SummaryChart::SetDay(Day * nullday)
     }
    // m_minx=qint64(QDateTime(PROFILE.FirstDay(),QTime(0,0,0),Qt::UTC).toTime_t())*1000L;
     m_maxx=qint64(QDateTime(PROFILE.LastDay(),QTime(23,59,0),Qt::UTC).toTime_t())*1000L;
-
+    m_physmaxy=m_maxy;
+    m_physminy=m_miny;
 }
 
 QColor brighten(QColor color)
@@ -290,9 +300,19 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     qint64 xx=maxx - minx;
     float days=double(xx)/86400000.0;
 
-    EventDataType maxy=m_maxy;
-    EventDataType miny=m_miny;
-    w.roundY(miny,maxy);
+
+    EventDataType maxy;
+    EventDataType miny;
+
+    if (w.zoomY()==0) {
+        maxy=m_physmaxy;
+        miny=m_physminy;
+        w.roundY(miny,maxy);
+    } else {
+        maxy=m_maxy;
+        miny=m_miny;
+        w.roundY(miny,maxy);
+    }
 
     EventDataType yy=maxy-miny;
     EventDataType ymult=float(height-2)/yy;

@@ -838,7 +838,7 @@ void gToolTip::paint()     //actually paints it.
         lines_drawn_this_frame+=4;
         quads_drawn_this_frame+=1;
 
-        QBrush brush(QColor(255,255,128,255));
+        QBrush brush(QColor(255,255,128,200));
         brush.setStyle(Qt::SolidPattern);
         painter.setBrush(brush);
         painter.setPen(QColor(0,0,0,255));

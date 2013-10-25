@@ -29,11 +29,18 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     gVertexBuffer * stippled, * lines;
 
-    EventDataType miny=w.min_y;
-    EventDataType maxy=w.max_y;
+    EventDataType miny,maxy;
 
-    if (miny<0) { // even it up if it's starts negative
-        miny=-MAX(fabs(miny),fabs(maxy));
+    if (w.zoomY()==0) {
+        miny=w.physMinY();
+        maxy=w.physMaxY();
+    } else {
+        miny=w.min_y;
+        maxy=w.max_y;
+
+        if (miny<0) { // even it up if it's starts negative
+            miny=-MAX(fabs(miny),fabs(maxy));
+        }
     }
 
     w.roundY(miny,maxy);
@@ -277,9 +284,8 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
             if (miny<0) { // even it up if it's starts negative
                 miny=-MAX(fabs(miny),fabs(maxy));
             }
-
-            w.roundY(miny,maxy);
         }
+        w.roundY(miny,maxy);
 
         EventDataType dy=maxy-miny;
 
