@@ -367,7 +367,7 @@ bool gYAxis::mouseMoveEvent(QMouseEvent * event, gGraph * graph)
     int y=event->y();
     if (!graph->units().isEmpty()) {
         graph->ToolTip(graph->units(),x,y-20,0);
-        graph->redraw();
+     //   graph->redraw();
     }
     return true;
 }

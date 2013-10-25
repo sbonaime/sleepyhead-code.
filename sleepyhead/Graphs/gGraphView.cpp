@@ -1513,7 +1513,8 @@ void gGraph::mouseMoveEvent(QMouseEvent * event)
 
     for (int i=0;i<m_layers.size();i++) {
         if (m_layers[i]->m_rect.contains(x,y))
-            if (m_layers[i]->mouseMoveEvent(event,this)) doredraw=true;
+            if (m_layers[i]->mouseMoveEvent(event,this))
+                doredraw=true;
     }
 
     y-=m_rect.top();
