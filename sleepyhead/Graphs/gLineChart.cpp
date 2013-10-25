@@ -48,6 +48,7 @@ void gLineChart::SetDay(Day *d)
 
     m_minx=0,m_maxx=0;
     m_miny=0,m_maxy=0;
+    m_physminy=0, m_physmaxy=0;
 
     if (!d)
         return;
@@ -66,17 +67,27 @@ void gLineChart::SetDay(Day *d)
                 int i=5;
             }
             if (first) {
-                m_miny=sess->physMin(code);
-                m_maxy=sess->physMax(code);
+                m_miny=sess->Min(code);
+                m_maxy=sess->Max(code);
+                m_physminy=sess->physMin(code);
+                m_physmaxy=sess->physMax(code);
                 m_minx=sess->first(code);
                 m_maxx=sess->last(code);
                 first=false;
             } else {
                 tmp=sess->physMin(code);
+                if (m_physminy > tmp)
+                    m_physminy=tmp;
+
+                tmp=sess->physMax(code);
+                if (m_physmaxy < tmp)
+                    m_physmaxy=tmp;
+
+                tmp=sess->Min(code);
                 if (m_miny > tmp)
                     m_miny=tmp;
 
-                tmp=sess->physMax(code);
+                tmp=sess->Max(code);
                 if (m_maxy < tmp)
                     m_maxy=tmp;
 
@@ -134,7 +145,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
    // lines=w.lines();
     EventDataType miny,maxy;
     double minx,maxx;
-    miny=w.min_y, maxy=w.max_y;
+
 
     if (w.blockZoom()) {
         minx=w.rmin_x, maxx=w.rmax_x;
@@ -148,9 +159,13 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         miny=-MAX(fabs(miny),fabs(maxy));
     }*/
 
-
-
-    w.roundY(miny,maxy);
+    if (w.zoomY()==0) {
+        miny=m_physminy;
+        maxy=m_physmaxy;
+    } else {
+        miny=w.min_y, maxy=w.max_y;
+        w.roundY(miny,maxy);
+    }
 
     double xx=maxx-minx;
     double xmult=double(width)/xx;

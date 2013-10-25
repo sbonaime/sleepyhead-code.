@@ -43,7 +43,7 @@ Machine::Machine(Profile *p,MachineID id)
 }
 Machine::~Machine()
 {
-    qDebug() << "Destroy Machine";
+    qDebug() << "Destroy Machine" << m_class;
     for (QMap<QDate,Day *>::iterator d=day.begin();d!=day.end();d++) {
         delete d.value();
     }

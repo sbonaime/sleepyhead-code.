@@ -263,14 +263,23 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         if (height>2000) return;
         int labelW=0;
 
-        EventDataType miny=w.min_y;
-        EventDataType maxy=w.max_y;
+        EventDataType miny;
+        EventDataType maxy;
 
-        if (miny<0) { // even it up if it's starts negative
-            miny=-MAX(fabs(miny),fabs(maxy));
+        if (w.zoomY()==0) {
+            miny=w.physMinY();
+            maxy=w.physMaxY();
+        } else {
+
+            miny=w.min_y;
+            maxy=w.max_y;
+
+            if (miny<0) { // even it up if it's starts negative
+                miny=-MAX(fabs(miny),fabs(maxy));
+            }
+
+            w.roundY(miny,maxy);
         }
-
-        w.roundY(miny,maxy);
 
         EventDataType dy=maxy-miny;
 
@@ -378,7 +387,9 @@ bool gYAxis::mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph)
 
         int x=event->x();
         int y=event->y();
-        qDebug() << "Mouse double clicked for" << graph->title() << x << y << m_rect;
+        short z=(graph->zoomY()+1) % gGraph::maxZoomY;
+        graph->setZoomY(z);
+        qDebug() << "Mouse double clicked for" << graph->title() << z;
     }
     Q_UNUSED(event);
     return false;

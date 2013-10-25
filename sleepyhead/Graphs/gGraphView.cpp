@@ -887,6 +887,7 @@ Layer::Layer(ChannelID code)
     m_day=NULL;
     m_miny=m_maxy=0;
     m_minx=m_maxx=0;
+    m_physminy=m_physmaxy=0;
     m_order=0;
     m_width=m_height=0;
     m_X=m_Y=0;
@@ -1178,6 +1179,8 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     max_x=max_y=0;
     min_x=min_y=0;
     rec_miny=rec_maxy=0;
+    rphysmax_y=rphysmin_y=0;
+    m_zoomY=0;
 
     if (graphview) {
         graphview->addGraph(this,group);
@@ -1278,6 +1281,13 @@ void gGraph::setDay(Day * day)
     }
     ResetBounds();
 }
+
+void gGraph::setZoomY(short zoom)
+{
+    m_zoomY=zoom;
+    redraw();
+}
+
 
 void gGraph::qglColor(QColor col)
 {
@@ -1896,10 +1906,13 @@ qint64 gGraph::MinX()
 {
     qint64 val=0,tmp;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
-        if ((*l)->isEmpty()) continue;
+        if ((*l)->isEmpty())
+            continue;
         tmp=(*l)->Minx();
-        if (!tmp) continue;
-        if (!val || tmp < val) val = tmp;
+        if (!tmp)
+            continue;
+        if (!val || tmp < val)
+            val = tmp;
     }
     if (val) rmin_x=val;
     return val;
@@ -1909,21 +1922,26 @@ qint64 gGraph::MaxX()
     //bool first=true;
     qint64 val=0,tmp;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
-        if ((*l)->isEmpty()) continue;
+        if ((*l)->isEmpty())
+            continue;
         tmp=(*l)->Maxx();
         //if (!tmp) continue;
-        if (!val || tmp > val) val = tmp;
+        if (!val || tmp > val)
+            val = tmp;
     }
     if (val) rmax_x=val;
     return val;
 }
+
 EventDataType gGraph::MinY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    if (m_enforceMinY) return rmin_y=f_miny;
+    if (m_enforceMinY)
+        return rmin_y=f_miny;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
-        if ((*l)->isEmpty()) continue;
+        if ((*l)->isEmpty())
+            continue;
         tmp=(*l)->Miny();
         if (tmp==0 && tmp==(*l)->Maxy())
             continue;
@@ -1931,7 +1949,8 @@ EventDataType gGraph::MinY()
             val=tmp;
             first=false;
         } else {
-            if (tmp < val) val = tmp;
+            if (tmp < val)
+                val = tmp;
         }
     }
     return rmin_y=val;
@@ -1940,21 +1959,67 @@ EventDataType gGraph::MaxY()
 {
     bool first=true;
     EventDataType val=0,tmp;
-    if (m_enforceMaxY) return rmax_y=f_maxy;
+    if (m_enforceMaxY)
+        return rmax_y=f_maxy;
     for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
-        if ((*l)->isEmpty()) continue;
+        if ((*l)->isEmpty())
+            continue;
         tmp=(*l)->Maxy();
-        if (tmp==0 && tmp==(*l)->Miny()) continue;
+        if (tmp==0 && tmp==(*l)->Miny())
+            continue;
         if (first) {
             val=tmp;
             first=false;
         } else {
-            if (tmp > val) val = tmp;
+            if (tmp > val)
+                val = tmp;
         }
     }
     return rmax_y=val;
 }
 
+EventDataType gGraph::physMinY()
+{
+    bool first=true;
+    EventDataType val=0,tmp;
+    //if (m_enforceMinY) return rmin_y=f_miny;
+    for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
+        if ((*l)->isEmpty())
+            continue;
+        tmp=(*l)->physMiny();
+        if (tmp==0 && tmp==(*l)->physMaxy())
+            continue;
+        if (first) {
+            val=tmp;
+            first=false;
+        } else {
+            if (tmp < val)
+                val = tmp;
+        }
+    }
+    return rphysmin_y=val;
+}
+EventDataType gGraph::physMaxY()
+{
+    bool first=true;
+    EventDataType val=0,tmp;
+   // if (m_enforceMaxY) return rmax_y=f_maxy;
+    for (QVector<Layer *>::iterator l=m_layers.begin();l!=m_layers.end();l++) {
+        if ((*l)->isEmpty())
+            continue;
+        tmp=(*l)->physMaxy();
+        if (tmp==0 && tmp==(*l)->physMiny())
+            continue;
+        if (first) {
+            val=tmp;
+            first=false;
+        } else {
+            if (tmp > val)
+                val = tmp;
+        }
+    }
+    return rphysmax_y=val;
+}
 void gGraph::SetMinX(qint64 v)
 {
     rmin_x=min_x=v;
@@ -2216,6 +2281,7 @@ void gGraph::ToolTip(QString text, int x, int y, int timeout)
     m_graphview->m_tooltip->display(text,x,y,timeout);
 }
 
+// YAxis Autoscaling code
 void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 {
     int m,t;
@@ -3936,7 +4002,7 @@ void MyScrollBar::SendWheelEvent(QWheelEvent * e)
 }
 
 const quint32 gvmagic=0x41756728;
-const quint16 gvversion=0;
+const quint16 gvversion=1;
 
 void gGraphView::SaveSettings(QString title)
 {
@@ -3957,6 +4023,7 @@ void gGraphView::SaveSettings(QString title)
         out << m_graphs[i]->visible();
         out << m_graphs[i]->RecMinY();
         out << m_graphs[i]->RecMaxY();
+        out << m_graphs[i]->zoomY();
     }
 
     f.close();
@@ -3994,6 +4061,8 @@ bool gGraphView::LoadSettings(QString title)
     bool vis;
     EventDataType recminy,recmaxy;
 
+    short zoomy=0;
+
     QVector<gGraph *> neworder;
     QHash<QString,gGraph *>::iterator gi;
 
@@ -4003,6 +4072,9 @@ bool gGraphView::LoadSettings(QString title)
         in >> vis;
         in >> recminy;
         in >> recmaxy;
+        if (gvversion>=1) {
+            in >> zoomy;
+        }
         gi=m_graphsbytitle.find(name);
         if (gi==m_graphsbytitle.end()) {
             qDebug() << "Graph" << name << "has been renamed or removed";
@@ -4013,6 +4085,7 @@ bool gGraphView::LoadSettings(QString title)
             g->setVisible(vis);
             g->setRecMinY(recminy);
             g->setRecMaxY(recmaxy);
+            g->setZoomY(zoomy);
         }
     }
 

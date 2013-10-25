@@ -306,6 +306,12 @@ public:
     //! \brief Return this layers physical maximum Yaxis value
     virtual EventDataType Maxy() { return m_maxy; }
 
+    //! \brief Return this layers physical minimum Yaxis value
+    virtual EventDataType physMiny() { return m_physminy; }
+
+    //! \brief Return this layers physical maximum Yaxis value
+    virtual EventDataType physMaxy() { return m_physmaxy; }
+
     //! \brief Set this layers physical minimum date boundary
     virtual void setMinX(qint64 val) { m_minx=val; }
 
@@ -373,6 +379,7 @@ protected:
     bool m_movable;
     qint64 m_minx,m_maxx;
     EventDataType m_miny,m_maxy;
+    EventDataType m_physminy, m_physmaxy;
     ChannelID m_code;
     short m_width;                   // reserved x pixels needed for this layer.  0==Depends on position..
     short m_height;                  // reserved y pixels needed for this layer.  both 0 == expand to all free area.
@@ -643,6 +650,13 @@ public:
     //! \brief Returns the physical Maximum Y scale value for all layers contained
     virtual EventDataType MaxY();
 
+    //! \brief Returns the physical Minimum Y scale value for all layers contained
+    virtual EventDataType physMinY();
+
+    //! \brief Returns the physical Maximum Y scale value for all layers contained
+    virtual EventDataType physMaxY();
+
+
     //! \brief Sets the physical start of this graphs time range (in milliseconds since epoch)
     virtual void SetMinX(qint64 v);
 
@@ -679,6 +693,7 @@ public:
 
     qint64 max_x,min_x,rmax_x,rmin_x;
     EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy, rec_miny, rec_maxy;
+    EventDataType rphysmin_y, rphysmax_y;
 
     // not sure why there's two.. I can't remember
     void setEnforceMinY(bool b) { m_enforceMinY=b; }
@@ -764,6 +779,11 @@ public:
 
     gGraphView * graphView() { return m_graphview; }
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
+
+    short zoomY() { return m_zoomY; }
+    void setZoomY(short zoom);
+
+    static const short maxZoomY=2;
 protected:
     //void invalidate();
 
@@ -811,6 +831,8 @@ protected:
     bool m_enforceMinY,m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
+
+    short m_zoomY;
 
     QRect m_rect;
 signals:
