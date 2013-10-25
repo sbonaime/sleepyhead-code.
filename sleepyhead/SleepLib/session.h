@@ -136,8 +136,15 @@ public:
     QHash<ChannelID,double> m_sum;
     QHash<ChannelID,EventDataType> m_avg;
     QHash<ChannelID,EventDataType> m_wavg;
-    QHash<ChannelID,EventDataType> m_min;
+
+    QHash<ChannelID,EventDataType> m_min; // The actual minimum
     QHash<ChannelID,EventDataType> m_max;
+
+    // This could go in channels, but different machines interpret it differently
+    // Under the new SleepyLib data Device model this can be done, but unfortunately not here..
+    QHash<ChannelID,EventDataType> m_physmin; // The physical minimum for graph display purposes
+    QHash<ChannelID,EventDataType> m_physmax; // The physical maximum
+
     QHash<ChannelID,EventDataType> m_cph;  // Counts per hour (eg AHI)
     QHash<ChannelID,EventDataType> m_sph;  // % indice (eg % night in CSR)
     QHash<ChannelID,quint64> m_firstchan;
@@ -158,6 +165,23 @@ public:
     void setSum(ChannelID id,EventDataType val) { m_sum[id]=val; }
     void setMin(ChannelID id,EventDataType val) { m_min[id]=val; }
     void setMax(ChannelID id,EventDataType val) { m_max[id]=val; }
+    void setPhysMin(ChannelID id,EventDataType val) { m_physmin[id]=val; }
+    void setPhysMax(ChannelID id,EventDataType val) { m_physmax[id]=val; }
+    void updateMin(ChannelID id,EventDataType val) {
+        QHash<ChannelID,EventDataType>::iterator i=m_min.find(id);
+        if (i==m_min.end())
+            m_min[id]=val;
+        else if (i.value() > val)
+            i.value() = val;
+    }
+    void updateMax(ChannelID id,EventDataType val) {
+        QHash<ChannelID,EventDataType>::iterator i=m_max.find(id);
+        if (i==m_max.end())
+            m_max[id]=val;
+        else if (i.value() < val)
+            i.value() = val;
+    }
+
     void setAvg(ChannelID id,EventDataType val) { m_avg[id]=val; }
     void setWavg(ChannelID id,EventDataType val) { m_wavg[id]=val; }
 //    void setMedian(ChannelID id,EventDataType val) { m_med[id]=val; }
@@ -182,7 +206,6 @@ public:
     //! \brief Returns the maximum of events of type id between time range
     EventDataType rangeMax(ChannelID id, qint64 first,qint64 last);
 
-
     //! \brief Returns (and caches) the Sum of all events of type id
     double sum(ChannelID id);
 
@@ -197,6 +220,12 @@ public:
 
     //! \brief Returns (and caches) the Maximum of all events of type id
     EventDataType Max(ChannelID id);
+
+    //! \brief Returns (and caches) the Minimum of all events of type id
+    EventDataType physMin(ChannelID id);
+
+    //! \brief Returns (and caches) the Maximum of all events of type id
+    EventDataType physMax(ChannelID id);
 
     //! \brief Returns (and caches) the 90th Percentile of all events of type id
     EventDataType p90(ChannelID id);

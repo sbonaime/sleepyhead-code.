@@ -47,6 +47,12 @@ public:
     //! \brief Returns the Maximum of all sessions' events for this day
     EventDataType Max(ChannelID code);
 
+    //! \brief Returns the Minimum of all this sessions' events for this day
+    EventDataType physMin(ChannelID code);
+
+    //! \brief Returns the Maximum of all sessions' events for this day
+    EventDataType physMax(ChannelID code);
+
     //! \brief Returns the Count-per-hour of all sessions' events for this day
     EventDataType cph(ChannelID code);
 

@@ -29,6 +29,20 @@ EventList::EventList(EventListType et,EventDataType gain, EventDataType offset, 
 EventList::~EventList()
 {
 }
+void EventList::clear()
+{
+    m_min2=m_min=999999999;
+    m_max2=m_max=-999999999;
+    m_update_minmax=true;
+    m_first=m_last=0;
+    m_count=0;
+
+    m_data.clear();
+    m_data2.clear();
+    m_time.clear();
+
+}
+
 qint64 EventList::time(quint32 i)
 {
     if (m_type==EVL_Event) {
@@ -55,8 +69,12 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
     EventDataType val=EventDataType(data)*m_gain; // ignoring m_offset
 
     if (m_update_minmax) {
-        if (m_min>val) m_min=val;
-        else if (m_max<val) m_max=val;
+        if (m_count==0) {
+            m_max=m_min=val;
+        } else {
+            if (m_min>val) m_min=val;
+            if (m_max<val) m_max=val;
+        }
     }
 
     if (!m_first) {
@@ -167,7 +185,7 @@ void EventList::AddWaveform(qint64 start, qint16 * data, int recs, qint64 durati
         //if (m_offset;
         for (sp=data; sp<ep; sp++) {
             *dp++=raw=*sp;
-            val=EventDataType(*sp)*gain;
+            val=EventDataType(*sp)*gain+m_offset;
             if (min > val) min=val;
             if (max < val) max=val;
         }

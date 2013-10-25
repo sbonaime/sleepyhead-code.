@@ -121,7 +121,7 @@ public:
 
         If force_login is set, it will return to the login menu even if it's set to skip
         */
-    void RestartApplication(bool force_login=false,bool change_datafolder=false);
+    static void RestartApplication(bool force_login=false,bool change_datafolder=false);
 
     //! \brief Self explainitory, selects the Oximetry Tab
     void selectOximetryTab();

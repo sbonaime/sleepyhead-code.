@@ -647,6 +647,20 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         session->setCph(CPAP_RERA,float(rc/hours));
         session->setCph(CPAP_FlowLimit,float(fc/hours));
     }
+
+    // Set recommended Graph values..
+    session->setPhysMax(CPAP_LeakTotal,120);
+    session->setPhysMin(CPAP_LeakTotal,0);
+    session->setPhysMax(CPAP_Pressure,25);
+    session->setPhysMin(CPAP_Pressure,4);
+    session->setPhysMax(CPAP_IPAP,25);
+    session->setPhysMin(CPAP_IPAP,4);
+    session->setPhysMax(CPAP_EPAP,25);
+    session->setPhysMin(CPAP_EPAP,4);
+    session->setPhysMax(CPAP_PS,25);
+    session->setPhysMin(CPAP_PS,0);
+
+
     new_sessions[sequence]=session;
     return true;
 }
@@ -950,6 +964,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
     session->m_valuesummary[CPAP_Pressure].clear();
     session->m_valuesummary.erase(session->m_valuesummary.find(CPAP_Pressure));
+
     return true;
 
 }
@@ -970,7 +985,6 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
     Session *session=new_sessions[sequence];
     session->updateFirst(t);
-
 
     EventList * OA=session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList * HY=session->AddEventList(CPAP_Hypopnea, EVL_Event);

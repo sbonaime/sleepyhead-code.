@@ -18,6 +18,7 @@
 #include "ui_profileselect.h"
 #include "SleepLib/profiles.h"
 #include "newprofile.h"
+#include "mainwindow.h"
 
 ProfileSelect::ProfileSelect(QWidget *parent) :
     QDialog(parent),
@@ -65,6 +66,14 @@ ProfileSelect::ProfileSelect(QWidget *parent) :
     popupMenu->addAction(tr("Edit Profile"),this,SLOT(editProfile()));
     popupMenu->addSeparator();
     popupMenu->addAction(tr("Delete Profile"),this,SLOT(deleteProfile()));
+
+    ui->labelAppName->setText(STR_TR_SleepyHead);
+    ui->labelVersion->setText("v"+VersionString+" "+ReleaseStatus);
+//    if (GIT_BRANCH!="master")
+//        ui->labelBuild->setText(GIT_BRANCH);
+//    else ui->labelBuild->setText(QString());
+    ui->labelFolder->setText(GetAppRoot());
+    ui->labelFolder->setToolTip("Current SleepyHead data folder\n"+GetAppRoot());
 }
 
 ProfileSelect::~ProfileSelect()
@@ -246,4 +255,9 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
 void ProfileSelect::on_listView_customContextMenuRequested(const QPoint &pos)
 {
     popupMenu->popup(QWidget::mapToGlobal(pos));
+}
+
+void ProfileSelect::on_pushButton_clicked()
+{
+    MainWindow::RestartApplication(false,true);
 }

@@ -1358,41 +1358,41 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             // The following only happens when the STR.edf file is not up to date..
             // This will only happen when the user fails to back up their SDcard properly.
             // Basically takes a guess.
-            bool dodgy=false;
-            if (!sess->settings.contains(CPAP_Mode)) {
-                //The following is a lame assumption if 50th percentile == max, then it's CPAP
-                EventDataType max=sess->Max(CPAP_Pressure);
-                EventDataType p50=sess->percentile(CPAP_Pressure,0.60);
-                EventDataType p502=sess->percentile(CPAP_MaskPressure,0.60);
-                p50=qMax(p50, p502);
-                if (max==0) {
-                    dodgy=true;
-                } else if (qAbs(max-p50)<1.8) {
-                    max=round(max*10.0)/10.0;
-                    sess->settings[CPAP_Mode]=MODE_CPAP;
-                    if (max<1) {
-                        int i=5;
-                    }
-                    sess->settings[CPAP_PressureMin]=max;
-                    EventDataType epr=round(sess->Max(CPAP_EPAP)*10.0)/10.0;
-                    int i=max-epr;
-                    sess->settings[CPAP_PresReliefType]=PR_EPR;
-                    prmode=(i>0) ? 0 : 1;
-                    sess->settings[CPAP_PresReliefMode]=prmode;
-                    sess->settings[CPAP_PresReliefSet]=i;
+//            bool dodgy=false;
+//            if (!sess->settings.contains(CPAP_Mode)) {
+//                //The following is a lame assumption if 50th percentile == max, then it's CPAP
+//                EventDataType max=sess->Max(CPAP_Pressure);
+//                EventDataType p50=sess->percentile(CPAP_Pressure,0.60);
+//                EventDataType p502=sess->percentile(CPAP_MaskPressure,0.60);
+//                p50=qMax(p50, p502);
+//                if (max==0) {
+//                    dodgy=true;
+//                } else if (qAbs(max-p50)<1.8) {
+//                    max=round(max*10.0)/10.0;
+//                    sess->settings[CPAP_Mode]=MODE_CPAP;
+//                    if (max<1) {
+//                        int i=5;
+//                    }
+//                    sess->settings[CPAP_PressureMin]=max;
+//                    EventDataType epr=round(sess->Max(CPAP_EPAP)*10.0)/10.0;
+//                    int i=max-epr;
+//                    sess->settings[CPAP_PresReliefType]=PR_EPR;
+//                    prmode=(i>0) ? 0 : 1;
+//                    sess->settings[CPAP_PresReliefMode]=prmode;
+//                    sess->settings[CPAP_PresReliefSet]=i;
 
 
-                } else {
-                    // It's not cpap, so just take the highest setting for this machines history.
-                    // This may fail if the missing str data is at the beginning of a fresh import.
-                    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,sess->machine()->FirstDay(),sess->machine()->LastDay());
-                    if (mode<MODE_APAP) mode=MODE_APAP;
-                    sess->settings[CPAP_Mode]=mode;
-                    // Assuming 10th percentile should cover for ramp/warmup
-                    sess->settings[CPAP_PressureMin]=sess->percentile(CPAP_Pressure,0.10);
-                    sess->settings[CPAP_PressureMax]=sess->Max(CPAP_Pressure);
-                }
-            }
+//                } else {
+//                    // It's not cpap, so just take the highest setting for this machines history.
+//                    // This may fail if the missing str data is at the beginning of a fresh import.
+//                    CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,sess->machine()->FirstDay(),sess->machine()->LastDay());
+//                    if (mode<MODE_APAP) mode=MODE_APAP;
+//                    sess->settings[CPAP_Mode]=mode;
+//                    // Assuming 10th percentile should cover for ramp/warmup
+//                    sess->settings[CPAP_PressureMin]=sess->percentile(CPAP_Pressure,0.10);
+//                    sess->settings[CPAP_PressureMax]=sess->Max(CPAP_Pressure);
+//                }
+//            }
             //Rather than take a dodgy guess, EPR settings can take a hit, and this data can simply be missed..
 
             // Add the session to the machine & profile objects
@@ -1831,7 +1831,9 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
         if (es.label=="Flow") {
-            es.gain*=60;
+            es.gain*=60.0;
+            es.physical_minimum*=60.0;
+            es.physical_maximum*=60.0;
             es.physical_dimension="L/M";
             code=CPAP_FlowRate;
         } else if (es.label.startsWith("Mask Pres")) {
@@ -1848,11 +1850,17 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         a->AddWaveform(edf.startdate,es.data,recs,duration);
         sess->setMin(code,a->Min());
         sess->setMax(code,a->Max());
+        sess->setPhysMin(code,es.physical_minimum);
+        sess->setPhysMax(code,es.physical_maximum);
     }
     return true;
 }
-EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType min,EventDataType max,bool square)
+void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs, qint64 duration,EventDataType t_min,EventDataType t_max,bool square)
 {
+    if (t_min==t_max) {
+        t_min=es.physical_minimum;
+        t_max=es.physical_maximum;
+    }
 #ifdef DEBUG_EFFICIENCY
     QElapsedTimer time;
     time.start();
@@ -1862,7 +1870,7 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     double rate=(duration/recs); // milliseconds per record
     double tt=edf.startdate;
     //sess->UpdateFirst(tt);
-    EventDataType c,last;
+    EventStoreType c,last;
 
     int startpos=0;
 
@@ -1874,27 +1882,91 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     qint16 * eptr=sptr+recs;
     sptr+=startpos;
 
+    EventDataType min=t_max,max=t_min,tmp;
+
     EventList *el=NULL;
     if (recs>startpos+1) {
-        el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,min,max);
-        c=last=*sptr++;
-        el->AddEvent(tt,last);
+
+        // Prime last with a good starting value
+        do {
+            last=*sptr++;
+            tmp=EventDataType(last) * es.gain;
+
+            if ((tmp >= t_min) && (tmp <= t_max)) {
+                min=tmp;
+                max=tmp;
+                el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,0,0);
+
+                el->AddEvent(tt,last);
+                tt+=rate;
+
+                break;
+            }
+            tt+=rate;
+
+        } while (sptr < eptr);
+        if (!el)
+            return;
 
         for (; sptr < eptr; sptr++) { //int i=startpos;i<recs;i++) {
             c=*sptr; //es.data[i];
 
             if (last!=c) {
-                if (square) el->AddEvent(tt,last); // square waves look better on some charts.
-                el->AddEvent(tt,c);
+                if (square) {
+                    tmp=EventDataType(last) * es.gain;
+                    if ((tmp >= t_min) && (tmp <= t_max)) {
+                        if (tmp < min)
+                            min=tmp;
+                        if (tmp > max)
+                            max=tmp;
+
+                        el->AddEvent(tt,last);
+                    } else {
+                        // Out of bounds value, start a new eventlist
+                        if (el->count()>1) {
+                            // that should be in session, not the eventlist.. handy for debugging though
+                            el->setDimension(es.physical_dimension);
+
+                            el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,0,0);
+                        } else {
+                            el->clear(); // reuse the object
+                        }
+                    }
+                }
+                tmp=EventDataType(c) * es.gain;
+                if (tmp<0) {
+                    int i=5;
+                }
+                if ((tmp >= t_min) && (tmp <= t_max)) {
+                    if (tmp < min)
+                        min=tmp;
+                    if (tmp > max)
+                        max=tmp;
+
+                    el->AddEvent(tt,c);
+                } else {
+                    if (el->count()>1) {
+                        el->setDimension(es.physical_dimension);
+
+                        // Create and attach new EventList
+                        el=sess->AddEventList(code,EVL_Event,es.gain,es.offset,0,0);
+                    } else el->clear();
+                }
             }
             tt+=rate;
 
             last=c;
         }
-        el->AddEvent(tt,c);
+        tmp=EventDataType(c) * es.gain;
+        if ((tmp >= t_min) && (tmp <= t_max)) {
+            el->AddEvent(tt,c);
+        }
+        sess->setMin(code,min);
+        sess->setMax(code,max);
+        sess->setPhysMin(code,es.physical_minimum);
+        sess->setPhysMax(code,es.physical_maximum);
         sess->updateLast(tt);
     }
-
 
 #ifdef DEBUG_EFFICIENCY
     qint64 t=time.nsecsElapsed();
@@ -1911,7 +1983,7 @@ EventList * ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & 
     }
 #endif
 
-    return el;
+    //return el;
 }
 bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
 {
@@ -1941,10 +2013,15 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
             }
         }
         if (hasdata) {
-            EventList *a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-            if (a) {
-                sess->setMin(code,a->Min());
-                sess->setMax(code,a->Max());
+            if (code==OXI_Pulse) {
+                ToTimeDelta(sess,edf,es, code,recs,duration);
+                sess->setPhysMax(code,180);
+                sess->setPhysMin(code,18);
+            } else if (code==OXI_SPO2) {
+                es.physical_minimum=60;
+                ToTimeDelta(sess,edf,es, code,recs,duration);
+                sess->setPhysMax(code,100);
+                sess->setPhysMin(code,60);
             }
         }
 
@@ -1975,40 +2052,59 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
         if (es.label=="Snore Index") {
             code=CPAP_Snore;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            ToTimeDelta(sess,edf,es, code,recs,duration,es.digital_maximum);
         } else if (es.label.startsWith("Therapy Pres")) {
             code=CPAP_Pressure; //TherapyPressure;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            es.physical_maximum=25;
+            es.physical_minimum=4;
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label=="Insp Pressure") {
             code=CPAP_IPAP;
             sess->settings[CPAP_Mode]=MODE_BIPAP;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            es.physical_maximum=25;
+            es.physical_minimum=4;
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if ((es.label=="MV") || (es.label=="VM")){
             code=CPAP_MinuteVent;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if ((es.label=="RR") || (es.label=="AF") || (es.label=="FR")) {
             code=CPAP_RespRate;
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
             a->AddWaveform(edf.startdate,es.data,recs,duration);
         } else if ((es.label=="Vt") || (es.label=="VC")) {
             code=CPAP_TidalVolume;
-            es.physical_maximum=es.physical_minimum=0;
             es.gain*=1000.0;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            es.physical_maximum*=1000.0;
+            es.physical_minimum*=1000.0;
+//            es.digital_maximum*=1000.0;
+//            es.digital_minimum*=1000.0;
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk"))) {
             code=CPAP_Leak;
             es.gain*=60;
+            es.physical_maximum*=60;
+            es.physical_minimum*=60;
+//            es.digital_maximum*=60.0;
+//            es.digital_minimum*=60.0;
             es.physical_dimension="L/M";
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0,true);
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0,true);
+            sess->setPhysMax(code,120.0);
+            sess->setPhysMin(code,0);
         } else if (es.label=="FFL Index") {
             code=CPAP_FLG;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Mask Pres")) {
             code=CPAP_MaskPressure;
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            es.physical_maximum=25;
+            es.physical_minimum=4;
+
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("Exp Press")) {
             code=CPAP_EPAP;//ExpiratoryPressure
-            a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
+            es.physical_maximum=25;
+            es.physical_minimum=4;
+
+            ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
         } else if (es.label.startsWith("I:E")) {
             code=CPAP_IE;//I:E ratio?
             a=sess->AddEventList(code,EVL_Waveform,es.gain,es.offset,0,0,rate);
@@ -2032,10 +2128,10 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         } else if (es.label=="") {
             if (emptycnt==0) {
                 code=RMS9_E01;
-                a=ToTimeDelta(sess,edf,es, code,recs,duration);
+                ToTimeDelta(sess,edf,es, code,recs,duration);
             } else if (emptycnt==1) {
                 code=RMS9_E02;
-                a=ToTimeDelta(sess,edf,es, code,recs,duration);
+                ToTimeDelta(sess,edf,es, code,recs,duration);
             } else {
                 qDebug() << "Unobserved Empty Signal " << es.label;
             }
@@ -2047,6 +2143,8 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
         if (a) {
             sess->setMin(code,a->Min());
             sess->setMax(code,a->Max());
+            sess->setPhysMin(code,es.physical_minimum);
+            sess->setPhysMax(code,es.physical_maximum);
             a->setDimension(es.physical_dimension);
         }
     }

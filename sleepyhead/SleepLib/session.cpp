@@ -24,7 +24,7 @@ const quint16 filetype_data=1;
 
 // This is the uber important database version for SleepyHeads internal storage
 // Increment this after stuffing with Session's save & load code.
-const quint16 summary_version=11;
+const quint16 summary_version=12;
 const quint16 events_version=10;
 
 Session::Session(Machine * m,SessionID session)
@@ -145,6 +145,8 @@ bool Session::StoreSummary(QString filename)
     out << m_wavg;
     out << m_min;
     out << m_max;
+    out << m_physmin;
+    out << m_physmax;
     out << m_cph;
     out << m_sph;
     out << m_firstchan;
@@ -263,6 +265,7 @@ bool Session::LoadSummary(QString filename)
             code=schema::channel[i.key()].id();
             m_max[code]=i.value();
         }
+
         ztmp.clear();
         in >> ztmp; // cph
         for (QHash<QString,EventDataType>::iterator i=ztmp.begin();i!=ztmp.end();i++) {
@@ -306,6 +309,11 @@ bool Session::LoadSummary(QString filename)
         }
         in >> m_min;
         in >> m_max;
+        // Added 24/10/2013 by MW to support physical graph min/max values
+        if (version>=12) {
+            in >> m_physmin;
+            in >> m_physmax;
+        }
         in >> m_cph;
         in >> m_sph;
         in >> m_firstchan;
@@ -894,6 +902,40 @@ EventDataType Session::Max(ChannelID id)
     m_max[id]=max;
     return max;
 }
+
+////
+EventDataType Session::physMin(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_physmin.find(id);
+    if (i!=m_physmin.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        m_physmin[id]=0;
+        return 0;
+    }
+    EventDataType min=round(Min(id));
+    m_physmin[id]=min;
+    return min;
+}
+EventDataType Session::physMax(ChannelID id)
+{
+    QHash<ChannelID,EventDataType>::iterator i=m_physmax.find(id);
+    if (i!=m_physmax.end())
+        return i.value();
+
+    QHash<ChannelID,QVector<EventList *> >::iterator j=eventlist.find(id);
+    if (j==eventlist.end()) {
+        m_physmax[id]=0;
+        return 0;
+    }
+    EventDataType max=round(Max(id)+0.5);
+    m_physmax[id]=max;
+    return max;
+}
+
+
 qint64 Session::first(ChannelID id)
 {
     qint64 drift=qint64(PROFILE.cpap->clockDrift())*1000L;

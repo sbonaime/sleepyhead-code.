@@ -101,7 +101,8 @@ void SessionBar::mousePressEvent(QMouseEvent * ev)
 {
     SegType mn=min();
     SegType mx=max();
-    Q_ASSERT(mx > mn);
+    if (mx < mn)
+        return;
 
     SegType total=mx-mn;
     double px=double(width()-5) / double(total);
@@ -134,7 +135,8 @@ void SessionBar::mouseMoveEvent(QMouseEvent * ev)
 {
     SegType mn=min();
     SegType mx=max();
-    Q_ASSERT(mx > mn);
+    if (mx < mn)
+        return;
 
     SegType total=mx-mn;
     double px=double(width()-5) / double(total);
@@ -169,7 +171,7 @@ void SessionBar::paintEvent(QPaintEvent *)
 
     SegType mn=min();
     SegType mx=max();
-    if (mx > mn)
+    if (mx < mn)
         return;
 
     SegType total=mx-mn;

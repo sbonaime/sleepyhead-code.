@@ -451,6 +451,7 @@ qint64 Day::last(ChannelID code)
     }
     return date;
 }
+
 EventDataType Day::Min(ChannelID code)
 {
     EventDataType min=0;
@@ -462,6 +463,29 @@ EventDataType Day::Min(ChannelID code)
         if (!(*s)->m_min.contains(code))
             continue;
         tmp=(*s)->Min(code);
+        if (first) {
+            min=tmp;
+            first=false;
+        } else {
+            if (tmp<min) min=tmp;
+        }
+    }
+    return min;
+}
+
+EventDataType Day::physMin(ChannelID code)
+{
+    EventDataType min=0;
+    EventDataType tmp;
+    bool first=true;
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled()) continue;
+
+        // MW: I meant to check this instead.
+        if (!(*s)->m_min.contains(code))
+            continue;
+
+        tmp=(*s)->physMin(code);
         if (first) {
             min=tmp;
             first=false;
@@ -535,6 +559,30 @@ EventDataType Day::Max(ChannelID code)
         if (!(*s)->m_max.contains(code)) continue;
 //        if ((*s)->eventlist.find(code)==(*s)->eventlist.end()) continue;
         tmp=(*s)->Max(code);
+        if (first) {
+            max=tmp;
+            first=false;
+        } else {
+            if (tmp>max) max=tmp;
+        }
+    }
+    return max;
+}
+
+EventDataType Day::physMax(ChannelID code)
+{
+    EventDataType max=0;
+    EventDataType tmp;
+    bool first=true;
+    for (QList<Session *>::iterator s=sessions.begin();s!=sessions.end();s++) {
+        if (!(*s)->enabled())
+            continue;
+
+        // MW: I meant to check this instead.
+        if (!(*s)->m_max.contains(code))
+            continue;
+
+        tmp=(*s)->physMax(code);
         if (first) {
             max=tmp;
             first=false;

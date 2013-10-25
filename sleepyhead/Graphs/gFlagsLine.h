@@ -8,8 +8,31 @@
 #define GFLAGSLINE_H
 
 #include "gGraphView.h"
+#include "gspacer.h"
 
 class gFlagsGroup;
+
+/*! \class gYSpacer
+    \brief A dummy vertical spacer object
+   */
+class gFlagsLabelArea:public gSpacer
+{
+    public:
+        gFlagsLabelArea(gFlagsGroup * group);
+        virtual void paint(gGraph & w,int left,int top, int width, int height) {
+            Q_UNUSED(w)
+            Q_UNUSED(left)
+            Q_UNUSED(top)
+            Q_UNUSED(width)
+            Q_UNUSED(height)
+        }
+protected:
+        gFlagsGroup * m_group;
+        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+
+
+};
+
 
 /*! \class gFlagsLine
     \brief One single line of event flags in the Event Flags chart
@@ -45,6 +68,9 @@ class gFlagsLine:public Layer
         void setTotalLines(int i) { total_lines=i; }
         void setLineNum(int i) { line_num=i; }
     protected:
+
+        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+
         QString m_label;
         bool m_always_visible;
         int total_lines,line_num;
@@ -60,6 +86,8 @@ class gFlagsLine:public Layer
     */
 class gFlagsGroup:public LayerGroup
 {
+    friend class gFlagsLabelArea;
+
 public:
     gFlagsGroup();
     virtual ~gFlagsGroup();
@@ -88,6 +116,8 @@ public:
     QVector<gFlagsLine *> & visibleLayers() { return lvisible; }
 
 protected:
+    virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+
     gVertexBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;
     float m_barh;

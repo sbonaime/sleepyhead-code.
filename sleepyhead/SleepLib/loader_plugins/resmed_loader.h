@@ -189,7 +189,7 @@ public:
     virtual const QString & ClassName() { return resmed_class_name; }
 
     //! \brief Converts EDFSignal data to time delta packed EventList, and adds to Session
-    EventList * ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0,bool square=false);
+    void ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0,bool square=false);
 
     //! \brief Create Machine record, and index it by serial number
     Machine *CreateMachine(QString serial,Profile *profile);

@@ -43,6 +43,8 @@ private slots:
 
     void on_listView_customContextMenuRequested(const QPoint &pos);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::ProfileSelect *ui;
     QString m_selectedProfile;

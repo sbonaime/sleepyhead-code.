@@ -10,6 +10,17 @@
 #include "gFlagsLine.h"
 #include "gYAxis.h"
 
+gFlagsLabelArea::gFlagsLabelArea(gFlagsGroup * group)
+    :gSpacer(20)
+{
+    m_group=group;
+}
+bool gFlagsLabelArea::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
+{
+    if (m_group) m_group->mouseMoveEvent(event,graph);
+}
+
+
 gFlagsGroup::gFlagsGroup()
 {
     addVertexBuffer(quads=new gVertexBuffer(512,GL_QUADS));
@@ -61,7 +72,7 @@ void gFlagsGroup::SetDay(Day * d)
     m_barh=0;
 }
 
-void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
+void gFlagsGroup::paint(gGraph &g, int left, int top, int width, int height)
 {
     if (!m_visible) return;
     if (!m_day) return;
@@ -77,11 +88,12 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
         quads->add(left, linetop, left, linetop+m_barh,   left+width-1, linetop+m_barh, left+width-1, linetop, barcol.rgba());
 
         // Paint the actual flags
-        lvisible[i]->paint(w,left,linetop,width,m_barh);
+        lvisible[i]->m_rect=QRect(left,linetop,width,m_barh);
+        lvisible[i]->paint(g,left,linetop,width,m_barh);
         linetop+=m_barh;
     }
 
-    gVertexBuffer *outlines=w.lines();
+    gVertexBuffer *outlines=g.lines();
     outlines->add(left-1, top, left-1, top+height, COLOR_Outline.rgba());
     outlines->add(left-1, top+height, left+width,top+height, COLOR_Outline.rgba());
     outlines->add(left+width,top+height, left+width, top,COLOR_Outline.rgba());
@@ -90,6 +102,30 @@ void gFlagsGroup::paint(gGraph &w, int left, int top, int width, int height)
     //lines->add(left-1, top, left-1, top+height);
     //lines->add(left+width, top+height, left+width, top);
 }
+
+bool gFlagsGroup::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
+{
+
+    for (int i=0;i<lvisible.size();i++) {
+        gFlagsLine *fl=lvisible[i];
+        if (fl->m_rect.contains(event->x(),event->y())) {
+            if (fl->mouseMoveEvent(event,graph)) return true;
+        } else {
+            // Inside main graph area?
+            if ((event->y() > fl->m_rect.y()) && (event->y()) < (fl->m_rect.y()+fl->m_rect.height())) {
+                if (event->x() < lvisible[i]->m_rect.x()) {
+                    // Display tooltip
+                    QString ttip=schema::channel[fl->code()].description();
+                    graph->graphView()->m_tooltip->display(ttip,event->x(),event->y()-15,p_profile->general->tooltipTimeout());
+                    graph->redraw();
+                }
+            }
+
+        }
+    }
+    return false;
+}
+
 
 gFlagsLine::gFlagsLine(ChannelID code,QColor flag_color,QString label,bool always_visible,FlagType flt)
 :Layer(code),m_label(label),m_always_visible(always_visible),m_flt(flt),m_flag_color(flag_color)
@@ -242,4 +278,11 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
     if (verts_exceeded) {
         qWarning() << "maxverts exceeded in gFlagsLine::plot()";
     }
+}
+
+bool gFlagsLine::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
+{
+  //  qDebug() << code() << event->x() << event->y() << graph->rect();
+
+    return false;
 }

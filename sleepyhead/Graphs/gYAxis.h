@@ -10,23 +10,6 @@
 #include "gGraphView.h"
 
 
-/*! \class gYSpacer
-    \brief A dummy vertical spacer object
-   */
-class gYSpacer:public Layer
-{
-    public:
-        gYSpacer(int spacer=20);
-        virtual void paint(gGraph & w,int left,int top, int width, int height) {
-            Q_UNUSED(w)
-            Q_UNUSED(left)
-            Q_UNUSED(top)
-            Q_UNUSED(width)
-            Q_UNUSED(height)
-        }
-
-};
-
 /*! \class gXGrid
     \brief Draws the horizintal major/minor grids over graphs
    */
@@ -110,7 +93,8 @@ class gYAxis:public Layer
         QColor m_line_color;
         QColor m_text_color;
         gVertexBuffer * lines;
-        virtual bool mouseMoveEvent(QMouseEvent * event);
+        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+        virtual bool mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph);
 
         QImage m_image;
         GLuint m_textureID;

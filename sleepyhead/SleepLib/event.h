@@ -25,6 +25,9 @@ public:
     EventList(EventListType et,EventDataType gain=1.0, EventDataType offset=0.0, EventDataType min=0.0, EventDataType max=0.0, double rate=0.0,bool second_field=false);
     ~EventList();
 
+    //! \brief Wipe the event list so it can be reused
+    void clear();
+
     /*! \brief Add an event starting at time, containing data to this event list
       Note, data2 is only used if second_field is specified in the constructor */
     void AddEvent(qint64 time, EventStoreType data);

@@ -49,34 +49,48 @@ void gLineChart::SetDay(Day *d)
     m_minx=0,m_maxx=0;
     m_miny=0,m_maxy=0;
 
-    if (!d) return;
+    if (!d)
+        return;
 
     qint64 t64;
+    EventDataType tmp;
 
-    EventDataType min=99999999,max=-999999999,tmp;
+    bool first=true;
 
     for (int j=0;j<m_codes.size();j++) {
         ChannelID code=m_codes[j];
         for (int i=0;i<d->size();i++) {
             Session *sess=d->getSessions()[i];
             if (!sess->channelExists(code)) continue;
+            if (code==CPAP_FLG) {
+                int i=5;
+            }
+            if (first) {
+                m_miny=sess->physMin(code);
+                m_maxy=sess->physMax(code);
+                m_minx=sess->first(code);
+                m_maxx=sess->last(code);
+                first=false;
+            } else {
+                tmp=sess->physMin(code);
+                if (m_miny > tmp)
+                    m_miny=tmp;
 
-            tmp=sess->Min(code);
-            if (min > tmp) min=tmp;
+                tmp=sess->physMax(code);
+                if (m_maxy < tmp)
+                    m_maxy=tmp;
 
-            tmp=sess->Max(code);
-            if (max < tmp) max=tmp;
+                t64=sess->first(code);
+                if (m_minx > t64)
+                    m_minx=t64;
 
-            t64=sess->first(code);
-            if (!m_minx || (m_minx > t64)) m_minx=t64;
-
-            t64=sess->last(code);
-            if (!m_maxx || (m_maxx < t64)) m_maxx=t64;
+                t64=sess->last(code);
+                if (m_maxx < t64)
+                    m_maxx=t64;
+            }
         }
 
     }
-    m_miny=min;
-    m_maxy=max;
 
     //if (m_code==CPAP_Leak) {
     // subtract_offset=profile.cpap.[IntentionalLeak].toDouble();
@@ -102,6 +116,10 @@ EventDataType gLineChart::Maxy()
 // Time Domain Line Chart
 void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 {
+
+    if (w.title()=="Flow Limit") {
+        int i=5;
+    }
     if (!m_visible)
         return;
 
@@ -112,8 +130,6 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 
     if (width<0)
         return;
-
-
 
    // lines=w.lines();
     EventDataType miny,maxy;
@@ -367,7 +383,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         for (int i=idx;i<siz;i+=sam,ptr+=sam) {
                             time+=rate;
                             // This is much faster than QVector access.
-                            data=*ptr;
+                            data=*ptr + el.offset();
                             data *= gain;
 
                             // Scale the time scale X to pixel scale X
@@ -446,7 +462,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 //                        }
 
                         // Prime first point
-                        data=*ptr * gain;
+                        data=(*ptr+el.offset()) * gain;
                         lastpx=xst+((time - minx) * xmult);
                         lastpy=yst-((data - miny) * ymult);
 
@@ -454,7 +470,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                             ptr+=sam;
                             time+=rate;
 
-                            data=*ptr * gain;
+                            data=(*ptr + el.offset()) * gain;
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                             py=yst-((data - miny) * ymult);   // Same for Y scale, with precomputed gain
@@ -504,7 +520,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     tptr=el.rawTime() + idx;
 
                     time=start + *tptr++;
-                    data=*dptr++ * gain;
+                    data=(*dptr++ + el.offset()) * gain;
 
                     idx++;
 
@@ -529,7 +545,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                     if (square_plot) {
                         for (; dptr < eptr; dptr++) {
                             time=start + *tptr++;
-                            data=gain * *dptr;
+                            data=gain * (*dptr + el.offset());
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                             py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain
@@ -562,7 +578,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
                         for (; dptr < eptr; dptr++) {
                         //for (int i=0;i<siz;i++) {
                             time=start + *tptr++;
-                            data=gain  * *dptr;
+                            data=gain * (*dptr + el.offset());
 
                             px=xst+((time - minx) * xmult);   // Scale the time scale X to pixel scale X
                             py=yst-((data - miny) * ymult);   // Same for Y scale without precomputed gain

@@ -9,12 +9,6 @@
 #include "gYAxis.h"
 //#include "SleepLib/profiles.h"
 
-gYSpacer::gYSpacer(int spacer)
-    :Layer(NoChannel)
-{
-    Q_UNUSED(spacer)
-}
-
 gXGrid::gXGrid(QColor col)
     :Layer(NoChannel)
 {
@@ -138,6 +132,7 @@ gYAxis::~gYAxis()
 }
 void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
 {
+
     int x,y;//,yh=0;
 
     //Todo: clean this up as there is a lot of duplicate code between the sections
@@ -366,15 +361,28 @@ const QString gYAxis::Format(EventDataType v, int dp) {
    return QString::number(v,'f',dp);
 }
 
-bool gYAxis::mouseMoveEvent(QMouseEvent * event)
+bool gYAxis::mouseMoveEvent(QMouseEvent * event, gGraph * graph)
 {
-    Q_UNUSED(event)
-    //int x=event->x();
-    //int y=event->y();
-    //qDebug() << "Hover at " << x << y;
-    return false;
+    int x=event->x();
+    int y=event->y();
+    if (!graph->units().isEmpty()) {
+        graph->ToolTip(graph->units(),x,y-20,0);
+        graph->redraw();
+    }
+    return true;
 }
 
+bool gYAxis::mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph)
+{
+    if (graph) {
+
+        int x=event->x();
+        int y=event->y();
+        qDebug() << "Mouse double clicked for" << graph->title() << x << y << m_rect;
+    }
+    Q_UNUSED(event);
+    return false;
+}
 
 const QString gYAxisTime::Format(EventDataType v, int dp)
 {

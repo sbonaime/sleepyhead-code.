@@ -17,6 +17,7 @@
 #include <QWaitCondition>
 #include <QPixmap>
 #include <Graphs/glcommon.h>
+#include <QRect>
 
 
 #define MIN(a,b) (((a)<(b)) ? (a) : (b));
@@ -271,6 +272,7 @@ enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, 
 class Layer
 {
     friend class gGraph;
+    friend class LayerGroup;
 public:
     Layer(ChannelID code);
     virtual ~Layer();
@@ -303,9 +305,6 @@ public:
 
     //! \brief Return this layers physical maximum Yaxis value
     virtual EventDataType Maxy() { return m_maxy; }
-
-
-
 
     //! \brief Set this layers physical minimum date boundary
     virtual void setMinX(qint64 val) { m_minx=val; }
@@ -363,6 +362,7 @@ public:
     void addref() { m_refcount++; }
     bool unref() { m_refcount--; if (m_refcount<=0) return true; return false; }
 
+
 protected:
     //! \brief Add a GLBuffer (vertex) object customized to this layer
     void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
@@ -380,23 +380,24 @@ protected:
     short m_Y;
     short m_order;                     // order for positioning..
     LayerPosition m_position;
+    QRect m_rect;
 
     //! \brief A vector containing all this layers custom drawing buffers
     QVector<GLBuffer *> mgl_buffers;
     QVector<gVertexBuffer *> mv_buffers;
 
     //! \brief Mouse wheel moved somewhere over this layer
-    virtual bool wheelEvent(QWheelEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool wheelEvent(QWheelEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
     //! \brief Mouse moved somewhere over this layer
-    virtual bool mouseMoveEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseMoveEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
     //! \brief Mouse left or right button pressed somewhere on this layer
-    virtual bool mousePressEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mousePressEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
     //! \brief Mouse button released that was originally pressed somewhere on this layer
-    virtual bool mouseReleaseEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseReleaseEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
     //! \brief Mouse button double clicked somewhere on this layer
-    virtual bool mouseDoubleClickEvent(QMouseEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
     //! \brief A key was pressed on the keyboard while the graph area was focused.
-    virtual bool keyPressEvent(QKeyEvent * event) { Q_UNUSED(event); return false; }
+    virtual bool keyPressEvent(QKeyEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
 };
 
 /*! \class LayerGroup
@@ -438,6 +439,24 @@ public:
 protected:
     //! \brief Contains all Layer objects in this group
     QVector<Layer *> layers;
+
+    //! \brief Mouse wheel moved somewhere over this LayerGroup
+    virtual bool wheelEvent(QWheelEvent * event, gGraph * graph);
+
+    //! \brief Mouse moved somewhere over this LayerGroup
+    virtual bool mouseMoveEvent(QMouseEvent * event, gGraph * graph);
+
+    //! \brief Mouse left or right button pressed somewhere on this LayerGroup
+    virtual bool mousePressEvent(QMouseEvent * event, gGraph * graph);
+
+    //! \brief Mouse button released that was originally pressed somewhere on this LayerGroup
+    virtual bool mouseReleaseEvent(QMouseEvent * event, gGraph * graph);
+
+    //! \brief Mouse button double clicked somewhere on this layerGroup
+    virtual bool mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph);
+
+    //! \brief A key was pressed on the keyboard while the graph area was focused.
+    virtual bool keyPressEvent(QKeyEvent * event, gGraph * graph);
 };
 
 class gGraph;
@@ -499,6 +518,7 @@ protected:
     QImage m_image;
     GLuint m_textureID;
     bool m_invalidate;
+
 protected slots:
 
     //! \brief Timeout to hide tooltip, and redraw without it.
@@ -691,7 +711,7 @@ public:
     virtual void paint(int originX, int originY, int width, int height);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
-    void ToolTip(QString text, int x, int y, int timeout=2000);
+    void ToolTip(QString text, int x, int y, int timeout=0);
 
     //! \brief Public version of updateGL(), to redraw all graphs.. Not for normal use
     void redraw();
@@ -723,6 +743,8 @@ public:
     //! \brief Returns the main gGraphView objects gVertexBuffer quads list.
     gVertexBuffer * quads();
 
+    const inline QRect & rect() { return m_rect; }
+
     // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
     //GLShortBuffer * stippled();
 
@@ -731,7 +753,6 @@ public:
     short left,right,top,bottom; // dirty magin hacks..
 
     Layer * getLineChart();
-    QRect m_lastbounds;
     QTimer * timer;
 
     // This gets set to true to force a redraw of the yAxis tickers when graphs are resized.
@@ -790,6 +811,8 @@ protected:
     bool m_enforceMinY,m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
+
+    QRect m_rect;
 signals:
 
 protected slots:
@@ -887,9 +910,7 @@ public:
     void deselect();
 
     QPoint pointClicked() { return m_point_clicked; }
-    QPoint globalPointClicked() { return m_global_point_clicked; }
     void setPointClicked(QPoint p) { m_point_clicked=p; }
-    void setGlobalPointClicked(QPoint p) { m_global_point_clicked=p; }
 
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
@@ -1072,7 +1093,7 @@ protected:
 
     bool m_button_down;
     QPoint m_point_clicked;
-    QPoint m_global_point_clicked;
+
     QPoint m_sizer_point;
     int m_horiz_travel;
 

@@ -195,7 +195,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     //fg->AddLayer((new gFlagsLine(PRS1_0B,COLOR_DarkGreen,tr("U0B"))));
     SF->setBlockZoom(true);
     SF->AddLayer(new gShadowArea());
-    SF->AddLayer(new gYSpacer(),LayerLeft,gYAxis::Margin);
+
+    SF->AddLayer(new gFlagsLabelArea(fg),LayerLeft,gYAxis::Margin);
     //SF->AddLayer(new gFooBar(),LayerBottom,0,1);
     SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
 

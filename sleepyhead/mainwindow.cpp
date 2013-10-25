@@ -1077,7 +1077,7 @@ void MainWindow::RestartApplication(bool force_login,bool change_datafolder)
 
         if (QProcess::startDetached("/usr/bin/open",args)) {
             QApplication::instance()->exit();
-        } else QMessageBox::warning(this,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
+        } else QMessageBox::warning(NULL,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
 
 #else
         apppath=QApplication::instance()->applicationFilePath();

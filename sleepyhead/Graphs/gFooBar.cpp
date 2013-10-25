@@ -5,6 +5,7 @@
 */
 #include <cmath>
 #include "gFooBar.h"
+#include "gYAxis.h"
 
 gShadowArea::gShadowArea(QColor shadow_color,QColor line_color)
 :Layer(NoChannel),m_shadow_color(shadow_color),m_line_color(line_color)
