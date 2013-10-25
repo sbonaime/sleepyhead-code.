@@ -2045,6 +2045,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     long recs;
     ChannelID code;
     for (int s=0;s<edf.GetNumSignals();s++) {
+        a=NULL;
         EDFSignal & es=*edf.edfsignals[s];
         recs=es.nr*edf.GetNumDataRecords();
         if (recs<=0) continue;
