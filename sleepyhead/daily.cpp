@@ -1092,12 +1092,6 @@ QString Daily::getSleepTime(Day * cpap, Day * oxi)
 
 void Daily::Load(QDate date)
 {
-    if (sessbar) {
-        sessbar->clear();
-        sessbar->deleteLater();
-        sessbar=NULL;
-    }
-
     dateDisplay->setText("<i>"+date.toString(Qt::SystemLocaleLongDate)+"</i>");
     previous_date=date;
     Day *cpap=PROFILE.GetDay(date,MT_CPAP);
