@@ -17,7 +17,9 @@ gFlagsLabelArea::gFlagsLabelArea(gFlagsGroup * group)
 }
 bool gFlagsLabelArea::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
 {
-    if (m_group) m_group->mouseMoveEvent(event,graph);
+    if (m_group)
+        return m_group->mouseMoveEvent(event,graph);
+    return false;
 }
 
 
@@ -282,6 +284,8 @@ void gFlagsLine::paint(gGraph & w,int left, int top, int width, int height)
 
 bool gFlagsLine::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(graph)
   //  qDebug() << code() << event->x() << event->y() << graph->rect();
 
     return false;

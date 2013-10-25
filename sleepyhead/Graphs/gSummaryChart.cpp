@@ -869,13 +869,14 @@ bool SummaryChart::mousePressEvent(QMouseEvent * event,gGraph * graph)
         //qDebug() << "Jump to daily view?";
         return true;
     }
-    Q_UNUSED(event)
+    Q_UNUSED(graph)
     return false;
 }
 
 bool SummaryChart::keyPressEvent(QKeyEvent * event,gGraph * graph)
 {
     Q_UNUSED(event)
+    Q_UNUSED(graph)
     //qDebug() << "Summarychart Keypress";
     return false;
 }

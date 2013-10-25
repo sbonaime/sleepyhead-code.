@@ -384,9 +384,8 @@ bool gYAxis::mouseMoveEvent(QMouseEvent * event, gGraph * graph)
 bool gYAxis::mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph)
 {
     if (graph) {
-
-        int x=event->x();
-        int y=event->y();
+//        int x=event->x();
+//        int y=event->y();
         short z=(graph->zoomY()+1) % gGraph::maxZoomY;
         graph->setZoomY(z);
         qDebug() << "Mouse double clicked for" << graph->title() << z;
