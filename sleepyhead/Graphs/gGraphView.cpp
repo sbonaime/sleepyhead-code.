@@ -849,6 +849,8 @@ void gToolTip::paint()     //actually paints it.
         painter.drawRoundedRect(rect,5,5);
         painter.setBrush(Qt::black);
 
+        painter.setFont(*defaultfont);
+
         painter.drawText(rect,Qt::AlignCenter,m_text);
 
         painter.end();

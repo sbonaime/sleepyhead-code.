@@ -493,7 +493,7 @@ bool PreferencesDialog::Save()
     }
 
     //PROFILE.Save();
-    //PREF.Save();
+    PREF.Save();
 
     if (recalc_events) {
         // send a signal instead?
