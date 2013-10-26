@@ -277,7 +277,7 @@ void ExportCSV::on_exportButton_clicked()
                                 for (quint32 q=0;q<ev->count();q++) {
                                     data=QDateTime::fromTime_t(ev->time(q)/1000L).toString(Qt::ISODate);
                                     data+=sep+QString::number(sess->session());
-                                    data+=sep+schema::channel[key].name();
+                                    data+=sep+schema::channel[key].code();
                                     data+=sep+QString::number(ev->data(q),'f',2);
                                     data+=newline;
                                     file.write(data.toLatin1());

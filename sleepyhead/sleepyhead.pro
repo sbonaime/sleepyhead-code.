@@ -251,8 +251,8 @@ use_bundled_libs: {
     greaterThan(QT_MAJOR_VERSION,4) {
         win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
         else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
-        else:unix:CONFIG(release, debug|release): LIBS += -lQt5ExtSerialPort1
-        else:unix:CONFIG(debug, debug|release): LIBS += -lQt5ExtSerialPortd1
+        else:unix:CONFIG(release, debug|release): LIBS += -lQtExtSerialPort
+        else:unix:CONFIG(debug, debug|release): LIBS += -lQtExtSerialPortd
     } else {
         win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
         else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport

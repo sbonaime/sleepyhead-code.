@@ -48,16 +48,18 @@ class Channel
 {
 public:
     Channel() { m_id=0; }
-    Channel(int id, ChanType type, ScopeType scope, QString name, QString description, QString label, QString unit,DataType datatype=DEFAULT, QColor=Qt::black, int link=0);
+    Channel(int id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit,DataType datatype=DEFAULT, QColor=Qt::black, int link=0);
     void addColor(Function f, QColor color) { m_colors[f]=color; }
     void addOption(int i, QString option) { m_options[i]=option; }
 
     const int & id() { return m_id; }
     const ChanType & type() { return m_type; }
-    const QString & name() { return m_name; }
+    const QString & code() { return m_code; }
+    const QString & fullname() { return m_fullname; }
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
     const QString & units() { return m_unit; }
+    const int linkid() { return m_link; }
 
     void setLabel(QString label) { m_label=label; }
     void setUnit(QString unit) { m_unit=unit; }
@@ -77,7 +79,9 @@ protected:
     int m_id;
     ChanType m_type;
     ScopeType m_scope;
-    QString m_name;
+    QString m_code; // Untranslatable
+
+    QString m_fullname; // Translatable Name
     QString m_description;
     QString m_label;
     QString m_unit;
@@ -101,6 +105,8 @@ public:
 
     //! \brief Stores Channel list to XML file specified by filename
     bool Save(QString filename);
+
+    void add(QString group,Channel * chan);
 
     //! \brief Looks up Channel in this List with the index idx, returns EmptyChannel if not found
     Channel & operator[](ChannelID idx) {

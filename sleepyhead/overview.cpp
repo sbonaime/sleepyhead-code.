@@ -133,7 +133,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
 
     WEIGHT=createGraph(STR_TR_Weight,STR_TR_Weight,YT_Weight);
     BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
-    ZOMBIE=createGraph(STR_TR_Zombie,tr("How you felt\n(0-10)"));
+    ZOMBIE=createGraph(STR_TR_Zombie,tr("How you felt\n(0-10)")); // Rename this Energy?
 
     ahihr=new SummaryChart(tr("Events/Hr"),GT_LINE);
     ahihr->addSlice(ahicode,COLOR_Blue,ST_MAX);

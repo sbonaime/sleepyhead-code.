@@ -119,35 +119,35 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     int default_height=PROFILE.appearance->graphHeight();
     SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
-    FRW=new gGraph(GraphView,STR_TR_FlowRate,schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
+    FRW=new gGraph(GraphView,STR_TR_FlowRate, schema::channel[CPAP_FlowRate].fullname()+"\n"+schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
 
 
     if (PROFILE.general->calculateRDI()) {
-        AHI=new gGraph(GraphView,STR_TR_RDI,schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
-    } else AHI=new gGraph(GraphView,STR_TR_AHI,schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+        AHI=new gGraph(GraphView,STR_TR_RDI,   schema::channel[CPAP_RDI].fullname()+"\n"+schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
+    } else AHI=new gGraph(GraphView,STR_TR_AHI,schema::channel[CPAP_AHI].fullname()+"\n"+schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
 
-    MP=new gGraph(GraphView,STR_TR_MaskPressure,schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
-    PRD=new gGraph(GraphView,STR_TR_Pressure,schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
-    LEAK=new gGraph(GraphView,STR_TR_Leak,schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
-    SNORE=new gGraph(GraphView,STR_TR_Snore,schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
-    RR=new gGraph(GraphView,STR_TR_RespRate,schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
-    TV=new gGraph(GraphView,STR_TR_TidalVolume,schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
-    MV=new gGraph(GraphView,STR_TR_MinuteVent,schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
-    //TgMV=new gGraph(GraphView,STR_TR_TgtMinVent,schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
-    FLG=new gGraph(GraphView,STR_TR_FlowLimit,schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
-    PTB=new gGraph(GraphView,STR_TR_PatTrigBreath,schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
-    RE=new gGraph(GraphView,STR_TR_RespEvent,schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
-    TI=new gGraph(GraphView,STR_TR_InspTime,schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
-    TE=new gGraph(GraphView,STR_TR_ExpTime,schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
-    IE=new gGraph(GraphView,STR_TR_IE,schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
+    MP=new gGraph(GraphView,schema::channel[CPAP_MaskPressure].label(), schema::channel[CPAP_MaskPressure].fullname()+"\n"+schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
+    PRD=new gGraph(GraphView,schema::channel[CPAP_Pressure].label(),    schema::channel[CPAP_Pressure].fullname()+"\n"+schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
+    LEAK=new gGraph(GraphView,STR_TR_Leak,                              schema::channel[CPAP_Leak].fullname()+"\n"+schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
+    SNORE=new gGraph(GraphView,STR_TR_Snore,                            schema::channel[CPAP_Snore].fullname()+"\n"+schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
+    RR=new gGraph(GraphView,STR_TR_RespRate,                            schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
+    TV=new gGraph(GraphView,STR_TR_TidalVolume,                         schema::channel[CPAP_TidalVolume].fullname()+"\n"+schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
+    MV=new gGraph(GraphView,STR_TR_MinuteVent,                          schema::channel[CPAP_MinuteVent].fullname()+"\n"+schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
+    //TgMV=new gGraph(GraphView,STR_TR_TgtMinVent,                      schema::channel[CPAP_TgMV].fullname()+"\n"+schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
+    FLG=new gGraph(GraphView,STR_TR_FlowLimit,                          schema::channel[CPAP_FLG].fullname()+"\n"+schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
+    PTB=new gGraph(GraphView,STR_TR_PatTrigBreath,                      schema::channel[CPAP_PTB].fullname()+"\n"+schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
+    RE=new gGraph(GraphView,STR_TR_RespEvent,                           schema::channel[CPAP_RespEvent].fullname()+"\n"+schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
+    TI=new gGraph(GraphView,STR_TR_InspTime,                            schema::channel[CPAP_Ti].fullname()+"\n"+schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
+    TE=new gGraph(GraphView,STR_TR_ExpTime,                             schema::channel[CPAP_Te].fullname()+"\n"+schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
+    IE=new gGraph(GraphView,schema::channel[CPAP_IE].label(),           schema::channel[CPAP_IE].fullname()+"\n"+schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
 
-    STAGE=new gGraph(GraphView,STR_TR_SleepStage,schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
+    STAGE=new gGraph(GraphView,STR_TR_SleepStage,                       schema::channel[ZEO_SleepStage].fullname()+"\n"+schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
     int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
-    PULSE=new gGraph(GraphView,STR_TR_PulseRate,schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    SPO2=new gGraph(GraphView,STR_TR_SpO2,schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    INTPULSE=new gGraph(GraphView,tr("Int. Pulse"),schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    INTSPO2=new gGraph(GraphView,tr("Int. SpO2"),schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    PLETHY=new gGraph(GraphView,STR_TR_Plethy,schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
+    PULSE=new gGraph(GraphView,STR_TR_PulseRate,                        schema::channel[OXI_Pulse].fullname()+"\n"+schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
+    SPO2=new gGraph(GraphView,STR_TR_SpO2,                              schema::channel[OXI_SPO2].fullname()+"\n"+schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
+    INTPULSE=new gGraph(GraphView,tr("Int. Pulse"),                     schema::channel[OXI_Pulse].fullname()+"\n"+schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
+    INTSPO2=new gGraph(GraphView,tr("Int. SpO2"),                       schema::channel[OXI_SPO2].fullname()+"\n"+schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
+    PLETHY=new gGraph(GraphView,STR_TR_Plethy,                          schema::channel[OXI_Plethy].fullname()+"\n"+schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -452,7 +452,7 @@ void Daily::Link_clicked(const QUrl &url)
         }
         return;
     } else if (code=="event")  {
-        QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[sid].description(),Qt::MatchContains);
+        QList<QTreeWidgetItem *> list=ui->treeWidget->findItems(schema::channel[sid].fullname(),Qt::MatchContains);
         if (list.size()>0) {
             ui->treeWidget->collapseAll();
             ui->treeWidget->expandItem(list.at(0));
@@ -460,7 +460,7 @@ void Daily::Link_clicked(const QUrl &url)
             ui->treeWidget->setCurrentItem(wi);
             ui->tabWidget->setCurrentIndex(1);
         } else {
-            mainwin->Notify(tr("No %1 events are recorded this day").arg(schema::channel[sid].description()),"",1500);
+            mainwin->Notify(tr("No %1 events are recorded this day").arg(schema::channel[sid].fullname()),"",1500);
         }
     } else if (code=="graph") {
         qDebug() << "Select graph " << data;
@@ -551,7 +551,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 int cnt=day->count(code);
                 if (!cnt) continue; // If no events than don't bother showing..
                 total_events+=cnt;
-                QString st=schema::channel[code].description();
+                QString st=schema::channel[code].fullname();
                 if (st.isEmpty())  {
                     st=QString("Fixme %1").arg(code);
                 }
@@ -1199,25 +1199,24 @@ void Daily::Load(QDate date)
 
             struct ChannelInfo {
                 ChannelID id;
-                QString name;
                 QColor color;
                 QColor color2;
                 EventDataType value;
             };
             ChannelInfo chans[]={
-                { CPAP_Hypopnea,    tr("Hypopnea"),             COLOR_Hypopnea,     Qt::white, hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours },
-                { CPAP_Obstructive, tr("Obstructive Apnea"),    COLOR_Obstructive,  Qt::black, oai=cpap->count(CPAP_Obstructive)/hours },
-                { CPAP_Apnea,       tr("Unclassified Apnea"),   COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
-                { CPAP_ClearAirway, tr("Clear Airway Apnea"),   COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
-                { CPAP_NRI,         tr("Non Responding Event"), COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
-                { CPAP_FlowLimit,   tr("Flow Limitation"),      COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
-                { CPAP_ExP,         tr("Expiratory Puff"),      COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
-                { CPAP_RERA,        tr("Respiratory Effort Related Arousal"), COLOR_RERA, Qt::black, rei=cpap->count(CPAP_RERA)/hours },
-                { CPAP_VSnore,      tr("Vibratory Snore"),      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
-                { CPAP_VSnore2,     tr("Vibratory Snore"),      COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
-                { CPAP_LeakFlag,    tr("Large Leak"),           COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
-                { PRS1_10,          tr("Large Leak"),           COLOR_LeakFlag,     Qt::black, lk2=cpap->count(PRS1_10)/hours },
-                { CPAP_CSR,         tr("Periodic Breathing / CSR %"), COLOR_CSR,      Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
+                { CPAP_Hypopnea,    COLOR_Hypopnea,     Qt::white, hi=(cpap->count(CPAP_ExP)+cpap->count(CPAP_Hypopnea))/hours },
+                { CPAP_Obstructive, COLOR_Obstructive,  Qt::black, oai=cpap->count(CPAP_Obstructive)/hours },
+                { CPAP_Apnea,       COLOR_Apnea,        Qt::black, uai=cpap->count(CPAP_Apnea)/hours },
+                { CPAP_ClearAirway, COLOR_ClearAirway,  Qt::black, cai=cpap->count(CPAP_ClearAirway)/hours },
+                { CPAP_NRI,         COLOR_NRI,          Qt::black, nri=cpap->count(CPAP_NRI)/hours },
+                { CPAP_FlowLimit,   COLOR_FlowLimit,    Qt::white, fli=cpap->count(CPAP_FlowLimit)/hours },
+                { CPAP_ExP,         COLOR_ExP,          Qt::black, exp=cpap->count(CPAP_ExP)/hours },
+                { CPAP_RERA,        COLOR_RERA,         Qt::black, rei=cpap->count(CPAP_RERA)/hours },
+                { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
+                { CPAP_VSnore2,     COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
+                { CPAP_LeakFlag,    COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
+                { PRS1_10,          COLOR_LeakFlag,     Qt::black, lk2=cpap->count(PRS1_10)/hours },
+                { CPAP_CSR,         COLOR_CSR,      Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
             };
             int numchans=sizeof(chans)/sizeof(ChannelInfo);
 
@@ -1228,7 +1227,7 @@ void Daily::Load(QDate date)
                 if ((cpap->machine->GetClass()==STR_MACH_PRS1) && (chans[i].id==CPAP_VSnore))
                     continue;
                 html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a href='event=%5'>%3</a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%4</font></b></td></tr>\n")
-                        .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(chans[i].name).arg(chans[i].value,0,'f',2).arg(chans[i].id);
+                        .arg(chans[i].color.name()).arg(chans[i].color2.name()).arg(schema::channel[chans[i].id].fullname()).arg(chans[i].value,0,'f',2).arg(chans[i].id);
 
                 // keep in case tooltips are needed
                 //html+=QString("<tr><td align='left' bgcolor='%1'><b><font color='%2'><a class=info href='event=%6'>%3<span>%4</span></a></font></b></td><td width=20% bgcolor='%1'><b><font color='%2'>%5</font></b></td></tr>\n")

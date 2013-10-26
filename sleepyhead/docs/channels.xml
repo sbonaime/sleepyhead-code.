@@ -8,59 +8,9 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 <channels language="en" version="1.0">
  <group name="CPAP">
   <!-- Channel List -->
-  <channel id="0x1000" class="data" name="CSR" details="Periodic Breathing" label="PB" unit="% of night" color="light green"/>
-  <channel id="0x1001" class="data" name="ClearAirway" details="Clear Airway Apnea" label="CA" unit="events/hour" color="purple"/>
-  <channel id="0x1002" class="data" name="Obstructive" details="Obstructive Apnea" label="OA" unit="events/hour" color="#40c0ff"/>
-  <channel id="0x1003" class="data" name="Hypopnea" details="Hypopnea" label="H" unit="events/hour" color="blue"/>
-  <channel id="0x1004" class="data" name="Apnea" details="Unspecified Apnea" label="UA" unit="events/hour" color="dark green"/>
-  <channel id="0x1005" class="data" name="FlowLimit" details="Flow Limitation" label="FL" unit="events/hour" color="#404040"/>
-  <channel id="0x1006" class="data" name="RERA" details="Resp. Effort Related Arousal" unit="events/hour" label="RERA" color="gold"/>
-  <channel id="0x1007" class="data" name="VSnore" details="Vibratory Snore" label="VS" unit="events/hour" color="red"/>
-  <channel id="0x1008" class="data" name="VSnore2" details="Vibratory Snore #2" label="VS2" unit="events/hour" color="orange"/>
-  <channel id="0x1009" class="data" name="PressurePulse" details="Pressure Pulse" label="PP" unit="events/hour" color="dark red"/>
-  <channel id="0x100a" class="data" name="LeakFlag" details="Leak Event" label="L" unit="events/hour" color="dark blue"/>
-  <channel id="0x100b" class="data" name="NRI" details="Non-Responding Event" label="NRI" unit="events/hour" color="orange"/>
-  <channel id="0x100c" class="data" name="ExP" details="Exhale Puff" label="EP" unit="events/hour" color="dark magenta"/>
-  <channel id="0x101e" class="data" name="UserFlag1" details="User Flag #1" label="UF1" unit="events/hour" color="dark cyan"/>
-  <channel id="0x101f" class="data" name="UserFlag2" details="User Flag #2" label="UF2" unit="events/hour" color="dark blue"/>
+  
 
-  <channel id="0x1020" class="data" name="PressureMin" details="Min Therapy Pressure" label="Pressure" color="black"/>
-  <channel id="0x1021" class="data" name="PressureMax" details="Max Therapy Pressure" label="Pressure" color="black"/>
-  <channel id="0x1022" class="data" name="RampTime" details="Ramp Time" label="Ramp Time" color="black"/>
-  <channel id="0x1023" class="data" name="RampPressure" details="Ramp Starting Pressure" label="Ramp Pr." color="black"/>
-
-  <channel id="0x1024" class="data" name="UserFlag3" details="User Flag #3" label="UF3" unit="events/hour" color="dark grey"/>
-
-
-  <channel id="0x1100" class="data" name="FlowRate" details="Flow Rate" label="Flow Rate" unit="L/min" color="black"/>
-  <channel id="0x1101" class="data" name="MaskPressure" details="Mask Pressure" label="Mask Pressure" unit="cmH20" color="blue"/>
-  <channel id="0x1102" class="data" name="MaskPressureHi" details="Mask Pressure" label="Mask Pressure (Hi-Res)" unit="cmH20" color="blue" link="0x1101"/>
-  <channel id="0x1103" class="data" name="TidalVolume" details="Tidal Volume" label="Tidal Volume" unit="ml" color="magenta"/>
-  <channel id="0x1104" class="data" name="Snore" details="Snore" label="Snore" unit="unknown" color="grey"/>
-  <channel id="0x1105" class="data" name="MinuteVent" details="Minute Ventilation" label="Minute Vent." unit="L/min" color="dark cyan"/>
-  <channel id="0x1106" class="data" name="RespRate" details="Respiratory Rate" label="Resp. Rate" unit="breaths/min" color="dark magenta"/>
-  <channel id="0x1107" class="data" name="PTB" details="Patient Triggered Breaths" label="Pat. Trig. Breaths" unit="%" color="dark grey"/>
-  <channel id="0x1108" class="data" name="Leak" details="Leak Rate" label="Leaks" unit="L/min" color="dark green"/>
-  <channel id="0x1109" class="data" name="IE" details="Inspiratory:Expiratory" label="I:E" unit="ratio" color="dark red"/>
-  <channel id="0x110a" class="data" name="Te" details="Expiratory Time" label="Exp Time" unit="seconds" color="dark green"/>
-  <channel id="0x110b" class="data" name="Ti" details="Inspiratory Time" label="Insp Time" unit="seconds" color="dark blue"/>
-  <channel id="0x110c" class="data" name="Pressure" details="Pressure" label="Pressure" unit="cmH20" color="dark green"/>
-  <channel id="0x110d" class="data" name="IPAP" details="Inspiratory Pressure" label="IPAP" unit="cmH20" color="orange"/>
-  <channel id="0x110e" class="data" name="EPAP" details="Expiratory Pressure" label="EPAP" unit="cmH20" color="light blue"/>
-  <channel id="0x110f" class="data" name="PS" details="Pressure Support" label="PS" unit="cmH20" color="dark blue"/>
-  <channel id="0x1110" class="data" name="IPAPLo" details="Inspiratory Pressure Lo" label="IPAP Lo" unit="cmH20" color="grey"/>
-  <channel id="0x1111" class="data" name="IPAPHi" details="Inspiratory Pressure Hi" label="IPAP Hi" unit="cmH20" color="grey"/>
-  <channel id="0x1112" class="data" name="RespEvent" details="Respiratory Events" label="Resp Events" unit="" color="black"/>
-  <channel id="0x1113" class="data" name="FLG" details="Flow Limit Graph" label="Flow Limit" unit="0-1" color="dark grey"/>
-  <channel id="0x1114" class="data" name="TgMV" details="Target Minute Ventilation" label="Target Vent." unit="" color="dark cyan"/>
-  <channel id="0x1115" class="data" name="MaxLeak" details="Maximum Leak" label="MaxLeaks" unit="L/min" color="dark red"/>
-  <channel id="0x1116" class="data" name="AHI" details="Apnea / Hypopnea Index" label="AHI/Hr" unit="events/hr" color="dark red"/>
-  <channel id="0x1117" class="data" name="LeakTotal" details="Total Leak Rate" label="Total Leaks" unit="L/min" color="dark green"/>
-  <channel id="0x1118" class="data" name="LeakMedian" details="Median Leak Rate" label="Median Leaks" unit="L/min" color="dark green"/>
-  <channel id="0x1119" class="data" name="RDI" details="Respiratory Disturbance Index" label="RDI" unit="events/hr" color="dark red"/>
-  <channel id="0x111a" class="setting" name="PSMin" details="Pressure Support Min" label="PS Min" unit="cmH20" color="dark cyan"/>
-  <channel id="0x111b" class="setting" name="PSMax" details="Pressure Support Max" label="PS Max" unit="cmH20" color="dark magenta"/>
-
+  
   <channel id="0x111c" class="data" name="TestChan1" details="Respiratory Rate" label="Mark's Resp. Rate" unit="breaths/min" color="black"/>
   <channel id="0x111d" class="data" name="TestChan2" details="Tidal Volume" label="Tidal Volume" unit="L/min" color="blue"/>
 
@@ -111,12 +61,7 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 
  </group>
  <group name="OXI">
-  <channel id="0x1800" class="data" name="Pulse" details="Pulse Rate" label="Pulse Rate" unit="bpm" color="red"/>
-  <channel id="0x1801" class="data" name="SPO2" details="Oxygen Saturation" label="SpO2" unit="%" color="blue"/>
-  <channel id="0x1802" class="data" name="Plethy" details="Plethysomogram" label="Plethy" color="black"/>
-  <channel id="0x1803" class="data" name="PulseChange" details="Pulse Change" label="Pulse Change" color="light gray"/>
-  <channel id="0x1804" class="data" name="SPO2Drop" details="SPO2Drop" label="SPO2 Drop" color="light blue"/>
- </group>
+  </group>
  <group name="SLEEP">
   <channel id="0x2000" class="data" name="SleepStage" details="Sleep Stage" label="Sleep Stage" unit="1=Awake 2=REM 3=Light Sleep 4=Deep Sleep" color="dark grey"/>
   <channel id="0x2001" class="data" name="ZeoBW" details="Zeo Brainwave" label="ZeoWave" color="black"/>

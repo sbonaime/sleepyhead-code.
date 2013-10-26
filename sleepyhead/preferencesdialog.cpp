@@ -467,7 +467,7 @@ bool PreferencesDialog::Save()
     for (QHash<int,QColor>::iterator i=m_new_colors.begin();i!=m_new_colors.end();i++) {
         schema::Channel &chan=schema::channel[i.key()];
         if (!chan.isNull()) {
-            qDebug() << "TODO: Change" << chan.name() << "color to" << i.value();
+            qDebug() << "TODO: Change" << chan.code() << "color to" << i.value();
             chan.setDefaultColor(i.value());
         }
     }
