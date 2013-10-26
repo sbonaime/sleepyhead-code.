@@ -59,7 +59,7 @@ public:
     const QString & description() { return m_description; }
     const QString & label() { return m_label; }
     const QString & units() { return m_unit; }
-    const int linkid() { return m_link; }
+    const int & linkid() { return m_link; }
 
     void setLabel(QString label) { m_label=label; }
     void setUnit(QString unit) { m_unit=unit; }

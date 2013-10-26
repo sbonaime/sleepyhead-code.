@@ -504,7 +504,7 @@ public:
     /*! \fn virtual void display(QString text, int x, int y, int timeout=2000);
         \brief Set the tooltips display message, position, and timeout value
         */
-    virtual void display(QString text, int x, int y, int timeout=2000);
+    virtual void display(QString text, int x, int y, int timeout=0);
 
     //! \brief Queue the actual OpenGL drawing instructions
     virtual void paint(); //actually paints it.

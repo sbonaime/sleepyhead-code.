@@ -304,7 +304,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     EventDataType maxy;
     EventDataType miny;
 
-    if (w.zoomY()==0) {
+    if (w.zoomY()==0 && PROFILE.appearance->allowYAxisScaling()) {
         maxy=m_physmaxy;
         miny=m_physminy;
         w.roundY(miny,maxy);

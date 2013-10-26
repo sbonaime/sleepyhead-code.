@@ -159,7 +159,7 @@ void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
         miny=-MAX(fabs(miny),fabs(maxy));
     }*/
 
-    if (w.zoomY()==0) {
+    if (w.zoomY()==0 && PROFILE.appearance->allowYAxisScaling()) {
         miny=m_physminy, maxy=m_physmaxy;
     } else {
         miny=w.min_y, maxy=w.max_y;
@@ -702,7 +702,7 @@ void AHIChart::paint(gGraph & w,int left, int top, int width, int height)
 
     // hmmm.. subtract_offset..
 
-    if (w.zoomY()==0) {
+    if (w.zoomY()==0 && PROFILE.appearance->allowYAxisScaling()) {
         miny=w.physMinY();
         maxy=w.physMaxY();
     } else {

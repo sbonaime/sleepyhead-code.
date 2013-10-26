@@ -159,6 +159,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     ui->usePixmapCaching->setChecked(profile->appearance->usePixmapCaching());
     ui->useSquareWavePlots->setChecked(profile->appearance->squareWavePlots());
     ui->enableGraphSnapshots->setChecked(profile->appearance->graphSnapshots());
+    ui->graphTooltips->setChecked(profile->appearance->graphTooltips());
+    ui->allowYAxisScaling->setChecked(profile->appearance->allowYAxisScaling());
+
     ui->skipLoginScreen->setChecked(PREF[STR_GEN_SkipLogin].toBool());
     ui->allowEarlyUpdates->setChecked(PREF[STR_PREF_AllowEarlyUpdates].toBool());
 
@@ -343,6 +346,9 @@ bool PreferencesDialog::Save()
             return false;
         }
     }
+
+    profile->appearance->setAllowYAxisScaling(ui->allowYAxisScaling->isChecked());
+    profile->appearance->setGraphTooltips(ui->graphTooltips->isChecked());
 
     profile->appearance->setAntiAliasing(ui->useAntiAliasing->isChecked());
     profile->appearance->setUsePixmapCaching(ui->usePixmapCaching->isChecked());

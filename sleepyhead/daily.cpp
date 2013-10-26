@@ -398,6 +398,7 @@ Daily::~Daily()
 
 void Daily::doToggleSession(Session * sess)
 {
+    Q_UNUSED(sess)
    // sess->StoreSummary();
     Day *day=PROFILE.GetDay(previous_date,MT_CPAP);
     if (day) {
@@ -720,6 +721,7 @@ QObject *MyWebPage::createPlugin(const QString &classid, const QUrl &url, const 
 {
     Q_UNUSED(paramNames)
     Q_UNUSED(paramValues)
+    Q_UNUSED(url)
 
     if (classid=="SessionBar") {
         return mainwin->getDaily()->sessionBar();
@@ -1051,6 +1053,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi)
 
 QString Daily::getEventBreakdown(Day * cpap)
 {
+    Q_UNUSED(cpap)
     QString html;
     html+="<table cellspacing=0 cellpadding=0 border=0 width='100%'>\n";
 

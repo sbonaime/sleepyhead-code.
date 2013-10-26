@@ -7,7 +7,7 @@
 #include <math.h>
 #include <QDebug>
 #include "gYAxis.h"
-//#include "SleepLib/profiles.h"
+#include "SleepLib/profiles.h"
 
 gXGrid::gXGrid(QColor col)
     :Layer(NoChannel)
@@ -31,7 +31,7 @@ void gXGrid::paint(gGraph & w,int left,int top, int width, int height)
 
     EventDataType miny,maxy;
 
-    if (w.zoomY()==0) {
+    if (w.zoomY()==0 && PROFILE.appearance->allowYAxisScaling()) {
         miny=w.physMinY();
         maxy=w.physMaxY();
     } else {
@@ -273,7 +273,7 @@ void gYAxis::paint(gGraph & w,int left,int top, int width, int height)
         EventDataType miny;
         EventDataType maxy;
 
-        if (w.zoomY()==0) {
+        if (w.zoomY()==0 && PROFILE.appearance->allowYAxisScaling()) {
             miny=w.physMinY();
             maxy=w.physMaxY();
         } else {
@@ -378,6 +378,9 @@ const QString gYAxis::Format(EventDataType v, int dp) {
 
 bool gYAxis::mouseMoveEvent(QMouseEvent * event, gGraph * graph)
 {
+    if (!p_profile->appearance->graphTooltips())
+        return false;
+
     int x=event->x();
     int y=event->y();
     if (!graph->units().isEmpty()) {

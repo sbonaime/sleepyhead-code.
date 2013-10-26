@@ -723,7 +723,7 @@ gToolTip::gToolTip(gGraphView * graphview)
     m_pos.setX(0);
     m_pos.setY(0);
     m_visible=false;
-    m_spacer=2; // pixels around text area
+    m_spacer=8; // pixels around text area
     timer=new QTimer(graphview);
     connect(timer,SIGNAL(timeout()),SLOT(timerDone()));
 }
@@ -742,6 +742,9 @@ gToolTip::~gToolTip()
 
 void gToolTip::display(QString text, int x, int y, int timeout)
 {
+    if (timeout<=0)
+        timeout=p_profile->general->tooltipTimeout();
+
     m_text=text;
     m_visible=true;
     // TODO: split multiline here
@@ -838,7 +841,7 @@ void gToolTip::paint()     //actually paints it.
         lines_drawn_this_frame+=4;
         quads_drawn_this_frame+=1;
 
-        QBrush brush(QColor(255,255,128,200));
+        QBrush brush(QColor(255,255,128,230));
         brush.setStyle(Qt::SolidPattern);
         painter.setBrush(brush);
         painter.setPen(QColor(0,0,0,255));

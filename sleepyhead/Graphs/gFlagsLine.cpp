@@ -107,6 +107,8 @@ void gFlagsGroup::paint(gGraph &g, int left, int top, int width, int height)
 
 bool gFlagsGroup::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
 {
+    if (!p_profile->appearance->graphTooltips())
+        return false;
 
     for (int i=0;i<lvisible.size();i++) {
         gFlagsLine *fl=lvisible[i];
@@ -117,8 +119,8 @@ bool gFlagsGroup::mouseMoveEvent(QMouseEvent * event,gGraph * graph)
             if ((event->y() > fl->m_rect.y()) && (event->y()) < (fl->m_rect.y()+fl->m_rect.height())) {
                 if (event->x() < lvisible[i]->m_rect.x()) {
                     // Display tooltip
-                    QString ttip=schema::channel[fl->code()].description();
-                    graph->graphView()->m_tooltip->display(ttip,event->x(),event->y()-15,p_profile->general->tooltipTimeout());
+                    QString ttip=schema::channel[fl->code()].fullname()+"\n"+schema::channel[fl->code()].description();
+                    graph->ToolTip(ttip,event->x(),event->y()-15);
                     graph->redraw();
                 }
             }

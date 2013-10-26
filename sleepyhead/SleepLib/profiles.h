@@ -227,6 +227,8 @@ const QString STR_AS_Animations="AnimationsAndTransitions";
 const QString STR_AS_SquareWave="SquareWavePlots";
 const QString STR_AS_OverlayType="OverlayType";
 const QString STR_AS_UsePixmapCaching="UsePixmapCaching";
+const QString STR_AS_AllowYAxisScaling="AllowYAxisScaling";
+const QString STR_AS_GraphTooltips="GraphTooltips";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem="UnitSystem";
@@ -530,6 +532,8 @@ public:
         if (!m_profile->contains(STR_AS_GraphSnapshots)) (*m_profile)[STR_AS_GraphSnapshots]=true;
         if (!m_profile->contains(STR_AS_Animations)) (*m_profile)[STR_AS_Animations]=true;
         if (!m_profile->contains(STR_AS_SquareWave)) (*m_profile)[STR_AS_SquareWave]=false;
+        if (!m_profile->contains(STR_AS_AllowYAxisScaling)) (*m_profile)[STR_AS_AllowYAxisScaling]=true;
+        if (!m_profile->contains(STR_AS_GraphTooltips)) (*m_profile)[STR_AS_GraphTooltips]=true;
         if (!m_profile->contains(STR_AS_UsePixmapCaching)) (*m_profile)[STR_AS_UsePixmapCaching]=true;
         if (!m_profile->contains(STR_AS_OverlayType)) (*m_profile)[STR_AS_OverlayType]=ODT_Bars;
     }
@@ -549,6 +553,10 @@ public:
     bool usePixmapCaching() { return (*m_profile)[STR_AS_UsePixmapCaching].toBool(); }
     //! \brief Returns true if Square Wave plots are preferred (where possible)
     bool squareWavePlots() { return (*m_profile)[STR_AS_SquareWave].toBool(); }
+    //! \brief Whether to allow double clicking on Y-Axis labels to change vertical scaling mode
+    bool allowYAxisScaling() { return (*m_profile)[STR_AS_AllowYAxisScaling].toBool(); }
+    //! \brief Whether to show graph tooltips
+    bool graphTooltips() { return (*m_profile)[STR_AS_GraphTooltips].toBool(); }
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
     OverlayDisplayType overlayType() { return (OverlayDisplayType )(*m_profile)[STR_AS_OverlayType].toInt(); }
 
@@ -566,6 +574,10 @@ public:
     void setSquareWavePlots(bool sw) { (*m_profile)[STR_AS_SquareWave]=sw; }
     //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
     void setOverlayType(OverlayDisplayType od) { (*m_profile)[STR_AS_OverlayType]=(int)od; }
+    //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
+    void setAllowYAxisScaling(bool b) {  (*m_profile)[STR_AS_AllowYAxisScaling]=b; }
+    //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
+    void setGraphTooltips(bool b) {  (*m_profile)[STR_AS_GraphTooltips]=b; }
 
     Profile *m_profile;
 };
