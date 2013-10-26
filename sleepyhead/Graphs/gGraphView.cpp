@@ -2445,7 +2445,7 @@ gGraphView::~gGraphView()
     delete backlines;
     delete quads;
     if (m_scrollbar) {
-        this->disconnect(SIGNAL(sliderMoved(int)),this);
+        this->disconnect(m_scrollbar,SIGNAL(sliderMoved(int)),0,0);
     }
     disconnect(redrawtimer,0,0,0);
     disconnect(timer,0,0,0);
