@@ -63,6 +63,7 @@ macx {
 
 win32 {
   DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
+  RC_FILE          += win_icon.rc
   LIBS             += -lsetupapi -lz
 }
 if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc") {
