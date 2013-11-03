@@ -580,9 +580,12 @@ jumpnext:
         daynum++;
         //lastQ=Q;
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+        float dpr=w.graphView()->devicePixelRatio();
+        lines->scissor(left*dpr,w.flipY(top+height+2)*dpr,(width+1)*dpr,(height+1)*dpr);
+#else
     lines->scissor(left,w.flipY(top+height+2),width+1,height+2);
-
+#endif
     // Draw Ledgend
     px=left+width-3;
     py=top-5;

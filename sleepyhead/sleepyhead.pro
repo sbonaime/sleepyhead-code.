@@ -15,7 +15,6 @@ greaterThan(QT_MAJOR_VERSION,4) {
 CONFIG += rtti
 
 win32:CONFIG += use_bundled_libs
-else:!use_bundled_libs:CONFIG += extserialport
 
 use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
 
@@ -231,7 +230,9 @@ mac {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
-else:unix {
+else:mac {
+include(../3rdparty/quazip/quazip/quazip.pri)
+} else:unix {
     use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/quazip/
     else:QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
 
@@ -262,5 +263,6 @@ use_bundled_libs: {
     INCLUDEPATH += $$PWD/../3rdparty/qextserialport
     DEPENDPATH += $$PWD/../3rdparty/qextserialport
 } else {
-    CONFIG += extserialport
+    mac:include(../3rdparty/qextserialport/src/qextserialport.pri)
+    else:CONFIG += extserialport
 }

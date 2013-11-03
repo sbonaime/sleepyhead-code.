@@ -1246,13 +1246,15 @@ void Daily::Load(QDate date)
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
                     GAHI->setShowTitle(false);
 
-                    QPixmap pixmap=GAHI->renderPixmap(155,155,false);
+                    int w=155;
+                    int h=155;
+                    QPixmap pixmap=GAHI->renderPixmap(w,h,false);
                     if (!pixmap.isNull()) {
                         QByteArray byteArray;
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray
                         buffer.open(QIODevice::WriteOnly);
                         pixmap.save(&buffer, "PNG");
-                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + "\"></td></tr>\n";
+                        html += "<tr><td align=center><img src=\"data:image/png;base64," + byteArray.toBase64() + QString("\" width='%1' height='%2px'></td></tr>\n").arg(w).arg(h);
                     } else {
                         html += "<tr><td align=center>Unable to display Pie Chart on this system</td></tr>\n";
                     }

@@ -2086,7 +2086,11 @@ void gGraphView::DrawTextQue(QPainter &painter)
         painter.setRenderHint(QPainter::TextAntialiasing,q.antialias);
 
         if (q.angle==0) { // normal text
-          painter.drawText(q.x,q.y,q.text);
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+            painter.drawText(q.x*devicePixelRatio(),q.y*devicePixelRatio(),q.text);
+#else
+            painter.drawText(q.x,q.y,q.text);
+#endif
         } else { // rotated text
             w=painter.fontMetrics().width(q.text);
             h=painter.fontMetrics().xHeight()+2;
@@ -2136,6 +2140,10 @@ QImage gGraphView::fboRenderPixmap(int w,int h)
     if (fbo_unsupported)
         return pm;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    w*=devicePixelRatio();
+    h*=devicePixelRatio();
+#endif
 
     if ((w > max_fbo_width) || (h > max_fbo_height)) {
         qWarning() << "gGraphView::fboRenderPixmap called with dimensiopns exceeding maximum frame buffer object size";
@@ -2578,35 +2586,47 @@ void gGraphView::DrawTextQue()
                 painter.drawText(2,h,q.text);
                 painter.end();
 
-                pc->image=QGLWidget::convertToGLFormat(pm);
+                pc->image=pm;// QGLWidget::convertToGLFormat(pm);
                 pixmap_cache_size+=pm.width()*pm.height()*(pm.depth()/8);
                 pc->textureID=bindTexture(pc->image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
                 pixmap_cache[hstr]=pc;
 
             }
 
+
             if (pc) {
+                painter.begin(this);
                 pc->last_used=ti;
 
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                //glEnable(GL_BLEND);
+                //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
                 //glEnable(GL_TEXTURE_2D);
                 if (q.angle!=0) {
-                    glPushMatrix();
-                    glTranslatef(q.x-pc->image.height()-(pc->image.height()/2),q.y+pc->image.width()/2 + pc->image.height()/2, 0);
-                    glRotatef(-q.angle,0,0,1);
-                    drawTexture(QPoint(0,pc->image.height()/2),pc->textureID);
-                    glPopMatrix();
+//                    glPushMatrix();
+//                    glTranslatef(q.x-pc->image.height()-(pc->image.height()/2),q.y+pc->image.width()/2 + pc->image.height()/2, 0);
+//                    glRotatef(-q.angle,0,0,1);
+//                    drawTexture(QPoint(0,pc->image.height()/2),pc->textureID);
+//                    glPopMatrix();
+
+                    float xxx=q.x-pc->image.height()-(pc->image.height()/2);
+                    float yyy=q.y+pc->image.width()/2 + pc->image.height()/2;
+                    painter.translate(xxx,yyy);
+                    painter.rotate(-q.angle);
+                    painter.drawImage(QPoint(0,pc->image.height()/2),pc->image);
+                    painter.rotate(+q.angle);
+                    painter.translate(-xxx, -yyy);
+
                     //glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
                     //glRotatef(-90,0,0,1);
                     //m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
                 } else {
+                    painter.drawImage(q.x,q.y-pc->image.height()+4,pc->image);
                     // TODO: setup for rotation if angle specified.
-                    drawTexture(QPoint(q.x,q.y-pc->image.height()+4),pc->textureID);
+                    //drawTexture(QPoint(q.x,q.y-pc->image.height()+4),pc->textureID);
                 }
                // glDisable(GL_TEXTURE_2D);
-                glDisable(GL_BLEND);
+               // glDisable(GL_BLEND);
             }
         } else {
 
@@ -2937,7 +2957,11 @@ void gGraphView::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    glOrtho(0, w/devicePixelRatio(), h/devicePixelRatio(), 0, -1, 1);
+#else
     glOrtho(0, w, h, 0, -1, 1);
+#endif
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -2948,6 +2972,11 @@ void gGraphView::renderSomethingFun(float alpha)
 //    glPushMatrix();
     float w=width();
     float h=height();
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    w*=devicePixelRatio();
+    h*=devicePixelRatio();
+#endif
+
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
