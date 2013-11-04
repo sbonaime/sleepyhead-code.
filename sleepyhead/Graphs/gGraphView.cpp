@@ -2529,7 +2529,13 @@ void gGraphView::DrawTextQue()
     //glPushAttrib(GL_COLOR_BUFFER_BIT);
     painter.begin(this);
 
+    int buf=4;
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     float dpr=devicePixelRatio();
+    buf*=dpr;
+#endif
+
     // process the text drawing queue
     for (int i=0;i<m_textque_items;i++) {
         TextQue & q=m_textque[i];
@@ -2558,13 +2564,15 @@ void gGraphView::DrawTextQue()
                 w=fm.width(q.text);
                 h=fm.height();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
                 w*=dpr;
                 h*=dpr;
+#endif
 
                 rect.setWidth(w);
                 rect.setHeight(h);
 
-                pm=QImage(w+4,h+4,QImage::Format_ARGB32_Premultiplied);
+                pm=QImage(w+buf,h+buf,QImage::Format_ARGB32_Premultiplied);
 
                 pm.fill(Qt::transparent);
 
@@ -2573,12 +2581,16 @@ void gGraphView::DrawTextQue()
                 QBrush b(q.color);
                 imgpainter.setBrush(b);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
                 QFont font=*q.font;
                 font.setPointSizeF(q.font->pointSizeF()*dpr);
                 imgpainter.setFont(font);
+#else
+                imgpainter.setFont(*q.font);
+#endif
 
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-                imgpainter.drawText(2,h,q.text);
+                imgpainter.drawText(buf/2,h,q.text);
                 imgpainter.end();
 
                 pc->image=pm;
@@ -2589,19 +2601,17 @@ void gGraphView::DrawTextQue()
 
             if (pc) {
                 pc->last_used=ti;
-
-                if (q.angle!=0) {
-
-                    int h=pc->image.height();
-                    int w=pc->image.width();
+                int h=pc->image.height();
+                int w=pc->image.width();
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-                    h/=dpr;
-                    w/=dpr;
+                h/=dpr;
+                w/=dpr;
 #endif
 
-                    float xxx=q.x-h-(h/2);
-                    float yyy=q.y+w/2 + w/2;
+                if (q.angle!=0) {
+                    float xxx=q.x-h-(h/2)-(buf/2);
+                    float yyy=q.y+w/2;
 
                     painter.translate(xxx,yyy);
                     painter.rotate(-q.angle);
@@ -2609,9 +2619,7 @@ void gGraphView::DrawTextQue()
                     painter.rotate(+q.angle);
                     painter.translate(-xxx, -yyy);
                 } else {
-                    int h=pc->image.height()/dpr;
-                    int w=pc->image.width()/dpr;
-                    painter.drawImage(QRect(q.x,q.y-h,w,h),pc->image,pc->image.rect());
+                    painter.drawImage(QRect(q.x-buf/2,q.y-h+buf/2,w,h),pc->image,pc->image.rect());
                 }
             }
         } else {
