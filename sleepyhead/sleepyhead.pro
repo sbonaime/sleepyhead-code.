@@ -231,7 +231,8 @@ mac {
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
 else:mac {
-include(../3rdparty/quazip/quazip/quazip.pri)
+    include(../3rdparty/quazip/quazip/quazip.pri)
+    INCLUDEPATH += $$PWD/../3rdparty/quazip
 } else:unix {
     use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/quazip/
     else:QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
