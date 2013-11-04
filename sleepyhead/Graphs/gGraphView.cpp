@@ -2483,6 +2483,8 @@ void gGraphView::DrawTextQue()
     int w,h;
     QHash<QString,myPixmapCache*>::iterator it;
     QPainter painter;
+
+    // Purge the Pixmap cache of any old text strings
     if (usePixmapCache()) {
         // Current time in milliseconds since epoch.
         ti=QDateTime::currentDateTime().toMSecsSinceEpoch();
@@ -2523,15 +2525,13 @@ void gGraphView::DrawTextQue()
             }
         }
     }
-    else {
-        glPushAttrib(GL_COLOR_BUFFER_BIT);
 
-#ifndef USE_RENDERTEXT
-        painter.begin(this);
-#endif
-    }
+    //glPushAttrib(GL_COLOR_BUFFER_BIT);
+    painter.begin(this);
+
+    float dpr=devicePixelRatio();
+    // process the text drawing queue
     for (int i=0;i<m_textque_items;i++) {
-        // GL Font drawing is ass in Qt.. :(
         TextQue & q=m_textque[i];
 
         // can do antialiased text via texture cache fine on mac
@@ -2541,17 +2541,16 @@ void gGraphView::DrawTextQue()
 
             QImage pm;
 
-            //Random_note: test add to qmake for qt5 stuff DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040900
-
             it=pixmap_cache.find(hstr);
             myPixmapCache *pc=NULL;
             if (it!=pixmap_cache.end()) {
                 pc=(*it);
 
             } else {
+                // not found.. create the image and store it in a cache
+
                 //This is much slower than other text rendering methods, but caching more than makes up for the speed decrease.
                 pc=new myPixmapCache;
-                // not found.. create the image and store it in a cache
                 pc->last_used=ti; // set the last_used value.
 
                 QFontMetrics fm(*q.font);
@@ -2559,6 +2558,8 @@ void gGraphView::DrawTextQue()
                 w=fm.width(q.text);
                 h=fm.height();
 
+                w*=dpr;
+                h*=dpr;
 
                 rect.setWidth(w);
                 rect.setHeight(h);
@@ -2567,94 +2568,70 @@ void gGraphView::DrawTextQue()
 
                 pm.fill(Qt::transparent);
 
-                QPainter painter(&pm);
-
-                // Hmmm.. Maybe I need to be able to turn this on/off?
-
+                QPainter imgpainter(&pm);
 
                 QBrush b(q.color);
-                painter.setBrush(b);
-                //QFont font=*q.font;
-                //if (!q.antialias) {
-                //    q.font->setStyleStrategy(QFont::NoAntialias);
-                //} else q.font->setStyleStrategy(QFont::PreferAntialias);
-                //painter.setFont(font);
+                imgpainter.setBrush(b);
 
-                painter.setFont(*q.font);
+                QFont font=*q.font;
+                font.setPointSizeF(q.font->pointSizeF()*dpr);
+                imgpainter.setFont(font);
 
-                painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-                painter.drawText(2,h,q.text);
-                painter.end();
+                imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
+                imgpainter.drawText(2,h,q.text);
+                imgpainter.end();
 
-                pc->image=pm;// QGLWidget::convertToGLFormat(pm);
+                pc->image=pm;
                 pixmap_cache_size+=pm.width()*pm.height()*(pm.depth()/8);
-                pc->textureID=bindTexture(pc->image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
                 pixmap_cache[hstr]=pc;
 
             }
 
-
             if (pc) {
-                painter.begin(this);
                 pc->last_used=ti;
 
-                //glEnable(GL_BLEND);
-                //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                //glEnable(GL_TEXTURE_2D);
                 if (q.angle!=0) {
-//                    glPushMatrix();
-//                    glTranslatef(q.x-pc->image.height()-(pc->image.height()/2),q.y+pc->image.width()/2 + pc->image.height()/2, 0);
-//                    glRotatef(-q.angle,0,0,1);
-//                    drawTexture(QPoint(0,pc->image.height()/2),pc->textureID);
-//                    glPopMatrix();
 
-                    float xxx=q.x-pc->image.height()-(pc->image.height()/2);
-                    float yyy=q.y+pc->image.width()/2 + pc->image.height()/2;
+                    int h=pc->image.height();
+                    int w=pc->image.width();
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+                    h/=dpr;
+                    w/=dpr;
+#endif
+
+                    float xxx=q.x-h-(h/2);
+                    float yyy=q.y+w/2 + w/2;
+
                     painter.translate(xxx,yyy);
                     painter.rotate(-q.angle);
-                    painter.drawImage(QPoint(0,pc->image.height()/2),pc->image);
+                    painter.drawImage(QRect(0,h/2,w,h),pc->image,pc->image.rect());
                     painter.rotate(+q.angle);
                     painter.translate(-xxx, -yyy);
-
-                    //glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
-                    //glRotatef(-90,0,0,1);
-                    //m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
                 } else {
-                    painter.drawImage(q.x,q.y-pc->image.height()+4,pc->image);
-                    // TODO: setup for rotation if angle specified.
-                    //drawTexture(QPoint(q.x,q.y-pc->image.height()+4),pc->textureID);
+                    int h=pc->image.height()/dpr;
+                    int w=pc->image.width()/dpr;
+                    painter.drawImage(QRect(q.x,q.y-h,w,h),pc->image,pc->image.rect());
                 }
-               // glDisable(GL_TEXTURE_2D);
-               // glDisable(GL_BLEND);
             }
         } else {
-
-#ifndef USE_RENDERTEXT
+            // Just draw the fonts..
             QBrush b(q.color);
             painter.setBrush(b);
             painter.setFont(*q.font);
-#endif
 
             if (q.angle==0) {
-                qglColor(q.color);
                 // *********************************************************
                 // Holy crap this is slow
                 // The following line is responsible for 77% of drawing time
                 // *********************************************************
 
-#ifdef USE_RENDERTEXT
-                renderText(q.x,q.y,q.text,*q.font);
-#else
                 painter.drawText(q.x, q.y, q.text);
-#endif
             } else {
-#ifdef USE_RENDERTEXT
-                painter.begin(this);
                 QBrush b(q.color);
                 painter.setBrush(b);
                 painter.setFont(*q.font);
-#endif
+
                 w=painter.fontMetrics().width(q.text);
                 h=painter.fontMetrics().xHeight()+2;
 
@@ -2663,9 +2640,6 @@ void gGraphView::DrawTextQue()
                 painter.drawText(floor(-w/2.0), floor(-h/2.0), q.text);
                 painter.rotate(+q.angle);
                 painter.translate(-q.x, -q.y);
-#ifdef USE_RENDERTEXT
-                painter.end();
-#endif
            }
         }
         q.text.clear();
@@ -2673,10 +2647,7 @@ void gGraphView::DrawTextQue()
     }
 
     if (!usePixmapCache()) {
-#ifndef USE_RENDERTEXT
         painter.end();
-#endif
-        glPopAttrib();
     }
     //qDebug() << "rendered" << m_textque_items << "text items";
     m_textque_items=0;
