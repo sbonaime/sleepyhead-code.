@@ -14,6 +14,9 @@
 #include <QGLPixelBuffer>
 #include <QGLFramebufferObject>
 #include <QPixmapCache>
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#include <QWindow>
+#endif
 #include "mainwindow.h"
 
 #include "Graphs/gYAxis.h"
@@ -2086,16 +2089,22 @@ void gGraphView::DrawTextQue(QPainter &painter)
         TextQue &q = m_textque[i];
         painter.setBrush(q.color);
         painter.setRenderHint(QPainter::TextAntialiasing,q.antialias);
+        QFont font=*q.font;
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+        int fs=font.pointSize();
+        if (fs>0)
+            font.setPointSize(fs*dpr);
+        else {
+            font.setPixelSize(font.pixelSize()*dpr);
+        }
+#endif
+        painter.setFont(font);
 
         if (q.angle==0) { // normal text
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-            QFont font=*q.font;
-            font.setPointSizeF(q.font->pointSizeF()*dpr);
-            painter.setFont(font);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
             painter.drawText(q.x*dpr,q.y*dpr,q.text);
 #else
-            painter.setFont(*q.font);
             painter.drawText(q.x,q.y,q.text);
 #endif
         } else { // rotated text
@@ -2240,7 +2249,11 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     sg->setScaleY(1.0);
 
+
     sg->makeCurrent(); // has to be current for fbo creation
+
+    float dpr=sg->devicePixelRatio();
+    sg->setDevicePixelRatio(1);
 #ifdef Q_OS_WIN
     if (pm.isNull()){
         pm=sg->renderPixmap(w,h,false);
@@ -2258,8 +2271,10 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
         pm=QPixmap::fromImage(sg->pbRenderPixmap(w,h));
     }
 #endif
+    sg->setDevicePixelRatio(dpr);
     //sg->doneCurrent();
     sg->trashGraphs();
+
     m_graphview=tgv;
 
     m_height=tmp;
@@ -2437,6 +2452,12 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_fadedir=false;
     m_blockUpdates=false;
     use_pixmap_cache=true;
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    m_dpr=this->windowHandle()->devicePixelRatio();
+#else
+    m_dpr=1;
+#endif
 }
 
 gGraphView::~gGraphView()
@@ -2589,13 +2610,16 @@ void gGraphView::DrawTextQue()
                 QBrush b(q.color);
                 imgpainter.setBrush(b);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
                 QFont font=*q.font;
-                font.setPointSizeF(q.font->pointSizeF()*dpr);
-                imgpainter.setFont(font);
-#else
-                imgpainter.setFont(*q.font);
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+                int fs=font.pointSize();
+                if (fs>0) {
+                    font.setPointSize(fs*dpr);
+                } else {
+                    font.setPixelSize(font.pixelSize()*dpr);
+                }
 #endif
+                imgpainter.setFont(font);
 
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
                 imgpainter.drawText(buf/2,h,q.text);

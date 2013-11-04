@@ -447,6 +447,9 @@ void Report::PrintReport(gGraphView *gv,QString name, QDate date)
 
     int page=1;
     int gcnt=0;
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    float dpr=gv->devicePixelRatio();
+#endif
     for (int i=0;i<graphs.size();i++) {
 
         if ((top+full_graph_height+normal_height) > virt_height) {
@@ -498,7 +501,11 @@ void Report::PrintReport(gGraphView *gv,QString name, QDate date)
         //painter.beginNativePainting();
         //g->showTitle(false);
         int hhh=full_graph_height-normal_height;
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
         QPixmap pm2=g->renderPixmap(virt_width,hhh,1);
+#else
+        QPixmap pm2=g->renderPixmap(virt_width,hhh,1);
+#endif
         QImage pm=pm2.toImage();//fscale);
         pm2.detach();
         //g->showTitle(true);
@@ -508,9 +515,11 @@ void Report::PrintReport(gGraphView *gv,QString name, QDate date)
 
 
         if (!pm.isNull()) {
-            painter.drawImage(0,top,pm);;
-
-
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+            painter.drawImage(QRect(0,top,pm.width(),pm.height()),pm);
+#else
+            painter.drawImage(0,top,pm);
+#endif
 
             //painter.drawImage(0,top,virt_width,full_graph_height-normal_height,pm);
         }

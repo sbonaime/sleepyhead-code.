@@ -994,6 +994,10 @@ public:
 
     void setCubeImage(QImage *);
 
+    inline const float & devicePixelRatio() { return m_dpr; }
+    void setDevicePixelRatio(float dpr) { m_dpr=dpr; }
+
+
     // Cube fun
     QVector<QImage *> cubeimg;
     GLuint cubetex;
@@ -1107,6 +1111,7 @@ protected:
     int m_offsetX;
     //! \variable Scale used to enlarge graphs when less graphs than can fit on screen.
     float m_scaleY;
+    float m_dpr;
 
     void renderSomethingFun(float alpha=1);
 
