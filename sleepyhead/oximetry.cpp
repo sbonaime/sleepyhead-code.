@@ -9,12 +9,7 @@
 #include <QCalendarWidget>
 #include <QTextCharFormat>
 
-
-#ifdef USE_BUNDLED_LIBS
-#include "src/qextserialenumerator.h"
-#else
 #include <qextserialenumerator.h>
-#endif
 
 #include "oximetry.h"
 #include "ui_oximetry.h"

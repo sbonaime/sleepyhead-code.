@@ -14,10 +14,6 @@ greaterThan(QT_MAJOR_VERSION,4) {
 
 CONFIG += rtti
 
-win32:CONFIG += use_bundled_libs
-
-use_bundled_libs:DEFINES += USE_BUNDLED_LIBS
-
 #static {
 #    CONFIG += static
 #    QTPLUGIN += qsvg qgif qpng
@@ -39,7 +35,7 @@ exists(../.git):{
 
     GIT_BRANCH=$$system(git rev-parse --abbrev-ref HEAD)
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
-    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse HEAD)\\\"
+    DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
 
     contains(GIT_BRANCH,"unstable"):DEFINES += UNSTABLE_BUILD
 
@@ -228,42 +224,21 @@ mac {
     QMAKE_BUNDLE_DATA += TransFiles
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/release/ -lquazip
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/quazip/quazip/debug/ -lquazip
-else:mac {
+win32|mac {
     include(../3rdparty/quazip/quazip/quazip.pri)
     INCLUDEPATH += $$PWD/../3rdparty/quazip
-} else:unix {
-    use_bundled_libs:QMAKE_LFLAGS += -L$$OUT_PWD/../3rdparty/quazip/
-    else:QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
-
-    LIBS += -lquazip
-}
-
-use_bundled_libs {
-    INCLUDEPATH += $$PWD/../3rdparty/quazip
     DEPENDPATH += $$PWD/../3rdparty/quazip
-} else {
+} else:unix {
+    QMAKE_LFLAGS += -L/usr/lib -L/usr/local/lib
     INCLUDEPATH += /usr/local/include
     INCLUDEPATH += /usr/include
     DEPENDPATH += /usr/local/include/quazip
     DEPENDPATH += /usr/include/quazip
+    LIBS += -lquazip
 }
 
-use_bundled_libs: {
-    greaterThan(QT_MAJOR_VERSION,4) {
-        win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lQt5ExtSerialPort1
-        else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lQt5ExtSerialPortd1
-        else:unix:CONFIG(release, debug|release): LIBS += -lQtExtSerialPort
-        else:unix:CONFIG(debug, debug|release): LIBS += -lQtExtSerialPortd
-    } else {
-        win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/release/ -lqextserialport
-        else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../3rdparty/qextserialport/debug/ -lqextserialport
-        else:unix: LIBS += -lqextserialport
-    }
-    INCLUDEPATH += $$PWD/../3rdparty/qextserialport
-    DEPENDPATH += $$PWD/../3rdparty/qextserialport
+win32|mac{
+    include(../3rdparty/qextserialport/src/qextserialport.pri)
 } else {
-    mac:include(../3rdparty/qextserialport/src/qextserialport.pri)
-    else:CONFIG += extserialport
+    CONFIG += extserialport
 }
