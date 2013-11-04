@@ -2079,16 +2079,23 @@ Layer * gGraph::getLineChart()
 void gGraphView::DrawTextQue(QPainter &painter)
 {
     int w,h;
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    int dpr=devicePixelRatio();
+#endif
     for (int i=0;i<m_textque_items;i++) {
         TextQue &q = m_textque[i];
-        painter.setFont(*q.font);
         painter.setBrush(q.color);
         painter.setRenderHint(QPainter::TextAntialiasing,q.antialias);
 
         if (q.angle==0) { // normal text
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-            painter.drawText(q.x*devicePixelRatio(),q.y*devicePixelRatio(),q.text);
+            QFont font=*q.font;
+            font.setPointSizeF(q.font->pointSizeF()*dpr);
+            painter.setFont(font);
+
+            painter.drawText(q.x*dpr,q.y*dpr,q.text);
 #else
+            painter.setFont(*q.font);
             painter.drawText(q.x,q.y,q.text);
 #endif
         } else { // rotated text
@@ -2141,8 +2148,9 @@ QImage gGraphView::fboRenderPixmap(int w,int h)
         return pm;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    w*=devicePixelRatio();
-    h*=devicePixelRatio();
+    float dpr=devicePixelRatio();
+    w*=dpr;
+    h*=dpr;
 #endif
 
     if ((w > max_fbo_width) || (h > max_fbo_height)) {
@@ -2937,7 +2945,8 @@ void gGraphView::resizeGL(int w, int h)
     glLoadIdentity();
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    glOrtho(0, w/devicePixelRatio(), h/devicePixelRatio(), 0, -1, 1);
+    float dpr=devicePixelRatio();
+    glOrtho(0, w/dpr, h/dpr, 0, -1, 1);
 #else
     glOrtho(0, w, h, 0, -1, 1);
 #endif
@@ -2952,8 +2961,9 @@ void gGraphView::renderSomethingFun(float alpha)
     float w=width();
     float h=height();
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    w*=devicePixelRatio();
-    h*=devicePixelRatio();
+    float dpr=devicePixelRatio();
+    w*=dpr;
+    h*=dpr;
 #endif
 
     glViewport(0, 0, w, h);
