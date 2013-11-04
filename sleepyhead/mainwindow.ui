@@ -466,7 +466,7 @@ QToolBox::tab:selected  {
         <number>1</number>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="tabSpacing">
         <number>0</number>
@@ -476,8 +476,8 @@ QToolBox::tab:selected  {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>165</width>
-          <height>532</height>
+          <width>180</width>
+          <height>516</height>
          </rect>
         </property>
         <property name="palette">
@@ -593,11 +593,6 @@ QToolBox::tab:selected  {
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="styleSheet">
             <string notr="true">QToolButton {
 background: transparent;
@@ -647,11 +642,6 @@ border: 2px solid #56789a; border-radius: 30px;
              <width>0</width>
              <height>0</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
            </property>
            <property name="styleSheet">
             <string notr="true">QToolButton {
