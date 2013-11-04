@@ -2610,8 +2610,8 @@ void gGraphView::DrawTextQue()
 #endif
 
                 if (q.angle!=0) {
-                    float xxx=q.x-h-(h/2)-(buf/2);
-                    float yyy=q.y+w/2;
+                    float xxx=q.x-h-(h/2);
+                    float yyy=q.y+ w/2 + buf/2;
 
                     painter.translate(xxx,yyy);
                     painter.rotate(-q.angle);
