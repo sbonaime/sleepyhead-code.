@@ -2403,6 +2403,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView * shared) :
     m_selected_graph=NULL;
     cubetex=0;
 
+    horizScrollTime.start();
+    vertScrollTime.start();
+
     this->setMouseTracking(true);
     m_emptytext=QObject::tr("No Data");
     InitGraphs();
@@ -3852,12 +3855,20 @@ void gGraphView::wheelEvent(QWheelEvent * event)
             py+=graphSpacer; // do we want the extra spacer down the bottom?
         }
     } else {
-        // Vertical Scrolling
-        if (event->orientation()==Qt::Vertical) {
+        if (event->orientation()==Qt::Vertical) { // Vertical Scrolling
+            if (horizScrollTime.elapsed()<100)
+                return;
+
             m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
             m_tooltip->cancel();
-        } else {
-            //Horinontal Panning
+            vertScrollTime.start();
+        } else { //Horizontal Panning
+            // (This is a total pain in the butt on MacBook touchpads..)
+
+            if (vertScrollTime.elapsed()<100)
+                return;
+
+            horizScrollTime.start();
             gGraph *g=NULL;
             int group=0;
 
@@ -3872,6 +3883,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
             }
 
             if (!g) {
+                // just pick any graph then
                 for (int i=0;i<m_graphs.size();i++) {
                     if (!m_graphs[i]->isEmpty()) {
                         g=m_graphs[i];
@@ -3886,9 +3898,6 @@ void gGraphView::wheelEvent(QWheelEvent * event)
             double zoom=240.0;
 
             int delta=event->delta();
-
-
-
 
             if (delta > 0)
                 g->min_x-=(xx/zoom)*(float)abs(delta);

@@ -1160,6 +1160,8 @@ protected:
     qint32 pixmap_cache_size;
     bool use_pixmap_cache;
 
+    QTime horizScrollTime, vertScrollTime;
+
 
     //QVector<GLuint> texid;
 signals:
