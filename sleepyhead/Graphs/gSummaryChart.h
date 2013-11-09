@@ -16,7 +16,7 @@
     \value GT_LINE  Display as a line plot
     \value GT_SESSIONS Display type for session times chart
     */
-enum GraphType { GT_BAR, GT_LINE, GT_SESSIONS };
+enum GraphType { GT_BAR, GT_LINE, GT_POINTS, GT_SESSIONS };
 
 /*! \class SummaryChart
     \brief The main overall chart type layer used in Overview page
@@ -77,6 +77,7 @@ class SummaryChart:public Layer
 
         gVertexBuffer *quads;
         gVertexBuffer *lines;
+        gVertexBuffer *points;
         bool m_empty;
         int m_fday;
         QString m_label;

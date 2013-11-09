@@ -135,22 +135,22 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     BMI=createGraph(STR_TR_BMI,tr("Body\nMass\nIndex"));
     ZOMBIE=createGraph(STR_TR_Zombie,tr("How you felt\n(0-10)")); // Rename this Energy?
 
-    ahihr=new SummaryChart(tr("Events/Hr"),GT_LINE);
+    ahihr=new SummaryChart(tr("Events/Hr"),GT_POINTS);
     ahihr->addSlice(ahicode,COLOR_Blue,ST_MAX);
     ahihr->addSlice(ahicode,COLOR_Orange,ST_WAVG);
     AHIHR->AddLayer(ahihr);
 
-    weight=new SummaryChart(STR_TR_Weight,GT_LINE);
+    weight=new SummaryChart(STR_TR_Weight,GT_POINTS);
     weight->setMachineType(MT_JOURNAL);
     weight->addSlice(Journal_Weight,COLOR_Black,ST_SETAVG);
     WEIGHT->AddLayer(weight);
 
-    bmi=new SummaryChart(STR_TR_BMI,GT_LINE);
+    bmi=new SummaryChart(STR_TR_BMI,GT_POINTS);
     bmi->setMachineType(MT_JOURNAL);
     bmi->addSlice(Journal_BMI,COLOR_DarkBlue,ST_SETAVG);
     BMI->AddLayer(bmi);
 
-    zombie=new SummaryChart(tr("Zombie Meter"),GT_LINE);
+    zombie=new SummaryChart(tr("Zombie Meter"),GT_POINTS);
     zombie->setMachineType(MT_JOURNAL);
     zombie->addSlice(Journal_ZombieMeter,COLOR_DarkRed,ST_SETAVG);
     ZOMBIE->AddLayer(zombie);
@@ -182,7 +182,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     us->addSlice(NoChannel, COLOR_Blue, ST_SESSIONS);
     US->AddLayer(us);
 
-    ses=new SummaryChart(STR_TR_Sessions,GT_LINE);
+    ses=new SummaryChart(STR_TR_Sessions,GT_POINTS);
     ses->addSlice(NoChannel, COLOR_Blue, ST_SESSIONS);
     SES->AddLayer(ses);
 
@@ -199,7 +199,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     }
     AHI->AddLayer(bc);
 
-    set=new SummaryChart("",GT_LINE);
+    set=new SummaryChart("",GT_POINTS);
     //set->addSlice(PRS1_SysOneResistSet,COLOR_Gray,ST_SETAVG);
     set->addSlice(CPAP_HumidSetting, COLOR_Blue, ST_SETWAVG);
     set->addSlice(CPAP_PresReliefSet, COLOR_Red, ST_SETWAVG);
@@ -207,7 +207,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //set->addSlice(INTP_SmartFlex,COLOR_Purple,ST_SETWAVG);
     SET->AddLayer(set);
 
-    rr=new SummaryChart(tr("breaths/min"),GT_LINE);
+    rr=new SummaryChart(tr("breaths/min"),GT_POINTS);
     rr->addSlice(CPAP_RespRate, COLOR_LightBlue, ST_MIN);
     rr->addSlice(CPAP_RespRate, COLOR_Blue, ST_mid,0.5);
     rr->addSlice(CPAP_RespRate, COLOR_LightGreen, ST_PERC,percentile);
@@ -248,7 +248,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // Added in summarychart.. Slightly annoying..
     PR->AddLayer(pr);
 
-    lk=new SummaryChart(STR_TR_Leaks,GT_LINE);
+    lk=new SummaryChart(STR_TR_Leaks,GT_POINTS);
     lk->addSlice(CPAP_Leak,COLOR_LightBlue,ST_mid,0.5);
     lk->addSlice(CPAP_Leak,COLOR_DarkGray,ST_PERC,percentile);
     //lk->addSlice(CPAP_Leak,COLOR_DarkBlue,ST_WAVG);

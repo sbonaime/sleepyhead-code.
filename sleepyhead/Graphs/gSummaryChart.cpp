@@ -17,7 +17,10 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     //QColor color=Qt::black;
     addVertexBuffer(quads=new gVertexBuffer(20000,GL_QUADS));
     addVertexBuffer(lines=new gVertexBuffer(20000,GL_LINES));
+    addVertexBuffer(points=new gVertexBuffer(20000,GL_POINTS));
     quads->forceAntiAlias(true);
+
+    points->setSize(10);
     lines->setSize(1.5);
     //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
     //lines->forceAntiAlias(false);
@@ -319,6 +322,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
     barw=(float(width)/float(days));
 
+    float dpr=w.graphView()->devicePixelRatio();
+
     graph=&w;
     float px=left;
     l_left=w.marginLeft()+gYAxis::Margin;
@@ -360,6 +365,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     QVector<bool> goodcodes;
     goodcodes.resize(m_goodcodes.size());
 
+    points->setSize(5.0*dpr);
     lastdaygood=true;
     for (int i=0;i<numcodes;i++) {
         totalcounts[i]=0;
@@ -543,12 +549,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         } // if (bar
                         py-=h;
                     } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
-                        //col.setAlpha(128);
                         GLuint col1=col.rgba();
                         GLuint col2=m_colors[j].rgba();
                         px2=px+barw;
                         py2=(top+height-2)-h;
-                        //py2+=j;
 
                         // If more than 1 day between records, skip the vertical crud.
                         if ((px2-lastX[j])>barw+1) {
@@ -564,7 +568,24 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;
-                        //}
+                    } else if (m_graphtype==GT_POINTS) {
+                        GLuint col1=col.rgba();
+                        GLuint col2=m_colors[j].rgba();
+                        px2=px+barw;
+                        py2=(top+height-2)-h;
+
+                        // If more than 1 day between records, skip the vertical crud.
+                        if ((px2-lastX[j])>barw+1) {
+                            lastdaygood=false;
+                        }
+                        points->add(px2-barw/2,py2,col1);
+                        if (lastdaygood) {
+                            lines->add(lastX[j]-barw/2,lastY[j],px2-barw/2,py2,col2);
+                        } else {
+//                            lines->add(x1-1,py2,x2+1,py2,col1);
+                        }
+                        lastX[j]=px2;
+                        lastY[j]=py2;
                     }
                 }  // for(QHash<short
             }
@@ -581,7 +602,6 @@ jumpnext:
         //lastQ=Q;
     }
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr=w.graphView()->devicePixelRatio();
     lines->scissor(left*dpr,w.flipY(top+height+2)*dpr,(width+1)*dpr,(height+1)*dpr);
 #else
     lines->scissor(left,w.flipY(top+height+2),width+1,height+2);
