@@ -91,6 +91,10 @@ private slots:
 
     void on_okButton_clicked();
 
+    void on_scrollDampeningSlider_valueChanged(int value);
+
+    void on_tooltipTimeoutSlider_valueChanged(int value);
+
 private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();

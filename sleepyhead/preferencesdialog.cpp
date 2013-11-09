@@ -179,7 +179,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
     float f=profile->general->prefCalcPercentile();
     ui->prefCalcPercentile->setValue(f);
 
-    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout());
+    ui->tooltipTimeoutSlider->setValue(profile->general->tooltipTimeout()/50);
+    ui->tooltipMS->display(profile->general->tooltipTimeout());
+
+    ui->scrollDampeningSlider->setValue(profile->general->scrollDampening()/10);
+
+   if (profile->general->scrollDampening()>0)
+       ui->scrollDampDisplay->display(profile->general->scrollDampening());
+   else ui->scrollDampDisplay->display(STR_TR_Off);
 
     bool bcd=profile->session->backupCardData();
     ui->createSDBackups->setChecked(bcd);
@@ -355,7 +362,9 @@ bool PreferencesDialog::Save()
     profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
     profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
-    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value());
+
+    profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value()*50);
+    profile->general->setScrollDampening(ui->scrollDampeningSlider->value()*10);
 
     profile->session->setMultithreading(ui->enableMultithreading->isChecked());
     profile->session->setCacheSessions(ui->cacheSessionData->isChecked());
@@ -834,4 +843,16 @@ void PreferencesDialog::on_okButton_clicked()
 {
     if (Save())
         accept();
+}
+
+void PreferencesDialog::on_scrollDampeningSlider_valueChanged(int value)
+{
+    if (value>0)
+        ui->scrollDampDisplay->display(value*10);
+    else ui->scrollDampDisplay->display(STR_TR_Off);
+}
+
+void PreferencesDialog::on_tooltipTimeoutSlider_valueChanged(int value)
+{
+    ui->tooltipMS->display(value*50);
 }

@@ -243,6 +243,7 @@ const QString STR_US_PrefCalcMiddle="PrefCalcMiddle";
 const QString STR_US_PrefCalcPercentile="PrefCalcPercentile";
 const QString STR_US_PrefCalcMax="PrefCalcMax";
 const QString STR_US_TooltipTimeout="TooltipTimeout";
+const QString STR_US_ScrollDampening="ScrollDampening";
 
 
 class DoctorInfo
@@ -603,6 +604,7 @@ public:
         if (!m_profile->contains(STR_US_PrefCalcPercentile)) (*m_profile)[STR_US_PrefCalcPercentile]=(double)95.0;
         if (!m_profile->contains(STR_US_PrefCalcMax)) (*m_profile)[STR_US_PrefCalcMax]=(int)0;
         if (!m_profile->contains(STR_US_TooltipTimeout)) (*m_profile)[STR_US_TooltipTimeout]=(int)2500;
+        if (!m_profile->contains(STR_US_ScrollDampening)) (*m_profile)[STR_US_ScrollDampening]=(int)50;
     }
     ~UserSettings() {}
 
@@ -620,6 +622,7 @@ public:
     double prefCalcPercentile() { return (*m_profile)[STR_US_PrefCalcPercentile].toDouble(); }
     int prefCalcMax() { return (*m_profile)[STR_US_PrefCalcMax].toInt(); }
     int tooltipTimeout() { return (*m_profile)[STR_US_TooltipTimeout].toInt(); }
+    int scrollDampening() { return (*m_profile)[STR_US_ScrollDampening].toInt(); }
 
 
     void setUnitSystem(UnitSystem us) { (*m_profile)[STR_US_UnitSystem]=(int)us; }
@@ -634,6 +637,7 @@ public:
     void setPrefCalcPercentile(double p) { (*m_profile)[STR_US_PrefCalcPercentile]=p; }
     void setPrefCalcMax(int i) { (*m_profile)[STR_US_PrefCalcMax]=i; }
     void setTooltipTimeout(int i) { (*m_profile)[STR_US_TooltipTimeout]=i; }
+    void setScrollDampening(int i) { (*m_profile)[STR_US_ScrollDampening]=i; }
 
     Profile *m_profile;
 };

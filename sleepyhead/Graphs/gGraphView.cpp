@@ -3855,8 +3855,9 @@ void gGraphView::wheelEvent(QWheelEvent * event)
             py+=graphSpacer; // do we want the extra spacer down the bottom?
         }
     } else {
+        int scrollDampening=PROFILE.general->scrollDampening();
         if (event->orientation()==Qt::Vertical) { // Vertical Scrolling
-            if (horizScrollTime.elapsed()<100)
+            if (horizScrollTime.elapsed() < scrollDampening)
                 return;
 
             m_scrollbar->SendWheelEvent(event); // Just forwarding the event to scrollbar for now..
@@ -3865,7 +3866,7 @@ void gGraphView::wheelEvent(QWheelEvent * event)
         } else { //Horizontal Panning
             // (This is a total pain in the butt on MacBook touchpads..)
 
-            if (vertScrollTime.elapsed()<100)
+            if (vertScrollTime.elapsed() < scrollDampening)
                 return;
 
             horizScrollTime.start();

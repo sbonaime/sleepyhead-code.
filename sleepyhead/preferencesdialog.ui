@@ -9,15 +9,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>504</height>
+    <width>721</width>
+    <height>502</height>
    </rect>
   </property>
-  <property name="maximumSize">
-   <size>
-    <width>640</width>
-    <height>16777215</height>
-   </size>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Preferences</string>
@@ -306,6 +306,12 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_7">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Session Storage Options</string>
          </property>
@@ -1916,21 +1922,6 @@ p, li { white-space: pre-wrap; }
             <string>Graph Settings</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <property name="leftMargin">
-             <number>8</number>
-            </property>
-            <property name="topMargin">
-             <number>8</number>
-            </property>
-            <property name="rightMargin">
-             <number>8</number>
-            </property>
-            <property name="bottomMargin">
-             <number>8</number>
-            </property>
-            <property name="spacing">
-             <number>-1</number>
-            </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_18">
               <property name="sizePolicy">
@@ -1944,38 +1935,34 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QComboBox" name="overlayFlagsCombo">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>The visual method of displaying waveform overlay flags.
+</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>Standard Bars</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Top &amp; Bottom Markers</string>
+               </property>
+              </item>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
                <string>Graph Height</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" colspan="3">
-             <widget class="QSlider" name="tooltipTimeoutSlider">
-              <property name="toolTip">
-               <string>How long you want the tooltips to stay visible.</string>
-              </property>
-              <property name="minimum">
-               <number>250</number>
-              </property>
-              <property name="maximum">
-               <number>10000</number>
-              </property>
-              <property name="singleStep">
-               <number>250</number>
-              </property>
-              <property name="pageStep">
-               <number>1000</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::TicksBelow</enum>
-              </property>
-              <property name="tickInterval">
-               <number>250</number>
               </property>
              </widget>
             </item>
@@ -2004,6 +1991,13 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
+            <item row="1" column="2">
+             <widget class="QCheckBox" name="graphTooltips">
+              <property name="text">
+               <string>Graph Tooltips</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_45">
               <property name="text">
@@ -2014,7 +2008,110 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="3" column="0" rowspan="2" colspan="4">
+            <item row="2" column="1" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="QSlider" name="tooltipTimeoutSlider">
+                <property name="toolTip">
+                 <string>How long you want the tooltips to stay visible.</string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>150</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="pageStep">
+                 <number>50</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TicksBelow</enum>
+                </property>
+                <property name="tickInterval">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLCDNumber" name="tooltipMS">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="digitCount">
+                 <number>5</number>
+                </property>
+                <property name="segmentStyle">
+                 <enum>QLCDNumber::Flat</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_46">
+              <property name="text">
+               <string>Scroll Dampening</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="QSlider" name="scrollDampeningSlider">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This makes scrolling when zoomed in easier on sensitive bidirectional TouchPads&lt;/p&gt;&lt;p&gt;50ms is recommended value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="maximum">
+                 <number>25</number>
+                </property>
+                <property name="singleStep">
+                 <number>1</number>
+                </property>
+                <property name="pageStep">
+                 <number>5</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="invertedAppearance">
+                 <bool>false</bool>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TicksBelow</enum>
+                </property>
+                <property name="tickInterval">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLCDNumber" name="scrollDampDisplay">
+                <property name="toolTip">
+                 <string>milliseconds</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="digitCount">
+                 <number>3</number>
+                </property>
+                <property name="segmentStyle">
+                 <enum>QLCDNumber::Flat</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="4" column="1">
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -2026,37 +2123,6 @@ p, li { white-space: pre-wrap; }
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="0" column="1" colspan="3">
-             <widget class="QComboBox" name="overlayFlagsCombo">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>The visual method of displaying waveform overlay flags.
-</string>
-              </property>
-              <item>
-               <property name="text">
-                <string>Standard Bars</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Top &amp; Bottom Markers</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="1" column="2" colspan="2">
-             <widget class="QCheckBox" name="graphTooltips">
-              <property name="text">
-               <string>Graph Tooltips</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </widget>
