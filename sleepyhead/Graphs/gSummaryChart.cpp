@@ -435,7 +435,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (zd==hl_day) {
                 QColor col=QColor("red");
                 col.setAlpha(64);
-                quads->add(x1-1,top,x1-1,top+height,x2,top+height,x2,top,col.rgba());
+                if (m_graphtype!=GT_POINTS)
+                    quads->add(x1-1,top,x1-1,top+height,x2,top+height,x2,top,col.rgba());
             }
 
             if (m_graphtype==GT_SESSIONS) {
@@ -578,8 +579,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         if ((px2-lastX[j])>barw+1) {
                             lastdaygood=false;
                         }
-//                        if (days<180)
-//                            points->add(px2-barw/2,py2,col1);
+
+                            if (zd==hl_day) {
+                                points->add(px2-barw/2,py2,QColor("red").rgba());
+                            }
                         if (lastdaygood) {
                             lines->add(lastX[j]-barw/2,lastY[j],px2-barw/2,py2,col2);
                         } else {
