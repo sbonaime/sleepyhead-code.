@@ -21,7 +21,10 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     quads->forceAntiAlias(true);
 
     points->setSize(10);
-    lines->setSize(1.5);
+    if (m_graphtype==GT_POINTS) {
+        lines->setSize(4);
+    } else
+        lines->setSize(1.5);
     //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
     //lines->forceAntiAlias(false);
 
