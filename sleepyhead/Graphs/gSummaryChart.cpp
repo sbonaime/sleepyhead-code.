@@ -17,6 +17,7 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     //QColor color=Qt::black;
     addVertexBuffer(quads=new gVertexBuffer(20000,GL_QUADS));
     addVertexBuffer(lines=new gVertexBuffer(20000,GL_LINES));
+    addVertexBuffer(outlines=new gVertexBuffer(20000,GL_LINES));
     addVertexBuffer(points=new gVertexBuffer(20000,GL_POINTS));
     quads->forceAntiAlias(true);
 
@@ -25,6 +26,8 @@ SummaryChart::SummaryChart(QString label,GraphType type)
         lines->setSize(4);
     } else
         lines->setSize(1.5);
+
+    outlines->setSize(1);
     //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
     //lines->forceAntiAlias(false);
 
@@ -296,10 +299,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     if (!m_visible) return;
 
     rtop=top;
-    gVertexBuffer *outlines=w.lines();
-    outlines->setColor(Qt::black);
-    outlines->add(left, top, left, top+height, left, top+height, left+width,top+height);
-    outlines->add(left+width,top+height, left+width, top, left+width, top, left, top);
+    gVertexBuffer *outlines2=w.lines();
+  //  outlines2->setColor(Qt::black);
+    outlines2->add(left, top, left, top+height, left, top+height, left+width,top+height,QColor("black").rgba());
+    outlines2->add(left+width,top+height, left+width, top, left+width, top, left, top,QColor("black").rgba());
     //if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
 
     qint64 minx=w.min_x, maxx=w.max_x;
@@ -410,11 +413,11 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     //EventStoreType * dptr;
 
     short px2,py2;
-    for (qint64 Q=minx;Q<=maxx+86400000L;Q+=86400000L) {
-        zd=Q/86400000L;
+    qint64 ms_per_day=86400000L;
+    for (qint64 Q=minx;Q<=maxx+ms_per_day;Q+=ms_per_day) {
+        zd=Q/ms_per_day;
         d=m_values.find(zd);
 
-        qint64 extra=86400000;
         if (Q<minx)
             goto jumpnext;
 
@@ -431,8 +434,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
             if (x1<left) x1=left;
             if (x2>left+width) x2=left+width;
-            if (x2<x1)
-                goto jumpnext;
+          //  if (x2<x1)
+          //      goto jumpnext;
 
 
             if (zd==hl_day) {
@@ -453,7 +456,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 }
                 GLuint col1=col.rgba();
                 GLuint col2=brighten(col).rgba();
-                outlines->setColor(Qt::black);
+                //outlines->setColor(Qt::black);
 
                 int np=d.value().size();
                 if (np > 0) {
@@ -472,8 +475,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 
                     quads->add(x1,py,x1,py-h,x2,py-h,x2,py,col1,col2);
                     if (h>0 && barw>2) {
-                        outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h);
-                        outlines->add(x1,py,x2,py,x2,py,x2,py-h);
+                        outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,QColor("black").rgba());
+                        outlines->add(x1,py,x2,py,x2,py,x2,py-h,QColor("black").rgba());
                     }
                     totalvalues[0]+=hours*tmp;
                 }
@@ -547,8 +550,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         quads->add(x1,py,x1,py-h,col1);
                         quads->add(x2,py-h,x2,py,col2);
                         if (h>0 && barw>2) {
-                            outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h);
-                            outlines->add(x1,py,x2,py,x2,py,x2,py-h);
+                            outlines->add(x1,py,x1,py-h,x1,py-h,x2,py-h,QColor("black").rgba());
+                            outlines->add(x1,py,x2,py,x2,py,x2,py-h,QColor("black").rgba());
                             if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
                         } // if (bar
                         py-=h;
@@ -583,9 +586,10 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                             lastdaygood=false;
                         }
 
-                            if (zd==hl_day) {
-                                points->add(px2-barw/2,py2,QColor("red").rgba());
-                            }
+                        if (zd==hl_day) {
+                            points->add(px2-barw/2,py2,QColor("red").rgba());
+                        }
+
                         if (lastdaygood) {
                             lines->add(lastX[j]-barw/2,lastY[j],px2-barw/2,py2,col2);
                         } else {
@@ -597,21 +601,28 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 }  // for(QHash<short
             }
             lastdaygood=true;
-            if (Q>maxx+extra) break;
+        //    if (Q>maxx+extra) break;
         } else {
             if (Q<maxx)
                 incompliant++;
             lastdaygood=false;
         }
 jumpnext:
+        if (px>=left+width+barw)
+            break;
         px+=barw;
+
         daynum++;
         //lastQ=Q;
     }
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    quads->scissor(left*dpr,w.flipY(top+height+2)*dpr,(width)*dpr,(height+1)*dpr);
     lines->scissor(left*dpr,w.flipY(top+height+2)*dpr,(width+1)*dpr,(height+1)*dpr);
+    outlines->scissor(left*dpr,w.flipY(top+height+2)*dpr,(width)*dpr,(height+1)*dpr);
 #else
     lines->scissor(left,w.flipY(top+height+2),width+1,height+2);
+    outlines->scissor(left,w.flipY(top+height+2),width,height+2);
+    quads->scissor(left,w.flipY(top+height+2),width,height+2);
 #endif
     // Draw Ledgend
     px=left+width-3;

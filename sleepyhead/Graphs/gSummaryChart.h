@@ -77,6 +77,7 @@ class SummaryChart:public Layer
 
         gVertexBuffer *quads;
         gVertexBuffer *lines;
+        gVertexBuffer *outlines;
         gVertexBuffer *points;
         bool m_empty;
         int m_fday;
