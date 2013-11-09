@@ -787,98 +787,48 @@ void gToolTip::paint()     //actually paints it.
     int x=m_pos.x();// - tw / 2;
     int y=m_pos.y();// - th;
 
-    QPainter painter;
+    QPainter painter(m_graphview);
 
-    if (!usepixmap | (usepixmap && m_invalidate)) {
+    QRect rect(x,y,0,0);
+    painter.setFont(*defaultfont);
 
+    rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
 
-        painter.begin(m_graphview);
+    int w=rect.width()+m_spacer*2;
+    int xx=rect.x()-m_spacer;
+    if (xx<0) xx=0;
 
-        QRect br;
-        QRect rect(x,y,0,0);
-        painter.setFont(*defaultfont);
+    rect.setLeft(xx);
+    rect.setTop(rect.y()-rect.height()/2);
+    rect.setWidth(w);
 
-        rect=painter.boundingRect(rect,Qt::AlignCenter,m_text);
-
-        if (!usepixmap) {
-            int w=rect.width()+m_spacer*2;
-            int xx=rect.x()-m_spacer;
-            if (xx<0) xx=0;
-
-            rect.setLeft(xx);
-            rect.setTop(rect.y()-rect.height()/2);
-            rect.setWidth(w);
-
-
-            //rect.setHeight(rect.height());
-            int z=rect.x()+rect.width();
-            if (z>m_graphview->width()-10) {
-                rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
-                rect.setRight(m_graphview->width()-2);
-            }
-            int h=rect.height();
-            if (rect.y()<0) {
-                rect.setY(0);
-                rect.setHeight(h);
-            }
-            if (!m_image.isNull()) {
-                m_graphview->deleteTexture(m_textureID);
-                m_textureID=0;
-                m_image=QImage();
-                m_invalidate=true;
-            }
-
-        } else {
-            rect.setCoords(0,0,rect.width()+m_spacer*2,rect.height()+m_spacer*2);
-            painter.end();
-            if (!m_image.isNull()) {
-                m_graphview->deleteTexture(m_textureID);
-            }
-            m_image=QImage(rect.width()+2,rect.height()+2,QImage::Format_ARGB32_Premultiplied);
-            m_image.fill(Qt::transparent);
-            painter.begin(&m_image);
-            painter.setCompositionMode(QPainter::CompositionMode_Source);
-
-        }
-
-        lines_drawn_this_frame+=4;
-        quads_drawn_this_frame+=1;
-
-        QBrush brush(QColor(255,255,128,230));
-        brush.setStyle(Qt::SolidPattern);
-        painter.setBrush(brush);
-        painter.setPen(QColor(0,0,0,255));
-
-        painter.drawRoundedRect(rect,5,5);
-        painter.setBrush(Qt::black);
-
-        painter.setFont(*defaultfont);
-
-        painter.drawText(rect,Qt::AlignCenter,m_text);
-
-        painter.end();
-        if (usepixmap) {
-             //m_image=m_image.
-        //    m_textureID=m_graphview->bindTexture(m_image,GL_TEXTURE_2D,GL_RGBA,QGLContext::NoBindOption);
-            m_invalidate=false;
-        }
-
+    int z=rect.x()+rect.width();
+    if (z>m_graphview->width()-10) {
+        rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
+        rect.setRight(m_graphview->width()-2);
     }
-    if (usepixmap) {
-        x-=m_spacer+m_image.width()/2;
-        y-=m_image.height()/2;
-        if (y<0) y=0;
-        if (x<0) x=0;
-        if ((x+m_image.width()) > (m_graphview->width()-10)) x=m_graphview->width()-10 - m_image.width();
-        if (usepixmap && !m_image.isNull()) {
-            painter.begin(m_graphview);
-
-            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            painter.drawImage(QPoint(x,y),m_image);
-        }
-
+    int h=rect.height();
+    if (rect.y()<0) {
+        rect.setY(0);
+        rect.setHeight(h);
     }
 
+    lines_drawn_this_frame+=4;
+    quads_drawn_this_frame+=1;
+
+    QBrush brush(QColor(255,255,128,230));
+    brush.setStyle(Qt::SolidPattern);
+    painter.setBrush(brush);
+    painter.setPen(QColor(0,0,0,255));
+
+    painter.drawRoundedRect(rect,5,5);
+    painter.setBrush(Qt::black);
+
+    painter.setFont(*defaultfont);
+
+    painter.drawText(rect,Qt::AlignCenter,m_text);
+
+    painter.end();
 }
 void gToolTip::timerDone()
 {

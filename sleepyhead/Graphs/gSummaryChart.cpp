@@ -413,7 +413,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
     //EventStoreType * dptr;
 
     short px2,py2;
-    qint64 ms_per_day=86400000L;
+    const qint64 ms_per_day=86400000L;
     for (qint64 Q=minx;Q<=maxx+ms_per_day;Q+=ms_per_day) {
         zd=Q/ms_per_day;
         d=m_values.find(zd);
@@ -487,7 +487,8 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                 total_hours+=hours;
                 total_days++;
             } else {
-                if (!d.value().contains(0)) goto jumpnext;
+                if (!d.value().contains(0))
+                    goto jumpnext;
                 total=d.value()[0];
                 //if (total>0) {
                 if (day) {
