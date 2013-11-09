@@ -155,14 +155,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     zombie->addSlice(Journal_ZombieMeter,COLOR_DarkRed,ST_SETAVG);
     ZOMBIE->AddLayer(zombie);
 
-    pulse=new SummaryChart(STR_TR_PulseRate,GT_LINE);
+    pulse=new SummaryChart(STR_TR_PulseRate,GT_POINTS);
     pulse->setMachineType(MT_OXIMETER);
     pulse->addSlice(OXI_Pulse,COLOR_Red,ST_mid,0.5);
     pulse->addSlice(OXI_Pulse,COLOR_Pink,ST_MIN);
     pulse->addSlice(OXI_Pulse,COLOR_Orange,ST_MAX);
     PULSE->AddLayer(pulse);
 
-    spo2=new SummaryChart(STR_TR_SpO2,GT_LINE);
+    spo2=new SummaryChart(STR_TR_SpO2,GT_POINTS);
     spo2->setMachineType(MT_OXIMETER);
     spo2->addSlice(OXI_SPO2,COLOR_Cyan,ST_mid,0.5);
     spo2->addSlice(OXI_SPO2,COLOR_LightBlue,ST_PERC,percentile);
@@ -215,14 +215,14 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
    // rr->addSlice(CPAP_RespRate,COLOR_Green,ST_MAX);
     RR->AddLayer(rr);
 
-    tv=new SummaryChart(tr("L/b"),GT_LINE);
+    tv=new SummaryChart(tr("L/b"),GT_POINTS);
     tv->addSlice(CPAP_TidalVolume,COLOR_LightBlue,ST_MIN);
     tv->addSlice(CPAP_TidalVolume,COLOR_Blue,ST_mid,0.5);
     tv->addSlice(CPAP_TidalVolume,COLOR_LightGreen,ST_PERC,percentile);
     tv->addSlice(CPAP_TidalVolume,COLOR_Green,ST_max,maxperc);
     TV->AddLayer(tv);
 
-    mv=new SummaryChart(STR_UNIT_LPM,GT_LINE);
+    mv=new SummaryChart(STR_UNIT_LPM,GT_POINTS);
     mv->addSlice(CPAP_MinuteVent,COLOR_LightBlue,ST_MIN);
     mv->addSlice(CPAP_MinuteVent,COLOR_Blue,ST_mid,0.5);
     mv->addSlice(CPAP_MinuteVent,COLOR_LightGreen,ST_PERC,percentile);
@@ -230,21 +230,21 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     MV->AddLayer(mv);
 
     // should merge...
-    tgmv=new SummaryChart(STR_UNIT_LPM,GT_LINE);
+    tgmv=new SummaryChart(STR_UNIT_LPM,GT_POINTS);
     tgmv->addSlice(CPAP_TgMV,COLOR_LightBlue,ST_MIN);
     tgmv->addSlice(CPAP_TgMV,COLOR_Blue,ST_mid,0.5);
     tgmv->addSlice(CPAP_TgMV,COLOR_LightGreen,ST_PERC,percentile);
     tgmv->addSlice(CPAP_TgMV,COLOR_Green,ST_max,maxperc);
     TGMV->AddLayer(tgmv);
 
-    ptb=new SummaryChart(tr("%PTB"),GT_LINE);
+    ptb=new SummaryChart(tr("%PTB"),GT_POINTS);
     ptb->addSlice(CPAP_PTB,COLOR_Yellow,ST_MIN);
     ptb->addSlice(CPAP_PTB,COLOR_Blue,ST_mid,0.5);
     ptb->addSlice(CPAP_PTB,COLOR_LightGray,ST_PERC,percentile);
     ptb->addSlice(CPAP_PTB,COLOR_Orange,ST_WAVG);
     PTB->AddLayer(ptb);
 
-    pr=new SummaryChart(STR_TR_Pressure,GT_LINE);
+    pr=new SummaryChart(STR_TR_Pressure,GT_POINTS);
     // Added in summarychart.. Slightly annoying..
     PR->AddLayer(pr);
 
@@ -256,7 +256,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //lk->addSlice(CPAP_Leak,COLOR_DarkYellow);
     LK->AddLayer(lk);
 
-    totlk=new SummaryChart(STR_TR_TotalLeaks,GT_LINE);
+    totlk=new SummaryChart(STR_TR_TotalLeaks,GT_POINTS);
     totlk->addSlice(CPAP_LeakTotal, COLOR_LightBlue, ST_mid,0.5);
     totlk->addSlice(CPAP_LeakTotal, COLOR_DarkGray, ST_PERC,percentile);
     totlk->addSlice(CPAP_LeakTotal, COLOR_Gray, ST_max,maxperc);
@@ -264,7 +264,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     //tot->addSlice(CPAP_Leak, COLOR_DarkYellow);
     TOTLK->AddLayer(totlk);
 
-    NPB->AddLayer(npb=new SummaryChart(tr("% PB"),GT_BAR));
+    NPB->AddLayer(npb=new SummaryChart(tr("% PB"),GT_POINTS));
     npb->addSlice(CPAP_CSR, COLOR_DarkGreen, ST_SPH);
     // <--- The code to the previous marker is crap
 
