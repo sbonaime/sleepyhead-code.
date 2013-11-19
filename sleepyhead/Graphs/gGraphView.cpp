@@ -777,15 +777,8 @@ void gToolTip::paint()     //actually paints it.
 {
     if (!m_visible) return;
 
-#ifdef Q_OS_MAC
-    // Using this solves the wavy text bug, but is a fraction slower
-    bool usepixmap=m_graphview->usePixmapCache();
-#else
-    // Slower on Linux in this case..
-    bool usepixmap=false;
-#endif
-    int x=m_pos.x();// - tw / 2;
-    int y=m_pos.y();// - th;
+    int x=m_pos.x();
+    int y=m_pos.y();
 
     QPainter painter(m_graphview);
 
@@ -804,7 +797,7 @@ void gToolTip::paint()     //actually paints it.
 
     int z=rect.x()+rect.width();
     if (z>m_graphview->width()-10) {
-        rect.setLeft(m_graphview->width()-2-rect.width());//m_pos.x()-m_spacer);
+        rect.setLeft(m_graphview->width()-2-rect.width());
         rect.setRight(m_graphview->width()-2);
     }
     int h=rect.height();

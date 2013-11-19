@@ -134,6 +134,8 @@ extern QString STR_TR_CPAP;    // Constant Positive Airway Pressure
 extern QString STR_TR_BIPAP;   // Bi-Level Positive Airway Pressure
 extern QString STR_TR_BiLevel; // Another name for BiPAP
 extern QString STR_TR_EPAP;    // Expiratory Positive Airway Pressure
+extern QString STR_TR_EPAPLo;  // Expiratory Positive Airway Pressure, Low
+extern QString STR_TR_EPAPHi;  // Expiratory Positive Airway Pressure, High
 extern QString STR_TR_IPAP;    // Inspiratory Positive Airway Pressure
 extern QString STR_TR_IPAPLo;  // Inspiratory Positive Airway Pressure, Low
 extern QString STR_TR_IPAPHi;  // Inspiratory Positive Airway Pressure, High

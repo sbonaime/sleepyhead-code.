@@ -414,6 +414,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             int j=i.value().toInt(&ok);
             if (ok)
                 m->properties[STR_PROP_Model]=RMS9ModelMap[j];
+            m->properties[STR_PROP_ModelNumber]=i.value();
         }
     }
 
@@ -1244,12 +1245,12 @@ int ResmedLoader::Open(QString & path,Profile *profile)
 
 
 
-                sess->settings[CPAP_PresReliefType]=PR_EPR;
 
                 // Ramp, Fulltime
                 // AutoSV machines don't have both fields
                 sig=stredf.lookupSignal(RMS9_EPR);
                 if (sig) {
+                    sess->settings[CPAP_PresReliefType]=PR_EPR;
                     prmode=EventDataType(sig->data[dn])*sig->gain;
                     // Off,
                     if (prmode<0) {
@@ -1284,42 +1285,66 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                     }
                 } else if (mode>5) {
                     if (mode>=7)
-                        sess->settings[CPAP_Mode]=MODE_ASV;
+                        sess->settings[CPAP_Mode]=MODE_ASV; // interestingly, last digit of model number matches these when in full mode.
                     else
                         sess->settings[CPAP_Mode]=MODE_BIPAP;
 
                     EventDataType tmp,epap=0,ipap=0;
+
+
+                    // All S9 machines have Set Pressure
+                    // Elite has Min Pressure and Max Pressure
+                    // VPAP Auto has EPAP, Min EPAP, IPAP and Max IPAP, and PS
+                    // VPAP Adapt 36007 has just EPAP and PSLo/Hi,
+                    // VPAP Adapt 36037 has EPAPLo, EPAPHi and PSLo/Hi
+
+
+                    if (stredf.lookup.contains("EPAP")) {
+                        sig=stredf.lookup["EPAP"];
+                        epap=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_EPAP]=epap;
+                    }
+                    if (stredf.lookup.contains("IPAP")) {
+                        sig=stredf.lookup["IPAP"];
+                        ipap=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_IPAP]=ipap;
+                    }
+
                     if (stredf.lookup.contains("Min EPAP")) {
                         sig=stredf.lookup["Min EPAP"];
                         epap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_EPAP]=epap;
+                        sess->settings[CPAP_EPAPLo]=epap;
+                    }
+                    if (stredf.lookup.contains("Max EPAP")) {
+                        sig=stredf.lookup["Max EPAP"];
+                        epap=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_EPAPHi]=epap;
+                    }
+
+                    if (stredf.lookup.contains("Min IPAP")) {
+                        sig=stredf.lookup["Min IPAP"];
+                        ipap=sig->data[dn]*sig->gain;
+                        sess->settings[CPAP_IPAPLo]=ipap;
                     }
                     if (stredf.lookup.contains("Max IPAP")) {
                         sig=stredf.lookup["Max IPAP"];
                         ipap=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_IPAP]=ipap;
+                        sess->settings[CPAP_IPAPHi]=ipap;
                     }
                     if (stredf.lookup.contains("PS")) {
                         sig=stredf.lookup["PS"];
                         tmp=sig->data[dn]*sig->gain;
-                        sess->settings[CPAP_PS]=tmp; // technically this is IPAP-EPAP
-                        if (!ipap) {
-                            // not really possible. but anyway, just in case..
-                            sess->settings[CPAP_IPAP]=epap+tmp;
-                        }
+                        sess->settings[CPAP_PS]=tmp; // plain VPAP Pressure support
                     }
                     if (stredf.lookup.contains("Min PS")) {
                         sig=stredf.lookup["Min PS"];
                         tmp=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PSMin]=tmp;
-                        sess->settings[CPAP_IPAPLo]=epap+tmp;
-                        sess->setMin(CPAP_IPAP,epap+tmp);
                     }
                     if (stredf.lookup.contains("Max PS")) {
                         sig=stredf.lookup["Max PS"];
                         tmp=sig->data[dn]*sig->gain;
                         sess->settings[CPAP_PSMax]=tmp;
-                        sess->settings[CPAP_IPAPHi]=epap+tmp;
                     }
                     if (stredf.lookup.contains("RR")) { // Is this a setting to force respiratory rate on S/T machines?
                         sig=stredf.lookup["RR"];
@@ -1327,6 +1352,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         sess->settings[CPAP_RespRate]=tmp*sig->gain;
                     }
 
+                    // this is not a setting on any machine I've played with, I think it's just an indication of the type of motor
                     if (stredf.lookup.contains("Easy-Breathe")) {
                         sig=stredf.lookup["Easy-Breathe"];
                         tmp=sig->data[dn]*sig->gain;
@@ -2208,8 +2234,10 @@ void ResInitModelMap()
     // VPAP Auto Series (+H5i +Climate Control)
     RMS9ModelMap[36006]=RMS9ModelMap[36016]=RMS9ModelMap[36026]=RMS9_STR_VPAP_Auto;
 
+
     // VPAP Adapt Series (+H5i +Climate Control)
-    RMS9ModelMap[36007]=RMS9ModelMap[36017]=RMS9ModelMap[36027]=RMS9ModelMap[36367]=RMS9_STR_VPAP_Adapt;
+    // Trev's 36037 supports variable EPAP...
+    RMS9ModelMap[36037]=RMS9ModelMap[36007]=RMS9ModelMap[36017]=RMS9ModelMap[36027]=RMS9ModelMap[36367]=RMS9_STR_VPAP_Adapt;
 
     // VPAP ST Series (+H5i +Climate Control)
     RMS9ModelMap[36008]=RMS9ModelMap[36018]=RMS9ModelMap[36028]=RMS9ModelMap[36108]=

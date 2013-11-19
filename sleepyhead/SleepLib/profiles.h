@@ -23,6 +23,7 @@ class Machine;
 enum Gender { GenderNotSpecified, Male, Female };
 enum MaskType { Mask_Unknown, Mask_NasalPillows, Mask_Hybrid, Mask_StandardNasal, Mask_FullFace };
 enum OverlayDisplayType { ODT_Bars, ODT_TopAndBottom };
+enum OverviewLinechartModes { OLC_Bartop, OLC_Lines };
 
 class DoctorInfo;
 class UserInfo;
@@ -226,6 +227,7 @@ const QString STR_AS_GraphSnapshots="EnableGraphSnapshots";
 const QString STR_AS_Animations="AnimationsAndTransitions";
 const QString STR_AS_SquareWave="SquareWavePlots";
 const QString STR_AS_OverlayType="OverlayType";
+const QString STR_AS_OverviewLinechartMode="OverviewLinechartMode";
 const QString STR_AS_UsePixmapCaching="UsePixmapCaching";
 const QString STR_AS_AllowYAxisScaling="AllowYAxisScaling";
 const QString STR_AS_GraphTooltips="GraphTooltips";
@@ -537,6 +539,7 @@ public:
         if (!m_profile->contains(STR_AS_GraphTooltips)) (*m_profile)[STR_AS_GraphTooltips]=true;
         if (!m_profile->contains(STR_AS_UsePixmapCaching)) (*m_profile)[STR_AS_UsePixmapCaching]=true;
         if (!m_profile->contains(STR_AS_OverlayType)) (*m_profile)[STR_AS_OverlayType]=ODT_Bars;
+        if (!m_profile->contains(STR_AS_OverviewLinechartMode)) (*m_profile)[STR_AS_OverviewLinechartMode]=OLC_Bartop;
     }
     ~AppearanceSettings() {}
 
@@ -560,6 +563,9 @@ public:
     bool graphTooltips() { return (*m_profile)[STR_AS_GraphTooltips].toBool(); }
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
     OverlayDisplayType overlayType() { return (OverlayDisplayType )(*m_profile)[STR_AS_OverlayType].toInt(); }
+    //! \brief Returns the display type of Overview pages linechart
+    OverviewLinechartModes overviewLinechartMode() { return (OverviewLinechartModes )(*m_profile)[STR_AS_OverviewLinechartMode].toInt(); }
+
 
     //! \brief Set the normal (unscaled) height of a graph.
     void setGraphHeight(int height) { (*m_profile)[STR_AS_GraphHeight]=height; }
@@ -575,6 +581,8 @@ public:
     void setSquareWavePlots(bool sw) { (*m_profile)[STR_AS_SquareWave]=sw; }
     //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
     void setOverlayType(OverlayDisplayType od) { (*m_profile)[STR_AS_OverlayType]=(int)od; }
+    //! \brief Sets the type of overlay flags (which are displayed over the Flow Waveform)
+    void setOverviewLinechartMode(OverviewLinechartModes od) { (*m_profile)[STR_AS_OverviewLinechartMode]=(int)od; }
     //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode
     void setAllowYAxisScaling(bool b) {  (*m_profile)[STR_AS_AllowYAxisScaling]=b; }
     //! \brief Sets whether to allow double clicking on Y-Axis labels to change vertical scaling mode

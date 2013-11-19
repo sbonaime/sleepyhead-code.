@@ -173,7 +173,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     uc->addSlice(NoChannel, COLOR_Green, ST_HOURS);
     UC->AddLayer(uc);
 
-    fl=new SummaryChart(STR_TR_FL,GT_BAR);
+    fl=new SummaryChart(STR_TR_FL,GT_POINTS);
     fl->addSlice(CPAP_FlowLimit, COLOR_Brown, ST_CPH);
     FL->AddLayer(fl);
 

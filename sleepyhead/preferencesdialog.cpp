@@ -207,6 +207,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent,Profile * _profile) :
 
 
     ui->overlayFlagsCombo->setCurrentIndex(profile->appearance->overlayType());
+    ui->overviewLinecharts->setCurrentIndex(profile->appearance->overviewLinechartMode());
 
     ui->oximetryGroupBox->setChecked(profile->oxi->oximetryEnabled());
     ui->oximetrySync->setChecked(profile->oxi->syncOximetry());
@@ -393,6 +394,8 @@ bool PreferencesDialog::Save()
     profile->cpap->setClockDrift(ui->clockDrift->value());
 
     profile->appearance->setOverlayType((OverlayDisplayType)ui->overlayFlagsCombo->currentIndex());
+    profile->appearance->setOverviewLinechartMode((OverviewLinechartModes)ui->overviewLinecharts->currentIndex());
+
     profile->cpap->setLeakMode(ui->leakModeCombo->currentIndex());
     profile->cpap->setMaskType((MaskType)ui->maskTypeCombo->currentIndex());
 

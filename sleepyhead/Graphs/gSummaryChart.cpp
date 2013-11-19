@@ -21,13 +21,8 @@ SummaryChart::SummaryChart(QString label,GraphType type)
     addVertexBuffer(points=new gVertexBuffer(20000,GL_POINTS));
     quads->forceAntiAlias(true);
 
-    points->setSize(10);
-    if (m_graphtype==GT_POINTS) {
-        lines->setSize(4);
-    } else
-        lines->setSize(1.5);
-
     outlines->setSize(1);
+
     //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
     //lines->forceAntiAlias(false);
 
@@ -298,6 +293,22 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
 {
     if (!m_visible) return;
 
+    points->setSize(10);
+
+
+    GraphType graphtype=m_graphtype;
+
+    if (graphtype==GT_LINE || graphtype==GT_POINTS) {
+        bool pts=PROFILE.appearance->overviewLinechartMode()==OLC_Lines;
+        graphtype=pts ? GT_POINTS : GT_LINE;
+    }
+
+    if (graphtype==GT_POINTS) {
+        lines->setSize(4);
+    } else
+        lines->setSize(1.5);
+
+
     rtop=top;
     gVertexBuffer *outlines2=w.lines();
   //  outlines2->setColor(Qt::black);
@@ -441,11 +452,14 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
             if (zd==hl_day) {
                 QColor col=QColor("red");
                 col.setAlpha(64);
-                if (m_graphtype!=GT_POINTS)
+                if (graphtype!=GT_POINTS) {
                     quads->add(x1-1,top,x1-1,top+height,x2,top+height,x2,top,col.rgba());
+                } else {
+                    quads->add((x1+barw/2)-5,top,(x1+barw/2)-5,top+height,(x2-barw/2)+5,top+height,(x2-barw/2)+5,top,col.rgba());
+                }
             }
 
-            if (m_graphtype==GT_SESSIONS) {
+            if (graphtype==GT_SESSIONS) {
                 int j;
                 QHash<int,QHash<short,EventDataType> >::iterator times=m_times.find(zd);
                 QColor col=m_colors[0];
@@ -544,7 +558,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                     tmp-=miny;
                     h=tmp*ymult; // height in pixels
 
-                    if (m_graphtype==GT_BAR) {
+                    if (graphtype==GT_BAR) {
                         GLuint col1=col.rgba();
                         GLuint col2=brighten(col).rgba();
 
@@ -556,7 +570,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                             if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
                         } // if (bar
                         py-=h;
-                    } else if (m_graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
+                    } else if (graphtype==GT_LINE) { // if (m_graphtype==GT_BAR
                         GLuint col1=col.rgba();
                         GLuint col2=m_colors[j].rgba();
                         px2=px+barw;
@@ -576,7 +590,7 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;
-                    } else if (m_graphtype==GT_POINTS) {
+                    } else if (graphtype==GT_POINTS) {
                         GLuint col1=col.rgba();
                         GLuint col2=m_colors[j].rgba();
                         px2=px+barw;
@@ -588,13 +602,13 @@ void SummaryChart::paint(gGraph & w,int left, int top, int width, int height)
                         }
 
                         if (zd==hl_day) {
-                            points->add(px2-barw/2,py2,QColor("red").rgba());
+                            points->add(px2-barw/2,py2,col2);
                         }
 
                         if (lastdaygood) {
                             lines->add(lastX[j]-barw/2,lastY[j],px2-barw/2,py2,col2);
                         } else {
-//                            lines->add(x1-1,py2,x2+1,py2,col1);
+                            lines->add(px+barw/2-1,py2,px+barw/2+1,py2,col1);
                         }
                         lastX[j]=px2;
                         lastY[j]=py2;

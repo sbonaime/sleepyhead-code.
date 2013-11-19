@@ -841,13 +841,15 @@ QString Daily::getMachineSettings(Day * cpap) {
         html="<table cellpadding=0 cellspacing=0 border=0 width=100%>";
         html+=QString("<tr><td colspan=5 align=center><b>%1</b></td></tr>").arg(tr("Machine Settings"));
         html+="<tr><td colspan=5>&nbsp;</td></tr>";
-        int i=cpap->settings_max(CPAP_PresReliefType);
-        int j=cpap->settings_max(CPAP_PresReliefSet);
-        QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
-        html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
-                .arg(STR_TR_PrRelief)
-                .arg(schema::channel[CPAP_PresReliefType].description())
-                .arg(flexstr);
+        if (cpap->settingExists(CPAP_PresReliefType)) {
+            int i=cpap->settings_max(CPAP_PresReliefType);
+            int j=cpap->settings_max(CPAP_PresReliefSet);
+            QString flexstr=(i>1) ? schema::channel[CPAP_PresReliefType].option(i)+" x"+QString::number(j) : STR_TR_None;
+            html+=QString("<tr><td><a class='info' href='#'>%1<span>%2</span></a></td><td colspan=4>%3</td></tr>")
+                    .arg(STR_TR_PrRelief)
+                    .arg(schema::channel[CPAP_PresReliefType].description())
+                    .arg(flexstr);
+        }
         QString mclass=cpap->machine->GetClass();
         if (mclass==STR_MACH_PRS1 || mclass==STR_MACH_FPIcon) {
             int humid=round(cpap->settings_wavg(CPAP_HumidSetting));
@@ -900,40 +902,76 @@ QString Daily::getCPAPInformation(Day * cpap)
     html+=tooltip;
     html+="</span></td></tr>\n";
     CPAPMode mode=(CPAPMode)(int)cpap->settings_max(CPAP_Mode);
-    html+="<tr><td colspan=4 align=center>"+tr("PAP Setting")+": <b>";
+    html+="<tr><td colspan=4 align=center>";
+
+
+    QString modestr;
+
+    if (mode==MODE_CPAP) modestr=STR_TR_CPAP;
+    else if (mode==MODE_APAP) modestr=STR_TR_APAP;
+    else if (mode==MODE_BIPAP) modestr=STR_TR_BiLevel;
+    else if (mode==MODE_ASV) modestr=STR_TR_ASV;
+    else modestr=STR_TR_Unknown;
+    html+=tr("PAP Mode: %1<br/>").arg(modestr);
 
     if (mode==MODE_CPAP) {
         EventDataType min=round(cpap->settings_wavg(CPAP_Pressure)*2)/2.0;
-        html+=STR_TR_CPAP+" "+QString::number(min)+STR_UNIT_CMH2O;
+        // eg: Pressure: 13cmH2O
+        html+=QString("%1: %2%3").arg(STR_TR_Pressure).arg(min).arg(STR_UNIT_CMH2O);
     } else if (mode==MODE_APAP) {
         EventDataType min=cpap->settings_min(CPAP_PressureMin);
         EventDataType max=cpap->settings_max(CPAP_PressureMax);
-        html+=STR_TR_APAP+" "+QString::number(min)+"-"+QString::number(max)+STR_UNIT_CMH2O;
-    } else if (mode==MODE_BIPAP) {
-        EventDataType epap=cpap->settings_min(CPAP_EPAP);
-        EventDataType ipap=cpap->settings_max(CPAP_IPAP);
-        EventDataType ps=cpap->settings_max(CPAP_PS);
-        html+=STR_TR_BiLevel+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 %3<br/> "+STR_TR_PS+": %4")
-                .arg(epap,0,'f',1).arg(ipap,0,'f',1).arg(STR_UNIT_CMH2O).arg(ps,0,'f',1);
-    }
-    else if (mode==MODE_ASV) {
-        EventDataType epap=cpap->settings_min(CPAP_EPAP);
-        EventDataType low=cpap->settings_min(CPAP_IPAPLo);
-        EventDataType high=cpap->settings_max(CPAP_IPAPHi);
-        EventDataType psl=cpap->settings_min(CPAP_PSMin);
-        EventDataType psh=cpap->settings_max(CPAP_PSMax);
-        html+=tr("ASV")+QString("<br/>"+STR_TR_EPAP+": %1 "+STR_TR_IPAP+": %2 - %3 %4<br/> "+STR_TR_PS+": %5 / %6")
-                .arg(epap,0,'f',1)
-                .arg(low,0,'f',1)
-                .arg(high,0,'f',1)
-                .arg(STR_UNIT_CMH2O)
+        // eg: Pressure: 7.0-10.0cmH2O
+        html+=QString("%1: %2-%3%4").arg(STR_TR_Pressure).arg(min,0,'f',1).arg(max,0,'f',1).arg(STR_UNIT_CMH2O);
+    } else if (mode>=MODE_BIPAP) {
+        if (cpap->settingExists(CPAP_EPAPLo)) {
+            html+=QString(STR_TR_EPAPLo+": %1")
+                    .arg(cpap->settings_min(CPAP_EPAPLo),0,'f',1);
+
+            if (cpap->settingExists(CPAP_EPAPHi)) {
+                    html+=QString("-%2")
+                    .arg(cpap->settings_max(CPAP_EPAPHi),0,'f',1);
+            }
+            html+=STR_UNIT_CMH2O+"</br>";
+        } else if (cpap->settingExists(CPAP_EPAP)) {
+            EventDataType epap=cpap->settings_min(CPAP_EPAP);
+
+            html+=QString("%1: %2%3<br/>").arg(STR_TR_EPAP)
+                    .arg(epap,0,'f',1)
+                    .arg(STR_UNIT_CMH2O);
+
+            if (!cpap->settingExists(CPAP_IPAPHi)) {
+                if (cpap->settingExists(CPAP_PSMax)) {
+                    html+=QString("%1: %2%3<br/>").arg(STR_TR_IPAPHi)
+                        .arg(epap+cpap->settings_max(CPAP_PSMax),0,'f',1)
+                        .arg(STR_UNIT_CMH2O);
+
+                }
+            }
+        }
+        if (cpap->settingExists(CPAP_IPAPHi)) {
+            html+=QString(STR_TR_IPAPHi+": %1"+STR_UNIT_CMH2O+"<br/>")
+                    .arg(cpap->settings_max(CPAP_IPAPHi),0,'f',1);
+        } else
+        if (cpap->settingExists(CPAP_IPAP)) {
+            html+=QString(STR_TR_IPAP+": %1"+STR_UNIT_CMH2O+"<br/>")
+                    .arg(cpap->settings_max(CPAP_IPAP),0,'f',1);
+        }
+
+        if (cpap->settingExists(CPAP_PS)) {
+            html+=QString(STR_TR_PS+": %1"+STR_UNIT_CMH2O+"<br/>")
+                .arg(cpap->settings_max(CPAP_PS),0,'f',1);
+        } else if (cpap->settingExists(CPAP_PSMin)) {
+            EventDataType psl=cpap->settings_min(CPAP_PSMin);
+            EventDataType psh=cpap->settings_max(CPAP_PSMax);
+            html+=QString(STR_TR_PS+": %1-%2"+STR_UNIT_CMH2O+"<br/>")
                 .arg(psl,0,'f',1)
                 .arg(psh,0,'f',1);
+        }
     }
-    else html+=STR_TR_Unknown;
-    html+="</b></td></tr>\n";
+    html+="</td></tr>\n";
     html+="</table>\n";
-  //  html+="<hr/>\n";
+    html+="<hr/>\n";
     return html;
 }
 

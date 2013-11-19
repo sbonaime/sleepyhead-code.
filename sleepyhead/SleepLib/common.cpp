@@ -127,6 +127,8 @@ QString STR_TR_CPAP;    // Constant Positive Airway Pressure
 QString STR_TR_BIPAP;   // Bi-Level Positive Airway Pressure
 QString STR_TR_BiLevel; // Another name for BiPAP
 QString STR_TR_EPAP;    // Expiratory Positive Airway Pressure
+QString STR_TR_EPAPLo;  // Expiratory Positive Airway Pressure, Low
+QString STR_TR_EPAPHi;  // Expiratory Positive Airway Pressure, High
 QString STR_TR_IPAP;    // Inspiratory Positive Airway Pressure
 QString STR_TR_IPAPLo;  // Inspiratory Positive Airway Pressure, Low
 QString STR_TR_IPAPHi;  // Inspiratory Positive Airway Pressure, High
@@ -278,9 +280,11 @@ void initializeStrings()
     STR_TR_BIPAP=QObject::tr("BiPAP");    // Bi-Level Positive Airway Pressure
     STR_TR_BiLevel=QObject::tr("Bi-Level"); // Another name for BiPAP
     STR_TR_EPAP=QObject::tr("EPAP");      // Expiratory Positive Airway Pressure
+    STR_TR_EPAPLo=QObject::tr("Min EPAP"); // Lower Expiratory Positive Airway Pressure
+    STR_TR_EPAPHi=QObject::tr("Max EPAP"); // Higher Expiratory Positive Airway Pressure
     STR_TR_IPAP=QObject::tr("IPAP");      // Inspiratory Positive Airway Pressure
-    STR_TR_IPAPLo=QObject::tr("IPAPLo");  // Inspiratory Positive Airway Pressure, Low
-    STR_TR_IPAPHi=QObject::tr("IPAPHi");  // Inspiratory Positive Airway Pressure, High
+    STR_TR_IPAPLo=QObject::tr("Min IPAP");  // Lower Inspiratory Positive Airway Pressure
+    STR_TR_IPAPHi=QObject::tr("Max IPAP");  // Higher Inspiratory Positive Airway Pressure
     STR_TR_APAP=QObject::tr("APAP");      // Automatic Positive Airway Pressure
     STR_TR_ASV=QObject::tr("ASV");        // Assisted Servo Ventilator
     STR_TR_STASV=QObject::tr("ST/ASV");
