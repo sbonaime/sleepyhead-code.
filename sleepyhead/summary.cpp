@@ -895,14 +895,13 @@ QString Summary::GenerateHTML()
             } else if (mode>MODE_CPAP) {
                 extratxt+=QString("<td align=left>APAP %1 - %2</td><td align=left></td>")
                         .arg(rx.min,4,'f',1)
-                        .arg(rx.max,4,'f',1)
-                        .arg(STR_UNIT_CMH2O);
+                        .arg(rx.max,4,'f',1);
                 tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_Pressure+
                         QString("=%2").arg(rx.per1,0,'f',decimals);
             } else {
 
                 if (cpapmode>MODE_CPAP) {
-                    extratxt+=QString("<td colspan=2>CPAP %1</td>").arg(rx.min,4,'f',1).arg(STR_UNIT_CMH2O);
+                    extratxt+=QString("<td colspan=2>CPAP %1</td>").arg(rx.min,4,'f',1);
                     tooltip=QString("%1").arg(machstr);
                 } else {
                     extratxt+="";

@@ -815,7 +815,7 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage)
                 sess->settings[SESSION_ENABLED]=true;
             }
             bool b=sess->settings[SESSION_ENABLED].toBool();
-            html+=QString("<tr onClick=\"document.location.href = '"+type+"=%1';\">"
+            html+=QString("<tr>"
                           "<td width=26><a href='toggle"+type+"session=%1'>"
                           "<img src='qrc:/icons/session-%4.png' width=24px></a></td><td align=center>%5</td><td align=center>%6</td><td align=center>%7</td><td align=left><a class=info href='"+type+"=%1'>%3<span>%2</span></a></td></tr>")
                     .arg((*s)->session())
