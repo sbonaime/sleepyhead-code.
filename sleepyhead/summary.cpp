@@ -114,7 +114,8 @@ struct RXChange
         min=copy.min;
         max=copy.max;
         ps=copy.ps;
-        maxhi=copy.maxhi;
+        pshi=copy.pshi;
+        maxipap=copy.maxipap;
         machine=copy.machine;
         per1=copy.per1;
         per2=copy.per2;
@@ -132,7 +133,8 @@ struct RXChange
     EventDataType min;
     EventDataType max;
     EventDataType ps;
-    EventDataType maxhi;
+    EventDataType pshi;
+    EventDataType maxipap;
     EventDataType per1;
     EventDataType per2;
     EventDataType weighted;
@@ -142,7 +144,7 @@ struct RXChange
     short highlight;
 };
 
-enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_ps, RX_maxhi, RX_per1, RX_per2, RX_weighted };
+enum RXSortMode { RX_first, RX_last, RX_days, RX_ahi, RX_mode, RX_min, RX_max, RX_ps, RX_pshi, RX_maxipap, RX_per1, RX_per2, RX_weighted };
 RXSortMode RXsort=RX_first;
 bool RXorder=false;
 
@@ -159,7 +161,8 @@ bool operator<(const RXChange & c1, const RXChange & c2) {
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
         case RX_ps:   return comp1->ps < comp2->ps;
-        case RX_maxhi: return comp1->maxhi < comp2->maxhi;
+        case RX_pshi:  return comp1->pshi < comp2->pshi;
+        case RX_maxipap: return comp1->maxipap < comp2->maxipap;
         case RX_per1:  return comp1->per1 < comp2->per1;
         case RX_per2:  return comp1->per2 < comp2->per2;
         case RX_weighted:  return comp1->weighted < comp2->weighted;
@@ -174,7 +177,8 @@ bool operator<(const RXChange & c1, const RXChange & c2) {
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
         case RX_ps:   return comp1->ps > comp2->ps;
-        case RX_maxhi: return comp1->maxhi > comp2->maxhi;
+        case RX_pshi:  return comp1->pshi > comp2->pshi;
+        case RX_maxipap: return comp1->maxipap > comp2->maxipap;
         case RX_per1:  return comp1->per1 > comp2->per1;
         case RX_per2:  return comp1->per2 > comp2->per2;
         case RX_weighted:  return comp1->weighted > comp2->weighted;
@@ -194,7 +198,8 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_min:  return comp1->min < comp2->min;
         case RX_max:  return comp1->max < comp2->max;
         case RX_ps:   return comp1->ps < comp2->ps;
-        case RX_maxhi: return comp1->maxhi < comp2->maxhi;
+        case RX_pshi:  return comp1->pshi < comp2->pshi;
+        case RX_maxipap: return comp1->maxipap < comp2->maxipap;
         case RX_per1:  return comp1->per1 < comp2->per1;
         case RX_per2:  return comp1->per2 < comp2->per2;
         case RX_weighted:  return comp1->weighted < comp2->weighted;
@@ -208,8 +213,9 @@ bool RXSort(const RXChange * comp1, const RXChange * comp2) {
         case RX_mode: return comp1->mode > comp2->mode;
         case RX_min:  return comp1->min > comp2->min;
         case RX_max:  return comp1->max > comp2->max;
-        case RX_ps:  return comp1->ps > comp2->ps;
-        case RX_maxhi: return comp1->maxhi > comp2->maxhi;
+        case RX_ps:   return comp1->ps > comp2->ps;
+        case RX_pshi:  return comp1->pshi > comp2->pshi;
+        case RX_maxipap: return comp1->maxipap > comp2->maxipap;
         case RX_per1:  return comp1->per1 > comp2->per1;
         case RX_per2:  return comp1->per2 > comp2->per2;
         case RX_weighted:  return comp1->weighted > comp2->weighted;
@@ -515,7 +521,7 @@ QString Summary::GenerateHTML()
     if (cpapdays>0) {
         QDate first,last=lastcpap;
         CPAPMode mode=MODE_UNKNOWN,cmode=MODE_UNKNOWN;
-        EventDataType cmin=0,cmax=0, cps=0, cmaxhi=0, min=0,max=0,maxhi=0,ps=0;
+        EventDataType cmin=0,cmax=0, cps=0, cpshi=0, cmaxipap=0, min=0,max=0,maxipap=0,ps=0,pshi=0;
         Machine *mach=NULL,*lastmach=NULL;
         PRTypes lastpr=PR_UNKNOWN, prelief=PR_UNKNOWN;
         short prelset=0, lastprelset=-1;
@@ -546,21 +552,41 @@ QString Summary::GenerateHTML()
                 prelset=round(day->settings_wavg(CPAP_PresReliefSet));
                 mode=(CPAPMode)(int)round(day->settings_wavg(CPAP_Mode));
                 mach=day->machine;
-                if (mode>=MODE_ASV) {
-                    min=day->settings_min(CPAP_EPAP);
-                    max=day->settings_max(CPAP_IPAPLo);
-                    maxhi=day->settings_max(CPAP_IPAPHi);
-                } else if (mode>=MODE_BIPAP) {
-                    min=day->settings_min(CPAP_EPAP);
-                    max=day->settings_max(CPAP_IPAP);
-                    ps=day->settings_max(CPAP_PS);
-                } else if (mode>=MODE_APAP) {
+
+                min=max=ps=pshi=maxipap=0;
+
+                if (mode==MODE_CPAP) {
+                    min=day->settings_min(CPAP_Pressure);
+                } else if (mode<MODE_BIPAP) {
                     min=day->settings_min(CPAP_PressureMin);
                     max=day->settings_max(CPAP_PressureMax);
                 } else {
-                    min=day->settings_min(CPAP_Pressure);
+                    // BIPAP or ASV machines
+                    // min & max hold EPAP
+                    if (day->settingExists(CPAP_EPAPLo)) {
+                        min=day->settings_min(CPAP_EPAPLo);
+                    } else if (day->settingExists(CPAP_EPAP)) {
+                        max=min=day->settings_min(CPAP_EPAP);
+                    }
+                    if (day->settingExists(CPAP_EPAPHi)) {
+                        max=day->settings_min(CPAP_EPAPHi);
+                    }
+
+                    if (day->settingExists(CPAP_PSMin)) {
+                        ps=day->settings_min(CPAP_PSMin);
+                    } else if (day->settingExists(CPAP_PS)) {
+                        pshi=ps=day->settings_min(CPAP_PS);
+                    }
+                    if (day->settingExists(CPAP_PSMax)) {
+                        pshi=day->settings_max(CPAP_PSMax);
+                    }
+                    if (day->settingExists(CPAP_IPAPHi)) {
+                        maxipap=day->settings_max(CPAP_IPAPHi);
+                    }
+
                 }
-                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (ps!=cps) || (mach!=lastmach) || (prelset!=lastprelset))  {
+
+                if ((mode!=cmode) || (min!=cmin) || (max!=cmax) || (ps!=cps) || (pshi!=cpshi) || (maxipap!=cmaxipap) || (mach!=lastmach) || (prelset!=lastprelset))  {
                     if ((cmode!=MODE_UNKNOWN) && (lastmach!=NULL)) {
                         first=date.addDays(1);
                         int days=PROFILE.countDays(MT_CPAP,first,last);
@@ -573,8 +599,9 @@ QString Summary::GenerateHTML()
                         rx.mode=cmode;
                         rx.min=cmin;
                         rx.max=cmax;
-                        rx.ps=ps;
-                        rx.maxhi=cmaxhi;
+                        rx.ps=cps;
+                        rx.pshi=cpshi;
+                        rx.maxipap=cmaxipap;
                         rx.prelief=lastpr;
                         rx.prelset=lastprelset;
                         rx.machine=lastmach;
@@ -596,7 +623,8 @@ QString Summary::GenerateHTML()
                     cmin=min;
                     cmax=max;
                     cps=ps;
-                    cmaxhi=maxhi;
+                    cpshi=pshi;
+                    cmaxipap=maxipap;
                     lastpr=prelief;
                     lastprelset=prelset;
                     last=date;
@@ -626,7 +654,8 @@ QString Summary::GenerateHTML()
             rx.min=min;
             rx.max=max;
             rx.ps=ps;
-            rx.maxhi=maxhi;
+            rx.pshi=pshi;
+            rx.maxipap=maxipap;
             rx.prelief=prelief;
             rx.prelset=prelset;
             rx.machine=mach;
@@ -709,6 +738,7 @@ QString Summary::GenerateHTML()
             tmpRX[ls]->highlight=1; //best
             CPAPMode mode=(CPAPMode)(int)PROFILE.calcSettingsMax(CPAP_Mode,MT_CPAP,tmpRX[ls]->first,tmpRX[ls]->last);
 
+
             if (mode<MODE_APAP) { // is CPAP?
                 minstr=STR_TR_Pressure;
                 maxstr="";
@@ -717,7 +747,9 @@ QString Summary::GenerateHTML()
                 minstr=STR_TR_Min;
                 maxstr=STR_TR_Max;
                 modestr=STR_TR_APAP;
-            } else if (mode<MODE_ASV) { // BIPAP
+            } else {
+
+                if (mode<MODE_ASV) { // BIPAP
                 minstr=STR_TR_EPAP;
                 maxstr=STR_TR_IPAP;
                 modestr=STR_TR_BiLevel;
@@ -727,6 +759,7 @@ QString Summary::GenerateHTML()
                 maxhistr=STR_TR_IPAPHi;
                 modestr=STR_TR_STASV;
 
+            }
             }
 
             recbox+=QString("<tr><td colspan=2><table width=100% border=0 cellpadding=1 cellspacing=0><tr><td colspan=2 align=center><b>%3</b></td></tr>")
@@ -740,7 +773,7 @@ QString Summary::GenerateHTML()
             recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(STR_TR_Mode).arg(modestr);
             recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(minstr).arg(tmpRX[ls]->min,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxstr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxstr).arg(tmpRX[ls]->max,0,'f',1).arg(STR_UNIT_CMH2O);
-            if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[ls]->maxhi,0,'f',1).arg(STR_UNIT_CMH2O);
+            if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[ls]->maxipap,0,'f',1).arg(STR_UNIT_CMH2O);
             recbox+="</table></td></tr>";
 
             recbox+=QString("<tr><td colspan=2>&nbsp;</td></tr>");
@@ -776,7 +809,7 @@ QString Summary::GenerateHTML()
             recbox+=QString("<tr><td>%1</td><td align=right>%2</td></tr>").arg(STR_TR_Mode).arg(modestr);
             recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(minstr).arg(tmpRX[0]->min,0,'f',1).arg(STR_UNIT_CMH2O);
             if (!maxstr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxstr).arg(tmpRX[0]->max,0,'f',1).arg(STR_UNIT_CMH2O);
-            if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[0]->maxhi,0,'f',1).arg(STR_UNIT_CMH2O);
+            if (!maxhistr.isEmpty()) recbox+=QString("<tr><td>%1</td><td align=right>%2%3</td></tr>").arg(maxhistr).arg(tmpRX[0]->maxipap,0,'f',1).arg(STR_UNIT_CMH2O);
             recbox+="</table></td></tr>";
 
         }
@@ -792,30 +825,17 @@ QString Summary::GenerateHTML()
         html+=QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
         QString extratxt;
 
-        if (cpapmode>=MODE_ASV) {
-            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td>")
-                .arg(STR_TR_EPAP).arg(STR_TR_IPAPLo).arg(STR_TR_IPAPHi).arg(tr("PS Min")).arg(tr("PS Max"));
-        } else if (cpapmode>=MODE_BIPAP) {
-            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td>")
-                .arg(STR_TR_EPAP).arg(STR_TR_IPAP).arg(STR_TR_PS);
-        } else if (cpapmode>MODE_CPAP) {
-            extratxt=QString("<td><b>%1</b></td><td><b>%2</b></td>")
-                .arg(tr("Min Pres.")).arg(tr("Max Pres."));
-        } else {
-            extratxt=QString("<td><b>%1</b></td>")
-                .arg(STR_TR_Pressure);
-        }
         QString tooltip;
-        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</td><td><b>%8</td>%9</tr>")
+        html+=QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</b></td><td><b>%7</b></td><td><b>%8</b></td><td><b>%9</b></td></tr>")
                   .arg(STR_TR_First)
                   .arg(STR_TR_Last)
                   .arg(tr("Days"))
                   .arg(ahitxt)
-          .arg(tr("FL"))
+                  .arg(tr("FL"))
                   .arg(STR_TR_Machine)
-                  .arg(STR_TR_Mode)
                   .arg(tr("Pr. Rel."))
-                  .arg(extratxt);
+                  .arg(STR_TR_Mode)
+                  .arg("Pressure Settings");
 
         for (int i=0;i<rxchange.size();i++) {
             RXChange rx=rxchange.at(i);
@@ -840,34 +860,56 @@ QString Summary::GenerateHTML()
             }
 
             mode=rx.mode;
-            if(mode>=MODE_ASV) {
-                extratxt=QString("<td>%1</td><td>%2</td><td>%3</td><td>%4</td>")
-                        .arg(rx.max,0,'f',decimals).arg(rx.maxhi,0,'f',decimals).arg(rx.max-rx.min,0,'f',decimals).arg(rx.maxhi-rx.min,0,'f',decimals);
-
-                tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_EPAP+
-                        QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals).arg(percentile*100.0)+
-                        STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
-            } else if (mode>=MODE_BIPAP) {
-                extratxt=QString("<td>%1</td><td>%2</td>")
-                       .arg(rx.max,0,'f',decimals).arg(rx.ps,0,'f',decimals);
+            extratxt="<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
+//            tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_EPAP+
+//                    QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals).arg(percentile*100.0)+
+//                    STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
+            if(mode>=MODE_BIPAP) {
+                if (rx.min>0) {
+                    extratxt+=QString("<td>EPAP %1")
+                           .arg(rx.min,4,'f',1);
+                }
+                if ((rx.max>0) && (rx.min!=rx.max)) {
+                    extratxt+=QString(" - %2")
+                            .arg(rx.max,4,'f',1);
+                }
+                extratxt+="</td><td>";
+                if (rx.ps>0) {
+                    extratxt+=QString("<td>PS %1")
+                           .arg(rx.ps,4,'f',1);
+                }
+                if ((rx.pshi>0) && (rx.ps!=rx.pshi)) {
+                    extratxt+=QString(" - %2")
+                            .arg(rx.pshi,4,'f',1);
+                }
+                extratxt+="</td>";
+                if (rx.maxipap>0) {
+                     extratxt+=QString("<td>IPAP %1</td>")
+                          .arg(rx.maxipap,4,'f',1);
+                }
                 tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+
                         STR_TR_EPAP+
                         QString("=%1<br/>%2% ").arg(rx.per1,0,'f',decimals)
                         .arg(percentile*100.0)
                         +STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             } else if (mode>MODE_CPAP) {
-                extratxt=QString("<td>%1</td>").arg(rx.max,0,'f',decimals);
+                extratxt+=QString("<td align=left>APAP %1 - %2</td><td align=left></td>")
+                        .arg(rx.min,4,'f',1)
+                        .arg(rx.max,4,'f',1)
+                        .arg(STR_UNIT_CMH2O);
                 tooltip=QString("%1 %2% ").arg(machstr).arg(percentile*100.0)+STR_TR_Pressure+
                         QString("=%2").arg(rx.per1,0,'f',decimals);
             } else {
+
                 if (cpapmode>MODE_CPAP) {
-                    extratxt="<td>&nbsp;</td>";
+                    extratxt+=QString("<td colspan=2>CPAP %1</td>").arg(rx.min,4,'f',1).arg(STR_UNIT_CMH2O);
                     tooltip=QString("%1").arg(machstr);
                 } else {
-                    extratxt="";
+                    extratxt+="";
                     tooltip="";
                 }
             }
+            extratxt+="</tr></table>";
             QString presrel;
             if (rx.prelset>0) {
                 presrel=schema::channel[CPAP_PresReliefType].option(int(rx.prelief));
@@ -878,18 +920,17 @@ QString Summary::GenerateHTML()
                 tooltipshow=QString("tooltip.show(\"%1\");").arg(tooltip);
                 tooltiphide="tooltip.hide();";
             }
-            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#eeeeee\"); %13' onmouseout='ChangeColor(this, \""+color+"\"); %14' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td><td>%11</td>%12</tr>")
+            html+=QString("<tr bgcolor='"+color+"' onmouseover='ChangeColor(this, \"#eeeeee\"); %12' onmouseout='ChangeColor(this, \""+color+"\"); %13' onclick='alert(\"overview=%1,%2\");'><td>%3</td><td>%4</td><td>%5</td><td>%6</td><td>%7</td><td>%8</td><td>%9</td><td>%10</td><td>%11</td></tr>")
                     .arg(rx.first.toString(Qt::ISODate))
                     .arg(rx.last.toString(Qt::ISODate))
                     .arg(rx.first.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.last.toString(Qt::SystemLocaleShortDate))
                     .arg(rx.days)
                     .arg(rx.ahi,0,'f',decimals)
-            .arg(rx.fl,0,'f',decimals)
+                    .arg(rx.fl,0,'f',decimals) // Not the best way to do this.. Todo: Add an extra field for data..
                     .arg(rx.machine->GetClass())
-                    .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(presrel)
-                    .arg(rx.min,0,'f',decimals)
+                    .arg(schema::channel[CPAP_Mode].option(int(rx.mode)-1))
                     .arg(extratxt)
                     .arg(tooltipshow)
                     .arg(tooltiphide);

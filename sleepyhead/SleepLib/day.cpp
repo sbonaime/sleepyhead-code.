@@ -72,15 +72,20 @@ EventDataType Day::settings_max(ChannelID code)
 {
     EventDataType val=0,tmp;
 
+    bool fir=true;
     QList<Session *>::iterator s;
     for (s=sessions.begin();s!=sessions.end();s++) {
-        if (!(*s)->enabled()) continue;
+        if (!(*s)->enabled())
+            continue;
 
         Session & sess=*(*s);
         QHash<ChannelID,QVariant>::iterator i=sess.settings.find(code);
         if (i!=sess.settings.end()) {
             tmp=i.value().toDouble();
-            if (tmp>val) val=tmp;
+            if (fir) {
+                val=tmp;
+                fir=false;
+            } else if (tmp>val) val=tmp;
         }
     }
     return val;

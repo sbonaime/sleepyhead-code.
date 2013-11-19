@@ -84,14 +84,15 @@ enum MCDataType
 
 
 extern ChannelID NoChannel,SESSION_ENABLED;
-extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_Pressure, CPAP_PS, CPAP_Mode, CPAP_AHI,
+extern ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_Pressure, CPAP_PS, CPAP_PSMin, CPAP_PSMax,
+CPAP_Mode, CPAP_AHI,
 CPAP_PressureMin, CPAP_PressureMax, CPAP_RampTime, CPAP_RampPressure, CPAP_Obstructive, CPAP_Hypopnea,
 CPAP_ClearAirway, CPAP_Apnea, CPAP_CSR, CPAP_LeakFlag, CPAP_ExP, CPAP_NRI, CPAP_VSnore, CPAP_VSnore2,
 CPAP_RERA, CPAP_PressurePulse, CPAP_FlowLimit, CPAP_FlowRate, CPAP_MaskPressure, CPAP_MaskPressureHi,
 CPAP_RespEvent, CPAP_Snore, CPAP_MinuteVent, CPAP_RespRate, CPAP_TidalVolume, CPAP_PTB, CPAP_Leak,
 CPAP_LeakMedian, CPAP_LeakTotal, CPAP_MaxLeak, CPAP_FLG, CPAP_IE, CPAP_Te, CPAP_Ti, CPAP_TgMV,
 CPAP_UserFlag1, CPAP_UserFlag2, CPAP_UserFlag3, CPAP_BrokenSummary, CPAP_BrokenWaveform, CPAP_RDI,
-CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_PSMin, CPAP_PSMax, CPAP_Test1, CPAP_Test2;
+CPAP_PresReliefSet, CPAP_PresReliefMode, CPAP_PresReliefType, CPAP_Test1, CPAP_Test2;
 
 extern ChannelID RMS9_E01, RMS9_E02, RMS9_EPR, RMS9_EPRSet, RMS9_SetPressure;
 extern ChannelID INTP_SmartFlex;
