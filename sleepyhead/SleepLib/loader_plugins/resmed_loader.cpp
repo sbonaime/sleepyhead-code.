@@ -2106,7 +2106,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 //            es.digital_maximum*=1000.0;
 //            es.digital_minimum*=1000.0;
             ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk"))) {
+        } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk")) || (es.label.startsWith("Läck"))) {
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_maximum*=60;
@@ -2320,6 +2320,7 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_Leak].push_back("Leak");
     resmed_codes[CPAP_Leak].push_back("Leck.");
+    resmed_codes[CPAP_Leak].push_back("Läcka");
 
     resmed_codes[CPAP_RespRate].push_back("RR");
     resmed_codes[CPAP_RespRate].push_back("AF");
@@ -2341,7 +2342,7 @@ void ResInitModelMap()
 
     // Sad (oximetry)
     resmed_codes[OXI_Pulse].push_back("Pulse");
-    resmed_codes[OXI_Pulse].push_back("Puls");                  // German
+    resmed_codes[OXI_Pulse].push_back("Puls");                  // German & Swedish
     resmed_codes[OXI_Pulse].push_back("Pols");                  // Dutch
     resmed_codes[OXI_SPO2].push_back("SpO2");
 
@@ -2353,11 +2354,13 @@ void ResInitModelMap()
 
     resmed_codes[CPAP_Mode].push_back("Mode");
     resmed_codes[CPAP_Mode].push_back("Modus"); // Dutch & German
+    resmed_codes[CPAP_Mode].push_back("Funktion"); // Swedish 
 
     resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");    // German
     resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");   // Dutch
     resmed_codes[RMS9_SetPressure].push_back("Set Pressure");      // English - Prescription
     resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");   // French
+    resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");    // Swedish
 
     resmed_codes[RMS9_EPR].push_back("EPR");
 
@@ -2365,16 +2368,19 @@ void ResInitModelMap()
     resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");             // French
     resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");            // Dutch
     resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");            // German
+    resmed_codes[RMS9_EPRSet].push_back("EPR-nivå");              // Swedish
 
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");       // German
     resmed_codes[CPAP_PressureMax].push_back("Max druk");         // Dutch
     resmed_codes[CPAP_PressureMax].push_back("Pression max.");    // French
+    resmed_codes[CPAP_PressureMax].push_back("Max tryck");        // Swedish
 
     resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
     resmed_codes[CPAP_PressureMin].push_back("Min. Druck");       // German
     resmed_codes[CPAP_PressureMin].push_back("Min druk");         // Dutch
     resmed_codes[CPAP_PressureMin].push_back("Pression min.");    // French
+    resmed_codes[CPAP_PressureMin].push_back("Min tryck");        // Swedish
 
     // STR.edf
 }
