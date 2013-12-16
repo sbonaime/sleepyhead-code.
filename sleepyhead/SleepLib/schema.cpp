@@ -305,7 +305,7 @@ void init()
     ZEO_TimeToZ=schema::channel["TimeToZ"].id();
 }
 
-Channel::Channel(int id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit, DataType datatype, QColor color, int link):
+Channel::Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit, DataType datatype, QColor color, int link):
     m_id(id),
     m_type(type),
     m_scope(scope),

@@ -53,7 +53,7 @@ class Channel
 {
 public:
     Channel() { m_id=0; }
-    Channel(int id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit,DataType datatype=DEFAULT, QColor=Qt::black, int link=0);
+    Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit,DataType datatype=DEFAULT, QColor=Qt::black, int link=0);
     void addColor(Function f, QColor color) { m_colors[f]=color; }
     void addOption(int i, QString option) { m_options[i]=option; }
 
