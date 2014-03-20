@@ -68,7 +68,7 @@ void SummaryChart::SetDay(Day * nullday)
         m_type.clear();
         m_typeval.clear();
 
-        float perc=PROFILE.general->prefCalcPercentile();
+        float perc=PROFILE.general->prefCalcPercentile()/100.0;
         int mididx=PROFILE.general->prefCalcMiddle();
         SummaryType mid;
         if (mididx==0) mid=ST_PERC;
