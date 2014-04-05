@@ -186,8 +186,9 @@ int main(int argc, char *argv[])
     lang_layout.addWidget(&lang_combo,1);
     lang_layout.addWidget(&lang_okbtn);
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QString transdir=QDir::cleanPath(QCoreApplication::applicationDirPath()+"/../Resources/Translations/");
+
 #else
     const QString transdir=QCoreApplication::applicationDirPath()+"/Translations/";
 #endif
@@ -236,7 +237,11 @@ int main(int argc, char *argv[])
     qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
     QTranslator translator;
 
-    translator.load(langfile,transdir);
+    if (!translator.load(langfile,transdir)) {
+        qDebug() << "Could not load translation" << langfile << "reverting to english :(";
+
+    }
+
 
     a.installTranslator(&translator);
     initializeStrings(); // Important, call this AFTER translator is installed.

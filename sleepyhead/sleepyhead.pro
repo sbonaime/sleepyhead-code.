@@ -219,8 +219,8 @@ win32 {
 }
 
 mac {
-    TransFiles.files = $$files(../Translations/*.qm)
-    TransFiles.path = Contents/Resources/Translations
+    TransFiles.files = $$files($$PWD/../Translations/*.qm)
+    TransFiles.path = ./Contents/Resources/Translations
     QMAKE_BUNDLE_DATA += TransFiles
 }
 

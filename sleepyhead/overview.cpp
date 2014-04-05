@@ -96,6 +96,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     else
         AHI=createGraph(STR_TR_AHI,tr("Apnea\nHypopnea\nIndex"));
 
+
     UC=createGraph(tr("Usage"),tr("Usage\n(hours)"));
 
     FL=createGraph(STR_TR_FlowLimit,STR_TR_FlowLimit);
@@ -275,6 +276,9 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SES->setRecMinY(1);
     SET->setRecMinY(0);
     //SET->setRecMaxY(5);
+
+    AHI->setPinned(true);
+
 
 }
 Overview::~Overview()

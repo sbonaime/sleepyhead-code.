@@ -3570,9 +3570,8 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
 
             for (int i=m_graph_index-1;i>=0;i--) {
                 if (m_graphs[i]->isPinned()!=m_graphs[m_graph_index]->isPinned()) {
-                    m_graph_dragging=false;
                     // fix cursor
-                    break;
+                    continue;
                 }
                 empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 // swapping upwards.
@@ -3597,9 +3596,9 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             //qDebug() << "Graph Reorder" << m_graph_index;
             for (int i=m_graph_index+1;i<m_graphs.size();i++) {
                 if (m_graphs[i]->isPinned()!=m_graphs[m_graph_index]->isPinned()) {
-                    m_graph_dragging=false;
+                    //m_graph_dragging=false;
                     // fix cursor
-                    break;
+                    continue;
                 }
                 empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 p=m_graphs[m_graph_index];
