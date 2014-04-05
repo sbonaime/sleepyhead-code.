@@ -1145,6 +1145,7 @@ gGraph::gGraph(gGraphView *graphview,QString title,QString units, int height,sho
     m_marginleft=0;
     m_marginright=15;
     m_selecting_area=m_blockzoom=false;
+    m_pinned=false;
     m_lastx23=0;
 
     invalidate_yAxisImage=true;
@@ -3108,14 +3109,97 @@ bool gGraphView::renderGraphs()
     } else threaded=false; */
     //#endif
     //threaded=false;
+
+
+    lines_drawn_this_frame=0;
+    quads_drawn_this_frame=0;
+
+    // Calculate the height of pinned graphs
+
+    float pinned_height=0; // pixel height total
+    int pinned_graphs=0; // count
+
     for (int i=0;i<m_graphs.size();i++) {
         if (m_graphs[i]->isEmpty()) continue;
         if (!m_graphs[i]->visible()) continue;
+        if (!m_graphs[i]->isPinned()) continue;
+        h=m_graphs[i]->height() * m_scaleY;
+        pinned_height+=h+graphSpacer;
+        pinned_graphs++;
+    }
+
+    py+=pinned_height; // start drawing at the end of pinned space
+
+    // Draw non pinned graphs
+    for (int i=0;i<m_graphs.size();i++) {
+        if (m_graphs[i]->isEmpty()) continue;
+        if (!m_graphs[i]->visible()) continue;
+        if (m_graphs[i]->isPinned()) continue;
         numgraphs++;
         h=m_graphs[i]->height() * m_scaleY;
 
         // set clipping?
 
+        if (py > height())
+            break; // we are done.. can't draw anymore
+
+        if ((py + h + graphSpacer) >= 0) {
+            w=width();
+            int tw=(m_graphs[i]->showTitle() ? titleWidth : 0);
+
+            queGraph(m_graphs[i],px+tw,py,width()-tw,h);
+
+            if (m_showsplitter) {
+                // draw the splitter handle
+                QColor ca=QColor(128,128,128,255);
+                backlines->add(0, py+h, w, py+h, ca.rgba());
+                ca=QColor(192,192,192,255);
+                backlines->add(0, py+h+1, w, py+h+1, ca.rgba());
+                ca=QColor(90,90,90,255);
+                backlines->add(0, py+h+2, w, py+h+2, ca.rgba());
+            }
+
+        }
+        py=ceil(py+h+graphSpacer);
+    }
+
+    // Physically draw the unpinned graphs
+    int s=m_drawlist.size();
+    for (int i=0;i<s;i++) {
+        gGraph *g=m_drawlist.at(0);
+        m_drawlist.pop_front();
+        g->paint(g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+    }
+    backlines->draw();
+    for (int i=0;i<m_graphs.size();i++) {
+        m_graphs[i]->drawGLBuf();
+    }
+    quads->draw();
+    lines->draw();
+    DrawTextQue();
+
+    py=0; // start drawing at top...
+
+ //   glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_QUADS);
+    glColor4f(1.0,1.0,1.0,1.0); // Gradient start
+    glVertex2f(0, pinned_height);
+    glVertex2f(0, 0);
+    glColor4f(0.7,0.7,1.0,1.0); // Gradient End
+    glVertex2f(width(), 0);
+    glVertex2f(width(), pinned_height);
+    glEnd();
+   // glDisable(GL_BLEND);
+
+
+    // Draw Pinned graphs
+    for (int i=0;i<m_graphs.size();i++) {
+        if (m_graphs[i]->isEmpty()) continue;
+        if (!m_graphs[i]->visible()) continue;
+        if (!m_graphs[i]->isPinned()) continue;
+        h=m_graphs[i]->height() * m_scaleY;
+        numgraphs++;
         if (py > height())
             break; // we are done.. can't draw anymore
 
@@ -3153,7 +3237,7 @@ bool gGraphView::renderGraphs()
 
     } else { // just do it here
 #endif
-        int s=m_drawlist.size();
+        s=m_drawlist.size();
         for (int i=0;i<s;i++) {
             gGraph *g=m_drawlist.at(0);
             m_drawlist.pop_front();
@@ -3165,8 +3249,6 @@ bool gGraphView::renderGraphs()
     //int elapsed=time.elapsed();
     //QColor col=Qt::black;
 
-    lines_drawn_this_frame=0;
-    quads_drawn_this_frame=0;
 
     backlines->draw();
     for (int i=0;i<m_graphs.size();i++) {
@@ -3174,7 +3256,9 @@ bool gGraphView::renderGraphs()
     }
     quads->draw();
     lines->draw();
-//    lines->setSize(linesize);
+
+
+    //    lines->setSize(linesize);
 
  //   DrawTextQue();
     //glDisable(GL_TEXTURE_2D);
@@ -3480,6 +3564,11 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
         if (y < yy) {
 
             for (int i=m_graph_index-1;i>=0;i--) {
+                if (m_graphs[i]->isPinned()!=m_graphs[m_graph_index]->isPinned()) {
+                    m_graph_dragging=false;
+                    // fix cursor
+                    break;
+                }
                 empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 // swapping upwards.
                 int yy2=yy-graphSpacer-m_graphs[i]->height()*m_scaleY;
@@ -3502,6 +3591,11 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             // swapping downwards
             //qDebug() << "Graph Reorder" << m_graph_index;
             for (int i=m_graph_index+1;i<m_graphs.size();i++) {
+                if (m_graphs[i]->isPinned()!=m_graphs[m_graph_index]->isPinned()) {
+                    m_graph_dragging=false;
+                    // fix cursor
+                    break;
+                }
                 empty=m_graphs[i]->isEmpty() || (!m_graphs[i]->visible());
                 p=m_graphs[m_graph_index];
                 m_graphs[m_graph_index]=m_graphs[i];
@@ -3517,13 +3611,60 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
         return;
     }
 
-    float py = -m_offsetY;
-    float h;
+    float py = 0, pinned_height=0, h;
+    bool done=false;
 
-    // Propagate mouseMove events to relevant graphs
+    // Do pinned graphs first
     for (int i=0; i < m_graphs.size(); i++) {
 
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible()))
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned())
+            continue;
+
+        h=m_graphs[i]->height() * m_scaleY;
+        pinned_height += h + graphSpacer;
+
+        if (py > height())
+            break; // we are done.. can't draw anymore
+
+        if (!((y >= py+m_graphs[i]->top) && (y < py + h-m_graphs[i]->bottom))) {
+            if (m_graphs[i]->isSelected()) {
+                m_graphs[i]->deselect();
+                timedRedraw(150);
+            }
+        }
+
+        // Update Mouse Cursor shape
+        if ((y >= py + h -1) && (y < (py + h + graphSpacer))) {
+            this->setCursor(Qt::SplitVCursor);
+            done=true;
+        } else if ((y >= py+1) && (y < py + h)) {
+           if (x >= titleWidth+10)
+              this->setCursor(Qt::ArrowCursor);
+           else
+              this->setCursor(Qt::OpenHandCursor);
+
+
+           m_horiz_travel+=qAbs(x-m_lastxpos)+qAbs(y-m_lastypos);
+           m_lastxpos=x;
+           m_lastypos=y;
+//           QPoint p(x,y);
+//           QMouseEvent e(event->type(),p,event->button(),event->buttons(),event->modifiers());
+           m_graphs[i]->mouseMoveEvent(event);
+
+           done=true;
+        }
+        py += h + graphSpacer;
+
+    }
+
+    py = -m_offsetY;
+    py += pinned_height;
+
+    // Propagate mouseMove events to relevant graphs
+    if (!done)
+    for (int i=0; i < m_graphs.size(); i++) {
+
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned())
             continue;
 
         h=m_graphs[i]->height() * m_scaleY;
@@ -3612,8 +3753,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent * event)
             } */
 
      //   }
-        py+=h;
-        py+=graphSpacer;
+        py += h + graphSpacer;
     }
 
 }
@@ -3623,14 +3763,76 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
     int x=event->x();
     int y=event->y();
 
-    float py=-m_offsetY;
-    float h;
+    float h,pinned_height=0,py=0;
 
+    bool done=false;
+
+    // first handle pinned graphs.
+    // Calculate total height of all pinned graphs
+    for (int i=0;i<m_graphs.size();i++) {
+        if (m_graphs[i]->isEmpty()
+            || !m_graphs[i]->visible()
+            || !m_graphs[i]->isPinned())
+            continue;
+
+        h=m_graphs[i]->height() * m_scaleY;
+        pinned_height += h+graphSpacer;
+
+        if (py>height())
+            break;
+
+        if ((py + h + graphSpacer) >= 0) {
+            if ((y >= py + h-1) && (y <= py + h + graphSpacer)) {
+                this->setCursor(Qt::SplitVCursor);
+                m_sizer_dragging=true;
+                m_sizer_index=i;
+                m_sizer_point.setX(x);
+                m_sizer_point.setY(y);
+                done=true;
+            } else if ((y >= py) && (y < py + h)) {
+                //qDebug() << "Clicked" << i;
+                if (x < titleWidth+20) {
+                    // clicked on title to drag graph..
+                    // Note: reorder has to be limited to pinned graphs.
+                    m_graph_dragging=true;
+                    m_tooltip->cancel();
+
+                    timedRedraw(50);
+                    m_graph_index=i;
+                    m_sizer_point.setX(x);
+                    m_sizer_point.setY(py); // point at top of graph..
+                    this->setCursor(Qt::ClosedHandCursor);
+                }
+
+                { // send event to graph..
+                    m_point_clicked=QPoint(event->x(),event->y());
+                    //QMouseEvent e(event->type(),m_point_clicked,event->button(),event->buttons(),event->modifiers());
+                    m_button_down=true;
+                    m_horiz_travel=0;
+                    m_graph_index=i;
+                    m_selected_graph=m_graphs[i];
+                    m_graphs[i]->mousePressEvent(event);
+                }
+                done=true;
+            }
+
+        }
+        py += h + graphSpacer;
+    }
+
+
+
+    // then handle the remainder...
+    py=-m_offsetY;
+    py+=pinned_height;
+
+    if (!done)
     for (int i=0;i<m_graphs.size();i++) {
 
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible())) continue;
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned()) continue;
 
         h=m_graphs[i]->height()*m_scaleY;
+
         if (py>height())
             break;
 
@@ -3666,9 +3868,7 @@ void gGraphView::mousePressEvent(QMouseEvent * event)
             }
 
         }
-        py+=h;
-        py+=graphSpacer;
-
+        py += h + graphSpacer;
     }
 }
 
@@ -3677,15 +3877,51 @@ void gGraphView::mouseReleaseEvent(QMouseEvent * event)
 
     int x=event->x();
     int y=event->y();
-    float py = -m_offsetY;
-    float h;
 
+    float h,py=0,pinned_height=0;
+    bool done=false;
+
+    // Handle pinned graphs first
     for (int i=0; i < m_graphs.size(); i++) {
-
-        if (m_graphs[i]->isEmpty() || (!m_graphs[i]->visible()))
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned())
             continue;
 
         h=m_graphs[i]->height() * m_scaleY;
+        pinned_height += h+graphSpacer;
+
+        if (py > height())
+            break; // we are done.. can't draw anymore
+
+        if ((y >= py + h -1) && (y < (py + h + graphSpacer))) {
+            this->setCursor(Qt::SplitVCursor);
+            done=true;
+        } else if ((y >= py+1) && (y <= py + h)) {
+
+//            if (!m_sizer_dragging && !m_graph_dragging) {
+//                m_graphs[i]->mouseReleaseEvent(event);
+//            }
+
+            if (x >= titleWidth+10)
+                this->setCursor(Qt::ArrowCursor);
+            else
+                this->setCursor(Qt::OpenHandCursor);
+            done=true;
+        }
+        py += h + graphSpacer;
+    }
+
+    // Now do the unpinned ones
+    py = -m_offsetY;
+    py += pinned_height;
+
+    if (done)
+    for (int i=0; i < m_graphs.size(); i++) {
+
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned())
+            continue;
+
+        h=m_graphs[i]->height() * m_scaleY;
+
         if (py > height())
             break; // we are done.. can't draw anymore
 
@@ -3702,7 +3938,7 @@ void gGraphView::mouseReleaseEvent(QMouseEvent * event)
             else
                 this->setCursor(Qt::OpenHandCursor);
         }
-
+        py += h + graphSpacer;
     }
 
     if (m_sizer_dragging) {
@@ -3728,17 +3964,53 @@ void gGraphView::mouseReleaseEvent(QMouseEvent * event)
 
 void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    mousePressEvent(event);
+    mousePressEvent(event); // signal missing.. a qt change might "fix" this if we are not careful.
 
     int x=event->x();
     int y=event->y();
 
-    float py=-m_offsetY;
-    float h;
+    float h,py=0,pinned_height=0;
+    bool done=false;
 
+    // Handle pinned graphs first
+    for (int i=0; i < m_graphs.size(); i++) {
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || !m_graphs[i]->isPinned())
+            continue;
+
+        h=m_graphs[i]->height() * m_scaleY;
+        pinned_height += h + graphSpacer;
+
+        if (py > height())
+            break; // we are done.. can't draw anymore
+
+        if ((py + h + graphSpacer) >= 0) {
+            if ((y >= py) && (y <= py + h)) {
+                if (x < titleWidth) {
+                    // What to do when double clicked on the graph title ??
+                    m_graphs[i]->mouseDoubleClickEvent(event);
+                } else {
+                    // send event to graph..
+                    m_graphs[i]->mouseDoubleClickEvent(event);
+                }
+                done=true;
+            } else if ((y >= py + h) && (y <= py + h + graphSpacer + 1)) {
+                // What to do when double clicked on the resize handle?
+                done=true;
+            }
+        }
+        py+=h;
+        py+=graphSpacer; // do we want the extra spacer down the bottom?
+    }
+
+
+    py=-m_offsetY;
+    py+=pinned_height;
+
+    if (!done) // then handle unpinned graphs
     for (int i=0;i<m_graphs.size();i++) {
 
-        if (m_graphs[i]->isEmpty()) continue;
+        if (m_graphs[i]->isEmpty() || !m_graphs[i]->visible() || m_graphs[i]->isPinned())
+            continue;
 
         h=m_graphs[i]->height()*m_scaleY;
         if (py>height())
@@ -4002,7 +4274,7 @@ void MyScrollBar::SendWheelEvent(QWheelEvent * e)
 }
 
 const quint32 gvmagic=0x41756728;
-const quint16 gvversion=1;
+const quint16 gvversion=2;
 
 void gGraphView::SaveSettings(QString title)
 {
@@ -4024,6 +4296,7 @@ void gGraphView::SaveSettings(QString title)
         out << m_graphs[i]->RecMinY();
         out << m_graphs[i]->RecMaxY();
         out << m_graphs[i]->zoomY();
+        out << (bool)m_graphs[i]->isPinned();
     }
 
     f.close();
@@ -4060,6 +4333,7 @@ bool gGraphView::LoadSettings(QString title)
     float hght;
     bool vis;
     EventDataType recminy,recmaxy;
+    bool pinned;
 
     short zoomy=0;
 
@@ -4075,6 +4349,9 @@ bool gGraphView::LoadSettings(QString title)
         if (gvversion>=1) {
             in >> zoomy;
         }
+        if (gvversion>=2) {
+            in >> pinned;
+        }
         gi=m_graphsbytitle.find(name);
         if (gi==m_graphsbytitle.end()) {
             qDebug() << "Graph" << name << "has been renamed or removed";
@@ -4086,6 +4363,7 @@ bool gGraphView::LoadSettings(QString title)
             g->setRecMinY(recminy);
             g->setRecMaxY(recmaxy);
             g->setZoomY(zoomy);
+            g->setPinned(pinned);
         }
     }
 

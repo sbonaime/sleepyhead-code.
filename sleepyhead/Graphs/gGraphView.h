@@ -760,6 +760,9 @@ public:
 
     const inline QRect & rect() { return m_rect; }
 
+    bool isPinned() { return m_pinned; }
+    void setPinned(bool b) { m_pinned=b; }
+
     // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
     //GLShortBuffer * stippled();
 
@@ -831,6 +834,7 @@ protected:
     bool m_enforceMinY,m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
+    bool m_pinned;
 
     short m_zoomY;
 

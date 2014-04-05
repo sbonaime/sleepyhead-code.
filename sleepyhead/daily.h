@@ -248,6 +248,11 @@ private slots:
     void on_weightSpinBox_valueChanged(double arg1);
 
     void doToggleSession(Session *);
+
+    void on_pinFlagsButton_toggled(bool checked);
+
+    void on_pinFlowButton_toggled(bool checked);
+
 protected:
 
 private:
