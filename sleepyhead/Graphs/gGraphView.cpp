@@ -3179,23 +3179,24 @@ bool gGraphView::renderGraphs()
 
     // can't draw snapshot text using this DrawTextQue function
     // TODO: Find a better solution for detecting when in snapshot mode
-    if (m_graphs.size()>1)
+    if (m_graphs.size()>1) {
         DrawTextQue();
 
+        // Draw a gradient behind pinned graphs
+        //   glEnable(GL_BLEND);
+           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           glBegin(GL_QUADS);
+           glColor4f(1.0,1.0,1.0,1.0); // Gradient start
+           glVertex2f(0, pinned_height);
+           glVertex2f(0, 0);
+           glColor4f(0.7,0.7,1.0,1.0); // Gradient End
+           glVertex2f(width(), 0);
+           glVertex2f(width(), pinned_height);
+           glEnd();
+          // glDisable(GL_BLEND);
+    }
+
     py=0; // start drawing at top...
-
- //   glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_QUADS);
-    glColor4f(1.0,1.0,1.0,1.0); // Gradient start
-    glVertex2f(0, pinned_height);
-    glVertex2f(0, 0);
-    glColor4f(0.7,0.7,1.0,1.0); // Gradient End
-    glVertex2f(width(), 0);
-    glVertex2f(width(), pinned_height);
-    glEnd();
-   // glDisable(GL_BLEND);
-
 
     // Draw Pinned graphs
     for (int i=0;i<m_graphs.size();i++) {
