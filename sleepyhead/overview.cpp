@@ -276,10 +276,6 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     SES->setRecMinY(1);
     SET->setRecMinY(0);
     //SET->setRecMaxY(5);
-
-    AHI->setPinned(true);
-
-
 }
 Overview::~Overview()
 {

@@ -6,7 +6,7 @@
 const int major_version=0;
 const int minor_version=9;
 const int revision_number=4;
-const int release_number=2;
+const int release_number=3;
 
 
 #ifdef UNSTABLE_BUILD
