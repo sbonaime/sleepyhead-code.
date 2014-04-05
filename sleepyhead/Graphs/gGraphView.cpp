@@ -3176,7 +3176,11 @@ bool gGraphView::renderGraphs()
     }
     quads->draw();
     lines->draw();
-    DrawTextQue();
+
+    // can't draw snapshot text using this DrawTextQue function
+    // TODO: Find a better solution for detecting when in snapshot mode
+    if (m_graphs.size()>1)
+        DrawTextQue();
 
     py=0; // start drawing at top...
 

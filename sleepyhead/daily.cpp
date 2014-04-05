@@ -119,7 +119,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     int default_height=PROFILE.appearance->graphHeight();
     SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
+
     SF->setPinned(true);
+    ui->pinFlagsButton->setChecked(true);
     FRW=new gGraph(GraphView,STR_TR_FlowRate, schema::channel[CPAP_FlowRate].fullname()+"\n"+schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
     //FRW->setPinned(true);
 
