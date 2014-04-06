@@ -249,10 +249,6 @@ private slots:
 
     void doToggleSession(Session *);
 
-    void on_pinFlagsButton_toggled(bool checked);
-
-    void on_pinFlowButton_toggled(bool checked);
-
 protected:
 
 private:

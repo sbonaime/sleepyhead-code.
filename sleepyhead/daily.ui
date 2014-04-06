@@ -1053,26 +1053,6 @@ QToolButton:pressed {
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pinFlagsButton">
-            <property name="text">
-             <string>Pin Flags</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pinFlowButton">
-            <property name="text">
-             <string>Pin Flow</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="sessionBarLayout">
             <property name="sizeConstraint">
              <enum>QLayout::SetMaximumSize</enum>

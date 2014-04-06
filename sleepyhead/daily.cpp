@@ -121,7 +121,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
 
     SF->setPinned(true);
-    ui->pinFlagsButton->setChecked(true);
     FRW=new gGraph(GraphView,STR_TR_FlowRate, schema::channel[CPAP_FlowRate].fullname()+"\n"+schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
     //FRW->setPinned(true);
 
@@ -364,9 +363,6 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ui->evViewLCD->display(ews);
 
     GraphView->LoadSettings("Daily");
-
-    ui->pinFlowButton->setChecked(FRW->isPinned());
-    ui->pinFlagsButton->setChecked(SF->isPinned());
 
     icon_on=new QIcon(":/icons/session-on.png");
     icon_off=new QIcon(":/icons/session-off.png");
@@ -2161,16 +2157,4 @@ void Daily::on_zoomFullyOut_clicked()
 void Daily::on_resetLayoutButton_clicked()
 {
     GraphView->resetLayout();
-}
-
-void Daily::on_pinFlagsButton_toggled(bool checked)
-{
-    SF->setPinned(checked);
-    GraphView->redraw();
-}
-
-void Daily::on_pinFlowButton_toggled(bool checked)
-{
-    FRW->setPinned(checked);
-    GraphView->redraw();
 }

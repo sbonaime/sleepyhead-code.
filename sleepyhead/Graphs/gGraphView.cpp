@@ -3991,7 +3991,11 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
             if ((y >= py) && (y <= py + h)) {
                 if (x < titleWidth) {
                     // What to do when double clicked on the graph title ??
+
                     m_graphs[i]->mouseDoubleClickEvent(event);
+                    // pin the graph??
+                    m_graphs[i]->setPinned(false);
+                    redraw();
                 } else {
                     // send event to graph..
                     m_graphs[i]->mouseDoubleClickEvent(event);
@@ -4025,6 +4029,9 @@ void gGraphView::mouseDoubleClickEvent(QMouseEvent * event)
                 if (x < titleWidth) {
                     // What to do when double clicked on the graph title ??
                     m_graphs[i]->mouseDoubleClickEvent(event);
+
+                    m_graphs[i]->setPinned(true);
+                    redraw();
                 } else {
                     // send event to graph..
                     m_graphs[i]->mouseDoubleClickEvent(event);

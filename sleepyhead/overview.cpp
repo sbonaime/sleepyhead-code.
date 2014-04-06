@@ -270,6 +270,7 @@ Overview::Overview(QWidget *parent,gGraphView * shared) :
     // <--- The code to the previous marker is crap
 
     GraphView->LoadSettings("Overview"); //no trans
+    AHI->setPinned(false);
     ui->rangeCombo->setCurrentIndex(6);
     icon_on=new QIcon(":/icons/session-on.png");
     icon_off=new QIcon(":/icons/session-off.png");
