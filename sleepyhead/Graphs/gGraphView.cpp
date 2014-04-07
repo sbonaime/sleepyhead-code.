@@ -1255,18 +1255,6 @@ void gGraph::paint(int originX, int originY, int width, int height)
 {
     m_rect=QRect(originX,originY,width,height);
 
-    /*glEnable(GL_BLEND);
-    glBegin(GL_QUADS);
-    glColor4f(1,1,1,0.4); // Gradient End
-    glVertex2i(originX,originY);
-    glVertex2i(originX+width,originY);
-    glColor4f(1,1,1.0,.7); // Gradient End
-    glVertex2i(originX+width,originY+height);
-    glVertex2i(originX,originY+height);
-    glEnd();
-    glDisable(GL_BLEND);
-    */
-
     int fw,font_height;
     GetTextExtent("Wg@",fw,font_height);
     if (m_margintop>0) m_margintop=font_height+(8*printScaleY());
@@ -1359,6 +1347,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
         if (ll->position()==LayerBottom) bottom+=tmp;
     }
 
+
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
         if (!ll->visible()) continue;
@@ -1381,6 +1370,7 @@ void gGraph::paint(int originX, int originY, int width, int height)
         }
     }
 
+
     bottom=marginBottom(); top=marginTop();
     for (int i=0;i<m_layers.size();i++) {
         Layer *ll=m_layers[i];
@@ -1396,6 +1386,19 @@ void gGraph::paint(int originX, int originY, int width, int height)
             ll->m_rect=QRect(originX+left,originY+height-bottom,width-left-right,tmp);
             ll->paint(*this,originX+left,originY+height-bottom,width-left-right,tmp);
         }
+    }
+
+    if (isPinned()) {
+        // Fill the background on pinned graphs
+
+//        m_graphview->quads->add(originX+left,originY+top, originX+width-right,originY+top, originX+width-right,originY+height-bottom, originX+left,originY+height-bottom, 0xffffffff);
+        glBegin(GL_QUADS);
+        glColor4f(1.0, 1.0, 1.0, 1.0); // Gradient End
+        glVertex2i(originX+left,originY+top);
+        glVertex2i(originX+width-right,originY+top);
+        glVertex2i(originX+width-right,originY+height-bottom);
+        glVertex2i(originX+left,originY+height-bottom);
+        glEnd();
     }
 
     for (int i=0;i<m_layers.size();i++) {
@@ -3078,18 +3081,6 @@ void gGraphView::renderSomethingFun(float alpha)
 
 bool gGraphView::renderGraphs()
 {
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glBegin(GL_QUADS);
-//    glColor4f(1.0,1.0,1.0,1.0); // Gradient start
-//    glVertex2f(0, height());
-//    glVertex2f(0, 0);
-//    glColor4f(0.9,0.9,0.9,1.0); // Gradient End
-//    glVertex2f(width(), 0);
-//    glVertex2f(width(), height());
-//    glEnd();
-//    glDisable(GL_BLEND);
-
     float px=m_offsetX;
     float py=-m_offsetY;
     int numgraphs=0;
@@ -3184,15 +3175,16 @@ bool gGraphView::renderGraphs()
 
         // Draw a gradient behind pinned graphs
         //   glEnable(GL_BLEND);
-           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+           //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
            glBegin(GL_QUADS);
-           glColor4f(1.0,1.0,1.0,1.0); // Gradient start
+           glColor4f(0.99,0.99,1.0,1.0); // Gradient start
            glVertex2f(0, pinned_height);
            glVertex2f(0, 0);
-           glColor4f(0.7,0.7,1.0,1.0); // Gradient End
+           glColor4f(0.85,0.85,1.0,1.0); // Gradient End
            glVertex2f(width(), 0);
            glVertex2f(width(), pinned_height);
            glEnd();
+
           // glDisable(GL_BLEND);
     }
 
@@ -3203,6 +3195,7 @@ bool gGraphView::renderGraphs()
         if (m_graphs[i]->isEmpty()) continue;
         if (!m_graphs[i]->visible()) continue;
         if (!m_graphs[i]->isPinned()) continue;
+
         h=m_graphs[i]->height() * m_scaleY;
         numgraphs++;
         if (py > height())
