@@ -740,9 +740,11 @@ void MainWindow::DelayedScreenshot()
     int h=height();
 
     // Scale for high resolution displays (like Retina)
+#if(QT_VERSION>=QT_VERSION_CHECK(5,0,0))
     qreal pr=devicePixelRatio();
     w/=pr;
     h/=pr;
+#endif
 
     QPixmap pixmap=QPixmap::grabWindow(this->winId(),x(),y(),w,h);
 
