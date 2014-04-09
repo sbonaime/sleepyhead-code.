@@ -123,7 +123,7 @@ public:
     qint16 Read16();
 
     //! \brief Vector containing the list of EDFSignals contained in this edf file
-    QVector<EDFSignal *> edfsignals;
+    QVector<EDFSignal> edfsignals;
 
     //! \brief An by-name indexed into the EDFSignal data
     QHash<QString,EDFSignal *> lookup;

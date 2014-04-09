@@ -71,10 +71,9 @@ EDFParser::EDFParser(QString name)
 }
 EDFParser::~EDFParser()
 {
-    QVector<EDFSignal *>::iterator s;
+    QVector<EDFSignal>::iterator s;
     for (s=edfsignals.begin();s!=edfsignals.end();s++) {
-        if ((*s)->data) delete [] (*s)->data;
-        delete *s;
+        if ((*s).data) delete [] (*s).data;
     }
     if (buffer) delete [] buffer;
 }
@@ -162,35 +161,37 @@ bool EDFParser::Parse()
 
     // this could be loaded quicker by transducer_type[signal] etc..
 
-    for (int i=0;i<num_signals;i++) {
-        EDFSignal *signal=new EDFSignal;
-        edfsignals.push_back(signal);
-        signal->data=NULL;
-        edfsignals[i]->label=Read(16);
-        lookup[edfsignals[i]->label]=signal;
+    // Initialize fixed-size signal list.
+    edfsignals.resize(num_signals);
+
+    for (int i = 0; i < num_signals; i++) {
+        EDFSignal &signal = edfsignals[i];
+        signal.data = NULL;
+        signal.label = Read(16);
+        lookup[signal.label] = &signal; // Safe: edfsignals won't move.
     }
 
-    for (int i=0;i<num_signals;i++) edfsignals[i]->transducer_type=Read(80);
+    for (int i=0;i<num_signals;i++) edfsignals[i].transducer_type=Read(80);
 
-    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_dimension=Read(8);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_minimum=Read(8).toDouble(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->physical_maximum=Read(8).toDouble(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->digital_minimum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i].physical_dimension=Read(8);
+    for (int i=0;i<num_signals;i++) edfsignals[i].physical_minimum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i].physical_maximum=Read(8).toDouble(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i].digital_minimum=Read(8).toDouble(&ok);
     for (int i=0;i<num_signals;i++) {
-        EDFSignal & e=*edfsignals[i];
+        EDFSignal &e = edfsignals[i];
         e.digital_maximum=Read(8).toDouble(&ok);
         e.gain=(e.physical_maximum-e.physical_minimum)/(e.digital_maximum-e.digital_minimum);
         e.offset=0;
     }
 
-    for (int i=0;i<num_signals;i++) edfsignals[i]->prefiltering=Read(80);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->nr=Read(8).toLong(&ok);
-    for (int i=0;i<num_signals;i++) edfsignals[i]->reserved=Read(32);
+    for (int i=0;i<num_signals;i++) edfsignals[i].prefiltering=Read(80);
+    for (int i=0;i<num_signals;i++) edfsignals[i].nr=Read(8).toLong(&ok);
+    for (int i=0;i<num_signals;i++) edfsignals[i].reserved=Read(32);
 
     // allocate the buffers
     for (int i=0;i<num_signals;i++) {
         //qDebug//cout << "Reading signal " << signals[i]->label << endl;
-        EDFSignal & sig=*edfsignals[i];
+        EDFSignal &sig = edfsignals[i];
 
         long recs=sig.nr * num_data_records;
         if (num_data_records<0)
@@ -201,7 +202,7 @@ bool EDFParser::Parse()
 
     for (int x=0;x<num_data_records;x++) {
         for (int i=0;i<num_signals;i++) {
-            EDFSignal & sig=*edfsignals[i];
+            EDFSignal &sig = edfsignals[i];
             memcpy((char *)&sig.data[sig.pos],(char *)&buffer[pos],sig.nr*2);
             sig.pos+=sig.nr;
             pos+=sig.nr*2;
@@ -501,7 +502,7 @@ int ResmedLoader::Open(QString & path,Profile *profile)
     //QDate dd2=dt2.date();
 
 //    for (int s=0;s<stredf.GetNumSignals();s++) {
-//        EDFSignal & es=*stredf.edfsignals[s];
+//        EDFSignal &es = stredf.edfsignals[s];
 //        long recs=es.nr*stredf.GetNumDataRecords();
 //        //qDebug() << "STREDF:" << es.label << recs;
 //    }
@@ -1757,9 +1758,9 @@ bool ResmedLoader::LoadEVE(Session *sess,EDFParser &edf)
     UA=sess->AddEventList(CPAP_Apnea,EVL_Event);
 
     for (int s=0;s<edf.GetNumSignals();s++) {
-        recs=edf.edfsignals[s]->nr*edf.GetNumDataRecords()*2;
+        recs=edf.edfsignals[s].nr*edf.GetNumDataRecords()*2;
 
-        data=(char *)edf.edfsignals[s]->data;
+        data=(char *)edf.edfsignals[s].data;
         pos=0;
         tt=edf.startdate;
         sess->updateFirst(tt);
@@ -1854,7 +1855,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
     sess->updateLast(edf.startdate+duration);
 
     for (int s=0;s<edf.GetNumSignals();s++) {
-        EDFSignal & es=*edf.edfsignals[s];
+        EDFSignal &es = edf.edfsignals[s];
         //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
@@ -1869,7 +1870,7 @@ bool ResmedLoader::LoadBRP(Session *sess,EDFParser &edf)
         } else if (es.label.startsWith("Resp Event")) {
             code=CPAP_RespEvent;
         } else {
-            qDebug() << "Unobserved ResMed BRP Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved ResMed BRP Signal " << es.label;
             continue;
         }
         double rate=double(duration)/double(recs);
@@ -2021,7 +2022,7 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
     sess->updateLast(edf.startdate+duration);
 
     for (int s=0;s<edf.GetNumSignals();s++) {
-        EDFSignal & es=*edf.edfsignals[s];
+        EDFSignal &es = edf.edfsignals[s];
         //qDebug() << "SAD:" << es.label << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
         long recs=es.nr*edf.GetNumDataRecords();
         ChannelID code;
@@ -2030,7 +2031,7 @@ bool ResmedLoader::LoadSAD(Session *sess,EDFParser &edf)
         } else if (es.label=="SpO2") {
             code=OXI_SPO2;
         } else {
-            qDebug() << "Unobserved ResMed SAD Signal " << edf.edfsignals[s]->label;
+            qDebug() << "Unobserved ResMed SAD Signal " << es.label;
             continue;
         }
         bool hasdata=false;
@@ -2074,7 +2075,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
     ChannelID code;
     for (int s=0;s<edf.GetNumSignals();s++) {
         a=NULL;
-        EDFSignal & es=*edf.edfsignals[s];
+        EDFSignal &es = edf.edfsignals[s];
         recs=es.nr*edf.GetNumDataRecords();
         if (recs<=0) continue;
         rate=double(duration)/double(recs);
