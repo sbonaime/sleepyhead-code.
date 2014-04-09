@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
 #ifdef Q_OS_MAC
-    ui->action_Screenshot->setVisible(false);
+   // ui->action_Screenshot->setVisible(false);
 #endif
 
     overview=NULL;
@@ -736,31 +736,26 @@ void MainWindow::on_action_Screenshot_triggered()
 }
 void MainWindow::DelayedScreenshot()
 {
-//#ifdef Q_OS_MAC
-//    CGImageRef windowImage = CGWindowListCreateImage(imageBounds, singleWindowListOptions, windowID, imageOptions);
-//    originalPixmap = new QPixmap(QPixmap::fromMacCGImageRef(windowImage));
+    int w=width();
+    int h=height();
 
+    // Scale for high resolution displays (like Retina)
+    qreal pr=devicePixelRatio();
+    w/=pr;
+    h/=pr;
 
-//    CGImageRef img = CGDisplayCreateImageForRect(displayID, *rect);
-//    CFMutableDataRef imgData = CFDataCreateMutable(0, 0);
-//    CGImageDestinationRef imgDst = CGImageDestinationCreateWithData(imgData, kUTTypeJPEG2000, 1, 0);
-//    CGImageDestinationAddImage(imgDst, img, 0);
-//    CGImageDestinationFinalize(imgDst);
-//    CFRelease(imgDst);
-//    QPixmap pixmap=QPixmap::fromMacCGImageRef(img);
-//#else
-    QPixmap pixmap = QPixmap::grabWindow(this->winId());
-//#endif
+    QPixmap pixmap=QPixmap::grabWindow(this->winId(),x(),y(),w,h);
+
     QString a=PREF.Get("{home}/Screenshots");
     QDir dir(a);
     if (!dir.exists()){
         dir.mkdir(a);
     }
 
-    a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".jpg";
+    a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".png";
+
     qDebug() << "Saving screenshot to" << a;
-    if (pixmap.save(a)) {
-        Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
+    if (!pixmap.save(a)) { Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     }
 }
 
