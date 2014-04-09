@@ -1,12 +1,16 @@
-/*
- gSegmentChart Implementation
- Copyright (c)2011 Mark Watkins <jedimark@users.sourceforge.net>
- License: GPL
-*/
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ * vim: set ts=8 sts=4 et sw=4 tw=99:
+ *
+ * gSegmentChart Implementation
+ *
+ * Copyright (c) 2011-2014 Mark Watkins <jedimark@users.sourceforge.net>
+ *
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License. See the file COPYING in the main directory of the Linux
+ * distribution for more details. */
 
 #include <cmath>
 #include "gSegmentChart.h"
-
 
 gSegmentChart::gSegmentChart(GraphSegmentType type,QColor gradient_color,QColor outline_color)
 :Layer(NoChannel),m_graph_type(type),m_gradient_color(gradient_color),m_outline_color(outline_color)

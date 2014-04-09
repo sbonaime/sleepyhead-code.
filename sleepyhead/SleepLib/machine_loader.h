@@ -1,11 +1,13 @@
-/*
-
-SleepLib MachineLoader Base Class Header
-
-Author: Mark Watkins <jedimark64@users.sourceforge.net>
-License: GPL
-
-*/
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ * vim: set ts=8 sts=4 et sw=4 tw=99:
+ *
+ * SleepLib MachineLoader Base Class Header
+ *
+ * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
+ *
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License. See the file COPYING in the main directory of the Linux
+ * distribution for more details. */
 
 #ifndef MACHINE_LOADER_H
 #define MACHINE_LOADER_H
