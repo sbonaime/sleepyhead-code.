@@ -3177,10 +3177,10 @@ bool gGraphView::renderGraphs()
         //   glEnable(GL_BLEND);
            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
            glBegin(GL_QUADS);
-           glColor4f(0.99,0.99,1.0,1.0); // Gradient start
+           glColor4f(0.85,0.85,1.0,1.0); // Gradient End
            glVertex2f(0, pinned_height);
            glVertex2f(0, 0);
-           glColor4f(0.85,0.85,1.0,1.0); // Gradient End
+           glColor4f(1.0, 1.0, 1.0, 1.0); // Gradient start
            glVertex2f(width(), 0);
            glVertex2f(width(), pinned_height);
            glEnd();

@@ -1156,7 +1156,7 @@ void Daily::Load(QDate date)
         int gr;
 
         if (qAbs(cpap->first() - oxi->first())>30000) {
-            mainwin->Notify(tr("Oximetry data exists for this day, however it's timestamps are too different, so the Graphs will not be linked."),"",3000);
+            mainwin->Notify(tr("Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked."),"",3000);
             gr=1;
         } else
             gr=0;

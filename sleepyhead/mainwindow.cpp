@@ -1460,7 +1460,7 @@ void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
-void MainWindow::on_actionHelp_Support_Sleepyhead_Development_triggered()
+void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
     QUrl url=QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Support_SleepyHead_Development");
     QDesktopServices().openUrl(url);

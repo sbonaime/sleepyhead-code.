@@ -342,7 +342,7 @@ p, li { white-space: pre-wrap; }
 ResMed machines delete high resolution data older than 7 days, 
 and graph data older than 30 days..
 
-Sleepyhead can keep a copy of this data if you ever need to reinstall. 
+SleepyHead can keep a copy of this data if you ever need to reinstall. 
 (Highly recomended, unless your short on disk space or don't care about the graph data)</string>
             </property>
             <property name="text">

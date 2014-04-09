@@ -2156,7 +2156,7 @@ border-radius: 10px;
     <addaction name="actionDebug"/>
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
-    <addaction name="actionHelp_Support_Sleepyhead_Development"/>
+    <addaction name="actionHelp_Support_SleepyHead_Development"/>
     <addaction name="action_About"/>
    </widget>
    <widget class="QMenu" name="menu_Data">
@@ -2389,9 +2389,9 @@ border-radius: 10px;
     <string>Import RemStar &amp;MSeries Data</string>
    </property>
   </action>
-  <action name="actionHelp_Support_Sleepyhead_Development">
+  <action name="actionHelp_Support_SleepyHead_Development">
    <property name="text">
-    <string>&amp;Support Sleepyhead Development</string>
+    <string>&amp;Support SleepyHead Development</string>
    </property>
   </action>
   <action name="actionSleep_Disorder_Terms_Glossary">

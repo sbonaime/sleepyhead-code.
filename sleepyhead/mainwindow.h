@@ -292,7 +292,7 @@ private slots:
 
     void on_actionSleep_Disorder_Terms_Glossary_triggered();
 
-    void on_actionHelp_Support_Sleepyhead_Development_triggered();
+    void on_actionHelp_Support_SleepyHead_Development_triggered();
 
     void aboutBoxLinkClicked(const QUrl & url);
 

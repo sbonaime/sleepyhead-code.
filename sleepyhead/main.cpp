@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
     }
 
     if (!havefolder && !force_data_dir) {
-        if (QMessageBox::question(NULL,QObject::tr("Question"),QObject::tr("No SleepyHead data folder was found.\n\nWould you like SleepyHead to use the default location for storing it's data?\n\n")+GetAppRoot(),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(NULL,QObject::tr("Question"),QObject::tr("No SleepyHead data folder was found.\n\nWould you like SleepyHead to use the default location for storing its data?\n\n")+GetAppRoot(),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
             settings.setValue("Settings/AppRoot",GetAppRoot());
             change_data_dir=false;
         }
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 
 retry_directory:
     if (change_data_dir) {
-        QString datadir=QFileDialog::getExistingDirectory(NULL,QObject::tr("Choose or create new folder for Sleepyhead data"),GetAppRoot(),QFileDialog::ShowDirsOnly);
+        QString datadir=QFileDialog::getExistingDirectory(NULL,QObject::tr("Choose or create new folder for SleepyHead data"),GetAppRoot(),QFileDialog::ShowDirsOnly);
         if (datadir.isEmpty()) {
             if (!havefolder) {
                QMessageBox::information(NULL,QObject::tr("Exiting"),QObject::tr("As you did not select a data folder, SleepyHead will exit.\n\nNext time you run, you will be asked again."));

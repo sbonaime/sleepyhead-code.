@@ -1006,6 +1006,9 @@ void zMaskProfile::load(Profile * profile)
 }
 void zMaskProfile::save()
 {
+    if (m_filename.isEmpty())
+        return;
+
     QFile f(m_filename);
     if (!f.open(QFile::WriteOnly))
         return;

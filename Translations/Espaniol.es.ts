@@ -294,7 +294,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <location filename="../sleepyhead/daily.cpp" line="1159"/>
-        <source>Oximetry data exists for this day, however it&apos;s timestamps are too different, so the Graphs will not be linked.</source>
+        <source>Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1014,7 +1014,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="2394"/>
-        <source>&amp;Support Sleepyhead Development</source>
+        <source>&amp;Support SleepyHead Development</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2149,7 +2149,7 @@ p, li { white-space: pre-wrap; }
 ResMed machines delete high resolution data older than 7 days, 
 and graph data older than 30 days..
 
-Sleepyhead can keep a copy of this data if you ever need to reinstall. 
+SleepyHead can keep a copy of this data if you ever need to reinstall. 
 (Highly recomended, unless your short on disk space or don&apos;t care about the graph data)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4011,14 +4011,14 @@ This folder currently resides at the following location:
         <location filename="../sleepyhead/main.cpp" line="269"/>
         <source>No SleepyHead data folder was found.
 
-Would you like SleepyHead to use the default location for storing it&apos;s data?
+Would you like SleepyHead to use the default location for storing its data?
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/main.cpp" line="277"/>
-        <source>Choose or create new folder for Sleepyhead data</source>
+        <source>Choose or create new folder for SleepyHead data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
