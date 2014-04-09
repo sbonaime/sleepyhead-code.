@@ -755,7 +755,10 @@ void MainWindow::DelayedScreenshot()
     a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".png";
 
     qDebug() << "Saving screenshot to" << a;
-    if (!pixmap.save(a)) { Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
+    if (!pixmap.save(a)) {
+        Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
+    } else {
+        Notify(tr("Screenshot saved to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     }
 }
 
