@@ -116,8 +116,8 @@ public:
     //! \brief Open the EDF+ file, and read it's header
     bool Open(QString name);
 
-    //! \brief Read si bytes of 8 bit data from the EDF+ data stream
-    QString Read(int si);
+    //! \brief Read n bytes of 8 bit data from the EDF+ data stream
+    QString Read(unsigned n);
 
     //! \brief Read 16 bit word of data from the EDF+ data stream
     qint16 Read16();

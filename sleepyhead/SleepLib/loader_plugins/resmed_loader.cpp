@@ -80,19 +80,21 @@ EDFParser::~EDFParser()
 }
 qint16 EDFParser::Read16()
 {
-    unsigned char *buf=(unsigned char *)buffer;
-    if (pos>=filesize) return 0;
-    qint16 res=*(qint16 *)&buf[pos];
-    //qint16 res=(buf[pos] ^128)<< 8 | buf[pos+1] ^ 128;
-    pos+=2;
+    if ((pos + sizeof(qint16)) > filesize)
+        return 0;
+
+    qint16 res = *(qint16 *)&buffer[pos];
+    pos += sizeof(qint16);
     return res;
 }
-QString EDFParser::Read(int si)
+QString EDFParser::Read(unsigned n)
 {
+    if ((pos + n) > filesize)
+        return "";
+
     QString str;
-    if (pos>=filesize) return "";
-    for (int i=0;i<si;i++) {
-        str+=buffer[pos++];
+    for (unsigned i = 0; i < n; i++) {
+        str += buffer[pos++];
     }
     return str.trimmed();
 }
