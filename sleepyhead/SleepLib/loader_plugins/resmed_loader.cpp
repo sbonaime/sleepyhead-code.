@@ -2109,7 +2109,7 @@ bool ResmedLoader::LoadPLD(Session *sess,EDFParser &edf)
 //            es.digital_maximum*=1000.0;
 //            es.digital_minimum*=1000.0;
             ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk")) || (es.label.startsWith("Läck"))) {
+        } else if ((es.label=="Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk")) || (es.label.startsWith("Läck")) || es.label.startsWith("LÃ¤ck")) {
             code=CPAP_Leak;
             es.gain*=60;
             es.physical_maximum*=60;
@@ -2364,6 +2364,7 @@ void ResInitModelMap()
     resmed_codes[RMS9_SetPressure].push_back("Set Pressure");      // English - Prescription
     resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");   // French
     resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");    // Swedish
+    resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");   // Swedish, QT5.2
 
     resmed_codes[RMS9_EPR].push_back("EPR");
 
@@ -2372,6 +2373,7 @@ void ResInitModelMap()
     resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");            // Dutch
     resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");            // German
     resmed_codes[RMS9_EPRSet].push_back("EPR-nivå");              // Swedish
+    resmed_codes[RMS9_EPRSet].push_back("EPR-nivÃ¥");             // Swedish, QT5.2
 
     resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
     resmed_codes[CPAP_PressureMax].push_back("Max. Druck");       // German
