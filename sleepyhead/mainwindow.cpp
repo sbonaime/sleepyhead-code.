@@ -93,9 +93,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle(STR_TR_SleepyHead+QString(" v%1 ("+tr("Profile")+": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
-    // Disable Screenshot on Mac Platform,as it doesn't work, and the system provides this functionality anyway.
 #ifdef Q_OS_MAC
-   // ui->action_Screenshot->setVisible(false);
+#if(QT_VERSION<QT_VERSION_CHECK(5,0,0))
+    // Disable Screenshot on Mac Platform,as it doesn't work in Qt4, and the system provides this functionality anyway.
+   ui->action_Screenshot->setEnabled(false);
+#endif
 #endif
 
     overview=NULL;
