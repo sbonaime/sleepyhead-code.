@@ -31,6 +31,9 @@ extern QFont * mediumfont;
 extern QFont * bigfont;
 extern MainWindow * mainwin;
 
+typedef QMessageBox::StandardButton StandardButton;
+typedef QMessageBox::StandardButtons StandardButtons;
+
 MaskProfile masks[]={
     {Mask_Unknown,QObject::tr("Unspecified"),{{4,25},{8,25},{12,25},{16,25},{20,25}}},
     {Mask_NasalPillows,QObject::tr("Nasal Pillows"),{{4,20},{8,29},{12,37},{16,43},{20,49}}},
@@ -781,33 +784,44 @@ void PreferencesDialog::resetGraphModel()
 
 void PreferencesDialog::on_resetGraphButton_clicked()
 {
-    if (QMessageBox::question(this,tr("Confirmation"),tr("Are you sure you want to reset your graph preferences to the defaults?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-        gGraphView *gv[3];
-        gv[0]=mainwin->getDaily()->graphView();
-        gv[1]=mainwin->getOverview()->graphView();
-        gv[2]=mainwin->getOximetry()->graphView();
-        for (int j=0;j<3;j++) {
-            if (gv[j]!=NULL) {
-                for (int i=0;i<gv[j]->size();i++) {
-                    gGraph *g=(*(gv[j]))[i];
-                    g->setRecMaxY(0);
-                    g->setRecMinY(0);
-                    g->setVisible(true);
-                }
-                gv[j]->updateScale();
-            }
-        }
-        resetGraphModel();
-        ui->graphView->update();
-    }
- }
+    QString title = tr("Confirmation");
+    QString text  = tr("Are you sure you want to reset your graph preferences to the defaults?");
+    StandardButtons buttons = QMessageBox::Yes | QMessageBox::No;
+    StandardButton  defaultButton = QMessageBox::No;
 
+    // Display confirmation dialog.
+    StandardButton choice = QMessageBox::question(this, title, text, buttons, defaultButton);
+    if (choice == QMessageBox::No)
+        return;
+
+    gGraphView *views[3];
+    views[0] = mainwin->getDaily()->graphView();
+    views[1] = mainwin->getOverview()->graphView();
+    views[2] = mainwin->getOximetry()->graphView();
+
+    // Iterate over all graph containers.
+    for (unsigned j = 0; j < 3; j++) {
+        gGraphView *view = views[j];
+        if (!view)
+            continue;
+
+        // Iterate over all contained graphs.
+        for (unsigned i = 0; i < view->size(); i++) {
+            gGraph *g = (*view)[i];
+            g->setRecMaxY(0); // FIXME: should be g->reset(), but need other patches to land.
+            g->setRecMinY(0);
+            g->setVisible(true);
+        }
+        view->updateScale();
+    }
+    resetGraphModel();
+    ui->graphView->update();
+}
 
 /*void PreferencesDialog::on_genOpWidget_itemActivated(QListWidgetItem *item)
 {
     item->setCheckState(item->checkState()==Qt::Checked ? Qt::Unchecked : Qt::Checked);
 }  */
-
 
 void PreferencesDialog::on_maskTypeCombo_activated(int index)
 {
