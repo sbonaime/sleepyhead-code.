@@ -15,31 +15,29 @@
 #include <QGLWidget>
 #include <QScrollBar>
 #include <QResizeEvent>
-#include <SleepLib/day.h>
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
 #include <QWaitCondition>
 #include <QPixmap>
-#include <Graphs/glcommon.h>
 #include <QRect>
 
+#include <Graphs/glcommon.h>
+#include <SleepLib/day.h>
 
 #define MIN(a,b) (((a)<(b)) ? (a) : (b));
 #define MAX(a,b) (((a)<(b)) ? (b) : (a));
 
 enum FlagType { FT_Bar, FT_Dot, FT_Span };
 
-//const int default_height=160;
-
 //! \brief Initialize the Graph Fonts
 void InitGraphs();
 //! \brief Destroy the Graph Fonts
 void DoneGraphs();
 
-extern QFont * defaultfont;
-extern QFont * mediumfont;
-extern QFont * bigfont;
+extern QFont *defaultfont;
+extern QFont *mediumfont;
+extern QFont *bigfont;
 
 extern QHash<QString, QImage *> images;
 
@@ -49,10 +47,10 @@ extern QHash<QString, QImage *> images;
     \param int & height
     \param QFont * font - The selected font used in the size calculations
     */
-void GetTextExtent(QString text, int & width, int & height, QFont *font=defaultfont);
+void GetTextExtent(QString text, int &width, int &height, QFont *font = defaultfont);
 
 //! \brief Return the height of the letter x for the selected font.
-int GetXHeight(QFont *font=defaultfont);
+int GetXHeight(QFont *font = defaultfont);
 
 class gGraphView;
 class gGraph;
@@ -87,43 +85,69 @@ __attribute__((packed))
 
 class gVertexBuffer
 {
-public:
-    gVertexBuffer(int max=2048,int type=GL_LINES);
-    ~gVertexBuffer();
+  public:
+    gVertexBuffer(int max = 2048, int type = GL_LINES)
+      : m_max(max), m_type(type), m_cnt(0), m_size(1),
+        m_scissor(false), m_antialias(false), m_forceantialias(false), m_stippled(false),
+        buffer(NULL),
+        s_x(0), s_y(0), s_width(0), s_height(0),
+        m_color(0),
+        m_stipple(0xffff),
+        m_blendfunc1(GL_SRC_ALPHA),
+        m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA)
+    {
+        // FIXME: Really should not allocate in constructor.
+        buffer = (gVertex *)calloc(max, sizeof(gVertex));
+    }
+
+    ~gVertexBuffer() {
+        if (buffer)
+            free(buffer);
+    }
 
     void add(GLshort x1, GLshort y1, RGBA color);
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, RGBA color);
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color);
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color, RGBA color2);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,
+             GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,
+             GLshort x3, GLshort y3, GLshort x4, GLshort y4, RGBA color, RGBA color2);
 
     void add(GLshort x1, GLshort y1);
     void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
-    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
+    void add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,
+             GLshort x3, GLshort y3, GLshort x4, GLshort y4);
 
     void unsafe_add(GLshort x1, GLshort y1);
     void unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
-    void unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, GLshort x3, GLshort y3, GLshort x4, GLshort y4);
+    void unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2,
+                    GLshort x3, GLshort y3, GLshort x4, GLshort y4);
 
     void draw();
 
-    void scissor(GLshort x, GLshort y, GLshort width, GLshort height) { s_x=x; s_y=y; s_width=width; s_height=height; m_scissor=true; }
+    void scissor(GLshort x, GLshort y, GLshort width, GLshort height) {
+        s_x = x;
+        s_y = y;
+        s_width = width;
+        s_height = height;
+        m_scissor = true;
+    }
 
-    void reset() { m_cnt=0; }
-    int Max() { return m_max; }
-    int cnt() { return m_cnt; }
-    GLuint type() { return m_type; }
-    float size() { return m_size; }
-    bool full() { return m_cnt>=m_max; }
+    int Max() const { return m_max; }
+    int cnt() const { return m_cnt; }
+    GLuint type() const { return m_type; }
+    float size() const { return m_size; }
+    bool full() const { return m_cnt >= m_max; }
 
-    void forceAntiAlias(bool b) { m_forceantialias=b; }
-    void setSize(float f) { m_size=f; }
-    void setAntiAlias(bool b) { m_antialias=b; }
-    void setStipple(GLshort stipple) { m_stipple=stipple; }
-    void setStippleOn(bool b) { m_stippled=b; }
+    void reset() { m_cnt = 0; }
+    void forceAntiAlias(bool b) { m_forceantialias = b; }
+    void setSize(float f) { m_size = f; }
+    void setAntiAlias(bool b) { m_antialias = b; }
+    void setStipple(GLshort stipple) { m_stipple = stipple; }
+    void setStippleOn(bool b) { m_stippled = b; }
+    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1 = b1; m_blendfunc2 = b2; }
     void setColor(QColor col);
-    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1=b1; m_blendfunc2=b2; }
 
-protected:
+  protected:
     //! \brief Maximum number of gVertex points contained in buffer
     int m_max;
     //! \brief Indicates type of GL vertex information (GL_LINES, GL_QUADS, etc)
@@ -139,9 +163,9 @@ protected:
     bool m_stippled;
 
     //! \brief Contains list of Vertex & Color points
-    gVertex * buffer;
+    gVertex *buffer;
     //! \brief GL Scissor parameters
-    GLshort s_x,s_y,s_width,s_height;
+    GLshort s_x, s_y, s_width, s_height;
     //! \brief Current drawing color
     GLuint m_color;
     //! \brief Stipple bitfield
@@ -157,30 +181,50 @@ protected:
     */
 class GLBuffer
 {
-public:
-    GLBuffer(int max=2048,int type=GL_LINES,bool stippled=false);
-    virtual ~GLBuffer();
-    void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) { s1=x1; s2=y1; s3=x2; s4=y2; m_scissor=true; }
+  public:
+    GLBuffer(int max = 2048, int type = GL_LINES, bool stippled = false)
+      : m_max(max), m_type(type), m_cnt(0), m_colcnt(0), m_size(1),
+        s1(0), s2(0), s3(0), s4(0),
+        m_scissor(false),
+        m_antialias(true),
+        m_forceantialias(false),
+        m_stippled(stippled),
+        m_blendfunc1(GL_SRC_ALPHA),
+        m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA)
+    { }
+    virtual ~GLBuffer() {}
+
+    void scissor(GLshort x1, GLshort y1, GLshort x2, GLshort y2) {
+        s1 = x1;
+        s2 = y1;
+        s3 = x2;
+        s4 = y2;
+        m_scissor=true;
+    }
+
+    int Max() const { return m_max; }
+    int cnt() const { return m_cnt; }
+    bool full() const { return m_cnt >= m_max; }
+    float size() const { return m_size; }
+    int type() const { return m_type; }
+
+    void reset() { m_cnt = 0; }
+    void setSize(float f) { m_size = f; }
+    void setAntiAlias(bool b) { m_antialias = b; }
+    void forceAntiAlias(bool b) { m_forceantialias = b; }
+    void setColor(QColor col) { m_color = col; }
+    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1 = b1; m_blendfunc2 = b2; }
+
     virtual void draw(){}
-    void reset() { m_cnt=0; }
-    int Max() { return m_max; }
-    int cnt() { return m_cnt; }
-    bool full() { return m_cnt>=m_max; }
-    float size() { return m_size; }
-    int type() { return m_type; }
-    void setSize(float f) { m_size=f; }
-    void setAntiAlias(bool b) { m_antialias=b; }
-    void forceAntiAlias(bool b) { m_forceantialias=b; }
-    void setColor(QColor col) { m_color=col; }
-    void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1=b1; m_blendfunc2=b2; }
-protected:
+
+  protected:
     int m_max;
     int m_type;     // type (GL_LINES, GL_QUADS, etc)
     int m_cnt;      // cnt
     int m_colcnt;
     QColor m_color;
     float m_size;
-    int s1,s2,s3,s4;
+    int s1, s2, s3, s4;
     bool m_scissor;
     bool m_antialias;
     bool m_forceantialias;
@@ -220,22 +264,27 @@ protected:
 /*! \class GLFloatBuffer
     \brief Holds an OpenGL draw list composed of 32bit GLfloat objects and vertex colors
     */
-class GLFloatBuffer:public GLBuffer
+class GLFloatBuffer : public GLBuffer
 {
-public:
-    GLFloatBuffer(int max=2048,int type=GL_LINES, bool stippled=false);
+  public:
+    GLFloatBuffer(int max = 2048, int type = GL_LINES, bool stippled = false);
     virtual ~GLFloatBuffer();
 
-    void add(GLfloat x, GLfloat y,QColor & col);    // add with vertex color
-    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,QColor & col); // add with vertex colors
-    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col); // add with vertex colors
-    void quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col,QColor & col2); // add with vertex colors
-    void quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4,QColor & col,QColor & col2); // add with vertex colors
+    // Add with vertex color(s).
+    void add(GLfloat x, GLfloat y, QColor &col);
+    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, QColor &col);
+    void add(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,
+             GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4, QColor &col);
+    void quadGrTB(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,
+                  GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4, QColor &col, QColor &col2);
+    void quadGrLR(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2,
+                  GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4, QColor &col, QColor &col2);
 
     virtual void draw();
-protected:
-    GLfloat * buffer;
-    GLubyte * colors;
+
+  protected:
+    GLfloat *buffer;
+    GLubyte *colors;
 };
 
 /*! \struct TextQue
@@ -262,11 +311,16 @@ struct TextQue
 /*! \class MyScrollBar
     \brief An custom scrollbar to interface with gGraphWindow
     */
-class MyScrollBar:public QScrollBar
+class MyScrollBar : public QScrollBar
 {
-public:
-    MyScrollBar(QWidget * parent=0);
-    void SendWheelEvent(QWheelEvent * e);
+  public:
+    MyScrollBar(QWidget *parent = NULL)
+      : QScrollBar(parent)
+    { }
+
+    void SendWheelEvent(QWheelEvent * e) {
+        wheelEvent(e);
+    }
 };
 
 enum LayerPosition { LayerLeft, LayerRight, LayerTop, LayerBottom, LayerCenter, LayerOverlay };
@@ -278,15 +332,30 @@ class Layer
 {
     friend class gGraph;
     friend class LayerGroup;
-public:
-    Layer(ChannelID code);
+
+  public:
+    Layer(ChannelID code)
+      : m_refcount(0),
+        m_day(NULL),
+        m_visible(true),
+        m_movable(false),
+        m_minx(0), m_maxx(0),
+        m_miny(0), m_maxy(0),
+        m_physminy(0), m_physmaxy(0),
+        m_code(code),
+        m_width(0), m_height(0),
+        m_X(0), m_Y(0),
+        m_order(0),
+        m_position(LayerCenter)
+    { }
+
     virtual ~Layer();
 
     //! \brief This gets called on day selection, allowing this layer to precalculate any drawing data
     virtual void SetDay(Day * d);
 
     //! \brief Set the ChannelID used in this layer
-    virtual void SetCode(ChannelID c) { m_code=c; }
+    virtual void SetCode(ChannelID c) { m_code = c; }
     //! \brief Return the ChannelID used in this layer
     const ChannelID & code() { return m_code; }
 
@@ -300,10 +369,10 @@ public:
     virtual void deselect() { }
 
     //! \brief Return this layers physical minimum date boundary
-    virtual qint64 Minx() { if (m_day) return m_day->first(); return m_minx; }
+    virtual qint64 Minx() { return m_day ? m_day->first() : m_minx; }
 
     //! \brief Return this layers physical maximum date boundary
-    virtual qint64 Maxx() { if (m_day) return m_day->last(); return m_maxx; }
+    virtual qint64 Maxx() { return m_day ? m_day->last() : m_maxx; }
 
     //! \brief Return this layers physical minimum Yaxis value
     virtual EventDataType Miny() { return m_miny; }
@@ -318,28 +387,28 @@ public:
     virtual EventDataType physMaxy() { return m_physmaxy; }
 
     //! \brief Set this layers physical minimum date boundary
-    virtual void setMinX(qint64 val) { m_minx=val; }
+    virtual void setMinX(qint64 val) { m_minx = val; }
 
     //! \brief Set this layers physical maximum date boundary
-    virtual void setMaxX(qint64 val) { m_maxx=val; }
+    virtual void setMaxX(qint64 val) { m_maxx = val; }
 
     //! \brief Set this layers physical minimum Yaxis value
-    virtual void setMinY(EventDataType val) { m_miny=val; }
+    virtual void setMinY(EventDataType val) { m_miny = val; }
 
     //! \brief Set this layers physical maximum Yaxis value
-    virtual void setMaxY(EventDataType val) { m_maxy=val; }
+    virtual void setMaxY(EventDataType val) { m_maxy = val; }
 
     //! \brief Set this layers Visibility status
-    void setVisible(bool b) { m_visible=b; }
+    void setVisible(bool b) { m_visible = b; }
 
     //! \brief Return this layers Visibility status
-    bool visible() { return m_visible; }
+    bool visible() const { return m_visible; }
 
     //! \brief Set this layers Moveability status (not really used yet)
-    void setMovable(bool b) { m_movable=b; }
+    void setMovable(bool b) { m_movable = b; }
 
     //! \brief Return this layers Moveability status (not really used yet)
-    bool movable() { return m_movable; }
+    bool movable() const { return m_movable; }
 
     /*! \brief Override this for the drawing code, using GLBuffer components for drawing
         \param gGraph & gv    Graph Object that holds this layer
@@ -348,13 +417,12 @@ public:
         \param int width
         \param int height
       */
-    virtual void paint(gGraph & gv,int left,int top,int width, int height)=0;
-
+    virtual void paint(gGraph & gv,int left,int top,int width, int height) = 0;
 
     //! \brief Set the layout position and order for this layer.
     void setLayout(LayerPosition position, short width, short height, short order);
 
-    void setPos(short x, short y) { m_X=x; m_Y=y; }
+    void setPos(short x, short y) { m_X = x; m_Y = y; }
 
     int Width() { return m_width; }
     int Height() { return m_height; }
@@ -364,26 +432,28 @@ public:
     //void X() { return m_X; }
     //void Y() { return m_Y; }
 
-
     //! \brief Draw all this layers custom GLBuffers (ie. the actual OpenGL Vertices)
     virtual void drawGLBuf(float linesize);
 
     //! \brief not sure why I needed the reference counting stuff.
     short m_refcount;
     void addref() { m_refcount++; }
-    bool unref() { m_refcount--; if (m_refcount<=0) return true; return false; }
+    bool unref() {
+        m_refcount--;
+        return (m_refcount <= 0);
+    }
 
-
-protected:
+  protected:
     //! \brief Add a GLBuffer (vertex) object customized to this layer
     void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
     void addVertexBuffer(gVertexBuffer *buf) { mv_buffers.push_back(buf); }
+
     //QRect bounds; // bounds, relative to top of individual graph.
     Day *m_day;
     bool m_visible;
     bool m_movable;
-    qint64 m_minx,m_maxx;
-    EventDataType m_miny,m_maxy;
+    qint64 m_minx, m_maxx;
+    EventDataType m_miny, m_maxy;
     EventDataType m_physminy, m_physmaxy;
     ChannelID m_code;
     short m_width;                   // reserved x pixels needed for this layer.  0==Depends on position..
@@ -399,26 +469,41 @@ protected:
     QVector<gVertexBuffer *> mv_buffers;
 
     //! \brief Mouse wheel moved somewhere over this layer
-    virtual bool wheelEvent(QWheelEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool wheelEvent(QWheelEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
     //! \brief Mouse moved somewhere over this layer
-    virtual bool mouseMoveEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
     //! \brief Mouse left or right button pressed somewhere on this layer
-    virtual bool mousePressEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool mousePressEvent(QMouseEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
     //! \brief Mouse button released that was originally pressed somewhere on this layer
-    virtual bool mouseReleaseEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
     //! \brief Mouse button double clicked somewhere on this layer
-    virtual bool mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
     //! \brief A key was pressed on the keyboard while the graph area was focused.
-    virtual bool keyPressEvent(QKeyEvent * event, gGraph * graph) { Q_UNUSED(event); Q_UNUSED(graph); return false; }
+    virtual bool keyPressEvent(QKeyEvent *event, gGraph *graph) {
+        Q_UNUSED(event); Q_UNUSED(graph); return false;
+    }
 };
 
 /*! \class LayerGroup
     \brief Contains a list of graph Layer obejcts
     */
-class LayerGroup:public Layer
+class LayerGroup : public Layer
 {
-public:
-    LayerGroup();
+  public:
+    LayerGroup()
+      : Layer(NoChannel)
+    { }
+
     virtual ~LayerGroup();
 
     //! \brief Add Layer to this Layer Group
@@ -440,13 +525,13 @@ public:
     virtual bool isEmpty();
 
     //! \brief Calls SetDay for all Layers contained in this object
-    virtual void SetDay(Day * d);
+    virtual void SetDay(Day *d);
 
     //! \brief Calls drawGLBuf for all Layers contained in this object
     virtual void drawGLBuf(float linesize);
 
     //! \brief Return the list of Layers this object holds
-    QVector<Layer *> & getLayers() { return layers; }
+    QVector<Layer *> &getLayers() { return layers; }
 
 protected:
     //! \brief Contains all Layer objects in this group
@@ -478,9 +563,9 @@ class gGraph;
 
     This is currently broken, as Qt didn't behave anyway, and it offered no performance improvement drawing-wise
     */
-class gThread:public QThread
+class gThread : public QThread
 {
-public:
+  public:
     gThread(gGraphView *g);
     ~gThread();
 
@@ -488,9 +573,10 @@ public:
     void run();
 
     //! \brief Kill thread process
-    void die() { m_running=false; }
+    void die() { m_running = false; }
     QMutex mutex;
-protected:
+
+  protected:
     gGraphView *graphview;
     volatile bool m_running;
 };
@@ -498,18 +584,18 @@ protected:
 /*! \class gToolTip
     \brief Popup Tooltip to display information over the OpenGL graphs
     */
-class gToolTip: public QObject
+class gToolTip : public QObject
 {
     Q_OBJECT
-public:
+  public:
     //! \brief Initializes the ToolTip object, and connects the timeout to the gGraphView object
-    gToolTip(gGraphView * graphview);
+    gToolTip(gGraphView *graphview);
     virtual ~gToolTip();
 
     /*! \fn virtual void display(QString text, int x, int y, int timeout=2000);
         \brief Set the tooltips display message, position, and timeout value
         */
-    virtual void display(QString text, int x, int y, int timeout=0);
+    virtual void display(QString text, int x, int y, int timeout = 0);
 
     //! \brief Queue the actual OpenGL drawing instructions
     virtual void paint(); //actually paints it.
@@ -519,11 +605,12 @@ public:
 
     //! \brief Returns true if the tooltip is currently visible
     bool visible() { return m_visible; }
-protected:
-    gGraphView * m_graphview;
-    QTimer * timer;
+
+  protected:
+    gGraphView *m_graphview;
+    QTimer *timer;
     QPoint m_pos;
-    int tw,th;
+    int tw, th;
     QString m_text;
     bool m_visible;
     int m_spacer;
@@ -531,7 +618,7 @@ protected:
     GLuint m_textureID;
     bool m_invalidate;
 
-protected slots:
+  protected slots:
 
     //! \brief Timeout to hide tooltip, and redraw without it.
     void timerDone();
@@ -540,10 +627,10 @@ protected slots:
 /*! \class gGraph
     \brief Single Graph object, containing multiple layers and Layer layout code
     */
-class gGraph:public QObject
+class gGraph : public QObject
 {
     Q_OBJECT
-public:
+  public:
     friend class gGraphView;
 
     /*! \brief Creates a new graph object
@@ -552,7 +639,8 @@ public:
         \param int height containing the opening height for this graph
         \param short group containing which graph-link group this graph belongs to
         */
-    gGraph(gGraphView * graphview=NULL, QString title="", QString units="", int height=100,short group=0);
+    gGraph(gGraphView *graphview = NULL, QString title = "", QString units = "",
+           int height = 100, short group = 0);
     virtual ~gGraph();
 
     //! \brief Tells all Layers to deselect any highlighting
@@ -573,10 +661,10 @@ public:
         Note if width or height is more than the OpenGL system allows, it could result in a crash
         Keeping them under 2048 is a reasonably safe value.
         */
-    QPixmap renderPixmap(int width, int height, bool printing=false);
+    QPixmap renderPixmap(int width, int height, bool printing = false);
 
     //! \brief Set Graph visibility status
-    void setVisible(bool b) { m_visible=b; }
+    void setVisible(bool b) { m_visible = b; }
 
     //! \brief Return Graph visibility status
     bool visible() { return m_visible; }
@@ -585,19 +673,19 @@ public:
     float height() { return m_height; }
 
     //! \brief Set the height element. (relative to the total of all heights)
-    void setHeight(float height) { m_height=height; invalidate_yAxisImage=true;}
+    void setHeight(float height) { m_height = height; invalidate_yAxisImage = true; }
 
     int minHeight() { return m_min_height; }
-    void setMinHeight(int height) { m_min_height=height; }
+    void setMinHeight(int height) { m_min_height = height; }
 
     int maxHeight() { return m_max_height; }
-    void setMaxHeight(int height) { m_max_height=height; }
+    void setMaxHeight(int height) { m_max_height = height; }
 
     //! \brief Returns true if the vertical graph title is shown
     bool showTitle() { return m_showTitle; }
 
     //! \brief Set whether or not to render the vertical graph title
-    void setShowTitle(bool b) { m_showTitle=b; }
+    void setShowTitle(bool b) { m_showTitle = b; }
 
     //! \brief Returns printScaleX, used for DPI scaling in report printing
     float printScaleX();
@@ -608,16 +696,21 @@ public:
     //! \brief Returns true if none of the included layers have data attached
     bool isEmpty();
 
-    //! \brief Add Layer l to graph object, allowing you to specify position,  margin sizes, order, movability status and offsets
-    void AddLayer(Layer * l,LayerPosition position=LayerCenter, short pixelsX=0, short pixelsY=0, short order=0, bool movable=false, short x=0, short y=0);
+    //! \brief Add Layer l to graph object, allowing you to specify position,
+    //         margin sizes, order, movability status and offsets
+    void AddLayer(Layer *l, LayerPosition position = LayerCenter,
+                  short pixelsX = 0, short pixelsY = 0, short order = 0,
+                  bool movable = false, short x = 0, short y = 0);
 
 
     void qglColor(QColor col);
 
     //! \brief Queues text for gGraphView object to draw it.
-    void renderText(QString text, int x,int y, float angle=0.0, QColor color=Qt::black, QFont *font=defaultfont,bool antialias=true);
+    void renderText(QString text, int x, int y, float angle = 0.0,
+                    QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
-    //! \brief Rounds Y scale values to make them look nice.. Applies the Graph Preference min/max settings.
+    //! \brief Rounds Y scale values to make them look nice..
+    //         Applies the Graph Preference min/max settings.
     void roundY(EventDataType &miny, EventDataType &maxy);
 
     //! \brief Process all Layers GLBuffer (Vertex) objects, drawing the actual OpenGL stuff.
@@ -661,7 +754,6 @@ public:
     //! \brief Returns the physical Maximum Y scale value for all layers contained
     virtual EventDataType physMaxY();
 
-
     //! \brief Sets the physical start of this graphs time range (in milliseconds since epoch)
     virtual void SetMinX(qint64 v);
 
@@ -675,39 +767,43 @@ public:
     virtual void SetMaxY(EventDataType v);
 
     //! \brief Forces Y Minimum to always select this value
-    virtual void setForceMinY(EventDataType v) { f_miny=v; m_enforceMinY=true; }
+    virtual void setForceMinY(EventDataType v) { f_miny = v; m_enforceMinY = true; }
     //! \brief Forces Y Maximum to always select this value
-    virtual void setForceMaxY(EventDataType v) { f_maxy=v; m_enforceMaxY=true; }
+    virtual void setForceMaxY(EventDataType v) { f_maxy = v; m_enforceMaxY = true; }
 
 
     virtual EventDataType forceMinY() { return rec_miny; }
     virtual EventDataType forceMaxY() { return rec_maxy; }
 
-    //! \brief Set recommended Y minimum.. It won't go under this unless the data does. It won't go above this.
-    virtual void setRecMinY(EventDataType v) { rec_miny=v; }
-    //! \brief Set recommended Y minimum.. It won't go above this unless the data does. It won't go under this.
-    virtual void setRecMaxY(EventDataType v) { rec_maxy=v; }
+    //! \brief Set recommended Y minimum.. It won't go under this unless the data does.
+    //         It won't go above this.
+    virtual void setRecMinY(EventDataType v) { rec_miny = v; }
+    //! \brief Set recommended Y minimum.. It won't go above this unless the data does.
+    //         It won't go under this.
+    virtual void setRecMaxY(EventDataType v) { rec_maxy = v; }
 
-    //! \brief Returns the recommended Y minimum.. It won't go under this unless the data does. It won't go above this.
+    //! \brief Returns the recommended Y minimum.. It won't go under this unless the data does.
+    //         It won't go above this.
     virtual EventDataType RecMinY() { return rec_miny; }
-    //! \brief Returns the recommended Y maximum.. It won't go under this unless the data does. It won't go above this.
+    //! \brief Returns the recommended Y maximum.. It won't go under this unless the data does.
+    //         It won't go above this.
     virtual EventDataType RecMaxY() { return rec_maxy; }
 
     //! \brief Called when main graph area is resized
     void resize(int width, int height);      // margin recalcs..
 
-    qint64 max_x,min_x,rmax_x,rmin_x;
-    EventDataType max_y,min_y,rmax_y,rmin_y, f_miny, f_maxy, rec_miny, rec_maxy;
+    qint64 max_x, min_x, rmax_x, rmin_x;
+    EventDataType max_y, min_y, rmax_y, rmin_y, f_miny, f_maxy, rec_miny, rec_maxy;
     EventDataType rphysmin_y, rphysmax_y;
 
     // not sure why there's two.. I can't remember
-    void setEnforceMinY(bool b) { m_enforceMinY=b; }
-    void setEnforceMaxY(bool b) { m_enforceMaxY=b; }
+    void setEnforceMinY(bool b) { m_enforceMinY = b; }
+    void setEnforceMaxY(bool b) { m_enforceMaxY = b; }
 
     //! \brief Returns whether this graph shows overall timescale, or a zoomed area
     bool blockZoom() { return m_blockzoom; }
     //! \brief Sets whether this graph shows an overall timescale, or a zoomed area.
-    void setBlockZoom(bool b) { m_blockzoom=b; }
+    void setBlockZoom(bool b) { m_blockzoom = b; }
 
     //! \brief Flips the GL coordinates from the graphs perspective.. Used in Scissor calculations
     int flipY(int y); // flip GL coordinates
@@ -716,13 +812,13 @@ public:
     short group() { return m_group; }
 
     //! \brief Sets the graph-linking group this Graph belongs in
-    void setGroup(short group) { m_group=group; }
+    void setGroup(short group) { m_group = group; }
 
     //! \brief Forces the main gGraphView object to draw all Text Components
     void DrawTextQue();
 
     //! \brief Sends supplied day object to all Graph layers so they can precalculate stuff
-    void setDay(Day * day);
+    void setDay(Day *day);
 
     //! \brief Returns the current day object
     Day * day() { return m_day; }
@@ -731,7 +827,7 @@ public:
     virtual void paint(int originX, int originY, int width, int height);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
-    void ToolTip(QString text, int x, int y, int timeout=0);
+    void ToolTip(QString text, int x, int y, int timeout = 0);
 
     //! \brief Public version of updateGL(), to redraw all graphs.. Not for normal use
     void redraw();
@@ -740,9 +836,9 @@ public:
     void timedRedraw(int ms);
 
     //! \brief Sets the margins for the four sides of this graph.
-    void setMargins(short left,short right,short top,short bottom) {
-        m_marginleft=left; m_marginright=right;
-        m_margintop=top; m_marginbottom=bottom;
+    void setMargins(short left, short right, short top, short bottom) {
+        m_marginleft = left; m_marginright = right;
+        m_margintop = top; m_marginbottom = bottom;
     }
 
     //! \brief Returns this graphs left margin
@@ -755,15 +851,15 @@ public:
     short marginBottom();
 
     //! \brief Returns the main gGraphView objects gVertexBuffer line list.
-    gVertexBuffer * lines();
+    gVertexBuffer *lines();
     //! \brief Returns the main gGraphView objects gVertexBuffer background line list.
-    gVertexBuffer * backlines();
+    gVertexBuffer *backlines();
     //! \brief Returns the main gGraphView objects gVertexBuffer front line list.
-    gVertexBuffer * frontlines();
+    gVertexBuffer *frontlines();
     //! \brief Returns the main gGraphView objects gVertexBuffer quads list.
-    gVertexBuffer * quads();
+    gVertexBuffer *quads();
 
-    const inline QRect & rect() { return m_rect; }
+    const inline QRect &rect() const { return m_rect; }
 
     bool isPinned() { return m_pinned; }
     void setPinned(bool b) { m_pinned=b; }
@@ -773,51 +869,53 @@ public:
 
     //gVertexBuffer * vlines(); // testing new vertexbuffer
 
-    short left,right,top,bottom; // dirty magin hacks..
+    short left, right, top, bottom; // dirty magin hacks..
 
-    Layer * getLineChart();
-    QTimer * timer;
+    Layer *getLineChart();
+    QTimer *timer;
 
     // This gets set to true to force a redraw of the yAxis tickers when graphs are resized.
     bool invalidate_yAxisImage;
     bool invalidate_xAxisImage;
 
     //! \brief Returns a Vector reference containing all this graphs layers
-    QVector<Layer *>  & layers() { return m_layers; }
+    QVector<Layer *> &layers() { return m_layers; }
 
-    gGraphView * graphView() { return m_graphview; }
+    gGraphView *graphView() { return m_graphview; }
     short m_marginleft, m_marginright, m_margintop, m_marginbottom;
 
     short zoomY() { return m_zoomY; }
     void setZoomY(short zoom);
 
-    static const short maxZoomY=2;
-protected:
+    static const short maxZoomY = 2;
+
+  protected:
     //void invalidate();
 
     //! \brief Mouse Wheel events
-    virtual void wheelEvent(QWheelEvent * event);
+    virtual void wheelEvent(QWheelEvent *event);
 
     //! \brief Mouse Movement events
-    virtual void mouseMoveEvent(QMouseEvent * event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
 
     //! \brief Mouse Button Pressed events
-    virtual void mousePressEvent(QMouseEvent * event);
+    virtual void mousePressEvent(QMouseEvent *event);
 
     //! \brief Mouse Button Released events
-    virtual void mouseReleaseEvent(QMouseEvent * event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
 
     //! \brief Mouse Button Double Clicked events
-    virtual void mouseDoubleClickEvent(QMouseEvent * event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
     //! \brief Key Pressed event
-    virtual void keyPressEvent(QKeyEvent * event);
+    virtual void keyPressEvent(QKeyEvent *event);
 
     //! \brief Change the current selected time boundaries by mult, from origin position origin_px
-    void ZoomX(double mult,int origin_px);
+    void ZoomX(double mult, int origin_px);
 
-    //! \brief The Main gGraphView object holding this graph (this can be pinched temporarily by print code)
-    gGraphView * m_graphview;
+    //! \brief The Main gGraphView object holding this graph
+    //         (this can be pinched temporarily by print code)
+    gGraphView *m_graphview;
     QString m_title;
     QString m_units;
 
@@ -834,19 +932,16 @@ protected:
     QPoint m_current;
     short m_group;
     short m_lastx23;
-    Day * m_day;
-    gVertexBuffer * m_quad;
-    bool m_enforceMinY,m_enforceMaxY;
+    Day *m_day;
+    gVertexBuffer *m_quad;
+    bool m_enforceMinY, m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
     bool m_pinned;
-
     short m_zoomY;
-
     QRect m_rect;
-signals:
 
-protected slots:
+  protected slots:
     //! \brief Deselects any highlights, and schedules a main gGraphView redraw
     void Timeout();
 };
@@ -862,7 +957,6 @@ struct myPixmapCache
     GLuint textureID;
 };
 
-
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 
@@ -877,7 +971,7 @@ struct myPixmapCache
 class gGraphView : public QGLWidget
 {
     Q_OBJECT
-public:
+  public:
     /*! \fn explicit gGraphView(QWidget *parent = 0,gGraphView * shared=0);
         \brief Constructs a new gGraphView object (main graph area)
         \param QWidget * parent
@@ -887,38 +981,38 @@ public:
         But this must not be shared with Printers snapshot gGraphView object,
         or it will lead to display/font corruption
         */
-    explicit gGraphView(QWidget *parent = 0,gGraphView * shared=0);
+    explicit gGraphView(QWidget *parent = 0, gGraphView *shared = 0);
     virtual ~gGraphView();
 
     //! \brief Add gGraph g to this gGraphView, in the requested graph-linkage group
-    void addGraph(gGraph *g,short group=0);
+    void addGraph(gGraph *g, short group = 0);
 
     //! \brief The width of the vertical text Title area for all graphs
-    static const int titleWidth=30;
+    static const int titleWidth = 30;
 
     //! \brief The splitter is drawn inside this gap
-    static const int graphSpacer=4;
+    static const int graphSpacer = 4;
 
     //! \brief Finds the top pixel position of the supplied graph
-    float findTop(gGraph * graph);
+    float findTop(gGraph *graph);
 
     //! \brief Returns the scaleY value, which is used when laying out less graphs than fit on the screen.
     float scaleY() { return m_scaleY; }
 
     //! \brief Sets the scaleY value, which is used when laying out less graphs than fit on the screen.
-    void setScaleY(float sy) { m_scaleY=sy; }
+    void setScaleY(float sy) { m_scaleY = sy; }
 
     //! \brief Returns the current selected time range
-    void GetXBounds(qint64 & st,qint64 & et);
+    void GetXBounds(qint64 &st, qint64 &et);
 
     //! \brief Returns the maximum time range bounds
-    void GetRXBounds(qint64 & st, qint64 & et);
+    void GetRXBounds(qint64 &st, qint64 &et);
 
     //! \brief Resets the time range to default for this day. Refreshing the display if refresh==true.
-    void ResetBounds(bool refresh=true); //short group=0);
+    void ResetBounds(bool refresh = true);
 
     //! \brief Supplies time range to all graph objects in linked group, refreshing if requested
-    void SetXBounds(qint64 minx, qint64 maxx, short group=0,bool refresh=true);
+    void SetXBounds(qint64 minx, qint64 maxx, short group = 0, bool refresh = true);
 
     //! \brief Saves the current graph order, heights, min & Max Y values to disk
     void SaveSettings(QString title);
@@ -929,10 +1023,10 @@ public:
     //! \brief Returns the graph object matching the supplied name, NULL if it does not exist.
     gGraph *findGraph(QString name);
 
-    inline float printScaleX() { return print_scaleX; }
-    inline float printScaleY() { return print_scaleY; }
-    inline void setPrintScaleX(float x) { print_scaleX=x; }
-    inline void setPrintScaleY(float y) { print_scaleY=y; }
+    inline float printScaleX() const { return print_scaleX; }
+    inline float printScaleY() const { return print_scaleY; }
+    inline void setPrintScaleX(float x) { print_scaleX = x; }
+    inline void setPrintScaleY(float y) { print_scaleY = y; }
 
     //! \brief Returns true if all Graph objects contain NO day data. ie, graph area is completely empty.
     bool isEmpty();
@@ -940,8 +1034,8 @@ public:
     //! \brief Tell all graphs to deslect any highlighted areas
     void deselect();
 
-    QPoint pointClicked() { return m_point_clicked; }
-    void setPointClicked(QPoint p) { m_point_clicked=p; }
+    QPoint pointClicked() const { return m_point_clicked; }
+    void setPointClicked(QPoint p) { m_point_clicked = p; }
 
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
@@ -950,20 +1044,21 @@ public:
     void fadeOut();
 
     //! \brief Start the animation sequence showing new Day's data. (fade in)
-    void fadeIn(bool dir=false);
+    void fadeIn(bool dir = false);
 
     //! \brief Call UpdateGL unless animation is in progress
     void redraw();
 
     gGraph *m_selected_graph;
-    gToolTip * m_tooltip;
-    QTimer * timer;
+    gToolTip *m_tooltip;
+    QTimer *timer;
 
     //! \brief Show the current selection time in the statusbar area
     void selectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
-    void AddTextQue(QString & text, short x, short y, float angle=0.0, QColor color=Qt::black, QFont * font=defaultfont, bool antialias=true);
+    void AddTextQue(QString &text, short x, short y, float angle = 0.0,
+                    QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
     //! \brief Draw all Text in the text drawing queue
     void DrawTextQue();
@@ -971,15 +1066,15 @@ public:
     //! \brief Draw all text components using QPainter object painter
     void DrawTextQue(QPainter &painter);
 
-
     //! \brief Returns number of graphs contained (whether they are visible or not)
-    int size() { return m_graphs.size(); }
+    int size() const { return m_graphs.size(); }
 
     //! \brief Return individual graph by index value
-    gGraph * operator[](int i) { return m_graphs[i]; }
+    gGraph *operator[](int i) { return m_graphs[i]; }
 
     //! \brief Returns the custom scrollbar object linked to this gGraphArea
-    MyScrollBar * scrollBar() { return m_scrollbar; }
+    MyScrollBar *scrollBar() const { return m_scrollbar; }
+
     //! \brief Sets the custom scrollbar object linked to this gGraphArea
     void setScrollBar(MyScrollBar *sb);
 
@@ -996,16 +1091,15 @@ public:
     int visibleGraphs();
 
     //! \brief Returns the horizontal travel of the mouse, for use in Mouse Handling code.
-    int horizTravel() { return m_horiz_travel; }
+    int horizTravel() const { return m_horiz_travel; }
 
     //! \brief Sets the message displayed when there are no graphs to draw
-    void setEmptyText(QString s) { m_emptytext=s; }
+    void setEmptyText(QString s) { m_emptytext = s; }
 
     void setCubeImage(QImage *);
 
     inline const float & devicePixelRatio() { return m_dpr; }
     void setDevicePixelRatio(float dpr) { m_dpr=dpr; }
-
 
     // Cube fun
     QVector<QImage *> cubeimg;
@@ -1021,33 +1115,31 @@ public:
     QMutex dl_mutex;
 #endif
 
-
-
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day * day);
 
     gVertexBuffer *lines, *backlines, *quads, *frontlines;
 
     //! \brief pops a graph off the list for multithreaded drawing code
-    gGraph * popGraph(); // exposed for multithreaded drawing
+    gGraph *popGraph(); // exposed for multithreaded drawing
 
     //! \brief Hides the splitter, used in report printing code
-    void hideSplitter() { m_showsplitter=false; }
+    void hideSplitter() { m_showsplitter = false; }
 
     //! \brief Re-enabled the in-between graph splitters.
-    void showSplitter() { m_showsplitter=true; }
+    void showSplitter() { m_showsplitter = true; }
 
     //! \brief Trash all graph objects listed (without destroying Graph contents)
     void trashGraphs();
 
     //! \brief Use a QGLFrameBufferObject to render to a pixmap
-    QImage fboRenderPixmap(int w,int h);
+    QImage fboRenderPixmap(int w, int h);
 
     //! \brief Use a QGLPixelBuffer to render to a pixmap
-    QImage pbRenderPixmap(int w,int h);
+    QImage pbRenderPixmap(int w, int h);
 
     //! \brief Enable or disable the Text Pixmap Caching system preference overide
-    void setUsePixmapCache(bool b) { use_pixmap_cache=b; }
+    void setUsePixmapCache(bool b) { use_pixmap_cache = b; }
 
     //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
     bool usePixmapCache();
@@ -1062,20 +1154,14 @@ protected:
     //! \brief The heart of the OpenGL drawing code
     virtual void paintGL();
 
-
-    Day * m_day;
-
     //! \brief Calculates the sum of all graph heights
     float totalHeight();
 
     //! \brief Calculates the sum of all graph heights, taking scaling into consideration
     float scaleHeight();
 
-
-
     //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
     bool renderGraphs();
-
 
     //! \brief Update the OpenGL area when the screen is resized
     virtual void resizeEvent(QResizeEvent *);
@@ -1087,20 +1173,24 @@ protected:
     void setOffsetX(int offsetX);
 
     //! \brief Mouse Moved somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseMoveEvent(QMouseEvent * event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
     //! \brief Mouse Button Press Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mousePressEvent(QMouseEvent * event);
+    virtual void mousePressEvent(QMouseEvent *event);
     //! \brief Mouse Button Release Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseReleaseEvent(QMouseEvent * event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
     //! \brief Mouse Button Double Click Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void mouseDoubleClickEvent(QMouseEvent * event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
     //! \brief Mouse Wheel Event somewhere in main gGraphArea, propagates to the individual graphs
-    virtual void wheelEvent(QWheelEvent * event);
+    virtual void wheelEvent(QWheelEvent *event);
     //! \brief Keyboard event while main gGraphArea has focus.
-    virtual void keyPressEvent(QKeyEvent * event);
+    virtual void keyPressEvent(QKeyEvent *event);
 
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
-    void queGraph(gGraph *,int originX, int originY, int width, int height);
+    void queGraph(gGraph *, int originX, int originY, int width, int height);
+
+    void renderSomethingFun(float alpha = 1);
+
+    Day *m_day;
 
     //! \brief the list of graphs to draw this frame
     QList<gGraph *> m_drawlist;
@@ -1121,8 +1211,6 @@ protected:
     //! \variable Scale used to enlarge graphs when less graphs than can fit on screen.
     float m_scaleY;
     float m_dpr;
-
-    void renderSomethingFun(float alpha=1);
 
     bool m_sizer_dragging;
     int m_sizer_index;
@@ -1171,18 +1259,12 @@ protected:
 
     QTime horizScrollTime, vertScrollTime;
 
-
-    //QVector<GLuint> texid;
-signals:
-
-
 public slots:
     //! \brief Callback from the ScrollBar, to change scroll position
     void scrollbarValueChanged(int val);
 
     //! \brief Simply refreshes the GL view, called when timeout expires.
     void refreshTimeout();
-
 };
 
 #endif // GGRAPHVIEW_H
