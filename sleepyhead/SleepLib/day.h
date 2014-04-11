@@ -41,7 +41,7 @@ class Day
     void AddSession(Session *s);
 
     //! \brief Returns this machines type
-    MachineType machine_type();
+    MachineType machine_type() const;
 
     //! \brief Returns the count of all this days sessions' events for this day
     int count(ChannelID code);

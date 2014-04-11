@@ -325,69 +325,46 @@ void Profile::AddDay(QDate date, Day *day, MachineType mt)
     daylist[date].push_back(day);
 }
 
-// Get Day record if data available for date and machine type, and has enabled session data, else return NULL
+// Get Day record if data available for date and machine type,
+// and has enabled session data, else return NULL
 Day *Profile::GetGoodDay(QDate date, MachineType type)
 {
-    Day *day = NULL;
+    Day *day = GetDay(date, type);
+    if (!day)
+        return NULL;
 
-    QMap<QDate, QList<Day *> >::iterator dli = daylist.find(date);
+    // Just return the day if not matching for a machine.
+    if (type == MT_UNKNOWN)
+        return day;
 
-    if (dli != daylist.end()) {
-
-        for (QList<Day *>::iterator di = (*dli).begin(); di != (*dli).end(); di++) {
-
-            if (type == MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
-                day = (*di);
-                break;
-            }
-
-            if ((*di)->machine_type() == type) {
-                bool b = false;
-
-                for (int i = 0; i < (*di)->size(); i++) {
-                    if ((*(*di))[i]->enabled()) {
-                        b = true;
-                        break;
-                    }
-                }
-
-                if (b) {
-                    day = (*di);
-                    break;
-                }
-            }
-        }
+    // For a machine match, find at least one enabled Session.
+    Q_ASSERT(day->machine_type() == type);
+    for (int i = 0; i < day->size(); ++i) {
+        if ((*day)[i]->enabled())
+            return day;
     }
 
-    return day;
+    // No enabled Sessions were found.
+    return NULL;
 }
 
 Day *Profile::GetDay(QDate date, MachineType type)
 {
-    Day *tmp, *day = NULL;
+    if (!daylist.contains(date))
+        return NULL;
 
-    if (daylist.find(date) != daylist.end()) {
-        for (QList<Day *>::iterator di = daylist[date].begin(); di != daylist[date].end(); di++) {
-            tmp = *di;
+    QList<Day *> list(daylist.value(date));
+    for (int i = 0; i < list.size(); ++i) {
+        Day *day = list.at(i);
+        Q_ASSERT(day != NULL);
 
-            if (!tmp) {
-                qDebug() << "This should never happen in Profile::GetDay()";
-                break;
-            }
-
-            if (type == MT_UNKNOWN) { // Who cares.. We just want to know there is data available.
-                day = tmp;
-                break;
-            }
-
-            if (tmp->machine_type() == type) {
-                day = tmp;
-                break;
-            }
+        // Just return the day if not matching for a machine.
+        if (day->machine_type() == type || type == MT_UNKNOWN) {
+            return day;
         }
     }
 
-    return day;
+    return NULL;
 }
 
 

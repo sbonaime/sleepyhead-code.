@@ -29,7 +29,7 @@ Day::~Day()
     }
 
 }
-MachineType Day::machine_type()
+MachineType Day::machine_type() const
 {
     return machine->GetType();
 }

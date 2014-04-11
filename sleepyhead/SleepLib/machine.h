@@ -114,7 +114,7 @@ class Machine
     const QString &GetClass() { return m_class; }
 
     //! \brief Returns the type of machine, according to MachineType enum
-    const MachineType &GetType() { return m_type; }
+    const MachineType &GetType() const { return m_type; }
 
     //! \brief Returns the machineID as a lower case hexadecimal string
     QString hexid() { return QString().sprintf("%08lx", m_id); }
