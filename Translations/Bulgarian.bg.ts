@@ -761,6 +761,7 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="750"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="482"/>
         <source>Oximetry</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1053,315 +1054,510 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="242"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="252"/>
         <source>Loading Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="285"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="295"/>
         <source>Access to Import has been blocked while recalculations are in progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="326"/>
         <source>Import from where?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="326"/>
         <source>Do you just want to Import from the usual (remembered) locations?
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="326"/>
         <source>The Usual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="326"/>
         <source>New Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="316"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="326"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="368"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="378"/>
         <source>Importing Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="385"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="395"/>
         <source>Remember this Location?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="385"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="395"/>
         <source>Would you like to remember this import location for next time?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="400"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="410"/>
         <source>Import Problem
 
 Couldn&apos;t find any new Machine Data at the locations given</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="585"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="469"/>
+        <source>Welcome to SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="472"/>
+        <source>About SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="473"/>
+        <source>This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="474"/>
+        <source>SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="475"/>
+        <source>This is a beta release, some features may not yet behave as expected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="475"/>
+        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="477"/>
+        <source>Currenly supported machines:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="478"/>
+        <source>CPAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="479"/>
+        <source>Philips Respironics System One (CPAP, Auto, BiPAP &amp; ASV models)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="480"/>
+        <source>ResMed S9 models (CPAP, Auto, VPAP)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="481"/>
+        <source>DeVilbiss Intellipap (Auto)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="483"/>
+        <source>Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="484"/>
+        <source>ResMed S9 Oximeter Attachment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="485"/>
+        <source>Online Help Resources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="486"/>
+        <source>Note:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="486"/>
+        <source>I don&apos;t recommend using this built in web browser to do any major surfing in, it will work, but it&apos;s mainly meant as a help browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="487"/>
+        <source>(It doesn&apos;t support SSL encryption, so it&apos;s not a good idea to type your passwords or personal details anywhere.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="489"/>
+        <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="490"/>
+        <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions&quot;&gt;Frequently Asked Questions&lt;/a&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="491"/>
+        <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="492"/>
+        <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page&quot;&gt;SleepyHead Wiki&lt;/a&gt;&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="493"/>
+        <source>SleepyHead&apos;s &lt;a href=&apos;http://www.sourceforge.net/projects/sleepyhead&apos;&gt;Project Website&lt;/a&gt; on SourceForge&lt;br/&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="494"/>
+        <source>Got a neat idea on how to improve SleepyHead? Check out SleepyHeads &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt;Idea Torrent&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="495"/>
+        <source>Further Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="497"/>
+        <source>Here are the &lt;a href=&apos;qrc:/docs/release_notes.html&apos;&gt;release notes&lt;/a&gt; for this version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="498"/>
+        <source>Plus a few &lt;a href=&apos;qrc:/docs/usage.html&apos;&gt;usage notes&lt;/a&gt;, and some important information for Mac users.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="499"/>
+        <source>About &lt;a href=&apos;http://en.wikipedia.org/wiki/Sleep_apnea&apos;&gt;Sleep Apnea&lt;/a&gt; on Wikipedia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="501"/>
+        <source>Friendly forums to talk and learn about Sleep Apnea:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="502"/>
+        <source>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="503"/>
+        <source>&lt;a href=&apos;http://s7.zetaboards.com/Apnea_Board/index&apos;&gt;Apnea Board&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="511"/>
+        <source>Copyright:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="511"/>
+        <source>&amp;copy;2011-2014</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="512"/>
+        <source>License:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="512"/>
+        <source>This software is released freely under the &lt;a href=&quot;qrc:/COPYING&quot;&gt;GNU Public License&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="514"/>
+        <source>DISCLAIMER:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="515"/>
+        <source>This is &lt;font color=&apos;red&apos;&gt;&lt;u&gt;NOT&lt;/u&gt;&lt;/font&gt; medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="516"/>
+        <source>The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="517"/>
+        <source>Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="518"/>
+        <source>*** &lt;u&gt;Use at your own risk&lt;/u&gt; ***</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="667"/>
         <source>Loading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="616"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="698"/>
         <source>Build Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="616"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="698"/>
         <source>Data Folder Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="617"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="699"/>
         <source>Copyright</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="618"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="700"/>
         <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="622"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="704"/>
         <source>SleepyHead Project Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="623"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="705"/>
         <source>SleepyHead Wiki</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="626"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="708"/>
         <source>Don&apos;t forget to Like/+1 SleepyHead on &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; or &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="629"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="711"/>
         <source>SleepyHead, brought to you by Jedimark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="633"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="715"/>
         <source>Kudos &amp; Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="634"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="716"/>
         <source>Bugfixes, Patches and Platform Help:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="634"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="716"/>
         <source>James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="636"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="718"/>
         <source>Translators:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="636"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="718"/>
         <source>Arie Klerk (Dutch), Steffen Reitz (German).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="638"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="720"/>
         <source>3rd Party Libaries:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="639"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="721"/>
         <source>SleepyHead is built using the &lt;a href=&quot;http://qt-project.org&quot;&gt;Qt Application Framework&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="640"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="722"/>
         <source>It uses the cross platform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; library for serial port access in the Oximetry module.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="641"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="723"/>
         <source>In the updater code, SleepyHead uses &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant&apos;s ZIP/UNZIP package.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="642"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="724"/>
         <source>Special thanks to Pugsy from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="646"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="728"/>
         <source>Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="649"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="731"/>
         <source>This software comes with absolutely no warranty, either express of implied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="650"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="732"/>
         <source>It comes with no guarantee of fitness for any particular purpose.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="651"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="733"/>
         <source>No guarantees are made regarding the accuracy of any data this program displays.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="652"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="734"/>
         <source>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="653"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="735"/>
         <source>This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="654"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="736"/>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="655"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="737"/>
         <source>Use this software entirely at your own risk.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="716"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="798"/>
         <source>Access to Preferences has been blocked until recalculation completes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="745"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="827"/>
         <source>Question</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="745"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="827"/>
         <source>Do you have a CMS50[x] Oximeter?
 One is required to use this section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="800"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="882"/>
         <source>There was an error saving screenshot to file &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="802"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="884"/>
         <source>Screenshot saved to file &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="819"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="901"/>
         <source>Printing Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="819"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="901"/>
         <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1119"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1137"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1201"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1219"/>
         <source>Gah!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1119"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1137"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1201"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1219"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1207"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1289"/>
         <source>Are you sure?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1207"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1289"/>
         <source>Are you sure you want to purge all CPAP data for the following machine:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1368"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1450"/>
         <source>Performance will be degraded during these recalculations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1368"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1450"/>
         <source>Recalculating Indices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1379"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1461"/>
         <source>Loading Event Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1381"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1429"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1463"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1511"/>
         <source>Recalculating Summaries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1439"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1521"/>
         <source>Restart Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1439"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1521"/>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1443"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1525"/>
         <source>Recalculations are now complete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1443"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1525"/>
         <source>Task Completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1464"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1546"/>
         <source>There was a problem opening ZEO File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1467"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1549"/>
         <source>Zeo CSV Import complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1487"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1569"/>
         <source>There was a problem opening MSeries block File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1490"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1572"/>
         <source>MSeries Import complete</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1374,258 +1570,313 @@ One is required to use this section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="45"/>
-        <source>qrc:/docs/intro.html</source>
+        <location filename="../sleepyhead/newprofile.ui" line="54"/>
+        <source>qrc:/docs/update_notes.html</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="58"/>
+        <location filename="../sleepyhead/newprofile.ui" line="70"/>
         <source>I agree to all the conditions above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="90"/>
+        <location filename="../sleepyhead/newprofile.ui" line="111"/>
         <source>User Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="113"/>
+        <location filename="../sleepyhead/newprofile.ui" line="134"/>
         <source>User Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="132"/>
+        <location filename="../sleepyhead/newprofile.ui" line="153"/>
         <source>Keep the kids out.. Nothing more.. This isn&apos;t meant to be uber security.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="135"/>
+        <location filename="../sleepyhead/newprofile.ui" line="156"/>
         <source>Password Protect Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="150"/>
+        <location filename="../sleepyhead/newprofile.ui" line="171"/>
         <source>Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="164"/>
+        <location filename="../sleepyhead/newprofile.ui" line="185"/>
         <source>...twice...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="191"/>
+        <location filename="../sleepyhead/newprofile.ui" line="212"/>
         <source>Locale Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="212"/>
+        <location filename="../sleepyhead/newprofile.ui" line="242"/>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="231"/>
+        <location filename="../sleepyhead/newprofile.ui" line="261"/>
         <source>TimeZone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="270"/>
+        <location filename="../sleepyhead/newprofile.ui" line="300"/>
         <source>DST Zone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="290"/>
+        <location filename="../sleepyhead/newprofile.ui" line="329"/>
         <source>Personal Information (for reports)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="314"/>
+        <location filename="../sleepyhead/newprofile.ui" line="353"/>
         <source>First Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="324"/>
+        <location filename="../sleepyhead/newprofile.ui" line="363"/>
         <source>Last Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="334"/>
+        <location filename="../sleepyhead/newprofile.ui" line="373"/>
         <source>D.O.B.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="350"/>
+        <location filename="../sleepyhead/newprofile.ui" line="389"/>
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="363"/>
+        <location filename="../sleepyhead/newprofile.ui" line="402"/>
         <source>Male</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="368"/>
+        <location filename="../sleepyhead/newprofile.ui" line="407"/>
         <source>Female</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="384"/>
+        <location filename="../sleepyhead/newprofile.ui" line="423"/>
         <source>Height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="423"/>
+        <location filename="../sleepyhead/newprofile.ui" line="462"/>
         <source>metric</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="428"/>
+        <location filename="../sleepyhead/newprofile.ui" line="467"/>
         <source>archiac</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="441"/>
+        <location filename="../sleepyhead/newprofile.ui" line="480"/>
         <source>Contact Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="468"/>
-        <location filename="../sleepyhead/newprofile.ui" line="732"/>
+        <location filename="../sleepyhead/newprofile.ui" line="507"/>
+        <location filename="../sleepyhead/newprofile.ui" line="789"/>
         <source>Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="485"/>
-        <location filename="../sleepyhead/newprofile.ui" line="763"/>
+        <location filename="../sleepyhead/newprofile.ui" line="524"/>
+        <location filename="../sleepyhead/newprofile.ui" line="820"/>
         <source>Email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="495"/>
-        <location filename="../sleepyhead/newprofile.ui" line="753"/>
+        <location filename="../sleepyhead/newprofile.ui" line="534"/>
+        <location filename="../sleepyhead/newprofile.ui" line="810"/>
         <source>Phone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="531"/>
+        <location filename="../sleepyhead/newprofile.ui" line="579"/>
         <source>CPAP Treatment Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="558"/>
+        <location filename="../sleepyhead/newprofile.ui" line="606"/>
         <source>Date Diagnosed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="572"/>
+        <location filename="../sleepyhead/newprofile.ui" line="620"/>
         <source>Untreated AHI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="586"/>
+        <location filename="../sleepyhead/newprofile.ui" line="634"/>
         <source>CPAP Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="594"/>
+        <location filename="../sleepyhead/newprofile.ui" line="642"/>
         <source>CPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="599"/>
+        <location filename="../sleepyhead/newprofile.ui" line="647"/>
         <source>APAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="604"/>
+        <location filename="../sleepyhead/newprofile.ui" line="652"/>
         <source>Bi-Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="609"/>
+        <location filename="../sleepyhead/newprofile.ui" line="657"/>
         <source>ASV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="617"/>
+        <location filename="../sleepyhead/newprofile.ui" line="665"/>
         <source>RX Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="661"/>
+        <location filename="../sleepyhead/newprofile.ui" line="718"/>
         <source>Doctors / Clinic Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="688"/>
+        <location filename="../sleepyhead/newprofile.ui" line="745"/>
         <source>Doctors Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="705"/>
+        <location filename="../sleepyhead/newprofile.ui" line="762"/>
         <source>Practice Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="715"/>
+        <location filename="../sleepyhead/newprofile.ui" line="772"/>
         <source>Patient ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="811"/>
+        <location filename="../sleepyhead/newprofile.ui" line="868"/>
         <source>SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="826"/>
+        <location filename="../sleepyhead/newprofile.ui" line="883"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="887"/>
+        <location filename="../sleepyhead/newprofile.ui" line="944"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="903"/>
+        <location filename="../sleepyhead/newprofile.ui" line="960"/>
         <source>&amp;Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.ui" line="919"/>
-        <location filename="../sleepyhead/newprofile.cpp" line="207"/>
-        <location filename="../sleepyhead/newprofile.cpp" line="215"/>
+        <location filename="../sleepyhead/newprofile.ui" line="976"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="238"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="246"/>
         <source>&amp;Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.cpp" line="57"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="59"/>
         <source>Select Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.cpp" line="107"/>
-        <source>Empty Username</source>
+        <location filename="../sleepyhead/newprofile.cpp" line="100"/>
+        <source>Welcome to SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="102"/>
+        <source>This software is being designed to assist you in reviewing the data produced by your CPAP machines and related equipment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="104"/>
+        <source>SleepyHead has been released freely under the &lt;a href=&apos;qrc:/COPYING&apos;&gt;GNU Public License&lt;/a&gt;, and comes with no warranty, and without ANY claims to fitness for any purpose.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="105"/>
+        <source>PLEASE READ CAREFULLY</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="106"/>
+        <source>SleepyHead is intended merely as a data viewer, and definitely not a substitute for competent medical guidance from your Doctor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="108"/>
+        <source>Accuracy of any data displayed is not and can not be guaranteed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="110"/>
+        <source>Any reports generated are for PERSONAL USE ONLY, and NOT IN ANY WAY fit for compliance or medical diagnostic purposes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="112"/>
+        <source>The author will not be held liable for &lt;u&gt;anything&lt;/u&gt; related to the use or misuse of this software.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sleepyhead/newprofile.cpp" line="115"/>
+        <source>Use of this software is entirely at your own risk.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="117"/>
+        <source>SleepyHead is copyright &amp;copy;2011-2014 Mark Watkins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="138"/>
+        <source>Empty Username</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="146"/>
         <source>Passwords don&apos;t match</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.cpp" line="138"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="169"/>
         <source>Profile Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.cpp" line="138"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="169"/>
         <source>Accept and save this information?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/newprofile.cpp" line="205"/>
+        <location filename="../sleepyhead/newprofile.cpp" line="236"/>
         <source>&amp;Finish</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/newprofile.cpp" line="400"/>
+        <source>&amp;Close this window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3037,29 +3288,29 @@ It really doesn&apos;t use that much resources.. :)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="58"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="61"/>
         <source>Nasal Pillows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="359"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="362"/>
         <source>Data Reindex Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="359"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="362"/>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="364"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="367"/>
         <source>Restart Required</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="364"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="367"/>
         <source>One or more of the changes you have made will require this application to be restarted,
 in order for these changes to come into effect.
 
@@ -3067,67 +3318,67 @@ Would you like do this now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="560"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="563"/>
         <source>Add this Location to the Import List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="678"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="681"/>
         <source>Daily Graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="679"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="682"/>
         <source>Overview Graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="691"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="694"/>
         <source>Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="721"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="724"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="752"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="755"/>
         <source>Oximetry Graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="784"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="787"/>
         <source>Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="784"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="788"/>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="861"/>
         <source>This may not be a good idea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="861"/>
         <source>ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="861"/>
         <source>If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won&apos;t come back.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="861"/>
         <source>If you need to conserve disk space, please remember to carry out manual backups.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="861"/>
         <source>Are you sure you want to disable these backups?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3304,7 +3555,7 @@ Signed: Nasty Programmer</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2362"/>
+        <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="2317"/>
         <location filename="../sleepyhead/SleepLib/common.cpp" line="361"/>
         <source>No Data</source>
         <translation type="unfinished"></translation>
@@ -4112,42 +4363,42 @@ Are you sure you want to use this folder?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="661"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="743"/>
         <source>About SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="676"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="758"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="680"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="762"/>
         <source>&amp;Donate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="35"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="38"/>
         <source>Unspecified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="36"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="39"/>
         <source>Nasal Pillows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="37"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="40"/>
         <source>Hybrid F/F Mask</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="38"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="41"/>
         <source>Nasal Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="39"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="42"/>
         <source>Full-Face Mask</source>
         <translation type="unfinished"></translation>
     </message>

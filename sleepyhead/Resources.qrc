@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>docs/index.html</file>
         <file>icons/sdcard.png</file>
         <file>icons/preferences.png</file>
         <file>icons/overview.png</file>
@@ -33,7 +32,6 @@
         <file>icons/trophy.png</file>
         <file>icons/bookmark.png</file>
         <file>icons/help.png</file>
-        <file>LICENSE.txt</file>
         <file>docs/tooltips.css</file>
         <file>icons/session-off.png</file>
         <file>icons/session-on.png</file>
@@ -44,7 +42,7 @@
         <file>docs/update_notes.html</file>
         <file>docs/sheep.png</file>
         <file>icons/Bob Strikes Back.png</file>
-        <file>docs/intro.html</file>
         <file>icons/Jedimark.png</file>
+        <file>COPYING</file>
     </qresource>
 </RCC>

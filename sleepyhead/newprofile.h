@@ -53,7 +53,11 @@ private slots:
 
     void on_heightCombo_currentIndexChanged(int index);
 
+    void on_textBrowser_anchorClicked(const QUrl &arg1);
+
 private:
+    QString getIntroHTML();
+
     Ui::NewProfile *ui;
     bool m_editMode;
     int m_firstPage;

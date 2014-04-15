@@ -14,6 +14,8 @@
 #include <QTextStream>
 #include <QCryptographicHash>
 #include <QFileDialog>
+#include <QFile>
+#include <QDesktopServices>
 #include <QSettings>
 #include "SleepLib/profiles.h"
 
@@ -81,12 +83,41 @@ NewProfile::NewProfile(QWidget *parent) :
     ui->AppTitle->setText("SleepyHead v"+VersionString);
     ui->releaseStatus->setText(ReleaseStatus);
 
-    ui->textBrowser->setSource(QUrl("qrc:/docs/intro.html"));
+
+    ui->textBrowser->setHtml(getIntroHTML());
 }
 
 NewProfile::~NewProfile()
 {
     delete ui;
+}
+
+
+QString NewProfile::getIntroHTML()
+{
+    return "<html>"
+"<body>"
+"<div align=center><h1>"+tr("Welcome to SleepyHead")+"</h1></div>"
+
+"<p>"+tr("This software is being designed to assist you in reviewing the data produced by your CPAP machines and related equipment.")+"</p>"
+
+"<p>"+tr("SleepyHead has been released freely under the <a href='qrc:/COPYING'>GNU Public License</a>, and comes with no warranty, and without ANY claims to fitness for any purpose.")+"</p>"
+"<div align=center><font color=\"red\"><h2>"+tr("PLEASE READ CAREFULLY")+"</h2></font></div>"
+"<p>"+tr("SleepyHead is intended merely as a data viewer, and definitely not a substitute for competent medical guidance from your Doctor.")+"</p>"
+
+"<p>"+tr("Accuracy of any data displayed is not and can not be guaranteed.")+"</p>"
+
+"<p>"+tr("Any reports generated are for PERSONAL USE ONLY, and NOT IN ANY WAY fit for compliance or medical diagnostic purposes.")+"</p>"
+
+"<p>"+tr("The author will not be held liable for <u>anything</u> related to the use or misuse of this software.")+"</p>"
+
+"<div align=center>"
+"<p><b><font size=+1>"+tr("Use of this software is entirely at your own risk.")+"</font></b></p>"
+
+"<p><i>"+tr("SleepyHead is copyright &copy;2011-2014 Mark Watkins")+"<i></p>"
+"</div>"
+"</body>"
+"</html>";
 }
 
 void NewProfile::on_nextButton_clicked()
@@ -355,4 +386,27 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         ui->heightEdit->setValue(feet);
         ui->heightEdit2->setValue(inches);
     }
+}
+
+void NewProfile::on_textBrowser_anchorClicked(const QUrl &arg1)
+{
+    QDialog * dlg=new QDialog(this);
+    dlg->setMinimumWidth(600);
+    dlg->setMinimumHeight(500);
+    QVBoxLayout *layout=new QVBoxLayout();
+    dlg->setLayout(layout);
+    QTextBrowser *browser=new QTextBrowser(this);
+    dlg->layout()->addWidget(browser);
+    QPushButton *button=new QPushButton(tr("&Close this window"),browser);
+
+    QFile f(arg1.toString().replace("qrc:",":"));
+    f.open(QIODevice::ReadOnly);
+    QTextStream ts(&f);
+    QString text=ts.readAll();
+    connect(button, SIGNAL(clicked()), dlg, SLOT(close()));
+    dlg->layout()->addWidget(button);
+    browser->setPlainText(text);
+    dlg->exec();
+
+    delete dlg;
 }

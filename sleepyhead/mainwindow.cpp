@@ -192,6 +192,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifndef REMSTAR_M_SUPPORT
     ui->actionImport_RemStar_MSeries_Data->setVisible(false);
 #endif
+
+    on_homeButton_clicked();
 }
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
@@ -451,12 +453,84 @@ void MyStatsPage::javaScriptAlert(QWebFrame * frame, const QString & msg)
     mainwin->sendStatsUrl(msg);
 }
 
-void MainWindow::on_homeButton_clicked()
+QString MainWindow::getWelcomeHTML()
 {
-    // FIXME: Make this translatable
-    QString infourl="qrc:/docs/index.html"; // use this as a fallback
+    // This is messy, but allows it to be translated easier
+    return "<html>\n<head>"
+" <style type='text/css'>"
+"  <!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
+"  p,a,td,body { font-size: 14px }"
+"  a:link,a:visited { color: \"#000020\"; text-decoration: none; font-weight: bold;}"
+"  a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
+" </style>\n"
+"</head>"
+"<body leftmargin=0 topmargin=0 rightmargin=0>"
+"<table width=\"100%\" cellspacing=0 cellpadding=4 border=0 >"
+"<tr><td bgcolor=\"#d0d0d0\" colspan=2 cellpadding=0 valign=center align=center><font color=\"black\" size=+1><b>"+tr("Welcome to SleepyHead")+"</b></font></td></tr>"
+"<tr>"
+"<td valign=\"top\" leftmargin=0 cellpadding=6>"
+"<h3>"+tr("About SleepyHead")+"</h3>"
+"<p>"+tr("This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.")+"</p>"
+"<p>"+tr("SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.")+"</p>"
+"<p><i><b>"+tr("This is a beta release, some features may not yet behave as expected.")+"</b></i><br/>"+tr("Please report any bugs you find to SleepyHead's SourceForge page.")+"</p>"
 
-    ui->webView->setUrl(QUrl(infourl));
+"<h3>"+tr("Currenly supported machines:")+"</h3>"
+"<b>"+tr("CPAP")+"</b>"
+"<li>"+tr("Philips Respironics System One (CPAP, Auto, BiPAP & ASV models)")+"</li>"
+"<li>"+tr("ResMed S9 models (CPAP, Auto, VPAP)")+"</li>"
+"<li>"+tr("DeVilbiss Intellipap (Auto)")+"</li>"
+"<b>"+tr("Oximetry")+"</b>"
+"<li>"+tr("Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters")+"</li>"
+"<li>"+tr("ResMed S9 Oximeter Attachment")+"</li>"
+"<p><h3>"+tr("Online Help Resources")+"</h3></p>"
+"<p><b>"+tr("Note:")+"</b>"+tr("I don't recommend using this built in web browser to do any major surfing in, it will work, but it's mainly meant as a help browser.")+
+tr("(It doesn't support SSL encryption, so it's not a good idea to type your passwords or personal details anywhere.)")+"</p>"+
+
+tr("SleepyHead's Online <a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide\">Users Guide</a><br/>")+
+tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions\">Frequently Asked Questions</a><br/>")+
+tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary\">Glossary of Sleep Disorder Terms</a><br/>")+
+tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page\">SleepyHead Wiki</a><br/>")+
+tr("SleepyHead's <a href='http://www.sourceforge.net/projects/sleepyhead'>Project Website</a> on SourceForge<br/>")+
+tr("Got a neat idea on how to improve SleepyHead? Check out SleepyHeads <a href=\"http://sourceforge.net/apps/ideatorrent/sleepyhead/\">Idea Torrent</a>")+
+"<p><h3>"+tr("Further Information")+"</h3></p>"
+"<p>"+
+tr("Here are the <a href='qrc:/docs/release_notes.html'>release notes</a> for this version.")+"<br/>"+
+tr("Plus a few <a href='qrc:/docs/usage.html'>usage notes</a>, and some important information for Mac users.")+"<br/>"+
+"<p>"+tr("About <a href='http://en.wikipedia.org/wiki/Sleep_apnea'>Sleep Apnea</a> on Wikipedia")+"</p>"
+
+"<p>"+tr("Friendly forums to talk and learn about Sleep Apnea:")+"<br/>"+
+tr("<a href='http://www.cpaptalk.com'>CPAPTalk Forum</a>,")+
+tr("<a href='http://s7.zetaboards.com/Apnea_Board/index'>Apnea Board</a>")+"</p>"
+"</td>"
+"<td><image src='qrc:/icons/bob-v3.0.png' width=220 height=220><br/>"
+"</td>"
+"</tr>"
+ "<tr>"
+"<td colspan=2>"
+ "<hr/>"
+"<p><b>"+tr("Copyright:")+"</b> "+tr("&copy;2011-2014")+" <a href=\"http://jedimark64.blogspot.com\">Mark Watkins</a> (jedimark)</p>"
+"<p><b>"+tr("License:")+"</b> "+tr("This software is released freely under the <a href=\"qrc:/COPYING\">GNU Public License</a>.")+"</p>"
+"<hr/>"
+"<p><b>"+tr("DISCLAIMER:")+"</b></p>"
+"<b><p>"+tr("This is <font color='red'><u>NOT</u></font> medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.")+"</p>"
+"<p>"+tr("The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.")+"</p>"
+"<p>"+tr("Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.")+"</p>"
+"<p>"+tr("*** <u>Use at your own risk</u> ***")+"</p></b>"
+"<hr/>"
+"</td></tr>"
+"</table>"
+"</body>"
+"</html>"
+
+;
+}
+
+void MainWindow::on_homeButton_clicked() {
+
+    ui->webView->setHtml(getWelcomeHTML());
+
+    //QString infourl="qrc:/docs/index.html"; // use this as a fallback
+    //ui->webView->setUrl(QUrl(infourl));
 }
 
 

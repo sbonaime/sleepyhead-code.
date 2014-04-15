@@ -306,6 +306,7 @@ private slots:
     void on_actionChange_Data_Folder_triggered();
 
 private:
+    QString getWelcomeHTML();
     void FreeSessions();
 
     Ui::MainWindow *ui;
