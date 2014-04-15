@@ -962,7 +962,7 @@ QString Summary::GenerateHTML()
                     .arg(tooltiphide);
         }
         html+="</table>";
-        html+=QString("<i>")+tr("Eficacy highlighting ignores prescription settings with less than %1 days of recorded data.").arg(rxthresh)+QString("</i><br/>");
+        html+=QString("<i>")+tr("Efficacy highlighting ignores prescription settings with less than %1 days of recorded data.").arg(rxthresh)+QString("</i><br/>");
         html+="</div>";
 
     }
