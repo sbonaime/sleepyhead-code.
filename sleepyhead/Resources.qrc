@@ -45,5 +45,6 @@
         <file>docs/sheep.png</file>
         <file>icons/Bob Strikes Back.png</file>
         <file>docs/intro.html</file>
+        <file>icons/Jedimark.png</file>
     </qresource>
 </RCC>

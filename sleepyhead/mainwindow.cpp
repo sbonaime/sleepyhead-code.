@@ -445,7 +445,10 @@ void MyStatsPage::javaScriptAlert(QWebFrame * frame, const QString & msg)
 
 void MainWindow::on_homeButton_clicked()
 {
-    ui->webView->setUrl(QUrl("qrc:/docs/index.html"));
+    // FIXME: Make this translatable
+    QString infourl="qrc:/docs/index.html"; // use this as a fallback
+
+    ui->webView->setUrl(QUrl(infourl));
 }
 
 
@@ -602,28 +605,57 @@ void MainWindow::on_action_About_triggered()
     if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev+" ("+QString(GIT_BRANCH)+" branch)";
 
 //    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
-    QString msg=QString(
+    QString msg=QString("<html>"
+"<head><style type=\"text/css\">a:link, a:visited { color: #000044; text-decoration: underline; font-weight: normal;}"
+"a:hover { background-color: inherit; color: #4444ff; text-decoration:none; font-weight: normal; }"
+"</style></head>"
+
+"<body>"
 "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
 "<table width=100%><tr><td>"
 "<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr/>"+
-tr("Copyright")+" &copy;2013 Mark Watkins (jedimark) <br/> \n"+
+tr("Copyright")+" &copy;2011-2014 Mark Watkins (jedimark) <br/> \n"+
 tr("This software is released under the GNU Public License v3.0<br/>")+
-"<hr><p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
-tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><br/>"+
-tr("Authors Twitter Feed")+": <a href=\"http://twitter.com/jedimark64\">http://twitter.com/jedimark64</a></p>"+
-"</td><td><img src=\"qrc:/icons/Bob Strikes Back.png\" width=150px height=150px></td></tr><tr colspan><td colspan=2>"+
-tr("<p>The author wishes to express thanks to James Marshall and Rich Freeman for their assistance with this project.</p>")+
-"<hr><p><i>"+tr("This software comes with absolutely no warranty, either express of implied.")+" "+
+"<hr>"
+
+// Project links
+"<p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
+tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><p/>"+
+
+// Social media links.. (Dear Translators, if one of these isn't available in your country, it's ok to leave it out.)
+tr("Don't forget to Like/+1 SleepyHead on <a href=\"http://www.facebook.com/SleepyHeadCPAP\">Facebook</a> or <a href=\"http://plus.google.com/u/0/b/101426655252362287937\">Google+")+"</p>"+
+
+// Image
+"</td><td align='center'><img src=\"qrc:/icons/Jedimark.png\" width=260px><br/> <br/><i>"+tr("SleepyHead, brought to you by Jedimark")+"</i></td></tr><tr colspan><td colspan=2>"+
+
+
+// Credits section
+"<hr/><p><b><font size='+1'>"+tr("Kudos & Credits")+"</font></b></p><b>"+
+tr("Bugfixes, Patches and Platform Help:")+"</b> "+tr("James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")+"</p>"
+
+"<p><b>"+tr("Translators:")+"</b> "+tr("Arie Klerk (Dutch), Steffen Reitz (German).")+"</p>"
+
+"<p><b>"+tr("3rd Party Libaries:")+"</b> "+
+tr("SleepyHead is built using the <a href=\"http://qt-project.org\">Qt Application Framework</a>.")+" "+
+tr("It uses the cross platform <a href=\"http://code.google.com/p/qextserialport\">QExtSerialPort</a> library for serial port access in the Oximetry module.")+" "+
+tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")+"<br/>"
+"<p>"+tr("Special thanks to Pugsy from <a href='http://cpaptalk.com'>CPAPTalk</a> for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")+"</p>"
+
+// Donations
+"<hr><p><font color=\"blue\">"+
+tr("Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.")+"</font>"
+
+
+"<hr><p><b>Disclaimer</b><br/><i>"+tr("This software comes with absolutely no warranty, either express of implied.")+" "+
 tr("It comes with no guarantee of fitness for any particular purpose.")+" "+
 tr("No guarantees are made regarding the accuracy of any data this program displays.")+"</i></p>"
 "<p><i>"+tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.")+
-tr("This software is NOT suitable for medical diagnosis, CPAP complaince reporting and other similar purposes.")+"</i></p>"
-"<p><i>"+tr("The author and any associates of his accept NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")+"<br/>"+
-tr("Use this software entirely at your own risk.")+"</i></p>"
-"<hr><p><font color=\"blue\">"+tr("If you find this free software to be of use, please consider supporting the development efforts by making a paypal donation to the Author")+"</font></p>"
-"</font></td></tr></table></span>"
+"<b> "+tr("This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.")+"</b></i></p>"
+"<p><i>"+tr("The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")+"</p><p><b>"+
+tr("Use this software entirely at your own risk.")+"</b></i></p>"
+"</font></td></tr></table></span></body>"
 ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(QDir::toNativeSeparators(GetAppRoot()));
-    //"</div></body>"
+    //"</div></body></html>"
 
      QDialog aboutbox;
      aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
