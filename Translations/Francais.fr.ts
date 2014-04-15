@@ -715,321 +715,332 @@ If you forgot to import todays CPAP data first, go and do that now, then import 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="125"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="2029"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="2086"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="136"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning: &lt;/span&gt;This is pre-release software, some parts of this program may not yet function as intended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.ui" line="153"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2057"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2114"/>
         <source>about:blank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="140"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="168"/>
         <source>&amp;Help Browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="208"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="228"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="248"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="1911"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="236"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="256"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="276"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="1939"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="297"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="325"/>
         <source>qrc:/docs/index.html</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="585"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="613"/>
         <source>&amp;Navigation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="612"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="640"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="662"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="690"/>
         <source>Daily</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="706"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="734"/>
         <source>Overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="750"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="778"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="482"/>
         <source>Oximetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="800"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="828"/>
         <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="850"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="878"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="972"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="1000"/>
         <source>&amp;Bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2056"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2084"/>
         <source>&amp;Records</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2115"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2143"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2131"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2159"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2148"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2176"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2164"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2192"/>
         <source>&amp;Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2168"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2196"/>
         <source>&amp;Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2172"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2200"/>
         <source>&amp;Purge CPAP Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2196"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2224"/>
         <source>&amp;Import Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2199"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2227"/>
         <source>Shift+F2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2204"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2232"/>
         <source>&amp;Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2209"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2237"/>
         <source>&amp;Profiles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2214"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2242"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="171"/>
         <source>E&amp;xit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2219"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2247"/>
         <source>View &amp;Daily</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2222"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2250"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2227"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2255"/>
         <source>View &amp;Overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2230"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2258"/>
         <source>F6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2235"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2263"/>
         <source>View &amp;Welcome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2238"/>
-        <location filename="../sleepyhead/mainwindow.ui" line="2379"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2266"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2413"/>
         <source>F4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2243"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2271"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2246"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2274"/>
         <source>Ctrl+Tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2254"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2282"/>
         <source>Use &amp;AntiAliasing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2259"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2287"/>
         <source>&amp;About SleepyHead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2267"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2295"/>
         <source>&amp;Fullscreen Toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2270"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2298"/>
         <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2278"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2306"/>
         <source>Show Debug Pane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2283"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2311"/>
         <source>&amp;Reset Graph Layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2288"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2316"/>
         <location filename="../sleepyhead/mainwindow.cpp" line="169"/>
         <source>Check for &amp;Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2293"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2321"/>
         <source>Take &amp;Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2296"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2324"/>
         <source>F12</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2301"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2329"/>
         <source>View O&amp;ximetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2304"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2332"/>
         <source>F7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2309"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2337"/>
         <source>Print &amp;Report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2314"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2342"/>
         <source>&amp;Edit Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2322"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2350"/>
         <source>&amp;Link Graph Groups</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2327"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2355"/>
         <source>Exp&amp;ort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2332"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2360"/>
         <source>Online Users &amp;Guide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2337"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2365"/>
         <source>&amp;Frequently Asked Questions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2342"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2370"/>
         <source>&amp;Rebuild Oximetry Indices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2347"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2375"/>
         <source>Change &amp;User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2352"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2380"/>
         <source>&amp;Current Selected Day</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2357"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2385"/>
         <source>All data for current CPAP machine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2368"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2396"/>
         <source>Right &amp;Sidebar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2371"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2399"/>
         <source>F8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2376"/>
-        <source>View S&amp;ummary</source>
+        <location filename="../sleepyhead/mainwindow.ui" line="2404"/>
+        <source>View S&amp;tatistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2384"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2407"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2410"/>
+        <source>View Statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.ui" line="2418"/>
         <source>Import &amp;ZEO Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2389"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2423"/>
         <source>Import RemStar &amp;MSeries Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2394"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2428"/>
         <source>&amp;Support SleepyHead Development</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2399"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2433"/>
         <source>Sleep Disorder Terms &amp;Glossary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2404"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2438"/>
         <source>Change &amp;Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.ui" line="2409"/>
+        <location filename="../sleepyhead/mainwindow.ui" line="2443"/>
         <source>Change &amp;Data Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4507,26 +4518,6 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="52"/>
-        <source>This is an unstable build so expect the possibility things will go wrong.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="53"/>
-        <source>Please report bugs you find here to SleepyHead&apos;s developer mailing list.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="55"/>
-        <source>This is a beta software and some functionality may not work as intended yet.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/summary.cpp" line="56"/>
-        <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sleepyhead/Graphs/gXAxis.cpp" line="57"/>
         <source>Jan</source>
         <translation type="unfinished"></translation>
@@ -5202,6 +5193,46 @@ Please don&apos;t touch anything until it&apos;s done.</source>
         <source>Graph showing running RDI for the past hour</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="63"/>
+        <source>Name: %1, %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="64"/>
+        <source>DOB: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="65"/>
+        <source>Phone: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="66"/>
+        <source>Email: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="67"/>
+        <source>Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="73"/>
+        <source>Usage Statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="83"/>
+        <source>This report was generated by a pre-release version of SleepyHead (%1), &lt;b&gt;and has not been approved in any way for compliance or medical diagnostic purposes&lt;/b&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/summary.cpp" line="84"/>
+        <source>SleepyHead is free open-source software available from http://sourceforge.net/projects/SleepyHead</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QextSerialPort</name>
@@ -5325,268 +5356,268 @@ Please don&apos;t touch anything until it&apos;s done.</source>
 <context>
     <name>Summary</name>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="274"/>
+        <location filename="../sleepyhead/summary.cpp" line="296"/>
         <source>Please Import Some Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="274"/>
+        <location filename="../sleepyhead/summary.cpp" line="296"/>
         <source>SleepyHead is pretty much useless without it.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="274"/>
+        <location filename="../sleepyhead/summary.cpp" line="296"/>
         <source>It might be a good idea to check preferences first,&lt;/br&gt;as there are some options that affect import.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="274"/>
+        <location filename="../sleepyhead/summary.cpp" line="296"/>
         <source>First import can take a few minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="305"/>
+        <location filename="../sleepyhead/summary.cpp" line="327"/>
         <source>No CPAP Machine Data Imported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="307"/>
+        <location filename="../sleepyhead/summary.cpp" line="329"/>
         <source>CPAP Statistics as of</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="313"/>
+        <location filename="../sleepyhead/summary.cpp" line="335"/>
         <source>No CPAP data available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="315"/>
+        <location filename="../sleepyhead/summary.cpp" line="337"/>
         <source>%1 day of CPAP Data, on %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="317"/>
+        <location filename="../sleepyhead/summary.cpp" line="339"/>
         <source>%1 days of CPAP Data, between %2 and %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Most Recent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Last 7 Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Last 30 Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Last 6 months</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="321"/>
-        <location filename="../sleepyhead/summary.cpp" line="451"/>
+        <location filename="../sleepyhead/summary.cpp" line="343"/>
+        <location filename="../sleepyhead/summary.cpp" line="473"/>
         <source>Last Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="332"/>
+        <location filename="../sleepyhead/summary.cpp" line="354"/>
         <source>RERA Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="342"/>
+        <location filename="../sleepyhead/summary.cpp" line="364"/>
         <source>Flow Limit Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="353"/>
+        <location filename="../sleepyhead/summary.cpp" line="375"/>
         <source>Hours per Night</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="362"/>
+        <location filename="../sleepyhead/summary.cpp" line="384"/>
         <source>Min EPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="376"/>
+        <location filename="../sleepyhead/summary.cpp" line="398"/>
         <source>Max IPAP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="391"/>
+        <location filename="../sleepyhead/summary.cpp" line="413"/>
         <source>Average Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="398"/>
+        <location filename="../sleepyhead/summary.cpp" line="420"/>
         <source>%1% Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="406"/>
+        <location filename="../sleepyhead/summary.cpp" line="428"/>
         <source>Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="422"/>
+        <location filename="../sleepyhead/summary.cpp" line="444"/>
         <source>Average %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="429"/>
+        <location filename="../sleepyhead/summary.cpp" line="451"/>
         <source>%1% %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="443"/>
+        <location filename="../sleepyhead/summary.cpp" line="465"/>
         <source>Oximetry Summary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="445"/>
+        <location filename="../sleepyhead/summary.cpp" line="467"/>
         <source>%1 day of Oximetry Data, on %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="447"/>
+        <location filename="../sleepyhead/summary.cpp" line="469"/>
         <source>%1 days of Oximetry Data, between %2 and %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="461"/>
+        <location filename="../sleepyhead/summary.cpp" line="483"/>
         <source>Average SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="468"/>
+        <location filename="../sleepyhead/summary.cpp" line="490"/>
         <source>Minimum SpO2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="475"/>
+        <location filename="../sleepyhead/summary.cpp" line="497"/>
         <source>SpO2 Events / Hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="482"/>
+        <location filename="../sleepyhead/summary.cpp" line="504"/>
         <source>% of time in SpO2 Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="489"/>
+        <location filename="../sleepyhead/summary.cpp" line="511"/>
         <source>Average Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="496"/>
+        <location filename="../sleepyhead/summary.cpp" line="518"/>
         <source>Minimum Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="503"/>
+        <location filename="../sleepyhead/summary.cpp" line="525"/>
         <source>Maximum Pulse Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="510"/>
+        <location filename="../sleepyhead/summary.cpp" line="532"/>
         <source>Pulse Change Events / Hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="702"/>
+        <location filename="../sleepyhead/summary.cpp" line="724"/>
         <source>Usage Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="703"/>
+        <location filename="../sleepyhead/summary.cpp" line="725"/>
         <source>Total Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="705"/>
+        <location filename="../sleepyhead/summary.cpp" line="727"/>
         <source>Compliant Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="712"/>
+        <location filename="../sleepyhead/summary.cpp" line="734"/>
         <source>Days AHI &amp;gt;5.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="716"/>
+        <location filename="../sleepyhead/summary.cpp" line="738"/>
         <source>Best&amp;nbsp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="725"/>
+        <location filename="../sleepyhead/summary.cpp" line="747"/>
         <source>Worst&amp;nbsp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="771"/>
+        <location filename="../sleepyhead/summary.cpp" line="793"/>
         <source>Best RX Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="807"/>
+        <location filename="../sleepyhead/summary.cpp" line="829"/>
         <source>Worst RX Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="829"/>
+        <location filename="../sleepyhead/summary.cpp" line="851"/>
         <source>Changes to Prescription Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="837"/>
+        <location filename="../sleepyhead/summary.cpp" line="859"/>
         <source>Days</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="839"/>
+        <location filename="../sleepyhead/summary.cpp" line="861"/>
         <source>FL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="841"/>
+        <location filename="../sleepyhead/summary.cpp" line="863"/>
         <source>Pr. Rel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="943"/>
-        <source>The above has a threshold which excludes day counts less than %1 from the best/worst highlighting</source>
+        <location filename="../sleepyhead/summary.cpp" line="965"/>
+        <source>Eficacy highlighting ignores prescription settings with less than %1 days of recorded data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="950"/>
+        <location filename="../sleepyhead/summary.cpp" line="972"/>
         <source>Machine Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="956"/>
+        <location filename="../sleepyhead/summary.cpp" line="978"/>
         <source>First Use</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/summary.cpp" line="957"/>
+        <location filename="../sleepyhead/summary.cpp" line="979"/>
         <source>Last Use</source>
         <translation type="unfinished"></translation>
     </message>

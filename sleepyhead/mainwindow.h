@@ -218,7 +218,7 @@ private slots:
     void DelayedScreenshot();
 
     //! \brief a slot that calls the real Oximetry tab selector
-    void on_actionView_O_ximetry_triggered();
+    void on_actionView_Oximetry_triggered();
 
     //! \brief Updates the Statusbar message with the QString message contained in Text
     void updatestatusBarMessage (const QString & text);
@@ -269,7 +269,7 @@ private slots:
 
     void on_helpButton_clicked();
 
-    void on_actionView_S_ummary_triggered();
+    void on_actionView_Statistics_triggered();
 
     void on_webView_linkClicked(const QUrl &arg1);
 

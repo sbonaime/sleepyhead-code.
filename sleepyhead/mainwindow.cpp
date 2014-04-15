@@ -885,7 +885,7 @@ void MainWindow::DelayedScreenshot()
     }
 }
 
-void MainWindow::on_actionView_O_ximetry_triggered()
+void MainWindow::on_actionView_Oximetry_triggered()
 {
     on_oximetryButton_clicked();
 }
@@ -1339,7 +1339,7 @@ void MainWindow::on_helpButton_clicked()
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
-void MainWindow::on_actionView_S_ummary_triggered()
+void MainWindow::on_actionView_Statistics_triggered()
 {
     ui->tabWidget->setCurrentWidget(ui->summaryTab);
 }
