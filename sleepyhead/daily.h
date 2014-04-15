@@ -295,21 +295,22 @@ private:
     void updateCube();
     void updateGraphCombo();
 
-    QString getSessionInformation(Day * cpap, Day * oxi, Day * stage);
-    QString getMachineSettings(Day * cpap);
-    QString getStatisticsInfo(Day * cpap, Day * oxi);
-    QString getCPAPInformation(Day * cpap);
-    QString getOximeterInformation(Day * oxi);
-    QString getEventBreakdown(Day * cpap);
-    QString getSleepTime(Day * cpap, Day * oxi);
+    QString getSessionInformation(Day *cpap, Day *oxi, Day *stage, Day *posit);
+    QString getMachineSettings(Day *cpap);
+    QString getStatisticsInfo(Day *cpap, Day *oxi, Day *pos);
+    QString getCPAPInformation(Day *cpap);
+    QString getOximeterInformation(Day *oxi);
+    QString getEventBreakdown(Day *cpap);
+    QString getSleepTime(Day *cpap, Day *oxi);
 
     gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
            *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF, *THPR,
-           *PLETHY,*TI,*TE, *RE, *IE, *AHI, *RDI, *STAGE, *INTPULSE, *INTSPO2;
+           *PLETHY,*TI,*TE, *RE, *IE, *AHI, *RDI, *STAGE, *INTPULSE, *INTSPO2, *INC, *ORI;
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
     QList<Layer *> STAGEData;
+    QList<Layer *> POSData;
     QHash<QString,QPushButton *> GraphToggles;
     QVector<QAction *> GraphAction;
     QGLContext *offscreen_context;
@@ -317,11 +318,13 @@ private:
     QList<int> splitter_sizes;
     Layer * AddCPAP(Layer *d) { CPAPData.push_back(d); return d; }
     Layer * AddSTAGE(Layer *d) { STAGEData.push_back(d); return d; }
+    Layer * AddPOS(Layer *d) { POSData.push_back(d); return d; }
     Layer * AddOXI(Layer *d) { OXIData.push_back(d); return d; }
 
     void UpdateCPAPGraphs(Day *day);
     void UpdateOXIGraphs(Day *day);
     void UpdateSTAGEGraphs(Day *day);
+    void UpdatePOSGraphs(Day *day);
 
 
     Ui::Daily *ui;
@@ -340,7 +343,6 @@ private:
 
     MyWebView * webView;
     Day * lastcpapday;
-
 
     bool ZombieMeterMoved;
     bool BookmarksChanged;

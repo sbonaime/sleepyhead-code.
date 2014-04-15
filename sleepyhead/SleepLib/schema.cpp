@@ -84,6 +84,7 @@ void init()
 //    <channel id="0x1023" class="data" name="RampPressure" details="Ramp Starting Pressure" label="Ramp Pr." color="black"/>
 
     QString GRP_CPAP="CPAP";
+    QString GRP_POS="POS";
     QString GRP_OXI="OXI";
     // Pressure Related Settings
 
@@ -191,6 +192,10 @@ void init()
     schema::channel.add(GRP_CPAP,new Channel(CPAP_LeakTotal         = 0x1117, DATA,    SESSION, "LeakTotal",         QObject::tr("Total Leak Rate"),                    QObject::tr("Detected mask leakage including natural Mask leakages"),  QObject::tr("Total Leaks"), QObject::tr("L/min"),    DEFAULT,    QColor("dark green")));
     schema::channel.add(GRP_CPAP,new Channel(CPAP_LeakMedian        = 0x1118, DATA,    SESSION, "LeakMedian",        QObject::tr("Median Leak Rate"),                   QObject::tr("Median rate of detected mask leakage"),         QObject::tr("Median Leaks"),          QObject::tr("L/min"),    DEFAULT,    QColor("dark green")));
     schema::channel.add(GRP_CPAP,new Channel(CPAP_RDI               = 0x1119, DATA,    SESSION, "RDI",               QObject::tr("Respiratory Disturbance Index"),      QObject::tr("Graph showing running RDI for the past hour"),  QObject::tr("RDI"),                QObject::tr("events/hour"), DEFAULT,  QColor("dark red")));
+
+    schema::channel.add(GRP_POS,new Channel(POS_Orientation         = 0x2990, DATA,    SESSION, "Orientation",      QObject::tr("Orientation"),                         QObject::tr("Sleep position in degrees"),  QObject::tr("Orientation"),  QObject::tr("degrees"), DEFAULT,  QColor("dark blue")));
+    schema::channel.add(GRP_POS,new Channel(POS_Inclination         = 0x2991, DATA,    SESSION, "Inclination",      QObject::tr("Inclination"),                         QObject::tr("Upright angle in degrees"),  QObject::tr("Inclination"),  QObject::tr("degrees"), DEFAULT,  QColor("dark magenta")));
+
 
 
     NoChannel=0;

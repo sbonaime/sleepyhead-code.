@@ -305,6 +305,8 @@ private slots:
 
     void on_actionChange_Data_Folder_triggered();
 
+    void on_actionImport_Somnopose_Data_triggered();
+
 private:
     QString getWelcomeHTML();
     void FreeSessions();

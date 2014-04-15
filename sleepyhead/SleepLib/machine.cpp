@@ -449,6 +449,17 @@ SleepStage::~SleepStage()
 {
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// PositionSensor Class implmementation
+//////////////////////////////////////////////////////////////////////////////////////////
+PositionSensor::PositionSensor(Profile *p,MachineID id):Machine(p,id)
+{
+    m_type=MT_POSITION;
+}
+PositionSensor::~PositionSensor()
+{
+}
+
 
 ChannelID NoChannel, SESSION_ENABLED;
 ChannelID CPAP_IPAP, CPAP_IPAPLo, CPAP_IPAPHi, CPAP_EPAP, CPAP_EPAPLo, CPAP_EPAPHi, CPAP_Pressure, CPAP_PS, CPAP_Mode, CPAP_AHI,
@@ -478,3 +489,4 @@ ChannelID ZEO_SleepStage, ZEO_ZQ, ZEO_TotalZ, ZEO_TimeToZ, ZEO_TimeInWake, ZEO_T
 ZEO_AlarmReason, ZEO_SnoozeTime, ZEO_WakeTone, ZEO_WakeWindow, ZEO_AlarmType, ZEO_MorningFeel, ZEO_FirmwareVersion,
 ZEO_FirstAlarmRing, ZEO_LastAlarmRing, ZEO_FirstSnoozeTime, ZEO_LastSnoozeTime, ZEO_SetAlarmTime, ZEO_RiseTime;
 
+ChannelID POS_Orientation, POS_Inclination;

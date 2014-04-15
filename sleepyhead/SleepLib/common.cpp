@@ -127,6 +127,10 @@ QString STR_TR_Oximetry;
 QString STR_TR_Oximeter;
 QString STR_TR_EventFlags;
 
+QString STR_TR_Inclination;
+QString STR_TR_Orientation;
+
+
 // Machine type names.
 QString STR_TR_CPAP;    // Constant Positive Airway Pressure
 QString STR_TR_BIPAP;   // Bi-Level Positive Airway Pressure
@@ -370,6 +374,9 @@ void initializeStrings()
     STR_TR_Machine=QObject::tr("Machine");
     STR_TR_Channel=QObject::tr("Channel");
     STR_TR_Settings=QObject::tr("Settings");
+
+    STR_TR_Inclination=QObject::tr("Inclination");
+    STR_TR_Orientation=QObject::tr("Orientation");
 
     STR_TR_Name=QObject::tr("Name");
     STR_TR_DOB=QObject::tr("DOB");    // Date of Birth

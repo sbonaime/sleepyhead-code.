@@ -2206,6 +2206,7 @@ border-radius: 10px;
      <addaction name="menu_Purge_CPAP_Data"/>
     </widget>
     <addaction name="actionImport_ZEO_Data"/>
+    <addaction name="actionImport_Somnopose_Data"/>
     <addaction name="actionImport_RemStar_MSeries_Data"/>
     <addaction name="separator"/>
     <addaction name="action_Rebuild_Oximetry_Index"/>
@@ -2441,6 +2442,11 @@ border-radius: 10px;
   <action name="actionChange_Data_Folder">
    <property name="text">
     <string>Change &amp;Data Folder</string>
+   </property>
+  </action>
+  <action name="actionImport_Somnopose_Data">
+   <property name="text">
+    <string>Import &amp;Somnopose Data</string>
    </property>
   </action>
  </widget>

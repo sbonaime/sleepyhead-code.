@@ -189,6 +189,16 @@ public:
 protected:
 };
 
+/*! \class PositionSensor
+    \brief A PositionSensor classed machine object..
+    */
+class PositionSensor:public Machine
+{
+public:
+    PositionSensor(Profile *p,MachineID id=0);
+    virtual ~PositionSensor();
+protected:
+};
 
 #endif // MACHINE_H
 

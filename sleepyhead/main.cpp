@@ -35,6 +35,7 @@
 #include "SleepLib/loader_plugins/prs1_loader.h"
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/loader_plugins/zeo_loader.h"
+#include "SleepLib/loader_plugins/somnopose_loader.h"
 #include "SleepLib/loader_plugins/resmed_loader.h"
 #include "SleepLib/loader_plugins/intellipap_loader.h"
 #include "SleepLib/loader_plugins/icon_loader.h"
@@ -305,7 +306,7 @@ retry_directory:
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
-    // Register Importer Modules
+    // Register Importer Modules for autoscanner
     ////////////////////////////////////////////////////////////////////////////////////////////
     initialize();
     PRS1Loader::Register();
@@ -333,8 +334,6 @@ retry_directory:
     if (!PREF.contains(STR_PREF_AllowEarlyUpdates)) {
         PREF[STR_PREF_AllowEarlyUpdates]=false;
     }
-
-
 
 
 

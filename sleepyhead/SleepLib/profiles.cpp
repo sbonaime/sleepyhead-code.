@@ -195,6 +195,8 @@ void Profile::ExtraLoad(QDomElement & root)
             m=new Oximeter(this,m_id);
         else if (m_type==MT_SLEEPSTAGE)
             m=new SleepStage(this,m_id);
+        else if (m_type==MT_POSITION)
+            m=new PositionSensor(this,m_id);
         else {
             m=new Machine(this,m_id);
             m->SetType(m_type);

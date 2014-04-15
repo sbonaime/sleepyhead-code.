@@ -140,6 +140,9 @@ extern QString STR_TR_Oximetry;
 extern QString STR_TR_Oximeter;
 extern QString STR_TR_EventFlags;
 
+extern QString STR_TR_Inclination;
+extern QString STR_TR_Orientation;
+
 // Machine type names.
 extern QString STR_TR_CPAP;    // Constant Positive Airway Pressure
 extern QString STR_TR_BIPAP;   // Bi-Level Positive Airway Pressure

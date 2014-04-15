@@ -35,6 +35,7 @@
 
 // Custom loaders that don't autoscan..
 #include <SleepLib/loader_plugins/zeo_loader.h>
+#include <SleepLib/loader_plugins/somnopose_loader.h>
 
 #ifndef REMSTAR_M_SUPPORT
 #include <SleepLib/loader_plugins/mseries_loader.h>
@@ -1605,4 +1606,26 @@ void MainWindow::on_actionChange_Data_Folder_triggered()
     PROFILE.Save();
     PREF.Save();
     RestartApplication(false,true);
+}
+
+void MainWindow::on_actionImport_Somnopose_Data_triggered()
+{
+    QFileDialog w;
+    w.setFileMode(QFileDialog::ExistingFiles);
+    w.setOption(QFileDialog::ShowDirsOnly, false);
+    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setNameFilters(QStringList("Somnopause CSV File (*.csv)"));
+
+    SomnoposeLoader somno;
+    if (w.exec()==QFileDialog::Accepted) {
+        QString filename=w.selectedFiles()[0];
+        if (!somno.OpenFile(filename)) {
+            Notify(tr("There was a problem opening Somnopose Data File: ")+filename);
+            return;
+        }
+
+        Notify(tr("Somnopause Data Import complete"));
+        daily->LoadDate(daily->getDate());
+    }
+
 }

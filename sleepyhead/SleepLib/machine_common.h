@@ -50,7 +50,7 @@ enum SummaryType { ST_CNT, ST_SUM, ST_AVG, ST_WAVG, ST_PERC, ST_90P, ST_MIN, ST_
 /*! \enum MachineType
     \brief Generalized type of a machine
   */
-enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL };
+enum MachineType { MT_UNKNOWN=0,MT_CPAP,MT_OXIMETER,MT_SLEEPSTAGE,MT_JOURNAL,MT_POSITION };
 //void InitMapsWithoutAwesomeInitializerLists();
 
 
@@ -115,5 +115,6 @@ extern ChannelID ZEO_SleepStage, ZEO_ZQ, ZEO_TotalZ, ZEO_TimeToZ, ZEO_TimeInWake
 ZEO_AlarmReason, ZEO_SnoozeTime, ZEO_WakeTone, ZEO_WakeWindow, ZEO_AlarmType, ZEO_MorningFeel, ZEO_FirmwareVersion,
 ZEO_FirstAlarmRing, ZEO_LastAlarmRing, ZEO_FirstSnoozeTime, ZEO_LastSnoozeTime, ZEO_SetAlarmTime, ZEO_RiseTime;
 
+extern ChannelID POS_Orientation, POS_Inclination;
 
 #endif // MACHINE_COMMON_H

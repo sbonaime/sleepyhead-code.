@@ -115,7 +115,8 @@ SOURCES += main.cpp\
     reports.cpp \
     summary.cpp \
     sessionbar.cpp \
-    Graphs/gspacer.cpp
+    Graphs/gspacer.cpp \
+    SleepLib/loader_plugins/somnopose_loader.cpp
 
 HEADERS  += \
     SleepLib/machine.h \
@@ -162,7 +163,8 @@ HEADERS  += \
     reports.h \
     summary.h \
     sessionbar.h \
-    Graphs/gspacer.h
+    Graphs/gspacer.h \
+    SleepLib/loader_plugins/somnopose_loader.h
 
 
 FORMS    += \

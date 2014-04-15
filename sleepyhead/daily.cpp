@@ -157,6 +157,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     INTSPO2=new gGraph(GraphView,tr("Int. SpO2"),                       schema::channel[OXI_SPO2].fullname()+"\n"+schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
     PLETHY=new gGraph(GraphView,STR_TR_Plethy,                          schema::channel[OXI_Plethy].fullname()+"\n"+schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
 
+    INC=new gGraph(GraphView,STR_TR_Inclination,                        schema::channel[POS_Inclination].fullname()+"\n"+schema::channel[POS_Inclination].description()+"\n("+schema::channel[POS_Inclination].units()+")",default_height);
+    ORI=new gGraph(GraphView,STR_TR_Orientation,                        schema::channel[POS_Orientation].fullname()+"\n"+schema::channel[POS_Orientation].description()+"\n("+schema::channel[POS_Orientation].units()+")",default_height);
+
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
 //    TAP=new gGraph(GraphView,"Time@Pressure",STR_UNIT_CMH2O,100);
@@ -247,7 +250,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(los));
 
 
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE, INTSPO2, INTPULSE};
+
+    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE, INTSPO2, INTPULSE, ORI, INC };
     int ng=sizeof(graphs)/sizeof(gGraph*);
     for (int i=0;i<ng;i++){
         graphs[i]->AddLayer(new gXGrid());
@@ -293,6 +297,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
     MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
     RR->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
+
+    INC->AddLayer(AddPOS(new gLineChart(POS_Inclination)));
+    ORI->AddLayer(AddPOS(new gLineChart(POS_Orientation)));
 
     // Delete me!!
 //    lc->addPlot(CPAP_Test1, COLOR_DarkRed,square);
@@ -636,12 +643,13 @@ void Daily::UpdateCalendarDay(QDate date)
     bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
     bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=NULL;
     bool hasstage=PROFILE.GetDay(date,MT_SLEEPSTAGE)!=NULL;
+    bool haspos=PROFILE.GetDay(date,MT_POSITION)!=NULL;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxicpap);
         } else if (hasjournal) {
             ui->calendar->setDateTextFormat(date,cpapjour);
-        } else if (hasstage) {
+        } else if (hasstage || haspos) {
             ui->calendar->setDateTextFormat(date,stageday);
         } else {
             ui->calendar->setDateTextFormat(date,cpaponly);
@@ -650,6 +658,10 @@ void Daily::UpdateCalendarDay(QDate date)
         ui->calendar->setDateTextFormat(date,oxiday);
     } else if (hasjournal) {
         ui->calendar->setDateTextFormat(date,jourday);
+    } else if (hasstage) {
+        ui->calendar->setDateTextFormat(date,oxiday);
+    } else if (haspos) {
+        ui->calendar->setDateTextFormat(date,oxiday);
     } else {
         ui->calendar->setDateTextFormat(date,nodata);
     }
@@ -750,13 +762,15 @@ MyWebView::MyWebView(QWidget *parent):
 }
 
 
-QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage)
+QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage, Day * posit)
 {
     QString html;
     QList<Day *> list;
     if (cpap) list.push_back(cpap);
     if (oxi) list.push_back(oxi);
     if (stage) list.push_back(stage);
+    if (posit) list.push_back(posit);
+
 
     if (list.isEmpty())
         return html;
@@ -798,6 +812,10 @@ QString Daily::getSessionInformation(Day * cpap, Day * oxi, Day * stage)
         case MT_SLEEPSTAGE: type="stage";
             html+=tr("Sleep Stage Sessions");
             break;
+        case MT_POSITION: type="stage";
+            html+=tr("Position Sensor Sessions");
+            break;
+
         default:
             type="unknown";
             html+=tr("Unknown Session");
@@ -985,13 +1003,14 @@ QString Daily::getCPAPInformation(Day * cpap)
 }
 
 
-QString Daily::getStatisticsInfo(Day * cpap,Day * oxi)
+QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
 {
 
     QList<Day *> list;
 
     list.push_back(cpap);
     list.push_back(oxi);
+    list.push_back(pos);
 
 
     int mididx=PROFILE.general->prefCalcMiddle();
@@ -1025,7 +1044,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi)
         CPAP_Pressure,CPAP_EPAP,CPAP_IPAP,CPAP_PS,CPAP_PTB,
         CPAP_MinuteVent, CPAP_RespRate, CPAP_RespEvent,CPAP_FLG,
         CPAP_Leak, CPAP_LeakTotal, CPAP_Snore,CPAP_IE,CPAP_Ti,CPAP_Te, CPAP_TgMV,
-        CPAP_TidalVolume, OXI_Pulse, OXI_SPO2
+        CPAP_TidalVolume, OXI_Pulse, OXI_SPO2, POS_Inclination, POS_Orientation
     };
     int numchans=sizeof(chans)/sizeof(ChannelID);
     int ccnt=0;
@@ -1147,6 +1166,7 @@ void Daily::Load(QDate date)
     Day *cpap=PROFILE.GetDay(date,MT_CPAP);
     Day *oxi=PROFILE.GetDay(date,MT_OXIMETER);
     Day *stage=PROFILE.GetDay(date,MT_SLEEPSTAGE);
+    Day *posit=PROFILE.GetDay(date,MT_POSITION);
 
     if (!PROFILE.session->cacheSessions()) {
         // Getting trashed on purge last day...
@@ -1189,6 +1209,7 @@ void Daily::Load(QDate date)
     UpdateOXIGraphs(oxi);
     UpdateCPAPGraphs(cpap);
     UpdateSTAGEGraphs(stage);
+    UpdatePOSGraphs(posit);
     UpdateEventsTree(ui->treeWidget,cpap);
 
     mainwin->refreshStatistics();
@@ -1336,9 +1357,9 @@ void Daily::Load(QDate date)
     } // if (!CPAP)
     else html+=getSleepTime(cpap,oxi);
 
-    if ((cpap && !isBrick && (cpap->hours()>0)) || oxi) {
+    if ((cpap && !isBrick && (cpap->hours()>0)) || oxi || posit) {
 
-        html+=getStatisticsInfo(cpap,oxi);
+        html+=getStatisticsInfo(cpap,oxi,posit);
     } else {
         if (cpap && cpap->hours()==0) {
         } else {
@@ -1353,7 +1374,7 @@ void Daily::Load(QDate date)
 
     html+=getOximeterInformation(oxi);
     html+=getMachineSettings(cpap);
-    html+=getSessionInformation(cpap,oxi,stage);
+    html+=getSessionInformation(cpap,oxi,stage,posit);
 
     html+="</body></html>";
 
@@ -1685,6 +1706,17 @@ void Daily::UpdateSTAGEGraphs(Day *day)
         day->OpenEvents();
     }
     for (QList<Layer *>::iterator g=STAGEData.begin();g!=STAGEData.end();g++) {
+        (*g)->SetDay(day);
+    }
+}
+
+void Daily::UpdatePOSGraphs(Day *day)
+{
+    //if (!day) return;
+    if (day) {
+        day->OpenEvents();
+    }
+    for (QList<Layer *>::iterator g=POSData.begin();g!=POSData.end();g++) {
         (*g)->SetDay(day);
     }
 }
