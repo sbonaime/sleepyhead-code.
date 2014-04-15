@@ -227,12 +227,20 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::Notify(QString s,QString title,int ms)
+void MainWindow::Notify(QString s, QString title, int ms)
 {
     if (systray) {
-        systray->showMessage(title,s,QSystemTrayIcon::Information,ms);
+        // GNOME3's systray hides the last line of the displayed Qt message.
+        // As a workaround, add an extra line to bump the message back
+        // into the visible area.
+        QString msg = s;
+        char *desktop = getenv("DESKTOP_SESSION");
+        if (desktop && !strncmp(desktop, "gnome", 5))
+            msg += "\n";
+
+        systray->showMessage(title, msg, QSystemTrayIcon::Information, ms);
     } else {
-        ui->statusbar->showMessage(s,ms);
+        ui->statusbar->showMessage(s, ms);
     }
 }
 

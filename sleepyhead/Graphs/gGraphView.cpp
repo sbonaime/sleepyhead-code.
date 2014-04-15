@@ -20,29 +20,28 @@
 #include <QGLFramebufferObject>
 #include <QPixmapCache>
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-#include <QWindow>
+# include <QWindow>
 #endif
-#include "mainwindow.h"
 
 #include "Graphs/gYAxis.h"
 #include "Graphs/gFlagsLine.h"
 #include "gLineChart.h"
 
-
-extern MainWindow *mainwin;
-
 #ifdef Q_OS_MAC
-#define USE_RENDERTEXT
-#include "OpenGL/glu.h"
+# define USE_RENDERTEXT
+# include "OpenGL/glu.h"
 #else
-#include "GL/glu.h"
+# include "GL/glu.h"
 #endif
 
 #ifdef DEBUG_EFFICIENCY
 // Only works in 4.8
-#include <QElapsedTimer>
+# include <QElapsedTimer>
 #endif
 
+#include "mainwindow.h"
+
+extern MainWindow *mainwin;
 
 // for profiling purposes, a count of lines drawn in a single frame
 int lines_drawn_this_frame=0;
@@ -70,77 +69,83 @@ QHash<QString, QImage *> images;
 // Must be called from a thread inside the application.
 void InitGraphs()
 {
-    if (!_graph_init) {
+    if (_graph_init)
+        return;
 
-        if (!PREF.contains("Fonts_Graph_Name")) {
-            PREF["Fonts_Graph_Name"]="Sans Serif";
-            PREF["Fonts_Graph_Size"]=10;
-            PREF["Fonts_Graph_Bold"]=false;
-            PREF["Fonts_Graph_Italic"]=false;
-        }
-        if (!PREF.contains("Fonts_Title_Name")) {
-            PREF["Fonts_Title_Name"]="Sans Serif";
-            PREF["Fonts_Title_Size"]=14;
-            PREF["Fonts_Title_Bold"]=true;
-            PREF["Fonts_Title_Italic"]=false;
-        }
-        if (!PREF.contains("Fonts_Big_Name")) {
-            PREF["Fonts_Big_Name"]="Serif";
-            PREF["Fonts_Big_Size"]=35;
-            PREF["Fonts_Big_Bold"]=false;
-            PREF["Fonts_Big_Italic"]=false;
-        }
-
-        defaultfont=new QFont(PREF["Fonts_Graph_Name"].toString(),
-                              PREF["Fonts_Graph_Size"].toInt(),
-                              PREF["Fonts_Graph_Bold"].toBool() ? QFont::Bold : QFont::Normal,
-                              PREF["Fonts_Graph_Italic"].toBool()
-                        );
-        mediumfont=new QFont(PREF["Fonts_Title_Name"].toString(),
-                             PREF["Fonts_Title_Size"].toInt(),
-                             PREF["Fonts_Title_Bold"].toBool() ? QFont::Bold : QFont::Normal,
-                             PREF["Fonts_Title_Italic"].toBool()
-                        );
-        bigfont=new QFont(PREF["Fonts_Big_Name"].toString(),
-                          PREF["Fonts_Big_Size"].toInt(),
-                          PREF["Fonts_Big_Bold"].toBool() ? QFont::Bold : QFont::Normal,
-                          PREF["Fonts_Big_Italic"].toBool()
-                     );
-
-        defaultfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
-        mediumfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
-        bigfont->setStyleHint(QFont::AnyStyle,QFont::OpenGLCompatible);
-
-        //images["mask"]=new QImage(":/icons/mask.png");
-        images["oximeter"]=new QImage(":/icons/cubeoximeter.png");
-        images["smiley"]=new QImage(":/icons/smileyface.png");
-        //images["sad"]=new QImage(":/icons/sadface.png");
-
-        images["sheep"]=new QImage(":/icons/sheep.png");
-        images["brick"]=new QImage(":/icons/brick.png");
-        images["nographs"]=new QImage(":/icons/nographs.png");
-        images["nodata"]=new QImage(":/icons/nodata.png");
-
-        _graph_init=true;
+    if (!PREF.contains("Fonts_Graph_Name")) {
+        PREF["Fonts_Graph_Name"] = "Sans Serif";
+        PREF["Fonts_Graph_Size"] = 10;
+        PREF["Fonts_Graph_Bold"] = false;
+        PREF["Fonts_Graph_Italic"] = false;
     }
+    if (!PREF.contains("Fonts_Title_Name")) {
+        PREF["Fonts_Title_Name"] = "Sans Serif";
+        PREF["Fonts_Title_Size"] = 14;
+        PREF["Fonts_Title_Bold"] = true;
+        PREF["Fonts_Title_Italic"] = false;
+    }
+    if (!PREF.contains("Fonts_Big_Name")) {
+        PREF["Fonts_Big_Name"] = "Serif";
+        PREF["Fonts_Big_Size"] = 35;
+        PREF["Fonts_Big_Bold"] = false;
+        PREF["Fonts_Big_Italic"] = false;
+    }
+
+    defaultfont = new QFont(PREF["Fonts_Graph_Name"].toString(),
+                            PREF["Fonts_Graph_Size"].toInt(),
+                            PREF["Fonts_Graph_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                            PREF["Fonts_Graph_Italic"].toBool()
+                      );
+    mediumfont = new QFont(PREF["Fonts_Title_Name"].toString(),
+                           PREF["Fonts_Title_Size"].toInt(),
+                           PREF["Fonts_Title_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                           PREF["Fonts_Title_Italic"].toBool()
+                      );
+    bigfont = new QFont(PREF["Fonts_Big_Name"].toString(),
+                        PREF["Fonts_Big_Size"].toInt(),
+                        PREF["Fonts_Big_Bold"].toBool() ? QFont::Bold : QFont::Normal,
+                        PREF["Fonts_Big_Italic"].toBool()
+                   );
+
+    defaultfont->setStyleHint(QFont::AnyStyle, QFont::OpenGLCompatible);
+    mediumfont->setStyleHint(QFont::AnyStyle, QFont::OpenGLCompatible);
+    bigfont->setStyleHint(QFont::AnyStyle, QFont::OpenGLCompatible);
+
+    //images["mask"] = new QImage(":/icons/mask.png");
+    images["oximeter"] = new QImage(":/icons/cubeoximeter.png");
+    images["smiley"] = new QImage(":/icons/smileyface.png");
+    //images["sad"] = new QImage(":/icons/sadface.png");
+
+    images["sheep"] = new QImage(":/icons/sheep.png");
+    images["brick"] = new QImage(":/icons/brick.png");
+    images["nographs"] = new QImage(":/icons/nographs.png");
+    images["nodata"] = new QImage(":/icons/nodata.png");
+
+    _graph_init=true;
 }
+
 void DoneGraphs()
 {
-    if (_graph_init) {
-        delete defaultfont;
-        delete bigfont;
-        delete mediumfont;
-        for (QHash<QString,QImage *>::iterator i=images.begin();i!=images.end();i++) {
-            delete i.value();
-        }
-        if (fbo) { // Clear the frame buffer object
-            if (fbo->isBound()) fbo->release();
-            delete fbo;
-            fbo=NULL;
-            fbo_unsupported=true; // just in case shutdown order gets messed up
-        }
-        _graph_init=false;
+    if (!_graph_init)
+        return;
+
+    delete defaultfont;
+    delete bigfont;
+    delete mediumfont;
+
+    for (QHash<QString,QImage *>::iterator i = images.begin(); i != images.end(); i++)
+        delete i.value();
+
+    // Clear the frame buffer object.
+    if (fbo) {
+        if (fbo->isBound())
+            fbo->release();
+        delete fbo;
+        fbo = NULL;
+        fbo_unsupported = true; // just in case shutdown order gets messed up
     }
+
+    _graph_init=false;
 }
 
 void GetTextExtent(QString text, int & width, int & height, QFont *font)
@@ -176,18 +181,6 @@ inline quint32 swaporder(quint32 color)
          ((color & 0xFF) << 16));
 }
 
-gVertexBuffer::gVertexBuffer(int max,int type)
-:m_max(max), m_type(type), m_cnt(0), m_size(1), m_scissor(false), m_stippled(false), m_stipple(0xffff)
-{
-    buffer=(gVertex *)calloc(max,sizeof(gVertex));
-    m_blendfunc1=GL_SRC_ALPHA;
-    m_blendfunc2=GL_ONE_MINUS_SRC_ALPHA;
-    m_antialias=m_forceantialias=false;
-}
-gVertexBuffer::~gVertexBuffer()
-{
-    free(buffer);
-}
 void gVertexBuffer::setColor(QColor col)
 {
     m_color=swaporder(col.rgba());
@@ -454,24 +447,6 @@ void gVertexBuffer::unsafe_add(GLshort x1, GLshort y1, GLshort x2, GLshort y2, G
     v->y=y4;
 
     m_cnt+=4;
-}
-
-
-GLBuffer::GLBuffer(int max,int type, bool stippled)
-    :m_max(max), m_type(type), m_stippled(stippled)
-{
-    m_scissor=false;
-    m_antialias=true;
-    m_forceantialias=false;
-
-    m_cnt=0;
-    m_colcnt=0;
-    m_size=1;
-    m_blendfunc1=GL_SRC_ALPHA;
-    m_blendfunc2=GL_ONE_MINUS_SRC_ALPHA;
-}
-GLBuffer::~GLBuffer()
-{
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -828,27 +803,11 @@ void gToolTip::paint()     //actually paints it.
 
     painter.end();
 }
+
 void gToolTip::timerDone()
 {
     m_visible=false;
     m_graphview->redraw();
-}
-
-Layer::Layer(ChannelID code)
-{
-    m_code = code;
-    m_visible = true;
-    m_movable = false;
-
-    m_day=NULL;
-    m_miny=m_maxy=0;
-    m_minx=m_maxx=0;
-    m_physminy=m_physmaxy=0;
-    m_order=0;
-    m_width=m_height=0;
-    m_X=m_Y=0;
-    m_position=LayerCenter;
-    m_refcount=0;
 }
 
 Layer::~Layer()
@@ -919,10 +878,6 @@ void Layer::setLayout(LayerPosition position, short width, short height, short o
     m_order=order;
 }
 
-LayerGroup::LayerGroup() :
-    Layer(NoChannel)
-{
-}
 LayerGroup::~LayerGroup()
 {
     for (int i=0;i<layers.size();i++)
@@ -4270,16 +4225,6 @@ void gGraphView::deselect()
     for (int i=0;i<m_graphs.size();i++) {
         m_graphs[i]->deselect();
     }
-}
-
-
-MyScrollBar::MyScrollBar(QWidget * parent)
-    :QScrollBar(parent)
-{
-}
-void MyScrollBar::SendWheelEvent(QWheelEvent * e)
-{
-    wheelEvent(e);
 }
 
 const quint32 gvmagic=0x41756728;
