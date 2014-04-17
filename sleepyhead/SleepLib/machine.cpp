@@ -243,7 +243,7 @@ bool Machine::Purge(int secret)
     return true;
 }
 
-const quint32 channel_version=1;
+//const quint32 channel_version=1;
 
 
 bool Machine::Load()

@@ -13,6 +13,7 @@
 #define NEWPROFILE_H
 
 #include <QDialog>
+#include <QUrl>
 
 namespace Ui {
     class NewProfile;

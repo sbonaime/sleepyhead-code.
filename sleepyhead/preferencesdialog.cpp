@@ -806,7 +806,7 @@ void PreferencesDialog::on_resetGraphButton_clicked()
             continue;
 
         // Iterate over all contained graphs.
-        for (unsigned i = 0; i < view->size(); i++) {
+        for (int i = 0; i < view->size(); i++) {
             gGraph *g = (*view)[i];
             g->setRecMaxY(0); // FIXME: should be g->reset(), but need other patches to land.
             g->setRecMinY(0);

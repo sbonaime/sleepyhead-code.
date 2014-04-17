@@ -201,7 +201,7 @@ void SessionBar::paintEvent(QPaintEvent *)
         int len=L/1000L;
         int h=len/3600;
         int m=(len/60) % 60;
-        int s=len % 60;
+        //int s=len % 60;
 
         QString msg=QString("%1h %2m").arg((short)h,1,10,QChar('0')).arg((short)m,1,10,QChar('0'));//.arg((short)s,2,10,QChar('0'));
         //painter.setBrush(QBrush((*i).color);

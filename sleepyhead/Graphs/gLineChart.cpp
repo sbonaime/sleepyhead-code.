@@ -68,9 +68,6 @@ void gLineChart::SetDay(Day *d)
         for (int i=0;i<d->size();i++) {
             Session *sess=d->getSessions()[i];
             if (!sess->channelExists(code)) continue;
-            if (code==CPAP_FLG) {
-                int i=5;
-            }
             if (first) {
                 m_miny=sess->Min(code);
                 m_maxy=sess->Max(code);
@@ -132,10 +129,6 @@ EventDataType gLineChart::Maxy()
 // Time Domain Line Chart
 void gLineChart::paint(gGraph & w,int left, int top, int width, int height)
 {
-
-    if (w.title()=="Flow Limit") {
-        int i=5;
-    }
     if (!m_visible)
         return;
 

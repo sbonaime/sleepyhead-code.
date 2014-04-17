@@ -168,8 +168,8 @@ int FPIconLoader::OpenMachine(Machine *mach, QString & path, Profile * profile)
     for (int i=0;i<flw.size();i++) {
         OpenFLW(mach,flw[i],profile);
     }
-    SessionID zz,sid;//,st;
-    float hours,dur,mins;
+    SessionID sid;//,st;
+    float hours,mins;
 
     qDebug() << "Last 20 Sessions";
 
@@ -379,7 +379,6 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
     }
 
     ti=qint64(ts)*1000L;
-    qint64 st=ti;
 
     EventStoreType pbuf[256];
 
@@ -436,8 +435,6 @@ bool FPIconLoader::OpenFLW(Machine * mach,QString filename, Profile * profile)
 
     EventDataType val;
     qint16 tmp;
-
-    bool corrupt=false;
 
     do {
         quint8 * p=buf;

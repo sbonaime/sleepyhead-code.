@@ -25,9 +25,9 @@
 
 
 const int PRS1_MAGIC_NUMBER=2;
-const int PRS1_SUMMARY_FILE=1;
-const int PRS1_EVENT_FILE=2;
-const int PRS1_WAVEFORM_FILE=5;
+//const int PRS1_SUMMARY_FILE=1;
+//const int PRS1_EVENT_FILE=2;
+//const int PRS1_WAVEFORM_FILE=5;
 
 
 //********************************************************************************************

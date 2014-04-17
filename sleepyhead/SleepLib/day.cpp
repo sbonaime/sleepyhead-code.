@@ -756,6 +756,6 @@ qint64 Day::last()
 void Day::removeSession(Session * sess)
 {
     if (sessions.removeAll(sess)<1) {
-        int i=5;
+//        int i=5;
     }
 }

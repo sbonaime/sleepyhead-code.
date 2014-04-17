@@ -79,7 +79,7 @@ EDFParser::~EDFParser()
 }
 qint16 EDFParser::Read16()
 {
-    if ((pos + sizeof(qint16)) > filesize)
+    if ((pos + long(sizeof(qint16))) > filesize)
         return 0;
 
     qint16 res = *(qint16 *)&buffer[pos];
@@ -1237,9 +1237,6 @@ int ResmedLoader::Open(QString & path,Profile *profile)
             dif=sess->first()-stredf.startdate;
 
             dn=dif/86400000L;
-            if (dn>=days-2) {
-                int i=5;
-            }
             if ((dn>=0) && (dn<days)) {
                 sig=stredf.lookupSignal(CPAP_Mode);
                 if (sig) {
@@ -1260,7 +1257,6 @@ int ResmedLoader::Open(QString & path,Profile *profile)
                         // Kaart's data has -1 here.. Not sure what it means.
                         prmode=0;
                     } else if (prmode > sig->physical_maximum) {
-                        int i=5;
                         prmode=sig->physical_maximum;
                     }
                     // My VPAP (using EasyBreathe) and JM's Elite (using none) have 0
@@ -1963,9 +1959,6 @@ void ResmedLoader::ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, Cha
                     }
                 }
                 tmp=EventDataType(c) * es.gain;
-                if (tmp<0) {
-                    int i=5;
-                }
                 if ((tmp >= t_min) && (tmp <= t_max)) {
                     if (tmp < min)
                         min=tmp;

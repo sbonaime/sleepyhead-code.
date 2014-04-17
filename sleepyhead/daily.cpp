@@ -46,8 +46,6 @@
 //extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
 
-const int min_height=150;
-
 Daily::Daily(QWidget *parent,gGraphView * shared)
     :QWidget(parent), ui(new Ui::Daily)
 {
