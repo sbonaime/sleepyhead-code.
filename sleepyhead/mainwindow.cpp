@@ -876,7 +876,7 @@ void MainWindow::DelayedScreenshot()
         dir.mkdir(a);
     }
 
-    a+="/screenshot-"+QDateTime::currentDateTime().toString(Qt::ISODate)+".png";
+    a+="/screenshot-"+QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss")+".png";
 
     qDebug() << "Saving screenshot to" << a;
     if (!pixmap.save(a)) {
