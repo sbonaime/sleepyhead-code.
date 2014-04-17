@@ -18,10 +18,6 @@
 //! \brief Gets the first day of week from the system locale, to show in the calendars.
 Qt::DayOfWeek firstDayOfWeekFromLocale();
 
-//! \brief Delay of ms milliseconds
-void sh_delay(int ms);
-
-
 // Flag Colors
 extern QColor COLOR_Hypopnea;
 extern QColor COLOR_Obstructive;
@@ -57,7 +53,7 @@ extern QColor COLOR_MaxLeak;
 extern QColor COLOR_Snore;
 extern QColor COLOR_RespRate;
 extern QColor COLOR_MaskPressure;
-extern QColor COLOR_PTB;            //Patient Triggered Breathing
+extern QColor COLOR_PTB;            // Patient Triggered Breathing
 extern QColor COLOR_MinuteVent;
 extern QColor COLOR_TgMV;
 extern QColor COLOR_TidalVolume;
@@ -67,5 +63,4 @@ extern QColor COLOR_Te;
 extern QColor COLOR_Ti;
 extern QColor COLOR_SleepStage;
 
-
-#endif
+#endif // COMMON_GUI_H
