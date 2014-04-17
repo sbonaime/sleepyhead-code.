@@ -13,7 +13,7 @@
 #define EVENT_H
 
 #include <QDateTime>
-//#include "SleepLib/session.h"
+
 #include "machine_common.h"
 
 //! \brief EventLists can either be Waveform or Event types
@@ -26,10 +26,11 @@ enum EventListType { EVL_Waveform, EVL_Event };
 class EventList
 {
     friend class Session;
+
   public:
     EventList(EventListType et, EventDataType gain = 1.0, EventDataType offset = 0.0,
-              EventDataType min = 0.0, EventDataType max = 0.0, double rate = 0.0, bool second_field = false);
-    ~EventList();
+              EventDataType min = 0.0, EventDataType max = 0.0, double rate = 0.0,
+              bool second_field = false);
 
     //! \brief Wipe the event list so it can be reused
     void clear();
@@ -156,8 +157,8 @@ class EventList
     EventStoreType *rawData() { return m_data.data(); }
     EventStoreType *rawData2() { return m_data2.data(); }
     quint32 *rawTime() { return m_time.data(); }
-  protected:
 
+  protected:
     //! \brief The time storage vector, in 32bits delta format, added as offsets to m_first
     QVector<quint32> m_time;
 
@@ -186,6 +187,5 @@ class EventList
     bool m_update_minmax;
     bool m_second_field;
 };
-
 
 #endif // EVENT_H

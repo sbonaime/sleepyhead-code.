@@ -24,7 +24,6 @@ EventList::EventList(EventListType et, EventDataType gain, EventDataType offset,
         m_update_minmax = true;
         m_min2 = m_min = 999999999;
         m_max2 = m_max = -999999999;
-
     } else {
         m_update_minmax = false;
     }
@@ -33,9 +32,7 @@ EventList::EventList(EventListType et, EventDataType gain, EventDataType offset,
 
     // Reserve a few to increase performace??
 }
-EventList::~EventList()
-{
-}
+
 void EventList::clear()
 {
     m_min2 = m_min = 999999999;
@@ -63,6 +60,7 @@ EventDataType EventList::data(quint32 i)
 {
     return EventDataType(m_data[i]) * m_gain;
 }
+
 EventDataType EventList::data2(quint32 i)
 {
     return EventDataType(m_data2[i]);
@@ -70,8 +68,6 @@ EventDataType EventList::data2(quint32 i)
 
 void EventList::AddEvent(qint64 time, EventStoreType data)
 {
-    m_data.push_back(data);
-
     // Apply gain & offset
     EventDataType val = EventDataType(data) * m_gain; // ignoring m_offset
 
@@ -79,9 +75,8 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
         if (m_count == 0) {
             m_max = m_min = val;
         } else {
-            if (m_min > val) { m_min = val; }
-
-            if (m_max < val) { m_max = val; }
+            m_min = (val < m_min) ? val : m_min;
+            m_max = (val > m_max) ? val : m_max;
         }
     }
 
@@ -93,11 +88,12 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
     if (m_first > time) {
         // Crud.. Update all the previous records
         // This really shouldn't happen.
+        qDebug() << "Unordered time detected in AddEvent().";
 
-        qint32 t = (m_first - time);
+        qint32 delta = (m_first - time);
 
         for (quint32 i = 0; i < m_count; i++) {
-            m_time[i] -= t;
+            m_time[i] -= delta;
         }
 
         m_first = time;
@@ -107,59 +103,24 @@ void EventList::AddEvent(qint64 time, EventStoreType data)
         m_last = time;
     }
 
-    quint32 t = (time - m_first);
+    quint32 delta = (time - m_first);
 
-    m_time.push_back(t);
+    m_data.push_back(data);
+    m_time.push_back(delta);
     m_count++;
 }
 
 void EventList::AddEvent(qint64 time, EventStoreType data, EventStoreType data2)
 {
-    // Apply gain & offset
-    m_data.push_back(data);
+    AddEvent(time, data);
 
-    if (m_second_field) {
-        m_data2.push_back(data2);
+    if (!m_second_field)
+        return;
 
-        if (m_min2 > data2) { m_min2 = data2; }
+    m_min2 = (data2 < m_min2) ? data2 : m_min2;
+    m_max2 = (data2 > m_max2) ? data2 : m_max2;
 
-        if (m_max2 < data2) { m_max2 = data2; }
-    }
-
-    EventDataType val = EventDataType(data) * m_gain + m_offset;
-
-    if (m_update_minmax) {
-        if (m_min > val) { m_min = val; }
-
-        if (m_max < val) { m_max = val; }
-    }
-
-    if (!m_first) {
-        m_first = time;
-        m_last = time;
-    }
-
-    if (m_first > time) {
-        // Crud.. Update all the previous records
-        // This really shouldn't happen.
-
-        qint32 t = (m_first - time);
-
-        for (quint32 i = 0; i < m_count; i++) {
-            m_time[i] -= t;
-        }
-
-        m_first = time;
-    }
-
-    if (m_last < time) {
-        m_last = time;
-    }
-
-    quint32 t = (time - m_first);
-
-    m_time.push_back(t);
-    m_count++;
+    m_data2.push_back(data2);
 }
 
 // Adds a consecutive waveform chunk
@@ -193,7 +154,7 @@ void EventList::AddWaveform(qint64 start, qint16 *data, int recs, qint64 duratio
         m_last = last;
     }
 
-    // TODO: Check waveform chunk really is contiguos
+    // TODO: Check waveform chunk really is contiguous
     //double rate=duration/recs;
 
     //realloc buffers.
@@ -340,7 +301,7 @@ void EventList::AddWaveform(qint64 start, char *data, int recs, qint64 duration)
 
     EventStoreType *edata = m_data.data();
     EventStoreType raw;
-    EventDataType val;
+    EventDataType val; // FIXME: sstangl: accesses random memory
 
     char *sp;
     char *ep = data + recs;
