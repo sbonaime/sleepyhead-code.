@@ -28,9 +28,10 @@ void RegisterLoader(MachineLoader *loader)
 }
 void DestroyLoaders()
 {
-    for (QList<MachineLoader *>::iterator i=m_loaders.begin(); i!=m_loaders.end(); i++) {
-        delete (*i);
+    for (QList<MachineLoader *>::iterator i = m_loaders.begin(); i != m_loaders.end(); i++) {
+        delete(*i);
     }
+
     m_loaders.clear();
 }
 
@@ -45,44 +46,52 @@ MachineLoader::MachineLoader()
 }*/
 MachineLoader::~MachineLoader()
 {
-    for (QList<Machine *>::iterator m=m_machlist.begin();m!=m_machlist.end();m++) {
+    for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {
         delete *m;
     }
 }
 
 bool MachineLoader::compressFile(QString inpath, QString outpath)
 {
-    if (outpath.isEmpty())
-        outpath=inpath+".gz";
-    else if (!outpath.endsWith(".gz")) {
-        outpath+=".gz";
+    if (outpath.isEmpty()) {
+        outpath = inpath + ".gz";
+    } else if (!outpath.endsWith(".gz")) {
+        outpath += ".gz";
     }
 
     QFile f(inpath);
+
     if (!f.exists(inpath)) {
         qDebug() << "compressFile()" << inpath << "does not exist";
         return false;
     }
-    qint64 size=f.size();
+
+    qint64 size = f.size();
+
     if (!f.open(QFile::ReadOnly)) {
         qDebug() << "compressFile() Couldn't open" << inpath;
         return false;
     }
-    char * buf=new char [size];
-    if (!f.read(buf,size)) {
+
+    char *buf = new char [size];
+
+    if (!f.read(buf, size)) {
         delete buf;
         qDebug() << "compressFile() Couldn't read all of" << inpath;
         return false;
     }
+
     f.close();
-    gzFile gz=gzopen(outpath.toLatin1(),"wb");
+    gzFile gz = gzopen(outpath.toLatin1(), "wb");
+
     //gzbuffer(gz,65536*2);
     if (!gz) {
-        qDebug() << "compressFile() Couldn't open" << outpath <<"for writing";
+        qDebug() << "compressFile() Couldn't open" << outpath << "for writing";
         delete buf;
         return false;
     }
-    gzwrite(gz,buf,size);
+
+    gzwrite(gz, buf, size);
     gzclose(gz);
     delete buf;
     return true;

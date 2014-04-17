@@ -40,21 +40,21 @@ class Machine;
 /*! \class SaveThread
     \brief This class is used in the multithreaded save code.. It accelerates the indexing of summary data.
     */
-class SaveThread:public QThread
+class SaveThread: public QThread
 {
     Q_OBJECT
-public:
-    SaveThread(Machine *m,QString p) { machine=m; path=p; }
+  public:
+    SaveThread(Machine *m, QString p) { machine = m; path = p; }
 
     //! \brief Static millisecond sleep function.. Can be used from anywhere
     static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
 
     //! \brief Start Save processing thread running
     virtual void run();
-protected:
+  protected:
     Machine *machine;
     QString path;
-signals:
+  signals:
     //! \brief Signal sent to update the Progress Bar
     void UpdateProgress(int i);
 };
@@ -66,13 +66,13 @@ signals:
     */
 class Machine
 {
-public:
+  public:
     /*! \fn Machine(Profile *p,MachineID id=0);
         \brief Constructs a Machine object in Profile p, and with MachineID id
 
         If supplied MachineID is zero, it will generate a new unused random one.
         */
-    Machine(Profile *p,MachineID id=0);
+    Machine(Profile *p, MachineID id = 0);
     virtual ~Machine();
 
     //! \brief Load all Machine summary data
@@ -87,50 +87,50 @@ public:
     bool Purge(int secret);
 
     //! \brief Contains a secondary index of day data, containing just this machines sessions
-    QMap<QDate,Day *> day;
+    QMap<QDate, Day *> day;
 
     //! \brief Contains all sessions for this machine, indexed by SessionID
-    QHash<SessionID,Session *> sessionlist;
+    QHash<SessionID, Session *> sessionlist;
 
     //! \brief List of text machine properties, like brand, model, etc...
-    QHash<QString,QString> properties;
+    QHash<QString, QString> properties;
 
     //! \brief Returns a pointer to a valid Session object if SessionID exists
-    Session * SessionExists(SessionID session);
+    Session *SessionExists(SessionID session);
 
     //! \brief Adds the session to this machine object, and the Master Profile list. (used during load)
-    QDate AddSession(Session *s,Profile *p);
+    QDate AddSession(Session *s, Profile *p);
 
     //! \brief Find the date this session belongs in, according to profile settings
     QDate pickDate(qint64 start);
 
     //! \brief Sets the Class of machine (Used to reference the particular loader that created it)
-    void SetClass(QString t) { m_class=t; }
+    void SetClass(QString t) { m_class = t; }
 
     //! \brief Sets the type of machine, according to MachineType enum
-    void SetType(MachineType t) { m_type=t; }
+    void SetType(MachineType t) { m_type = t; }
 
     //! \brief Returns the Class of machine (Used to reference the particular loader that created it)
-    const QString & GetClass() { return m_class; }
+    const QString &GetClass() { return m_class; }
 
     //! \brief Returns the type of machine, according to MachineType enum
-    const MachineType & GetType() { return m_type; }
+    const MachineType &GetType() { return m_type; }
 
     //! \brief Returns the machineID as a lower case hexadecimal string
-    QString hexid() { return QString().sprintf("%08lx",m_id); }
+    QString hexid() { return QString().sprintf("%08lx", m_id); }
 
 
     //! \brief Unused, increments the most recent sessionID
-    SessionID CreateSessionID() { return highest_sessionid+1; }
+    SessionID CreateSessionID() { return highest_sessionid + 1; }
 
     //! \brief Returns this objects MachineID
-    const MachineID & id() { return m_id; }
+    const MachineID &id() { return m_id; }
 
     //! \brief Returns the date of the first loaded Session
-    const QDate & FirstDay() { return firstday; }
+    const QDate &FirstDay() { return firstday; }
 
     //! \brief Returns the date of the most recent loaded Session
-    const QDate & LastDay() { return lastday; }
+    const QDate &LastDay() { return lastday; }
 
     //! \brief Grab the next task in the multithreaded save code
     Session *popSaveList();
@@ -143,8 +143,8 @@ public:
     QMutex savelistMutex;
     QSemaphore *savelistSem;
 
-protected:
-    QDate firstday,lastday;
+  protected:
+    QDate firstday, lastday;
     SessionID highest_sessionid;
     MachineID m_id;
     QString m_class;
@@ -159,10 +159,10 @@ protected:
 /*! \class CPAP
     \brief A CPAP classed machine object..
     */
-class CPAP:public Machine
+class CPAP: public Machine
 {
-public:
-    CPAP(Profile *p,MachineID id=0);
+  public:
+    CPAP(Profile *p, MachineID id = 0);
     virtual ~CPAP();
 };
 
@@ -170,34 +170,34 @@ public:
 /*! \class Oximeter
     \brief An Oximeter classed machine object..
     */
-class Oximeter:public Machine
+class Oximeter: public Machine
 {
-public:
-    Oximeter(Profile *p,MachineID id=0);
+  public:
+    Oximeter(Profile *p, MachineID id = 0);
     virtual ~Oximeter();
-protected:
+  protected:
 };
 
 /*! \class SleepStage
     \brief A SleepStage classed machine object..
     */
-class SleepStage:public Machine
+class SleepStage: public Machine
 {
-public:
-    SleepStage(Profile *p,MachineID id=0);
+  public:
+    SleepStage(Profile *p, MachineID id = 0);
     virtual ~SleepStage();
-protected:
+  protected:
 };
 
 /*! \class PositionSensor
     \brief A PositionSensor classed machine object..
     */
-class PositionSensor:public Machine
+class PositionSensor: public Machine
 {
-public:
-    PositionSensor(Profile *p,MachineID id=0);
+  public:
+    PositionSensor(Profile *p, MachineID id = 0);
     virtual ~PositionSensor();
-protected:
+  protected:
 };
 
 #endif // MACHINE_H

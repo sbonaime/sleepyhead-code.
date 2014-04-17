@@ -19,29 +19,29 @@
 #include "machine_common.h"
 
 namespace GraphFlags {
-const quint32 Shadow=1;
-const quint32 Foobar=2;
-const quint32 XTicker=4;
-const quint32 YTicker=8;
-const quint32 XGrid=16;
-const quint32 YGrid=32;
+const quint32 Shadow = 1;
+const quint32 Foobar = 2;
+const quint32 XTicker = 4;
+const quint32 YTicker = 8;
+const quint32 XGrid = 16;
+const quint32 YGrid = 32;
 }
 
 namespace schema {
 
 enum Function {
-    NONE=0, AVG, WAVG, MIN, MAX, SUM, CNT, P90, CPH, SPH, HOURS, SET
+    NONE = 0, AVG, WAVG, MIN, MAX, SUM, CNT, P90, CPH, SPH, HOURS, SET
 };
 
 enum ChanType {
-    DATA=0, SETTING
+    DATA = 0, SETTING
 };
 
 enum DataType {
-    DEFAULT=0, INTEGER, BOOL, DOUBLE, STRING, RICHTEXT, DATE, TIME, DATETIME
+    DEFAULT = 0, INTEGER, BOOL, DOUBLE, STRING, RICHTEXT, DATE, TIME, DATETIME
 };
 enum ScopeType {
-    GLOBAL=0, MACHINE, DAY, SESSION
+    GLOBAL = 0, MACHINE, DAY, SESSION
 };
 class Channel;
 extern Channel EmptyChannel;
@@ -51,36 +51,40 @@ extern Channel EmptyChannel;
     */
 class Channel
 {
-public:
-    Channel() { m_id=0; }
-    Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname, QString description, QString label, QString unit,DataType datatype=DEFAULT, QColor=Qt::black, int link=0);
-    void addColor(Function f, QColor color) { m_colors[f]=color; }
-    void addOption(int i, QString option) { m_options[i]=option; }
+  public:
+    Channel() { m_id = 0; }
+    Channel(ChannelID id, ChanType type, ScopeType scope, QString code, QString fullname,
+            QString description, QString label, QString unit, DataType datatype = DEFAULT, QColor = Qt::black,
+            int link = 0);
+    void addColor(Function f, QColor color) { m_colors[f] = color; }
+    void addOption(int i, QString option) { m_options[i] = option; }
 
-    const int & id() { return m_id; }
-    const ChanType & type() { return m_type; }
-    const QString & code() { return m_code; }
-    const QString & fullname() { return m_fullname; }
-    const QString & description() { return m_description; }
-    const QString & label() { return m_label; }
-    const QString & units() { return m_unit; }
-    const int & linkid() { return m_link; }
+    const int &id() { return m_id; }
+    const ChanType &type() { return m_type; }
+    const QString &code() { return m_code; }
+    const QString &fullname() { return m_fullname; }
+    const QString &description() { return m_description; }
+    const QString &label() { return m_label; }
+    const QString &units() { return m_unit; }
+    const int &linkid() { return m_link; }
 
-    void setLabel(QString label) { m_label=label; }
-    void setUnit(QString unit) { m_unit=unit; }
-    void setDescription(QString desc) { m_description=desc; }
+    void setLabel(QString label) { m_label = label; }
+    void setUnit(QString unit) { m_unit = unit; }
+    void setDescription(QString desc) { m_description = desc; }
     QString option(int i) {
-        if (m_options.contains(i))
+        if (m_options.contains(i)) {
             return m_options[i];
+        }
+
         return QString();
     }
-    QColor & defaultColor() { return m_defaultcolor; }
-    void setDefaultColor(QColor color) { m_defaultcolor=color; }
-    QHash<int,QString> m_options;
-    QHash<Function,QColor> m_colors;
+    QColor &defaultColor() { return m_defaultcolor; }
+    void setDefaultColor(QColor color) { m_defaultcolor = color; }
+    QHash<int, QString> m_options;
+    QHash<Function, QColor> m_colors;
     QList<Channel *> m_links;              // better versions of this data type
     bool isNull();
-protected:
+  protected:
     int m_id;
     ChanType m_type;
     ScopeType m_scope;
@@ -101,7 +105,7 @@ protected:
     */
 class ChannelList
 {
-public:
+  public:
     ChannelList();
     virtual ~ChannelList();
 
@@ -111,31 +115,33 @@ public:
     //! \brief Stores Channel list to XML file specified by filename
     bool Save(QString filename);
 
-    void add(QString group,Channel * chan);
+    void add(QString group, Channel *chan);
 
     //! \brief Looks up Channel in this List with the index idx, returns EmptyChannel if not found
-    Channel & operator[](ChannelID idx) {
-        if (channels.contains(idx))
+    Channel &operator[](ChannelID idx) {
+        if (channels.contains(idx)) {
             return *channels[idx];
-        else
+        } else {
             return EmptyChannel;
+        }
     }
     //! \brief Looks up Channel from this list by name, returns Empty Channel if not found.
-    Channel & operator[](QString name) {
-        if (names.contains(name))
+    Channel &operator[](QString name) {
+        if (names.contains(name)) {
             return *names[name];
-        else
+        } else {
             return EmptyChannel;
+        }
     }
 
     //! \brief Channel List indexed by integer ID
-    QHash<ChannelID,Channel *> channels;
+    QHash<ChannelID, Channel *> channels;
 
     //! \brief Channel List index by name
-    QHash<QString,Channel *> names;
+    QHash<QString, Channel *> names;
 
     //! \brief Channel List indexed by group
-    QHash<QString,QHash<QString,Channel *> > groups;
+    QHash<QString, QHash<QString, Channel *> > groups;
     QString m_doctype;
 };
 extern ChannelList channel;

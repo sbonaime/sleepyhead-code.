@@ -33,7 +33,7 @@ class Session;
     */
 class Day
 {
-public:
+  public:
     Day(Machine *m);
     ~Day();
 
@@ -77,7 +77,7 @@ public:
     EventDataType wavg(ChannelID code);
 
     //! \brief Returns a requested Percentile of all this sessions' events for this day
-    EventDataType percentile(ChannelID code,EventDataType percentile);
+    EventDataType percentile(ChannelID code, EventDataType percentile);
 
     //! \brief Returns if the cache contains SummaryType information about the requested code
     bool hasData(ChannelID code, SummaryType type);
@@ -122,7 +122,7 @@ public:
     bool hasEnabledSessions();
 
     //! \brief Return the total time in decimal hours for this day
-    EventDataType hours() { return double(total_time())/3600000.0; }
+    EventDataType hours() { return double(total_time()) / 3600000.0; }
 
     //! \brief Return the session indexed by i
     Session *operator [](int i) { return sessions[i]; }
@@ -133,7 +133,7 @@ public:
     QList<Session *>::iterator end() { return sessions.end(); }
 
     //! \brief Finds and returns the index of a session, otherwise -1 if it's not there
-    int find(Session * sess) { return sessions.indexOf(sess); }
+    int find(Session *sess) { return sessions.indexOf(sess); }
 
     Session *find(SessionID sessid);
 
@@ -149,7 +149,7 @@ public:
     void CloseEvents();
 
     //! \brief Returns this days sessions list
-    QList<Session *> & getSessions() { return sessions; }
+    QList<Session *> &getSessions() { return sessions; }
 
     //! \brief Returns true if this Day contains loaded Event Data for this channel.
     bool channelExists(ChannelID id);
@@ -163,14 +163,14 @@ public:
     //! \brief Returns true if this day contains the supplied settings Channel id
     bool settingExists(ChannelID id);
 
-    void removeSession(Session * sess);
+    void removeSession(Session *sess);
 
-protected:
+  protected:
     //! \brief A Vector containing all sessions for this day
     QList<Session *> sessions;
     QHash<ChannelID, QHash<EventDataType, EventDataType> > perc_cache;
     //qint64 d_first,d_last;
-private:
+  private:
     bool d_firstsession;
 };
 

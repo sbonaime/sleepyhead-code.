@@ -14,8 +14,8 @@
 
 #include "SleepLib/machine_loader.h"
 
-const QString zeo_class_name="ZEO";
-const int zeo_data_version=1;
+const QString zeo_class_name = "ZEO";
+const int zeo_data_version = 1;
 
 
 /*! \class ZEOLoader
@@ -23,21 +23,21 @@ const int zeo_data_version=1;
 */
 class ZEOLoader : public MachineLoader
 {
-    public:
-        ZEOLoader();
-        virtual ~ZEOLoader();
-        virtual int Open(QString & path,Profile *profile);
-        virtual int OpenFile(QString filename);
-        static void Register();
+  public:
+    ZEOLoader();
+    virtual ~ZEOLoader();
+    virtual int Open(QString &path, Profile *profile);
+    virtual int OpenFile(QString filename);
+    static void Register();
 
-        virtual int Version() { return zeo_data_version; }
-        virtual const QString & ClassName() { return zeo_class_name; }
+    virtual int Version() { return zeo_data_version; }
+    virtual const QString &ClassName() { return zeo_class_name; }
 
 
-        Machine *CreateMachine(Profile *profile);
+    Machine *CreateMachine(Profile *profile);
 
-    protected:
-    private:
+  protected:
+  private:
 };
 
 #endif // ZEOLOADER_H

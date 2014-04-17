@@ -28,11 +28,11 @@ enum UnitSystem { US_Undefined, US_Metric, US_Archiac };
 typedef float EventDataType;
 
 struct ValueCount {
-    ValueCount() { value=0; count=0; p=0; }
-    ValueCount(const ValueCount & copy) {
-        value=copy.value;
-        count=copy.count;
-        p=copy.p;
+    ValueCount() { value = 0; count = 0; p = 0; }
+    ValueCount(const ValueCount &copy) {
+        value = copy.value;
+        count = copy.count;
+        p = copy.p;
     }
     EventDataType value;
     qint64 count;
@@ -40,21 +40,21 @@ struct ValueCount {
 };
 
 // Primarily sort by value
-bool operator <(const ValueCount & a, const ValueCount & b);
+bool operator <(const ValueCount &a, const ValueCount &b);
 
-const float ounce_convert=28.3495231F; // grams
-const float pound_convert=ounce_convert*16;
+const float ounce_convert = 28.3495231F; // grams
+const float pound_convert = ounce_convert * 16;
 
-QString weightString(float kg, UnitSystem us=US_Undefined);
+QString weightString(float kg, UnitSystem us = US_Undefined);
 
 //! \brief Mercilessly trash a directory
-bool removeDir(const QString & path);
+bool removeDir(const QString &path);
 
 
 #ifdef UNSTABLE_BUILD
-const QString STR_Unstable="-Unstable";
+const QString STR_Unstable = "-Unstable";
 #else
-const QString STR_Unstable="";
+const QString STR_Unstable = "";
 #endif
 
 const QString getAppName();
@@ -68,44 +68,44 @@ void initializeStrings();
 // Preference Name Strings
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-const QString STR_GEN_Profile="Profile";
-const QString STR_GEN_SkipLogin="SkipLoginScreen";
-const QString STR_GEN_UpdatesLastChecked="UpdatesLastChecked";
-const QString STR_GEN_UpdatesAutoCheck="Updates_AutoCheck";
-const QString STR_GEN_UpdateCheckFrequency="Updates_CheckFrequency";
-const QString STR_GEN_DataFolder="DataFolder";
+const QString STR_GEN_Profile = "Profile";
+const QString STR_GEN_SkipLogin = "SkipLoginScreen";
+const QString STR_GEN_UpdatesLastChecked = "UpdatesLastChecked";
+const QString STR_GEN_UpdatesAutoCheck = "Updates_AutoCheck";
+const QString STR_GEN_UpdateCheckFrequency = "Updates_CheckFrequency";
+const QString STR_GEN_DataFolder = "DataFolder";
 
-const QString STR_GEN_On=QObject::tr("On");
-const QString STR_GEN_Off=QObject::tr("Off");
+const QString STR_GEN_On = QObject::tr("On");
+const QString STR_GEN_Off = QObject::tr("Off");
 
-const QString STR_PREF_AllowEarlyUpdates="AllowEarlyUpdates";
+const QString STR_PREF_AllowEarlyUpdates = "AllowEarlyUpdates";
 
-const QString STR_PROP_Brand="Brand";
-const QString STR_PROP_Model="Model";
-const QString STR_PROP_Series="Series";
-const QString STR_PROP_ModelNumber="ModelNumber";
-const QString STR_PROP_SubModel="SubModel";
-const QString STR_PROP_Serial="Serial";
-const QString STR_PROP_DataVersion="DataVersion";
-const QString STR_PROP_Path="Path";
-const QString STR_PROP_BackupPath="BackupPath";
-const QString STR_PROP_LastImported="LastImported";
+const QString STR_PROP_Brand = "Brand";
+const QString STR_PROP_Model = "Model";
+const QString STR_PROP_Series = "Series";
+const QString STR_PROP_ModelNumber = "ModelNumber";
+const QString STR_PROP_SubModel = "SubModel";
+const QString STR_PROP_Serial = "Serial";
+const QString STR_PROP_DataVersion = "DataVersion";
+const QString STR_PROP_Path = "Path";
+const QString STR_PROP_BackupPath = "BackupPath";
+const QString STR_PROP_LastImported = "LastImported";
 
-const QString STR_MACH_ResMed="ResMed";
-const QString STR_MACH_PRS1="PRS1";
-const QString STR_MACH_Journal="Journal";
-const QString STR_MACH_Intellipap="Intellipap";
-const QString STR_MACH_FPIcon="FPIcon";
-const QString STR_MACH_MSeries="MSeries";
-const QString STR_MACH_CMS50="CMS50";
-const QString STR_MACH_ZEO="Zeo";
+const QString STR_MACH_ResMed = "ResMed";
+const QString STR_MACH_PRS1 = "PRS1";
+const QString STR_MACH_Journal = "Journal";
+const QString STR_MACH_Intellipap = "Intellipap";
+const QString STR_MACH_FPIcon = "FPIcon";
+const QString STR_MACH_MSeries = "MSeries";
+const QString STR_MACH_CMS50 = "CMS50";
+const QString STR_MACH_ZEO = "Zeo";
 
-const QString STR_PREF_VersionString="VersionString";
-const QString STR_PREF_Language="Language";
+const QString STR_PREF_VersionString = "VersionString";
+const QString STR_PREF_Language = "Language";
 
-const QString STR_AppName="SleepyHead";
-const QString STR_DeveloperName="Jedimark";
-const QString STR_AppRoot="SleepyHeadData";
+const QString STR_AppName = "SleepyHead";
+const QString STR_DeveloperName = "Jedimark";
+const QString STR_AppRoot = "SleepyHeadData";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Commonly used translatable text strings
@@ -167,7 +167,8 @@ extern QString STR_TR_FL;      // Short form of Flow Limitation
 extern QString STR_TR_LE;      // Short form of Leak Event
 extern QString STR_TR_EP;      // Short form of Expiratory Puff
 extern QString STR_TR_VS;      // Short form of Vibratory Snore
-extern QString STR_TR_VS2;     // Short form of Secondary Vibratory Snore (Some Philips Respironics Machines have two sources)
+extern QString
+STR_TR_VS2;     // Short form of Secondary Vibratory Snore (Some Philips Respironics Machines have two sources)
 extern QString STR_TR_RERA;    // Acronym for Respiratory Effort Related Arousal
 extern QString STR_TR_PP;      // Short form for Pressure Pulse
 extern QString STR_TR_P;       // Short form for Pressure Event

@@ -14,8 +14,8 @@
 
 #include "SleepLib/machine_loader.h"
 
-const QString somnopose_class_name="Somnopose";
-const int somnopose_data_version=1;
+const QString somnopose_class_name = "Somnopose";
+const int somnopose_data_version = 1;
 
 
 /*! \class SomnoposeLoader
@@ -23,21 +23,21 @@ const int somnopose_data_version=1;
 */
 class SomnoposeLoader : public MachineLoader
 {
-    public:
-        SomnoposeLoader();
-        virtual ~SomnoposeLoader();
-        virtual int Open(QString & path,Profile *profile);
-        virtual int OpenFile(QString filename);
-        static void Register();
+  public:
+    SomnoposeLoader();
+    virtual ~SomnoposeLoader();
+    virtual int Open(QString &path, Profile *profile);
+    virtual int OpenFile(QString filename);
+    static void Register();
 
-        virtual int Version() { return somnopose_data_version; }
-        virtual const QString & ClassName() { return somnopose_class_name; }
+    virtual int Version() { return somnopose_data_version; }
+    virtual const QString &ClassName() { return somnopose_class_name; }
 
 
-        Machine *CreateMachine(Profile *profile);
+    Machine *CreateMachine(Profile *profile);
 
-    protected:
-    private:
+  protected:
+  private:
 };
 
 #endif // SOMNOPOSELOADER_H

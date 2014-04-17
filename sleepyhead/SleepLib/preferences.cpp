@@ -27,29 +27,31 @@
 #include "common.h"
 #include "preferences.h"
 
-const QString & getUserName()
+const QString &getUserName()
 {
     static QString userName;
-    userName=getenv("USER");
+    userName = getenv("USER");
 
     if (userName.isEmpty()) {
-        userName=QObject::tr("Windows User");
+        userName = QObject::tr("Windows User");
 
 #if defined (Q_OS_WIN32)
-    #if defined(UNICODE)
-    if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
-        TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
-        DWORD winUserNameSize = sizeof(winUserName);
-        GetUserNameW( winUserName, &winUserNameSize );
-        userName = QString::fromStdWString( winUserName );
-    } else
-    #endif
-    {
-        char winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
-        DWORD winUserNameSize = sizeof(winUserName);
-        GetUserNameA( winUserName, &winUserNameSize );
-        userName = QString::fromLocal8Bit( winUserName );
-    }
+#if defined(UNICODE)
+
+        if (QSysInfo::WindowsVersion >= QSysInfo::WV_NT) {
+            TCHAR winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
+            DWORD winUserNameSize = sizeof(winUserName);
+            GetUserNameW(winUserName, &winUserNameSize);
+            userName = QString::fromStdWString(winUserName);
+        } else
+#endif
+        {
+            char winUserName[UNLEN + 1]; // UNLEN is defined in LMCONS.H
+            DWORD winUserNameSize = sizeof(winUserName);
+            GetUserNameA(winUserName, &winUserNameSize);
+            userName = QString::fromLocal8Bit(winUserName);
+        }
+
 #endif
     }
 
@@ -61,16 +63,18 @@ QString GetAppRoot()
 {
     QSettings settings(getDeveloperName(), getAppName());
 
-    QString HomeAppRoot=settings.value("Settings/AppRoot").toString();
+    QString HomeAppRoot = settings.value("Settings/AppRoot").toString();
 
 #if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
-    const QString desktopFolder=QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    const QString desktopFolder = QDesktopServices::storageLocation(
+                                      QDesktopServices::DocumentsLocation);
 #else
-    const QString desktopFolder=QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    const QString desktopFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #endif
 
-    if (HomeAppRoot.isEmpty())
-        HomeAppRoot=desktopFolder+"/"+getDefaultAppRoot();
+    if (HomeAppRoot.isEmpty()) {
+        HomeAppRoot = desktopFolder + "/" + getDefaultAppRoot();
+    }
 
     return HomeAppRoot;
 }
@@ -78,28 +82,28 @@ QString GetAppRoot()
 
 Preferences::Preferences()
 {
-    p_name="Preferences";
-    p_path=GetAppRoot();
+    p_name = "Preferences";
+    p_path = GetAppRoot();
 }
 
-Preferences::Preferences(QString name,QString filename)
+Preferences::Preferences(QString name, QString filename)
 {
     if (name.endsWith(STR_ext_XML)) {
-        p_name=name.section(".",0,0);
+        p_name = name.section(".", 0, 0);
     } else {
-        p_name=name;
+        p_name = name;
     }
 
     if (filename.isEmpty()) {
-        p_filename=GetAppRoot()+"/"+p_name+STR_ext_XML;
+        p_filename = GetAppRoot() + "/" + p_name + STR_ext_XML;
     } else {
         if (!filename.contains("/")) {
-            p_filename=GetAppRoot()+"/";
-        } else p_filename="";
+            p_filename = GetAppRoot() + "/";
+        } else { p_filename = ""; }
 
-        p_filename+=filename;
+        p_filename += filename;
 
-        if (!p_filename.endsWith(STR_ext_XML)) p_filename+=STR_ext_XML;
+        if (!p_filename.endsWith(STR_ext_XML)) { p_filename += STR_ext_XML; }
     }
 }
 
@@ -122,41 +126,48 @@ Preferences::~Preferences()
 const QString Preferences::Get(QString name)
 {
     QString temp;
-    QChar obr=QChar('{');
-    QChar cbr=QChar('}');
-    QString t,a,ref; // How I miss Regular Expressions here..
-    if (p_preferences.find(name)!=p_preferences.end()) {
-        temp="";
-        t=p_preferences[name].toString();
-        if (p_preferences[name].type()!=QVariant::String) {
+    QChar obr = QChar('{');
+    QChar cbr = QChar('}');
+    QString t, a, ref; // How I miss Regular Expressions here..
+
+    if (p_preferences.find(name) != p_preferences.end()) {
+        temp = "";
+        t = p_preferences[name].toString();
+
+        if (p_preferences[name].type() != QVariant::String) {
             return t;
         }
     } else {
-        t=name; // parse the string..
+        t = name; // parse the string..
     }
+
     while (t.contains(obr)) {
-        temp+=t.section(obr,0,0);
-        a=t.section(obr,1);
+        temp += t.section(obr, 0, 0);
+        a = t.section(obr, 1);
+
         if (a.startsWith("{")) {
-            temp+=obr;
-            t=a.section(obr,1);
+            temp += obr;
+            t = a.section(obr, 1);
             continue;
         }
-        ref=a.section(cbr,0,0);
 
-        if (ref.toLower()=="home") {
-            temp+=GetAppRoot();
-        } else if (ref.toLower()=="user") {
-            temp+=getUserName();
-        } else if (ref.toLower()=="sep") { // redundant in QT
-            temp+="/";
+        ref = a.section(cbr, 0, 0);
+
+        if (ref.toLower() == "home") {
+            temp += GetAppRoot();
+        } else if (ref.toLower() == "user") {
+            temp += getUserName();
+        } else if (ref.toLower() == "sep") { // redundant in QT
+            temp += "/";
         } else {
-            temp+=Get(ref);
+            temp += Get(ref);
         }
-        t=a.section(cbr,1);
+
+        t = a.section(cbr, 1);
     }
-    temp+=t;
-    temp.replace("}}","}"); // Make things look a bit better when escaping braces.
+
+    temp += t;
+    temp.replace("}}", "}"); // Make things look a bit better when escaping braces.
 
     return temp;
 }
@@ -164,133 +175,154 @@ const QString Preferences::Get(QString name)
 
 bool Preferences::Open(QString filename)
 {
-    if (!filename.isEmpty())
-        p_filename=filename;
+    if (!filename.isEmpty()) {
+        p_filename = filename;
+    }
 
     QDomDocument doc(p_name);
     QFile file(p_filename);
     qDebug() << "Scanning " << QDir::toNativeSeparators(p_filename);
+
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open" << QDir::toNativeSeparators(p_filename);
         return false;
     }
+
     if (!doc.setContent(&file)) {
         qWarning() << "Invalid XML Content in" << QDir::toNativeSeparators(p_filename);
         return false;
     }
+
     file.close();
 
 
-    QDomElement root=doc.documentElement();
+    QDomElement root = doc.documentElement();
+
     if (root.tagName() != STR_AppName) {
         return false;
     }
 
-    root=root.firstChildElement();
+    root = root.firstChildElement();
+
     if (root.tagName() != p_name) {
         return false;
     }
 
     bool ok;
     p_preferences.clear();
-    QDomNode n=root.firstChild();
+    QDomNode n = root.firstChild();
+
     while (!n.isNull()) {
-        QDomElement e=n.toElement();
+        QDomElement e = n.toElement();
+
         if (!e.isNull()) {
-            QString name=e.tagName();
-            QString type=e.attribute("type").toLower();
-            QString value=e.text();;
-            if (type=="double") {
+            QString name = e.tagName();
+            QString type = e.attribute("type").toLower();
+            QString value = e.text();;
+
+            if (type == "double") {
                 double d;
-                d=value.toDouble(&ok);
+                d = value.toDouble(&ok);
+
                 if (ok) {
-                    p_preferences[name]=d;
+                    p_preferences[name] = d;
                 } else {
                     qDebug() << "XML Error:" << name << "=" << value << "??";
                 }
-            } else if (type=="qlonglong") {
+            } else if (type == "qlonglong") {
                 qint64 d;
-                d=value.toLongLong(&ok);
+                d = value.toLongLong(&ok);
+
                 if (ok) {
-                    p_preferences[name]=d;
+                    p_preferences[name] = d;
                 } else {
                     qDebug() << "XML Error:" << name << "=" << value << "??";
                 }
-            } else if (type=="int") {
+            } else if (type == "int") {
                 int d;
-                d=value.toInt(&ok);
+                d = value.toInt(&ok);
+
                 if (ok) {
-                    p_preferences[name]=d;
+                    p_preferences[name] = d;
                 } else {
                     qDebug() << "XML Error:" << name << "=" << value << "??";
                 }
-            } else
-            if (type=="bool") {
-                QString v=value.toLower();
-                if ((v=="true") || (v=="on") || (v=="yes")) {
-                    p_preferences[name]=true;
-                } else
-                if ((v=="false") || (v=="off") || (v=="no")) {
-                    p_preferences[name]=false;
+            } else if (type == "bool") {
+                QString v = value.toLower();
+
+                if ((v == "true") || (v == "on") || (v == "yes")) {
+                    p_preferences[name] = true;
+                } else if ((v == "false") || (v == "off") || (v == "no")) {
+                    p_preferences[name] = false;
                 } else {
                     int d;
-                    d=value.toInt(&ok);
+                    d = value.toInt(&ok);
+
                     if (ok) {
-                        p_preferences[name]=d!=0;
+                        p_preferences[name] = d != 0;
                     } else {
                         qDebug() << "XML Error:" << name << "=" << value << "??";
                     }
                 }
-            } else if (type=="qdatetime") {
+            } else if (type == "qdatetime") {
                 QDateTime d;
-                d=QDateTime::fromString(value,"yyyy-MM-dd HH:mm:ss");
-                if (d.isValid())
-                    p_preferences[name]=d;
-                else
-                    qWarning() << "XML Error: Invalid DateTime record" << name << value;
+                d = QDateTime::fromString(value, "yyyy-MM-dd HH:mm:ss");
 
-            } else if (type=="qtime") {
+                if (d.isValid()) {
+                    p_preferences[name] = d;
+                } else {
+                    qWarning() << "XML Error: Invalid DateTime record" << name << value;
+                }
+
+            } else if (type == "qtime") {
                 QTime d;
-                d=QTime::fromString(value,"hh:mm:ss");
-                if (d.isValid())
-                    p_preferences[name]=d;
-                else
+                d = QTime::fromString(value, "hh:mm:ss");
+
+                if (d.isValid()) {
+                    p_preferences[name] = d;
+                } else {
                     qWarning() << "XML Error: Invalid Time record" << name << value;
+                }
 
             } else  {
-                p_preferences[name]=value;
+                p_preferences[name] = value;
             }
 
         }
-        n=n.nextSibling();
+
+        n = n.nextSibling();
     }
-    root=root.nextSiblingElement();
+
+    root = root.nextSiblingElement();
     ExtraLoad(root);
     return true;
 }
 
 bool Preferences::Save(QString filename)
 {
-    if (!filename.isEmpty())
-        p_filename=filename;
+    if (!filename.isEmpty()) {
+        p_filename = filename;
+    }
 
     QDomDocument doc(p_name);
 
     QDomElement droot = doc.createElement(STR_AppName);
-    doc.appendChild( droot );
+    doc.appendChild(droot);
 
-    QDomElement root=doc.createElement(p_name);
+    QDomElement root = doc.createElement(p_name);
     droot.appendChild(root);
 
-    for (QHash<QString,QVariant>::iterator i=p_preferences.begin(); i!=p_preferences.end(); i++) {
-        QVariant::Type type=i.value().type();
-        if (type==QVariant::Invalid) continue;
+    for (QHash<QString, QVariant>::iterator i = p_preferences.begin(); i != p_preferences.end(); i++) {
+        QVariant::Type type = i.value().type();
 
-        QDomElement cn=doc.createElement(i.key());
-        cn.setAttribute("type",i.value().typeName());
-        if (type==QVariant::DateTime) {
+        if (type == QVariant::Invalid) { continue; }
+
+        QDomElement cn = doc.createElement(i.key());
+        cn.setAttribute("type", i.value().typeName());
+
+        if (type == QVariant::DateTime) {
             cn.appendChild(doc.createTextNode(i.value().toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
-        } else if (type==QVariant::Time) {
+        } else if (type == QVariant::Time) {
             cn.appendChild(doc.createTextNode(i.value().toTime().toString("hh:mm:ss")));
         } else {
             cn.appendChild(doc.createTextNode(i.value().toString()));
@@ -302,9 +334,11 @@ bool Preferences::Save(QString filename)
     droot.appendChild(ExtraSave(doc));
 
     QFile file(p_filename);
+
     if (!file.open(QIODevice::WriteOnly)) {
         return false;
     }
+
     QTextStream ts(&file);
     ts << doc.toString();
     file.close();

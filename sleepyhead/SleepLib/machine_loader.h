@@ -21,7 +21,7 @@
     */
 class MachineLoader
 {
-public:
+  public:
     MachineLoader();
     virtual ~MachineLoader();
 
@@ -29,43 +29,43 @@ public:
     //virtual Machine * CreateMachine() {};
 
     //! \brief Override this to scan path and detect new machine data
-    virtual int Open(QString & path,Profile *)=0;   // Scans for new content
+    virtual int Open(QString &path, Profile *) = 0; // Scans for new content
 
     //! \brief Override to returns the Version number of this MachineLoader
-    virtual int Version()=0;
+    virtual int Version() = 0;
 
     //! \brief Override to returns the class name of this MachineLoader
-    virtual const QString & ClassName()=0;
+    virtual const QString &ClassName() = 0;
 
-    bool compressFile(QString inpath, QString outpath="");
+    bool compressFile(QString inpath, QString outpath = "");
 
 
- /*
-    MachineLoader(Profile *profile,QString & classname);
-    virtual void LoadMachineList();
-    virtual void SaveMachineList();
-    virtual bool LoadSummaries();
-    virtual bool LoadEvents();
-    virtual bool LoadWaveforms();
-    virtual bool Scan(QString &)=0;   // Scans for new content
+    /*
+       MachineLoader(Profile *profile,QString & classname);
+       virtual void LoadMachineList();
+       virtual void SaveMachineList();
+       virtual bool LoadSummaries();
+       virtual bool LoadEvents();
+       virtual bool LoadWaveforms();
+       virtual bool Scan(QString &)=0;   // Scans for new content
 
-    virtual bool LoadAll();
-    virtual bool SaveAll();
+       virtual bool LoadAll();
+       virtual bool SaveAll();
 
-    virtual bool LoadSummary(Machine * m, QString & filename);
-    virtual bool LoadEvent(Machine * m, QString & filename);
-    virtual bool LoadWaveform(Machine * m, QString & filename);
+       virtual bool LoadSummary(Machine * m, QString & filename);
+       virtual bool LoadEvent(Machine * m, QString & filename);
+       virtual bool LoadWaveform(Machine * m, QString & filename);
 
-    virtual bool SaveSummary(Machine * m, QString & filename);
-    virtual bool SaveEvent(Machine * m, QString & filename);
-    virtual bool SaveWaveform(Machine * m, QString & filename);*/
+       virtual bool SaveSummary(Machine * m, QString & filename);
+       virtual bool SaveEvent(Machine * m, QString & filename);
+       virtual bool SaveWaveform(Machine * m, QString & filename);*/
 
-protected:
+  protected:
     //! \brief Contains a list of Machine records known by this loader
     QList<Machine *> m_machlist;
     QString m_class;
     MachineType m_type;
-    Profile * m_profile;
+    Profile *m_profile;
 };
 
 // Put in machine loader class as static??

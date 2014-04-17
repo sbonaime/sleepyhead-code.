@@ -14,8 +14,8 @@
 
 #include "SleepLib/machine_loader.h"
 
-const QString cms50_class_name="CMS50";
-const int cms50_data_version=4;
+const QString cms50_class_name = "CMS50";
+const int cms50_data_version = 4;
 
 
 /*! \class CMS50Loader
@@ -23,26 +23,26 @@ const int cms50_data_version=4;
     */
 class CMS50Loader : public MachineLoader
 {
-    public:
+  public:
 
 
-        CMS50Loader();
-        virtual ~CMS50Loader();
-        virtual int Open(QString & path,Profile *profile);
-        static void Register();
+    CMS50Loader();
+    virtual ~CMS50Loader();
+    virtual int Open(QString &path, Profile *profile);
+    static void Register();
 
-        virtual int Version() { return cms50_data_version; }
-        virtual const QString & ClassName() { return cms50_class_name; }
+    virtual int Version() { return cms50_data_version; }
+    virtual const QString &ClassName() { return cms50_class_name; }
 
-        Machine *CreateMachine(Profile *profile);
+    Machine *CreateMachine(Profile *profile);
 
 
-    protected:
-        int OpenCMS50(QString & path, Profile *profile);
-        bool OpenSPORFile(QString path, Machine * machine,Profile *profile);
+  protected:
+    int OpenCMS50(QString &path, Profile *profile);
+    bool OpenSPORFile(QString path, Machine *machine, Profile *profile);
 
-    private:
-        char *buffer;
+  private:
+    char *buffer;
 };
 
 #endif // CMS50LOADER_H

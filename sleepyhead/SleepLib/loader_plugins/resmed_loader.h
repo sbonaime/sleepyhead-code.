@@ -23,12 +23,12 @@
 //********************************************************************************************
 // Please INCREMENT the following value when making changes to this loaders implementation.
 //
-const int resmed_data_version=6;
+const int resmed_data_version = 6;
 //
 //********************************************************************************************
 
 
-const QString resmed_class_name=STR_MACH_ResMed;
+const QString resmed_class_name = STR_MACH_ResMed;
 
 /*! \struct EDFHeader
     \brief  Represents the EDF+ header structure, used as a place holder while processing the text data.
@@ -46,18 +46,18 @@ struct EDFHeader {
     char num_signals[4];
 }
 #ifndef BUILD_WITH_MSVC
-__attribute__ ((packed))
+__attribute__((packed))
 #endif
 ;
 
-const int EDFHeaderSize=sizeof(EDFHeader);
+const int EDFHeaderSize = sizeof(EDFHeader);
 
 /*! \struct EDFSignal
     \brief Contains information about a single EDF+ Signal
     \note More information on the EDF+ file format can be obtained from http://edfplus.info
     */
 struct EDFSignal {
-public:
+  public:
     //! \brief Name of this Signal
     QString label;
 
@@ -95,7 +95,7 @@ public:
     QString reserved;
 
     //! \brief Pointer to the signals sample data
-    qint16 * data;
+    qint16 *data;
 
     //! \brief a non-EDF extra used internally to count the signal data
     int pos;
@@ -108,9 +108,9 @@ public:
     */
 class EDFParser
 {
-public:
+  public:
     //! \brief Constructs an EDFParser object, opening the filename if one supplied
-    EDFParser(QString filename="");
+    EDFParser(QString filename = "");
 
     ~EDFParser();
 
@@ -127,11 +127,11 @@ public:
     QVector<EDFSignal> edfsignals;
 
     //! \brief An by-name indexed into the EDFSignal data
-    QHash<QString,EDFSignal *> lookup;
+    QHash<QString, EDFSignal *> lookup;
 
     //! \brief Look up signal names by SleepLib ChannelID.. A little "ResMed"ified.. :/
-    EDFSignal * lookupSignal(ChannelID);
-    EDFSignal * lookupName(QString name);
+    EDFSignal *lookupSignal(ChannelID);
+    EDFSignal *lookupName(QString name);
 
     //! \brief Returns the number of signals contained in this EDF file
     long GetNumSignals() { return num_signals; }
@@ -176,52 +176,53 @@ public:
     */
 class ResmedLoader : public MachineLoader
 {
-public:
+  public:
     ResmedLoader();
     virtual ~ResmedLoader();
 
     //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
-    virtual int Open(QString & path,Profile *profile);
+    virtual int Open(QString &path, Profile *profile);
 
     //! \brief Returns the version number of this ResMed loader
     virtual int Version() { return resmed_data_version; }
 
     //! \brief Returns the Machine class name of this loader. ("ResMed")
-    virtual const QString & ClassName() { return resmed_class_name; }
+    virtual const QString &ClassName() { return resmed_class_name; }
 
     //! \brief Converts EDFSignal data to time delta packed EventList, and adds to Session
-    void ToTimeDelta(Session *sess,EDFParser &edf, EDFSignal & es, ChannelID code, long recs,qint64 duration,EventDataType min=0,EventDataType max=0,bool square=false);
+    void ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, ChannelID code, long recs,
+                     qint64 duration, EventDataType min = 0, EventDataType max = 0, bool square = false);
 
     //! \brief Create Machine record, and index it by serial number
-    Machine *CreateMachine(QString serial,Profile *profile);
+    Machine *CreateMachine(QString serial, Profile *profile);
 
     //! \brief Register the ResmedLoader with the list of other machine loaders
     static void Register();
-protected:
-    QHash<QString,Machine *> ResmedList;
+  protected:
+    QHash<QString, Machine *> ResmedList;
 
     //! \brief Parse the EVE Event annotation data, and save to Session * sess
     //! This contains all Hypopnea, Obstructive Apnea, Central and Apnea codes
-    bool LoadEVE(Session *sess,EDFParser &edf);
+    bool LoadEVE(Session *sess, EDFParser &edf);
 
     //! \brief Parse the BRP High Resolution data, and save to Session * sess
     //! This contains Flow Rate, Mask Pressure, and Resp. Event  data
-    bool LoadBRP(Session *sess,EDFParser &edf);
+    bool LoadBRP(Session *sess, EDFParser &edf);
 
     //! \brief Parse the SAD Pulse oximetry attachment data, and save to Session * sess
     //! This contains Pulse Rate and SpO2 Oxygen saturation data
-    bool LoadSAD(Session *sess,EDFParser &edf);
+    bool LoadSAD(Session *sess, EDFParser &edf);
 
     //! \brief Parse the PRD low resolution data, and save to Session * sess
     //! This contains the Pressure, Leak, Respiratory Rate, Minute Ventilation, Tidal Volume, etc..
-    bool LoadPLD(Session *sess,EDFParser &edf);
+    bool LoadPLD(Session *sess, EDFParser &edf);
 
-    QString backup(QString file, QString backup_path, bool compress=false);
+    QString backup(QString file, QString backup_path, bool compress = false);
 
-    QMap<SessionID,QStringList> sessfiles;
+    QMap<SessionID, QStringList> sessfiles;
 #ifdef DEBUG_EFFICIENCY
-    QHash<ChannelID,qint64> channel_efficiency;
-    QHash<ChannelID,qint64> channel_time;
+    QHash<ChannelID, qint64> channel_efficiency;
+    QHash<ChannelID, qint64> channel_time;
 #endif
 };
 
