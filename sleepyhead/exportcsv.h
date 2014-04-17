@@ -17,14 +17,14 @@
 #include "SleepLib/machine_common.h"
 
 namespace Ui {
-    class ExportCSV;
+class ExportCSV;
 }
 
 
 struct DumpField {
-    DumpField() { code=NoChannel; mtype=MT_UNKNOWN; type=ST_CNT; }
-    DumpField(ChannelID c, MachineType mt, SummaryType t) { code=c; mtype=mt; type=t; }
-    DumpField(const DumpField & copy) {code=copy.code; mtype=copy.mtype; type=copy.type; }
+    DumpField() { code = NoChannel; mtype = MT_UNKNOWN; type = ST_CNT; }
+    DumpField(ChannelID c, MachineType mt, SummaryType t) { code = c; mtype = mt; type = t; }
+    DumpField(const DumpField &copy) {code = copy.code; mtype = copy.mtype; type = copy.type; }
     ChannelID code;
     MachineType mtype;
     SummaryType type;
@@ -39,11 +39,11 @@ class ExportCSV : public QDialog
 {
     Q_OBJECT
 
-public:
+  public:
     explicit ExportCSV(QWidget *parent = 0);
     ~ExportCSV();
 
-private slots:
+  private slots:
     void on_filenameBrowseButton_clicked();
 
     void on_quickRangeCombo_activated(const QString &arg1);
@@ -54,8 +54,8 @@ private slots:
     void endDate_currentPageChanged(int year, int month);
 
 
-private:
-    void UpdateCalendarDay(QDateEdit * dateedit,QDate date);
+  private:
+    void UpdateCalendarDay(QDateEdit *dateedit, QDate date);
 
     Ui::ExportCSV *ui;
     QList<DumpField> fields;

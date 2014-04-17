@@ -35,23 +35,25 @@ enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE, SO_WAIT };
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
     \brief Base class for Serial Oximeters
     */
-class SerialOximeter:public QObject
+class SerialOximeter: public QObject
 {
     Q_OBJECT
-public:
-    explicit SerialOximeter(QObject * parent,QString oxiname, QString portname="",BaudRateType baud=BAUD19200, FlowType flow=FLOW_OFF, ParityType parity=PAR_ODD, DataBitsType databits=DATA_8, StopBitsType stopbits=STOP_1);
+  public:
+    explicit SerialOximeter(QObject *parent, QString oxiname, QString portname = "",
+                            BaudRateType baud = BAUD19200, FlowType flow = FLOW_OFF, ParityType parity = PAR_ODD,
+                            DataBitsType databits = DATA_8, StopBitsType stopbits = STOP_1);
     virtual ~SerialOximeter();
 
-    virtual void setSession(Session * sess) { session=sess; }
+    virtual void setSession(Session *sess) { session = sess; }
 
     //! \brief Open the serial port in either EventDriven or Polling mode
-    virtual bool Open(QextSerialPort::QueryMode mode=QextSerialPort::EventDriven);
+    virtual bool Open(QextSerialPort::QueryMode mode = QextSerialPort::EventDriven);
 
     //! \brief Close the serial port
     virtual void Close();
 
     //! \brief Virtual method for Importing the Oximeters internal recording.
-    virtual bool startImport()=0;
+    virtual bool startImport() = 0;
     //! \brief Virtual method to Abort importing the Oximeters internal recording.
     virtual void stopImport() {} // abort, default do nothing.
 
@@ -61,16 +63,16 @@ public:
     virtual void stopLive();
 
     //! \brief Put the device in standard transmit mode
-    virtual void resetDevice()=0;
+    virtual void resetDevice() = 0;
 
     //! \brief Put the device in record request mode
-    virtual void requestData()=0;
+    virtual void requestData() = 0;
 
     //! \brief Return the current SerialOxMode, either SO_OFF, SO_IMPORT, SO_LIVE, SO_WAIT
     SerialOxMode mode() { return m_mode; }
 
     //! \brief Trash the session object
-    void destroySession() { delete session; session=NULL; }
+    void destroySession() { delete session; session = NULL; }
 
     //! \brief Returns true if the serial port is currently open
     bool isOpen() { return m_opened; }
@@ -81,16 +83,16 @@ public:
     //! \brief Returns the time of the last callback in milliseconds since epoch
     qint64 lastTime() { return lasttime; }
     //! \brief Sets the time of the last callback in milliseconds since epoch
-    void setLastTime(qint64 t) { lasttime=t; }
+    void setLastTime(qint64 t) { lasttime = t; }
 
     //! \brief Return the current machine object
-    Machine * getMachine() { return machine; }
+    Machine *getMachine() { return machine; }
 
     //! \brief Create a new Session object for the specified date
-    Session *createSession(QDateTime date=QDateTime::currentDateTime());
+    Session *createSession(QDateTime date = QDateTime::currentDateTime());
 
     //! \brief Returns the current session
-    Session * getSession() { return session; }
+    Session *getSession() { return session; }
 
     //! \brief Removes the TimeCodes, converting the EventList to Waveform type
     void compactToWaveform(EventList *el);
@@ -138,15 +140,15 @@ public:
 
     bool isImporting() { return import_mode; }
 
-    EventList * Pulse() { return pulse; }
-    EventList * Spo2() { return spo2; }
-    EventList * Plethy() { return plethy; }
+    EventList *Pulse() { return pulse; }
+    EventList *Spo2() { return spo2; }
+    EventList *Plethy() { return plethy; }
     virtual void addPulse(qint64 time, EventDataType pr);
     virtual void addSpO2(qint64 time, EventDataType o2);
     virtual void addPlethy(qint64 time, EventDataType pleth);
-    virtual void killTimers()=0;
+    virtual void killTimers() = 0;
 
-signals:
+  signals:
     void sessionCreated(Session *);
     void dataChanged();
 
@@ -169,30 +171,30 @@ signals:
     void updatePulse(float p);
     void updateSpO2(float p);
 
-protected slots:
+  protected slots:
     //! \brief Override this to process the serial import as it's received
-    virtual void ReadyRead()=0;
+    virtual void ReadyRead() = 0;
 
     //! \brief Override this to parse the read import data
-    virtual void import_process()=0;
+    virtual void import_process() = 0;
 
     //! \brief This slot gets called when the serial port Times out
     virtual void Timeout();
 
     //! \brief Override this to start the Import Timeout
-    virtual void startImportTimeout()=0;
-    virtual void resetImportTimeout()=0;
+    virtual void startImportTimeout() = 0;
+    virtual void resetImportTimeout() = 0;
 
-protected:
+  protected:
 
     //virtual void addEvents(EventDataType pr, EventDataType o2, EventDataType pleth=-1000000);
 
     //! \brief Pointer to current session object
-    Session * session;
+    Session *session;
 
-    EventList * pulse;
-    EventList * spo2;
-    EventList * plethy;
+    EventList *pulse;
+    EventList *spo2;
+    EventList *plethy;
 
     //! \brief Holds the serial port object
     QextSerialPort *m_port;
@@ -212,11 +214,11 @@ protected:
     qint64 lasttime;
     bool import_mode;
 
-    int m_callbacks,cb_start, cb_reset;
+    int m_callbacks, cb_start, cb_reset;
     bool done_import;
-    bool started_import,started_reading,finished_import;
+    bool started_import, started_reading, finished_import;
     QTimer *timer;
-    EventDataType lasto2,lastpr;
+    EventDataType lasto2, lastpr;
 
     QByteArray buffer;
 };
@@ -225,11 +227,11 @@ protected:
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
     \brief Serial Import & Live module
     */
-class CMS50Serial:public SerialOximeter
+class CMS50Serial: public SerialOximeter
 {
-     Q_OBJECT
-public:
-    explicit CMS50Serial(QObject * parent,QString portname);
+    Q_OBJECT
+  public:
+    explicit CMS50Serial(QObject *parent, QString portname);
     virtual ~CMS50Serial();
 
     //! \brief Start the serial parts of Import mode.
@@ -247,7 +249,7 @@ public:
     //! \brief Kill any CMS50 specific timers (used internally)
     virtual void killTimers();
 
-protected:
+  protected:
     //! \brief CMS50 Time-out detection
     virtual void startImportTimeout();
     virtual void resetImportTimeout();
@@ -265,7 +267,7 @@ protected:
     QByteArray data;
     QByteArray buffer;
 
-    QDateTime oxitime,cpaptime;
+    QDateTime oxitime, cpaptime;
 
     bool cms50dplus;
     int datasize;
@@ -277,21 +279,21 @@ protected:
 
     QTime imptime;
 
-    EventDataType plmin,plmax;
-    EventDataType o2min,o2max;
-    int plcnt,o2cnt;
-    qint64 lastpltime,lasto2time;
-    short lastpl,lasto2;
+    EventDataType plmin, plmax;
+    EventDataType o2min, o2max;
+    int plcnt, o2cnt;
+    qint64 lastpltime, lasto2time;
+    short lastpl, lasto2;
     bool first;
-    QTimer *cms50timer,*cms50timer2;
+    QTimer *cms50timer, *cms50timer2;
 };
 
 namespace Ui {
-    class Oximetry;
+class Oximetry;
 }
 
 enum PORTMODE { PM_LIVE, PM_RECORDING };
-const int max_data_points=1000000;
+const int max_data_points = 1000000;
 
 /*! \class Oximetry
     \author Mark Watkins <jedimark_at_users.sourceforge.net>
@@ -301,8 +303,8 @@ class Oximetry : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit Oximetry(QWidget *parent, gGraphView * shared=NULL);
+  public:
+    explicit Oximetry(QWidget *parent, gGraphView *shared = NULL);
     ~Oximetry();
 
     //! \brief Calls updateGL to redraw the graphs
@@ -312,15 +314,15 @@ public:
     gGraphView *graphView() { return GraphView; }
 
     //! \brief Loads and displays a session containing oximetry data into into the Oximetry module
-    void openSession(Session * session);
+    void openSession(Session *session);
 
     //! \brief Initiate an automated serial import
     void serialImport();
     QMessageBox *connectDeviceMsgBox;
 
-private slots:
+  private slots:
     //! \brief Scans the list of serial ports and detects any oximetry devices
-    void on_RefreshPortsButton_clicked();    
+    void on_RefreshPortsButton_clicked();
 
     //! \brief Start or Stop live view mode
     void on_RunButton_toggled(bool checked); // Live mode button
@@ -368,9 +370,9 @@ private slots:
     void on_resetTimeButton_clicked();
 
     void timeout_CheckPorts();
-    void cancel_CheckPorts(QAbstractButton*);
+    void cancel_CheckPorts(QAbstractButton *);
 
-private:
+  private:
     //! \brief Imports a .spo file
     bool openSPOFile(QString filename);
     //! \brief Imports a .spoR file (from SPO2Review software in windows)
@@ -388,9 +390,9 @@ private:
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
 
-    gLineChart *pulse,*spo2,*plethy;
-    Layer *lo1,*lo2;
-    gGraph *PULSE,*SPO2,*PLETHY,*CONTROL;
+    gLineChart *pulse, *spo2, *plethy;
+    Layer *lo1, *lo2;
+    gGraph *PULSE, *SPO2, *PLETHY, *CONTROL;
 
     //! \brief Contains a list of gLineCharts that display Pulse, Plethy & SPO2 data
     QVector<gLineChart *> Data;
@@ -398,16 +400,16 @@ private:
     QextSerialPort *port;
     QString portname;
     PORTMODE portmode;
-    double lasttime,starttime;
+    double lasttime, starttime;
     int lastpulse, lastspo2;
 
-    Day * day;
+    Day *day;
     //Session * session;
     //EventList * ev_pulse;
     //EventList * ev_spo2;
     //EventList * ev_plethy;
-    Layer * foobar;
-    gGraphView * m_shared;
+    Layer *foobar;
+    gGraphView *m_shared;
 
     SerialOximeter *oximeter;
     qint64 saved_starttime;

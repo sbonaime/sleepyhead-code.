@@ -24,10 +24,10 @@
 #include "oximetry.h"
 #include "preferencesdialog.h"
 
-extern Profile * profile;
+extern Profile *profile;
 
 namespace Ui {
-    class MainWindow;
+class MainWindow;
 }
 
 /*! \mainpage SleepyHead
@@ -74,7 +74,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -85,7 +85,7 @@ public:
     void updateFavourites();
 
     //! \brief Create a new menu object in the main menubar.
-    QMenu * CreateMenu(QString title);
+    QMenu *CreateMenu(QString title);
 
     //! \brief Start the automatic update checker process
     void CheckForUpdates();
@@ -105,7 +105,7 @@ public:
 
         Mac needs Growl notification system for this to work
         */
-    void Notify(QString s, QString title="SleepyHead v"+VersionString, int ms=5000);
+    void Notify(QString s, QString title = "SleepyHead v" + VersionString, int ms = 5000);
 
     /*! \fn gGraphView *snapshotGraph()
         \brief Returns the current snapshotGraph object used by the report printing system */
@@ -126,7 +126,7 @@ public:
 
         If force_login is set, it will return to the login menu even if it's set to skip
         */
-    static void RestartApplication(bool force_login=false,bool change_datafolder=false);
+    static void RestartApplication(bool force_login = false, bool change_datafolder = false);
 
     //! \brief Self explainitory, selects the Oximetry Tab
     void selectOximetryTab();
@@ -136,20 +136,20 @@ public:
     void sendStatsUrl(QString msg) { on_recordsBox_linkClicked(QUrl(msg)); }
 
     //! \brief Sets up recalculation of all event summaries and flags
-    void reprocessEvents(bool restart=false);
+    void reprocessEvents(bool restart = false);
 
 
     //! \brief Internal function to set Records Box html from summary module
     void setRecBoxHTML(QString html);
 
-public slots:
+  public slots:
     //! \brief Recalculate all event summaries and flags
     void doReprocessEvents();
 
-protected:
-    virtual void keyPressEvent(QKeyEvent * event);
+  protected:
+    virtual void keyPressEvent(QKeyEvent *event);
 
-private slots:
+  private slots:
     /*! \fn void on_action_Import_Data_triggered();
         \brief Provide the file dialog for selecting import location, and start the import process
         This is called when the Import button is clicked
@@ -221,7 +221,7 @@ private slots:
     void on_actionView_Oximetry_triggered();
 
     //! \brief Updates the Statusbar message with the QString message contained in Text
-    void updatestatusBarMessage (const QString & text);
+    void updatestatusBarMessage(const QString &text);
 
     //! \brief Passes the Daily, Overview & Oximetry object to Print Report, based on current tab
     void on_actionPrint_Report_triggered();
@@ -280,7 +280,7 @@ private slots:
     void on_webView_statusBarMessage(const QString &text);
 
     //! \brief Display Help WebView Link in statusbar.
-    void LinkHovered(const QString & link, const QString & title, const QString & textContent);
+    void LinkHovered(const QString &link, const QString &title, const QString &textContent);
     void on_tabWidget_currentChanged(int index);
 
     void on_summaryView_linkClicked(const QUrl &arg1);
@@ -299,7 +299,7 @@ private slots:
 
     void on_actionHelp_Support_SleepyHead_Development_triggered();
 
-    void aboutBoxLinkClicked(const QUrl & url);
+    void aboutBoxLinkClicked(const QUrl &url);
 
     void on_actionChange_Language_triggered();
 
@@ -307,17 +307,17 @@ private slots:
 
     void on_actionImport_Somnopose_Data_triggered();
 
-private:
+  private:
     QString getWelcomeHTML();
     void FreeSessions();
 
     Ui::MainWindow *ui;
-    Daily * daily;
-    Overview * overview;
-    Oximetry * oximetry;
+    Daily *daily;
+    Overview *overview;
+    Oximetry *oximetry;
     bool first_load;
     PreferencesDialog *prefdialog;
-    QMutex loglock,strlock;
+    QMutex loglock, strlock;
     QStringList logbuffer;
     QTime logtime;
     QSystemTrayIcon *systray;

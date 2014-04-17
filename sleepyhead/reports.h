@@ -15,7 +15,7 @@
 
 class Report
 {
-public:
+  public:
     Report();
 
     /*! \fn void PrintReport gGraphView *gv,QString name, QDate date=QDate::currentDate());
@@ -24,7 +24,7 @@ public:
         \param QString name   Report Title
         \param QDate date
         */
-    static void PrintReport(gGraphView *gv,QString name, QDate date=QDate::currentDate());
+    static void PrintReport(gGraphView *gv, QString name, QDate date = QDate::currentDate());
 };
 
 #endif // REPORTS_H

@@ -21,7 +21,7 @@
 #include "Graphs/gSummaryChart.h"
 
 namespace Ui {
-    class Overview;
+class Overview;
 }
 
 class Report;
@@ -36,8 +36,8 @@ class Overview : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit Overview(QWidget *parent, gGraphView *shared=NULL);
+  public:
+    explicit Overview(QWidget *parent, gGraphView *shared = NULL);
     ~Overview();
 
     //! \brief Returns Overview gGraphView object containing it's graphs
@@ -61,10 +61,12 @@ public:
     /*! \brief Create an overview graph, adding it to the overview gGraphView object
         \param QString name  The title of the graph
         \param QString units The units of measurements to show in the popup */
-    gGraph * createGraph(QString name,QString units="",YTickerType yttype=YT_Number);
+    gGraph *createGraph(QString name, QString units = "", YTickerType yttype = YT_Number);
 
-    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR,*LK,*NPB,*SET,*SES,*RR,*MV,*TV,*PTB,*PULSE,*SPO2,*WEIGHT,*ZOMBIE, *BMI, *TGMV, *TOTLK;
-    SummaryChart *bc,*uc, *fl, *us, *pr,*lk,*npb,*set,*ses,*rr,*mv,*tv,*ptb,*pulse,*spo2,*weight,*zombie, *bmi, *ahihr, *tgmv, *totlk;
+    gGraph *AHI, *AHIHR, *UC, *FL, *US, *PR, *LK, *NPB, *SET, *SES, *RR, *MV, *TV, *PTB, *PULSE, *SPO2,
+           *WEIGHT, *ZOMBIE, *BMI, *TGMV, *TOTLK;
+    SummaryChart *bc, *uc, *fl, *us, *pr, *lk, *npb, *set, *ses, *rr, *mv, *tv, *ptb, *pulse, *spo2,
+                 *weight, *zombie, *bmi, *ahihr, *tgmv, *totlk;
 
     //! \breif List of SummaryCharts shown on the overview page
     QVector<SummaryChart *> OverviewCharts;
@@ -72,18 +74,18 @@ public:
     void updateGraphCombo();
     void ResetGraph(QString name);
 
-public slots:
+  public slots:
     // ! \brief Print button down the bottom, does the same as File->Print
     //void on_printButton_clicked();
 
-private slots:
-/*    void on_drStart_dateChanged(const QDate &date);
-    void on_drEnd_dateChanged(const QDate &date);
-    void on_rbDateRange_toggled(bool checked);
-    void on_rbLastWeek_clicked();
-    void on_rbLastMonth_clicked();
-    void on_rbEverything_clicked();
-    void on_rbDateRange_clicked(); */
+  private slots:
+    /*    void on_drStart_dateChanged(const QDate &date);
+        void on_drEnd_dateChanged(const QDate &date);
+        void on_rbDateRange_toggled(bool checked);
+        void on_rbLastWeek_clicked();
+        void on_rbLastMonth_clicked();
+        void on_rbEverything_clicked();
+        void on_rbDateRange_clicked(); */
 
     //! \brief Resets the graph view because the Start date has been changed
     void on_dateStart_dateChanged(const QDate &date);
@@ -108,17 +110,17 @@ private slots:
 
     void on_toggleVisibility_clicked(bool checked);
 
-private:
+  private:
     Ui::Overview *ui;
     gGraphView *GraphView;
     MyScrollBar *scrollbar;
     QHBoxLayout *layout;
-    gGraphView * m_shared;
-    QIcon * icon_on;
-    QIcon * icon_off;
+    gGraphView *m_shared;
+    QIcon *icon_on;
+    QIcon *icon_off;
 
     //! \brief Updates the calendar highlighting for the calendar object for this date.
-    void UpdateCalendarDay(QDateEdit * calendar,QDate date);
+    void UpdateCalendarDay(QDateEdit *calendar, QDate date);
     void updateCube();
 
     //SessionTimes *session_times;
@@ -126,7 +128,7 @@ private:
 
     //Layer *prmax,*prmin,*iap,*eap,*pr,*sesstime;
 
-    Day * day;// dummy in this case
+    Day *day; // dummy in this case
 
 };
 

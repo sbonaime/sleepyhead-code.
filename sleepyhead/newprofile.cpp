@@ -32,55 +32,67 @@ NewProfile::NewProfile(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->userNameEdit->setText(getUserName());
-    QLocale locale=QLocale::system();
-    QString shortformat=locale.dateFormat(QLocale::ShortFormat);
+    QLocale locale = QLocale::system();
+    QString shortformat = locale.dateFormat(QLocale::ShortFormat);
+
     if (!shortformat.toLower().contains("yyyy")) {
-        shortformat.replace("yy","yyyy");
+        shortformat.replace("yy", "yyyy");
     }
+
     ui->dobEdit->setDisplayFormat(shortformat);
     ui->dateDiagnosedEdit->setDisplayFormat(shortformat);
-    m_firstPage=0;
+    m_firstPage = 0;
     ui->backButton->setEnabled(false);
     ui->nextButton->setEnabled(false);
 
     ui->stackedWidget->setCurrentIndex(0);
     on_cpapModeCombo_activated(0);
-    m_passwordHashed=false;
+    m_passwordHashed = false;
     ui->heightEdit2->setVisible(false);
     ui->heightEdit->setDecimals(2);
     ui->heightEdit->setSuffix(STR_UNIT_CM);
 
-    { // process countries list
-    QFile f(":/docs/countries.txt");
-    f.open(QFile::ReadOnly);
-    QTextStream cnt(&f);
-    QString a;
-    ui->countryCombo->clear();
-    ui->countryCombo->addItem(tr("Select Country"));
-    do {
-        a=cnt.readLine();
-        if (a.isEmpty()) break;
-        ui->countryCombo->addItem(a);
-    } while(1);
-    f.close();
+    {
+        // process countries list
+        QFile f(":/docs/countries.txt");
+        f.open(QFile::ReadOnly);
+        QTextStream cnt(&f);
+        QString a;
+        ui->countryCombo->clear();
+        ui->countryCombo->addItem(tr("Select Country"));
+
+        do {
+            a = cnt.readLine();
+
+            if (a.isEmpty()) { break; }
+
+            ui->countryCombo->addItem(a);
+        } while (1);
+
+        f.close();
     }
-    { // timezone list
-    QFile f(":/docs/tz.txt");
-    f.open(QFile::ReadOnly);
-    QTextStream cnt(&f);
-    QString a;
-    ui->timezoneCombo->clear();
-    //ui->countryCombo->addItem("Select TimeZone");
-    do {
-        a=cnt.readLine();
-        if (a.isEmpty()) break;
-        QStringList l;
-        l=a.split("=");
-        ui->timezoneCombo->addItem(l[1],l[0]);
-    } while(1);
-    f.close();
+    {
+        // timezone list
+        QFile f(":/docs/tz.txt");
+        f.open(QFile::ReadOnly);
+        QTextStream cnt(&f);
+        QString a;
+        ui->timezoneCombo->clear();
+
+        //ui->countryCombo->addItem("Select TimeZone");
+        do {
+            a = cnt.readLine();
+
+            if (a.isEmpty()) { break; }
+
+            QStringList l;
+            l = a.split("=");
+            ui->timezoneCombo->addItem(l[1], l[0]);
+        } while (1);
+
+        f.close();
     }
-    ui->AppTitle->setText("SleepyHead v"+VersionString);
+    ui->AppTitle->setText("SleepyHead v" + VersionString);
     ui->releaseStatus->setText(ReleaseStatus);
 
 
@@ -96,88 +108,111 @@ NewProfile::~NewProfile()
 QString NewProfile::getIntroHTML()
 {
     return "<html>"
-"<body>"
-"<div align=center><h1>"+tr("Welcome to SleepyHead")+"</h1></div>"
+           "<body>"
+           "<div align=center><h1>" + tr("Welcome to SleepyHead") + "</h1></div>"
 
-"<p>"+tr("This software is being designed to assist you in reviewing the data produced by your CPAP machines and related equipment.")+"</p>"
+           "<p>" + tr("This software is being designed to assist you in reviewing the data produced by your CPAP machines and related equipment.")
+           + "</p>"
 
-"<p>"+tr("SleepyHead has been released freely under the <a href='qrc:/COPYING'>GNU Public License</a>, and comes with no warranty, and without ANY claims to fitness for any purpose.")+"</p>"
-"<div align=center><font color=\"red\"><h2>"+tr("PLEASE READ CAREFULLY")+"</h2></font></div>"
-"<p>"+tr("SleepyHead is intended merely as a data viewer, and definitely not a substitute for competent medical guidance from your Doctor.")+"</p>"
+           "<p>" + tr("SleepyHead has been released freely under the <a href='qrc:/COPYING'>GNU Public License</a>, and comes with no warranty, and without ANY claims to fitness for any purpose.")
+           + "</p>"
+           "<div align=center><font color=\"red\"><h2>" + tr("PLEASE READ CAREFULLY") + "</h2></font></div>"
+           "<p>" + tr("SleepyHead is intended merely as a data viewer, and definitely not a substitute for competent medical guidance from your Doctor.")
+           + "</p>"
 
-"<p>"+tr("Accuracy of any data displayed is not and can not be guaranteed.")+"</p>"
+           "<p>" + tr("Accuracy of any data displayed is not and can not be guaranteed.") + "</p>"
 
-"<p>"+tr("Any reports generated are for PERSONAL USE ONLY, and NOT IN ANY WAY fit for compliance or medical diagnostic purposes.")+"</p>"
+           "<p>" + tr("Any reports generated are for PERSONAL USE ONLY, and NOT IN ANY WAY fit for compliance or medical diagnostic purposes.")
+           + "</p>"
 
-"<p>"+tr("The author will not be held liable for <u>anything</u> related to the use or misuse of this software.")+"</p>"
+           "<p>" + tr("The author will not be held liable for <u>anything</u> related to the use or misuse of this software.")
+           + "</p>"
 
-"<div align=center>"
-"<p><b><font size=+1>"+tr("Use of this software is entirely at your own risk.")+"</font></b></p>"
+           "<div align=center>"
+           "<p><b><font size=+1>" + tr("Use of this software is entirely at your own risk.") +
+           "</font></b></p>"
 
-"<p><i>"+tr("SleepyHead is copyright &copy;2011-2014 Mark Watkins")+"<i></p>"
-"</div>"
-"</body>"
-"</html>";
+           "<p><i>" + tr("SleepyHead is copyright &copy;2011-2014 Mark Watkins") + "<i></p>"
+           "</div>"
+           "</body>"
+           "</html>";
 }
 
 void NewProfile::on_nextButton_clicked()
 {
-    const QString xmlext=".xml";
+    const QString xmlext = ".xml";
 
     QSettings settings(getDeveloperName(), getAppName());
 
-    int index=ui->stackedWidget->currentIndex();
-    switch(index) {
+    int index = ui->stackedWidget->currentIndex();
+
+    switch (index) {
     case 0:
-        if (!ui->agreeCheckbox->isChecked())
+        if (!ui->agreeCheckbox->isChecked()) {
             return;
+        }
+
         // Reload Preferences object
         break;
+
     case 1:
         if (ui->userNameEdit->text().isEmpty()) {
-            QMessageBox::information(this,STR_MESSAGE_ERROR,tr("Empty Username"),QMessageBox::Ok);
+            QMessageBox::information(this, STR_MESSAGE_ERROR, tr("Empty Username"), QMessageBox::Ok);
             return;
         }
-        if (ui->genderCombo->currentIndex()==0) {
+
+        if (ui->genderCombo->currentIndex() == 0) {
             //QMessageBox::information(this,tr("Notice"),tr("You did not specify Gender."),QMessageBox::Ok);
         }
+
         if (ui->passwordGroupBox->isChecked()) {
-            if (ui->passwordEdit1->text()!=ui->passwordEdit2->text()) {
-                QMessageBox::information(this,STR_MESSAGE_ERROR,tr("Passwords don't match"),QMessageBox::Ok);
+            if (ui->passwordEdit1->text() != ui->passwordEdit2->text()) {
+                QMessageBox::information(this, STR_MESSAGE_ERROR, tr("Passwords don't match"), QMessageBox::Ok);
                 return;
             }
-            if (ui->passwordEdit1->text().isEmpty())
+
+            if (ui->passwordEdit1->text().isEmpty()) {
                 ui->passwordGroupBox->setChecked(false);
+            }
         }
 
         break;
+
     case 2:
         break;
+
     case 3:
         break;
+
     default:
         break;
     }
 
-    int max_pages=ui->stackedWidget->count()-1;
-    if (index<max_pages) {
+    int max_pages = ui->stackedWidget->count() - 1;
+
+    if (index < max_pages) {
         index++;
         ui->stackedWidget->setCurrentIndex(index);
     } else {
         // Finish button clicked.
-        QString username=ui->userNameEdit->text();
-        if (QMessageBox::question(this,tr("Profile Changes"),tr("Accept and save this information?"),QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
-            Profile *profile=Profiles::Get(username);
+        QString username = ui->userNameEdit->text();
+
+        if (QMessageBox::question(this, tr("Profile Changes"), tr("Accept and save this information?"),
+                                  QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+            Profile *profile = Profiles::Get(username);
+
             if (!profile) { // No profile, create one.
-                profile=Profiles::Create(username);
+                profile = Profiles::Create(username);
             }
-            Profile &prof=*profile;
+
+            Profile &prof = *profile;
             profile->user->setFirstName(ui->firstNameEdit->text());
             profile->user->setLastName(ui->lastNameEdit->text());
             profile->user->setDOB(ui->dobEdit->date());
             profile->user->setEmail(ui->emailEdit->text());
             profile->user->setPhone(ui->phoneEdit->text());
             profile->user->setAddress(ui->addressEdit->toPlainText());
+
             if (ui->passwordGroupBox->isChecked()) {
                 if (!m_passwordHashed) {
                     profile->user->setPassword(ui->passwordEdit1->text().toUtf8());
@@ -201,42 +236,48 @@ void NewProfile::on_nextButton_clicked()
             profile->doctor->setPhone(ui->doctorPhoneEdit->text());
             profile->doctor->setEmail(ui->doctorEmailEdit->text());
             profile->doctor->setPatientID(ui->doctorPatientIDEdit->text());
-            profile->user->setTimeZone(ui->timezoneCombo->itemData(ui->timezoneCombo->currentIndex()).toString());
+            profile->user->setTimeZone(ui->timezoneCombo->itemData(
+                                           ui->timezoneCombo->currentIndex()).toString());
             profile->user->setCountry(ui->countryCombo->currentText());
             profile->user->setDaylightSaving(ui->DSTcheckbox->isChecked());
             UnitSystem us;
-            if (ui->heightCombo->currentIndex()==0) us=US_Metric;
-            else if (ui->heightCombo->currentIndex()==1) us=US_Archiac;
-            else us=US_Metric;
+
+            if (ui->heightCombo->currentIndex() == 0) { us = US_Metric; }
+            else if (ui->heightCombo->currentIndex() == 1) { us = US_Archiac; }
+            else { us = US_Metric; }
 
             if (profile->general->unitSystem() != us) {
                 profile->general->setUnitSystem(us);
-                if (mainwin && mainwin->getDaily()) mainwin->getDaily()->UnitsChanged();
+
+                if (mainwin && mainwin->getDaily()) { mainwin->getDaily()->UnitsChanged(); }
             }
 
-            double v=0;
-            if (us==US_Archiac) {
+            double v = 0;
+
+            if (us == US_Archiac) {
                 // convert to metric
-                v=(ui->heightEdit->value()*30.48);
-                v+=ui->heightEdit2->value()*2.54;
+                v = (ui->heightEdit->value() * 30.48);
+                v += ui->heightEdit2->value() * 2.54;
             } else {
-                v=ui->heightEdit->value();
+                v = ui->heightEdit->value();
             }
+
             profile->user->setHeight(v);
 
             //profile->user->setUserName(username);
-            PREF[STR_GEN_Profile]=username;
+            PREF[STR_GEN_Profile] = username;
 
 
             this->accept();
         }
     }
 
-    if (index>=max_pages) {
+    if (index >= max_pages) {
         ui->nextButton->setText(tr("&Finish"));
     } else {
         ui->nextButton->setText(tr("&Next"));
     }
+
     ui->backButton->setEnabled(true);
 
 }
@@ -244,10 +285,12 @@ void NewProfile::on_nextButton_clicked()
 void NewProfile::on_backButton_clicked()
 {
     ui->nextButton->setText(tr("&Next"));
-    if (ui->stackedWidget->currentIndex()>m_firstPage) {
-        ui->stackedWidget->setCurrentIndex(ui->stackedWidget->currentIndex()-1);
+
+    if (ui->stackedWidget->currentIndex() > m_firstPage) {
+        ui->stackedWidget->setCurrentIndex(ui->stackedWidget->currentIndex() - 1);
     }
-    if (ui->stackedWidget->currentIndex()==m_firstPage) {
+
+    if (ui->stackedWidget->currentIndex() == m_firstPage) {
         ui->backButton->setEnabled(false);
     } else {
         ui->backButton->setEnabled(true);
@@ -259,7 +302,7 @@ void NewProfile::on_backButton_clicked()
 
 void NewProfile::on_cpapModeCombo_activated(int index)
 {
-    if (index==0) {
+    if (index == 0) {
         ui->maxPressureEdit->setVisible(false);
     } else {
         ui->maxPressureEdit->setVisible(true);
@@ -274,35 +317,42 @@ void NewProfile::on_agreeCheckbox_clicked(bool checked)
 void NewProfile::skipWelcomeScreen()
 {
     ui->agreeCheckbox->setChecked(true);
-    ui->stackedWidget->setCurrentIndex(m_firstPage=1);
+    ui->stackedWidget->setCurrentIndex(m_firstPage = 1);
     ui->backButton->setEnabled(false);
     ui->nextButton->setEnabled(true);
 }
 void NewProfile::edit(const QString name)
 {
     skipWelcomeScreen();
-    Profile *profile=Profiles::Get(name);
+    Profile *profile = Profiles::Get(name);
+
     if (!profile) {
-        profile=Profiles::Create(name);
+        profile = Profiles::Create(name);
     }
+
     ui->userNameEdit->setText(name);
     ui->userNameEdit->setReadOnly(true);
     ui->firstNameEdit->setText(profile->user->firstName());
     ui->lastNameEdit->setText(profile->user->lastName());
-    if (profile->contains(STR_UI_Password) && !profile->p_preferences[STR_UI_Password].toString().isEmpty()) {
+
+    if (profile->contains(STR_UI_Password)
+            && !profile->p_preferences[STR_UI_Password].toString().isEmpty()) {
         // leave the password box blank..
-        QString a="******";
+        QString a = "******";
         ui->passwordEdit1->setText(a);
         ui->passwordEdit2->setText(a);
         ui->passwordGroupBox->setChecked(true);
-        m_passwordHashed=true;
+        m_passwordHashed = true;
     }
+
     ui->dobEdit->setDate(profile->user->DOB());
-    if (profile->user->gender()==Male) {
+
+    if (profile->user->gender() == Male) {
         ui->genderCombo->setCurrentIndex(1);
-    } else if (profile->user->gender()==Female) {
+    } else if (profile->user->gender() == Female) {
         ui->genderCombo->setCurrentIndex(2);
-    } else ui->genderCombo->setCurrentIndex(0);
+    } else { ui->genderCombo->setCurrentIndex(0); }
+
     ui->heightEdit->setValue(profile->user->height());
     ui->addressEdit->setText(profile->user->address());
     ui->emailEdit->setText(profile->user->email());
@@ -323,22 +373,24 @@ void NewProfile::edit(const QString name)
     ui->doctorPatientIDEdit->setText(profile->doctor->patientID());
 
     ui->DSTcheckbox->setChecked(profile->user->daylightSaving());
-    int i=ui->timezoneCombo->findData(profile->user->timeZone());
+    int i = ui->timezoneCombo->findData(profile->user->timeZone());
     ui->timezoneCombo->setCurrentIndex(i);
-    i=ui->countryCombo->findText(profile->user->country());
+    i = ui->countryCombo->findText(profile->user->country());
     ui->countryCombo->setCurrentIndex(i);
 
-    UnitSystem us=profile->general->unitSystem();
-    i=(int)us - 1;
-    if (i<0) i=0;
+    UnitSystem us = profile->general->unitSystem();
+    i = (int)us - 1;
+
+    if (i < 0) { i = 0; }
+
     ui->heightCombo->setCurrentIndex(i);
 
-    double v=profile->user->height();
+    double v = profile->user->height();
 
-    if (us==US_Archiac)  { // evil non-metric
-        int ti=v/2.54;
-        int feet=ti / 12;
-        int inches=ti % 12;
+    if (us == US_Archiac)  { // evil non-metric
+        int ti = v / 2.54;
+        int feet = ti / 12;
+        int inches = ti % 12;
         ui->heightEdit->setValue(feet);
         ui->heightEdit2->setValue(inches);
         ui->heightEdit2->setVisible(true);
@@ -356,23 +408,23 @@ void NewProfile::edit(const QString name)
 
 void NewProfile::on_passwordEdit1_editingFinished()
 {
-    m_passwordHashed=false;
+    m_passwordHashed = false;
 }
 
 void NewProfile::on_passwordEdit2_editingFinished()
 {
-    m_passwordHashed=false;
+    m_passwordHashed = false;
 }
 
 void NewProfile::on_heightCombo_currentIndexChanged(int index)
 {
-    if (index==0) {
+    if (index == 0) {
         //metric
         ui->heightEdit2->setVisible(false);
         ui->heightEdit->setDecimals(2);
         ui->heightEdit->setSuffix(STR_UNIT_CM);
-        double v=ui->heightEdit->value()*30.48;
-        v+=ui->heightEdit2->value()*2.54;
+        double v = ui->heightEdit->value() * 30.48;
+        v += ui->heightEdit2->value() * 2.54;
         ui->heightEdit->setValue(v);
     } else {        //evil
         ui->heightEdit->setDecimals(0);
@@ -380,9 +432,9 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
         ui->heightEdit->setSuffix(STR_UNIT_FOOT);
         ui->heightEdit2->setVisible(true);
         ui->heightEdit2->setSuffix(STR_UNIT_INCH);
-        int v=ui->heightEdit->value()/2.54;
-        int feet=v / 12;
-        int inches=v % 12;
+        int v = ui->heightEdit->value() / 2.54;
+        int feet = v / 12;
+        int inches = v % 12;
         ui->heightEdit->setValue(feet);
         ui->heightEdit2->setValue(inches);
     }
@@ -390,19 +442,19 @@ void NewProfile::on_heightCombo_currentIndexChanged(int index)
 
 void NewProfile::on_textBrowser_anchorClicked(const QUrl &arg1)
 {
-    QDialog * dlg=new QDialog(this);
+    QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(600);
     dlg->setMinimumHeight(500);
-    QVBoxLayout *layout=new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
     dlg->setLayout(layout);
-    QTextBrowser *browser=new QTextBrowser(this);
+    QTextBrowser *browser = new QTextBrowser(this);
     dlg->layout()->addWidget(browser);
-    QPushButton *button=new QPushButton(tr("&Close this window"),browser);
+    QPushButton *button = new QPushButton(tr("&Close this window"), browser);
 
-    QFile f(arg1.toString().replace("qrc:",":"));
+    QFile f(arg1.toString().replace("qrc:", ":"));
     f.open(QIODevice::ReadOnly);
     QTextStream ts(&f);
-    QString text=ts.readAll();
+    QString text = ts.readAll();
     connect(button, SIGNAL(clicked()), dlg, SLOT(close()));
     dlg->layout()->addWidget(button);
     browser->setPlainText(text);

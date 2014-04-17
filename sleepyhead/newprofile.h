@@ -16,7 +16,7 @@
 #include <QUrl>
 
 namespace Ui {
-    class NewProfile;
+class NewProfile;
 }
 
 /*! \class NewProfile
@@ -27,7 +27,7 @@ class NewProfile : public QDialog
 {
     Q_OBJECT
 
-public:
+  public:
     explicit NewProfile(QWidget *parent = 0);
     ~NewProfile();
 
@@ -37,7 +37,7 @@ public:
     //! \brief Open profile named 'name' for editing, loading all it's content
     void edit(const QString name);
 
-private slots:
+  private slots:
     //! \brief Validate each step and move to the next page, saving at the end if requested.
     void on_nextButton_clicked();
 
@@ -56,7 +56,7 @@ private slots:
 
     void on_textBrowser_anchorClicked(const QUrl &arg1);
 
-private:
+  private:
     QString getIntroHTML();
 
     Ui::NewProfile *ui;

@@ -21,20 +21,20 @@
 #include "SleepLib/profiles.h"
 
 namespace Ui {
-    class PreferencesDialog;
+class PreferencesDialog;
 }
 
 
 /*! \class MySortFilterProxyModel
     \brief Enables the Graph tabs view to be filtered
     */
-class MySortFilterProxyModel:public QSortFilterProxyModel
+class MySortFilterProxyModel: public QSortFilterProxyModel
 {
     Q_OBJECT
-public:
+  public:
     MySortFilterProxyModel(QObject *parent = 0);
 
-protected:
+  protected:
     //! \brief Simply extends filterAcceptRow to scan children as well
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 
@@ -58,8 +58,8 @@ class PreferencesDialog : public QDialog
 {
     Q_OBJECT
 
-public:
-    explicit PreferencesDialog(QWidget *parent, Profile * _profile);
+  public:
+    explicit PreferencesDialog(QWidget *parent, Profile *_profile);
     ~PreferencesDialog();
 
     //! \brief Save the current preferences, called when Ok button is clicked on.
@@ -68,7 +68,7 @@ public:
     //! \brief Updates the date text of the last time updates where checked
     void RefreshLastChecked();
 
-private slots:
+  private slots:
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void on_combineSlider_valueChanged(int value);
 
@@ -84,7 +84,7 @@ private slots:
 
     void on_graphFilter_textChanged(const QString &arg1);
 
-    void graphModel_changed(QStandardItem * item);
+    void graphModel_changed(QStandardItem *item);
 
     void on_resetGraphButton_clicked();
 
@@ -100,13 +100,13 @@ private slots:
 
     void on_tooltipTimeoutSlider_valueChanged(int value);
 
-private:
+  private:
     //! \brief Populates the Graph Model view with data from the Daily, Overview & Oximetry gGraphView objects
     void resetGraphModel();
 
     Ui::PreferencesDialog *ui;
-    Profile * profile;
-    QHash<int,QColor> m_new_colors;
+    Profile *profile;
+    QHash<int, QColor> m_new_colors;
     QStringList importLocations;
     QStringListModel *importModel;
     MySortFilterProxyModel *graphFilterModel;

@@ -42,8 +42,8 @@ enum RequestMode { RM_None, RM_CheckUpdates, RM_GetFile };
 class UpdaterWindow : public QMainWindow
 {
     Q_OBJECT
-    
-public:
+
+  public:
     explicit UpdaterWindow(QWidget *parent = 0);
     ~UpdaterWindow();
 
@@ -53,11 +53,11 @@ public:
     /*! \fn ParseUpdateXML(QIODevice * dev)
         \brief Parses the update.xml from either QFile or QNetworkReply source
         */
-    void ParseUpdateXML(QIODevice * dev);
+    void ParseUpdateXML(QIODevice *dev);
 
-protected slots:
+  protected slots:
     //! \brief Network reply completed
-    void replyFinished(QNetworkReply * reply);
+    void replyFinished(QNetworkReply *reply);
 
     //! \brief Update the progress bars as data is received
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -71,7 +71,7 @@ protected slots:
     //! \brief Request the update.xml file
     void downloadUpdateXML();
 
-private slots:
+  private slots:
     //! \brief Just close the Updater window
     void on_CloseButton_clicked();
 
@@ -84,7 +84,7 @@ private slots:
     //! \brief Click on finished, restart if app has been upgraded, otherwise just close the window.
     void on_FinishedButton_clicked();
 
-private:
+  private:
 
     //! \brief Holds the results of parsing the update.xml file
     UpdateParser updateparser;
@@ -98,7 +98,7 @@ private:
     Release *release;
     QFile file;
     QNetworkAccessManager *netmanager;
-    QNetworkReply * reply;
+    QNetworkReply *reply;
     QList<Update *> updates;
     int current_row;
     bool success;

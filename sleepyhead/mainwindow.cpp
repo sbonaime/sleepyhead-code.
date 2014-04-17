@@ -59,26 +59,29 @@ QLabel *qstatus;
 QLabel *qstatus2;
 QStatusBar *qstatusbar;
 
-extern Profile * profile;
+extern Profile *profile;
 
 void MainWindow::Log(QString s)
 {
 
-    if (!strlock.tryLock())
+    if (!strlock.tryLock()) {
         return;
+    }
 
-//  strlock.lock();
-    QString tmp=QString("%1: %2").arg(logtime.elapsed(),5,10,QChar('0')).arg(s);
+    //  strlock.lock();
+    QString tmp = QString("%1: %2").arg(logtime.elapsed(), 5, 10, QChar('0')).arg(s);
 
     logbuffer.append(tmp); //QStringList appears not to be threadsafe
     strlock.unlock();
 
     strlock.lock();
+
     // only do this in the main thread?
-    for (int i=0;i<logbuffer.size();i++) {
+    for (int i = 0; i < logbuffer.size(); i++) {
         ui->logText->appendPlainText(logbuffer[i]);
-        fprintf(stderr,"%s\n",logbuffer[i].toLocal8Bit().constData());
+        fprintf(stderr, "%s\n", logbuffer[i].toLocal8Bit().constData());
     }
+
     logbuffer.clear();
     strlock.unlock();
 
@@ -89,47 +92,50 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    Q_ASSERT(p_profile!=NULL);
+    Q_ASSERT(p_profile != NULL);
 
     logtime.start();
     ui->setupUi(this);
 
-    QString version=FullVersionString;
-    if (QString(GIT_BRANCH)!="master") version+=QString(" ")+QString(GIT_BRANCH);
-    this->setWindowTitle(STR_TR_SleepyHead+QString(" v%1 ("+tr("Profile")+": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
+    QString version = FullVersionString;
+
+    if (QString(GIT_BRANCH) != "master") { version += QString(" ") + QString(GIT_BRANCH); }
+
+    this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(
+                             version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
 #ifdef Q_OS_MAC
 #if(QT_VERSION<QT_VERSION_CHECK(5,0,0))
     // Disable Screenshot on Mac Platform,as it doesn't work in Qt4, and the system provides this functionality anyway.
-   ui->action_Screenshot->setEnabled(false);
+    ui->action_Screenshot->setEnabled(false);
 #endif
 #endif
 
-    overview=NULL;
-    daily=NULL;
-    oximetry=NULL;
-    prefdialog=NULL;
+    overview = NULL;
+    daily = NULL;
+    oximetry = NULL;
+    prefdialog = NULL;
 
-    m_inRecalculation=false;
-    m_restartRequired=false;
+    m_inRecalculation = false;
+    m_restartRequired = false;
     // Initialize Status Bar objects
-    qstatusbar=ui->statusbar;
-    qprogress=new QProgressBar(this);
+    qstatusbar = ui->statusbar;
+    qprogress = new QProgressBar(this);
     qprogress->setMaximum(100);
-    qstatus2=new QLabel(tr("Welcome"),this);
+    qstatus2 = new QLabel(tr("Welcome"), this);
     qstatus2->setFrameStyle(QFrame::Raised);
     qstatus2->setFrameShadow(QFrame::Sunken);
     qstatus2->setFrameShape(QFrame::Box);
     //qstatus2->setMinimumWidth(100);
     qstatus2->setMaximumWidth(100);
-    qstatus2->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
-    qstatus=new QLabel("",this);
+    qstatus2->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    qstatus = new QLabel("", this);
     qprogress->hide();
     ui->statusbar->setMinimumWidth(200);
-    ui->statusbar->addPermanentWidget(qstatus,0);
-    ui->statusbar->addPermanentWidget(qprogress,1);
-    ui->statusbar->addPermanentWidget(qstatus2,0);
+    ui->statusbar->addPermanentWidget(qstatus, 0);
+    ui->statusbar->addPermanentWidget(qprogress, 1);
+    ui->statusbar->addPermanentWidget(qstatus2, 0);
 
     ui->actionDebug->setChecked(PROFILE.general->showDebug());
 
@@ -142,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     ui->action_Link_Graph_Groups->setChecked(PROFILE.general->linkGroups());
 
-    first_load=true;
+    first_load = true;
 
     // Using the dirty registry here. :(
     QSettings settings(getDeveloperName(), getAppName());
@@ -150,30 +156,33 @@ MainWindow::MainWindow(QWidget *parent) :
     // Load previous Window geometry
     this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
-    daily=new Daily(ui->tabWidget,NULL);
-    ui->tabWidget->insertTab(1,daily,STR_TR_Daily);
+    daily = new Daily(ui->tabWidget, NULL);
+    ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
 
 
     // Start with the Summary Tab
-    ui->tabWidget->setCurrentWidget(ui->summaryTab); // setting this to daily shows the cube during loading..
+    ui->tabWidget->setCurrentWidget(
+        ui->summaryTab); // setting this to daily shows the cube during loading..
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
-        systray=new QSystemTrayIcon(QIcon(":/icons/bob-v3.0.png"),this);
+        systray = new QSystemTrayIcon(QIcon(":/icons/bob-v3.0.png"), this);
         systray->show();
-        systraymenu=new QMenu(this);
+        systraymenu = new QMenu(this);
         systray->setContextMenu(systraymenu);
-        QAction *a=systraymenu->addAction(STR_TR_SleepyHead+" v"+VersionString);
+        QAction *a = systraymenu->addAction(STR_TR_SleepyHead + " v" + VersionString);
         a->setEnabled(false);
         systraymenu->addSeparator();
-        systraymenu->addAction(tr("&About"),this,SLOT(on_action_About_triggered()));
-        systraymenu->addAction(tr("Check for &Updates"),this,SLOT(on_actionCheck_for_Updates_triggered()));
+        systraymenu->addAction(tr("&About"), this, SLOT(on_action_About_triggered()));
+        systraymenu->addAction(tr("Check for &Updates"), this,
+                               SLOT(on_actionCheck_for_Updates_triggered()));
         systraymenu->addSeparator();
-        systraymenu->addAction(tr("E&xit"),this,SLOT(close()));
+        systraymenu->addAction(tr("E&xit"), this, SLOT(close()));
     } else { // if not available, the messages will popup in the taskbar
-        systray=NULL;
-        systraymenu=NULL;
+        systray = NULL;
+        systraymenu = NULL;
     }
+
     ui->toolBox->setCurrentIndex(0);
     daily->graphView()->redraw();
 
@@ -186,7 +195,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
     ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
-    QString loadingtxt="<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"+tr("Loading...")+"</h1></td></tr></table></body></HTML>";
+    QString loadingtxt =
+        "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"
+        + tr("Loading...") + "</h1></td></tr></table></body></HTML>";
     ui->summaryView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
 
@@ -199,8 +210,9 @@ MainWindow::MainWindow(QWidget *parent) :
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-    if (systraymenu) delete systraymenu;
-    if (systray) delete systray;
+    if (systraymenu) { delete systraymenu; }
+
+    if (systray) { delete systray; }
 
     // Save current window position
     QSettings settings(getDeveloperName(), getAppName());
@@ -210,10 +222,12 @@ MainWindow::~MainWindow()
         daily->close();
         delete daily;
     }
+
     if (overview) {
         overview->close();
         delete overview;
     }
+
     if (oximetry) {
         oximetry->close();
         delete oximetry;
@@ -225,7 +239,7 @@ MainWindow::~MainWindow()
     // Shutdown and Save the current User profile
     Profiles::Done();
 
-    mainwin=NULL;
+    mainwin = NULL;
     delete ui;
 }
 
@@ -238,8 +252,10 @@ void MainWindow::Notify(QString s, QString title, int ms)
         // into the visible area.
         QString msg = s;
         char *desktop = getenv("DESKTOP_SESSION");
-        if (desktop && !strncmp(desktop, "gnome", 5))
+
+        if (desktop && !strncmp(desktop, "gnome", 5)) {
             msg += "\n";
+        }
 
         systray->showMessage(title, msg, QSystemTrayIcon::Information, ms);
     } else {
@@ -249,7 +265,8 @@ void MainWindow::Notify(QString s, QString title, int ms)
 
 void MainWindow::Startup()
 {
-    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt"<< QT_VERSION_STR << "on" << __DATE__ << __TIME__;
+    qDebug() << STR_TR_SleepyHeadVersion.toLocal8Bit().data() << "built with Qt" << QT_VERSION_STR <<
+             "on" << __DATE__ << __TIME__;
     qstatus->setText(tr("Loading Data"));
     qprogress->show();
     //qstatusbar->showMessage(tr("Loading Data"),0);
@@ -257,7 +274,7 @@ void MainWindow::Startup()
     // profile is a global variable set in main after login
     PROFILE.LoadMachineData();
 
-    SnapshotGraph=new gGraphView(this,daily->graphView());
+    SnapshotGraph = new gGraphView(this, daily->graphView());
 
     // the following are platform overides for the UsePixmapCache preference settings
 #ifdef Q_OS_MAC
@@ -273,17 +290,21 @@ void MainWindow::Startup()
     //SnapshotGraph->setMinimumSize(1024,512);
     SnapshotGraph->hide();
 
-    overview=new Overview(ui->tabWidget,daily->graphView());
-    ui->tabWidget->insertTab(2,overview,STR_TR_Overview);
+    overview = new Overview(ui->tabWidget, daily->graphView());
+    ui->tabWidget->insertTab(2, overview, STR_TR_Overview);
+
     if (PROFILE.oxi->oximetryEnabled()) {
-        oximetry=new Oximetry(ui->tabWidget,daily->graphView());
-        ui->tabWidget->insertTab(3,oximetry,STR_TR_Oximetry);
+        oximetry = new Oximetry(ui->tabWidget, daily->graphView());
+        ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
     }
 
 
     ui->tabWidget->setCurrentWidget(ui->summaryTab);
-    if (daily) daily->ReloadGraphs();
-    if (overview) overview->ReloadGraphs();
+
+    if (daily) { daily->ReloadGraphs(); }
+
+    if (overview) { overview->ReloadGraphs(); }
+
     qprogress->hide();
     qstatus->setText("");
     on_summaryButton_clicked();
@@ -300,36 +321,45 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QStringList importLocations;
     {
-        QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
+        QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
         QFile file(filename);
         file.open(QFile::ReadOnly);
         QTextStream textStream(&file);
+
         while (1) {
             QString line = textStream.readLine();
-             if (line.isNull())
-                 break;
-             else if (line.isEmpty())
-                 continue;
-             else {
-                 importLocations.append(line);
-             }
+
+            if (line.isNull()) {
+                break;
+            } else if (line.isEmpty()) {
+                continue;
+            } else {
+                importLocations.append(line);
+            }
         }
+
         file.close();
     }
 
     //bool addnew=false;
     QString newdir;
 
-    bool asknew=false;
-    if (importLocations.size()==0) {
-        asknew=true;
+    bool asknew = false;
+
+    if (importLocations.size() == 0) {
+        asknew = true;
     } else {
-        int res=QMessageBox::question(this,tr("Import from where?"),tr("Do you just want to Import from the usual (remembered) locations?\n"),tr("The Usual"),tr("New Location"),tr("Cancel"),0,2);
-        if (res==1) {
-            asknew=true;
+        int res = QMessageBox::question(this, tr("Import from where?"),
+                                        tr("Do you just want to Import from the usual (remembered) locations?\n"), tr("The Usual"),
+                                        tr("New Location"), tr("Cancel"), 0, 2);
+
+        if (res == 1) {
+            asknew = true;
         }
-        if (res==2) return;
+
+        if (res == 2) { return; }
     }
+
     if (asknew) {
         //mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
     }
@@ -343,87 +373,112 @@ void MainWindow::on_action_Import_Data_triggered()
 
 #if defined(Q_OS_MAC) && (QT_VERSION_CHECK(4,8,0) > QT_VERSION)
         // Fix for tetragon, 10.6 barfs up Qt's custom dialog
-        w.setOption(QFileDialog::DontUseNativeDialog,true);
+        w.setOption(QFileDialog::DontUseNativeDialog, true);
 #else
-        w.setOption(QFileDialog::DontUseNativeDialog,false);
+        w.setOption(QFileDialog::DontUseNativeDialog, false);
 
-        QListView *l = w.findChild<QListView*>("listView");
+        QListView *l = w.findChild<QListView *>("listView");
+
         if (l) {
             l->setSelectionMode(QAbstractItemView::MultiSelection);
         }
-        QTreeView *t = w.findChild<QTreeView*>();
+
+        QTreeView *t = w.findChild<QTreeView *>();
+
         if (t) {
             t->setSelectionMode(QAbstractItemView::MultiSelection);
         }
+
 #endif
-        if (w.exec()!=QDialog::Accepted) {
+
+        if (w.exec() != QDialog::Accepted) {
             return;
         }
-        for (int i=0;i<w.selectedFiles().size();i++) {
-            QString newdir=w.selectedFiles().at(i);
+
+        for (int i = 0; i < w.selectedFiles().size(); i++) {
+            QString newdir = w.selectedFiles().at(i);
+
             if (!importFrom.contains(newdir)) {
                 importFrom.append(newdir);
                 //addnew=true;
             }
         }
-    } else importFrom=importLocations;
+    } else { importFrom = importLocations; }
 
-    int successful=false;
+    int successful = false;
 
     QStringList goodlocations;
-    for (int i=0;i<importFrom.size();i++) {
-        QString dir=importFrom[i];
+
+    for (int i = 0; i < importFrom.size(); i++) {
+        QString dir = importFrom[i];
+
         if (!dir.isEmpty()) {
             qprogress->setValue(0);
             qprogress->show();
             qstatus->setText(tr("Importing Data"));
-            int c=PROFILE.Import(dir);
+            int c = PROFILE.Import(dir);
             qDebug() << "Finished Importing data" << c;
+
             if (c) {
-                if (!importLocations.contains(dir))
+                if (!importLocations.contains(dir)) {
                     goodlocations.push_back(dir);
-                successful=true;
+                }
+
+                successful = true;
             }
+
             qstatus->setText("");
             qprogress->hide();
         }
     }
+
     if (successful) {
         PROFILE.Save();
-        if (overview) overview->ReloadGraphs();
+
+        if (overview) { overview->ReloadGraphs(); }
+
         on_summaryButton_clicked();
-        if (daily) daily->ReloadGraphs();
-        if ((goodlocations.size()>0) && (QMessageBox::question(this,tr("Remember this Location?"),tr("Would you like to remember this import location for next time?")+"\n"+newdir,QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)) {
-            for (int i=0;i<goodlocations.size();i++) {
+
+        if (daily) { daily->ReloadGraphs(); }
+
+        if ((goodlocations.size() > 0)
+                && (QMessageBox::question(this, tr("Remember this Location?"),
+                                          tr("Would you like to remember this import location for next time?") + "\n" + newdir,
+                                          QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)) {
+            for (int i = 0; i < goodlocations.size(); i++) {
                 importLocations.push_back(goodlocations[i]);
             }
-            QString filename=PROFILE.Get("{DataFolder}/ImportLocations.txt");
+
+            QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
             QFile file(filename);
             file.open(QFile::WriteOnly);
             QTextStream ts(&file);
-            for (int i=0;i<importLocations.size();i++) {
+
+            for (int i = 0; i < importLocations.size(); i++) {
                 ts << importLocations[i] << endl;
-               //file.write(importLocations[i].toUtf8());
+                //file.write(importLocations[i].toUtf8());
             }
+
             file.close();
         }
     } else {
         mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
     }
 }
-QMenu * MainWindow::CreateMenu(QString title)
+QMenu *MainWindow::CreateMenu(QString title)
 {
-    QMenu *menu=new QMenu(title,ui->menubar);
-    ui->menubar->insertMenu(ui->menu_Help->menuAction(),menu);
+    QMenu *menu = new QMenu(title, ui->menubar);
+    ui->menubar->insertMenu(ui->menu_Help->menuAction(), menu);
     return menu;
 }
 
 void MainWindow::on_action_Fullscreen_triggered()
 {
-    if (ui->action_Fullscreen->isChecked())
+    if (ui->action_Fullscreen->isChecked()) {
         this->showFullScreen();
-    else
+    } else {
         this->showNormal();
+    }
 }
 
 void MainWindow::setRecBoxHTML(QString html)
@@ -431,24 +486,24 @@ void MainWindow::setRecBoxHTML(QString html)
     ui->recordsBox->setHtml(html);
 }
 
-class MyStatsPage:public QWebPage
+class MyStatsPage: public QWebPage
 {
-public:
+  public:
     MyStatsPage(QObject *parent);
     virtual ~MyStatsPage();
-protected:
+  protected:
     //virtual void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
-    virtual void javaScriptAlert ( QWebFrame * frame, const QString & msg );
+    virtual void javaScriptAlert(QWebFrame *frame, const QString &msg);
 };
 MyStatsPage::MyStatsPage(QObject *parent)
-:QWebPage(parent)
+    : QWebPage(parent)
 {
 }
 MyStatsPage::~MyStatsPage()
 {
 }
 
-void MyStatsPage::javaScriptAlert(QWebFrame * frame, const QString & msg)
+void MyStatsPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
     Q_UNUSED(frame);
     mainwin->sendStatsUrl(msg);
@@ -458,75 +513,99 @@ QString MainWindow::getWelcomeHTML()
 {
     // This is messy, but allows it to be translated easier
     return "<html>\n<head>"
-" <style type='text/css'>"
-"  <!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
-"  p,a,td,body { font-size: 14px }"
-"  a:link,a:visited { color: \"#000020\"; text-decoration: none; font-weight: bold;}"
-"  a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
-" </style>\n"
-"</head>"
-"<body leftmargin=0 topmargin=0 rightmargin=0>"
-"<table width=\"100%\" cellspacing=0 cellpadding=4 border=0 >"
-"<tr><td bgcolor=\"#d0d0d0\" colspan=2 cellpadding=0 valign=center align=center><font color=\"black\" size=+1><b>"+tr("Welcome to SleepyHead")+"</b></font></td></tr>"
-"<tr>"
-"<td valign=\"top\" leftmargin=0 cellpadding=6>"
-"<h3>"+tr("About SleepyHead")+"</h3>"
-"<p>"+tr("This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.")+"</p>"
-"<p>"+tr("SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.")+"</p>"
-"<p><i><b>"+tr("This is a beta release, some features may not yet behave as expected.")+"</b></i><br/>"+tr("Please report any bugs you find to SleepyHead's SourceForge page.")+"</p>"
+           " <style type='text/css'>"
+           "  <!--h1,p,a,td,body { font-family: 'FreeSans', 'Sans Serif' } --/>"
+           "  p,a,td,body { font-size: 14px }"
+           "  a:link,a:visited { color: \"#000020\"; text-decoration: none; font-weight: bold;}"
+           "  a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
+           " </style>\n"
+           "</head>"
+           "<body leftmargin=0 topmargin=0 rightmargin=0>"
+           "<table width=\"100%\" cellspacing=0 cellpadding=4 border=0 >"
+           "<tr><td bgcolor=\"#d0d0d0\" colspan=2 cellpadding=0 valign=center align=center><font color=\"black\" size=+1><b>"
+           + tr("Welcome to SleepyHead") + "</b></font></td></tr>"
+           "<tr>"
+           "<td valign=\"top\" leftmargin=0 cellpadding=6>"
+           "<h3>" + tr("About SleepyHead") + "</h3>"
+           "<p>" + tr("This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.")
+           + "</p>"
+           "<p>" + tr("SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.")
+           + "</p>"
+           "<p><i><b>" + tr("This is a beta release, some features may not yet behave as expected.") +
+           "</b></i><br/>" + tr("Please report any bugs you find to SleepyHead's SourceForge page.") + "</p>"
 
-"<h3>"+tr("Currenly supported machines:")+"</h3>"
-"<b>"+tr("CPAP")+"</b>"
-"<li>"+tr("Philips Respironics System One (CPAP, Auto, BiPAP & ASV models)")+"</li>"
-"<li>"+tr("ResMed S9 models (CPAP, Auto, VPAP)")+"</li>"
-"<li>"+tr("DeVilbiss Intellipap (Auto)")+"</li>"
-"<b>"+tr("Oximetry")+"</b>"
-"<li>"+tr("Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters")+"</li>"
-"<li>"+tr("ResMed S9 Oximeter Attachment")+"</li>"
-"<p><h3>"+tr("Online Help Resources")+"</h3></p>"
-"<p><b>"+tr("Note:")+"</b>"+tr("I don't recommend using this built in web browser to do any major surfing in, it will work, but it's mainly meant as a help browser.")+
-tr("(It doesn't support SSL encryption, so it's not a good idea to type your passwords or personal details anywhere.)")+"</p>"+
+           "<h3>" + tr("Currenly supported machines:") + "</h3>"
+           "<b>" + tr("CPAP") + "</b>"
+           "<li>" + tr("Philips Respironics System One (CPAP, Auto, BiPAP & ASV models)") + "</li>"
+           "<li>" + tr("ResMed S9 models (CPAP, Auto, VPAP)") + "</li>"
+           "<li>" + tr("DeVilbiss Intellipap (Auto)") + "</li>"
+           "<b>" + tr("Oximetry") + "</b>"
+           "<li>" + tr("Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters") + "</li>"
+           "<li>" + tr("ResMed S9 Oximeter Attachment") + "</li>"
+           "<p><h3>" + tr("Online Help Resources") + "</h3></p>"
+           "<p><b>" + tr("Note:") + "</b>" +
+           tr("I don't recommend using this built in web browser to do any major surfing in, it will work, but it's mainly meant as a help browser.")
+           +
+           tr("(It doesn't support SSL encryption, so it's not a good idea to type your passwords or personal details anywhere.)")
+           + "</p>" +
 
-tr("SleepyHead's Online <a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide\">Users Guide</a><br/>")+
-tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions\">Frequently Asked Questions</a><br/>")+
-tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary\">Glossary of Sleep Disorder Terms</a><br/>")+
-tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page\">SleepyHead Wiki</a><br/>")+
-tr("SleepyHead's <a href='http://www.sourceforge.net/projects/sleepyhead'>Project Website</a> on SourceForge<br/>")+
-tr("Got a neat idea on how to improve SleepyHead? Check out SleepyHeads <a href=\"http://sourceforge.net/apps/ideatorrent/sleepyhead/\">Idea Torrent</a>")+
-"<p><h3>"+tr("Further Information")+"</h3></p>"
-"<p>"+
-tr("Here are the <a href='qrc:/docs/release_notes.html'>release notes</a> for this version.")+"<br/>"+
-tr("Plus a few <a href='qrc:/docs/usage.html'>usage notes</a>, and some important information for Mac users.")+"<br/>"+
-"<p>"+tr("About <a href='http://en.wikipedia.org/wiki/Sleep_apnea'>Sleep Apnea</a> on Wikipedia")+"</p>"
+           tr("SleepyHead's Online <a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide\">Users Guide</a><br/>")
+           +
+           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions\">Frequently Asked Questions</a><br/>")
+           +
+           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary\">Glossary of Sleep Disorder Terms</a><br/>")
+           +
+           tr("<a href=\"http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page\">SleepyHead Wiki</a><br/>")
+           +
+           tr("SleepyHead's <a href='http://www.sourceforge.net/projects/sleepyhead'>Project Website</a> on SourceForge<br/>")
+           +
+           tr("Got a neat idea on how to improve SleepyHead? Check out SleepyHeads <a href=\"http://sourceforge.net/apps/ideatorrent/sleepyhead/\">Idea Torrent</a>")
+           +
+           "<p><h3>" + tr("Further Information") + "</h3></p>"
+           "<p>" +
+           tr("Here are the <a href='qrc:/docs/release_notes.html'>release notes</a> for this version.") +
+           "<br/>" +
+           tr("Plus a few <a href='qrc:/docs/usage.html'>usage notes</a>, and some important information for Mac users.")
+           + "<br/>" +
+           "<p>" + tr("About <a href='http://en.wikipedia.org/wiki/Sleep_apnea'>Sleep Apnea</a> on Wikipedia")
+           + "</p>"
 
-"<p>"+tr("Friendly forums to talk and learn about Sleep Apnea:")+"<br/>"+
-tr("<a href='http://www.cpaptalk.com'>CPAPTalk Forum</a>,")+
-tr("<a href='http://s7.zetaboards.com/Apnea_Board/index'>Apnea Board</a>")+"</p>"
-"</td>"
-"<td><image src='qrc:/icons/bob-v3.0.png' width=220 height=220><br/>"
-"</td>"
-"</tr>"
- "<tr>"
-"<td colspan=2>"
- "<hr/>"
-"<p><b>"+tr("Copyright:")+"</b> "+tr("&copy;2011-2014")+" <a href=\"http://jedimark64.blogspot.com\">Mark Watkins</a> (jedimark)</p>"
-"<p><b>"+tr("License:")+"</b> "+tr("This software is released freely under the <a href=\"qrc:/COPYING\">GNU Public License</a>.")+"</p>"
-"<hr/>"
-"<p><b>"+tr("DISCLAIMER:")+"</b></p>"
-"<b><p>"+tr("This is <font color='red'><u>NOT</u></font> medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.")+"</p>"
-"<p>"+tr("The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.")+"</p>"
-"<p>"+tr("Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.")+"</p>"
-"<p>"+tr("*** <u>Use at your own risk</u> ***")+"</p></b>"
-"<hr/>"
-"</td></tr>"
-"</table>"
-"</body>"
-"</html>"
+           "<p>" + tr("Friendly forums to talk and learn about Sleep Apnea:") + "<br/>" +
+           tr("<a href='http://www.cpaptalk.com'>CPAPTalk Forum</a>,") +
+           tr("<a href='http://s7.zetaboards.com/Apnea_Board/index'>Apnea Board</a>") + "</p>"
+           "</td>"
+           "<td><image src='qrc:/icons/bob-v3.0.png' width=220 height=220><br/>"
+           "</td>"
+           "</tr>"
+           "<tr>"
+           "<td colspan=2>"
+           "<hr/>"
+           "<p><b>" + tr("Copyright:") + "</b> " + tr("&copy;2011-2014") +
+           " <a href=\"http://jedimark64.blogspot.com\">Mark Watkins</a> (jedimark)</p>"
+           "<p><b>" + tr("License:") + "</b> " +
+           tr("This software is released freely under the <a href=\"qrc:/COPYING\">GNU Public License</a>.") +
+           "</p>"
+           "<hr/>"
+           "<p><b>" + tr("DISCLAIMER:") + "</b></p>"
+           "<b><p>" +
+           tr("This is <font color='red'><u>NOT</u></font> medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.")
+           + "</p>"
+           "<p>" + tr("The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.")
+           + "</p>"
+           "<p>" + tr("Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.")
+           + "</p>"
+           "<p>" + tr("*** <u>Use at your own risk</u> ***") + "</p></b>"
+           "<hr/>"
+           "</td></tr>"
+           "</table>"
+           "</body>"
+           "</html>"
 
-;
+           ;
 }
 
-void MainWindow::on_homeButton_clicked() {
+void MainWindow::on_homeButton_clicked()
+{
 
     ui->webView->setHtml(getWelcomeHTML());
 
@@ -537,73 +616,84 @@ void MainWindow::on_homeButton_clicked() {
 
 void MainWindow::on_summaryButton_clicked()
 {
-    QString html=Summary::GenerateHTML();
+    QString html = Summary::GenerateHTML();
 
     updateFavourites();
 
     //QWebFrame *frame=ui->summaryView->page()->currentFrame();
     //frame->addToJavaScriptWindowObject("mainwin",this);
     //ui->summaryView->setHtml(html);
-    MyStatsPage *page=new MyStatsPage(this);
+    MyStatsPage *page = new MyStatsPage(this);
     page->currentFrame()->setHtml(html);
     ui->summaryView->setPage(page);
-//    connect(ui->summaryView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
-//    QString file="qrc:/docs/index.html";
-//    QUrl url(file);
-//    ui->webView->setUrl(url);
+    //    connect(ui->summaryView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
+    //    QString file="qrc:/docs/index.html";
+    //    QUrl url(file);
+    //    ui->webView->setUrl(url);
 }
 
 
 void MainWindow::updateFavourites()
 {
-    QDate date=PROFILE.LastDay(MT_JOURNAL);
-    if (!date.isValid())
-        return;
+    QDate date = PROFILE.LastDay(MT_JOURNAL);
 
-    QString html="<html><head><style type='text/css'>"
-        "p,a,td,body { font-family: '"+QApplication::font().family()+"'; }"
-        "p,a,td,body { font-size: "+QString::number(QApplication::font().pointSize() + 2)+"px; }"
-        "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
-        "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
-        "</style></head><body>"
-        "<table width=100% cellpadding=2 cellspacing=0>";
+    if (!date.isValid()) {
+        return;
+    }
+
+    QString html = "<html><head><style type='text/css'>"
+                   "p,a,td,body { font-family: '" + QApplication::font().family() + "'; }"
+                   "p,a,td,body { font-size: " + QString::number(QApplication::font().pointSize() + 2) + "px; }"
+                   "a:link,a:visited { color: inherit; text-decoration: none; }" //font-weight: normal;
+                   "a:hover { background-color: inherit; color: white; text-decoration:none; font-weight: bold; }"
+                   "</style></head><body>"
+                   "<table width=100% cellpadding=2 cellspacing=0>";
 
     do {
-        Day * journal=PROFILE.GetDay(date,MT_JOURNAL);
+        Day *journal = PROFILE.GetDay(date, MT_JOURNAL);
+
         if (journal) {
-            if (journal->size()>0) {
-                Session *sess=(*journal)[0];
+            if (journal->size() > 0) {
+                Session *sess = (*journal)[0];
                 QString tmp;
-                bool filtered=!bookmarkFilter.isEmpty();
-                bool found=!filtered;
+                bool filtered = !bookmarkFilter.isEmpty();
+                bool found = !filtered;
+
                 if (sess->settings.contains(Bookmark_Start)) {
                     //QVariantList start=sess->settings[Bookmark_Start].toList();
                     //QVariantList end=sess->settings[Bookmark_End].toList();
-                    QStringList notes=sess->settings[Bookmark_Notes].toStringList();
-                    if (notes.size()>0) {
-                        tmp+=QString("<tr><td><b><a href='daily=%1'>%2</a></b><br/>")
-                                .arg(date.toString(Qt::ISODate))
-                                .arg(date.toString());
+                    QStringList notes = sess->settings[Bookmark_Notes].toStringList();
 
-                        tmp+="<list>";
+                    if (notes.size() > 0) {
+                        tmp += QString("<tr><td><b><a href='daily=%1'>%2</a></b><br/>")
+                               .arg(date.toString(Qt::ISODate))
+                               .arg(date.toString());
 
-                        for (int i=0;i<notes.size();i++) {
+                        tmp += "<list>";
+
+                        for (int i = 0; i < notes.size(); i++) {
                             //QDate d=start[i].toDate();
-                            QString note=notes[i];
-                            if (filtered && note.contains(bookmarkFilter,Qt::CaseInsensitive))
-                                found=true;
-                            tmp+="<li>"+note+"</li>";
+                            QString note = notes[i];
+
+                            if (filtered && note.contains(bookmarkFilter, Qt::CaseInsensitive)) {
+                                found = true;
+                            }
+
+                            tmp += "<li>" + note + "</li>";
                         }
-                        tmp+="</list></td>";
+
+                        tmp += "</list></td>";
                     }
                 }
-                if (found) html+=tmp;
+
+                if (found) { html += tmp; }
             }
         }
 
-        date=date.addDays(-1);
-    } while (date>=PROFILE.FirstDay(MT_JOURNAL));
-    html+="</table></body></html>";
+        date = date.addDays(-1);
+    } while (date >= PROFILE.FirstDay(MT_JOURNAL));
+
+    html += "</table></body></html>";
     ui->bookmarkView->setHtml(html);
 }
 
@@ -649,21 +739,26 @@ void MainWindow::on_webView_loadFinished(bool arg1)
 {
     Q_UNUSED(arg1);
     qprogress->hide();
+
     if (first_load) {
-        QTimer::singleShot(0,this,SLOT(Startup()));
-        first_load=false;
+        QTimer::singleShot(0, this, SLOT(Startup()));
+        first_load = false;
     } else {
         qstatus->setText("");
     }
+
     ui->backButton->setEnabled(ui->webView->history()->canGoBack());
     ui->forwardButton->setEnabled(ui->webView->history()->canGoForward());
 
-    connect(ui->webView->page(),SIGNAL(linkHovered(QString,QString,QString)),this,SLOT(LinkHovered(QString,QString,QString)));
+    connect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this,
+            SLOT(LinkHovered(QString, QString, QString)));
 }
 
 void MainWindow::on_webView_loadStarted()
 {
-    disconnect(ui->webView->page(),SIGNAL(linkHovered(QString,QString,QString)),this,SLOT(LinkHovered(QString,QString,QString)));
+    disconnect(ui->webView->page(), SIGNAL(linkHovered(QString, QString, QString)), this,
+               SLOT(LinkHovered(QString, QString, QString)));
+
     if (!first_load) {
         qstatus->setText(tr("Loading"));
         qprogress->reset();
@@ -676,7 +771,7 @@ void MainWindow::on_webView_loadProgress(int progress)
     qprogress->setValue(progress);
 }
 
-void MainWindow::aboutBoxLinkClicked(const QUrl & url)
+void MainWindow::aboutBoxLinkClicked(const QUrl &url)
 {
     QDesktopServices::openUrl(url);
 }
@@ -684,100 +779,125 @@ void MainWindow::aboutBoxLinkClicked(const QUrl & url)
 void MainWindow::on_action_About_triggered()
 {
 
-    QString gitrev=QString(GIT_REVISION);
-    if (!gitrev.isEmpty()) gitrev="Revision: "+gitrev+" ("+QString(GIT_BRANCH)+" branch)";
+    QString gitrev = QString(GIT_REVISION);
 
-//    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
-    QString msg=QString("<html>"
-"<head><style type=\"text/css\">a:link, a:visited { color: #000044; text-decoration: underline; font-weight: normal;}"
-"a:hover { background-color: inherit; color: #4444ff; text-decoration:none; font-weight: normal; }"
-"</style></head>"
+    if (!gitrev.isEmpty()) { gitrev = "Revision: " + gitrev + " (" + QString(GIT_BRANCH) + " branch)"; }
 
-"<body>"
-"<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
-"<table width=100%><tr><td>"
-"<p><h1>"+STR_TR_SleepyHead+" v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>"+tr("Build Date")+": %5 %6<br/>%7<br/>"+tr("Data Folder Location")+": %9<hr/>"+
-tr("Copyright")+" &copy;2011-2014 Mark Watkins (jedimark) <br/> \n"+
-tr("This software is released under the GNU Public License v3.0<br/>")+
-"<hr>"
+    //    "<style type=\"text/css\">body { margin:0; padding:0; } html, body, #bg { height:100%; width:100% } #bg { position: absolute; left:0; right:0; bottom:0; top:0; overflow:hidden; z-index:1; } #bg img { width:100%; min-width:100%; min-height:100%; } #content { z-index:0; }</style><body><div id=\"bg\"> <img style=\"display:block;\" src=\"qrc:/icons/Bob Strikes Back.png\"></div><div id=\"content\">"
+    QString msg = QString("<html>"
+                          "<head><style type=\"text/css\">a:link, a:visited { color: #000044; text-decoration: underline; font-weight: normal;}"
+                          "a:hover { background-color: inherit; color: #4444ff; text-decoration:none; font-weight: normal; }"
+                          "</style></head>"
 
-// Project links
-"<p>"+tr("SleepyHead Project Page")+": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"+
-tr("SleepyHead Wiki")+": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><p/>"+
+                          "<body>"
+                          "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
+                          "<table width=100%><tr><td>"
+                          "<p><h1>" + STR_TR_SleepyHead + " v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>" +
+                          tr("Build Date") + ": %5 %6<br/>%7<br/>" + tr("Data Folder Location") + ": %9<hr/>" +
+                          tr("Copyright") + " &copy;2011-2014 Mark Watkins (jedimark) <br/> \n" +
+                          tr("This software is released under the GNU Public License v3.0<br/>") +
+                          "<hr>"
 
-// Social media links.. (Dear Translators, if one of these isn't available in your country, it's ok to leave it out.)
-tr("Don't forget to Like/+1 SleepyHead on <a href=\"http://www.facebook.com/SleepyHeadCPAP\">Facebook</a> or <a href=\"http://plus.google.com/u/0/b/101426655252362287937\">Google+")+"</p>"+
+                          // Project links
+                          "<p>" +tr("SleepyHead Project Page") +
+                          ": <a href=\"http://sourceforge.net/projects/sleepyhead\">http://sourceforge.net/projects/sleepyhead</a><br/>"
+                          +
+                          tr("SleepyHead Wiki") +
+                          ": <a href=\"http://sleepyhead.sourceforge.net\">http://sleepyhead.sourceforge.net</a><p/>" +
 
-// Image
-"</td><td align='center'><img src=\"qrc:/icons/Jedimark.png\" width=260px><br/> <br/><i>"+tr("SleepyHead, brought to you by Jedimark")+"</i></td></tr><tr colspan><td colspan=2>"+
+                          // Social media links.. (Dear Translators, if one of these isn't available in your country, it's ok to leave it out.)
+                          tr("Don't forget to Like/+1 SleepyHead on <a href=\"http://www.facebook.com/SleepyHeadCPAP\">Facebook</a> or <a href=\"http://plus.google.com/u/0/b/101426655252362287937\">Google+")
+                          + "</p>" +
 
-
-// Credits section
-"<hr/><p><b><font size='+1'>"+tr("Kudos & Credits")+"</font></b></p><b>"+
-tr("Bugfixes, Patches and Platform Help:")+"</b> "+tr("James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")+"</p>"
-
-"<p><b>"+tr("Translators:")+"</b> "+tr("Arie Klerk (Dutch), Steffen Reitz (German).")+"</p>"
-
-"<p><b>"+tr("3rd Party Libaries:")+"</b> "+
-tr("SleepyHead is built using the <a href=\"http://qt-project.org\">Qt Application Framework</a>.")+" "+
-tr("It uses the cross platform <a href=\"http://code.google.com/p/qextserialport\">QExtSerialPort</a> library for serial port access in the Oximetry module.")+" "+
-tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")+"<br/>"
-"<p>"+tr("Special thanks to Pugsy from <a href='http://cpaptalk.com'>CPAPTalk</a> for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")+"</p>"
-
-// Donations
-"<hr><p><font color=\"blue\">"+
-tr("Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.")+"</font>"
+                          // Image
+                          "</td><td align='center'><img src=\"qrc:/icons/Jedimark.png\" width=260px><br/> <br/><i>"
+                          +tr("SleepyHead, brought to you by Jedimark") + "</i></td></tr><tr colspan><td colspan=2>" +
 
 
-"<hr><p><b>Disclaimer</b><br/><i>"+tr("This software comes with absolutely no warranty, either express of implied.")+" "+
-tr("It comes with no guarantee of fitness for any particular purpose.")+" "+
-tr("No guarantees are made regarding the accuracy of any data this program displays.")+"</i></p>"
-"<p><i>"+tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.")+
-"<b> "+tr("This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.")+"</b></i></p>"
-"<p><i>"+tr("The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")+"</p><p><b>"+
-tr("Use this software entirely at your own risk.")+"</b></i></p>"
-"</font></td></tr></table></span></body>"
-).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(__TIME__).arg(gitrev).arg(ReleaseStatus).arg(QDir::toNativeSeparators(GetAppRoot()));
+                          // Credits section
+                          "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
+                          tr("Bugfixes, Patches and Platform Help:") + "</b> " +
+                          tr("James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")
+                          + "</p>"
+
+                          "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz (German).") +
+                          "</p>"
+
+                          "<p><b>" + tr("3rd Party Libaries:") + "</b> " +
+                          tr("SleepyHead is built using the <a href=\"http://qt-project.org\">Qt Application Framework</a>.")
+                          + " " +
+                          tr("It uses the cross platform <a href=\"http://code.google.com/p/qextserialport\">QExtSerialPort</a> library for serial port access in the Oximetry module.")
+                          + " " +
+                          tr("In the updater code, SleepyHead uses <a href=\"http://sourceforge.net/projects/quazip\">QuaZip</a> by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant's ZIP/UNZIP package.")
+                          + "<br/>"
+                          "<p>" + tr("Special thanks to Pugsy from <a href='http://cpaptalk.com'>CPAPTalk</a> for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.")
+                          + "</p>"
+
+                          // Donations
+                          "<hr><p><font color=\"blue\">" +
+                          tr("Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.")
+                          + "</font>"
+
+
+                          "<hr><p><b>Disclaimer</b><br/><i>" +
+                          tr("This software comes with absolutely no warranty, either express of implied.") + " " +
+                          tr("It comes with no guarantee of fitness for any particular purpose.") + " " +
+                          tr("No guarantees are made regarding the accuracy of any data this program displays.") + "</i></p>"
+                          "<p><i>" +
+                          tr("This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.")
+                          +
+                          "<b> " + tr("This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.")
+                          + "</b></i></p>"
+                          "<p><i>" +
+                          tr("The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.")
+                          + "</p><p><b>" +
+                          tr("Use this software entirely at your own risk.") + "</b></i></p>"
+                          "</font></td></tr></table></span></body>"
+                         ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(
+                      __TIME__).arg(gitrev).arg(ReleaseStatus).arg(QDir::toNativeSeparators(GetAppRoot()));
     //"</div></body></html>"
 
-     QDialog aboutbox;
-     aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
+    QDialog aboutbox;
+    aboutbox.setWindowTitle(QObject::tr("About SleepyHead"));
 
 
-     QVBoxLayout layout(&aboutbox);
+    QVBoxLayout layout(&aboutbox);
 
-     QWebView webview(&aboutbox);
+    QWebView webview(&aboutbox);
 
-     webview.setHtml(msg);
-     webview.page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-     connect(&webview,SIGNAL(linkClicked(const QUrl &)),SLOT(aboutBoxLinkClicked(const QUrl &)));
+    webview.setHtml(msg);
+    webview.page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    connect(&webview, SIGNAL(linkClicked(const QUrl &)), SLOT(aboutBoxLinkClicked(const QUrl &)));
 
-     layout.insertWidget(0,&webview,1);
+    layout.insertWidget(0, &webview, 1);
 
-     QHBoxLayout layout2(&aboutbox);
-     layout.insertLayout(1,&layout2,1);
-     QPushButton okbtn(QObject::tr("&Close"),&aboutbox);
-     aboutbox.connect(&okbtn,SIGNAL(clicked()),SLOT(reject()));
-     layout2.insertWidget(1,&okbtn,1);
+    QHBoxLayout layout2(&aboutbox);
+    layout.insertLayout(1, &layout2, 1);
+    QPushButton okbtn(QObject::tr("&Close"), &aboutbox);
+    aboutbox.connect(&okbtn, SIGNAL(clicked()), SLOT(reject()));
+    layout2.insertWidget(1, &okbtn, 1);
 
-     QPushButton donatebtn(QObject::tr("&Donate"),&aboutbox);
-     aboutbox.connect(&donatebtn,SIGNAL(clicked()),SLOT(accept())); //hack this button to use the accepted slot, so clicking x closes like it shouldß
-     layout2.insertWidget(1,&donatebtn,1);
+    QPushButton donatebtn(QObject::tr("&Donate"), &aboutbox);
+    aboutbox.connect(&donatebtn, SIGNAL(clicked()),
+                     SLOT(accept())); //hack this button to use the accepted slot, so clicking x closes like it shouldß
+    layout2.insertWidget(1, &donatebtn, 1);
 
-     QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
+    QApplication::processEvents(); // MW: Needed on Mac, as the html has to finish loading
 
 
-     if (aboutbox.exec()==QDialog::Accepted) {
-         QDesktopServices::openUrl(QUrl("http://sourceforge.net/p/sleepyhead/donate"));
+    if (aboutbox.exec() == QDialog::Accepted) {
+        QDesktopServices::openUrl(QUrl("http://sourceforge.net/p/sleepyhead/donate"));
         //spawn browser with paypal site.
-     }
+    }
 
-     disconnect(&webview,SIGNAL(linkClicked(const QUrl &)),this,SLOT(aboutBoxLinkClicked(const QUrl &)));
+    disconnect(&webview, SIGNAL(linkClicked(const QUrl &)), this,
+               SLOT(aboutBoxLinkClicked(const QUrl &)));
 }
 
 void MainWindow::on_actionDebug_toggled(bool checked)
 {
     PROFILE.general->setShowDebug(checked);
+
     if (checked) {
         ui->logText->show();
     } else {
@@ -787,8 +907,9 @@ void MainWindow::on_actionDebug_toggled(bool checked)
 
 void MainWindow::on_action_Reset_Graph_Layout_triggered()
 {
-    if (daily && (ui->tabWidget->currentWidget()==daily)) daily->ResetGraphLayout();
-    if (overview && (ui->tabWidget->currentWidget()==overview)) overview->ResetGraphLayout();
+    if (daily && (ui->tabWidget->currentWidget() == daily)) { daily->ResetGraphLayout(); }
+
+    if (overview && (ui->tabWidget->currentWidget() == overview)) { overview->ResetGraphLayout(); }
 }
 
 void MainWindow::on_action_Preferences_triggered()
@@ -799,21 +920,26 @@ void MainWindow::on_action_Preferences_triggered()
         mainwin->Notify(tr("Access to Preferences has been blocked until recalculation completes."));
         return;
     }
-    PreferencesDialog pd(this,p_profile);
-    prefdialog=&pd;
-    if (pd.exec()==PreferencesDialog::Accepted) {
+
+    PreferencesDialog pd(this, p_profile);
+    prefdialog = &pd;
+
+    if (pd.exec() == PreferencesDialog::Accepted) {
         qDebug() << "Preferences Accepted";
+
         //pd.Save();
         if (daily) {
             //daily->ReloadGraphs();
             daily->RedrawGraphs();
         }
+
         if (overview) {
             overview->ReloadGraphs();
             overview->RedrawGraphs();
         }
     }
-    prefdialog=NULL;
+
+    prefdialog = NULL;
 }
 void MainWindow::selectOximetryTab()
 {
@@ -822,22 +948,29 @@ void MainWindow::selectOximetryTab()
 
 void MainWindow::on_oximetryButton_clicked()
 {
-    bool first=false;
+    bool first = false;
+
     if (!oximetry) {
         if (!PROFILE.oxi->oximetryEnabled()) {
-            if (QMessageBox::question(this,tr("Question"),tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."),QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) return;
+            if (QMessageBox::question(this, tr("Question"),
+                                      tr("Do you have a CMS50[x] Oximeter?\nOne is required to use this section."), QMessageBox::Yes,
+                                      QMessageBox::No) == QMessageBox::No) { return; }
+
             PROFILE.oxi->setOximetryEnabled(true);
         }
-        oximetry=new Oximetry(ui->tabWidget,daily->graphView());
-        ui->tabWidget->insertTab(3,oximetry,STR_TR_Oximetry);
-        first=true;
+
+        oximetry = new Oximetry(ui->tabWidget, daily->graphView());
+        ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
+        first = true;
     }
 
     // MW: Instead, how about starting a direct import?
     oximetry->serialImport();
 
     ui->tabWidget->setCurrentWidget(oximetry);
-    if (!first) oximetry->RedrawGraphs();
+
+    if (!first) { oximetry->RedrawGraphs(); }
+
     qstatus2->setText(STR_TR_Oximetry);
 }
 
@@ -848,37 +981,39 @@ void MainWindow::CheckForUpdates()
 
 void MainWindow::on_actionCheck_for_Updates_triggered()
 {
-    UpdaterWindow *w=new UpdaterWindow(this);
+    UpdaterWindow *w = new UpdaterWindow(this);
     w->checkForUpdates();
 }
 
 void MainWindow::on_action_Screenshot_triggered()
 {
-    QTimer::singleShot(250,this,SLOT(DelayedScreenshot()));
+    QTimer::singleShot(250, this, SLOT(DelayedScreenshot()));
 }
 void MainWindow::DelayedScreenshot()
 {
-    int w=width();
-    int h=height();
+    int w = width();
+    int h = height();
 
     // Scale for high resolution displays (like Retina)
 #if(QT_VERSION>=QT_VERSION_CHECK(5,0,0))
-    qreal pr=devicePixelRatio();
-    w/=pr;
-    h/=pr;
+    qreal pr = devicePixelRatio();
+    w /= pr;
+    h /= pr;
 #endif
 
-    QPixmap pixmap=QPixmap::grabWindow(this->winId(),x(),y(),w,h);
+    QPixmap pixmap = QPixmap::grabWindow(this->winId(), x(), y(), w, h);
 
-    QString a=PREF.Get("{home}/Screenshots");
+    QString a = PREF.Get("{home}/Screenshots");
     QDir dir(a);
-    if (!dir.exists()){
+
+    if (!dir.exists()) {
         dir.mkdir(a);
     }
 
-    a+="/screenshot-"+QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss")+".png";
+    a += "/screenshot-" + QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss") + ".png";
 
     qDebug() << "Saving screenshot to" << a;
+
     if (!pixmap.save(a)) {
         Notify(tr("There was an error saving screenshot to file \"%1\"").arg(QDir::toNativeSeparators(a)));
     } else {
@@ -890,27 +1025,31 @@ void MainWindow::on_actionView_Oximetry_triggered()
 {
     on_oximetryButton_clicked();
 }
-void MainWindow::updatestatusBarMessage (const QString & text)
+void MainWindow::updatestatusBarMessage(const QString &text)
 {
-    ui->statusbar->showMessage(text,1000);
+    ui->statusbar->showMessage(text, 1000);
 }
 
 void MainWindow::on_actionPrint_Report_triggered()
 {
 #ifdef Q_WS_MAC
- #if ((QT_VERSION <= QT_VERSION_CHECK(4, 8, 4)))
-    QMessageBox::information(this,tr("Printing Disabled"),tr("Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt"),QMessageBox::Ok);
+#if ((QT_VERSION <= QT_VERSION_CHECK(4, 8, 4)))
+    QMessageBox::information(this, tr("Printing Disabled"),
+                             tr("Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt"),
+                             QMessageBox::Ok);
     return;
- #endif
+#endif
 #endif
     Report report;
-    if (ui->tabWidget->currentWidget()==overview) {
-        Report::PrintReport(overview->graphView(),STR_TR_Overview);
-    } else if (ui->tabWidget->currentWidget()==daily) {
-        Report::PrintReport(daily->graphView(),STR_TR_Daily,daily->getDate());
-    } else if (ui->tabWidget->currentWidget()==oximetry) {
-        if (oximetry)
-            Report::PrintReport(oximetry->graphView(),STR_TR_Oximetry);
+
+    if (ui->tabWidget->currentWidget() == overview) {
+        Report::PrintReport(overview->graphView(), STR_TR_Overview);
+    } else if (ui->tabWidget->currentWidget() == daily) {
+        Report::PrintReport(daily->graphView(), STR_TR_Daily, daily->getDate());
+    } else if (ui->tabWidget->currentWidget() == oximetry) {
+        if (oximetry) {
+            Report::PrintReport(oximetry->graphView(), STR_TR_Oximetry);
+        }
     } else {
         QPrinter printer;
 #ifdef Q_WS_X11
@@ -918,15 +1057,17 @@ void MainWindow::on_actionPrint_Report_triggered()
         printer.setOutputFormat(QPrinter::PdfFormat);
         QString name;
         QString datestr;
-        if (ui->tabWidget->currentWidget()==ui->summaryTab) {
-            name="Summary";
-            datestr=QDate::currentDate().toString(Qt::ISODate);
-        } else if (ui->tabWidget->currentWidget()==ui->helpTab) {
-            name="Help";
-            datestr=QDateTime::currentDateTime().toString(Qt::ISODate);
-        } else name="Unknown";
 
-        QString filename=PREF.Get("{home}/"+name+"_"+PROFILE.user->userName()+"_"+datestr+".pdf");
+        if (ui->tabWidget->currentWidget() == ui->summaryTab) {
+            name = "Summary";
+            datestr = QDate::currentDate().toString(Qt::ISODate);
+        } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
+            name = "Help";
+            datestr = QDateTime::currentDateTime().toString(Qt::ISODate);
+        } else { name = "Unknown"; }
+
+        QString filename = PREF.Get("{home}/" + name + "_" + PROFILE.user->userName() + "_" + datestr +
+                                    ".pdf");
 
         printer.setOutputFileName(filename);
 #endif
@@ -934,18 +1075,20 @@ void MainWindow::on_actionPrint_Report_triggered()
         printer.setOrientation(QPrinter::Portrait);
         printer.setFullPage(false); // This has nothing to do with scaling
         printer.setNumCopies(1);
-        printer.setPageMargins(10,10,10,10,QPrinter::Millimeter);
+        printer.setPageMargins(10, 10, 10, 10, QPrinter::Millimeter);
 
-        QPrintDialog pdlg(&printer,this);
-        if (pdlg.exec()==QPrintDialog::Accepted) {
+        QPrintDialog pdlg(&printer, this);
 
-            if (ui->tabWidget->currentWidget()==ui->summaryTab) {
+        if (pdlg.exec() == QPrintDialog::Accepted) {
+
+            if (ui->tabWidget->currentWidget() == ui->summaryTab) {
                 ui->summaryView->print(&printer);
-            } else if (ui->tabWidget->currentWidget()==ui->helpTab) {
+            } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
                 ui->webView->print(&printer);
             }
 
         }
+
         //QMessageBox::information(this,tr("Not supported Yet"),tr("Sorry, printing from this page is not supported yet"),QMessageBox::Ok);
     }
 }
@@ -961,80 +1104,96 @@ void MainWindow::on_action_Edit_Profile_triggered()
 void MainWindow::on_action_Link_Graph_Groups_toggled(bool arg1)
 {
     PROFILE.general->setLinkGroups(arg1);
-    if (daily) daily->RedrawGraphs();
+
+    if (daily) { daily->RedrawGraphs(); }
 }
 
 void MainWindow::on_action_CycleTabs_triggered()
 {
     int i;
     qDebug() << "Switching Tabs";
-    i=ui->tabWidget->currentIndex()+1;
-    if (i >= ui->tabWidget->count())
-        i=0;
+    i = ui->tabWidget->currentIndex() + 1;
+
+    if (i >= ui->tabWidget->count()) {
+        i = 0;
+    }
+
     ui->tabWidget->setCurrentIndex(i);
 }
 
 void MainWindow::on_actionExp_ort_triggered()
 {
     ExportCSV ex(this);
-    if (ex.exec()==ExportCSV::Accepted) {
+
+    if (ex.exec() == ExportCSV::Accepted) {
     }
 }
 
 void MainWindow::on_actionOnline_Users_Guide_triggered()
 {
-    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide"));
+    ui->webView->load(
+        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_action_Frequently_Asked_Questions_triggered()
 {
-    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
+    ui->webView->load(
+        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
-void packEventList(EventList *el, EventDataType minval=0)
+void packEventList(EventList *el, EventDataType minval = 0)
 {
-    if (el->count()<2) return;
+    if (el->count() < 2) { return; }
+
     EventList nel(EVL_Waveform);
-    EventDataType t=0,lastt=0; //el->data(0);
-    qint64 ti=0;//=el->time(0);
+    EventDataType t = 0, lastt = 0; //el->data(0);
+    qint64 ti = 0; //=el->time(0);
     //nel.AddEvent(ti,lastt);
-    bool f=false;
-    qint64 lasttime=0;
-    EventDataType min=999,max=0;
+    bool f = false;
+    qint64 lasttime = 0;
+    EventDataType min = 999, max = 0;
 
 
-    for (quint32 i=0;i<el->count();i++) {
-        t=el->data(i);
-        ti=el->time(i);
-        f=false;
-        if (t>minval) {
-            if (t!=lastt) {
+    for (quint32 i = 0; i < el->count(); i++) {
+        t = el->data(i);
+        ti = el->time(i);
+        f = false;
+
+        if (t > minval) {
+            if (t != lastt) {
                 if (!lasttime) {
                     nel.setFirst(ti);
                 }
-                nel.AddEvent(ti,t);
-                if (t < min) min=t;
-                if (t > max) max=t;
-                lasttime=ti;
-                f=true;
+
+                nel.AddEvent(ti, t);
+
+                if (t < min) { min = t; }
+
+                if (t > max) { max = t; }
+
+                lasttime = ti;
+                f = true;
             }
         } else {
-            if (lastt>minval) {
-                nel.AddEvent(ti,lastt);
-                lasttime=ti;
-                f=true;
+            if (lastt > minval) {
+                nel.AddEvent(ti, lastt);
+                lasttime = ti;
+                f = true;
             }
         }
-        lastt=t;
+
+        lastt = t;
     }
+
     if (!f) {
-        if (t>minval) {
-            nel.AddEvent(ti,t);
-            lasttime=ti;
+        if (t > minval) {
+            nel.AddEvent(ti, t);
+            lasttime = ti;
         }
     }
+
     el->setFirst(nel.first());
     el->setLast(nel.last());
     el->setMin(min);
@@ -1044,8 +1203,8 @@ void packEventList(EventList *el, EventDataType minval=0)
     el->getTime().clear();
     el->setCount(nel.count());
 
-    el->getData()=nel.getData();
-    el->getTime()=nel.getTime();
+    el->getData() = nel.getData();
+    el->getTime() = nel.getTime();
 }
 
 void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
@@ -1059,98 +1218,114 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
 
     QVector<ChannelID> invalid;
 
-    QList<Machine *> machines=PROFILE.GetMachines(MT_OXIMETER);
+    QList<Machine *> machines = PROFILE.GetMachines(MT_OXIMETER);
 
-    qint64 f=0,l=0;
+    qint64 f = 0, l = 0;
 
-    int discard_threshold=PROFILE.oxi->oxiDiscardThreshold();
+    int discard_threshold = PROFILE.oxi->oxiDiscardThreshold();
     Machine *m;
-    for (int z=0;z<machines.size();z++) {
-        m=machines.at(z);
+
+    for (int z = 0; z < machines.size(); z++) {
+        m = machines.at(z);
         //m->sessionlist.erase(m->sessionlist.find(0));
 
         // For each Session
-        for (QHash<SessionID,Session *>::iterator s=m->sessionlist.begin();s!=m->sessionlist.end();s++) {
-            Session *sess=s.value();
-            if (!sess) continue;
+        for (QHash<SessionID, Session *>::iterator s = m->sessionlist.begin(); s != m->sessionlist.end();
+                s++) {
+            Session *sess = s.value();
+
+            if (!sess) { continue; }
+
             sess->OpenEvents();
 
             // For each EventList contained in session
             invalid.clear();
-            f=0;
-            l=0;
-            for (QHash<ChannelID,QVector<EventList *> >::iterator e=sess->eventlist.begin();e!=sess->eventlist.end();e++) {
+            f = 0;
+            l = 0;
+
+            for (QHash<ChannelID, QVector<EventList *> >::iterator e = sess->eventlist.begin();
+                    e != sess->eventlist.end(); e++) {
 
                 // Discard any non data events.
                 if (!valid.contains(e.key())) {
                     // delete and push aside for later to clean up
-                    for (int i=0;i<e.value().size();i++)  {
+                    for (int i = 0; i < e.value().size(); i++)  {
                         delete e.value()[i];
                     }
+
                     e.value().clear();
                     invalid.push_back(e.key());
                 } else {
                     // Valid event
 
 
-//                    // Clean up outliers at start of eventlist chunks
-//                    EventDataType baseline=sess->wavg(OXI_SPO2);
-//                    if (e.key()==OXI_SPO2) {
-//                        const int o2start_threshold=10000; // seconds since start of event
+                    //                    // Clean up outliers at start of eventlist chunks
+                    //                    EventDataType baseline=sess->wavg(OXI_SPO2);
+                    //                    if (e.key()==OXI_SPO2) {
+                    //                        const int o2start_threshold=10000; // seconds since start of event
 
-//                        EventDataType zz;
-//                        int ii;
+                    //                        EventDataType zz;
+                    //                        int ii;
 
-//                        // Trash suspect outliers in the first o2start_threshold milliseconds
-//                        for (int j=0;j<e.value().size();j++) {
-//                            EventList *ev=e.value()[j];
-//                            if ((ev->count() <= (unsigned)discard_threshold))
-//                                continue;
+                    //                        // Trash suspect outliers in the first o2start_threshold milliseconds
+                    //                        for (int j=0;j<e.value().size();j++) {
+                    //                            EventList *ev=e.value()[j];
+                    //                            if ((ev->count() <= (unsigned)discard_threshold))
+                    //                                continue;
 
-//                            qint64 ti=ev->time(0);
+                    //                            qint64 ti=ev->time(0);
 
-//                            zz=-1;
-//                            // Peek o2start_threshold ms ahead and grab the value
-//                            for (ii=0;ii<ev->count();ii++) {
-//                                if (((ev->time(ii)-ti) > o2start_threshold)) {
-//                                    zz=ev->data(ii);
-//                                    break;
-//                                }
-//                            }
-//                            if (zz<0)
-//                                continue;
-//                            // Trash any suspect outliers
-//                            for (int i=0;i<ii;i++) {
-//                                if (ev->data(i) < baseline) { //(zz-10)) {
+                    //                            zz=-1;
+                    //                            // Peek o2start_threshold ms ahead and grab the value
+                    //                            for (ii=0;ii<ev->count();ii++) {
+                    //                                if (((ev->time(ii)-ti) > o2start_threshold)) {
+                    //                                    zz=ev->data(ii);
+                    //                                    break;
+                    //                                }
+                    //                            }
+                    //                            if (zz<0)
+                    //                                continue;
+                    //                            // Trash any suspect outliers
+                    //                            for (int i=0;i<ii;i++) {
+                    //                                if (ev->data(i) < baseline) { //(zz-10)) {
 
-//                                    ev->getData()[i]=0;
-//                                }
-//                            }
-//                        }
-//                    }
+                    //                                    ev->getData()[i]=0;
+                    //                                }
+                    //                            }
+                    //                        }
+                    //                    }
                     QVector<EventList *> newlist;
-                    for (int i=0;i<e.value().size();i++)  {
+
+                    for (int i = 0; i < e.value().size(); i++)  {
                         if (e.value()[i]->count() > (unsigned)discard_threshold) {
                             newlist.push_back(e.value()[i]);
                         } else {
                             delete e.value()[i];
                         }
                     }
-                    for (int i=0;i<newlist.size();i++) {
-                        packEventList(newlist[i],8);
 
-                        EventList * el=newlist[i];
-                        if (!f || f > el->first()) f=el->first();
-                        if (!l || l < el->last()) l=el->last();
+                    for (int i = 0; i < newlist.size(); i++) {
+                        packEventList(newlist[i], 8);
+
+                        EventList *el = newlist[i];
+
+                        if (!f || f > el->first()) { f = el->first(); }
+
+                        if (!l || l < el->last()) { l = el->last(); }
                     }
-                    e.value()=newlist;
+
+                    e.value() = newlist;
                 }
             }
-            for (int i=0;i<invalid.size();i++) {
+
+            for (int i = 0; i < invalid.size(); i++) {
                 sess->eventlist.erase(sess->eventlist.find(invalid[i]));
             }
-            if (f) sess->really_set_first(f);
-            if (l) sess->really_set_last(l);
+
+            if (f) { sess->really_set_first(f); }
+
+            if (l) { sess->really_set_last(l); }
+
             sess->m_cnt.clear();
             sess->m_sum.clear();
             sess->m_min.clear();
@@ -1167,57 +1342,64 @@ void MainWindow::on_action_Rebuild_Oximetry_Index_triggered()
         }
 
     }
-    for (int i=0;i<machines.size();i++) {
-        Machine *m=machines[i];
+
+    for (int i = 0; i < machines.size(); i++) {
+        Machine *m = machines[i];
         m->Save();
     }
+
     getDaily()->LoadDate(getDaily()->getDate());
     //getDaily()->ReloadGraphs();
     getOverview()->ReloadGraphs();
 }
 
-void MainWindow::RestartApplication(bool force_login,bool change_datafolder)
+void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
 {
     QString apppath;
 #ifdef Q_OS_MAC
-        // In Mac OS the full path of aplication binary is:
-        //    <base-path>/myApp.app/Contents/MacOS/myApp
+    // In Mac OS the full path of aplication binary is:
+    //    <base-path>/myApp.app/Contents/MacOS/myApp
 
-        // prune the extra bits to just get the app bundle path
-        apppath=QApplication::instance()->applicationDirPath().section("/",0,-3);
+    // prune the extra bits to just get the app bundle path
+    apppath = QApplication::instance()->applicationDirPath().section("/", 0, -3);
 
-        QStringList args;
-        args << "-n"; // -n option is important, as it opens a new process
-        args << apppath;
+    QStringList args;
+    args << "-n"; // -n option is important, as it opens a new process
+    args << apppath;
 
-        args << "--args"; // SleepyHead binary options after this
-        args << "-p"; // -p starts with 1 second delay, to give this process time to save..
+    args << "--args"; // SleepyHead binary options after this
+    args << "-p"; // -p starts with 1 second delay, to give this process time to save..
 
 
-        if (force_login) args << "-l";
-        if (change_datafolder) args << "-d";
+    if (force_login) { args << "-l"; }
 
-        if (QProcess::startDetached("/usr/bin/open",args)) {
-            QApplication::instance()->exit();
-        } else QMessageBox::warning(NULL,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
+    if (change_datafolder) { args << "-d"; }
+
+    if (QProcess::startDetached("/usr/bin/open", args)) {
+        QApplication::instance()->exit();
+    } else { QMessageBox::warning(NULL, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
 
 #else
-        apppath=QApplication::instance()->applicationFilePath();
+    apppath = QApplication::instance()->applicationFilePath();
 
-        // If this doesn't work on windoze, try uncommenting this method
-        // Technically should be the same thing..
+    // If this doesn't work on windoze, try uncommenting this method
+    // Technically should be the same thing..
 
-        //if (QDesktopServices::openUrl(apppath)) {
-        //    QApplication::instance()->exit();
-        //} else
-        QStringList args;
-        args << "-p";
-        if (force_login) args << "-l";
-        if (change_datafolder) args << "-d";
-        if (QProcess::startDetached(apppath,args)) {
-            ::exit(0);
-            //QApplication::instance()->exit();
-        } else QMessageBox::warning(NULL,tr("Gah!"),tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."),QMessageBox::Ok);
+    //if (QDesktopServices::openUrl(apppath)) {
+    //    QApplication::instance()->exit();
+    //} else
+    QStringList args;
+    args << "-p";
+
+    if (force_login) { args << "-l"; }
+
+    if (change_datafolder) { args << "-d"; }
+
+    if (QProcess::startDetached(apppath, args)) {
+        ::exit(0);
+        //QApplication::instance()->exit();
+    } else { QMessageBox::warning(NULL, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
+
 #endif
 }
 
@@ -1230,20 +1412,23 @@ void MainWindow::on_actionChange_User_triggered()
 
 void MainWindow::on_actionPurge_Current_Day_triggered()
 {
-    QDate date=getDaily()->getDate();
-    Day *day=PROFILE.GetDay(date,MT_CPAP);
+    QDate date = getDaily()->getDate();
+    Day *day = PROFILE.GetDay(date, MT_CPAP);
     Machine *m;
+
     if (day) {
-        m=day->machine;
-        QString path=PROFILE.Get("{"+STR_GEN_DataFolder+"}/")+m->GetClass()+"_"+m->properties[STR_PROP_Serial]+"/";
+        m = day->machine;
+        QString path = PROFILE.Get("{" + STR_GEN_DataFolder + "}/") + m->GetClass() + "_" +
+                       m->properties[STR_PROP_Serial] + "/";
 
         QList<Session *>::iterator s;
 
         QList<Session *> list;
-        for (s=day->begin();s!=day->end();++s) {
-            SessionID id=(*s)->session();
-            QString filename0=path+QString().sprintf("%08lx.000",id);
-            QString filename1=path+QString().sprintf("%08lx.001",id);
+
+        for (s = day->begin(); s != day->end(); ++s) {
+            SessionID id = (*s)->session();
+            QString filename0 = path + QString().sprintf("%08lx.000", id);
+            QString filename1 = path + QString().sprintf("%08lx.001", id);
             qDebug() << "Removing" << filename0;
             qDebug() << "Removing" << filename1;
             QFile::remove(filename0);
@@ -1252,42 +1437,54 @@ void MainWindow::on_actionPurge_Current_Day_triggered()
             list.push_back(*s);
             m->sessionlist.erase(m->sessionlist.find(id)); // remove from machines session list
         }
+
         m->day.erase(m->day.find(date));
-        for (int i=0;i<list.size();i++) {
-            Session * sess=list.at(i);
+
+        for (int i = 0; i < list.size(); i++) {
+            Session *sess = list.at(i);
             day->removeSession(sess);
             delete sess;
         }
 
 
 
-        QList<Day *> & dl=PROFILE.daylist[date];
+        QList<Day *> &dl = PROFILE.daylist[date];
         QList<Day *>::iterator it;//=dl.begin();
-        for (it=dl.begin();it!=dl.end();it++) {
-            if ((*it)==day) break;
+
+        for (it = dl.begin(); it != dl.end(); it++) {
+            if ((*it) == day) { break; }
         }
-        if (it!=dl.end()) {
+
+        if (it != dl.end()) {
             dl.erase(it);
             //PROFILE.daylist[date].  // ??
             delete day;
         }
     }
+
     getDaily()->clearLastDay();
     getDaily()->LoadDate(date);
 }
 
 void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
 {
-    QDate date=getDaily()->getDate();
-    Day *day=PROFILE.GetDay(date,MT_CPAP);
+    QDate date = getDaily()->getDate();
+    Day *day = PROFILE.GetDay(date, MT_CPAP);
     Machine *m;
+
     if (day) {
-        m=day->machine;
+        m = day->machine;
+
         if (!m) {
             qDebug() << "Gah!! no machine to purge";
             return;
         }
-        if (QMessageBox::question(this,tr("Are you sure?"),tr("Are you sure you want to purge all CPAP data for the following machine:\n")+m->properties[STR_PROP_Brand]+" "+m->properties[STR_PROP_Model]+" "+m->properties[STR_PROP_ModelNumber]+" ("+m->properties[STR_PROP_Serial]+")",QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes) {
+
+        if (QMessageBox::question(this, tr("Are you sure?"),
+                                  tr("Are you sure you want to purge all CPAP data for the following machine:\n") +
+                                  m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
+                                  m->properties[STR_PROP_ModelNumber] + " (" + m->properties[STR_PROP_Serial] + ")",
+                                  QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
             m->Purge(3478216);
             PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
             // delete or not to delete.. this needs to delete later.. :/
@@ -1297,7 +1494,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
     }
 }
 
-void MainWindow::keyPressEvent(QKeyEvent * event)
+void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     Q_UNUSED(event)
     //qDebug() << "Keypress:" << event->key();
@@ -1316,20 +1513,21 @@ void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 
 void MainWindow::on_recordsBox_linkClicked(const QUrl &linkurl)
 {
-    QString link=linkurl.toString().section("=",0,0).toLower();
-    QString datestr=linkurl.toString().section("=",1).toLower();
+    QString link = linkurl.toString().section("=", 0, 0).toLower();
+    QString datestr = linkurl.toString().section("=", 1).toLower();
     qDebug() << linkurl.toString() << link << datestr;
-    if (link=="daily") {
-        QDate date=QDate::fromString(datestr,Qt::ISODate);
+
+    if (link == "daily") {
+        QDate date = QDate::fromString(datestr, Qt::ISODate);
         daily->LoadDate(date);
         ui->tabWidget->setCurrentWidget(daily);
-    } else if (link=="overview") {
-        QString date1=datestr.section(",",0,0);
-        QString date2=datestr.section(",",1);
+    } else if (link == "overview") {
+        QString date1 = datestr.section(",", 0, 0);
+        QString date2 = datestr.section(",", 1);
 
-        QDate d1=QDate::fromString(date1,Qt::ISODate);
-        QDate d2=QDate::fromString(date2,Qt::ISODate);
-        overview->setRange(d1,d2);
+        QDate d1 = QDate::fromString(date1, Qt::ISODate);
+        QDate d2 = QDate::fromString(date2, Qt::ISODate);
+        overview->setRange(d1, d2);
         ui->tabWidget->setCurrentWidget(overview);
     }
 
@@ -1347,8 +1545,9 @@ void MainWindow::on_actionView_Statistics_triggered()
 
 void MainWindow::on_webView_linkClicked(const QUrl &url)
 {
-    QString s=url.toString();
+    QString s = url.toString();
     qDebug() << "Link Clicked" << url;
+
     if (s.toLower().startsWith("https:")) {
         QDesktopServices().openUrl(url);
     } else {
@@ -1361,7 +1560,7 @@ void MainWindow::on_webView_statusBarMessage(const QString &text)
     ui->statusbar->showMessage(text);
 }
 
-void MainWindow::LinkHovered(const QString & link, const QString & title, const QString & textContent)
+void MainWindow::LinkHovered(const QString &link, const QString &title, const QString &textContent)
 {
     Q_UNUSED(title);
     Q_UNUSED(textContent);
@@ -1371,16 +1570,17 @@ void MainWindow::LinkHovered(const QString & link, const QString & title, const 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     Q_UNUSED(index);
-    QWidget *widget=ui->tabWidget->currentWidget();
-    if ((widget==ui->summaryTab) || (widget==ui->helpTab)) {
+    QWidget *widget = ui->tabWidget->currentWidget();
+
+    if ((widget == ui->summaryTab) || (widget == ui->helpTab)) {
         qstatus2->setVisible(false);
-    } else if (widget==daily) {
+    } else if (widget == daily) {
         qstatus2->setVisible(true);
         daily->graphView()->selectionTime();
-    } else if (widget==overview) {
+    } else if (widget == overview) {
         qstatus2->setVisible(true);
         overview->graphView()->selectionTime();
-    } else if (widget==oximetry) {
+    } else if (widget == oximetry) {
         qstatus2->setVisible(true);
         oximetry->graphView()->selectionTime();
     }
@@ -1399,7 +1599,7 @@ void MainWindow::on_bookmarkView_linkClicked(const QUrl &arg1)
 
 void MainWindow::on_filterBookmarks_editingFinished()
 {
-    bookmarkFilter=ui->filterBookmarks->text();
+    bookmarkFilter = ui->filterBookmarks->text();
     updateFavourites();
 }
 
@@ -1407,73 +1607,83 @@ void MainWindow::on_filterBookmarksButton_clicked()
 {
     if (!bookmarkFilter.isEmpty()) {
         ui->filterBookmarks->setText("");
-        bookmarkFilter="";
+        bookmarkFilter = "";
         updateFavourites();
     }
 }
 
 void MainWindow::reprocessEvents(bool restart)
 {
-    m_restartRequired=restart;
-    QTimer::singleShot(0,this,SLOT(doReprocessEvents()));
+    m_restartRequired = restart;
+    QTimer::singleShot(0, this, SLOT(doReprocessEvents()));
 }
 
 
 void MainWindow::FreeSessions()
 {
-    QDate first=PROFILE.FirstDay();
-    QDate date=PROFILE.LastDay();
+    QDate first = PROFILE.FirstDay();
+    QDate date = PROFILE.LastDay();
     Day *day;
-    QDate current=daily->getDate();
+    QDate current = daily->getDate();
+
     do {
-        day=PROFILE.GetDay(date,MT_CPAP);
+        day = PROFILE.GetDay(date, MT_CPAP);
+
         if (day) {
-            if (date!=current) {
+            if (date != current) {
                 day->CloseEvents();
             }
         }
-        date=date.addDays(-1);
-    }  while (date>=first);
+
+        date = date.addDays(-1);
+    }  while (date >= first);
 }
 
 void MainWindow::doReprocessEvents()
 {
-    if (PROFILE.countDays(MT_CPAP,PROFILE.FirstDay(),PROFILE.LastDay())==0)
+    if (PROFILE.countDays(MT_CPAP, PROFILE.FirstDay(), PROFILE.LastDay()) == 0) {
         return;
+    }
 
-    m_inRecalculation=true;
-    QDate first=PROFILE.FirstDay();
-    QDate date=PROFILE.LastDay();
+    m_inRecalculation = true;
+    QDate first = PROFILE.FirstDay();
+    QDate date = PROFILE.LastDay();
     Session *sess;
     Day *day;
     //FlowParser flowparser;
 
-    mainwin->Notify(tr("Performance will be degraded during these recalculations."),tr("Recalculating Indices"));
+    mainwin->Notify(tr("Performance will be degraded during these recalculations."),
+                    tr("Recalculating Indices"));
 
     // For each day in history
-    int daycount=first.daysTo(date);
-    int idx=0;
+    int daycount = first.daysTo(date);
+    int idx = 0;
 
-    QList<Machine *> machines=PROFILE.GetMachines(MT_CPAP);
+    QList<Machine *> machines = PROFILE.GetMachines(MT_CPAP);
 
     // Disabling multithreaded save as it appears it's causing problems
-    bool cache_sessions=false; //PROFILE.session->cacheSessions();
+    bool cache_sessions = false; //PROFILE.session->cacheSessions();
+
     if (cache_sessions) { // Use multithreaded save to handle reindexing.. (hogs memory like hell)
         qstatus->setText(tr("Loading Event Data"));
     } else {
         qstatus->setText(tr("Recalculating Summaries"));
     }
+
     if (qprogress) {
         qprogress->setValue(0);
         qprogress->setVisible(true);
     }
+
     bool isopen;
+
     do {
-        day=PROFILE.GetDay(date,MT_CPAP);
+        day = PROFILE.GetDay(date, MT_CPAP);
+
         if (day) {
-            for (int i=0;i<day->size();i++) {
-                sess=(*day)[i];
-                isopen=sess->eventsLoaded();
+            for (int i = 0; i < day->size(); i++) {
+                sess = (*day)[i];
+                isopen = sess->eventsLoaded();
 
                 // Load the events if they aren't loaded already
                 sess->OpenEvents();
@@ -1492,43 +1702,52 @@ void MainWindow::doReprocessEvents()
                 sess->destroyEvent(CPAP_RDI);
 
                 sess->SetChanged(true);
+
                 if (!cache_sessions) {
                     sess->UpdateSummaries();
                     sess->machine()->SaveSession(sess);
-                    if (!isopen)
+
+                    if (!isopen) {
                         sess->TrashEvents();
+                    }
                 }
             }
         }
-        date=date.addDays(-1);
-       // if (qprogress && (++idx % 10) ==0) {
-            qprogress->setValue(0+(float(++idx)/float(daycount)*100.0));
-            QApplication::processEvents();
-       // }
 
-    } while (date>=first);
+        date = date.addDays(-1);
+        // if (qprogress && (++idx % 10) ==0) {
+        qprogress->setValue(0 + (float(++idx) / float(daycount) * 100.0));
+        QApplication::processEvents();
+        // }
+
+    } while (date >= first);
 
     if (cache_sessions) {
         qstatus->setText(tr("Recalculating Summaries"));
-        for (int i=0;i<machines.size();i++) {
+
+        for (int i = 0; i < machines.size(); i++) {
             machines.at(i)->Save();
         }
     }
 
     qstatus->setText(tr(""));
     qprogress->setVisible(false);
-    m_inRecalculation=false;
+    m_inRecalculation = false;
+
     if (m_restartRequired) {
-        QMessageBox::information(this,tr("Restart Required"),tr("Recalculations are complete, the application now needs to restart to display the changes."),QMessageBox::Ok);
+        QMessageBox::information(this, tr("Restart Required"),
+                                 tr("Recalculations are complete, the application now needs to restart to display the changes."),
+                                 QMessageBox::Ok);
         RestartApplication();
         return;
     } else {
-        Notify(tr("Recalculations are now complete."),tr("Task Completed"));
+        Notify(tr("Recalculations are now complete."), tr("Task Completed"));
 
         FreeSessions();
-        QDate current=daily->getDate();
+        QDate current = daily->getDate();
         daily->LoadDate(current);
-        if (overview) overview->ReloadGraphs();
+
+        if (overview) { overview->ReloadGraphs(); }
     }
 }
 
@@ -1537,16 +1756,19 @@ void MainWindow::on_actionImport_ZEO_Data_triggered()
     QFileDialog w;
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
-    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setOption(QFileDialog::DontUseNativeDialog, true);
     w.setNameFilters(QStringList("Zeo CSV File (*.csv)"));
 
     ZEOLoader zeo;
-    if (w.exec()==QFileDialog::Accepted) {
-        QString filename=w.selectedFiles()[0];
+
+    if (w.exec() == QFileDialog::Accepted) {
+        QString filename = w.selectedFiles()[0];
+
         if (!zeo.OpenFile(filename)) {
-            Notify(tr("There was a problem opening ZEO File: ")+filename);
+            Notify(tr("There was a problem opening ZEO File: ") + filename);
             return;
         }
+
         Notify(tr("Zeo CSV Import complete"));
         daily->LoadDate(daily->getDate());
     }
@@ -1560,39 +1782,45 @@ void MainWindow::on_actionImport_RemStar_MSeries_Data_triggered()
     QFileDialog w;
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
-    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setOption(QFileDialog::DontUseNativeDialog, true);
     w.setNameFilters(QStringList("M-Series data file (*.bin)"));
 
     MSeriesLoader mseries;
-    if (w.exec()==QFileDialog::Accepted) {
-        QString filename=w.selectedFiles()[0];
-        if (!mseries.Open(filename,p_profile)) {
-            Notify(tr("There was a problem opening MSeries block File: ")+filename);
+
+    if (w.exec() == QFileDialog::Accepted) {
+        QString filename = w.selectedFiles()[0];
+
+        if (!mseries.Open(filename, p_profile)) {
+            Notify(tr("There was a problem opening MSeries block File: ") + filename);
             return;
         }
+
         Notify(tr("MSeries Import complete"));
         daily->LoadDate(daily->getDate());
     }
+
 #endif
 }
 
 void MainWindow::on_actionSleep_Disorder_Terms_Glossary_triggered()
 {
-    ui->webView->load(QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary"));
+    ui->webView->load(
+        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary"));
     ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_actionHelp_Support_SleepyHead_Development_triggered()
 {
-    QUrl url=QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Support_SleepyHead_Development");
+    QUrl url =
+        QUrl("http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Support_SleepyHead_Development");
     QDesktopServices().openUrl(url);
-//    ui->webView->load(url);
-//    ui->tabWidget->setCurrentWidget(ui->helpTab);
+    //    ui->webView->load(url);
+    //    ui->tabWidget->setCurrentWidget(ui->helpTab);
 }
 
 void MainWindow::on_actionChange_Language_triggered()
 {
-    QSettings *settings=new QSettings(getDeveloperName(),getAppName());
+    QSettings *settings = new QSettings(getDeveloperName(), getAppName());
     settings->remove("Settings/Language");
     delete settings;
     PROFILE.Save();
@@ -1605,7 +1833,7 @@ void MainWindow::on_actionChange_Data_Folder_triggered()
 {
     PROFILE.Save();
     PREF.Save();
-    RestartApplication(false,true);
+    RestartApplication(false, true);
 }
 
 void MainWindow::on_actionImport_Somnopose_Data_triggered()
@@ -1613,14 +1841,16 @@ void MainWindow::on_actionImport_Somnopose_Data_triggered()
     QFileDialog w;
     w.setFileMode(QFileDialog::ExistingFiles);
     w.setOption(QFileDialog::ShowDirsOnly, false);
-    w.setOption(QFileDialog::DontUseNativeDialog,true);
+    w.setOption(QFileDialog::DontUseNativeDialog, true);
     w.setNameFilters(QStringList("Somnopause CSV File (*.csv)"));
 
     SomnoposeLoader somno;
-    if (w.exec()==QFileDialog::Accepted) {
-        QString filename=w.selectedFiles()[0];
+
+    if (w.exec() == QFileDialog::Accepted) {
+        QString filename = w.selectedFiles()[0];
+
         if (!somno.OpenFile(filename)) {
-            Notify(tr("There was a problem opening Somnopose Data File: ")+filename);
+            Notify(tr("There was a problem opening Somnopose Data File: ") + filename);
             return;
         }
 

@@ -17,15 +17,15 @@
 class Summary : public QObject
 {
     Q_OBJECT
-public:
+  public:
     explicit Summary(QObject *parent = 0);
-    
+
     static QString GenerateHTML();
 
-signals:
-    
-public slots:
-    
+  signals:
+
+  public slots:
+
 };
 
 #endif // SUMMARY_H
