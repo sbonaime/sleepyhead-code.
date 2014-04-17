@@ -20,20 +20,20 @@ class gFlagsGroup;
 /*! \class gYSpacer
     \brief A dummy vertical spacer object
    */
-class gFlagsLabelArea:public gSpacer
+class gFlagsLabelArea: public gSpacer
 {
-    public:
-        gFlagsLabelArea(gFlagsGroup * group);
-        virtual void paint(gGraph & w,int left,int top, int width, int height) {
-            Q_UNUSED(w)
-            Q_UNUSED(left)
-            Q_UNUSED(top)
-            Q_UNUSED(width)
-            Q_UNUSED(height)
-        }
-protected:
-        gFlagsGroup * m_group;
-        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+  public:
+    gFlagsLabelArea(gFlagsGroup *group);
+    virtual void paint(gGraph &w, int left, int top, int width, int height) {
+        Q_UNUSED(w)
+        Q_UNUSED(left)
+        Q_UNUSED(top)
+        Q_UNUSED(width)
+        Q_UNUSED(height)
+    }
+  protected:
+    gFlagsGroup *m_group;
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
 
 };
@@ -42,63 +42,64 @@ protected:
 /*! \class gFlagsLine
     \brief One single line of event flags in the Event Flags chart
     */
-class gFlagsLine:public Layer
+class gFlagsLine: public Layer
 {
     friend class gFlagsGroup;
-    public:
-        /*! \brief Constructs an individual gFlagsLine object
-            \param code  The Channel the data is sourced from
-            \param col   The colour to draw this flag
-            \param label The label to show to the left of the Flags line.
-            \param always_visible  Whether to always show this line, even if empty
-            \param Type of Flag, either FT_Bar, or FT_Span
-            */
-        gFlagsLine(ChannelID code,QColor col=Qt::black,QString label="",bool always_visible=false,FlagType flt=FT_Bar);
-        virtual ~gFlagsLine();
+  public:
+    /*! \brief Constructs an individual gFlagsLine object
+        \param code  The Channel the data is sourced from
+        \param col   The colour to draw this flag
+        \param label The label to show to the left of the Flags line.
+        \param always_visible  Whether to always show this line, even if empty
+        \param Type of Flag, either FT_Bar, or FT_Span
+        */
+    gFlagsLine(ChannelID code, QColor col = Qt::black, QString label = "", bool always_visible = false,
+               FlagType flt = FT_Bar);
+    virtual ~gFlagsLine();
 
-        //! \brief Drawing code to add the flags and span markers to the Vertex buffers.
-        virtual void paint(gGraph & w,int left, int top, int width, int height);
+    //! \brief Drawing code to add the flags and span markers to the Vertex buffers.
+    virtual void paint(gGraph &w, int left, int top, int width, int height);
 
-        //! \brief Returns true if should always show this flag, even if it's empty
-        bool isAlwaysVisible() { return m_always_visible; }
-        //! \brief Set this to true to make a flag line always visible
-        void setAlwaysVisible(bool b) { m_always_visible=b; }
+    //! \brief Returns true if should always show this flag, even if it's empty
+    bool isAlwaysVisible() { return m_always_visible; }
+    //! \brief Set this to true to make a flag line always visible
+    void setAlwaysVisible(bool b) { m_always_visible = b; }
 
-        //! \brief Returns the label for this individual Event Flags line
-        QString label() { return m_label; }
+    //! \brief Returns the label for this individual Event Flags line
+    QString label() { return m_label; }
 
-        //! \brief Sets the label for this individual Event Flags line
-        void setLabel(QString s) { m_label=s; }
+    //! \brief Sets the label for this individual Event Flags line
+    void setLabel(QString s) { m_label = s; }
 
-        void setTotalLines(int i) { total_lines=i; }
-        void setLineNum(int i) { line_num=i; }
-    protected:
+    void setTotalLines(int i) { total_lines = i; }
+    void setLineNum(int i) { line_num = i; }
+  protected:
 
-        virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
-        QString m_label;
-        bool m_always_visible;
-        int total_lines,line_num;
-        FlagType m_flt;
-        QColor m_flag_color;
-        gVertexBuffer *quads;
-        gVertexBuffer *lines;
-        int m_lx, m_ly;
+    QString m_label;
+    bool m_always_visible;
+    int total_lines, line_num;
+    FlagType m_flt;
+    QColor m_flag_color;
+    gVertexBuffer *quads;
+    gVertexBuffer *lines;
+    int m_lx, m_ly;
 };
 
 /*! \class gFlagsGroup
     \brief Contains multiple gFlagsLine entries for the Events Flag graph
     */
-class gFlagsGroup:public LayerGroup
+class gFlagsGroup: public LayerGroup
 {
     friend class gFlagsLabelArea;
 
-public:
+  public:
     gFlagsGroup();
     virtual ~gFlagsGroup();
 
     //! Draw filled rectangles behind Event Flag's, and an outlines around them all, Calls the individual paint for each gFlagLine
-    virtual void paint(gGraph & w,int left, int top, int width, int height);
+    virtual void paint(gGraph &w, int left, int top, int width, int height);
 
     //! Returns the first time represented by all gFlagLine layers, in milliseconds since epoch
     virtual qint64 Minx();
@@ -118,10 +119,10 @@ public:
     int barHeight() { return m_barh; }
 
     //! Returns a list of Visible gFlagsLine layers to draw
-    QVector<gFlagsLine *> & visibleLayers() { return lvisible; }
+    QVector<gFlagsLine *> &visibleLayers() { return lvisible; }
 
-protected:
-    virtual bool mouseMoveEvent(QMouseEvent * event,gGraph * graph);
+  protected:
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
     gVertexBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;

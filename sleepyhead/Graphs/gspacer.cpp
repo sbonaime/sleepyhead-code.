@@ -12,7 +12,7 @@
 #include "gspacer.h"
 
 gSpacer::gSpacer(int space)
-    :Layer(NoChannel)
+    : Layer(NoChannel)
 {
-    m_space=space;
+    m_space = space;
 }

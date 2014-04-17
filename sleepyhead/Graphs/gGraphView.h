@@ -55,7 +55,7 @@ int GetXHeight(QFont *font = defaultfont);
 class gGraphView;
 class gGraph;
 
-const int textque_max=512;
+const int textque_max = 512;
 
 typedef quint32 RGBA;
 /*union RGBA {
@@ -71,9 +71,8 @@ typedef quint32 RGBA;
 #ifdef BUILD_WITH_MSVC
 __declspec(align(1))
 #endif
-struct gVertex
-{
-    gVertex(GLshort _x, GLshort _y, GLuint _c) { x=_x; y=_y; color=_c; }
+struct gVertex {
+    gVertex(GLshort _x, GLshort _y, GLuint _c) { x = _x; y = _y; color = _c; }
     GLshort x;
     GLshort y;
     RGBA color;
@@ -87,22 +86,22 @@ class gVertexBuffer
 {
   public:
     gVertexBuffer(int max = 2048, int type = GL_LINES)
-      : m_max(max), m_type(type), m_cnt(0), m_size(1),
-        m_scissor(false), m_antialias(false), m_forceantialias(false), m_stippled(false),
-        buffer(NULL),
-        s_x(0), s_y(0), s_width(0), s_height(0),
-        m_color(0),
-        m_stipple(0xffff),
-        m_blendfunc1(GL_SRC_ALPHA),
-        m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA)
-    {
+        : m_max(max), m_type(type), m_cnt(0), m_size(1),
+          m_scissor(false), m_antialias(false), m_forceantialias(false), m_stippled(false),
+          buffer(NULL),
+          s_x(0), s_y(0), s_width(0), s_height(0),
+          m_color(0),
+          m_stipple(0xffff),
+          m_blendfunc1(GL_SRC_ALPHA),
+          m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA) {
         // FIXME: Really should not allocate in constructor.
         buffer = (gVertex *)calloc(max, sizeof(gVertex));
     }
 
     ~gVertexBuffer() {
-        if (buffer)
+        if (buffer) {
             free(buffer);
+        }
     }
 
     void add(GLshort x1, GLshort y1, RGBA color);
@@ -183,14 +182,14 @@ class GLBuffer
 {
   public:
     GLBuffer(int max = 2048, int type = GL_LINES, bool stippled = false)
-      : m_max(max), m_type(type), m_cnt(0), m_colcnt(0), m_size(1),
-        s1(0), s2(0), s3(0), s4(0),
-        m_scissor(false),
-        m_antialias(true),
-        m_forceantialias(false),
-        m_stippled(stippled),
-        m_blendfunc1(GL_SRC_ALPHA),
-        m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA)
+        : m_max(max), m_type(type), m_cnt(0), m_colcnt(0), m_size(1),
+          s1(0), s2(0), s3(0), s4(0),
+          m_scissor(false),
+          m_antialias(true),
+          m_forceantialias(false),
+          m_stippled(stippled),
+          m_blendfunc1(GL_SRC_ALPHA),
+          m_blendfunc2(GL_ONE_MINUS_SRC_ALPHA)
     { }
     virtual ~GLBuffer() {}
 
@@ -199,7 +198,7 @@ class GLBuffer
         s2 = y1;
         s3 = x2;
         s4 = y2;
-        m_scissor=true;
+        m_scissor = true;
     }
 
     int Max() const { return m_max; }
@@ -215,7 +214,7 @@ class GLBuffer
     void setColor(QColor col) { m_color = col; }
     void setBlendFunc(GLuint b1, GLuint b2) { m_blendfunc1 = b1; m_blendfunc2 = b2; }
 
-    virtual void draw(){}
+    virtual void draw() {}
 
   protected:
     int m_max;
@@ -290,8 +289,7 @@ class GLFloatBuffer : public GLBuffer
 /*! \struct TextQue
     \brief Holds a single item of text for the drawing queue
     */
-struct TextQue
-{
+struct TextQue {
     //! \variable contains the x axis screen position to draw the text
     short x;
     //! \variable contains the y axis screen position to draw the text
@@ -315,10 +313,10 @@ class MyScrollBar : public QScrollBar
 {
   public:
     MyScrollBar(QWidget *parent = NULL)
-      : QScrollBar(parent)
+        : QScrollBar(parent)
     { }
 
-    void SendWheelEvent(QWheelEvent * e) {
+    void SendWheelEvent(QWheelEvent *e) {
         wheelEvent(e);
     }
 };
@@ -335,29 +333,29 @@ class Layer
 
   public:
     Layer(ChannelID code)
-      : m_refcount(0),
-        m_day(NULL),
-        m_visible(true),
-        m_movable(false),
-        m_minx(0), m_maxx(0),
-        m_miny(0), m_maxy(0),
-        m_physminy(0), m_physmaxy(0),
-        m_code(code),
-        m_width(0), m_height(0),
-        m_X(0), m_Y(0),
-        m_order(0),
-        m_position(LayerCenter)
+        : m_refcount(0),
+          m_day(NULL),
+          m_visible(true),
+          m_movable(false),
+          m_minx(0), m_maxx(0),
+          m_miny(0), m_maxy(0),
+          m_physminy(0), m_physmaxy(0),
+          m_code(code),
+          m_width(0), m_height(0),
+          m_X(0), m_Y(0),
+          m_order(0),
+          m_position(LayerCenter)
     { }
 
     virtual ~Layer();
 
     //! \brief This gets called on day selection, allowing this layer to precalculate any drawing data
-    virtual void SetDay(Day * d);
+    virtual void SetDay(Day *d);
 
     //! \brief Set the ChannelID used in this layer
     virtual void SetCode(ChannelID c) { m_code = c; }
     //! \brief Return the ChannelID used in this layer
-    const ChannelID & code() { return m_code; }
+    const ChannelID &code() { return m_code; }
 
     //! \brief returns true if this layer contains no data.
     virtual bool isEmpty();
@@ -417,7 +415,7 @@ class Layer
         \param int width
         \param int height
       */
-    virtual void paint(gGraph & gv,int left,int top,int width, int height) = 0;
+    virtual void paint(gGraph &gv, int left, int top, int width, int height) = 0;
 
     //! \brief Set the layout position and order for this layer.
     void setLayout(LayerPosition position, short width, short height, short order);
@@ -470,27 +468,39 @@ class Layer
 
     //! \brief Mouse wheel moved somewhere over this layer
     virtual bool wheelEvent(QWheelEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
     //! \brief Mouse moved somewhere over this layer
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
     //! \brief Mouse left or right button pressed somewhere on this layer
     virtual bool mousePressEvent(QMouseEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
     //! \brief Mouse button released that was originally pressed somewhere on this layer
     virtual bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
     //! \brief Mouse button double clicked somewhere on this layer
     virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
     //! \brief A key was pressed on the keyboard while the graph area was focused.
     virtual bool keyPressEvent(QKeyEvent *event, gGraph *graph) {
-        Q_UNUSED(event); Q_UNUSED(graph); return false;
+        Q_UNUSED(event);
+        Q_UNUSED(graph);
+        return false;
     }
 };
 
@@ -501,7 +511,7 @@ class LayerGroup : public Layer
 {
   public:
     LayerGroup()
-      : Layer(NoChannel)
+        : Layer(NoChannel)
     { }
 
     virtual ~LayerGroup();
@@ -533,27 +543,27 @@ class LayerGroup : public Layer
     //! \brief Return the list of Layers this object holds
     QVector<Layer *> &getLayers() { return layers; }
 
-protected:
+  protected:
     //! \brief Contains all Layer objects in this group
     QVector<Layer *> layers;
 
     //! \brief Mouse wheel moved somewhere over this LayerGroup
-    virtual bool wheelEvent(QWheelEvent * event, gGraph * graph);
+    virtual bool wheelEvent(QWheelEvent *event, gGraph *graph);
 
     //! \brief Mouse moved somewhere over this LayerGroup
-    virtual bool mouseMoveEvent(QMouseEvent * event, gGraph * graph);
+    virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
     //! \brief Mouse left or right button pressed somewhere on this LayerGroup
-    virtual bool mousePressEvent(QMouseEvent * event, gGraph * graph);
+    virtual bool mousePressEvent(QMouseEvent *event, gGraph *graph);
 
     //! \brief Mouse button released that was originally pressed somewhere on this LayerGroup
-    virtual bool mouseReleaseEvent(QMouseEvent * event, gGraph * graph);
+    virtual bool mouseReleaseEvent(QMouseEvent *event, gGraph *graph);
 
     //! \brief Mouse button double clicked somewhere on this layerGroup
-    virtual bool mouseDoubleClickEvent(QMouseEvent * event, gGraph * graph);
+    virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph);
 
     //! \brief A key was pressed on the keyboard while the graph area was focused.
-    virtual bool keyPressEvent(QKeyEvent * event, gGraph * graph);
+    virtual bool keyPressEvent(QKeyEvent *event, gGraph *graph);
 };
 
 class gGraph;
@@ -720,13 +730,13 @@ class gGraph : public QObject
     QString title() { return m_title; }
 
     //! \brief Sets the Graph's (vertical) title
-    void setTitle(const QString title) { m_title=title; }
+    void setTitle(const QString title) { m_title = title; }
 
     //! \brief Returns the measurement Units the Y scale is referring to
     QString units() { return m_units; }
 
     //! \brief Sets the measurement Units the Y scale is referring to
-    void setUnits(const QString units) { m_units=units; }
+    void setUnits(const QString units) { m_units = units; }
 
     //virtual void repaint(); // Repaint individual graph..
 
@@ -821,7 +831,7 @@ class gGraph : public QObject
     void setDay(Day *day);
 
     //! \brief Returns the current day object
-    Day * day() { return m_day; }
+    Day *day() { return m_day; }
 
     //! \brief The Layer, layout and title drawing code
     virtual void paint(int originX, int originY, int width, int height);
@@ -837,8 +847,10 @@ class gGraph : public QObject
 
     //! \brief Sets the margins for the four sides of this graph.
     void setMargins(short left, short right, short top, short bottom) {
-        m_marginleft = left; m_marginright = right;
-        m_margintop = top; m_marginbottom = bottom;
+        m_marginleft = left;
+        m_marginright = right;
+        m_margintop = top;
+        m_marginbottom = bottom;
     }
 
     //! \brief Returns this graphs left margin
@@ -862,7 +874,7 @@ class gGraph : public QObject
     const inline QRect &rect() const { return m_rect; }
 
     bool isPinned() { return m_pinned; }
-    void setPinned(bool b) { m_pinned=b; }
+    void setPinned(bool b) { m_pinned = b; }
 
     // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
     //GLShortBuffer * stippled();
@@ -921,7 +933,7 @@ class gGraph : public QObject
 
     //! \brief Vector containing all this graphs Layers
     QVector<Layer *> m_layers;
-    float m_height,m_width;
+    float m_height, m_width;
 
     int m_min_height;
     int m_max_height;
@@ -950,8 +962,7 @@ class gGraph : public QObject
     \brief My version of Pixmap cache with texture binding support
 
  */
-struct myPixmapCache
-{
+struct myPixmapCache {
     quint64 last_used;
     QImage image;
     GLuint textureID;
@@ -1098,8 +1109,8 @@ class gGraphView : public QGLWidget
 
     void setCubeImage(QImage *);
 
-    inline const float & devicePixelRatio() { return m_dpr; }
-    void setDevicePixelRatio(float dpr) { m_dpr=dpr; }
+    inline const float &devicePixelRatio() { return m_dpr; }
+    void setDevicePixelRatio(float dpr) { m_dpr = dpr; }
 
     // Cube fun
     QVector<QImage *> cubeimg;
@@ -1108,15 +1119,15 @@ class gGraphView : public QGLWidget
 #ifdef ENABLE_THREADED_DRAWING
     QMutex text_mutex;
     QMutex gl_mutex;
-    QSemaphore * masterlock;
-    bool useThreads() { return m_idealthreads>1; }
+    QSemaphore *masterlock;
+    bool useThreads() { return m_idealthreads > 1; }
     QVector<gThread *> m_threads;
     int m_idealthreads;
     QMutex dl_mutex;
 #endif
 
     //! \brief Sends day object to be distributed to all Graphs Layers objects
-    void setDay(Day * day);
+    void setDay(Day *day);
 
     gVertexBuffer *lines, *backlines, *quads, *frontlines;
 
@@ -1144,7 +1155,7 @@ class gGraphView : public QGLWidget
     //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
     bool usePixmapCache();
 
-protected:
+  protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
     virtual void initializeGL();
 
@@ -1202,7 +1213,7 @@ protected:
     QVector<gGraph *> m_graphs;
 
     //! \brief List of all graphs contained, indexed by title
-    QHash<QString,gGraph*> m_graphsbytitle;
+    QHash<QString, gGraph *> m_graphsbytitle;
 
     //! \variable Vertical scroll offset (adjusted when scrollbar gets moved)
     int m_offsetY;
@@ -1221,7 +1232,7 @@ protected:
     QPoint m_sizer_point;
     int m_horiz_travel;
 
-    MyScrollBar * m_scrollbar;
+    MyScrollBar *m_scrollbar;
     QTimer *redrawtimer;
 
     bool m_graph_dragging;
@@ -1231,13 +1242,13 @@ protected:
     TextQue m_textque[textque_max];
 
     int m_textque_items;
-    int m_lastxpos,m_lastypos;
+    int m_lastxpos, m_lastypos;
 
     QString m_emptytext;
     bool m_showsplitter;
 
-    qint64 m_minx,m_maxx;
-    float print_scaleX,print_scaleY;
+    qint64 m_minx, m_maxx;
+    float print_scaleX, print_scaleY;
 
     QPixmap previous_day_snapshot;
     QPixmap current_day_snapshot;
@@ -1253,13 +1264,13 @@ protected:
     QTime m_animationStarted;
 
     // turn this into a struct later..
-    QHash<QString,myPixmapCache *> pixmap_cache;
+    QHash<QString, myPixmapCache *> pixmap_cache;
     qint32 pixmap_cache_size;
     bool use_pixmap_cache;
 
     QTime horizScrollTime, vertScrollTime;
 
-public slots:
+  public slots:
     //! \brief Callback from the ScrollBar, to change scroll position
     void scrollbarValueChanged(int val);
 

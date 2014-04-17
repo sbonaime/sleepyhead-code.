@@ -21,12 +21,13 @@ enum GraphSegmentType { GST_Pie, GST_CandleStick, GST_Line };
   */
 class gSegmentChart : public Layer
 {
-public:
-    gSegmentChart(GraphSegmentType gt=GST_Pie, QColor gradient_color=Qt::white,QColor outline_color=Qt::black);
+  public:
+    gSegmentChart(GraphSegmentType gt = GST_Pie, QColor gradient_color = Qt::white,
+                  QColor outline_color = Qt::black);
     virtual ~gSegmentChart();
 
     //! \brief The drawing code that fills the Vertex buffers
-    virtual void paint(gGraph & w,int left, int top, int width, int height);
+    virtual void paint(gGraph &w, int left, int top, int width, int height);
 
     //! \brief Pre-fills a buffer with the data needed to draw
     virtual void SetDay(Day *d);
@@ -35,17 +36,17 @@ public:
     virtual bool isEmpty();
 
     //! \brief Adds a channel slice, and sets the color and label
-    void AddSlice(ChannelID code,QColor col,QString name="");
+    void AddSlice(ChannelID code, QColor col, QString name = "");
 
     //! \brief Sets the fade-out color to make the graphs look more attractive
-    void setGradientColor(QColor & color) { m_gradient_color=color; }
+    void setGradientColor(QColor &color) { m_gradient_color = color; }
 
     //! \brief Sets the outline color for the edges drawn around the Pie slices
-    void setOutlineColor(QColor & color) { m_outline_color=color; }
-    const GraphSegmentType & graphType() { return m_graph_type; }
-    void setGraphType(GraphSegmentType type) { m_graph_type=type; }
+    void setOutlineColor(QColor &color) { m_outline_color = color; }
+    const GraphSegmentType &graphType() { return m_graph_type; }
+    void setGraphType(GraphSegmentType type) { m_graph_type = type; }
 
-protected:
+  protected:
     QVector<ChannelID> m_codes;
     QVector<QString> m_names;
     QVector<int> m_values;
@@ -58,20 +59,21 @@ protected:
     bool m_empty;
 
     // gah.. can't convert these
-    GLFloatBuffer *poly,*lines;
+    GLFloatBuffer *poly, *lines;
 };
 
 /*! \class gTAPGraph
     \brief Time at Pressure chart, derived from gSegmentChart
     \notes Currently unused
     */
-class gTAPGraph:public gSegmentChart
+class gTAPGraph: public gSegmentChart
 {
-public:
-    gTAPGraph(ChannelID code,GraphSegmentType gt=GST_CandleStick, QColor gradient_color=Qt::lightGray,QColor outline_color=Qt::black);
+  public:
+    gTAPGraph(ChannelID code, GraphSegmentType gt = GST_CandleStick,
+              QColor gradient_color = Qt::lightGray, QColor outline_color = Qt::black);
     virtual ~gTAPGraph();
     virtual void SetDay(Day *d);
-protected:
+  protected:
     ChannelID m_code;
 };
 
