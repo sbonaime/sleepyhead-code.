@@ -1,0 +1,23 @@
+# Style definitions for Artistic Style.
+# Usage: astyle --options=STYLE
+
+--style=otbs  # "One True Brace Style"
+--max-code-length=99  # Maximum length of a single line.
+--lineend=linux  # Use \n, not \r\n.
+
+--attach-namespaces  # Attach brackets to a namespace statement.
+--attach-inlines  # Attach brackets to class and struct inline function definitions.
+
+--indent-modifiers  # Indent C++ class and struct access modifiers one half-indent.
+
+--indent-col1-comments  # Indent C++ comments beginning in column one, with the code.
+
+--break-blocks  # Pad empty lines around if, for, and while blocks.
+--pad-oper  # Insert space padding around operators.
+--pad-header  # Insert space padding after if, while, and for paren headers.
+--unpad-paren  # Remove extra space padding around parentheses on inside and outside.
+
+--align-pointer=name  # char* foo ==> char *foo. Also applies to references.
+
+--remove-brackets  # Remove brackets from one-line conditional statements.
+--keep-one-line-blocks  # don't break apart multiple statements on one line.
