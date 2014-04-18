@@ -654,6 +654,11 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
             offset += 12;
         }
 
+        // on some 60 series it's one off. or was the original 60 series patch wrong?
+        // I verified this comment below against several data samples compared with encore reports.
+        //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
+
+
         duration = data[offset + 0x14] | (data[offset + 0x15] << 8);
 
         if (!duration) {
