@@ -30,31 +30,16 @@ Preferences *p_pref;
 Preferences *p_layout;
 Profile *p_profile;
 
-
-
-Profile::Profile()
-    : Preferences(), is_first_day(true)
-{
-    p_name = STR_GEN_Profile;
-    p_path = PREF.Get("{home}/Profiles");
-    machlist.clear();
-
-    doctor = new DoctorInfo(this);
-    user = new UserInfo(this);
-    cpap = new CPAPSettings(this);
-    oxi = new OxiSettings(this);
-    appearance = new AppearanceSettings(this);
-    session = new SessionSettings(this);
-    general = new UserSettings(this);
-}
 Profile::Profile(QString path)
-    : Preferences(), is_first_day(true)
+  : is_first_day(true)
 {
     p_name = STR_GEN_Profile;
 
     if (path.isEmpty()) {
         p_path = GetAppRoot();
-    } else { p_path = path; }
+    } else {
+        p_path = path;
+    }
 
     (*this)[STR_GEN_DataFolder] = p_path;
     path = path.replace("\\", "/");
@@ -74,11 +59,6 @@ Profile::Profile(QString path)
     session = NULL;
     general = NULL;
 }
-bool Profile::Save(QString filename)
-{
-    return Preferences::Save(filename);
-}
-
 
 Profile::~Profile()
 {
@@ -93,6 +73,11 @@ Profile::~Profile()
     for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
         delete i.value();
     }
+}
+
+bool Profile::Save(QString filename)
+{
+    return Preferences::Save(filename);
 }
 
 bool Profile::Open(QString filename)
