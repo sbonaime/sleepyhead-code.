@@ -13,6 +13,7 @@ greaterThan(QT_MAJOR_VERSION,4) {
 }
 
 CONFIG += rtti
+CONFIG += c++11
 
 #static {
 #    CONFIG += static
