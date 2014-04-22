@@ -9,11 +9,14 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
+#include <QMultiMap>
+
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 #include "day.h"
 #include "profiles.h"
-#include <cmath>
-#include <QMultiMap>
-#include <algorithm>
 
 Day::Day(Machine *m)
     : machine(m)
