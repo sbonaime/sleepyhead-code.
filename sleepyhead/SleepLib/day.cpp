@@ -201,6 +201,11 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
     // First Calculate count of all events
     bool timeweight;
 
+    QHash<EventStoreType, quint32>::iterator teival_it;
+    QHash<EventStoreType, quint32>::iterator teival_end;
+    QHash<EventStoreType, EventStoreType>::iterator eival_it;
+    QHash<EventStoreType, EventStoreType>::iterator eival_end;
+
     for (; sess_it != sess_end; sess_it++) {
         Session &sess = *(*sess_it);
         if (!sess.enabled()) { continue; }
@@ -228,8 +233,8 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
 
         //qint64 tval;
         if (timeweight) {
-            QHash<EventStoreType, quint32>::iterator teival_it = tei.value().begin();
-            QHash<EventStoreType, quint32>::iterator teival_end = tei.value().end();
+            teival_it = tei.value().begin();
+            teival_end = tei.value().end();
 
             for (; teival_it != teival_end; ++teival_it) {
                 value = teival_it.key();
@@ -238,8 +243,8 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
                 wmap[value] += weight;
             }
         } else {
-            QHash<EventStoreType, EventStoreType>::iterator eival_it = ei.value().begin();
-            QHash<EventStoreType, EventStoreType>::iterator eival_end = ei.value().end();
+            eival_it = ei.value().begin();
+            eival_end = ei.value().end();
 
             for (; eival_it != eival_end; ++eival_it) {
                 value = eival_it.key();

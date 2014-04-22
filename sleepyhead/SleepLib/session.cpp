@@ -17,6 +17,7 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include <algorithm>
+#include <limits>
 
 #include "SleepLib/calcs.h"
 #include "SleepLib/profiles.h"
@@ -60,11 +61,14 @@ Session::~Session()
 void Session::TrashEvents()
 // Trash this sessions Events and release memory.
 {
-    QHash<ChannelID, QVector<EventList *> >::iterator i;
     QVector<EventList *>::iterator j;
+    QVector<EventList *>::iterator j_end;
+    QHash<ChannelID, QVector<EventList *> >::iterator i;
+    QHash<ChannelID, QVector<EventList *> >::iterator i_end=eventlist.end();
 
-    for (i = eventlist.begin(); i != eventlist.end(); i++) {
-        for (j = i.value().begin(); j != i.value().end(); j++) {
+    for (i = eventlist.begin(); i != i_end; ++i) {
+        j_end=i.value().end();
+        for (j = i.value().begin(); j != j_end; ++j) {
             delete *j;
         }
     }
@@ -431,12 +435,18 @@ bool Session::StoreEvents(QString filename)
     out << (qint16)eventlist.size(); // Number of event categories
 
     QHash<ChannelID, QVector<EventList *> >::iterator i;
+    QHash<ChannelID, QVector<EventList *> >::iterator i_end=eventlist.end();
 
-    for (i = eventlist.begin(); i != eventlist.end(); i++) {
+    qint16 ev_size;
+
+    for (i = eventlist.begin(); i != i_end; i++) {
+        ev_size=i.value().size();
+
         out << i.key(); // ChannelID
-        out << (qint16)i.value().size();
+        out << (qint16)ev_size;
 
-        for (int j = 0; j < i.value().size(); j++) {
+
+        for (int j = 0; j < ev_size; j++) {
             EventList &e = *i.value()[j];
             out << e.first();
             out << e.last();
@@ -457,8 +467,10 @@ bool Session::StoreEvents(QString filename)
         }
     }
 
-    for (i = eventlist.begin(); i != eventlist.end(); i++) {
-        for (int j = 0; j < i.value().size(); j++) {
+    for (i = eventlist.begin(); i != i_end; i++) {
+        ev_size=i.value().size();
+
+        for (int j = 0; j < ev_size; j++) {
             EventList &e = *i.value()[j];
             // ****** This is assuming little endian ******
 
@@ -768,13 +780,17 @@ void Session::updateCountSummary(ChannelID code)
     QHash<EventStoreType, EventStoreType> valsum;
     QHash<EventStoreType, quint32> timesum;
 
+    QHash<EventStoreType, EventStoreType>::iterator it;
+    QHash<EventStoreType, EventStoreType>::iterator valsum_end;
+
     EventDataType raw, lastraw = 0;
     qint64 start, time, lasttime = 0;
     qint32 len, cnt;
     quint32 *tptr;
     EventStoreType *dptr, * eptr;
 
-    for (int i = 0; i < ev.value().size(); i++) {
+    int ev_size=ev.value().size();
+    for (int i = 0; i < ev_size; i++) {
         EventList &e = *(ev.value()[i]);
         start = e.first();
         cnt = e.count();
@@ -816,8 +832,10 @@ void Session::updateCountSummary(ChannelID code)
             rate = e.rate();
             EventDataType t;
 
-            for (QHash<EventStoreType, EventStoreType>::iterator it = valsum.begin(); it != valsum.end();
-                    it++) {
+            QHash<EventStoreType, EventStoreType>::iterator it = valsum.begin();
+            QHash<EventStoreType, EventStoreType>::iterator valsum_end = valsum.end();
+
+            for (; it != valsum_end; ++it) {
                 t = EventDataType(it.value()) * rate;
                 timesum[it.key()] += t;
             }
@@ -833,7 +851,6 @@ void Session::updateCountSummary(ChannelID code)
 void Session::UpdateSummaries()
 {
     ChannelID id;
-    QHash<ChannelID, QVector<EventList *> >::iterator c;
     calcAHIGraph(this);
 
     // Calculates RespRate and related waveforms (Tv, MV, Te, Ti) if missing
@@ -843,7 +860,10 @@ void Session::UpdateSummaries()
     calcSPO2Drop(this);
     calcPulseChange(this);
 
-    for (c = eventlist.begin(); c != eventlist.end(); c++) {
+    QHash<ChannelID, QVector<EventList *> >::iterator c = eventlist.begin();
+    QHash<ChannelID, QVector<EventList *> >::iterator ev_end = eventlist.end();
+
+    for (; c != ev_end; c++) {
         id = c.key();
 
         if (schema::channel[id].type() == schema::DATA) {
@@ -888,7 +908,8 @@ bool Session::SearchEvent(ChannelID code, qint64 time, qint64 dist)
 
     //qint64 rate;
     if (it != eventlist.end()) {
-        for (int i = 0; i < it.value().size(); i++)  {
+        int el_size=it.value().size();
+        for (int i = 0; i < el_size; i++)  {
             EventList *el = it.value()[i];
             //            rate=el->rate();
             cnt = el->count();
@@ -959,20 +980,20 @@ EventDataType Session::Min(ChannelID id)
     bool first = true;
     EventDataType min = 0, t1;
 
-    for (int i = 0; i < evec.size(); i++) {
-        if (evec[i]->count() == 0) {
-            continue;
-        }
+    int evec_size=evec.size();
 
-        t1 = evec[i]->Min();
+    for (int i = 0; i < evec_size; ++i) {
+        if (evec[i]->count() != 0) {
+            t1 = evec[i]->Min();
 
-        if (t1 == 0 && t1 == evec[i]->Max()) { continue; }
+            if ((t1 == 0) && (t1 == evec[i]->Max())) { continue; }
 
-        if (first) {
-            min = t1;
-            first = false;
-        } else {
-            if (min > t1) { min = t1; }
+            if (first) {
+                min = t1;
+                first = false;
+            } else {
+                if (min > t1) { min = t1; }
+            }
         }
     }
 
@@ -999,18 +1020,20 @@ EventDataType Session::Max(ChannelID id)
     bool first = true;
     EventDataType max = 0, t1;
 
-    for (int i = 0; i < evec.size(); i++) {
-        if (evec[i]->count() == 0) { continue; }
+    int evec_size=evec.size();
 
-        t1 = evec[i]->Max();
+    for (int i = 0; i < evec_size; ++i) {
+        if (evec[i]->count() != 0) {
+            t1 = evec[i]->Max();
 
-        if (t1 == 0 && t1 == evec[i]->Min()) { continue; }
+            if (t1 == 0 && t1 == evec[i]->Min()) { continue; }
 
-        if (first) {
-            max = t1;
-            first = false;
-        } else {
-            if (max < t1) { max = t1; }
+            if (first) {
+                max = t1;
+                first = false;
+            } else {
+                if (max < t1) { max = t1; }
+            }
         }
     }
 
@@ -1038,6 +1061,7 @@ EventDataType Session::physMin(ChannelID id)
     m_physmin[id] = min;
     return min;
 }
+
 EventDataType Session::physMax(ChannelID id)
 {
     QHash<ChannelID, EventDataType>::iterator i = m_physmax.find(id);
@@ -1086,7 +1110,8 @@ qint64 Session::first(ChannelID id)
     bool first = true;
     qint64 min = 0, t1;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+    for (int i = 0; i < evec_size; ++i) {
         t1 = evec[i]->first();
 
         if (first) {
@@ -1132,7 +1157,9 @@ qint64 Session::last(ChannelID id)
     bool first = true;
     qint64 max = 0, t1;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; ++i) {
         t1 = evec[i]->last();
 
         if (first) {
@@ -1203,7 +1230,9 @@ int Session::rangeCount(ChannelID id, qint64 first, qint64 last)
 
     qint64 t, start;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *evec[i];
 
         if ((ev.last() < first) || (ev.first() > last)) {
@@ -1263,7 +1292,9 @@ double Session::rangeSum(ChannelID id, qint64 first, qint64 last)
 
     qint64 rate;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; i++) {
         EventList &ev = *evec[i];
 
         if ((ev.last() < first) || (ev.first() > last)) {
@@ -1320,14 +1351,16 @@ EventDataType Session::rangeMin(ChannelID id, qint64 first, qint64 last)
     }
 
     QVector<EventList *> &evec = j.value();
-    EventDataType gain, v, min = 999999999;
+    EventDataType gain, v, min = std::numeric_limits<EventDataType>::max();
 
     qint64 t, start, rate;
     EventStoreType *dptr, * eptr;
     quint32 *tptr;
     int cnt, idx;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *evec[i];
 
         if ((ev.last() < first) || (ev.first() > last)) {
@@ -1384,6 +1417,7 @@ EventDataType Session::rangeMin(ChannelID id, qint64 first, qint64 last)
 
     return min;
 }
+
 EventDataType Session::rangeMax(ChannelID id, qint64 first, qint64 last)
 {
     QHash<ChannelID, QVector<EventList *> >::iterator j = eventlist.find(id);
@@ -1393,14 +1427,16 @@ EventDataType Session::rangeMax(ChannelID id, qint64 first, qint64 last)
     }
 
     QVector<EventList *> &evec = j.value();
-    EventDataType gain, v, max = -999999999;
+    EventDataType gain, v, max = std::numeric_limits<EventDataType>::min();
 
     qint64 t, start, rate;
     EventStoreType *dptr, * eptr;
     quint32 *tptr;
     int cnt, idx;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; i++) {
         EventList &ev = *evec[i];
 
         if ((ev.last() < first) || (ev.first() > last)) {
@@ -1472,8 +1508,9 @@ int Session::count(ChannelID id)
     QVector<EventList *> &evec = j.value();
 
     int sum = 0;
+    int evec_size=evec.size();
 
-    for (int i = 0; i < evec.size(); i++) {
+    for (int i = 0; i < evec_size; i++) {
         sum += evec[i]->count();
     }
 
@@ -1502,7 +1539,9 @@ double Session::sum(ChannelID id)
     EventStoreType *dptr, * eptr;
     int cnt;
 
-    for (int i = 0; i < evec.size(); i++) {
+    int evec_size=evec.size();
+
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *(evec[i]);
         gain = ev.gain();
         cnt = ev.count();
@@ -1538,8 +1577,9 @@ EventDataType Session::avg(ChannelID id)
     double val = 0, gain;
     int cnt = 0;
     EventStoreType *dptr, * eptr;
+    int evec_size=evec.size();
 
-    for (int i = 0; i < evec.size(); i++) {
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *(evec[i]);
         dptr = ev.rawData();
         gain = ev.gain();
@@ -1603,9 +1643,9 @@ EventDataType Session::percentile(ChannelID id, EventDataType percent)
         return 0;
     }
 
-    int size = evec.size();
+    int evec_size = evec.size();
 
-    if (size == 0) {
+    if (evec_size == 0) {
         return 0;
     }
 
@@ -1617,7 +1657,7 @@ EventDataType Session::percentile(ChannelID id, EventDataType percent)
 
     int tt = 0, cnt = 0;
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *evec[i];
         cnt = ev.count();
         tt += cnt;
@@ -1625,7 +1665,7 @@ EventDataType Session::percentile(ChannelID id, EventDataType percent)
 
     array.resize(tt);
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < evec_size; ++i) {
         EventList &ev = *evec[i];
         sptr = ev.rawData();
         dptr = array.data();
@@ -1674,7 +1714,10 @@ EventDataType Session::wavg(ChannelID id)
 
     EventDataType val, gain = m_gain[id];
 
-    for (QHash<EventStoreType, quint32>::iterator vi = timesum.begin(); vi != timesum.end(); vi++) {
+    QHash<EventStoreType, quint32>::iterator vi = timesum.begin();
+    QHash<EventStoreType, quint32>::iterator ts_end = timesum.end();
+
+    for (; vi != ts_end; vi++) {
         val = vi.key() * gain;
         s2 = vi.value();
         s0 += s2;
@@ -1712,22 +1755,32 @@ void Session::offsetSession(qint64 offset)
     s_last += offset;
     QHash<ChannelID, quint64>::iterator it;
 
-    for (it = m_firstchan.begin(); it != m_firstchan.end(); it++) {
+    QHash<ChannelID, quint64>::iterator end;
+
+    it = m_firstchan.begin();
+    end = m_firstchan.end();
+    for (; it != end; it++) {
         if (it.value() > 0) {
             it.value() += offset;
         }
     }
 
-    for (it = m_lastchan.begin(); it != m_lastchan.end(); it++) {
+    it = m_lastchan.begin();
+    end = m_lastchan.end();
+    for (; it != end; it++) {
         if (it.value() > 0) {
             it.value() += offset;
         }
     }
 
     QHash<ChannelID, QVector<EventList *> >::iterator i;
+    QHash<ChannelID, QVector<EventList *> >::iterator el_end=eventlist.end();
 
-    for (i = eventlist.begin(); i != eventlist.end(); i++) {
-        for (int j = 0; j < i.value().size(); j++) {
+    int el_s;
+
+    for (i = eventlist.begin(); i != el_end; i++) {
+        el_s=i.value().size();
+        for (int j = 0; j < el_s; j++) {
             EventList *e = i.value()[j];
 
             e->setFirst(e->first() + offset);

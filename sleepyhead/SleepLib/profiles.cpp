@@ -354,8 +354,13 @@ Day *Profile::GetDay(QDate date, MachineType type)
         return NULL;
 
     QList<Day *> list(daylist.value(date));
-    for (int i = 0; i < list.size(); ++i) {
-        Day *day = list.at(i);
+
+    QList<Day *>::iterator it = list.begin();
+    QList<Day *>::iterator list_end = list.end();
+
+    for (; it != list_end; ++it) {
+        Day * day = (*it);
+
         Q_ASSERT(day != NULL);
 
         // Just return the day if not matching for a machine.
@@ -380,29 +385,26 @@ int Profile::Import(QString path)
 
     QList<MachineLoader *>loaders = GetLoaders();
 
-    for (QList<MachineLoader *>::iterator i = loaders.begin(); i != loaders.end(); i++) {
-        if (c += (*i)->Open(path, this)) {
+    Q_FOREACH(MachineLoader * loader, loaders) {
+        if (c += loader->Open(path, this)) {
             break;
         }
     }
 
-    //qDebug() << "Import Done";
     return c;
 }
 
 MachineLoader *GetLoader(QString name)
 {
-    MachineLoader *l = NULL;
     QList<MachineLoader *>loaders = GetLoaders();
 
-    for (QList<MachineLoader *>::iterator i = loaders.begin(); i != loaders.end(); i++) {
-        if ((*i)->ClassName() == name) {
-            l = *i;
-            break;
+    Q_FOREACH(MachineLoader * loader, loaders) {
+        if (loader->ClassName() == name) {
+            return loader;
         }
     }
 
-    return l;
+    return NULL;
 }
 
 
@@ -411,8 +413,9 @@ QList<Machine *> Profile::GetMachines(MachineType t)
 {
     QList<Machine *> vec;
     QHash<MachineID, Machine *>::iterator i;
+    QHash<MachineID, Machine *>::iterator machlist_end=machlist.end();
 
-    for (i = machlist.begin(); i != machlist.end(); i++) {
+    for (i = machlist.begin(); i != machlist_end; i++) {
         if (!i.value()) {
             qWarning() << "Profile::GetMachines() i->second == NULL";
             continue;
@@ -437,14 +440,14 @@ Machine *Profile::GetMachine(MachineType t)
     }
 
     return vec[0];
-
 }
 
 void Profile::RemoveSession(Session *sess)
 {
     QMap<QDate, QList<Day *> >::iterator di;
+    QMap<QDate, QList<Day *> >::iterator daylist_end=daylist.end();
 
-    for (di = daylist.begin(); di != daylist.end(); di++) {
+    for (di = daylist.begin(); di != daylist_end; di++) {
         for (int d = 0; d < di.value().size(); d++) {
             Day *day = di.value()[d];
 
@@ -494,10 +497,10 @@ void Done()
     PREF.Save();
     LAYOUT.Save();
 
-    // Only save the open profile..
-    for (QMap<QString, Profile *>::iterator i = profiles.begin(); i != profiles.end(); i++) {
-        i.value()->Save();
-        delete i.value();
+    Q_FOREACH(Profile * profile, profiles) {
+        // TODO: only save open profiles.. (maybe add an open bit?)
+        profile->Save();
+        delete profile;
     }
 
     profiles.clear();
@@ -626,7 +629,6 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
         return 0;
     }
 
-
     int days = 0;
 
     do {
@@ -673,6 +675,7 @@ EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QD
 
     return val;
 }
+
 double Profile::calcSum(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
@@ -765,6 +768,7 @@ EventDataType Profile::calcAvg(ChannelID code, MachineType mt, QDate start, QDat
 
     return val / float(cnt);
 }
+
 EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
@@ -803,6 +807,7 @@ EventDataType Profile::calcWavg(ChannelID code, MachineType mt, QDate start, QDa
     val = val / hours;
     return val;
 }
+
 EventDataType Profile::calcMin(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {
@@ -1212,14 +1217,20 @@ bool Profile::hasChannel(ChannelID code)
     }
 
     QMap<QDate, QList<Day *> >::iterator dit;
+    QList<Day *>::iterator di;
+    QList<Day *>::iterator di_end;
+
     bool found = false;
 
     do {
         dit = daylist.find(d);
 
         if (dit != daylist.end()) {
-            for (int i = 0; i < dit.value().size(); i++) {
-                Day *day = dit.value().at(i);
+
+            di = dit.value().begin();
+            di_end = dit.value().end();
+            for (; di != di_end; ++di) {
+                Day *day = (*di);
 
                 if (day->channelHasData(code)) {
                     found = true;
