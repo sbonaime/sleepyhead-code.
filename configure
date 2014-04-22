@@ -1,0 +1,26 @@
+#!/bin/bash
+
+command_exists() {
+	type "$1" &> /dev/null
+}
+
+# Get the base directory of the source distribution (where this script is)
+DIR="$(cd "$(dirname $0)" && pwd)"
+
+# Attempt distro-specific Qt5 QMake detection.
+if command_exists qmake-qt5; then
+	QMAKE=qmake-qt5
+elif command_exists qt5-qmake; then
+	QMAKE=qt5-qmake
+elif command_exists qmake; then
+	QMAKE=qmake
+fi
+
+# If no qmake found, fail.
+if [[ -z ${QMAKE} ]]; then
+	echo "Missing QMake for Qt5 on system."
+	exit 1
+fi
+
+# Finally, configure the build.
+qmake-qt5 "${DIR}"

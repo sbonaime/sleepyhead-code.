@@ -239,8 +239,6 @@ win32|mac {
     LIBS += -lquazip
 }
 
-win32|mac{
-    include(../3rdparty/qextserialport/src/qextserialport.pri)
-} else {
-    CONFIG += extserialport
-}
+# Most Linux distros can use "CONFIG += extserialport",
+# but Fedora does not yet provide qextserialport for Qt5.
+include(../3rdparty/qextserialport/src/qextserialport.pri)
