@@ -46,8 +46,8 @@ bool UpdateParser::startDocument()
     inUpdate = false;
     inNotes = false;
     inUpdateNotes = false;
-    release = NULL;
-    update = NULL;
+    release = nullptr;
+    update = nullptr;
     return true;
 }
 
@@ -60,10 +60,10 @@ bool UpdateParser::endElement(const QString &namespaceURI, const QString &localN
 
     if (name == "release") {
         inRelease = false;
-        release = NULL;
+        release = nullptr;
     } else if (inRelease && name == "update") {
         inUpdate = false;
-        update = NULL;
+        update = nullptr;
     } else if (inUpdate && name == "notes") {
         inUpdateNotes = false;
     } else if (inRelease && name == "notes") {

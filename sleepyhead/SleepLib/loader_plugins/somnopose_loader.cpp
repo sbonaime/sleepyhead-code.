@@ -59,7 +59,7 @@ int SomnoposeLoader::Open(QString &path, Profile *profile)
 Machine *SomnoposeLoader::CreateMachine(Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     QList<Machine *> ml = profile->GetMachines(MT_POSITION);
@@ -142,10 +142,10 @@ int SomnoposeLoader::OpenFile(QString filename)
 
     bool first = true;
     Machine *mach = CreateMachine(p_profile);
-    Session *sess = NULL;
+    Session *sess = nullptr;
     SessionID sid;
 
-    EventList *ev_orientation = NULL, *ev_inclination = NULL;
+    EventList *ev_orientation = nullptr, *ev_inclination = nullptr;
 
     while (!(data = ts.readLine()).isEmpty()) {
         fields = data.split(",");

@@ -486,7 +486,7 @@ int MSeriesLoader::Open(QString &path, Profile *profile)
 Machine *MSeriesLoader::CreateMachine(QString serial, Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     qDebug() << "Create Machine " << serial;

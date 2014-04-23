@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    Q_ASSERT(p_profile != NULL);
+    Q_ASSERT(p_profile != nullptr);
 
     logtime.start();
     ui->setupUi(this);
@@ -112,10 +112,10 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 #endif
 
-    overview = NULL;
-    daily = NULL;
-    oximetry = NULL;
-    prefdialog = NULL;
+    overview = nullptr;
+    daily = nullptr;
+    oximetry = nullptr;
+    prefdialog = nullptr;
 
     m_inRecalculation = false;
     m_restartRequired = false;
@@ -156,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Load previous Window geometry
     this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
-    daily = new Daily(ui->tabWidget, NULL);
+    daily = new Daily(ui->tabWidget, nullptr);
     ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
 
 
@@ -179,8 +179,8 @@ MainWindow::MainWindow(QWidget *parent) :
         systraymenu->addSeparator();
         systraymenu->addAction(tr("E&xit"), this, SLOT(close()));
     } else { // if not available, the messages will popup in the taskbar
-        systray = NULL;
-        systraymenu = NULL;
+        systray = nullptr;
+        systraymenu = nullptr;
     }
 
     ui->toolBox->setCurrentIndex(0);
@@ -239,7 +239,7 @@ MainWindow::~MainWindow()
     // Shutdown and Save the current User profile
     Profiles::Done();
 
-    mainwin = NULL;
+    mainwin = nullptr;
     delete ui;
 }
 
@@ -939,7 +939,7 @@ void MainWindow::on_action_Preferences_triggered()
         }
     }
 
-    prefdialog = NULL;
+    prefdialog = nullptr;
 }
 void MainWindow::selectOximetryTab()
 {
@@ -1377,7 +1377,7 @@ void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
 
     if (QProcess::startDetached("/usr/bin/open", args)) {
         QApplication::instance()->exit();
-    } else { QMessageBox::warning(NULL, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
+    } else { QMessageBox::warning(nullptr, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
 
 #else
     apppath = QApplication::instance()->applicationFilePath();
@@ -1398,7 +1398,7 @@ void MainWindow::RestartApplication(bool force_login, bool change_datafolder)
     if (QProcess::startDetached(apppath, args)) {
         ::exit(0);
         //QApplication::instance()->exit();
-    } else { QMessageBox::warning(NULL, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
+    } else { QMessageBox::warning(nullptr, tr("Gah!"), tr("If you can read this, the restart command didn't work. Your going to have to do it yourself manually."), QMessageBox::Ok); }
 
 #endif
 }

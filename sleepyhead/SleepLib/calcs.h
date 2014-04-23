@@ -142,7 +142,7 @@ class FlowParser
 bool SearchApnea(Session *session, qint64 time, qint64 dist = 15000);
 
 //! \brief Calculate Respiratory Rate, Tidal Volume & Minute Ventilation for PRS1 data
-void calcRespRate(Session *session, FlowParser *flowparser = NULL);
+void calcRespRate(Session *session, FlowParser *flowparser = nullptr);
 
 //! \brief Calculates the sliding window AHI graph
 int calcAHIGraph(Session *session);

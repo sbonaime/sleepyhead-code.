@@ -57,7 +57,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     ZombieMeterMoved=false;
     BookmarksChanged=false;
 
-    lastcpapday=NULL;
+    lastcpapday=nullptr;
 
     QList<int> a;
     a.push_back(300);
@@ -85,7 +85,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //        sessbar->setMinimumHeight(sessbar->height());
 //    }
 
-    sessbar=NULL;
+    sessbar=nullptr;
 
     webView=new MyWebView(this);
 
@@ -426,7 +426,7 @@ void Daily::Link_clicked(const QUrl &url)
     QString code=url.toString().section("=",0,0).toLower();
     QString data=url.toString().section("=",1);
     int sid=data.toInt();
-    Day *day=NULL;
+    Day *day=nullptr;
     if (code=="togglecpapsession") { // Enable/Disable CPAP session
         day=PROFILE.GetDay(previous_date,MT_CPAP);
         Session *sess=day->find(sid);
@@ -526,7 +526,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
 
     tree->setColumnCount(1); // 1 visible common.. (1 hidden)
 
-    QTreeWidgetItem *root=NULL;
+    QTreeWidgetItem *root=nullptr;
     QHash<ChannelID,QTreeWidgetItem *> mcroot;
     QHash<ChannelID,int> mccnt;
     int total_events=0;
@@ -637,11 +637,11 @@ void Daily::UpdateCalendarDay(QDate date)
     nodata.setForeground(QBrush(COLOR_Black, Qt::SolidPattern));
     nodata.setFontWeight(QFont::Normal);
 
-    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=NULL;
-    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=NULL;
-    bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=NULL;
-    bool hasstage=PROFILE.GetDay(date,MT_SLEEPSTAGE)!=NULL;
-    bool haspos=PROFILE.GetDay(date,MT_POSITION)!=NULL;
+    bool hascpap=PROFILE.GetDay(date,MT_CPAP)!=nullptr;
+    bool hasoxi=PROFILE.GetDay(date,MT_OXIMETER)!=nullptr;
+    bool hasjournal=PROFILE.GetDay(date,MT_JOURNAL)!=nullptr;
+    bool hasstage=PROFILE.GetDay(date,MT_SLEEPSTAGE)!=nullptr;
+    bool haspos=PROFILE.GetDay(date,MT_POSITION)!=nullptr;
     if (hascpap) {
         if (hasoxi) {
             ui->calendar->setDateTextFormat(date,oxicpap);
@@ -1129,7 +1129,7 @@ QString Daily::getSleepTime(Day * cpap, Day * oxi)
 {
     QString html;
 
-    Day * day=NULL;
+    Day * day=nullptr;
     if (cpap && cpap->hours()>0)
         day=cpap;
     else if (oxi && oxi->hours()>0)
@@ -1395,7 +1395,7 @@ void Daily::Load(QDate date)
             sessbar->add(s, cols[c % maxcolors]);
             c++;
         }
-    } else sessbar=NULL;
+    } else sessbar=nullptr;
     //sessbar->update();
 
     webView->setHtml(html);
@@ -1482,7 +1482,7 @@ void Daily::Load(QDate date)
 
             qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
             Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
-            drift=(dday!=NULL) ? clockdrift : 0;
+            drift=(dday!=nullptr) ? clockdrift : 0;
 
             bool ok;
             for (int i=0;i<start.size();i++) {
@@ -1532,7 +1532,7 @@ void Daily::UnitsChanged()
 
 void Daily::clearLastDay()
 {
-    lastcpapday=NULL;
+    lastcpapday=nullptr;
 }
 
 
@@ -1679,12 +1679,12 @@ Session * Daily::GetJournalSession(QDate date) // Get the first journal session
 {
     Day *journal=PROFILE.GetDay(date,MT_JOURNAL);
     if (!journal)
-        return NULL; //CreateJournalSession(date);
+        return nullptr; //CreateJournalSession(date);
     QList<Session *>::iterator s;
     s=journal->begin();
     if (s!=journal->end())
         return *s;
-    return NULL;
+    return nullptr;
 }
 
 void Daily::UpdateCPAPGraphs(Day *day)
@@ -1867,7 +1867,7 @@ void Daily::on_bookmarkTable_itemClicked(QTableWidgetItem *item)
 
 //    qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
 //    Day * dday=PROFILE.GetDay(previous_date,MT_CPAP);
-//    drift=(dday!=NULL) ? clockdrift : 0;
+//    drift=(dday!=nullptr) ? clockdrift : 0;
 
     QTableWidgetItem *it=ui->bookmarkTable->item(row,1);
     bool ok;
@@ -1917,7 +1917,7 @@ void Daily::on_addBookmarkButton_clicked()
     ui->bookmarkTable->setItem(row,1,tw);
     qint64 clockdrift=PROFILE.cpap->clockDrift()*1000L,drift;
     Day * day=PROFILE.GetDay(previous_date,MT_CPAP);
-    drift=(day!=NULL) ? clockdrift : 0;
+    drift=(day!=nullptr) ? clockdrift : 0;
 
     // Counter CPAP clock drift for storage, in case user changes it later on
     // This won't fix the text string names..
@@ -2025,7 +2025,7 @@ void Daily::on_weightSpinBox_editingFinished()
     gGraph *g;
     if (gv) {
         g=gv->findGraph(STR_TR_Weight);
-        if (g) g->setDay(NULL);
+        if (g) g->setDay(nullptr);
     }
     if ((height>0) && (kg>0)) {
         double bmi=kg/(height * height);
@@ -2034,7 +2034,7 @@ void Daily::on_weightSpinBox_editingFinished()
         journal->settings[Journal_BMI]=bmi;
         if (gv) {
             g=gv->findGraph(STR_TR_BMI);
-            if (g) g->setDay(NULL);
+            if (g) g->setDay(nullptr);
         }
     }
     journal->SetChanged(true);
@@ -2066,7 +2066,7 @@ void Daily::on_ouncesSpinBox_editingFinished()
     gGraph *g;
     if (mainwin->getOverview()) {
         g=mainwin->getOverview()->graphView()->findGraph(STR_TR_Weight);
-        if (g) g->setDay(NULL);
+        if (g) g->setDay(nullptr);
     }
 
     if ((height>0) && (kg>0)) {
@@ -2077,7 +2077,7 @@ void Daily::on_ouncesSpinBox_editingFinished()
         journal->settings[Journal_BMI]=bmi;
         if (mainwin->getOverview()) {
             g=mainwin->getOverview()->graphView()->findGraph(STR_TR_BMI);
-            if (g) g->setDay(NULL);
+            if (g) g->setDay(nullptr);
         }
     }
     journal->SetChanged(true);

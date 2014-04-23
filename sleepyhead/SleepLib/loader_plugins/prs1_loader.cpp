@@ -120,7 +120,7 @@ struct WaveHeaderList {
 PRS1Loader::PRS1Loader()
 {
     //genCRCTable();
-    m_buffer = NULL;
+    m_buffer = nullptr;
 }
 
 PRS1Loader::~PRS1Loader()
@@ -129,7 +129,7 @@ PRS1Loader::~PRS1Loader()
 Machine *PRS1Loader::CreateMachine(QString serial, Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     qDebug() << "Create Machine " << serial;
@@ -137,7 +137,7 @@ Machine *PRS1Loader::CreateMachine(QString serial, Profile *profile)
     QList<Machine *> ml = profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
-    Machine *m = NULL;
+    Machine *m = nullptr;
 
     for (i = ml.begin(); i != ml.end(); i++) {
         if (((*i)->GetClass() == STR_MACH_PRS1) && ((*i)->properties[STR_PROP_Serial] == serial)) {
@@ -248,7 +248,7 @@ int PRS1Loader::Open(QString &path, Profile *profile)
         } catch (OneTypePerDay e) {
             profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(s));
-            QMessageBox::warning(NULL, QObject::tr("Import Error"),
+            QMessageBox::warning(nullptr, QObject::tr("Import Error"),
                                  QObject::tr("This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content."),
                                  QMessageBox::Ok);
             delete m;
@@ -431,7 +431,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
             qDebug() << "Ignoring empty session" << sess->session();
             SessionID id = sess->session();
             delete sess;
-            new_sessions[id] = NULL;
+            new_sessions[id] = nullptr;
             //KillList.push_back(id);
             continue;
         }
@@ -750,7 +750,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     };
 
     int ncodes = sizeof(Codes) / sizeof(ChannelID);
-    EventList *Code[0x20] = {NULL};
+    EventList *Code[0x20] = {nullptr};
 
     EventList *OA = session->AddEventList(CPAP_Obstructive, EVL_Event);
     EventList *HY = session->AddEventList(CPAP_Hypopnea, EVL_Event);
@@ -768,11 +768,11 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
     EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10);
 
-    EventList *CA = NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
-    EventList *VS = NULL, * FL = NULL; //,* RE=NULL,* VS2=NULL;
+    EventList *CA = nullptr; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *VS = nullptr, * FL = nullptr; //,* RE=nullptr,* VS2=nullptr;
 
-    //EventList * PRESSURE=NULL;
-    //EventList * PP=NULL;
+    //EventList * PRESSURE=nullptr;
+    //EventList * PP=nullptr;
 
     EventDataType data[10];//,tmp;
 
@@ -1098,15 +1098,18 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
 
-    EventList *CA = NULL; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
-    EventList *VS = NULL, * VS2 = NULL, * FL = NULL, * RE = NULL;
+    EventList *CA = nullptr; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
+    EventList *VS = nullptr;
+    EventList *VS2 = nullptr;
+    EventList *FL = nullptr;
+    EventList *RE = nullptr;
 
-    EventList *PRESSURE = NULL;
-    EventList *EPAP = NULL;
-    EventList *IPAP = NULL;
-    EventList *PS = NULL;
+    EventList *PRESSURE = nullptr;
+    EventList *EPAP = nullptr;
+    EventList *IPAP = nullptr;
+    EventList *PS = nullptr;
 
-    EventList *PP = NULL;
+    EventList *PP = nullptr;
 
     //session->AddEventList(CPAP_VSnore, EVL_Event);
     //EventList * VS=session->AddEventList(CPAP_Obstructive, EVL_Event);
@@ -1632,7 +1635,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     for (int i = 0; i < num_signals; i++) {
         wlength[i] = 0;
         wdur[i] = 0;
-        //evl[i]=NULL;
+        //evl[i]=nullptr;
 
         //waveform[i].resize(500000);
     }

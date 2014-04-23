@@ -361,9 +361,9 @@ void ExportCSV::UpdateCalendarDay(QDateEdit *dateedit, QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap = p_profile->GetDay(date, MT_CPAP) != NULL;
-    bool hasoxi = p_profile->GetDay(date, MT_OXIMETER) != NULL;
-    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=NULL;
+    bool hascpap = p_profile->GetDay(date, MT_CPAP) != nullptr;
+    bool hasoxi = p_profile->GetDay(date, MT_OXIMETER) != nullptr;
+    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=nullptr;
 
     if (hascpap) {
         if (hasoxi) {

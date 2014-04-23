@@ -46,7 +46,7 @@ SerialOximeter::SerialOximeter(QObject *parent, QString oxiname, QString portnam
                                BaudRateType baud, FlowType flow, ParityType parity, DataBitsType databits,
                                StopBitsType stopbits) :
     QObject(parent),
-    session(NULL), pulse(NULL), spo2(NULL), plethy(NULL), m_port(NULL),
+    session(nullptr), pulse(nullptr), spo2(nullptr), plethy(nullptr), m_port(nullptr),
     m_opened(false),
     m_oxiname(oxiname),
     m_portname(portname),
@@ -458,7 +458,7 @@ Session *SerialOximeter::createSession(QDateTime date)
     session->set_first(lasttime);
     pulse = new EventList(EVL_Event);
     spo2 = new EventList(EVL_Event);
-    plethy = NULL;
+    plethy = nullptr;
     session->eventlist[OXI_Pulse].push_back(pulse);
     session->eventlist[OXI_SPO2].push_back(spo2);
 
@@ -835,7 +835,7 @@ void CMS50Serial::ReadyRead()
                                                            SIGNAL(buttonClicked(QAbstractButton *)), mainwin->getOximetry(), SLOT(cancel_CheckPorts()));
                         mainwin->getOximetry()->close();
                         delete mainwin->getOximetry()->connectDeviceMsgBox;
-                        mainwin->getOximetry()->connectDeviceMsgBox = NULL;
+                        mainwin->getOximetry()->connectDeviceMsgBox = nullptr;
                     }
 
                     mainwin->getOximetry()->graphView()->setEmptyText(tr("Please Wait, Importing..."));
@@ -1141,7 +1141,7 @@ Oximetry::Oximetry(QWidget *parent, gGraphView *shared) :
     m_shared = shared;
     ui->setupUi(this);
 
-    port = NULL;
+    port = nullptr;
     portname = "";
 
     oximeter = new CMS50Serial(this);
@@ -1347,7 +1347,7 @@ void Oximetry::cancel_CheckPorts(QAbstractButton *)
 
     connectDeviceMsgBox->close();
     delete connectDeviceMsgBox;
-    connectDeviceMsgBox = NULL;
+    connectDeviceMsgBox = nullptr;
 
 
     if (oximeter->isImporting()) {
@@ -1385,7 +1385,7 @@ void Oximetry::timeout_CheckPorts()
     connectDeviceMsgBox->close();
     delete connectDeviceMsgBox;
 
-    //connectDeviceMsgBox=NULL;
+    //connectDeviceMsgBox=nullptr;
     connectDeviceMsgBox = new QMessageBox(QMessageBox::Information, tr("Device Connected"),
                                           tr("Please make sure Oximeter device is in upload mode."),
                                           QMessageBox::Cancel);
@@ -1661,7 +1661,7 @@ void Oximetry::import_finished()
         disconnect(connectDeviceMsgBox, SIGNAL(buttonClicked(QAbstractButton *)), this,
                    SLOT(cancel_CheckPorts()));
         delete connectDeviceMsgBox;
-        connectDeviceMsgBox = NULL;
+        connectDeviceMsgBox = nullptr;
     }
 
     disconnect(oximeter, SIGNAL(importComplete(Session *)), this, SLOT(import_complete(Session *)));

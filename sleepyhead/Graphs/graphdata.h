@@ -26,9 +26,9 @@ public:
     gGraphData(int mp,gDataType t=gDT_Point);
     virtual ~gGraphData();
 
-    virtual void Reload(Day *day=NULL) { day=day; }
+    virtual void Reload(Day *day=nullptr) { day=day; }
 
-    virtual void Update(Day *day=NULL);
+    virtual void Update(Day *day=nullptr);
     //inline wxRealPoint & operator [](int i) { return vpoint[seg][i]; }
     //inline vector<double> & Vec(int i) { return yaxis[i]; }
 
@@ -110,7 +110,7 @@ class gPointData:public gGraphData
 public:
     gPointData(int mp);
     virtual ~gPointData();
-    virtual void Reload(Day *day=NULL){ day=day; };
+    virtual void Reload(Day *day=nullptr){ day=day; };
     virtual void AddSegment(int max_points);
     virtual double CalcAverage();
     virtual double CalcMinY();

@@ -122,9 +122,9 @@ void xpassFilter(EventDataType *input, EventDataType *output, int samples, Event
 
 FlowParser::FlowParser()
 {
-    m_session = NULL;
-    m_flow = NULL;
-    m_filtered = NULL;
+    m_session = nullptr;
+    m_flow = nullptr;
+    m_filtered = nullptr;
     m_gain = 1;
     m_samples = 0;
     m_startsUpper = true;
@@ -146,11 +146,11 @@ void FlowParser::clearFilters()
 
 EventDataType *FlowParser::applyFilters(EventDataType *data, int samples)
 {
-    EventDataType *in = NULL, *out = NULL;
+    EventDataType *in = nullptr, *out = nullptr;
 
     if (m_filters.size() == 0) {
         //qDebug() << "Trying to apply empty filter list in FlowParser..";
-        return NULL;
+        return nullptr;
     }
 
     for (int i = 0; i < num_filter_buffers; i++) {
@@ -166,7 +166,7 @@ EventDataType *FlowParser::applyFilters(EventDataType *data, int samples)
 
             if (in == out) {
                 //qDebug() << "Error: If you need to use internal m_buffers as initial input, use the second one. No filters were applied";
-                return NULL;
+                return nullptr;
             }
         } else {
             in = m_buffers[(i + 1) % num_filter_buffers];
@@ -360,9 +360,9 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     // Respiratory Rate setup
     /////////////////////////////////////////////////////////////////////////////////
     EventDataType minrr = 0, maxrr = 0;
-    EventList *RR = NULL;
-    quint32 *rr_tptr = NULL;
-    EventStoreType *rr_dptr = NULL;
+    EventList *RR = nullptr;
+    quint32 *rr_tptr = nullptr;
+    EventStoreType *rr_dptr = nullptr;
 
     if (calcResp) {
         RR = m_session->AddEventList(CPAP_RespRate, EVL_Event);
@@ -387,7 +387,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     // Inspiratory / Expiratory Time setup
     /////////////////////////////////////////////////////////////////////////////////
     double lastte2 = 0, lastti2 = 0, lastte = 0, lastti = 0, te, ti, ti1, te1, c;
-    EventList *Te = NULL, * Ti = NULL;
+    EventList *Te = nullptr, * Ti = nullptr;
 
     if (calcTi) {
         Ti = m_session->AddEventList(CPAP_Ti, EVL_Event);
@@ -403,11 +403,11 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////////////////
     // Tidal Volume setup
     /////////////////////////////////////////////////////////////////////////////////
-    EventList *TV = NULL;
+    EventList *TV = nullptr;
     EventDataType mintv = 0, maxtv = 0, tv = 0;
     double val1, val2;
-    quint32 *tv_tptr = NULL;
-    EventStoreType *tv_dptr = NULL;
+    quint32 *tv_tptr = nullptr;
+    EventStoreType *tv_dptr = nullptr;
     int tv_count = 0;
 
     if (calcTv) {
@@ -424,7 +424,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     /////////////////////////////////////////////////////////////////////////////////
     // Minute Ventilation setup
     /////////////////////////////////////////////////////////////////////////////////
-    EventList *MV = NULL;
+    EventList *MV = nullptr;
     EventDataType mv;
 
     if (calcMv) {
@@ -718,7 +718,7 @@ void FlowParser::flagEvents()
     //double lastst=start, lastet=start;
     //EventDataType v;
     int bsize = bstart.size();
-    EventList *uf1 = NULL;
+    EventList *uf1 = nullptr;
 
     for (int i = 0; i < bsize - 1; i++) {
         bs = bend[i];
@@ -909,7 +909,7 @@ int calcAHIGraph(Session *session)
     AHI->setGain(0.02);
     session->eventlist[CPAP_AHI].push_back(AHI);
 
-    EventList *RDI = NULL;
+    EventList *RDI = nullptr;
 
     if (calcrdi) {
         RDI = new EventList(EVL_Event);

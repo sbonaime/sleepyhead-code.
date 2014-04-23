@@ -32,7 +32,7 @@ FPIcon::~FPIcon()
 
 FPIconLoader::FPIconLoader()
 {
-    m_buffer = NULL;
+    m_buffer = nullptr;
 }
 
 FPIconLoader::~FPIconLoader()
@@ -101,7 +101,7 @@ int FPIconLoader::Open(QString &path, Profile *profile)
         } catch (OneTypePerDay e) {
             profile->DelMachine(m);
             MachList.erase(MachList.find(sn));
-            QMessageBox::warning(NULL, "Import Error",
+            QMessageBox::warning(nullptr, "Import Error",
                                  "This Machine Record cannot be imported in this profile.\nThe Day records overlap with already existing content.",
                                  QMessageBox::Ok);
             delete m;
@@ -115,12 +115,12 @@ struct FPWaveChunk {
     FPWaveChunk() {
         st = 0;
         duration = 0;
-        flow = NULL;
-        pressure = NULL;
-        leak = NULL;
+        flow = nullptr;
+        pressure = nullptr;
+        leak = nullptr;
         file = 0;
     }
-    FPWaveChunk(qint64 start, qint64 dur, int f) { st = start; duration = dur; file = f, flow = NULL; leak = NULL; pressure = NULL; }
+    FPWaveChunk(qint64 start, qint64 dur, int f) { st = start; duration = dur; file = f, flow = nullptr; leak = nullptr; pressure = nullptr; }
     FPWaveChunk(const FPWaveChunk &copy) {
         st = copy.st;
         duration = copy.duration;
@@ -330,7 +330,7 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
     quint32 ts;
     double ti;
 
-    EventList *flow = NULL, * pressure = NULL, *leak = NULL;
+    EventList *flow = nullptr, * pressure = nullptr, *leak = nullptr;
     QDateTime datetime;
 
     unsigned char *buf, *endbuf;
@@ -422,8 +422,8 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
         qDebug() << filenum << ":" << date << sess->session() << ":" << sess->hours() * 60.0;
     } else {
         qint64 k = -1;
-        Session *s1 = NULL;
-        sess = NULL;
+        Session *s1 = nullptr;
+        sess = nullptr;
 
         for (sit = Sessions.begin(); sit != Sessions.end(); sit++) {
             s1 = sit.value();
@@ -854,7 +854,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
 Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     qDebug() << "Create Machine " << serial;

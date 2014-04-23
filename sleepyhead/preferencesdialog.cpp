@@ -116,7 +116,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->importListWidget->setModel(importModel);
     //ui->tabWidget->removeTab(3);
 
-    Q_ASSERT(profile != NULL);
+    Q_ASSERT(profile != nullptr);
     ui->tabWidget->setCurrentIndex(0);
 
     //i=ui->timeZoneCombo->findText((*profile)["TimeZone"].toString());
@@ -654,7 +654,7 @@ void PreferencesDialog::graphModel_changed(QStandardItem *item)
 {
     QModelIndex index = item->index();
 
-    gGraphView *gv = NULL;
+    gGraphView *gv = nullptr;
     bool ok;
 
     const QModelIndex &row = index.sibling(index.row(), 0);

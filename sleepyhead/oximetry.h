@@ -72,7 +72,7 @@ class SerialOximeter: public QObject
     SerialOxMode mode() { return m_mode; }
 
     //! \brief Trash the session object
-    void destroySession() { delete session; session = NULL; }
+    void destroySession() { delete session; session = nullptr; }
 
     //! \brief Returns true if the serial port is currently open
     bool isOpen() { return m_opened; }
@@ -304,7 +304,7 @@ class Oximetry : public QWidget
     Q_OBJECT
 
   public:
-    explicit Oximetry(QWidget *parent, gGraphView *shared = NULL);
+    explicit Oximetry(QWidget *parent, gGraphView *shared = nullptr);
     ~Oximetry();
 
     //! \brief Calls updateGL to redraw the graphs

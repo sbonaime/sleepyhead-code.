@@ -44,7 +44,7 @@
 #include <X11/Xlib.h>
 #endif
 
-MainWindow *mainwin = NULL;
+MainWindow *mainwin = nullptr;
 
 #if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 void MyOutputHandler(QtMsgType type, const char *msgtxt)
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
-    QDialog langsel(NULL, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+    QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     langsel.setWindowTitle(QObject::tr("Language"));
 
     QHBoxLayout lang_layout(&langsel);
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
     }
 
     if (!havefolder && !force_data_dir) {
-        if (QMessageBox::question(NULL, QObject::tr("Question"),
+        if (QMessageBox::question(nullptr, QObject::tr("Question"),
                                   QObject::tr("No SleepyHead data folder was found.\n\nWould you like SleepyHead to use the default location for storing its data?\n\n")
                                   + GetAppRoot(), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
             settings.setValue("Settings/AppRoot", GetAppRoot());
@@ -296,17 +296,17 @@ int main(int argc, char *argv[])
 retry_directory:
 
     if (change_data_dir) {
-        QString datadir = QFileDialog::getExistingDirectory(NULL,
+        QString datadir = QFileDialog::getExistingDirectory(nullptr,
                           QObject::tr("Choose or create new folder for SleepyHead data"), GetAppRoot(),
                           QFileDialog::ShowDirsOnly);
 
         if (datadir.isEmpty()) {
             if (!havefolder) {
-                QMessageBox::information(NULL, QObject::tr("Exiting"),
+                QMessageBox::information(nullptr, QObject::tr("Exiting"),
                                          QObject::tr("As you did not select a data folder, SleepyHead will exit.\n\nNext time you run, you will be asked again."));
                 return 0;
             } else {
-                QMessageBox::information(NULL, QObject::tr("No Directory"),
+                QMessageBox::information(nullptr, QObject::tr("No Directory"),
                                          QObject::tr("You did not select a directory.\n\nSleepyHead will now start with your old one.\n\n")
                                          + GetAppRoot(), QMessageBox::Ok);
             }
@@ -317,7 +317,7 @@ retry_directory:
             if (!file.exists()) {
                 if (dir.count() > 2) {
                     // Not a new directory.. nag the user.
-                    if (QMessageBox::question(NULL, QObject::tr("Warning"),
+                    if (QMessageBox::question(nullptr, QObject::tr("Warning"),
                                               QObject::tr("The folder you chose is not empty, nor does it already contain valid SleepyHead data.\n\nAre you sure you want to use this folder?\n\n")
                                               + datadir, QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
                         goto retry_directory;
@@ -423,7 +423,7 @@ retry_directory:
             }
 
             p_profile = Profiles::Get(PREF[STR_GEN_Profile].toString());
-        } else { p_profile = NULL; }
+        } else { p_profile = nullptr; }
 
         if (!p_profile) {
             if (profsel.exec() == ProfileSelect::Rejected) {

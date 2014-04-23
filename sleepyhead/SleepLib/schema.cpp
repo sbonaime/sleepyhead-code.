@@ -20,9 +20,6 @@
 #include "common.h"
 #include "schema.h"
 
-
-
-
 namespace schema {
 
 ChannelList channel;
@@ -689,7 +686,7 @@ bool ChannelList::Load(QString filename)
 
 void ChannelList::add(QString group, Channel *chan)
 {
-    Q_ASSERT(chan != NULL);
+    Q_ASSERT(chan != nullptr);
 
     if (channels.contains(chan->id())) {
         qWarning() << "Channels already contains id" << chan->id() << chan->code();

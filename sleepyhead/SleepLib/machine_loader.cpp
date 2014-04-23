@@ -38,12 +38,7 @@ void DestroyLoaders()
 MachineLoader::MachineLoader()
 {
 }
-/*MachineLoader::MachineLoader(Profile * profile, QString & classname, MachineType type)
-:m_profile(profile), m_class(classname), m_type(type)
-{
-    assert(m_profile!=NULL);
-    assert(!m_classname.isEmpty());
-}*/
+
 MachineLoader::~MachineLoader()
 {
     for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {

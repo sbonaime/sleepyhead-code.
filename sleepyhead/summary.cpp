@@ -137,7 +137,7 @@ EventDataType calcFL(QDate start, QDate end)
 
 
 struct RXChange {
-    RXChange() { highlight = 0; machine = NULL; }
+    RXChange() { highlight = 0; machine = nullptr; }
     RXChange(const RXChange &copy) {
         first = copy.first;
         last = copy.last;
@@ -738,7 +738,7 @@ QString Summary::GenerateHTML()
         CPAPMode mode = MODE_UNKNOWN, cmode = MODE_UNKNOWN;
         EventDataType cmin = 0, cmax = 0, cps = 0, cpshi = 0, cmaxipap = 0, min = 0, max = 0, maxipap = 0,
                       ps = 0, pshi = 0;
-        Machine *mach = NULL, *lastmach = NULL;
+        Machine *mach = nullptr, *lastmach = nullptr;
         PRTypes lastpr = PR_UNKNOWN, prelief = PR_UNKNOWN;
         short prelset = 0, lastprelset = -1;
         QDate date = lastcpap;
@@ -812,7 +812,7 @@ QString Summary::GenerateHTML()
 
                 if ((mode != cmode) || (min != cmin) || (max != cmax) || (ps != cps) || (pshi != cpshi)
                         || (maxipap != cmaxipap) || (mach != lastmach) || (prelset != lastprelset))  {
-                    if ((cmode != MODE_UNKNOWN) && (lastmach != NULL)) {
+                    if ((cmode != MODE_UNKNOWN) && (lastmach != nullptr)) {
                         first = date.addDays(1);
                         int days = PROFILE.countDays(MT_CPAP, first, last);
                         RXChange rx;
@@ -869,7 +869,7 @@ QString Summary::GenerateHTML()
 
         lastchanged = false;
 
-        if (!lastchanged && (mach != NULL)) {
+        if (!lastchanged && (mach != nullptr)) {
             // last=date.addDays(1);
             first = firstcpap;
             int days = PROFILE.countDays(MT_CPAP, first, last);

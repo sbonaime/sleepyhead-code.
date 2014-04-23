@@ -63,7 +63,7 @@ UpdaterWindow::UpdaterWindow(QWidget *parent) :
     requestmode = RM_None;
     netmanager = new QNetworkAccessManager(this);
     connect(netmanager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
-    update = NULL;
+    update = nullptr;
     ui->stackedWidget->setCurrentIndex(0);
 }
 
@@ -212,7 +212,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
         qSort(versions);
 
         QString platform = PlatformString.toLower();
-        release = NULL;
+        release = nullptr;
 
         for (int i = versions.size() - 1; i >= 0; i--) {
             QString verstr = versions[i];
@@ -222,7 +222,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
                     && (release->status >= AcceptUpdates)
                     && (release->version >= VersionString)) {
                 break;
-            } else { release = NULL; }
+            } else { release = nullptr; }
         }
 
         if (!release) {
@@ -236,8 +236,8 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 
         QString latestapp = "", latestqt = "";
         updates.clear();
-        Update *upd = NULL;
-        Update *upq = NULL;
+        Update *upd = nullptr;
+        Update *upq = nullptr;
 
         for (int i = 0; i < release->updates[platform].size(); i++) {
             update = &release->updates[platform][i];

@@ -20,7 +20,7 @@
 
 SBSeg::SBSeg()
 {
-    session = NULL;
+    session = nullptr;
     color = QColor();
     highlight = false;
 }

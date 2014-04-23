@@ -51,13 +51,13 @@ Profile::Profile(QString path)
     p_filename = p_path + p_name + STR_ext_XML;
     machlist.clear();
 
-    doctor = NULL;
-    user = NULL;
-    cpap = NULL;
-    oxi = NULL;
-    appearance = NULL;
-    session = NULL;
-    general = NULL;
+    doctor = nullptr;
+    user = nullptr;
+    cpap = nullptr;
+    oxi = nullptr;
+    appearance = nullptr;
+    session = nullptr;
+    general = nullptr;
 }
 
 Profile::~Profile()
@@ -104,13 +104,13 @@ void Profile::DataFormatError(Machine *m)
     msg = msg +
           QObject::tr("Would you like me to purge this data this for you so you can run the new version?");
 
-    if (QMessageBox::warning(NULL, QObject::tr("Machine Database Changes"), msg,
+    if (QMessageBox::warning(nullptr, QObject::tr("Machine Database Changes"), msg,
                              QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes) {
 
         if (!m->Purge(
                     3478216)) { // Do not copy this line without thinking.. You will be eaten by a Grue if you do
 
-            QMessageBox::critical(NULL, QObject::tr("Purge Failed"),
+            QMessageBox::critical(nullptr, QObject::tr("Purge Failed"),
                                   QObject::tr("Sorry, I could not purge this data, which means this version of SleepyHead can't start.. SleepyHead's Data folder needs to be removed manually\n\nThis folder currently resides at the following location:\n")
                                   + PREF[STR_GEN_DataFolder].toString(), QMessageBox::Ok);
             QApplication::exit(-1);
@@ -299,7 +299,7 @@ void Profile::AddDay(QDate date, Day *day, MachineType mt)
         if ((*a)->machine->GetType() == mt) {
 
             // disabled this because two machines isn't all that bad
-            //            if (QMessageBox::question(NULL,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
+            //            if (QMessageBox::question(nullptr,"Different Machine Detected","This data comes from another machine to what's usually imported, and has overlapping data.\nThis new data will override any older data from the old machine. Are you sure you want to do this?",QMessageBox::Yes,QMessageBox::No)==QMessageBox::No) {
             //                throw OneTypePerDay();
             //            }
             daylist[date].erase(a);
@@ -311,12 +311,12 @@ void Profile::AddDay(QDate date, Day *day, MachineType mt)
 }
 
 // Get Day record if data available for date and machine type,
-// and has enabled session data, else return NULL
+// and has enabled session data, else return nullptr
 Day *Profile::GetGoodDay(QDate date, MachineType type)
 {
     Day *day = GetDay(date, type);
     if (!day)
-        return NULL;
+        return nullptr;
 
     // Just return the day if not matching for a machine.
     if (type == MT_UNKNOWN)
@@ -330,13 +330,13 @@ Day *Profile::GetGoodDay(QDate date, MachineType type)
     }
 
     // No enabled Sessions were found.
-    return NULL;
+    return nullptr;
 }
 
 Day *Profile::GetDay(QDate date, MachineType type)
 {
     if (!daylist.contains(date))
-        return NULL;
+        return nullptr;
 
     QList<Day *> list(daylist.value(date));
 
@@ -346,7 +346,7 @@ Day *Profile::GetDay(QDate date, MachineType type)
     for (; it != list_end; ++it) {
         Day * day = (*it);
 
-        Q_ASSERT(day != NULL);
+        Q_ASSERT(day != nullptr);
 
         // Just return the day if not matching for a machine.
         if (day->machine_type() == type || type == MT_UNKNOWN) {
@@ -354,7 +354,7 @@ Day *Profile::GetDay(QDate date, MachineType type)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -389,7 +389,7 @@ MachineLoader *GetLoader(QString name)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -402,7 +402,7 @@ QList<Machine *> Profile::GetMachines(MachineType t)
 
     for (i = machlist.begin(); i != machlist_end; i++) {
         if (!i.value()) {
-            qWarning() << "Profile::GetMachines() i->second == NULL";
+            qWarning() << "Profile::GetMachines() i->second == nullptr";
             continue;
         }
 
@@ -421,7 +421,7 @@ Machine *Profile::GetMachine(MachineType t)
     QList<Machine *>vec = GetMachines(t);
 
     if (vec.size() == 0) {
-        return NULL;
+        return nullptr;
     }
 
     return vec[0];
@@ -467,7 +467,7 @@ void Profile::RemoveSession(Session *sess)
 }
 
 
-//Profile *profile=NULL;
+//Profile *profile=nullptr;
 QString SHA1(QString pass)
 {
     return pass;
@@ -500,7 +500,7 @@ Profile *Get(QString name)
         return profiles[name];
     }
 
-    return NULL;
+    return nullptr;
 }
 Profile *Create(QString name)
 {
@@ -1116,7 +1116,7 @@ QDate Profile::FirstDay(MachineType mt)
     QDate d = m_first;
 
     do {
-        if (GetDay(d, mt) != NULL) {
+        if (GetDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1136,7 +1136,7 @@ QDate Profile::LastDay(MachineType mt)
     QDate d = m_last;
 
     do {
-        if (GetDay(d, mt) != NULL) {
+        if (GetDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1160,7 +1160,7 @@ QDate Profile::FirstGoodDay(MachineType mt)
     }
 
     do {
-        if (GetGoodDay(d, mt) != NULL) {
+        if (GetGoodDay(d, mt) != nullptr) {
             return d;
         }
 
@@ -1183,7 +1183,7 @@ QDate Profile::LastGoodDay(MachineType mt)
     }
 
     do {
-        if (GetGoodDay(d, mt) != NULL) {
+        if (GetGoodDay(d, mt) != nullptr) {
             return d;
         }
 

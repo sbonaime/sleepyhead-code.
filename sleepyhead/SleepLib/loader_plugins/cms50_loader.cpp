@@ -356,7 +356,7 @@ bool CMS50Loader::OpenSPORFile(QString path, Machine *mach, Profile *profile)
 Machine *CMS50Loader::CreateMachine(Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     // NOTE: This only allows for one CMS50 machine per profile..

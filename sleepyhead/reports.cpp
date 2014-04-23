@@ -33,7 +33,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 {
     if (!gv) { return; }
 
-    Session *journal = NULL;
+    Session *journal = nullptr;
     //QDate d=QDate::currentDate();
 
     int visgraphs = gv->visibleGraphs();
@@ -161,7 +161,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
         if (bounds.height() > maxy) { maxy = bounds.height(); }
     }
 
-    Day *cpap = NULL, *oxi = NULL;
+    Day *cpap = nullptr, *oxi = nullptr;
 
     int graph_slots = 0;
 

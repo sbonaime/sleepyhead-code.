@@ -24,7 +24,7 @@ class FlagData:public gPointData
 public:
     FlagData(MachineCode _code,int _field=-1,int _offset=-1);
     virtual ~FlagData();
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
 protected:
     MachineCode code;
     int field;
@@ -36,7 +36,7 @@ class TAPData:public gPointData
 public:
     TAPData(MachineCode _code);
     virtual ~TAPData();
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
 
     static const int max_slots=4096;
     double pTime[max_slots];
@@ -49,7 +49,7 @@ class WaveData:public gPointData
 public:
     WaveData(MachineCode _code,int _size=1000000);
     virtual ~WaveData();
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
 protected:
     MachineCode code;
 };
@@ -59,7 +59,7 @@ class EventData:public gPointData
 public:
     EventData(MachineCode _code,int _field=0,int _size=250000,bool _skipzero=false);
     virtual ~EventData();
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
 protected:
     MachineCode code;
     int field;
@@ -72,7 +72,7 @@ class AHIData:public gPointData
 public:
     AHIData();
     virtual ~AHIData();
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
 };
 
 class HistoryData:public gPointData
@@ -86,10 +86,10 @@ public:
     //double GetAverage();
 
     virtual double Calc(Day *day);
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
     virtual void ResetDateRange();
     virtual void SetDateRange(QDate start,QDate end);
-  //  virtual void Reload(Machine *machine=NULL);
+  //  virtual void Reload(Machine *machine=nullptr);
 protected:
     Profile * profile;
 };
@@ -103,7 +103,7 @@ public:
     //void SetProfile(Profile *_profile) { profile=_profile; Reload(); }
     //Profile * GetProfile() { return profile; }
     //virtual double GetAverage(); // length??
-    virtual void Reload(Day *day=NULL);
+    virtual void Reload(Day *day=nullptr);
     //virtual void ResetDateRange();
     //virtual void SetDateRange(QDate start,QDate end);
 

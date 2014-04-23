@@ -88,7 +88,7 @@ class gVertexBuffer
     gVertexBuffer(int max = 2048, int type = GL_LINES)
         : m_max(max), m_type(type), m_cnt(0), m_size(1),
           m_scissor(false), m_antialias(false), m_forceantialias(false), m_stippled(false),
-          buffer(NULL),
+          buffer(nullptr),
           s_x(0), s_y(0), s_width(0), s_height(0),
           m_color(0),
           m_stipple(0xffff),
@@ -312,7 +312,7 @@ struct TextQue {
 class MyScrollBar : public QScrollBar
 {
   public:
-    MyScrollBar(QWidget *parent = NULL)
+    MyScrollBar(QWidget *parent = nullptr)
         : QScrollBar(parent)
     { }
 
@@ -334,7 +334,7 @@ class Layer
   public:
     Layer(ChannelID code)
         : m_refcount(0),
-          m_day(NULL),
+          m_day(nullptr),
           m_visible(true),
           m_movable(false),
           m_minx(0), m_maxx(0),
@@ -649,7 +649,7 @@ class gGraph : public QObject
         \param int height containing the opening height for this graph
         \param short group containing which graph-link group this graph belongs to
         */
-    gGraph(gGraphView *graphview = NULL, QString title = "", QString units = "",
+    gGraph(gGraphView *graphview = nullptr, QString title = "", QString units = "",
            int height = 100, short group = 0);
     virtual ~gGraph();
 
@@ -1031,7 +1031,7 @@ class gGraphView : public QGLWidget
     //! \brief Loads the current graph order, heights, min & max Y values from disk
     bool LoadSettings(QString title);
 
-    //! \brief Returns the graph object matching the supplied name, NULL if it does not exist.
+    //! \brief Returns the graph object matching the supplied name, nullptr if it does not exist.
     gGraph *findGraph(QString name);
 
     inline float printScaleX() const { return print_scaleX; }

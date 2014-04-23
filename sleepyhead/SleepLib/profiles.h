@@ -78,17 +78,17 @@ class Profile : public Preferences
     //! \brief Add Day record to Profile Day list
     void AddDay(QDate date, Day *day, MachineType mt);
 
-    //! \brief Get Day record if data available for date and machine type, else return NULL
+    //! \brief Get Day record if data available for date and machine type, else return nullptr
     Day *GetDay(QDate date, MachineType type = MT_UNKNOWN);
 
     //! \brief Get Day record if data available for date and machine type,
-    //         and has enabled session data, else return NULL
+    //         and has enabled session data, else return nullptr
     Day *GetGoodDay(QDate date, MachineType type);
 
     //! \brief Returns a list of all machines of type t
     QList<Machine *> GetMachines(MachineType t = MT_UNKNOWN);
 
-    //! \brief Returns the machine of type t used on date, NULL if none..
+    //! \brief Returns the machine of type t used on date, nullptr if none..
     Machine *GetMachine(MachineType t, QDate date);
 
     //! \brief return the first machine of type t

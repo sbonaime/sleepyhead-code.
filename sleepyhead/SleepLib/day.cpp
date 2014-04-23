@@ -42,13 +42,13 @@ Session *Day::find(SessionID sessid)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void Day::AddSession(Session *s)
 {
     if (!s) {
-        qWarning("Day::AddSession called with NULL session object");
+        qWarning("Day::AddSession called with nullptr session object");
         return;
     }
 

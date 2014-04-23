@@ -118,7 +118,7 @@ public:
     /*! \fn GetJournalSession(QDate date)
         \brief Looks up if there is a journal object for a supplied date
         \param QDate date
-        \returns Session * containing valid Journal Session object or NULL if none found.
+        \returns Session * containing valid Journal Session object or nullptr if none found.
     */
     Session * GetJournalSession(QDate date);
 

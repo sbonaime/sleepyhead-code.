@@ -337,7 +337,7 @@ gGraph *Overview::createGraph(QString name, QString units, YTickerType yttype)
 
 void Overview::ReloadGraphs()
 {
-    GraphView->setDay(NULL);
+    GraphView->setDay(nullptr);
     updateCube();
 
     on_rangeCombo_activated(ui->rangeCombo->currentIndex());
@@ -373,7 +373,7 @@ void Overview::ResetGraphs()
     //GraphView->GetXBounds(st,et);
     QDate start = ui->dateStart->date();
     QDate end = ui->dateEnd->date();
-    GraphView->setDay(NULL);
+    GraphView->setDay(nullptr);
     updateCube();
 
     if (start.isValid() && end.isValid()) {
@@ -389,7 +389,7 @@ void Overview::ResetGraph(QString name)
 
     if (!g) { return; }
 
-    g->setDay(NULL);
+    g->setDay(nullptr);
     GraphView->redraw();
 }
 
@@ -410,9 +410,9 @@ void Overview::UpdateCalendarDay(QDateEdit *dateedit, QDate date)
     cpapcol.setFontWeight(QFont::Bold);
     oxiday.setForeground(QBrush(Qt::red, Qt::SolidPattern));
     oxiday.setFontWeight(QFont::Bold);
-    bool hascpap = p_profile->GetDay(date, MT_CPAP) != NULL;
-    bool hasoxi = p_profile->GetDay(date, MT_OXIMETER) != NULL;
-    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=NULL;
+    bool hascpap = p_profile->GetDay(date, MT_CPAP) != nullptr;
+    bool hasoxi = p_profile->GetDay(date, MT_OXIMETER) != nullptr;
+    //bool hasjournal=p_profile->GetDay(date,MT_JOURNAL)!=nullptr;
 
     if (hascpap) {
         if (hasoxi) {

@@ -34,7 +34,7 @@ Machine::Machine(Profile *p, MachineID id)
     profile = p;
 
     if (!id) {
-        srand(time(NULL));
+        srand(time(nullptr));
         MachineID temp;
 
         do {
@@ -62,7 +62,7 @@ Session *Machine::SessionExists(SessionID session)
     if (sessionlist.find(session) != sessionlist.end()) {
         return sessionlist[session];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -177,7 +177,7 @@ QDate Machine::AddSession(Session *s, Profile *p)
     }
 
 
-    Day *dd = NULL;
+    Day *dd = nullptr;
     dit = day.find(date);
 
     if (dit == day.end()) {
@@ -460,7 +460,7 @@ void SaveThread::run()
 Session *Machine::popSaveList()
 {
 
-    Session *sess = NULL;
+    Session *sess = nullptr;
     savelistMutex.lock();
 
     if (m_savelist.size() > 0) {

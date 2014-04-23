@@ -49,13 +49,13 @@ int quads_drawn_this_frame = 0;
 
 bool _graph_init = false;
 
-QFont *defaultfont = NULL;
-QFont *mediumfont = NULL;
-QFont *bigfont = NULL;
+QFont *defaultfont = nullptr;
+QFont *mediumfont = nullptr;
+QFont *bigfont = nullptr;
 
 //MW: ick globals, but I want a system wide framebuffer of decent proprotions..
 bool fbo_unsupported = false;
-QGLFramebufferObject *fbo = NULL;
+QGLFramebufferObject *fbo = nullptr;
 const int max_fbo_width = 2048;
 const int max_fbo_height = 2048;
 
@@ -148,7 +148,7 @@ void DoneGraphs()
         }
 
         delete fbo;
-        fbo = NULL;
+        fbo = nullptr;
         fbo_unsupported = true; // just in case shutdown order gets messed up
     }
 
@@ -912,7 +912,7 @@ void Layer::SetDay(Day *d)
         m_maxx = d->last(m_code);
         m_miny = d->Min(m_code);
         m_maxy = d->Max(m_code);
-    } else { m_day = NULL; }
+    } else { m_day = nullptr; }
 
 }
 
@@ -1528,7 +1528,7 @@ gGraph *gGraphView::popGraph()
     if (!m_drawlist.isEmpty()) {
         g = m_drawlist.at(0);
         m_drawlist.pop_front();
-    } else { g = NULL; }
+    } else { g = nullptr; }
 
 #ifdef ENABLED_THREADED_DRAWING
     dl_mutex.unlock();
@@ -2227,7 +2227,7 @@ Layer *gGraph::getLineChart()
         if (lc) { return lc; }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // Render all qued text via QPainter method
@@ -2354,7 +2354,7 @@ QImage gGraphView::fboRenderPixmap(int w, int h)
         }
     } else {
         delete fbo;
-        fbo = NULL;
+        fbo = nullptr;
         fbo_unsupported = true;
     }
 
@@ -2596,7 +2596,7 @@ void gGraph::roundY(EventDataType &miny, EventDataType &maxy)
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared) :
     QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer | QGL::NoOverlay), parent, shared),
-    m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(NULL)
+    m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
@@ -2606,8 +2606,8 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared) :
     m_horiz_travel = 0;
     pixmap_cache_size = 0;
     m_minx = m_maxx = 0;
-    m_day = NULL;
-    m_selected_graph = NULL;
+    m_day = nullptr;
+    m_selected_graph = nullptr;
     cubetex = 0;
 
     horizScrollTime.start();
@@ -2800,7 +2800,7 @@ void gGraphView::DrawTextQue()
             QImage pm;
 
             it = pixmap_cache.find(hstr);
-            myPixmapCache *pc = NULL;
+            myPixmapCache *pc = nullptr;
 
             if (it != pixmap_cache.end()) {
                 pc = (*it);
@@ -3051,7 +3051,7 @@ void gGraphView::selectionTime()
 void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
 {
     //qint64 m1=0,m2=0;
-    gGraph *g = NULL;
+    gGraph *g = nullptr;
 
     for (int i = 0; i < m_graphs.size(); i++) {
         g = m_graphs[i];
@@ -3068,7 +3068,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)
     qint64 m1 = 0, m2 = 0;
-    gGraph *g = NULL;
+    gGraph *g = nullptr;
 
     for (int i = 0; i < m_graphs.size(); i++) {
         m_graphs[i]->ResetBounds();
@@ -4138,7 +4138,7 @@ void gGraphView::mouseMoveEvent(QMouseEvent *event)
                                         QVector<Layer *> & layers=m_graphs[i]->layers();
                                         gFlagsGroup *fg;
                                         for (int i=0;i<layers.size();i++) {
-                                            if ((fg=dynamic_cast<gFlagsGroup *>(layers[i]))!=NULL) {
+                                            if ((fg=dynamic_cast<gFlagsGroup *>(layers[i]))!=nullptr) {
                                                 float bh=fg->barHeight();
                                                 int count=fg->count();
                                                 float yp=py+m_graphs[i]->marginTop();
@@ -4547,7 +4547,7 @@ void gGraphView::wheelEvent(QWheelEvent *event)
             }
 
             horizScrollTime.start();
-            gGraph *g = NULL;
+            gGraph *g = nullptr;
             int group = 0;
 
             // Pick the first valid graph in the primary group
@@ -4626,7 +4626,7 @@ void gGraphView::keyPressEvent(QKeyEvent *event)
         //        redraw();
     }
 
-    gGraph *g = NULL;
+    gGraph *g = nullptr;
     int group = 0;
 
     // Pick the first valid graph in the primary group
@@ -4870,7 +4870,7 @@ gGraph *gGraphView::findGraph(QString name)
 {
     QHash<QString, gGraph *>::iterator i = m_graphsbytitle.find(name);
 
-    if (i == m_graphsbytitle.end()) { return NULL; }
+    if (i == m_graphsbytitle.end()) { return nullptr; }
 
     return i.value();
 }

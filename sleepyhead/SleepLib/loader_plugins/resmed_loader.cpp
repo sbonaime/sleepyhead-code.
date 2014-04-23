@@ -45,7 +45,7 @@ EDFSignal *EDFParser::lookupSignal(ChannelID ch)
     ci = resmed_codes.find(ch);
 
     if (ci == resmed_codes.end()) {
-        return NULL;
+        return nullptr;
     }
 
     for (int i = 0; i < ci.value().size(); i++) {
@@ -58,7 +58,7 @@ EDFSignal *EDFParser::lookupSignal(ChannelID ch)
         return jj.value();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 EDFSignal *EDFParser::lookupName(QString name)
@@ -67,12 +67,12 @@ EDFSignal *EDFParser::lookupName(QString name)
 
     if (i != lookup.end()) { return i.value(); }
 
-    return NULL;
+    return nullptr;
 }
 
 EDFParser::EDFParser(QString name)
 {
-    buffer = NULL;
+    buffer = nullptr;
     Open(name);
 }
 EDFParser::~EDFParser()
@@ -197,7 +197,7 @@ bool EDFParser::Parse()
 
     for (int i = 0; i < num_signals; i++) {
         EDFSignal &signal = edfsignals[i];
-        signal.data = NULL;
+        signal.data = nullptr;
         signal.label = Read(16);
         lookup[signal.label] = &signal; // Safe: edfsignals won't move.
     }
@@ -319,12 +319,12 @@ ResmedLoader::~ResmedLoader()
 
 Machine *ResmedLoader::CreateMachine(QString serial, Profile *profile)
 {
-    if (!profile) { return NULL; }
+    if (!profile) { return nullptr; }
 
     QList<Machine *> ml = profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
-    Machine *m = NULL;
+    Machine *m = nullptr;
 
     for (i = ml.begin(); i != ml.end(); i++) {
         if (((*i)->GetClass() == resmed_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {
@@ -832,7 +832,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     //        if (!daystarttimes.contains(dn))
     //            continue;
 
-    //        sess=NULL;
+    //        sess=nullptr;
 
     //        int scnt=daystarttimes[dn].size(); // count of sessions for this day
 
@@ -1871,11 +1871,11 @@ bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
     //Event *e;
     //totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
-    //    EventList *EL[4]={NULL};
+    //    EventList *EL[4]={nullptr};
     sess->updateFirst(edf.startdate);
     //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
 
-    EventList *OA = NULL, *HY = NULL, *CA = NULL, *UA = NULL;
+    EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr;
 
     // Allow for empty sessions..
     OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
@@ -2070,7 +2070,7 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
 
     EventDataType min = t_max, max = t_min, tmp;
 
-    EventList *el = NULL;
+    EventList *el = nullptr;
 
     if (recs > startpos + 1) {
 
@@ -2247,13 +2247,13 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
     sess->updateLast(edf.startdate + duration);
     QString t;
     int emptycnt = 0;
-    EventList *a = NULL;
+    EventList *a = nullptr;
     double rate;
     long recs;
     ChannelID code;
 
     for (int s = 0; s < edf.GetNumSignals(); s++) {
-        a = NULL;
+        a = nullptr;
         EDFSignal &es = edf.edfsignals[s];
         recs = es.nr * edf.GetNumDataRecords();
 
@@ -2352,7 +2352,7 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
             emptycnt++;
         } else {
             qDebug() << "Unobserved ResMed PLD Signal " << es.label;
-            a = NULL;
+            a = nullptr;
         }
 
         if (a) {

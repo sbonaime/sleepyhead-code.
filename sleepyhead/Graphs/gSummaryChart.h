@@ -37,7 +37,7 @@ class SummaryChart: public Layer
     virtual void paint(gGraph &w, int left, int top, int width, int height);
 
     //! \brief Precalculation code prior to drawing. Day object is not needed here, it's just here for Layer compatability.
-    virtual void SetDay(Day *day = NULL);
+    virtual void SetDay(Day *day = nullptr);
 
     //! \brief Returns true if no data was found for this day during SetDay
     virtual bool isEmpty() { return m_empty; }

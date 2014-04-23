@@ -256,7 +256,7 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
             Session *sess = (*m_day)[svi];
 
             if (!sess) {
-                qWarning() << "gLineChart::Plot() NULL Session Record.. This should not happen";
+                qWarning() << "gLineChart::Plot() nullptr Session Record.. This should not happen";
                 continue;
             }
 
@@ -888,23 +888,23 @@ void AHIChart::SetDay(Day *d)
 
             if (sess->eventlist.contains(CPAP_Obstructive)) {
                 el[0] = sess->eventlist[CPAP_Obstructive][0];
-            } else { el[0] = NULL; }
+            } else { el[0] = nullptr; }
 
             if (sess->eventlist.contains(CPAP_Apnea)) {
                 el[1] = sess->eventlist[CPAP_Apnea][0];
-            } else { el[1] = NULL; }
+            } else { el[1] = nullptr; }
 
             if (sess->eventlist.contains(CPAP_Hypopnea)) {
                 el[2] = sess->eventlist[CPAP_Hypopnea][0];
-            } else { el[2] = NULL; }
+            } else { el[2] = nullptr; }
 
             if (sess->eventlist.contains(CPAP_ClearAirway)) {
                 el[3] = sess->eventlist[CPAP_ClearAirway][0];
-            } else { el[3] = NULL; }
+            } else { el[3] = nullptr; }
 
             if (sess->eventlist.contains(CPAP_NRI)) {
                 el[4] = sess->eventlist[CPAP_NRI][0];
-            } else { el[4] = NULL; }
+            } else { el[4] = nullptr; }
 
             int znt = 5;
 
@@ -912,7 +912,7 @@ void AHIChart::SetDay(Day *d)
                 if (sess->eventlist.contains(CPAP_RERA)) {// What about ExP??
                     el[5] = sess->eventlist[CPAP_RERA][0];
                     znt++;
-                } else { el[5] = NULL; }
+                } else { el[5] = nullptr; }
             }
 
             qint64 t;

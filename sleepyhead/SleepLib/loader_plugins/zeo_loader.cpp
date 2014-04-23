@@ -30,6 +30,7 @@ ZEOLoader::~ZEOLoader()
 {
     //dtor
 }
+
 int ZEOLoader::Open(QString &path, Profile *profile)
 {
     Q_UNUSED(path)
@@ -56,10 +57,11 @@ int ZEOLoader::Open(QString &path, Profile *profile)
 
     return 0; // number of machines affected
 }
+
 Machine *ZEOLoader::CreateMachine(Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     // NOTE: This only allows for one ZEO machine per profile..
@@ -91,6 +93,7 @@ Machine *ZEOLoader::CreateMachine(Profile *profile)
 
     return m;
 }
+
 /*15233: "Sleep Date"
 15234: "ZQ"
 15236: "Total Z"
@@ -353,7 +356,6 @@ int ZEOLoader::OpenFile(QString filename)
     mach->Save();
     return true;
 }
-
 
 static bool zeo_initialized = false;
 

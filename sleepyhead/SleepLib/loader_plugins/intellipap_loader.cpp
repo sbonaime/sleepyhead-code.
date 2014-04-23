@@ -29,7 +29,7 @@ Intellipap::~Intellipap()
 
 IntellipapLoader::IntellipapLoader()
 {
-    m_buffer = NULL;
+    m_buffer = nullptr;
 }
 
 IntellipapLoader::~IntellipapLoader()
@@ -128,7 +128,7 @@ int IntellipapLoader::Open(QString &path, Profile *profile)
         qDebug() << key << "=" << value;
     }
 
-    Machine *mach = NULL;
+    Machine *mach = nullptr;
 
     if (set1.contains(STR_PROP_Serial)) {
         mach = CreateMachine(set1[STR_PROP_Serial], profile);
@@ -416,7 +416,7 @@ int IntellipapLoader::Open(QString &path, Profile *profile)
 Machine *IntellipapLoader::CreateMachine(QString serial, Profile *profile)
 {
     if (!profile) {
-        return NULL;
+        return nullptr;
     }
 
     qDebug() << "Create Machine " << serial;
@@ -424,7 +424,7 @@ Machine *IntellipapLoader::CreateMachine(QString serial, Profile *profile)
     QList<Machine *> ml = profile->GetMachines(MT_CPAP);
     bool found = false;
     QList<Machine *>::iterator i;
-    Machine *m = NULL;
+    Machine *m = nullptr;
 
     for (i = ml.begin(); i != ml.end(); i++) {
         if (((*i)->GetClass() == intellipap_class_name) && ((*i)->properties[STR_PROP_Serial] == serial)) {

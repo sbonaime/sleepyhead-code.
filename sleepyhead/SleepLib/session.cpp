@@ -1739,7 +1739,7 @@ EventList *Session::AddEventList(ChannelID code, EventListType et, EventDataType
 
     if (!channel) {
         qWarning() << "Channel" << code << "does not exist!";
-        //return NULL;
+        //return nullptr;
     }
 
     EventList *el = new EventList(et, gain, offset, min, max, rate, second_field);
