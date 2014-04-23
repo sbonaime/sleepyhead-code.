@@ -11,6 +11,7 @@
 
 #include <QLabel>
 #include <QTimer>
+#include <cmath>
 
 #include "mainwindow.h"
 #include "Graphs/gGraphView.h"
