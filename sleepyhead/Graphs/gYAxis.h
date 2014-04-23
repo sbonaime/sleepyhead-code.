@@ -12,8 +12,7 @@
 #ifndef GYAXIS_H
 #define GYAXIS_H
 
-#include "gGraphView.h"
-
+#include "Graphs/layer.h"
 
 /*! \class gXGrid
     \brief Draws the horizintal major/minor grids over graphs

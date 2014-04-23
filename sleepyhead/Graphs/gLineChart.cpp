@@ -9,12 +9,17 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <math.h>
+#include "Graphs/gLineChart.h"
+
 #include <QString>
 #include <QDebug>
-#include <SleepLib/profiles.h>
-#include "gLineChart.h"
-#include "glcommon.h"
+
+#include <math.h>
+
+#include "Graphs/glcommon.h"
+#include "Graphs/gGraph.h"
+#include "Graphs/gGraphView.h"
+#include "SleepLib/profiles.h"
 
 #define EXTRA_ASSERTS 1
 gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disable_accel)

@@ -28,6 +28,7 @@
 #include "SleepLib/loader_plugins/cms50_loader.h"
 #include "SleepLib/event.h"
 #include "SleepLib/calcs.h"
+#include "Graphs/gFooBar.h"
 #include "Graphs/gXAxis.h"
 #include "Graphs/gSummaryChart.h"
 #include "Graphs/gLineChart.h"

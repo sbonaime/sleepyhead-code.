@@ -9,10 +9,15 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <math.h>
+#include "Graphs/gXAxis.h"
+
 #include <QDebug>
 
-#include "gXAxis.h"
+#include <math.h>
+
+#include "Graphs/glcommon.h"
+#include "Graphs/gGraph.h"
+#include "Graphs/gGraphView.h"
 
 const quint64 divisors[] = {
     15552000000ULL, 7776000000ULL, 5184000000ULL, 2419200000ULL, 1814400000ULL, 1209600000L, 604800000L, 259200000L,

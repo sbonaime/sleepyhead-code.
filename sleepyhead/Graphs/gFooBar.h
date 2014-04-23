@@ -12,7 +12,8 @@
 #ifndef GFOOBAR_H
 #define GFOOBAR_H
 
-#include "gGraphView.h"
+#include "Graphs/gVertexBuffer.h"
+#include "Graphs/layer.h"
 
 /*! \class gShadowArea
     \brief Displays a Shadow for all graph areas not highlighted (used in Event Flags)

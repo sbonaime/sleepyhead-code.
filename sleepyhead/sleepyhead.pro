@@ -73,102 +73,110 @@ if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc")
 
 #include(SleepLib2/sleeplib.pri)
 
-SOURCES += main.cpp\
+SOURCES += \
+    common_gui.cpp \
+    daily.cpp \
+    exportcsv.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    newprofile.cpp \
+    oximetry.cpp \
+    overview.cpp \
+    preferencesdialog.cpp \
+    profileselect.cpp \
+    reports.cpp \
+    sessionbar.cpp \
+    summary.cpp \
+    updateparser.cpp \
+    UpdaterWindow.cpp \
+    Graphs/gFlagsLine.cpp \
+    Graphs/gFooBar.cpp \
+    Graphs/gGraph.cpp \
+    Graphs/gGraphView.cpp \
+    Graphs/GLBuffer.cpp \
+    Graphs/glcommon.cpp \
+    Graphs/gLineChart.cpp \
+    Graphs/gLineOverlay.cpp \
+    Graphs/gSegmentChart.cpp \
+    Graphs/gspacer.cpp \
+    Graphs/gStatsLine.cpp \
+    Graphs/gSummaryChart.cpp \
+    Graphs/gVertexBuffer.cpp \
+    Graphs/gXAxis.cpp \
+    Graphs/gYAxis.cpp \
+    Graphs/layer.cpp \
+    SleepLib/calcs.cpp \
+    SleepLib/common.cpp \
+    SleepLib/day.cpp \
+    SleepLib/event.cpp \
     SleepLib/machine.cpp \
     SleepLib/machine_loader.cpp \
     SleepLib/preferences.cpp \
     SleepLib/profiles.cpp \
-    SleepLib/loader_plugins/cms50_loader.cpp \
-    SleepLib/loader_plugins/prs1_loader.cpp \
-    SleepLib/loader_plugins/zeo_loader.cpp \
-    SleepLib/loader_plugins/resmed_loader.cpp \
-    daily.cpp \
-    oximetry.cpp \
-    overview.cpp \
-    mainwindow.cpp \
-    SleepLib/event.cpp \
-    SleepLib/session.cpp \
-    SleepLib/day.cpp \
-    Graphs/gLineChart.cpp \
-    Graphs/gLineOverlay.cpp \
-    Graphs/gFooBar.cpp \
-    Graphs/gXAxis.cpp \
-    Graphs/gYAxis.cpp \
-    Graphs/gFlagsLine.cpp \
-    Graphs/glcommon.cpp \
-    Graphs/gSegmentChart.cpp \
-    preferencesdialog.cpp \
-    Graphs/gGraphView.cpp \
-    Graphs/gStatsLine.cpp \
-    Graphs/gSummaryChart.cpp \
     SleepLib/schema.cpp \
-    profileselect.cpp \
-    newprofile.cpp \
-    exportcsv.cpp \
-    common_gui.cpp \
-    SleepLib/loader_plugins/intellipap_loader.cpp \
-    SleepLib/calcs.cpp \
-    updateparser.cpp \
-    UpdaterWindow.cpp \
-    SleepLib/common.cpp \
+    SleepLib/session.cpp \
+    SleepLib/loader_plugins/cms50_loader.cpp \
     SleepLib/loader_plugins/icon_loader.cpp \
+    SleepLib/loader_plugins/intellipap_loader.cpp \
     SleepLib/loader_plugins/mseries_loader.cpp \
-    reports.cpp \
-    summary.cpp \
-    sessionbar.cpp \
-    Graphs/gspacer.cpp \
-    SleepLib/loader_plugins/somnopose_loader.cpp
+    SleepLib/loader_plugins/prs1_loader.cpp \
+    SleepLib/loader_plugins/resmed_loader.cpp \
+    SleepLib/loader_plugins/somnopose_loader.cpp \
+    SleepLib/loader_plugins/zeo_loader.cpp
 
 HEADERS  += \
+    common_gui.h \
+    daily.h \
+    exportcsv.h \
+    mainwindow.h \
+    newprofile.h \
+    oximetry.h \
+    overview.h \
+    preferencesdialog.h \
+    profileselect.h \
+    reports.h \
+    sessionbar.h \
+    summary.h \
+    updateparser.h \
+    UpdaterWindow.h \
+    version.h \
+    Graphs/gFlagsLine.h \
+    Graphs/gFooBar.h \
+    Graphs/gGraph.h \
+    Graphs/gGraphView.h \
+    Graphs/GLBuffer.h \
+    Graphs/glcommon.h \
+    Graphs/gLineChart.h \
+    Graphs/gLineOverlay.h \
+    Graphs/gSegmentChart.h\
+    Graphs/gspacer.h \
+    Graphs/gStatsLine.h \
+    Graphs/gSummaryChart.h \
+    Graphs/gVertexBuffer.h \
+    Graphs/gXAxis.h \
+    Graphs/gYAxis.h \
+    Graphs/layer.h \
+    SleepLib/calcs.h \
+    SleepLib/common.h \
+    SleepLib/day.h \
+    SleepLib/event.h \
     SleepLib/machine.h \
+    SleepLib/machine_common.h \
     SleepLib/machine_loader.h \
     SleepLib/preferences.h \
     SleepLib/profiles.h \
-    SleepLib/loader_plugins/cms50_loader.h \
-    SleepLib/loader_plugins/prs1_loader.h \
-    SleepLib/loader_plugins/zeo_loader.h \
-    oximetry.h \
-    daily.h \
-    overview.h \
-    mainwindow.h \
-    SleepLib/event.h \
-    SleepLib/machine_common.h \
-    SleepLib/session.h \
-    SleepLib/day.h \
-    Graphs/gLineChart.h \
-    Graphs/gLineOverlay.h \
-    Graphs/gFooBar.h \
-    Graphs/gXAxis.h \
-    Graphs/gYAxis.h \
-    Graphs/gFlagsLine.h \
-    Graphs/glcommon.h \
-    Graphs/gSegmentChart.h\
-    SleepLib/loader_plugins/resmed_loader.h \
-    preferencesdialog.h \
-    Graphs/gGraphView.h \
-    Graphs/gStatsLine.h \
-    Graphs/gSummaryChart.h \
     SleepLib/schema.h \
-    profileselect.h \
-    newprofile.h \
-    exportcsv.h \
-    common_gui.h \
-    SleepLib/loader_plugins/intellipap_loader.h \
-    SleepLib/calcs.h \
-    version.h \
-    updateparser.h \
-    UpdaterWindow.h \
-    SleepLib/common.h \
+    SleepLib/session.h \
+    SleepLib/loader_plugins/cms50_loader.h \
     SleepLib/loader_plugins/icon_loader.h \
+    SleepLib/loader_plugins/intellipap_loader.h \
     SleepLib/loader_plugins/mseries_loader.h \
-    reports.h \
-    summary.h \
-    sessionbar.h \
-    Graphs/gspacer.h \
-    SleepLib/loader_plugins/somnopose_loader.h
+    SleepLib/loader_plugins/prs1_loader.h \
+    SleepLib/loader_plugins/resmed_loader.h \
+    SleepLib/loader_plugins/somnopose_loader.h \
+    SleepLib/loader_plugins/zeo_loader.h
 
-
-FORMS    += \
+FORMS += \
     daily.ui \
     overview.ui \
     mainwindow.ui \

@@ -26,7 +26,7 @@
 #include "SleepLib/session.h"
 
 #include "Graphs/gLineChart.h"
-#include "Graphs/gFooBar.h"
+#include "Graphs/gGraphView.h"
 
 //! \brief Oximeters current mode
 enum SerialOxMode { SO_OFF, SO_IMPORT, SO_LIVE, SO_WAIT };

@@ -11,7 +11,8 @@
 
 #ifndef GXAXIS_H
 #define GXAXIS_H
-#include "gGraphView.h"
+
+#include "Graphs/layer.h"
 
 /*! \class gXAxis
     \brief Draws the XTicker timescales underneath graphs */

@@ -15,6 +15,16 @@
 #include <QtOpenGL/qgl.h>
 #include <QColor>
 
+#ifdef Q_OS_MAC
+# define USE_RENDERTEXT
+# include "OpenGL/glu.h"
+#else
+# include "GL/glu.h"
+#endif
+
+#define MIN(a,b) (((a)<(b)) ? (a) : (b));
+#define MAX(a,b) (((a)<(b)) ? (b) : (a));
+
 const QColor COLOR_Black = Qt::black;
 const QColor COLOR_LightGreen = QColor("light green");
 const QColor COLOR_DarkGreen = Qt::darkGreen;

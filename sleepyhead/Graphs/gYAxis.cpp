@@ -9,9 +9,15 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
-#include <math.h>
+#include "Graphs/gYAxis.h"
+
 #include <QDebug>
-#include "gYAxis.h"
+
+#include <math.h>
+
+#include "Graphs/glcommon.h"
+#include "Graphs/gGraph.h"
+#include "Graphs/gGraphView.h"
 #include "SleepLib/profiles.h"
 
 gXGrid::gXGrid(QColor col)

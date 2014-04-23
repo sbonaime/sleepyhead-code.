@@ -13,10 +13,11 @@
 #define GLINECHART_H
 
 #include <QVector>
+
+#include "Graphs/gVertexBuffer.h"
+#include "Graphs/layer.h"
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
-#include "gGraphView.h"
-//#include "graphlayer.h"
 
 /*! \class AHIChart
     \brief Another graph calculating the AHI/hour, this one looks at all the sessions for a day. Currently Unused.

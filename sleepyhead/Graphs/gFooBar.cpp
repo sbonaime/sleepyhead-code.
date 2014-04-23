@@ -9,9 +9,13 @@
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
 
+#include "Graphs/gFooBar.h"
+
 #include <cmath>
-#include "gFooBar.h"
-#include "gYAxis.h"
+
+#include "Graphs/gGraph.h"
+#include "Graphs/gVertexBuffer.h"
+#include "Graphs/gYAxis.h"
 
 gShadowArea::gShadowArea(QColor shadow_color, QColor line_color)
     : Layer(NoChannel), m_shadow_color(shadow_color), m_line_color(line_color)

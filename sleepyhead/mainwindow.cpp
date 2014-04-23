@@ -234,7 +234,7 @@ MainWindow::~MainWindow()
     }
 
     // Trash anything allocated by the Graph objects
-    DoneGraphs();
+    DestroyGraphGlobals();
 
     // Shutdown and Save the current User profile
     Profiles::Done();
