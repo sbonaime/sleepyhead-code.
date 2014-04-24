@@ -709,7 +709,9 @@ void ChannelList::add(QString group, Channel *chan)
         it->m_links.push_back(chan);
         //int i=0;
     } else {
-        qWarning() << "Linked channel must be defined first for" << chan->code();
+        if (chan->linkid()>0) {
+            qWarning() << "Linked channel must be defined first for" << chan->code();
+        }
     }
 }
 

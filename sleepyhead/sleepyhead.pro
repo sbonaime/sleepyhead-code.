@@ -12,8 +12,9 @@ greaterThan(QT_MAJOR_VERSION,4) {
     QT += webkit
 }
 
-CONFIG += rtti
 CONFIG += c++11
+CONFIG += rtti
+
 
 #static {
 #    CONFIG += static
@@ -122,7 +123,8 @@ SOURCES += \
     SleepLib/loader_plugins/prs1_loader.cpp \
     SleepLib/loader_plugins/resmed_loader.cpp \
     SleepLib/loader_plugins/somnopose_loader.cpp \
-    SleepLib/loader_plugins/zeo_loader.cpp
+    SleepLib/loader_plugins/zeo_loader.cpp \
+    translation.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -174,7 +176,8 @@ HEADERS  += \
     SleepLib/loader_plugins/prs1_loader.h \
     SleepLib/loader_plugins/resmed_loader.h \
     SleepLib/loader_plugins/somnopose_loader.h \
-    SleepLib/loader_plugins/zeo_loader.h
+    SleepLib/loader_plugins/zeo_loader.h \
+    translation.h
 
 FORMS += \
     daily.ui \

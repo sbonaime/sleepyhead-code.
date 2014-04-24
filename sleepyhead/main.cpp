@@ -30,6 +30,7 @@
 #include "SleepLib/profiles.h"
 #include "profileselect.h"
 #include "newprofile.h"
+#include "translation.h"
 
 // Gah! I must add the real darn plugin system one day.
 #include "SleepLib/loader_plugins/prs1_loader.h"
@@ -190,86 +191,13 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Language Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
-    QDialog langsel(nullptr, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
-    langsel.setWindowTitle(QObject::tr("Language"));
-
-    QHBoxLayout lang_layout(&langsel);
-
-    QComboBox lang_combo(&langsel);
-    QPushButton lang_okbtn("->", &langsel);
-
-    lang_layout.addWidget(&lang_combo, 1);
-    lang_layout.addWidget(&lang_okbtn);
-
-#ifdef Q_OS_MAC
-    QString transdir = QDir::cleanPath(QCoreApplication::applicationDirPath() +
-                                       "/../Resources/Translations/");
-
-#else
-    const QString transdir = QCoreApplication::applicationDirPath() + "/Translations/";
-#endif
-
-    QDir dir(transdir);
-    qDebug() << "Scanning \"" << transdir << "\" for translations";
-    dir.setFilter(QDir::Files);
-    dir.setNameFilters(QStringList("*.qm"));
-
-    qDebug() << "Available Translations";
-    QFileInfoList list = dir.entryInfoList();
-    QString language = settings.value("Settings/Language").toString();
-
-    QString langfile, langname;
-
-    // Fake english for now..
-    lang_combo.addItem("English", "English.en_US.qm");
-
-    // Scan translation directory
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fi = list.at(i);
-        langname = fi.fileName().section('.', 0, 0);
-
-        lang_combo.addItem(langname, fi.fileName());
-        qDebug() << "Found Translation" << QDir::toNativeSeparators(fi.fileName());
-    }
-
-    for (int i = 0; i < lang_combo.count(); i++) {
-        langname = lang_combo.itemText(i);
-
-        if (langname == language) {
-            langfile = lang_combo.itemData(i).toString();
-            break;
-        }
-    }
-
-    if (language.isEmpty()) {
-        langsel.connect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
-
-        langsel.exec();
-        langsel.disconnect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
-        langname = lang_combo.currentText();
-        langfile = lang_combo.itemData(lang_combo.currentIndex()).toString();
-        settings.setValue("Settings/Language", langname);
-    }
-
-    qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
-    QTranslator translator;
-
-    if (!translator.load(langfile, transdir)) {
-        qDebug() << "Could not load translation" << langfile << "reverting to english :(";
-
-    }
-
-
-    a.installTranslator(&translator);
+    initTranslations(settings);
     initializeStrings(); // Important, call this AFTER translator is installed.
-
     a.setApplicationName(STR_TR_SleepyHead);
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Datafolder location Selection
     ////////////////////////////////////////////////////////////////////////////////////////////
-
     bool change_data_dir = force_data_dir;
 
     bool havefolder = false;

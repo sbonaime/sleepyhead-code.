@@ -6,7 +6,7 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
- 
+
 #include "Graphs/gGraph.h"
 
 #include <QLabel>
@@ -33,7 +33,7 @@ static bool globalsInitialized = false;
 
 // Graph constants.
 static const double zoom_hard_limit = 500.0;
- 
+
  // Must be called from a thread inside the application.
 bool InitGraphGlobals()
 {
@@ -123,7 +123,7 @@ void DestroyGraphGlobals()
 
     globalsInitialized = false;
 }
- 
+
 gGraph::gGraph(gGraphView *graphview, QString title, QString units, int height, short group)
     : m_graphview(graphview),
       m_title(title),
