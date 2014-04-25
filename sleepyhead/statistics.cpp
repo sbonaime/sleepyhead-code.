@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  *
- * Summary Module
+ * Statistics Report Generator
  *
  * Copyright (c) 2011 Mark Watkins <jedimark@users.sourceforge.net>
  *
@@ -13,14 +13,14 @@
 #include <cmath>
 
 #include "mainwindow.h"
-#include "summary.h"
+#include "statistics.h"
 #include "SleepLib/schema.h"
 
 
 extern MainWindow *mainwin;
 
 
-Summary::Summary(QObject *parent) :
+Statistics::Statistics(QObject *parent) :
     QObject(parent)
 {
 }
@@ -382,7 +382,7 @@ bool operator <(const UsageData &c1, const UsageData &c2)
     //return c1.value < c2.value;
 }
 
-QString Summary::GenerateHTML()
+QString Statistics::GenerateHTML()
 {
     QString html = htmlHeader();
 
@@ -411,7 +411,6 @@ QString Summary::GenerateHTML()
 
     if (mach.size() == 0) {
         html += "<table cellpadding=2 cellspacing=0 border=0 width=100% height=60%>";
-        QString datacard;
         html += "<tr><td align=center><h1>" + tr("Please Import Some Data") + "</h1><i>" +
                 tr("SleepyHead is pretty much useless without it.") + "</i><br/><p>" +
                 tr("It might be a good idea to check preferences first,</br>as there are some options that affect import.")
@@ -456,7 +455,7 @@ QString Summary::GenerateHTML()
                 QString(" %1</b></td></tr>").arg(lastcpap.toString(Qt::SystemLocaleLongDate));
 
         if (cpap_machines.size() > 0) {
-            // html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("CPAP Summary"));
+            // html+=QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("CPAP Statistics"));
 
             if (!cpapdays) {
                 html += QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(
@@ -485,31 +484,31 @@ QString Summary::GenerateHTML()
             if (PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapyear, lastcpap)) {
                 html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                         .arg(tr("RERA Index"))
-                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, lastcpap, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                lastcpap, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapweek, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapweek, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapmonth, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapmonth, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpap6month, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpap6month, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapyear, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapyear, lastcpap), 0, 'f', decimals);
+                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, lastcpap, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, lastcpap, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapweek, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapweek, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapmonth, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapmonth, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpap6month, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpap6month, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_RERA, MT_CPAP, cpapyear, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapyear, lastcpap), 0, 'f', decimals);
             }
 
             if (PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapyear, lastcpap)) {
                 html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                         .arg(tr("Flow Limit Index"))
-                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, lastcpap, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                lastcpap, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapweek, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapweek, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapmonth, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapmonth, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpap6month, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpap6month, lastcpap), 0, 'f', decimals)
-                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapyear, lastcpap) / PROFILE.calcHours(MT_CPAP,
-                                cpapyear, lastcpap), 0, 'f', decimals);
+                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, lastcpap, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, lastcpap, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapweek, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapweek, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapmonth, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapmonth, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpap6month, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpap6month, lastcpap), 0, 'f', decimals)
+                        .arg(PROFILE.calcCount(CPAP_FlowLimit, MT_CPAP, cpapyear, lastcpap)
+                             / PROFILE.calcHours(MT_CPAP, cpapyear, lastcpap), 0, 'f', decimals);
             }
 
 
@@ -622,7 +621,7 @@ QString Summary::GenerateHTML()
         int days = PROFILE.countDays(MT_OXIMETER, firstoxi, lastoxi);
 
         if (days > 0) {
-            html += QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("Oximetry Summary"));
+            html += QString("<tr><td colspan=6 align=center><b>%1</b></td></tr>").arg(tr("Oximetry Statistics"));
 
             if (days == 1) {
                 html += QString("<tr><td colspan=6 align=center>%1</td></tr>").arg(QString(
@@ -666,30 +665,32 @@ QString Summary::GenerateHTML()
                     .arg(p_profile->calcMin(OXI_SPO2, MT_OXIMETER, oxiyear, lastoxi), 0, 'f', decimals);
             html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                     .arg(tr("SpO2 Events / Hour"))
-                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER) / p_profile->calcHours(MT_OXIMETER), 0, 'f',
-                         decimals)
-                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxiweek,
-                                              lastoxi) / p_profile->calcHours(MT_OXIMETER, oxiweek, lastoxi), 0, 'f', decimals)
-                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oximonth,
-                                              lastoxi) / p_profile->calcHours(MT_OXIMETER, oximonth, lastoxi), 0, 'f', decimals)
-                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxi6month,
-                                              lastoxi) / p_profile->calcHours(MT_OXIMETER, oxi6month, lastoxi), 0, 'f', decimals)
-                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxiyear,
-                                              lastoxi) / p_profile->calcHours(MT_OXIMETER, oxiyear, lastoxi), 0, 'f', decimals);
+                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER)
+                         / p_profile->calcHours(MT_OXIMETER), 0, 'f', decimals)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxiweek, lastoxi)
+                         / p_profile->calcHours(MT_OXIMETER, oxiweek, lastoxi), 0, 'f', decimals)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oximonth, lastoxi)
+                         / p_profile->calcHours(MT_OXIMETER, oximonth, lastoxi), 0, 'f', decimals)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxi6month, lastoxi)
+                         / p_profile->calcHours(MT_OXIMETER, oxi6month, lastoxi), 0, 'f', decimals)
+                    .arg(p_profile->calcCount(OXI_SPO2Drop, MT_OXIMETER, oxiyear, lastoxi)
+                         / p_profile->calcHours(MT_OXIMETER, oxiyear, lastoxi), 0, 'f', decimals);
             html += QString("<tr><td>%1</td><td>%2\%</td><td>%3\%</td><td>%4\%</td><td>%5\%</td><td>%6\%</td></tr>")
                     .arg(tr("% of time in SpO2 Events"))
                     .arg(100.0 / p_profile->calcHours(MT_OXIMETER) * p_profile->calcSum(OXI_SPO2Drop,
                             MT_OXIMETER) / 3600.0, 0, 'f', decimals)
-                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxiweek, lastoxi) * p_profile->calcSum(OXI_SPO2Drop,
-                            MT_OXIMETER, oxiweek, lastoxi) / 3600.0, 0, 'f', decimals)
-                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oximonth,
-                            lastoxi) * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oximonth, lastoxi) / 3600.0, 0, 'f',
-                         decimals)
-                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxi6month,
-                            lastoxi) * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oxi6month, lastoxi) / 3600.0, 0, 'f',
-                         decimals)
-                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxiyear, lastoxi) * p_profile->calcSum(OXI_SPO2Drop,
-                            MT_OXIMETER, oxiyear, lastoxi) / 3600.0, 0, 'f', decimals);
+                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxiweek, lastoxi)
+                         * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oxiweek, lastoxi)
+                         / 3600.0, 0, 'f', decimals)
+                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oximonth, lastoxi)
+                         * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oximonth, lastoxi)
+                         / 3600.0, 0, 'f', decimals)
+                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxi6month, lastoxi)
+                         * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oxi6month, lastoxi)
+                         / 3600.0, 0, 'f',decimals)
+                    .arg(100.0 / p_profile->calcHours(MT_OXIMETER, oxiyear, lastoxi)
+                         * p_profile->calcSum(OXI_SPO2Drop, MT_OXIMETER, oxiyear, lastoxi)
+                         / 3600.0, 0, 'f', decimals);
             html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>")
                     .arg(tr("Average Pulse Rate"))
                     .arg(p_profile->calcWavg(OXI_Pulse, MT_OXIMETER), 0, 'f', decimals)
@@ -1101,7 +1102,7 @@ QString Summary::GenerateHTML()
                 .arg(STR_TR_Machine)
                 .arg(tr("Pr. Rel."))
                 .arg(STR_TR_Mode)
-                .arg("Pressure Settings");
+                .arg(tr("Pressure Settings"));
 
         for (int i = 0; i < rxchange.size(); i++) {
             RXChange rx = rxchange.at(i);
@@ -1139,7 +1140,7 @@ QString Summary::GenerateHTML()
             //                    STR_TR_IPAP+QString("=%1").arg(rx.per2,0,'f',decimals);
             if (mode >= MODE_BIPAP) {
                 if (rx.min > 0) {
-                    extratxt += QString("<td>EPAP %1")
+                    extratxt += "<td>"+QString(tr("EPAP %1"))
                                 .arg(rx.min, 4, 'f', 1);
                 }
 
@@ -1151,19 +1152,17 @@ QString Summary::GenerateHTML()
                 extratxt += "</td><td>";
 
                 if (rx.ps > 0) {
-                    extratxt += QString("<td>PS %1")
-                                .arg(rx.ps, 4, 'f', 1);
+                    extratxt += "<td>"+QString(tr("PS %1")).arg(rx.ps, 4, 'f', 1);
                 }
 
                 if ((rx.pshi > 0) && (rx.ps != rx.pshi)) {
-                    extratxt += QString(" - %2")
-                                .arg(rx.pshi, 4, 'f', 1);
+                    extratxt += QString(" - %2").arg(rx.pshi, 4, 'f', 1);
                 }
 
                 extratxt += "</td>";
 
                 if (rx.maxipap > 0) {
-                    extratxt += QString("<td>IPAP %1</td>")
+                    extratxt += "<td>"+QString(tr("IPAP %1")+"</td>")
                                 .arg(rx.maxipap, 4, 'f', 1);
                 }
 
@@ -1173,7 +1172,7 @@ QString Summary::GenerateHTML()
                           .arg(percentile * 100.0)
                           + STR_TR_IPAP + QString("=%1").arg(rx.per2, 0, 'f', decimals);
             } else if (mode > MODE_CPAP) {
-                extratxt += QString("<td align=left>APAP %1 - %2</td><td align=left></td>")
+                extratxt += "<td align=left>"+QString(tr("APAP %1 - %2")+"</td><td align=left></td>")
                             .arg(rx.min, 4, 'f', 1)
                             .arg(rx.max, 4, 'f', 1);
                 tooltip = QString("%1 %2% ").arg(machstr).arg(percentile * 100.0) + STR_TR_Pressure +
@@ -1181,7 +1180,7 @@ QString Summary::GenerateHTML()
             } else {
 
                 if (cpapmode > MODE_CPAP) {
-                    extratxt += QString("<td colspan=2>CPAP %1</td>").arg(rx.min, 4, 'f', 1);
+                    extratxt += "<td colspan=2>"+QString(tr("CPAP %1")+"</td>").arg(rx.min, 4, 'f', 1);
                     tooltip = QString("%1").arg(machstr);
                 } else {
                     extratxt += "";

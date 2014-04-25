@@ -62,6 +62,13 @@ class Preferences
         return (p_preferences.contains(name));
     }
 
+    //! \brief Create a preference and set the default if it doesn't exists
+    void init(QString name, QVariant value) {
+        if (!contains(name)) {
+            p_preferences[name] = value;
+        }
+    }
+
     //! \brief Returns true if preference 'name' exists, and contains a boolean true value
     bool ExistsAndTrue(QString name) {
         QHash<QString, QVariant>::iterator i = p_preferences.find(name);

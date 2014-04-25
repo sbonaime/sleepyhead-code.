@@ -269,8 +269,16 @@ retry_directory:
     IntellipapLoader::Register();
     FPIconLoader::Register();
 
+    p_pref = new Preferences("Preferences");
+    p_layout = new Preferences("Layout");
+
+    PREF.Open();
+    LAYOUT.Open();
+
     // Scan for user profiles
     Profiles::Scan();
+
+
     //qRegisterMetaType<Preference>("Preference");
     PREF["AppName"] = STR_TR_SleepyHead;
 
@@ -282,16 +290,9 @@ retry_directory:
     // Todo: Make a wrapper for Preference settings, like Profile settings have..
     QDateTime lastchecked, today = QDateTime::currentDateTime();
 
-    if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) {
-        PREF[STR_GEN_UpdatesAutoCheck] = true;
-        PREF[STR_GEN_UpdateCheckFrequency] = 7;
-    }
-
-    if (!PREF.contains(STR_PREF_AllowEarlyUpdates)) {
-        PREF[STR_PREF_AllowEarlyUpdates] = false;
-    }
-
-
+    PREF.init(STR_GEN_UpdatesAutoCheck, true);
+    PREF.init(STR_GEN_UpdateCheckFrequency, 7);    // days
+    PREF.init(STR_PREF_AllowEarlyUpdates, false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     // Check when last checked for updates..
@@ -314,6 +315,7 @@ retry_directory:
     }
 
     if (!Profiles::profiles.size()) {
+        // Show New User wizard..
         NewProfile newprof(0);
 
         if (newprof.exec() == NewProfile::Rejected) {
@@ -321,8 +323,6 @@ retry_directory:
         }
 
         release_notes();
-
-        // Show New User wizard..
     } else {
         if (PREF.contains(STR_PREF_VersionString)) {
             QString V = PREF[STR_PREF_VersionString].toString();
@@ -364,7 +364,7 @@ retry_directory:
 
     p_profile = Profiles::Get(PREF[STR_GEN_Profile].toString());
 
-    qDebug() << "Selected Profile" << p_profile->user->userName();
+    qDebug() << "Opened Profile" << p_profile->user->userName();
 
     //    int id=QFontDatabase::addApplicationFont(":/fonts/FreeSans.ttf");
     //    QFontDatabase fdb;
@@ -386,14 +386,15 @@ retry_directory:
                                 PREF["Fonts_Application_Bold"].toBool() ? QFont::Bold : QFont::Normal,
                                 PREF["Fonts_Application_Italic"].toBool()));
 
-    qDebug() << "Selected" << QApplication::font().family();
+    qDebug() << "Selected Font" << QApplication::font().family();
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     qInstallMessageHandler(MyOutputHandler);
 #else
     qInstallMsgHandler(MyOutputHandler);
 #endif
-    //#endif
+
+    // Must be initialized AFTER profile creation
     MainWindow w;
     mainwin = &w;
 

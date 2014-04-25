@@ -132,7 +132,8 @@ class Profile : public Preferences
 
     QString dataFolder() { return (*this).Get("{DataFolder}"); }
 
-  public:
+    bool isOpen() { return m_opened; }
+
     QMap<QDate, QList<Day *> > daylist; // Red-Black tree of Days (iterates in order).
     QHash<MachineID, Machine *> machlist; // List of machines, indexed by MachineID.
 
@@ -149,6 +150,8 @@ class Profile : public Preferences
   protected:
     QDate m_first;
     QDate m_last;
+
+    bool m_opened;
 };
 
 class MachineLoader;
@@ -267,9 +270,7 @@ class ProfileSettings
     }
 
     void initPref(QString name, QVariant value) {
-        if (!m_profile->contains(name)) {
-            setPref(name, value);
-        }
+        m_profile->init(name, value);
     }
 
     QVariant getPref(QString name) const {

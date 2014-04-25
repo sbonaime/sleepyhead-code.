@@ -14,11 +14,11 @@
 
 #include <QObject>
 
-class Summary : public QObject
+class Statistics : public QObject
 {
     Q_OBJECT
   public:
-    explicit Summary(QObject *parent = 0);
+    explicit Statistics(QObject *parent = 0);
 
     static QString GenerateHTML();
 

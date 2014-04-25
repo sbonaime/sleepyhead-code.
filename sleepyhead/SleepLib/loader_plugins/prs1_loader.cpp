@@ -1651,7 +1651,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     do {
         timestamp = m_buffer[pos + 0xb] | m_buffer[pos + 0xc] << 8 | m_buffer[pos + 0xd] << 16 |
                     m_buffer[pos + 0x0e] << 24;
-        register unsigned char sum8 = 0;
+        unsigned char sum8 = 0;
 
         for (int i = 0; i < hl; i++) { sum8 += m_buffer[pos + i]; }
 

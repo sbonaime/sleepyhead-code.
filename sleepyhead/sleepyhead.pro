@@ -87,7 +87,6 @@ SOURCES += \
     profileselect.cpp \
     reports.cpp \
     sessionbar.cpp \
-    summary.cpp \
     updateparser.cpp \
     UpdaterWindow.cpp \
     Graphs/gFlagsLine.cpp \
@@ -124,7 +123,8 @@ SOURCES += \
     SleepLib/loader_plugins/resmed_loader.cpp \
     SleepLib/loader_plugins/somnopose_loader.cpp \
     SleepLib/loader_plugins/zeo_loader.cpp \
-    translation.cpp
+    translation.cpp \
+    statistics.cpp
 
 HEADERS  += \
     common_gui.h \
@@ -138,7 +138,6 @@ HEADERS  += \
     profileselect.h \
     reports.h \
     sessionbar.h \
-    summary.h \
     updateparser.h \
     UpdaterWindow.h \
     version.h \
@@ -177,7 +176,8 @@ HEADERS  += \
     SleepLib/loader_plugins/resmed_loader.h \
     SleepLib/loader_plugins/somnopose_loader.h \
     SleepLib/loader_plugins/zeo_loader.h \
-    translation.h
+    translation.h \
+    statistics.h
 
 FORMS += \
     daily.ui \

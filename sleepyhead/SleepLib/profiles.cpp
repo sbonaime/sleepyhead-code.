@@ -31,7 +31,8 @@ Preferences *p_layout;
 Profile *p_profile;
 
 Profile::Profile(QString path)
-  : is_first_day(true)
+  : is_first_day(true),
+     m_opened(false)
 {
     p_name = STR_GEN_Profile;
 
@@ -62,27 +63,41 @@ Profile::Profile(QString path)
 
 Profile::~Profile()
 {
-    delete user;
-    delete doctor;
-    delete cpap;
-    delete oxi;
-    delete appearance;
-    delete session;
-    delete general;
+    if (m_opened) {
+        delete user;
+        delete doctor;
+        delete cpap;
+        delete oxi;
+        delete appearance;
+        delete session;
+        delete general;
 
-    for (QHash<MachineID, Machine *>::iterator i = machlist.begin(); i != machlist.end(); i++) {
-        delete i.value();
+        for (auto it = machlist.begin(); it != machlist.end(); it++) {
+            delete it.value();
+        }
+        m_opened=false;
     }
 }
 
 bool Profile::Save(QString filename)
 {
-    return Preferences::Save(filename);
+    if (m_opened) {
+        return Preferences::Save(filename);
+    } else return false;
 }
 
 bool Profile::Open(QString filename)
 {
+    if (filename.isEmpty()) {
+        filename=p_filename;
+    }
+    if (m_opened) {
+        qDebug() << "Profile" << filename << "all ready open";
+        return true;
+    }
     bool b = Preferences::Open(filename);
+
+    m_opened=true;
     doctor = new DoctorInfo(this);
     user = new UserInfo(this);
     cpap = new CPAPSettings(this);
@@ -549,20 +564,10 @@ Profile *Get()
  */
 void Scan()
 {
-    //InitMapsWithoutAwesomeInitializerLists();
-    p_pref = new Preferences("Preferences");
-    p_layout = new Preferences("Layout");
-
-    PREF.Open();
-    LAYOUT.Open();
-
     QString path = PREF.Get("{home}/Profiles");
     QDir dir(path);
 
     if (!dir.exists(path)) {
-        //dir.mkpath(path);
-        // Just silently create a new user record and get on with it.
-        //Create(getUserName(),getUserName(),"");
         return;
     }
 
@@ -576,18 +581,12 @@ void Scan()
 
     QFileInfoList list = dir.entryInfoList();
 
-    //QString username=getUserName();
-    //if (list.size()==0) { // No profiles.. Create one.
-    //Create(username,username,"");
-    //return;
-    //}
-
     // Iterate through subdirectories and load profiles..
     for (int i = 0; i < list.size(); i++) {
         QFileInfo fi = list.at(i);
         QString npath = fi.canonicalFilePath();
         Profile *prof = new Profile(npath);
-        prof->Open();  // Read it's XML file..
+//        prof->Open();  // Read it's XML file..
         profiles[fi.fileName()] = prof;
     }
 

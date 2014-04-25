@@ -45,13 +45,13 @@ Machine::Machine(Profile *p, MachineID id)
 
     } else { m_id = id; }
 
-    //qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
+    qDebug() << "Create Machine: " << hex << m_id; //%lx",m_id);
     m_type = MT_UNKNOWN;
     firstsession = true;
 }
 Machine::~Machine()
 {
-    qDebug() << "Destroy Machine" << m_class;
+    qDebug() << "Destroy Machine" << m_class << hex << m_id;
 
     for (QMap<QDate, Day *>::iterator d = day.begin(); d != day.end(); d++) {
         delete d.value();

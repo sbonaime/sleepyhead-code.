@@ -26,16 +26,21 @@
 
 void initTranslations(QSettings & settings) {
 
+
     QStringList welcome={"Welcome", "Welkom", "Willkommen", "Bienvenue", u8"歡迎", u8"ようこそ！"};
 
-    // Add any special language names here
-    // Ordinary character sets will just use the name before the first '.' in the filename.
+    // (Ordinary character sets will just use the name before the first '.' in the filename.)
+    // (This u8 stuff deliberately kills Qt4.x build support - if you know another way feel free to
+    //  change it, but Qt4 support is still going to die sooner or later)
+    // Add any languages with special character set needs to this list
     QHash<QString, QString> langNames={
         { "cn", u8"漢語繁體字" },
         { "es", u8"Español" },
         { "bg", u8"български" },
         { "fr", u8"Français" },
     };
+    // CHECK: Will the above break with MS VisualC++ compiler?
+
     QHash<QString, QString> langFiles;
 
 #ifdef Q_OS_MAC
@@ -51,7 +56,6 @@ void initTranslations(QSettings & settings) {
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList("*.qm"));
 
-    qDebug() << "Available Translations";
     QFileInfoList list = dir.entryInfoList();
     QString language = settings.value("Settings/Language").toString();
 
@@ -62,11 +66,14 @@ void initTranslations(QSettings & settings) {
     langFiles[en]="";
     langNames[en]="English";
 
-    // Scan translation directory
+
+    // Scan through available translations, and add them to the list
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fi = list.at(i);
         QString name = fi.fileName().section('.', 0, 0);
         QString code = fi.fileName().section('.', 1, 1);
+
+        qDebug() << "Detected" << name << "Translation";
 
         if (langNames.contains(code)) {
             name = langNames[code];
@@ -76,7 +83,6 @@ void initTranslations(QSettings & settings) {
 
         langFiles[code]=fi.fileName();
 
-        qDebug() << "Detected" << name << "Translation";
     }
 
     if (language.isEmpty() || !langNames.contains(language)) {
@@ -95,8 +101,8 @@ void initTranslations(QSettings & settings) {
         QComboBox lang_combo(&langsel);
         QPushButton lang_okbtn("->", &langsel);
 
-        QVBoxLayout layout1;
-        QVBoxLayout layout2;
+        QVBoxLayout layout1(&langsel);
+        QVBoxLayout layout2(&langsel);
 
         lang_layout.addLayout(&layout1);
         lang_layout.addLayout(&layout2);
@@ -135,9 +141,8 @@ void initTranslations(QSettings & settings) {
     qDebug() << "Loading " << langname << " Translation" << langfile << "from" << transdir;
     QTranslator * translator = new QTranslator();
 
-    if (!translator->load(langfile, transdir)) {
-        qDebug() << "Could not load translation" << langfile << "reverting to english :(";
-
+    if (!langfile.isEmpty() && !translator->load(langfile, transdir)) {
+        qWarning() << "Could not load translation" << langfile << "reverting to english :(";
     }
 
     qApp->installTranslator(translator);

@@ -52,7 +52,7 @@
 #include "version.h"
 
 #include "reports.h"
-#include "summary.h"
+#include "statistics.h"
 
 QProgressBar *qprogress;
 QLabel *qstatus;
@@ -161,8 +161,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // Start with the Summary Tab
-    ui->tabWidget->setCurrentWidget(
-        ui->summaryTab); // setting this to daily shows the cube during loading..
+    ui->tabWidget->setCurrentWidget(ui->statisticsTab); // setting this to daily shows the cube during loading..
 
     // Nifty Notification popups in System Tray (uses Growl on Mac)
     if (QSystemTrayIcon::isSystemTrayAvailable() && QSystemTrayIcon::supportsMessages()) {
@@ -191,14 +190,14 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->recordsBox->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    ui->summaryView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    ui->statisticsView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
     ui->bookmarkView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
     QString loadingtxt =
         "<HTML><body style='text-align: center; vertical-align: center'><table width='100%' height='100%'><tr><td align=center><h1>"
         + tr("Loading...") + "</h1></td></tr></table></body></HTML>";
-    ui->summaryView->setHtml(loadingtxt);
+    ui->statisticsView->setHtml(loadingtxt);
     on_tabWidget_currentChanged(0);
 
 #ifndef REMSTAR_M_SUPPORT
@@ -298,8 +297,8 @@ void MainWindow::Startup()
         ui->tabWidget->insertTab(3, oximetry, STR_TR_Oximetry);
     }
 
-
-    ui->tabWidget->setCurrentWidget(ui->summaryTab);
+    GenerateStatistics();
+    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
 
     if (daily) { daily->ReloadGraphs(); }
 
@@ -307,7 +306,6 @@ void MainWindow::Startup()
 
     qprogress->hide();
     qstatus->setText("");
-    on_summaryButton_clicked();
 
 }
 
@@ -437,7 +435,7 @@ void MainWindow::on_action_Import_Data_triggered()
 
         if (overview) { overview->ReloadGraphs(); }
 
-        on_summaryButton_clicked();
+        GenerateStatistics();
 
         if (daily) { daily->ReloadGraphs(); }
 
@@ -612,26 +610,6 @@ void MainWindow::on_homeButton_clicked()
     //QString infourl="qrc:/docs/index.html"; // use this as a fallback
     //ui->webView->setUrl(QUrl(infourl));
 }
-
-
-void MainWindow::on_summaryButton_clicked()
-{
-    QString html = Summary::GenerateHTML();
-
-    updateFavourites();
-
-    //QWebFrame *frame=ui->summaryView->page()->currentFrame();
-    //frame->addToJavaScriptWindowObject("mainwin",this);
-    //ui->summaryView->setHtml(html);
-    MyStatsPage *page = new MyStatsPage(this);
-    page->currentFrame()->setHtml(html);
-    ui->summaryView->setPage(page);
-    //    connect(ui->summaryView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
-    //    QString file="qrc:/docs/index.html";
-    //    QUrl url(file);
-    //    ui->webView->setUrl(url);
-}
-
 
 void MainWindow::updateFavourites()
 {
@@ -1058,8 +1036,8 @@ void MainWindow::on_actionPrint_Report_triggered()
         QString name;
         QString datestr;
 
-        if (ui->tabWidget->currentWidget() == ui->summaryTab) {
-            name = "Summary";
+        if (ui->tabWidget->currentWidget() == ui->statisticsTab) {
+            name = "Statistics";
             datestr = QDate::currentDate().toString(Qt::ISODate);
         } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
             name = "Help";
@@ -1081,8 +1059,8 @@ void MainWindow::on_actionPrint_Report_triggered()
 
         if (pdlg.exec() == QPrintDialog::Accepted) {
 
-            if (ui->tabWidget->currentWidget() == ui->summaryTab) {
-                ui->summaryView->print(&printer);
+            if (ui->tabWidget->currentWidget() == ui->statisticsTab) {
+                ui->statisticsView->print(&printer);
             } else if (ui->tabWidget->currentWidget() == ui->helpTab) {
                 ui->webView->print(&printer);
             }
@@ -1500,12 +1478,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     //qDebug() << "Keypress:" << event->key();
 }
 
-void MainWindow::on_summaryButton_2_clicked()
-{
-    ui->tabWidget->setCurrentWidget(ui->summaryTab);
-    on_summaryButton_clicked();
-}
-
 void MainWindow::on_action_Sidebar_Toggle_toggled(bool visible)
 {
     ui->toolBox->setVisible(visible);
@@ -1540,7 +1512,7 @@ void MainWindow::on_helpButton_clicked()
 
 void MainWindow::on_actionView_Statistics_triggered()
 {
-    ui->tabWidget->setCurrentWidget(ui->summaryTab);
+    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
 }
 
 void MainWindow::on_webView_linkClicked(const QUrl &url)
@@ -1572,7 +1544,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     Q_UNUSED(index);
     QWidget *widget = ui->tabWidget->currentWidget();
 
-    if ((widget == ui->summaryTab) || (widget == ui->helpTab)) {
+    if ((widget == ui->statisticsTab) || (widget == ui->helpTab)) {
         qstatus2->setVisible(false);
     } else if (widget == daily) {
         qstatus2->setVisible(true);
@@ -1586,11 +1558,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     }
 }
 
-void MainWindow::on_summaryView_linkClicked(const QUrl &arg1)
-{
-    //qDebug() << arg1;
-    on_recordsBox_linkClicked(arg1);
-}
 
 void MainWindow::on_bookmarkView_linkClicked(const QUrl &arg1)
 {
@@ -1858,4 +1825,34 @@ void MainWindow::on_actionImport_Somnopose_Data_triggered()
         daily->LoadDate(daily->getDate());
     }
 
+}
+
+void MainWindow::GenerateStatistics()
+{
+    QString html = Statistics::GenerateHTML();
+
+    updateFavourites();
+
+    //QWebFrame *frame=ui->statisticsView->page()->currentFrame();
+    //frame->addToJavaScriptWindowObject("mainwin",this);
+    //ui->statisticsView->setHtml(html);
+    MyStatsPage *page = new MyStatsPage(this);
+    page->currentFrame()->setHtml(html);
+    ui->statisticsView->setPage(page);
+    //    connect(ui->statisticsView->page()->currentFrame(),SIGNAL(javaScriptWindowObjectCleared())
+    //    QString file="qrc:/docs/index.html";
+    //    QUrl url(file);
+    //    ui->webView->setUrl(url);
+}
+
+
+void MainWindow::on_statisticsButton_clicked()
+{
+    ui->tabWidget->setCurrentWidget(ui->statisticsTab);
+}
+
+void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
+{
+    //qDebug() << arg1;
+    on_recordsBox_linkClicked(arg1);
 }

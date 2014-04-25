@@ -98,7 +98,7 @@
         <property name="movable">
          <bool>false</bool>
         </property>
-        <widget class="QWidget" name="summaryTab">
+        <widget class="QWidget" name="statisticsTab">
          <attribute name="title">
           <string>&amp;Statistics</string>
          </attribute>
@@ -141,7 +141,7 @@ color: yellow;</string>
            </widget>
           </item>
           <item>
-           <widget class="QWebView" name="summaryView">
+           <widget class="QWebView" name="statisticsView">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -614,7 +614,7 @@ QToolBox::tab:selected  {
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QToolButton" name="summaryButton_2">
+          <widget class="QToolButton" name="statisticsButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -2522,6 +2522,22 @@ border-radius: 10px;
     <hint type="destinationlabel">
      <x>850</x>
      <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionView_Statistics</sender>
+   <signal>triggered()</signal>
+   <receiver>statisticsButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>772</x>
+     <y>101</y>
     </hint>
    </hints>
   </connection>

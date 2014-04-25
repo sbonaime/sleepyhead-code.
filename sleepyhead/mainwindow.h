@@ -91,7 +91,7 @@ class MainWindow : public QMainWindow
     void CheckForUpdates();
 
     //! \brief Refresh the statistics page
-    void refreshStatistics() { on_summaryButton_clicked(); }
+    void refreshStatistics() { on_statisticsButton_clicked(); }
 
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
@@ -139,7 +139,7 @@ class MainWindow : public QMainWindow
     void reprocessEvents(bool restart = false);
 
 
-    //! \brief Internal function to set Records Box html from summary module
+    //! \brief Internal function to set Records Box html from statistics module
     void setRecBoxHTML(QString html);
 
   public slots:
@@ -258,11 +258,6 @@ class MainWindow : public QMainWindow
     //! \brief Destroy ALL the CPAP data for the currently selected machine, so it can be freshly imported again
     void on_actionAll_Data_for_current_CPAP_machine_triggered();
 
-    //! \brief Populates the statistics with information.
-    void on_summaryButton_clicked();
-
-    void on_summaryButton_2_clicked();
-
     void on_action_Sidebar_Toggle_toggled(bool arg1);
 
     void on_recordsBox_linkClicked(const QUrl &arg1);
@@ -282,8 +277,6 @@ class MainWindow : public QMainWindow
     //! \brief Display Help WebView Link in statusbar.
     void LinkHovered(const QString &link, const QString &title, const QString &textContent);
     void on_tabWidget_currentChanged(int index);
-
-    void on_summaryView_linkClicked(const QUrl &arg1);
 
     void on_bookmarkView_linkClicked(const QUrl &arg1);
 
@@ -307,9 +300,15 @@ class MainWindow : public QMainWindow
 
     void on_actionImport_Somnopose_Data_triggered();
 
-  private:
+    //! \brief Populates the statistics with information.
+    void on_statisticsButton_clicked();
+
+    void on_statisticsView_linkClicked(const QUrl &arg1);
+
+private:
     QString getWelcomeHTML();
     void FreeSessions();
+    void GenerateStatistics();
 
     Ui::MainWindow *ui;
     Daily *daily;

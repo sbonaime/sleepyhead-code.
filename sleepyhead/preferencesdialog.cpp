@@ -219,11 +219,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     ui->graphHeight->setValue(profile->appearance->graphHeight());
 
-    if (!PREF.contains(STR_GEN_UpdatesAutoCheck)) { PREF[STR_GEN_UpdatesAutoCheck] = true; }
-
     ui->automaticallyCheckUpdates->setChecked(PREF[STR_GEN_UpdatesAutoCheck].toBool());
-
-    if (!PREF.contains(STR_GEN_UpdateCheckFrequency)) { PREF[STR_GEN_UpdateCheckFrequency] = 3; }
 
     ui->updateCheckEvery->setValue(PREF[STR_GEN_UpdateCheckFrequency].toInt());
 

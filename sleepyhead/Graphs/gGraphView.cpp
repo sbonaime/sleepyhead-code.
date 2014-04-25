@@ -453,6 +453,12 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 
 gGraphView::~gGraphView()
 {
+    timer->stop();
+    redrawtimer->stop();
+
+    disconnect(redrawtimer, 0, 0, 0);
+    disconnect(timer, 0, 0, 0);
+
 #ifdef ENABLE_THREADED_DRAWING
 
     for (int i = 0; i < m_threads.size(); i++) {
@@ -465,6 +471,7 @@ gGraphView::~gGraphView()
     // Note: This will cause a crash if two graphs accidentally have the same name
     for (int i = 0; i < m_graphs.size(); i++) {
         delete m_graphs[i];
+        m_graphs[i]=NULL;
     }
 
     QHash<QString, myPixmapCache *>::iterator it;
@@ -477,8 +484,7 @@ gGraphView::~gGraphView()
 
     delete m_tooltip;
     m_graphs.clear();
-    //delete vlines;
-    //delete stippled;
+
     delete frontlines;
     delete lines;
     delete backlines;
@@ -488,10 +494,8 @@ gGraphView::~gGraphView()
         this->disconnect(m_scrollbar, SIGNAL(sliderMoved(int)), 0, 0);
     }
 
-    disconnect(redrawtimer, 0, 0, 0);
-    disconnect(timer, 0, 0, 0);
-    timer->stop();
     delete timer;
+    delete redrawtimer;
 }
 
 bool gGraphView::usePixmapCache()

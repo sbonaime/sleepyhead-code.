@@ -261,6 +261,9 @@ void ProfileSelect::on_listView_activated(const QModelIndex &index)
     Profile *profile = Profiles::profiles[name];
 
     if (!profile) { return; }
+    if (!profile->isOpen()) {
+        profile->Open();
+    }
 
     if (!profile->user->hasPassword()) {
         m_selectedProfile = name;
