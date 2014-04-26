@@ -1795,6 +1795,12 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     return true;
 }
 
+
+bool PRS1Loader::Detect(const QString & path)
+{
+    return false;
+}
+
 void InitModelMap()
 {
     ModelMap[0x34] = "RemStar Pro with C-Flex+";

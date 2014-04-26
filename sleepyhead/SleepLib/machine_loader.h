@@ -28,6 +28,9 @@ class MachineLoader
 
     //virtual Machine * CreateMachine() {};
 
+    //! \brief Detect if the given path contains a valid folder structure
+    virtual bool Detect(const QString & path) = 0;
+
     //! \brief Override this to scan path and detect new machine data
     virtual int Open(QString &path, Profile *) = 0; // Scans for new content
 

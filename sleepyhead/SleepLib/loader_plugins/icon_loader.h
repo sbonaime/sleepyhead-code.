@@ -54,6 +54,9 @@ class FPIconLoader : public MachineLoader
     FPIconLoader();
     virtual ~FPIconLoader();
 
+    //! \brief Detect if the given path contains a valid Folder structure
+    virtual bool Detect(const QString & path);
+
     //! \brief Scans path for F&P Icon data signature, and Loads any new data
     virtual int Open(QString &path, Profile *profile);
 

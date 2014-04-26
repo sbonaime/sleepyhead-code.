@@ -180,6 +180,9 @@ class ResmedLoader : public MachineLoader
     ResmedLoader();
     virtual ~ResmedLoader();
 
+    //! \brief Detect if the given path contains a valid Folder structure
+    virtual bool Detect(const QString & path);
+
     //! \brief Scans for S9 SD folder structure signature, and loads any new data if found
     virtual int Open(QString &path, Profile *profile);
 

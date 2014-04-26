@@ -28,6 +28,9 @@ class CMS50Loader : public MachineLoader
 
     CMS50Loader();
     virtual ~CMS50Loader();
+
+    virtual bool Detect(const QString &path) { Q_UNUSED(path); return false; }  // bypass autoscanner
+
     virtual int Open(QString &path, Profile *profile);
     static void Register();
 

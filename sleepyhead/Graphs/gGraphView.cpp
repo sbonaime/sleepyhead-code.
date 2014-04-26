@@ -954,18 +954,19 @@ void gGraphView::updateScale()
 
 void gGraphView::updateScrollBar()
 {
-    if (!m_scrollbar) { return; }
-
-    if (!m_graphs.size()) { return; }
+    if (!m_scrollbar || (m_graphs.size() == 0)) {
+        return;
+    }
 
     float th = scaleHeight(); // height of all graphs
     float h = height();     // height of main widget
 
     float vis = 0;
 
-    for (int i = 0; i < m_graphs.size(); i++) { vis += m_graphs[i]->isEmpty()  || (!m_graphs[i]->visible()) ? 0 : 1; }
+    for (int i = 0; i < m_graphs.size(); i++) {
+        vis += (m_graphs[i]->isEmpty() || !m_graphs[i]->visible()) ? 0 : 1;
+    }
 
-    //vis+=1;
     if (th < h) { // less graphs than fits on screen
 
         m_scrollbar->setMaximum(0); // turn scrollbar off.
@@ -1027,7 +1028,7 @@ void gGraphView::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
-void gGraphView::renderSomethingFun(float alpha)
+void gGraphView::renderCube(float alpha)
 {
     if (cubeimg.size() == 0) { return; }
 
@@ -1366,55 +1367,51 @@ bool gGraphView::renderGraphs()
 
     //int thr=m_idealthreads;
 #ifdef ENABLED_THREADED_DRAWING
+    if (threaded) {
+        for (int i = 0; i < m_idealthreads; i++) {
+            masterlock->acquire(1);
+            m_threads[i]->mutex.unlock();
+        }
 
-    for (int i = 0; i < m_idealthreads; i++) {
-        masterlock->acquire(1);
-        m_threads[i]->mutex.unlock();
-    }
-
-    // wait till all the threads are done
-    // ask for all the CPU's back..
-    masterlock->acquire(m_idealthreads);
-    masterlock->release(m_idealthreads);
-
-}
-else   // just do it here
-{
+        // wait till all the threads are done
+        // ask for all the CPU's back..
+        masterlock->acquire(m_idealthreads);
+        masterlock->release(m_idealthreads);
+    } else {
 #endif
-    s = m_drawlist.size();
+        s = m_drawlist.size();
 
-    for (int i = 0; i < s; i++) {
-        gGraph *g = m_drawlist.at(0);
-        m_drawlist.pop_front();
-        g->paint(g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
-    }
+        for (int i = 0; i < s; i++) {
+            gGraph *g = m_drawlist.at(0);
+            m_drawlist.pop_front();
+            g->paint(g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+        }
 
 #ifdef ENABLED_THREADED_DRAWING
-}
-
+    }
 #endif
-//int elapsed=time.elapsed();
-//QColor col=Qt::black;
+    //int elapsed=time.elapsed();
+    //QColor col=Qt::black;
 
 
-backlines->draw();
+    backlines->draw();
 
-for (int i = 0; i < m_graphs.size(); i++)
-{
-    m_graphs[i]->drawGLBuf();
-}
+    for (int i = 0; i < m_graphs.size(); i++)
+    {
+        m_graphs[i]->drawGLBuf();
+    }
 
-quads->draw();
-lines->draw();
+    quads->draw();
+    lines->draw();
 
 
-//    lines->setSize(linesize);
+    //    lines->setSize(linesize);
 
-//   DrawTextQue();
-//glDisable(GL_TEXTURE_2D);
-//glDisable(GL_DEPTH_TEST);
+    //   DrawTextQue();
+    //glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_DEPTH_TEST);
 
-return numgraphs > 0;
+    return numgraphs > 0;
 }
 void gGraphView::fadeOut()
 {
@@ -1605,7 +1602,7 @@ void gGraphView::paintGL()
     if (!m_inAnimation || (!m_fadingIn)) {
         // Not in animation sequence, draw graphs like normal
         if (bereallyannoying) {
-            renderSomethingFun(0.7F);
+            renderCube(0.7F);
         }
 
         numgraphs = renderGraphs();
@@ -1617,7 +1614,7 @@ void gGraphView::paintGL()
 
             if (something_fun && this->isVisible()) {// Do something fun instead
                 if (!bereallyannoying) {
-                    renderSomethingFun();
+                    renderCube();
                 }
 
                 tp = height() - (y / 2);

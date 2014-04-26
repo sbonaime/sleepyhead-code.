@@ -36,6 +36,11 @@ IntellipapLoader::~IntellipapLoader()
 {
 }
 
+bool IntellipapLoader::Detect(const QString & path)
+{
+    return false;
+}
+
 int IntellipapLoader::Open(QString &path, Profile *profile)
 {
     // Check for SL directory
@@ -66,46 +71,48 @@ int IntellipapLoader::Open(QString &path, Profile *profile)
     f.open(QFile::ReadOnly);
     QTextStream tstream(&f);
 
-    QHash<QString, QString> lookup;
-    lookup["Sn"] = STR_PROP_Serial;
-    lookup["Mn"] = STR_PROP_ModelNumber;
-    lookup["Mo"] = "PAPMode"; // 0=cpap, 1=auto
-    //lookup["Pn"]="Pn";
-    lookup["Pu"] = "MaxPressure";
-    lookup["Pl"] = "MinPressure";
-    //lookup["Ds"]="Ds";
-    //lookup["Pc"]="Pc";
-    lookup["Pd"] = "RampPressure"; // Delay Pressure
-    lookup["Dt"] = "RampTime"; // Delay Time
-    //lookup["Ld"]="Ld";
-    //lookup["Lh"]="Lh";
-    //lookup["FC"]="FC";
-    //lookup["FE"]="FE";
-    //lookup["FL"]="FL";
-    lookup["A%"] = "ApneaThreshold";
-    lookup["Ad"] = "ApneaDuration";
-    lookup["H%"] = "HypopneaThreshold";
-    lookup["Hd"] = "HypopneaDuration";
-    //lookup["Pi"]="Pi"; //080
-    //lookup["Pe"]="Pe"; //WF
-    lookup["Ri"] = "SmartFlexIRnd"; // Inhale Rounding (0-5)
-    lookup["Re"] = "SmartFlexERnd"; // Exhale Rounding (0-5)
-    //lookup["Bu"]="Bu"; //WF
-    //lookup["Ie"]="Ie"; //20
-    //lookup["Se"]="Se"; //05
-    //lookup["Si"]="Si"; //05
-    //lookup["Mi"]="Mi"; //0
-    lookup["Uh"] = "HoursMeter"; //0000.0
-    lookup["Up"] = "ComplianceMeter"; //0000.0
-    //lookup["Er"]="ErrorCode"; // E00
-    //lookup["El"]="LastErrorCode"; // E00 00/00/0000
-    //lookup["Hp"]="Hp"; //1
-    //lookup["Hs"]="Hs"; //02
-    //lookup["Lu"]="LowUseThreshold"; // defaults to 0 (4 hours)
-    lookup["Sf"] = "SmartFlex";
-    lookup["Sm"] = "SmartFlexMode";
-    lookup["Ks=s"] = "Ks_s";
-    lookup["Ks=i"] = "Ks_i";
+    QHash<QString, QString> lookup = {
+        {"Sn", STR_PROP_Serial },
+        {"Mn", STR_PROP_ModelNumber },
+        {"Mo", "PAPMode" },     // 0 cpap, 1 auto
+        //{"Pn", "??" },
+        {"Pu", "MaxPressure" },
+        {"Pl", "MaxPressure" },
+        //{"Ds", "??" },
+        //{"Pc", "??" },
+        {"Pd", "RampPressure" }, // Pressure Delay
+        {"Dt", "RampTime" },
+        //{"Ld", "??" },
+        //{"Lh", "??" },
+        //{"FC", "??" },
+        //{"FE", "??" },
+        //{"FL", "??" },
+        {"A%", "ApneaThreshold" },
+        {"Ad", "ApneaDuration" },
+        {"H%", "HypopneaThreshold" },
+        {"Hd", "HypopneaDuration" },
+        //{"Pi", "??" },
+        //{"Pe", "??" },
+        {"Ri", "SmartFlexIRnd" },  // Inhale Rounding (0-5)
+        {"Re", "SmartFlexERnd" }, // Inhale Rounding (0-5)
+        //{"Bu", "??" }, // WF
+        //{"Ie", "??" }, // 20
+        //{"Se", "??" }, // 05
+        //{"Si", "??" }, // 05
+        //{"Mi", "??" }, // 0
+        {"Uh", "HoursMeter"}, // 0000.0
+        {"Up", "ComplianceMeter"}, // 0000.00
+        //{"Er", "ErrorCode"}, // E00
+        //{"El", "LastErrorCode"}, // E00 00/00/0000
+        //{"Hp", "??"}, // 1
+        //{"Hs", "??"}, // 02
+        //{"Lu", "LowUseThreshold"}, // defaults to 0 (4 hours)
+        {"Sf", "SmartFlex"},
+        {"Sm", "SmartFlexMode"},
+        {"Ks=s", "Ks_s"},
+        {"Ks=i", "ks_i"}
+
+    };
 
     QHash<QString, QString> set1;
     QHash<QString, QString>::iterator hi;

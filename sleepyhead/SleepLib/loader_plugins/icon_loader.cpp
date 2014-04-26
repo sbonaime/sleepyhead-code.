@@ -899,6 +899,12 @@ Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
     return m;
 }
 
+bool FPIconLoader::Detect(const QString & path)
+{
+    return false;
+}
+
+
 bool fpicon_initialized = false;
 void FPIconLoader::Register()
 {

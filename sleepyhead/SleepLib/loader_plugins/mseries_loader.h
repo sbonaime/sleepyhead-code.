@@ -47,6 +47,9 @@ class MSeriesLoader : public MachineLoader
     MSeriesLoader();
     virtual ~MSeriesLoader();
 
+    //! \brief Detect if the given path contains a valid Folder structure
+    virtual bool Detect(const QString & path) { Q_UNUSED(path); return false; }
+
     //! \brief Opens M-Series block device
     virtual int Open(QString &file, Profile *profile);
 

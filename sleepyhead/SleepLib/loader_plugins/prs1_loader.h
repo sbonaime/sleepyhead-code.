@@ -51,6 +51,10 @@ class PRS1Loader : public MachineLoader
   public:
     PRS1Loader();
     virtual ~PRS1Loader();
+
+    //! \brief Detect if the given path contains a valid Folder structure
+    virtual bool Detect(const QString & path);
+
     //! \brief Scans directory path for valid PRS1 signature
     virtual int Open(QString &path, Profile *profile);
 

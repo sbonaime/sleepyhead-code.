@@ -374,7 +374,8 @@ class gGraphView : public QGLWidget
     //! \brief Add Graph to drawing queue, mainly for the benefit of multithreaded drawing code
     void queGraph(gGraph *, int originX, int originY, int width, int height);
 
-    void renderSomethingFun(float alpha = 1);
+    //! \brief Render the annoying spinning graph empty cube
+    void renderCube(float alpha = 1);
 
     Day *m_day;
 

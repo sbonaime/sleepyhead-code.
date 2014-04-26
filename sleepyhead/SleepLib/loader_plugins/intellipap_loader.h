@@ -51,6 +51,10 @@ class IntellipapLoader : public MachineLoader
   public:
     IntellipapLoader();
     virtual ~IntellipapLoader();
+
+    //! \brief Detect if the given path contains a valid Folder structure
+    virtual bool Detect(const QString & path);
+
     //! \brief Scans path for Intellipap data signature, and Loads any new data
     virtual int Open(QString &path, Profile *profile);
 
