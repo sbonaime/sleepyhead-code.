@@ -84,14 +84,14 @@ class MainWindow : public QMainWindow
     //! \brief Update the list of Favourites (Bookmarks) in the right sidebar.
     void updateFavourites();
 
+    //! \brief Update statistics report
+    void GenerateStatistics();
+
     //! \brief Create a new menu object in the main menubar.
     QMenu *CreateMenu(QString title);
 
     //! \brief Start the automatic update checker process
     void CheckForUpdates();
-
-    //! \brief Refresh the statistics page
-    void refreshStatistics() { on_statisticsButton_clicked(); }
 
     /*! \fn Notify(QString s,int ms=5000, QString title="SleepyHead v"+VersionString());
         \brief Pops up a message box near the system tray
@@ -308,7 +308,6 @@ class MainWindow : public QMainWindow
 private:
     QString getWelcomeHTML();
     void FreeSessions();
-    void GenerateStatistics();
 
     Ui::MainWindow *ui;
     Daily *daily;

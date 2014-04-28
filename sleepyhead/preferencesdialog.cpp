@@ -92,30 +92,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
 
     //ui->leakProfile->setColumnWidth(1,ui->leakProfile->width()/2);
 
-    {
-        QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
-        QFile file(filename);
-        file.open(QFile::ReadOnly);
-        QTextStream textStream(&file);
-
-        while (1) {
-            QString line = textStream.readLine();
-
-            if (line.isNull()) {
-                break;
-            } else if (line.isEmpty()) {
-                continue;
-            } else {
-                importLocations.append(line);
-            }
-        };
-
-        file.close();
-    }
-    importModel = new QStringListModel(importLocations, this);
-    ui->importListWidget->setModel(importModel);
-    //ui->tabWidget->removeTab(3);
-
     Q_ASSERT(profile != nullptr);
     ui->tabWidget->setCurrentIndex(0);
 
@@ -537,21 +513,6 @@ bool PreferencesDialog::Save()
 
     //qDebug() << "TODO: Save channels.xml to update channel data";
 
-    {
-        QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
-        QFile file(filename);
-        file.open(QFile::WriteOnly);
-        QTextStream ts(&file);
-
-        for (int i = 0; i < importLocations.size(); i++) {
-            ts << importLocations[i] << endl;
-            //file.write(importLocations[i].toUtf8());
-        }
-
-        file.close();
-    }
-
-    //PROFILE.Save();
     PREF.Save();
 
     if (recalc_events) {
@@ -592,29 +553,6 @@ void PreferencesDialog::on_checkForUpdatesButton_clicked()
 {
     mainwin->CheckForUpdates();
 }
-
-void PreferencesDialog::on_addImportLocation_clicked()
-{
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Add this Location to the Import List"),
-                  "", QFileDialog::ShowDirsOnly);
-
-    if (!dir.isEmpty()) {
-        if (!importLocations.contains(dir)) {
-            importLocations.append(dir);
-            importModel->setStringList(importLocations);
-        }
-    }
-}
-
-void PreferencesDialog::on_removeImportLocation_clicked()
-{
-    if (ui->importListWidget->currentIndex().isValid()) {
-        QString dir = ui->importListWidget->currentIndex().data().toString();
-        importModel->removeRow(ui->importListWidget->currentIndex().row());
-        importLocations.removeAll(dir);
-    }
-}
-
 
 void PreferencesDialog::on_graphView_activated(const QModelIndex &index)
 {

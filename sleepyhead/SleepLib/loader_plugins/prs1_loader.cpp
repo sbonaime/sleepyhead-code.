@@ -180,6 +180,48 @@ bool isdigit(QChar c)
 
 const QString PR_STR_PSeries = "P-Series";
 
+
+// Tests path to see if it has (what looks like) a valid PRS1 folder structure
+bool PRS1Loader::Detect(const QString & path)
+{
+    QString newpath = path;
+
+    newpath.replace("\\", "/");
+
+    if (!newpath.endsWith("/" + PR_STR_PSeries)) {
+        newpath = path + "/" + PR_STR_PSeries;
+    }
+
+    QDir dir(newpath);
+
+    if ((!dir.exists() || !dir.isReadable())) {
+        return false;
+    }
+    qDebug() << "PRS1Loader::Detect path=" << newpath;
+
+    QFile lastfile(newpath+"/last.txt");
+    if (!lastfile.exists()) {
+        return false;
+    }
+
+    if (!lastfile.open(QIODevice::ReadOnly)) {
+        qDebug() << "PRS1Loader: last.txt exists but I couldn't open it!";
+        return false;
+    }
+
+    QString last = lastfile.readLine(64);
+    last = last.trimmed();
+    lastfile.close();
+
+    QFile f(newpath+"/"+last);
+    if (!f.exists()) {
+        qDebug() << "in PRS1Loader::Detect():" << last << "does not exist, despite last.txt saying it does";
+        return false;
+    }
+    // newpath is a valid path
+    return true;
+}
+
 int PRS1Loader::Open(QString &path, Profile *profile)
 {
     QString newpath;
@@ -1793,12 +1835,6 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 
     // lousy family 5 check to see if already has RespRate
     return true;
-}
-
-
-bool PRS1Loader::Detect(const QString & path)
-{
-    return false;
 }
 
 void InitModelMap()

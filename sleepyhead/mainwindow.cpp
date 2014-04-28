@@ -314,58 +314,87 @@ void MainWindow::on_action_Import_Data_triggered()
     if (m_inRecalculation) {
         Notify(tr("Access to Import has been blocked while recalculations are in progress."));
         return;
-
     }
 
-    QStringList importLocations;
-    {
-        QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
-        QFile file(filename);
-        file.open(QFile::ReadOnly);
-        QTextStream textStream(&file);
+    QList<QString> AutoScannerPaths =
+#ifdef Q_OS_MAC
+    { "/Volumes" };
+#elif Q_OS_WIN
+    { "dummy" };
+    // scan all available drive letters after C:
+#else
+    { "/Media", "/mnt" };
+#endif
 
-        while (1) {
-            QString line = textStream.readLine();
+    QHash<QString,QString> datacard;
 
-            if (line.isNull()) {
-                break;
-            } else if (line.isEmpty()) {
-                continue;
-            } else {
-                importLocations.append(line);
+    QString datacard_path = QString();
+    MachineLoader * datacard_loader = nullptr;
+
+    QList<MachineLoader *>loaders = GetLoaders();
+
+    Q_FOREACH(const QString & path, AutoScannerPaths) {
+        qDebug() << "Scanning" << path;
+
+#ifdef Q_OS_WIN
+        QFileInfoList list = QDir::drives();
+#else
+        QDir dir(path);
+        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList list = dir.entryInfoList();
+#endif
+
+        for (int i = 0; i < list.size(); ++i) {
+            QFileInfo fileInfo = list.at(i);
+            QString p=fileInfo.fileName();
+
+            Q_FOREACH(MachineLoader * loader, loaders) {
+                QString scanpath=path+"/"+p;
+                if (loader->Detect(scanpath)) {
+                    datacard[loader->ClassName()]=scanpath;
+
+                    qDebug() << "Found" << loader->ClassName() << "datacard at" << scanpath;
+                    if (datacard_path.isEmpty()) {
+                        datacard_loader=loader;
+                        datacard_path=scanpath;
+                    }
+                }
             }
-        }
-
-        file.close();
-    }
-
-    //bool addnew=false;
-    QString newdir;
-
-    bool asknew = false;
-
-    if (importLocations.size() == 0) {
-        asknew = true;
-    } else {
-        int res = QMessageBox::question(this, tr("Import from where?"),
-                                        tr("Do you just want to Import from the usual (remembered) locations?\n"), tr("The Usual"),
-                                        tr("New Location"), tr("Cancel"), 0, 2);
-
-        if (res == 1) {
-            asknew = true;
-        }
-
-        if (res == 2) { return; }
-    }
-
-    if (asknew) {
-        //mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
+         }
     }
 
     QStringList importFrom;
+    bool asknew = false;
+
+    if (datacard.size() > 0) {
+        if (datacard.size() > 1) {
+            qWarning() << "User has more than detected datacard folder structure in scan path, only using the first one found.";
+        }
+
+        int res = QMessageBox::question(this, tr("Datacard Located"),
+            QString(tr("A %1 datacard structure was detected at\n%2\n\nWould you like to import from this location?")).arg(datacard_loader->ClassName()).arg(datacard_path), tr("Yes"),
+            tr("Select another folder"), tr("Cancel"), 0, 2);
+        if (res == 1) {
+            asknew = true;
+        } else {
+            importFrom.push_back(datacard_path);
+        }
+
+        if (res == 2) { return; }
+
+    }
 
     if (asknew) {
+        mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
+
         QFileDialog w;
+#if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
+        const QString documentsFolder = QDesktopServices::storageLocation(
+                                      QDesktopServices::DocumentsLocation);
+#else
+        const QString documentsFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
+        w.setDirectory(documentsFolder);
         w.setFileMode(QFileDialog::Directory);
         w.setOption(QFileDialog::ShowDirsOnly, true);
 
@@ -401,7 +430,7 @@ void MainWindow::on_action_Import_Data_triggered()
                 //addnew=true;
             }
         }
-    } else { importFrom = importLocations; }
+    }
 
     int successful = false;
 
@@ -418,9 +447,7 @@ void MainWindow::on_action_Import_Data_triggered()
             qDebug() << "Finished Importing data" << c;
 
             if (c) {
-                if (!importLocations.contains(dir)) {
-                    goodlocations.push_back(dir);
-                }
+                goodlocations.push_back(dir);
 
                 successful = true;
             }
@@ -433,32 +460,16 @@ void MainWindow::on_action_Import_Data_triggered()
     if (successful) {
         PROFILE.Save();
 
-        if (overview) { overview->ReloadGraphs(); }
-
         GenerateStatistics();
 
+        if (overview) { overview->ReloadGraphs(); }
         if (daily) { daily->ReloadGraphs(); }
 
-        if ((goodlocations.size() > 0)
-                && (QMessageBox::question(this, tr("Remember this Location?"),
-                                          tr("Would you like to remember this import location for next time?") + "\n" + newdir,
-                                          QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)) {
-            for (int i = 0; i < goodlocations.size(); i++) {
-                importLocations.push_back(goodlocations[i]);
-            }
-
-            QString filename = PROFILE.Get("{DataFolder}/ImportLocations.txt");
-            QFile file(filename);
-            file.open(QFile::WriteOnly);
-            QTextStream ts(&file);
-
-            for (int i = 0; i < importLocations.size(); i++) {
-                ts << importLocations[i] << endl;
-                //file.write(importLocations[i].toUtf8());
-            }
-
-            file.close();
+        QString str=tr("Data successfully imported from the following locations\n\n");
+        for (int i=0; i<goodlocations.size(); i++) {
+            str += goodlocations.at(i) + "\n";
         }
+        mainwin->Notify(str);
     } else {
         mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
     }

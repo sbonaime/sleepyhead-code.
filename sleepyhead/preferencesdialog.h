@@ -76,10 +76,6 @@ class PreferencesDialog : public QDialog
 
     void on_checkForUpdatesButton_clicked();
 
-    void on_addImportLocation_clicked();
-
-    void on_removeImportLocation_clicked();
-
     void on_graphView_activated(const QModelIndex &index);
 
     void on_graphFilter_textChanged(const QString &arg1);

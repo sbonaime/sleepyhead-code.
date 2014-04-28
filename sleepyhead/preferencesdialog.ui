@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>721</width>
-    <height>545</height>
+    <height>572</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1420,61 +1420,6 @@ p, li { white-space: pre-wrap; }
         <number>4</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="GeneralSettings">
-         <property name="title">
-          <string>General Settings</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_10">
-          <property name="leftMargin">
-           <number>4</number>
-          </property>
-          <property name="topMargin">
-           <number>4</number>
-          </property>
-          <property name="rightMargin">
-           <number>4</number>
-          </property>
-          <property name="bottomMargin">
-           <number>4</number>
-          </property>
-          <property name="spacing">
-           <number>4</number>
-          </property>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="skipEmptyDays">
-            <property name="toolTip">
-             <string>Daily view navigation buttons will skip over days without data records</string>
-            </property>
-            <property name="text">
-             <string>Skip over Empty Days</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="enableMultithreading">
-            <property name="toolTip">
-             <string>Allow use of multiple CPU cores where available to improve performance. 
-Mainly affects the importer.</string>
-            </property>
-            <property name="text">
-             <string>Enable Multithreading</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="skipLoginScreen">
-            <property name="toolTip">
-             <string>Bypass the login screen and load the most recent User Profile</string>
-            </property>
-            <property name="text">
-             <string>Skip Login Screen</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="Line" name="line_7">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -1603,74 +1548,65 @@ as this is the only value available on summary-only days.</string>
           </widget>
          </item>
          <item>
-          <widget class="Line" name="line_6">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="ImportLocations">
+          <widget class="QGroupBox" name="GeneralSettings">
            <property name="title">
-            <string>Import Locations</string>
+            <string>General Settings</string>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <property name="spacing">
-             <number>0</number>
-            </property>
+           <layout class="QGridLayout" name="gridLayout_10">
             <property name="leftMargin">
-             <number>0</number>
+             <number>4</number>
             </property>
             <property name="topMargin">
              <number>4</number>
             </property>
             <property name="rightMargin">
-             <number>0</number>
+             <number>4</number>
             </property>
             <property name="bottomMargin">
-             <number>0</number>
+             <number>4</number>
             </property>
-            <item>
-             <widget class="QListView" name="importListWidget">
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
+            <property name="spacing">
+             <number>4</number>
+            </property>
+            <item row="5" column="0">
+             <widget class="QCheckBox" name="skipEmptyDays">
+              <property name="toolTip">
+               <string>Daily view navigation buttons will skip over days without data records</string>
+              </property>
+              <property name="text">
+               <string>Skip over Empty Days</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QWidget" name="widget" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_9">
-               <item>
-                <widget class="QPushButton" name="addImportLocation">
-                 <property name="text">
-                  <string>Add</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="removeImportLocation">
-                 <property name="text">
-                  <string>Remove</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="enableMultithreading">
+              <property name="toolTip">
+               <string>Allow use of multiple CPU cores where available to improve performance. 
+Mainly affects the importer.</string>
+              </property>
+              <property name="text">
+               <string>Enable Multithreading</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="skipLoginScreen">
+              <property name="toolTip">
+               <string>Bypass the login screen and load the most recent User Profile</string>
+              </property>
+              <property name="text">
+               <string>Skip Login Screen</string>
+              </property>
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
           </widget>
          </item>
         </layout>

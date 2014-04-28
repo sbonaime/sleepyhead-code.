@@ -1210,7 +1210,9 @@ void Daily::Load(QDate date)
     UpdatePOSGraphs(posit);
     UpdateEventsTree(ui->treeWidget,cpap);
 
-    mainwin->refreshStatistics();
+    // FIXME:
+    // Generating entire statistics because bookmarks may have changed.. (This updates the side panel too)
+    mainwin->GenerateStatistics();
 
     snapGV->setDay(cpap);
 
