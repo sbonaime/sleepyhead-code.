@@ -370,30 +370,21 @@ const QString RMS9_STR_strfile = "STR.";
 
 bool ResmedLoader::Detect(const QString & givenpath)
 {
-    QString path = givenpath;
+    QDir dir(givenpath);
 
-    path.replace("\\", "/");
-
-    // Strip off end "/" if any
-    if (path.endsWith("/")) {
-        path = path.section("/", 0, -2);
-    }
-
-    // Strip off DATALOG from path, and set newpath to the path contianing DATALOG
-    if (path.endsWith(RMS9_STR_datalog)) {
-        path = path.section("/", 0, -2);
-    }
-
-    path += "/";
-
-    // Check DATALOG folder exists and is readable
-    if (!QDir().exists(path + RMS9_STR_datalog)) {
+    if (!dir.exists()) {
         return false;
     }
 
-    QFile str(path+"STR.edf");
-    if (!str.exists())
+    // ResMed drives contain a folder named "DATALOG".
+    if (!dir.exists(RMS9_STR_datalog)) {
         return false;
+    }
+
+    // They also contain a file named "STR.edf".
+    if (!dir.exists("STR.edf")) {
+        return false;
+    }
 
     return true;
 }
