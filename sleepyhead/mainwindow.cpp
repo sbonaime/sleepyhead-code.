@@ -336,9 +336,9 @@ QStringList getDriveList()
     int num_mounts = getmntinfo(&mounts, MNT_WAIT);
     if (num_mounts >= 0) {
         for (int i = 0; i < num_mounts; i++) {
-            // TODO: need to check on what BSD calls FAT filesystems
             QString name = mounts[i].f_mntonname;
 
+            // Only interested in drives mounted under /Volumes
             if (name.toLower().startsWith("/volumes/")) {
                 drivelist.push_back(name);
 //                qDebug() << QString("Disk type '%1' mounted at: %2").arg(mounts[i].f_fstypename).arg(mounts[i].f_mntonname);
@@ -357,10 +357,13 @@ QStringList getDriveList()
         struct statfs fs;
         if ((mnt.mnt_dir != NULL) && (statfs(mnt.mnt_dir, &fs) == 0)) {
             QString name = mnt.mnt_dir;
-            drivelist.push_back(name);
             quint64 size = fs.f_blocks * fs.f_bsize;
-            quint64 free = fs.f_bfree * fs.f_bsize;
-            quint64 avail = fs.f_bavail * fs.f_bsize;
+
+            if (size > 0) { // this should theoretically ignore /dev, /proc, /sys etc..
+                drivelist.push_back(name);
+            }
+//            quint64 free = fs.f_bfree * fs.f_bsize;
+//            quint64 avail = fs.f_bavail * fs.f_bsize;
         }
     }
     endmntent(mtab);
