@@ -323,12 +323,19 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QList<QString> AutoScannerPaths =
 #ifdef Q_OS_MAC
+    // Apple OSX mount points
     { "/Volumes" };
+
 #elif Q_OS_WIN
-    { "dummy" };
-    // scan all available drive letters after C:
-#else
-    { "/Media", "/mnt" };
+    // This is a dummy on windows, as we are scanning drive letters
+    { QString() };
+
+#else // UNIX
+    // Mountpoints for Linux, UNIX, BSD, etc.
+    { "/media", "/mnt", "/Media" };
+
+    // TODO: Extra code will need to go here for user directory fuser mounts and similar
+
 #endif
 
     QHash<QString,QString> datacard;
@@ -342,6 +349,7 @@ void MainWindow::on_action_Import_Data_triggered()
         qDebug() << "Scanning" << path;
 
 #ifdef Q_OS_WIN
+        // Get available drive letters
         QFileInfoList list = QDir::drives();
 #else
         QDir dir(path);
@@ -351,17 +359,22 @@ void MainWindow::on_action_Import_Data_triggered()
 
         for (int i = 0; i < list.size(); ++i) {
             QFileInfo fileInfo = list.at(i);
-            QString p=fileInfo.fileName();
 
+            // Scan through available machine loaders and test if this folder contains valid folder structure
             Q_FOREACH(MachineLoader * loader, loaders) {
-                QString scanpath=path+"/"+p;
+                QString scanpath;
+#ifndef Q_OS_WIN
+                scanpath = path + "/";
+#endif
+                scanpath += fileInfo.fileName();
+
                 if (loader->Detect(scanpath)) {
                     datacard[loader->ClassName()]=scanpath;
 
                     qDebug() << "Found" << loader->ClassName() << "datacard at" << scanpath;
                     if (datacard_path.isEmpty()) {
-                        datacard_loader=loader;
-                        datacard_path=scanpath;
+                        datacard_loader = loader;
+                        datacard_path = scanpath;
                     }
                 }
             }
