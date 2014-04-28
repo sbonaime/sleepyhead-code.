@@ -36,9 +36,25 @@ IntellipapLoader::~IntellipapLoader()
 {
 }
 
-bool IntellipapLoader::Detect(const QString & path)
+bool IntellipapLoader::Detect(const QString & givenpath)
 {
-    return false;
+    QDir dir(givenpath);
+
+    if (!dir.exists()) {
+        return false;
+    }
+
+    // Intellipap has a folder called SL in the root directory
+    if (!dir.cd("SL")) {
+        return false;
+    }
+
+    // Check for the settings file inside the SL folder
+    if (!dir.exists("SET1")) {
+        return false;
+    }
+
+    return true;
 }
 
 int IntellipapLoader::Open(QString &path, Profile *profile)

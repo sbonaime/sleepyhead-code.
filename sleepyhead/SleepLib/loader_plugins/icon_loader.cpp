@@ -20,6 +20,8 @@
 
 extern QProgressBar *qprogress;
 
+const QString FPHCARE = "FPHCARE";
+
 FPIcon::FPIcon(Profile *p, MachineID id)
     : CPAP(p, id)
 {
@@ -39,6 +41,28 @@ FPIconLoader::~FPIconLoader()
 {
 }
 
+bool FPIconLoader::Detect(const QString & givenpath)
+{
+    QDir dir(givenpath);
+
+    if (!dir.exists()) {
+        return false;
+    }
+
+    // F&P Icon have a folder called FPHCARE in the root directory
+    if (!dir.exists(FPHCARE)) {
+        return false;
+    }
+
+    // CHECKME: I can't access F&P ICON data right now
+    if (!dir.exists("FPCARE/ICON")) {
+        return false;
+    }
+
+    return true;
+}
+
+
 int FPIconLoader::Open(QString &path, Profile *profile)
 {
     QString newpath;
@@ -49,12 +73,10 @@ int FPIconLoader::Open(QString &path, Profile *profile)
         path.chop(1);
     }
 
-    QString dirtag = "FPHCARE";
-
-    if (path.endsWith("/" + dirtag)) {
+    if (path.endsWith("/" + FPHCARE)) {
         newpath = path;
     } else {
-        newpath = path + "/" + dirtag;
+        newpath = path + "/" + FPHCARE;
     }
 
     newpath += "/ICON/";
@@ -898,12 +920,6 @@ Machine *FPIconLoader::CreateMachine(QString serial, Profile *profile)
 
     return m;
 }
-
-bool FPIconLoader::Detect(const QString & path)
-{
-    return false;
-}
-
 
 bool fpicon_initialized = false;
 void FPIconLoader::Register()
