@@ -368,6 +368,35 @@ const QString RMS9_STR_datalog = "DATALOG";
 const QString RMS9_STR_idfile = "Identification.";
 const QString RMS9_STR_strfile = "STR.";
 
+bool ResmedLoader::Detect(const QString & givenpath)
+{
+    QString path = givenpath;
+
+    path.replace("\\", "/");
+
+    // Strip off end "/" if any
+    if (path.endsWith("/")) {
+        path = path.section("/", 0, -2);
+    }
+
+    // Strip off DATALOG from path, and set newpath to the path contianing DATALOG
+    if (path.endsWith(RMS9_STR_datalog)) {
+        path = path.section("/", 0, -2);
+    }
+
+    path += "/";
+
+    // Check DATALOG folder exists and is readable
+    if (!QDir().exists(path + RMS9_STR_datalog)) {
+        return false;
+    }
+
+    QFile str(path+"STR.edf");
+    if (!str.exists())
+        return false;
+
+    return true;
+}
 
 int ResmedLoader::Open(QString &path, Profile *profile)
 {
@@ -2366,12 +2395,6 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
 
     return true;
 }
-
-bool ResmedLoader::Detect(const QString & path)
-{
-    return false;
-}
-
 
 const QString RMS9_STR_Escape = "S9 Escape";
 const QString RMS9_STR_EscapeAuto = "S9 Escape Auto";
