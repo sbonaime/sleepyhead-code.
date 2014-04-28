@@ -377,7 +377,8 @@ void MainWindow::on_action_Import_Data_triggered()
         }
 
         int res = QMessageBox::question(this, tr("Datacard Located"),
-            QString(tr("A %1 datacard structure was detected at\n%2\n\nWould you like to import from this location?")).arg(datacard_loader->ClassName()).arg(datacard_path), tr("Yes"),
+            QString(tr("A %1 datacard structure was detected at\n%2\n\nWould you like to import from this location?")).
+                arg(datacard_loader->ClassName()).arg(datacard_path), tr("Yes"),
             tr("Select another folder"), tr("Cancel"), 0, 2);
         if (res == 1) {
             asknew = true;
@@ -387,6 +388,8 @@ void MainWindow::on_action_Import_Data_triggered()
 
         if (res == 2) { return; }
 
+    } else {
+        asknew = true;
     }
 
     if (asknew) {
