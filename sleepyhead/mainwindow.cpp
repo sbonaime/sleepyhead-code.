@@ -314,6 +314,74 @@ void MainWindow::Startup()
 
 }
 
+#ifdef Q_OS_UNIX
+#include <stdio.h>
+#include <unistd.h>
+
+#if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
+#include <sys/mount.h>
+#else
+#include <mntent.h>
+#endif // Q_OS_MAC/BSD
+
+#endif // Q_OS_UNIX
+
+//! \brief Returns a list of drive mountpoints
+QStringList getDriveList()
+{
+    QStringList drivelist;
+
+#if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
+    struct statfs *mounts;
+    int num_mounts = getmntinfo(&mounts, MNT_WAIT);
+    if (num_mounts >= 0) {
+        for (int i = 0; i < num_mounts; i++) {
+            // TODO: need to check on what BSD calls FAT filesystems
+            QString name = mounts[i].f_mntonname;
+
+            if (name.toLower().startsWith("/volumes/")) {
+                drivelist.push_back(name);
+//                qDebug() << QString("Disk type '%1' mounted at: %2").arg(mounts[i].f_fstypename).arg(mounts[i].f_mntonname);
+            }
+        }
+    }
+
+#elif defined(Q_OS_UNIX)
+    // Unix / Linux (except BSD)
+    FILE *mtab = setmntent("/etc/mtab", "r");
+    struct mntent *m;
+    struct mntent mnt;
+    char strings[4096];
+    while ((m = getmntent_r(mtab, &mnt, strings, sizeof(strings)))) {
+
+        struct statfs fs;
+        if ((mnt.mnt_dir != NULL) && (statfs(mnt.mnt_dir, &fs) == 0)) {
+            QString name = mnt.mnt_dir;
+            drivelist.push_back(name);
+            quint64 size = fs.f_blocks * fs.f_bsize;
+            quint64 free = fs.f_bfree * fs.f_bsize;
+            quint64 avail = fs.f_bavail * fs.f_bsize;
+        }
+    }
+    endmntent(mtab);
+
+#elif defined(Q_OS_WIN)
+    QFileInfoList list = QDir::drives();
+
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString name = fileInfo.fileName();
+        if (name[0].toUpper() > 'C') { // Only bother looking after the C: drive
+            drivelist.push_back(name);
+        }
+    }
+
+#endif
+
+    return drivelist;
+}
+
+
 void MainWindow::on_action_Import_Data_triggered()
 {
     if (m_inRecalculation) {
@@ -321,64 +389,28 @@ void MainWindow::on_action_Import_Data_triggered()
         return;
     }
 
-    QList<QString> AutoScannerPaths =
-#ifdef Q_OS_MAC
-    // Apple OSX mount points
-    { "/Volumes" };
-
-#elif Q_OS_WIN
-    // This is a dummy on windows, as we are scanning drive letters
-    { QString() };
-
-#else // UNIX
-    // Mountpoints for Linux, UNIX, BSD, etc.
-    { "/media", "/mnt", "/Media" };
-
-    // TODO: Extra code will need to go here for user directory fuser mounts and similar
-
-#endif
-
     QHash<QString,QString> datacard;
 
     QString datacard_path = QString();
     MachineLoader * datacard_loader = nullptr;
 
     QList<MachineLoader *>loaders = GetLoaders();
+    QStringList AutoScannerPaths = getDriveList();
 
-    Q_FOREACH(const QString & path, AutoScannerPaths) {
+    Q_FOREACH(const QString &path, AutoScannerPaths) {
         qDebug() << "Scanning" << path;
+        // Scan through available machine loaders and test if this folder contains valid folder structure
+        Q_FOREACH(MachineLoader * loader, loaders) {
+            if (loader->Detect(path)) {
+                datacard[loader->ClassName()] = path;
 
-#ifdef Q_OS_WIN
-        // Get available drive letters
-        QFileInfoList list = QDir::drives();
-#else
-        QDir dir(path);
-        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        QFileInfoList list = dir.entryInfoList();
-#endif
-
-        for (int i = 0; i < list.size(); ++i) {
-            QFileInfo fileInfo = list.at(i);
-
-            // Scan through available machine loaders and test if this folder contains valid folder structure
-            Q_FOREACH(MachineLoader * loader, loaders) {
-                QString scanpath;
-#ifndef Q_OS_WIN
-                scanpath = path + "/";
-#endif
-                scanpath += fileInfo.fileName();
-
-                if (loader->Detect(scanpath)) {
-                    datacard[loader->ClassName()]=scanpath;
-
-                    qDebug() << "Found" << loader->ClassName() << "datacard at" << scanpath;
-                    if (datacard_path.isEmpty()) {
-                        datacard_loader = loader;
-                        datacard_path = scanpath;
-                    }
+                qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
+                if (datacard_path.isEmpty()) {
+                    datacard_loader = loader;
+                    datacard_path = path;
                 }
             }
-         }
+        }
     }
 
     QStringList importFrom;
