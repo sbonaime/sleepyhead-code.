@@ -153,8 +153,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Using the dirty registry here. :(
     QSettings settings(getDeveloperName(), getAppName());
 
-    // Load previous Window geometry
-    this->restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    // Load previous Window geometry (this is currently broken on Mac as of Qt5.2.1)
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
 
     daily = new Daily(ui->tabWidget, nullptr);
     ui->tabWidget->insertTab(1, daily, STR_TR_Daily);
@@ -206,17 +206,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     on_homeButton_clicked();
 }
-extern MainWindow *mainwin;
-MainWindow::~MainWindow()
+
+void MainWindow::closeEvent(QCloseEvent * event)
 {
-    if (systraymenu) { delete systraymenu; }
-
-    if (systray) { delete systray; }
-
-    // Save current window position
-    QSettings settings(getDeveloperName(), getAppName());
-    settings.setValue("MainWindow/geometry", saveGeometry());
-
     if (daily) {
         daily->close();
         delete daily;
@@ -232,11 +224,24 @@ MainWindow::~MainWindow()
         delete oximetry;
     }
 
-    // Trash anything allocated by the Graph objects
-    DestroyGraphGlobals();
-
     // Shutdown and Save the current User profile
     Profiles::Done();
+
+    // Save current window position
+    QSettings settings(getDeveloperName(), getAppName());
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    QMainWindow::closeEvent(event);
+}
+
+extern MainWindow *mainwin;
+MainWindow::~MainWindow()
+{
+    if (systraymenu) { delete systraymenu; }
+
+    if (systray) { delete systray; }
+
+    // Trash anything allocated by the Graph objects
+    DestroyGraphGlobals();
 
     mainwin = nullptr;
     delete ui;
