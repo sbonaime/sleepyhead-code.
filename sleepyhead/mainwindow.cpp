@@ -315,14 +315,16 @@ void MainWindow::Startup()
 }
 
 #ifdef Q_OS_UNIX
-#include <stdio.h>
-#include <unistd.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <sys/statfs.h>
 
-#if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
-#include <sys/mount.h>
-#else
-#include <mntent.h>
-#endif // Q_OS_MAC/BSD
+# if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
+#  include <sys/mount.h>
+# else
+#  include <sys/statfs.h>
+#  include <mntent.h>
+# endif // Q_OS_MAC/BSD
 
 #endif // Q_OS_UNIX
 
@@ -352,6 +354,8 @@ QStringList getDriveList()
     struct mntent *m;
     struct mntent mnt;
     char strings[4096];
+
+    // NOTE: getmntent_r is a GNU extension, requiring glibc.
     while ((m = getmntent_r(mtab, &mnt, strings, sizeof(strings)))) {
 
         struct statfs fs;
