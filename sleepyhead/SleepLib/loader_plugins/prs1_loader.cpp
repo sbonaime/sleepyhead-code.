@@ -386,12 +386,27 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
         }
     }
 
+    QString modelstr = m->properties["ModelNumber"];
+
+    if (modelstr.endsWith("P"))
+        modelstr.chop(1);
+
+    bool ok;
+    int model = modelstr.toInt(&ok);
+    if (!ok || (model < 450)) {
+        QMessageBox::information(NULL,
+                                 QObject::tr("Non Data Capable Machine"),
+                                 QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
+                                         QObject::tr("I'm sorry to report that SleepyHead can only track hours of use for this machine.")).
+                                 arg(m->properties["ModelNumber"]),QMessageBox::Ok);
+
+    }
+
     SessionID sid;
     long ext;
     QHash<SessionID, QStringList> sessfiles;
     int size = paths.size();
     int cnt = 0;
-    bool ok;
 
     new_sessions.clear();
 

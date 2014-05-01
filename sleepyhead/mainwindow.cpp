@@ -492,6 +492,13 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QStringList goodlocations;
 
+    QDialog dlg(this,Qt::SplashScreen);
+    QVBoxLayout layout;
+    dlg.setLayout(&layout);
+    QLabel label(tr("Please wait, SleepyHead is importing data..."));
+    layout.addWidget(&label,1);
+    layout.addWidget(qprogress,1);
+    dlg.show();
     for (int i = 0; i < importFrom.size(); i++) {
         QString dir = importFrom[i];
 
@@ -512,6 +519,9 @@ void MainWindow::on_action_Import_Data_triggered()
             qprogress->hide();
         }
     }
+    dlg.hide();
+
+    ui->statusbar->insertWidget(2,qprogress,1);
 
     if (successful) {
         PROFILE.Save();
