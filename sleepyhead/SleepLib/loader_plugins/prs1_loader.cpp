@@ -358,7 +358,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     QDir dir(path);
 
     if (!dir.exists() || (!dir.isReadable())) {
-        return false;
+        return 0;
     }
 
 
@@ -370,13 +370,14 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
     if (qprogress) { qprogress->setValue(0); }
 
-    QList<QString> paths;
+    QStringList paths;
 
     for (int i = 0; i < flist.size(); i++) {
         QFileInfo fi = flist.at(i);
         filename = fi.fileName();
 
         if ((filename[0].toLower() == 'p') && (isdigit(filename[1]))) {
+            // p0, p1, p2.. etc.. folders contain the session data
             paths.push_back(fi.canonicalFilePath());
         } else if (filename.toLower() == "properties.txt") {
             ParseProperties(m, fi.canonicalFilePath());
@@ -393,13 +394,23 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
     bool ok;
     int model = modelstr.toInt(&ok);
-    if (!ok || (model < 450)) {
-        QMessageBox::information(NULL,
-                                 QObject::tr("Non Data Capable Machine"),
-                                 QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
-                                         QObject::tr("I'm sorry to report that SleepyHead can only track hours of use for this machine.")).
-                                 arg(m->properties["ModelNumber"]),QMessageBox::Ok);
+    if (ok) {
+        // Assumption is made here all PRS1 machines less than 450P are not data capable.. this could be wrong one day.
+        if ((model < 450)) {
+            QMessageBox::information(NULL,
+                                     QObject::tr("Non Data Capable Machine"),
+                                     QString(QObject::tr("Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.")+"\n\n"+
+                                             QObject::tr("I'm sorry to report that SleepyHead can only track hours of use for this machine.")).
+                                     arg(m->properties["ModelNumber"]),QMessageBox::Ok);
 
+        }
+
+        if ((model % 100) >= 60) {
+            // 60 series machine warning??
+        }
+
+    } else {
+        // model number didn't parse.. Meh...
     }
 
     SessionID sid;
@@ -408,40 +419,43 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     int size = paths.size();
     int cnt = 0;
 
-    new_sessions.clear();
+    new_sessions.clear(); // this hash is used by OpenFile
 
-    for (QList<QString>::iterator p = paths.begin(); p != paths.end(); p++) {
+    // for each p0/p1/p2/etc... folder
+    for (auto p = paths.begin(); p != paths.end(); p++) {
         dir.setPath(*p);
 
         if (!dir.exists() || !dir.isReadable()) { continue; }
 
         flist = dir.entryInfoList();
 
+        // Scan for individual session files
         for (int i = 0; i < flist.size(); i++) {
             QFileInfo fi = flist.at(i);
             QString ext_s = fi.fileName().section(".", -1);
             QString session_s = fi.fileName().section(".", 0, -2);
 
             ext = ext_s.toLong(&ok);
-
-            if (!ok) {
+            if (!ok) { // not a numerical extension
                 continue;
             }
 
             sid = session_s.toLong(&ok);
-
-            if (!ok) {
+            if (!ok) { // not a numerical session ID
                 continue;
             }
 
             if (m->SessionExists(sid)) {
-                continue;    // could skip this and error check data by reloading summary.
+                // Skip already imported session
+                continue;
             }
 
             if ((ext == 1) || (ext == 0)) {
-                OpenFile(m, fi.canonicalFilePath()); // Open just the summary files first round
+                // Open just the summary files first round and create a session record if succesful
+                OpenFile(m, fi.canonicalFilePath());
             } else {
-                sessfiles[sid].push_back(fi.canonicalFilePath()); // and keep the rest of the names
+                // and keep the rest of the names for next stage
+                sessfiles[sid].push_back(fi.canonicalFilePath());
             }
         }
     }
@@ -449,8 +463,9 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     cnt = 0;
     size = new_sessions.size();
 
-    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end();
-            it++) {
+    // Scan through new sessions and parse event and waveform data
+    // NOTE: this function could be multithreaded.
+    for (auto it = new_sessions.begin(); it != new_sessions.end(); ++it) {
         sid = it.key();
 
         if (sessfiles.contains(sid)) {
@@ -458,8 +473,10 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
                 QString name = sessfiles[sid][j];
 
                 if (name.endsWith(".002")) {
+                    // Parse event data
                     OpenFile(m, name);
                 } else if (name.endsWith(".005")) {
+                    // Parse Flow Rate Waveform (and mask pressure if available) data
                     OpenWaveforms(sid, name);
                 }
             }
@@ -467,6 +484,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
         // sessions are fully loaded here..
 
+        // Update the progress bar.. this could be done better by an emit if MachineLoader was a QObject and an
+        // event loop was running.
         if ((++cnt % 10) == 0) {
             if (qprogress) { qprogress->setValue(0.0 + (float(cnt) / float(size) * 100.0)); }
 
@@ -477,9 +496,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     // strictly can do this in the above loop, but this is cautionary
     cnt = 0;
 
-    //QVector<SessionID> KillList;
-    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end();
-            it++) {
+    // Scan through parsed sessions, do a little cleanup and add to machine object
+    for (auto it = new_sessions.begin(); it != new_sessions.end(); ++it) {
         Session *sess = it.value();
 
         if ((sess->length()) == 0) {
@@ -489,7 +507,6 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
             SessionID id = sess->session();
             delete sess;
             new_sessions[id] = nullptr;
-            //KillList.push_back(id);
             continue;
         }
 
@@ -540,9 +557,13 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
             //sess->settings[CPAP_PressureMax]=sess->settings[CPAP_PressureMin];
         }
 
+        // set session saved flag so machine::Save() knows it needs saving
         sess->SetChanged(true);
+
+        // Add session to machine record
         m->AddSession(sess, profile);
 
+        // Update the progress bar
         if ((++cnt % 10) == 0) {
             //if (qprogress) qprogress->setValue(33.0+(float(cnt)/float(size)*33.0));
             QApplication::processEvents();
@@ -552,10 +573,14 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
     m->properties[STR_PROP_DataVersion] = QString::number(prs1_data_version);
     m->properties[STR_PROP_LastImported] = QDateTime::currentDateTime().toString(Qt::ISODate);
-    m->Save(); // Save any new sessions to disk in our format
 
+    // Save any new sessions to disk in our format, updating summaries as it goes..
+    m->Save();
+
+    // Set progress bar to completed.
     if (qprogress) { qprogress->setValue(100); }
 
+    // Return number of newly added sessions
     return cnt;
 }
 
@@ -571,6 +596,11 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
 
 //};// __attribute__((packed));
+
+// Family 0 = xPAP
+// Family 5 = ASV
+
+
 
 bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
                               unsigned char *data, quint16 size, int family, int familyVersion)
@@ -631,8 +661,8 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         offset = 2;
     }
 
-    session->settings[CPAP_RampTime] = (int)data[offset +
-                                       0x06]; // Minutes. Convert to seconds/hours here?
+    // Minutes. Convert to seconds/hours here?
+    session->settings[CPAP_RampTime] = (int)data[offset + 0x06];
     session->settings[CPAP_RampPressure] = (EventDataType)data[offset + 0x07] / 10.0;
 
     if (max > 0) { // Ignoring bipap until we see some more data during import
@@ -693,7 +723,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 
     unsigned duration;
 
-    // up to this point appears to becorrect for 0x01 & 0x00
+    // up to this point appears to be correct for 0x01 & 0x00
     if (size < 59) {
         duration = data[offset + 0x12] | (data[offset + 0x13] << 8);
         duration *= 2;
@@ -784,10 +814,10 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     session->setPhysMax(CPAP_PS, 25);
     session->setPhysMin(CPAP_PS, 0);
 
-
     new_sessions[sequence] = session;
     return true;
 }
+
 bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *buffer,
                             quint16 size)
 {
@@ -1524,6 +1554,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
         family = header[4]; // == 5
         familyVersion = header[5];
         ext = header[6];
+
         sequence = (header[10] << 24) | (header[9] << 16) | (header[8] << 8) | header[7];
         timestamp = (header[14] << 24) | (header[13] << 16) | (header[12] << 8) | header[11];
 
@@ -1611,6 +1642,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
                 Parse002(sequence, timestamp, data, datasize, family, familyVersion);
             }
         } else if (ext == 5) {
+            // too messy to do here..
             //ParseWaveform(mach,sequence,timestamp,data,datasize,duration,num_signals,interleave,sample_format);
         }
     }
@@ -1666,10 +1698,10 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     pos = 0x14 + (num_signals - 1) * 3;
     vector<WaveHeaderList> whl;
 
-    // add the in reverse...
+    // add the signals to whl in reverse...
     for (int i = 0; i < num_signals; i++) {
         quint16 interleave = m_buffer[pos] | m_buffer[pos + 1] << 8;
-        quint8  sample_format = m_buffer[pos + 2];
+        quint8 sample_format = m_buffer[pos + 2];
         whl.push_back(WaveHeaderList(interleave, sample_format));
         pos -= 3;
     }
@@ -1684,7 +1716,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     lasttimestamp = start;
     duration = 0;
     int corrupt = 0;
-    char waveform[2][500000];
+    char waveform[2][500000]; // eek. That's a lot of Stack.
     int wlength[2];
     qint64 wdur[2];
 
@@ -1705,11 +1737,15 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
     //QString MaskPressure="MaskPressure";
     ChannelID wc[2] = {CPAP_FlowRate, CPAP_MaskPressure};
 
-    do {
-        timestamp = m_buffer[pos + 0xb] | m_buffer[pos + 0xc] << 8 | m_buffer[pos + 0xd] << 16 |
-                    m_buffer[pos + 0x0e] << 24;
-        unsigned char sum8 = 0;
+    unsigned char sum8; // additive checksum
 
+    do {
+        timestamp = m_buffer[pos + 0xb] | m_buffer[pos + 0xc] << 8 |
+                    m_buffer[pos + 0xd] << 16 | m_buffer[pos + 0x0e] << 24;
+
+
+        // Calculate header checksum
+        sum8 = 0;
         for (int i = 0; i < hl; i++) { sum8 += m_buffer[pos + i]; }
 
         if (m_buffer[pos + hl] != sum8) {
@@ -1737,7 +1773,6 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 
             length = m_buffer[pos + 0x1] | m_buffer[pos + 0x2] << 8; // block length in bytes
             duration = m_buffer[pos + 0xf] | m_buffer[pos + 0x10] << 8; // block duration in seconds
-
 
             if (diff < 0) {
                 qDebug() << "Padding waveform to keep sync" << block;
@@ -1780,10 +1815,10 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
                         a->setMax(120);
                         a->setMin(-120);
                     } else if (wc[i] == CPAP_MaskPressure) {
-                        //                       int v=ceil(a->Max()/5);
-                        //                        a->setMax(v*5);
-                        //                        v=floor(a->Min()/5);
-                        //                        a->setMin(v*5);
+                        //int v=ceil(a->Max()/5);
+                        //a->setMax(v*5);
+                        //v=floor(a->Min()/5);
+                        //a->setMin(v*5);
                     }
 
                     session->updateLast(start + (qint64(wdur[i]) * 1000L));
@@ -1799,6 +1834,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
         pos += hl + 1;
 
         //qDebug() <<  (duration*num_signals*whl[0].interleave) << duration;
+
         if (num_signals == 1) { // no interleave.. this is much quicker.
             int bs = duration * whl[0].interleave;
             memcpy((char *) & (waveform[0])[wlength[0]], (char *)&m_buffer[pos], bs);
@@ -1854,11 +1890,11 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 
 void InitModelMap()
 {
-    ModelMap[0x34] = "RemStar Pro with C-Flex+";
-    ModelMap[0x35] = "RemStar Auto with A-Flex";
+    ModelMap[0x34] = "RemStar Pro with C-Flex+"; // 450/460P
+    ModelMap[0x35] = "RemStar Auto with A-Flex"; // 550/560P
     ModelMap[0x36] = "RemStar BiPAP Pro with Bi-Flex";
     ModelMap[0x37] = "RemStar BiPAP Auto with Bi-Flex";
-    ModelMap[0x38] = "RemStar Plus :(";
+    ModelMap[0x38] = "RemStar Plus :(";          // 150/250P/260P
     ModelMap[0x41] = "BiPAP autoSV Advanced";
 }
 

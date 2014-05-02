@@ -382,6 +382,8 @@ bool Machine::Save()
 
     if (!PROFILE.session->multithreading()) {
         for (int i = 0; i < savelistSize; i++) {
+
+            // Update progress bar
             if ((i % 10) == 0) {
                 qprogress->setValue(0 + (float(savelistCnt) / float(savelistSize) * 100.0));
                 QApplication::processEvents();

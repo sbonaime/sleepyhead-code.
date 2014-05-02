@@ -872,7 +872,7 @@ void MainWindow::on_action_About_triggered()
                           // Credits section
                           "<hr/><p><b><font size='+1'>" +tr("Kudos & Credits") + "</font></b></p><b>" +
                           tr("Bugfixes, Patches and Platform Help:") + "</b> " +
-                          tr("James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")
+                          tr("James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.")
                           + "</p>"
 
                           "<p><b>" + tr("Translators:") + "</b> " + tr("Arie Klerk (Dutch), Steffen Reitz (German).") +
