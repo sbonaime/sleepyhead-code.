@@ -97,7 +97,7 @@ class PRS1Loader : public MachineLoader
                   int familyVersion);
 
     //! \brief Parse a single data chunk from a .002 file containing event data for a family 5 ASV machine (which has a different format)
-    bool Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size);
+    bool Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *data, quint16 size, int familyVersion);
 
     //! \brief Open a PRS1 data file, and break into data chunks, delivering them to the correct parser.
     bool OpenFile(Machine *mach, QString filename);

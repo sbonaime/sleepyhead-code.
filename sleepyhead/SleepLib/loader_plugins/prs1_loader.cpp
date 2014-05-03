@@ -500,7 +500,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     for (auto it = new_sessions.begin(); it != new_sessions.end(); ++it) {
         Session *sess = it.value();
 
-        if ((sess->length()) == 0) {
+        if ((sess->length()) <= 0) {
             //const double ignore_thresh=300.0/3600.0;// Ignore useless sessions under 5 minute
             //if (sess->hours()<=ignore_thresh) {
             qDebug() << "Ignoring empty session" << sess->session();
@@ -824,7 +824,7 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
 }
 
 bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *buffer,
-                            quint16 size)
+                            quint16 size,int familyVersion)
 {
     if (!new_sessions.contains(sequence)) {
         qDebug() << "contains squence exit";
@@ -1084,6 +1084,10 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
             EPAP->AddEvent(t, data[1] = buffer[pos++]); // 09=EPAP
             data[2] = data[0] - data[1];
             PS->AddEvent(t, data[2]);           // Pressure Support
+            if (familyVersion >= 1) {
+                data[0] = buffer[pos++];
+
+            }
             break;
 
         case 0x03: // BIPAP Pressure
@@ -1457,8 +1461,8 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
         default:
             // ERROR!!!
-            qWarning() << "Some new fandangled PRS1 code detected in" << sequence << hex << int(
-                           code) << " at " << pos - 1;
+            qWarning() << "Some new fandangled PRS1 code detected in" << sequence << hex
+                       << int(code) << " at " << pos - 1;
             return false;
         }
     }
@@ -1641,7 +1645,7 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
             ParseSummary(mach, sequence, timestamp, data, datasize, family, familyVersion);
         } else if (ext == 2) {
             if (family == 5) {
-                if (!Parse002v5(sequence, timestamp, data, datasize)) {
+                if (!Parse002v5(sequence, timestamp, data, datasize, familyVersion)) {
                     qDebug() << "in file: " << QDir::toNativeSeparators(filename);
                 }
             } else {
