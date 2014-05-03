@@ -514,6 +514,7 @@ bool PreferencesDialog::Save()
     //qDebug() << "TODO: Save channels.xml to update channel data";
 
     PREF.Save();
+    PROFILE.Save();
 
     if (recalc_events) {
         // send a signal instead?
