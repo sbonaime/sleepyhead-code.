@@ -985,15 +985,15 @@ QString Daily::getCPAPInformation(Day * cpap)
                     .arg(cpap->settings_max(CPAP_IPAP),0,'f',1);
         }
 
-        if (cpap->settingExists(CPAP_PS)) {
+        if (cpap->settingExists(CPAP_PSMin)) {
+                    EventDataType psl=cpap->settings_min(CPAP_PSMin);
+                    EventDataType psh=cpap->settings_max(CPAP_PSMax);
+                    html+=QString(STR_TR_PS+": %1-%2"+STR_UNIT_CMH2O+"<br/>")
+                        .arg(psl,0,'f',1)
+                        .arg(psh,0,'f',1);
+        } else if (cpap->settingExists(CPAP_PS)) {
             html+=QString(STR_TR_PS+": %1"+STR_UNIT_CMH2O+"<br/>")
                 .arg(cpap->settings_max(CPAP_PS),0,'f',1);
-        } else if (cpap->settingExists(CPAP_PSMin)) {
-            EventDataType psl=cpap->settings_min(CPAP_PSMin);
-            EventDataType psh=cpap->settings_max(CPAP_PSMax);
-            html+=QString(STR_TR_PS+": %1-%2"+STR_UNIT_CMH2O+"<br/>")
-                .arg(psl,0,'f',1)
-                .arg(psh,0,'f',1);
         }
     }
     html+="</td></tr>\n";
