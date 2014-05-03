@@ -205,6 +205,8 @@ QString STR_TR_RespRate;        // Respiratory Rate
 QString STR_TR_Snore;
 QString STR_TR_Leak;
 QString STR_TR_Leaks;
+QString STR_TR_LargeLeak;
+QString STR_TR_LL;
 QString STR_TR_TotalLeaks;
 QString STR_TR_UnintentionalLeaks;
 QString STR_TR_MaskPressure;
@@ -359,6 +361,8 @@ void initializeStrings()
     STR_TR_Snore = QObject::tr("Snore");
     STR_TR_Leak = QObject::tr("Leak");
     STR_TR_Leaks = QObject::tr("Leaks");
+    STR_TR_LargeLeak = QObject::tr("Large Leak");
+    STR_TR_LL = QObject::tr("LL"); // Large Leak
     STR_TR_TotalLeaks = QObject::tr("Total Leaks");
     STR_TR_UnintentionalLeaks = QObject::tr("Unintentional Leaks");
     STR_TR_MaskPressure = QObject::tr("MaskPressure");

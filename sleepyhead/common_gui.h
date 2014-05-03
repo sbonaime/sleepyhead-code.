@@ -23,6 +23,7 @@ extern QColor COLOR_Hypopnea;
 extern QColor COLOR_Obstructive;
 extern QColor COLOR_Apnea;
 extern QColor COLOR_CSR;
+extern QColor COLOR_LargeLeak;
 extern QColor COLOR_ClearAirway;
 extern QColor COLOR_RERA;
 extern QColor COLOR_VibratorySnore;

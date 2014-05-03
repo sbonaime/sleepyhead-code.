@@ -317,7 +317,6 @@ void MainWindow::Startup()
 #ifdef Q_OS_UNIX
 # include <stdio.h>
 # include <unistd.h>
-# include <sys/statfs.h>
 
 # if defined(Q_OS_MAC) || defined(Q_OS_BSD4)
 #  include <sys/mount.h>
@@ -502,7 +501,7 @@ void MainWindow::on_action_Import_Data_triggered()
     QLabel label(tr("Please wait, SleepyHead is importing data..."));
     layout.addWidget(&label,1);
     layout.addWidget(qprogress,1);
-    dlg.show();
+    //dlg.show();
     for (int i = 0; i < importFrom.size(); i++) {
         QString dir = importFrom[i];
 

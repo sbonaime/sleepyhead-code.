@@ -212,6 +212,8 @@ extern QString STR_TR_TidalVolume;
 extern QString STR_TR_RespRate;        // Respiratory Rate
 extern QString STR_TR_Snore;
 extern QString STR_TR_Leak;
+extern QString STR_TR_LargeLeak;
+extern QString STR_TR_LL;
 extern QString STR_TR_Leaks;
 extern QString STR_TR_TotalLeaks;
 extern QString STR_TR_UnintentionalLeaks;

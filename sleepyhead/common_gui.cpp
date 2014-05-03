@@ -68,6 +68,7 @@ QColor COLOR_Hypopnea       = Qt::blue;
 QColor COLOR_Obstructive    = COLOR_Aqua;
 QColor COLOR_Apnea          = Qt::darkGreen;
 QColor COLOR_CSR            = COLOR_LightGreen;
+QColor COLOR_LargeLeak      = COLOR_LightGray;
 QColor COLOR_ClearAirway    = QColor("#b254cd");
 QColor COLOR_RERA           = COLOR_Gold;
 QColor COLOR_VibratorySnore = QColor("#ff4040");

@@ -189,10 +189,19 @@ void init()
                         "PressurePulse",  QObject::tr("Pressure Pulse"),
                         QObject::tr("A pulse of pressure 'pinged' to detect a closed airway."),
                         QObject::tr("PP"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark red")));
+
+    // This Large Leak record is just a flag marker, used by Intellipap for one
     schema::channel.add(GRP_CPAP, new Channel(CPAP_LeakFlag      = 0x100a, DATA,    SESSION,
                         "LeakFlag",       QObject::tr("Large Leak"),
                         QObject::tr("A large mask leak affecting machine performance."),
-                        QObject::tr("LL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("dark blue")));
+                        QObject::tr("LL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("light gray")));
+
+    // The following is a Large Leak record that references a waveform span
+    schema::channel.add(GRP_CPAP, new Channel(PRS1_10 = 0x1158, DATA,    SESSION,
+                        "LeakFlagSpan",       QObject::tr("Large Leak"),
+                        QObject::tr("A large mask leak affecting machine performance."),
+                        QObject::tr("LL"),       QObject::tr("events/hr"),    DEFAULT,    QColor("light gray")));
+
     schema::channel.add(GRP_CPAP, new Channel(CPAP_NRI           = 0x100b, DATA,    SESSION, "NRI",
                         QObject::tr("Non Responding Event"),
                         QObject::tr("A type of respiratory event that won't respond to a pressure increase."),
@@ -420,7 +429,6 @@ void init()
     PRS1_0C = schema::channel["PRS1_0C"].id();
     PRS1_0E = schema::channel["PRS1_0E"].id();
     PRS1_0F = schema::channel["PRS1_0F"].id();
-    PRS1_10 = schema::channel["PRS1_10"].id();
     PRS1_12 = schema::channel["PRS1_12"].id();
     PRS1_FlexMode = schema::channel["FlexMode"].id();
     PRS1_FlexSet = schema::channel["FlexSet"].id();

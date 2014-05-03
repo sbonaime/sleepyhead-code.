@@ -721,13 +721,17 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         session->settings[PRS1_SysOneResistSet] = (int)data[offset + 0x0a] & 7;
     }
 
+
+    // up to this point appears to be correct, everything after is pretty much crap
+    // Summary files vary too much between Families/versions
+
+
     unsigned duration;
 
-    // up to this point appears to be correct for 0x01 & 0x00
     if (size < 59) {
-        duration = data[offset + 0x12] | (data[offset + 0x13] << 8);
-        duration *= 2;
-        session->really_set_last(qint64(timestamp + duration) * 1000L);
+//        duration = data[offset + 0x12] | (data[offset + 0x13] << 8);
+//        duration *= 2;
+//        session->really_set_last(qint64(timestamp + duration) * 1000L);
 
         if (max > 0) {
             session->setMin(CPAP_Pressure, min);
@@ -737,25 +741,25 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     } else {
 
         // 0X28 & 0X29 is length on r5
-        if (family == 0 && familyVersion >= 4) {
-            offset += 12;
-        }
+//        if (family == 0 && familyVersion >= 4) {
+//            offset += 12;
+//        }
 
         // on some 60 series it's one off. or was the original 60 series patch wrong?
         // I verified this comment below against several data samples compared with encore reports.
         //duration=data[0x1B] | data[0x1C] << 8)  // Session length in seconds
 
 
-        duration = data[offset + 0x14] | (data[offset + 0x15] << 8);
+//        duration = data[offset + 0x14] | (data[offset + 0x15] << 8);
 
-        if (!duration) {
-            qDebug() << "!duration exit";
-            delete session;
-            return false;
-        }
+//        if (!duration) {
+//            qDebug() << "!duration exit";
+//            delete session;
+//            return false;
+//        }
 
-        session->really_set_last(qint64(timestamp + duration) * 1000L);
-        float hours = float(duration) / 3600.0;
+  //      session->really_set_last(qint64(timestamp + duration) * 1000L);
+   //     float hours = float(duration) / 3600.0;
 
         // Not using these because sometimes this summary is broken.
         //EventDataType minp,maxp,avgp,p90p;
@@ -765,41 +769,42 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
         //p90p=float(data[offset+0x18])/10.0;
         //avgp=float(data[offset+0x19])/10.0;
 
-        short minp = data[offset + 0x16];
-        short maxp = data[offset + 0x17];
-        short medp = data[offset + 0x19];
-        short p90p = data[offset + 0x18];
+        // Nope.. positions are too variant between models.. calculate the hard way during machine->Save()..
+//        short minp = data[offset + 0x16];
+//        short maxp = data[offset + 0x17];
+//        short medp = data[offset + 0x19];
+//        short p90p = data[offset + 0x18];
 
-        if (family < 5) {
-            if (minp > 0) { session->setMin(CPAP_Pressure, EventDataType(minp) * 0.10); }
+//        if (family < 5) {
+//            if (minp > 0) { session->setMin(CPAP_Pressure, EventDataType(minp) * 0.10); }
+//            if (maxp > 0) { session->setMax(CPAP_Pressure, EventDataType(maxp) * 0.10); }
+//            if (medp > 0) { session->setWavg(CPAP_Pressure, EventDataType(medp) * 0.10); } // ??
 
-            if (maxp > 0) { session->setMax(CPAP_Pressure, EventDataType(maxp) * 0.10); }
-
-            if (medp > 0) { session->setWavg(CPAP_Pressure, EventDataType(medp) * 0.10); } // ??
-
-            session->m_gain[CPAP_Pressure] = 0.1;
-            session->m_valuesummary[CPAP_Pressure][minp] = 5;
-            session->m_valuesummary[CPAP_Pressure][medp] = 46;
-            session->m_valuesummary[CPAP_Pressure][p90p] = 44;
-            session->m_valuesummary[CPAP_Pressure][maxp] = 5;
-        }
+//            session->m_gain[CPAP_Pressure] = 0.1;
+//            session->m_valuesummary[CPAP_Pressure][minp] = 5;
+//            session->m_valuesummary[CPAP_Pressure][medp] = 46;
+//            session->m_valuesummary[CPAP_Pressure][p90p] = 44;
+//            session->m_valuesummary[CPAP_Pressure][maxp] = 5;
+//        }
 
         //        if (p90p>0) {
         //            session->set90p(CPAP_Pressure,p90p);
         //        }
 
-        int oc, cc, hc, rc, fc;
-        session->setCount(CPAP_Obstructive, oc = (int)data[offset + 0x1C] | (data[offset + 0x1D] << 8));
-        session->setCount(CPAP_ClearAirway, cc = (int)data[offset + 0x20] | (data[offset + 0x21] << 8));
-        session->setCount(CPAP_Hypopnea, hc = (int)data[offset + 0x2A] | (data[offset + 0x2B] << 8));
-        session->setCount(CPAP_RERA, rc = (int)data[offset + 0x2E] | (data[offset + 0x2F] << 8));
-        session->setCount(CPAP_FlowLimit, fc = (int)data[offset + 0x30] | (data[offset + 0x31] << 8));
+        // I can't rely on the position of any of this!
 
-        session->setCph(CPAP_Obstructive, float(oc / hours));
-        session->setCph(CPAP_ClearAirway, float(cc / hours));
-        session->setCph(CPAP_Hypopnea, float(hc / hours));
-        session->setCph(CPAP_RERA, float(rc / hours));
-        session->setCph(CPAP_FlowLimit, float(fc / hours));
+//        int oc, cc, hc, rc, fc;
+//        session->setCount(CPAP_Obstructive, oc = (int)data[offset + 0x1C] | (data[offset + 0x1D] << 8));
+//        session->setCount(CPAP_ClearAirway, cc = (int)data[offset + 0x20] | (data[offset + 0x21] << 8));
+//        session->setCount(CPAP_Hypopnea, hc = (int)data[offset + 0x2A] | (data[offset + 0x2B] << 8));
+//        session->setCount(CPAP_RERA, rc = (int)data[offset + 0x2E] | (data[offset + 0x2F] << 8));
+//        session->setCount(CPAP_FlowLimit, fc = (int)data[offset + 0x30] | (data[offset + 0x31] << 8));
+
+//        session->setCph(CPAP_Obstructive, float(oc / hours));
+//        session->setCph(CPAP_ClearAirway, float(cc / hours));
+//        session->setCph(CPAP_Hypopnea, float(hc / hours));
+//        session->setCph(CPAP_RERA, float(rc / hours));
+//        session->setCph(CPAP_FlowLimit, float(fc / hours));
     }
 
     // Set recommended Graph values..
@@ -1416,16 +1421,17 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
             //session->AddEvent(new Event(t,CPAP_CSR, data, 2));
             break;
 
-        case 0x10: // Unknown
-            data[0] = buffer[pos++]; // << 8) | buffer[pos];
+        case 0x10: // Unknown, Large Leak
+            data[0] = buffer[pos + 1] << 8 | buffer[pos];
+            pos += 2;
             data[1] = buffer[pos++];
-            data[2] = buffer[pos++];
 
             if (!Code[20]) {
                 if (!(Code[20] = session->AddEventList(PRS1_10, EVL_Event))) { return false; }
             }
 
-            Code[20]->AddEvent(t, data[0]);
+            tt = t - qint64(data[1]) * 1000L;
+            Code[20]->AddEvent(tt, data[0]);
             break;
 
         case 0x0f: // Cheyne Stokes Respiration
@@ -1653,6 +1659,11 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
 bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 {
+
+    if (sid == 1532) {
+        int i=5;
+    }
+
     Session *session = new_sessions[sid];
     //int sequence,seconds,br,htype,version,numsignals;
     QFile file(filename);
@@ -1788,7 +1799,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
                     wdur[i] += diff;
                 }
 
-            } else if (diff > 0 && wlength[0] > 0)  {
+            } else if ((diff > 0) && (wlength[0] > 0))  {
                 qDebug() << "Timestamp resync" << block << diff << corrupt << duration << timestamp - lasttimestamp
                          << filename;
 
@@ -1821,7 +1832,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
                         //a->setMin(v*5);
                     }
 
-                    session->updateLast(start + (qint64(wdur[i]) * 1000L));
+                    session->updateLast((start + qint64(wdur[i])) * 1000L);
                     wlength[i] = 0;
                     wdur[i] = 0;
                 }
@@ -1881,7 +1892,7 @@ bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
         } else if (wc[i] == CPAP_MaskPressure) {
         }
 
-        session->updateLast(start + qint64(wdur[i]) * 1000L);
+        session->updateLast((start + qint64(wdur[i])) * 1000L);
     }
 
     // lousy family 5 check to see if already has RespRate

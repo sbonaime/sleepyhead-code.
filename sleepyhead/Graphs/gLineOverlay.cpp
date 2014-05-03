@@ -149,7 +149,10 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
                         x1 = width + left;
                     }
 
-                    quads->add(x2, start_py, x1, start_py, x1, start_py + height, x2, start_py + height,
+                    quads->add(x2, start_py,
+                               x1, start_py,
+                               x1, start_py + height,
+                               x2, start_py + height,
                                m_flag_color.rgba());
 
                     if (quads->full()) {

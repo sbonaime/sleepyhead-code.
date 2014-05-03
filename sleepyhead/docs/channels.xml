@@ -8,9 +8,9 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
 <channels language="en" version="1.0">
  <group name="CPAP">
   <!-- Channel List -->
-  
 
-  
+
+
   <channel id="0x111e" class="data" name="TestChan1" details="Respiratory Rate" label="Mark's Resp. Rate" unit="breaths/min" color="black"/>
   <channel id="0x111f" class="data" name="TestChan2" details="Tidal Volume" label="Tidal Volume" unit="L/min" color="blue"/>
 
@@ -22,7 +22,6 @@ Important: One id code per item, DO NOT CHANGE ID NUMBERS!!!
   <channel id="0x1155" class="data" name="PRS1_0B" details="Unknown 0B" label="U0B" unit="?" color="light blue"/>
   <channel id="0x1156" class="data" name="PRS1_0C" details="Unknown 0C" label="U0C" unit="?" color="black"/>
   <channel id="0x1157" class="data" name="PRS1_0E" details="Unknown 0E" label="U0E" unit="?" color="dark green"/>
-  <channel id="0x1158" class="data" name="PRS1_10" details="Unknown 10" label="U10" unit="?" color="black"/>
   <channel id="0x1159" class="data" name="PRS1_12" details="PRS1 Unknown 12" label="U12" unit="" color="black"/>
   <channel id="0x1160" class="data" name="RMS9_E01" details="RMS9 Empty 1" label="E01" unit="" color="black"/>
   <channel id="0x1161" class="data" name="RMS9_E02" details="RMS9 Empty 2" label="E02" unit="" color="black"/>

@@ -184,7 +184,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
-    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB,false,FT_Span)));
+    fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
+    fg->AddLayer((new gFlagsLine(PRS1_10, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
+
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
     fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
@@ -215,7 +217,8 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
     FRW->AddLayer(new gXGrid());
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR,FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
+    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
     FRW->AddLayer(l);
     FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
     FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
@@ -223,13 +226,12 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
-    FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10,COLOR_Orange,"10",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
-    if (PROFILE.general->calculateRDI())
+    if (PROFILE.general->calculateRDI()) {
         FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE))));
-    else
+    } else {
         FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
-
+    }
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_FlowLimit, COLOR_FlowLimit, STR_TR_FL)));
@@ -1286,8 +1288,8 @@ void Daily::Load(QDate date)
                 { CPAP_VSnore,      COLOR_VibratorySnore, Qt::black, vs=cpap->count(CPAP_VSnore)/cpap->hours() },
                 { CPAP_VSnore2,     COLOR_VibratorySnore, Qt::black, vs2=cpap->count(CPAP_VSnore2)/cpap->hours() },
                 { CPAP_LeakFlag,    COLOR_LeakFlag,     Qt::black, lki=cpap->count(CPAP_LeakFlag)/hours },
-                { PRS1_10,          COLOR_LeakFlag,     Qt::black, lk2=cpap->count(PRS1_10)/hours },
-                { CPAP_CSR,         COLOR_CSR,      Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
+                { PRS1_10,          COLOR_LargeLeak,    Qt::black, lk2=(100.0/cpap->hours())*(cpap->sum(PRS1_10)/3600.0) },
+                { CPAP_CSR,         COLOR_CSR,          Qt::black, csr=(100.0/cpap->hours())*(cpap->sum(CPAP_CSR)/3600.0) }
             };
             int numchans=sizeof(chans)/sizeof(ChannelInfo);
 
