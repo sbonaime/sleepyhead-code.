@@ -99,7 +99,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString version = FullVersionString;
 
-//    if (QString(GIT_BRANCH) != "master") { version += QString(" ") + QString(GIT_BRANCH); }
+    if (QString(GIT_BRANCH) != "master") { version += QString(" ") + QString(GIT_BRANCH); }
+
+#ifdef TEST_BUILD
+    version += QString(STR_TestBuild);
+#endif
 
     this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
@@ -849,8 +853,8 @@ void MainWindow::on_action_About_triggered()
                           "<body>"
                           "<span style=\"color:#000000; font-weight:600; vertical-align:middle;\">"
                           "<table width=100%><tr><td>"
-                          "<p><h1>" + STR_TR_SleepyHead + " v%1.%2.%3-%4 (%8)</h1></p><font color=black><p>" +
-                          tr("Build Date") + ": %5 %6<br/>%7<br/>" + tr("Data Folder Location") + ": %9<hr/>" +
+                          "<p><h1>" + STR_TR_SleepyHead + " v%1 (%2)</h1></p><font color=black><p>" +
+                          tr("Build Date") + ": %3 %4<br/>%5<br/>" + tr("Data Folder Location") + ": %6<hr/>" +
                           tr("Copyright") + " &copy;2011-2014 Mark Watkins (jedimark) <br/> \n" +
                           tr("This software is released under the GNU Public License v3.0<br/>") +
                           "<hr>"
@@ -910,8 +914,12 @@ void MainWindow::on_action_About_triggered()
                           + "</p><p><b>" +
                           tr("Use this software entirely at your own risk.") + "</b></i></p>"
                           "</font></td></tr></table></span></body>"
-                         ).arg(major_version).arg(minor_version).arg(revision_number).arg(release_number).arg(__DATE__).arg(
-                      __TIME__).arg(gitrev).arg(ReleaseStatus).arg(QDir::toNativeSeparators(GetAppRoot()));
+                         ). arg(VersionString).
+                            arg(ReleaseStatus).
+                            arg(__DATE__).
+                            arg(__TIME__).
+                            arg(gitrev).
+                            arg(QDir::toNativeSeparators(GetAppRoot()));
     //"</div></body></html>"
 
     QDialog aboutbox;
@@ -928,7 +936,7 @@ void MainWindow::on_action_About_triggered()
 
     layout.insertWidget(0, &webview, 1);
 
-    QHBoxLayout layout2(&aboutbox);
+    QHBoxLayout layout2;
     layout.insertLayout(1, &layout2, 1);
     QPushButton okbtn(QObject::tr("&Close"), &aboutbox);
     aboutbox.connect(&okbtn, SIGNAL(clicked()), SLOT(reject()));

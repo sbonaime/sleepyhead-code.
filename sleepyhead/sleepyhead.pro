@@ -39,13 +39,15 @@ exists(../.git):{
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
     DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
 
-    contains(GIT_BRANCH,"testing"):DEFINES += TEST_BUILD
+#    contains(GIT_BRANCH,"testing"):
 
 } else {
     DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"
     DEFINES += GIT_REVISION=\\\"UNKNOWN\\\"
 }
 
+#Comment out for official builds
+DEFINES += TEST_BUILD
 
 
 unix:!macx {

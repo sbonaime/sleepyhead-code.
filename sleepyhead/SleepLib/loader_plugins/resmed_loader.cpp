@@ -28,8 +28,28 @@
 #endif
 
 extern QProgressBar *qprogress;
-QHash<int, QString> RMS9ModelMap;
-QHash<ChannelID, QVector<QString> > resmed_codes;
+
+QHash<QString, QList<quint16> > Resmed_Model_Map;
+
+const QString STR_UnknownModel = "Resmed S9 ???";
+
+// Return the model name matching the supplied model number.
+const QString & lookupModel(quint16 model)
+{
+
+    auto end = Resmed_Model_Map.end();
+    for (auto it = Resmed_Model_Map.begin(); it != end; ++it) {
+        QList<quint16> & list = it.value();
+        for (int i=0; i < list.size(); ++i) {
+            if (list.at(i) == model) {
+                return it.key();
+            }
+        }
+    }
+    return STR_UnknownModel;
+}
+
+QHash<ChannelID, QStringList> resmed_codes;
 
 const QString STR_ext_TGT = "tgt";
 const QString STR_ext_CRC = "crc";
@@ -40,25 +60,49 @@ const QString STR_ext_gz = ".gz";
 // Looks up foreign language Signal names that match this channelID
 EDFSignal *EDFParser::lookupSignal(ChannelID ch)
 {
-    QHash<ChannelID, QVector<QString> >::iterator ci;
-    QHash<QString, EDFSignal *>::iterator jj;
-    ci = resmed_codes.find(ch);
+    // Get list of all known foreign language names for this channel
+    auto channames = resmed_codes.find(ch);
 
-    if (ci == resmed_codes.end()) {
+    if (channames == resmed_codes.end()) {
+        // no alternatives strings found for this channel
         return nullptr;
     }
 
-    for (int i = 0; i < ci.value().size(); i++) {
-        jj = lookup.find(ci.value()[i]);
+    // Scan through EDF's list of signals to see if any match
+    for (int i = 0; i < channames.value().size(); i++) {
+        auto jj = lookup.find(channames.value()[i]);
 
         if (jj == lookup.end()) {
             continue;
         }
 
+        // return the EDFSignal record
         return jj.value();
     }
 
+    // Failed
     return nullptr;
+}
+
+// Check if given string matches any alternative signal names for this channel
+bool matchSignal(ChannelID ch, const QString & name)
+{
+    auto channames = resmed_codes.find(ch);
+
+    if (channames == resmed_codes.end()) {
+        return false;
+    }
+
+    QStringList & strings = channames.value();
+    int size = strings.size();
+
+    for (int i=0; i < size; ++i) {
+        // Using starts with, because ResMed is very lazy about consistency
+        if (name.startsWith(strings.at(i), Qt::CaseInsensitive)) {
+                return true;
+        }
+    }
+    return false;
 }
 
 EDFSignal *EDFParser::lookupName(QString name)
@@ -439,13 +483,19 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         line = f.readLine().trimmed();
 
         if (!line.isEmpty()) {
-            key = line.section(" ", 0, 0);
+            key = line.section(" ", 0, 0).section("#", 1);
             value = line.section(" ", 1);
-            key = key.section("#", 1);
 
-            if (key == "SRN") {
+            if (key == "SRN") { // Serial Number
                 key = STR_PROP_Serial;
                 serial = value;
+
+            } else if (key == "PNA") {  // Product Name
+                key = STR_PROP_Model;
+                value.replace("_"," ");
+
+            } else if (key == "PCD") { // Product Code
+                key = STR_PROP_ModelNumber;
             }
 
             idmap[key] = value;
@@ -489,25 +539,15 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     }
 
     if (path == backup_path) {
+        // Don't create backups if importing from backup folder
         create_backups = false;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse the idmap into machine objects properties, (overwriting any old values)
     ///////////////////////////////////////////////////////////////////////////////////
-    for (QHash<QString, QString>::iterator i = idmap.begin(); i != idmap.end(); i++) {
+    for (auto i = idmap.begin(); i != idmap.end(); i++) {
         m->properties[i.key()] = i.value();
-
-        if (i.key() == "PCD") { // Lookup Product Code for real model string
-            bool ok;
-            int j = i.value().toInt(&ok);
-
-            if (ok) {
-                m->properties[STR_PROP_Model] = RMS9ModelMap[j];
-            }
-
-            m->properties[STR_PROP_ModelNumber] = i.value();
-        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1360,9 +1400,6 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                     mode = sig->data[dn];
                 } else { mode = 0; }
 
-
-
-
                 // Ramp, Fulltime
                 // AutoSV machines don't have both fields
                 sig = stredf.lookupSignal(RMS9_EPR);
@@ -1414,85 +1451,39 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                         sess->settings[CPAP_Mode] = MODE_BIPAP;
                     }
 
-                    EventDataType tmp, epap = 0, ipap = 0;
-
-
                     // All S9 machines have Set Pressure
                     // Elite has Min Pressure and Max Pressure
                     // VPAP Auto has EPAP, Min EPAP, IPAP and Max IPAP, and PS
                     // VPAP Adapt 36007 has just EPAP and PSLo/Hi,
                     // VPAP Adapt 36037 has EPAPLo, EPAPHi and PSLo/Hi
+                    QHash<ChannelID, QString> hash = {
+                        { CPAP_EPAP, "EPAP" },
+                        { CPAP_IPAP, "IPAP" },
+                        { CPAP_EPAPLo, "Min EPAP" },
+                        { CPAP_EPAPHi, "Max EPAP" },
+                        { CPAP_IPAPLo, "Min IPAP" },
+                        { CPAP_IPAPHi, "Max IPAP" },
+                        { CPAP_PS, "PS" },
+                        { CPAP_PSMin, "Min PS" },
+                        { CPAP_PSMax, "Max PS" },
+                        { CPAP_RespRate, "RR" }, // Is this a setting to force respiratory rate on S/T machines? or an average
+                        { CPAP_PresReliefSet, "Easy-Breathe" },
+                    };
 
+                    for (auto it = hash.begin(); it != hash.end(); ++it) {
+                        auto a = stredf.lookup.find(it.value());
+                        if (a != stredf.lookup.end()) {
+                            sig = a.value();
+                            sess->settings[it.key()] = EventDataType(sig->data[dn] * sig->gain);
 
-                    if (stredf.lookup.contains("EPAP")) {
-                        sig = stredf.lookup["EPAP"];
-                        epap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_EPAP] = epap;
+                            if (it.key() == CPAP_PresReliefSet) {
+                                // this is not a setting on any machine I've played with, I think it's just an indication of the type of motor
+                                sess->settings[CPAP_PresReliefType] = (int)PR_EASYBREATHE;
+                                sess->settings[CPAP_PresReliefMode] = (int)PM_FullTime;
+                            }
+                        }
                     }
 
-                    if (stredf.lookup.contains("IPAP")) {
-                        sig = stredf.lookup["IPAP"];
-                        ipap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_IPAP] = ipap;
-                    }
-
-                    if (stredf.lookup.contains("Min EPAP")) {
-                        sig = stredf.lookup["Min EPAP"];
-                        epap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_EPAPLo] = epap;
-                    }
-
-                    if (stredf.lookup.contains("Max EPAP")) {
-                        sig = stredf.lookup["Max EPAP"];
-                        epap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_EPAPHi] = epap;
-                    }
-
-                    if (stredf.lookup.contains("Min IPAP")) {
-                        sig = stredf.lookup["Min IPAP"];
-                        ipap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_IPAPLo] = ipap;
-                    }
-
-                    if (stredf.lookup.contains("Max IPAP")) {
-                        sig = stredf.lookup["Max IPAP"];
-                        ipap = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_IPAPHi] = ipap;
-                    }
-
-                    if (stredf.lookup.contains("PS")) {
-                        sig = stredf.lookup["PS"];
-                        tmp = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_PS] = tmp; // plain VPAP Pressure support
-                    }
-
-                    if (stredf.lookup.contains("Min PS")) {
-                        sig = stredf.lookup["Min PS"];
-                        tmp = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_PSMin] = tmp;
-                    }
-
-                    if (stredf.lookup.contains("Max PS")) {
-                        sig = stredf.lookup["Max PS"];
-                        tmp = sig->data[dn] * sig->gain;
-                        sess->settings[CPAP_PSMax] = tmp;
-                    }
-
-                    if (stredf.lookup.contains("RR")) { // Is this a setting to force respiratory rate on S/T machines?
-                        sig = stredf.lookup["RR"];
-                        tmp = sig->data[dn];
-                        sess->settings[CPAP_RespRate] = tmp * sig->gain;
-                    }
-
-                    // this is not a setting on any machine I've played with, I think it's just an indication of the type of motor
-                    if (stredf.lookup.contains("Easy-Breathe")) {
-                        sig = stredf.lookup["Easy-Breathe"];
-                        tmp = sig->data[dn] * sig->gain;
-
-                        sess->settings[CPAP_PresReliefSet] = tmp;
-                        sess->settings[CPAP_PresReliefType] = (int)PR_EASYBREATHE;
-                        sess->settings[CPAP_PresReliefMode] = (int)PM_FullTime;
-                    }
 
                 } else {
                     sess->settings[CPAP_Mode] = MODE_APAP;
@@ -1876,7 +1867,6 @@ QString ResmedLoader::backup(QString fullname, QString backup_path, bool compres
 
 bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
 {
-    // EVEnt records have useless duration record.
 
     QString t;
     long recs;
@@ -1887,21 +1877,20 @@ bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
     bool sign, ok;
     double d;
     double tt;
-    //ChannelID code;
-    //Event *e;
-    //totaldur=edf.GetNumDataRecords()*edf.GetDuration();
 
-    //    EventList *EL[4]={nullptr};
+    // Notes: Event records have useless duration record.
     sess->updateFirst(edf.startdate);
-    //if (edf.enddate>edf.startdate) sess->set_last(edf.enddate);
 
     EventList *OA = nullptr, *HY = nullptr, *CA = nullptr, *UA = nullptr;
 
     // Allow for empty sessions..
+
+    // Create EventLists
     OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
     HY = sess->AddEventList(CPAP_Hypopnea, EVL_Event);
     UA = sess->AddEventList(CPAP_Apnea, EVL_Event);
 
+    // Process event annotation records
     for (int s = 0; s < edf.GetNumSignals(); s++) {
         recs = edf.edfsignals[s].nr * edf.GetNumDataRecords() * 2;
 
@@ -1979,13 +1968,13 @@ bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
                 } while ((data[pos] != 20) && (pos < recs)); // start code
 
                 if (!t.isEmpty()) {
-                    if (t == "obstructive apnea") {
+                    if (matchSignal(CPAP_Obstructive, t)) {
                         OA->AddEvent(tt, duration);
-                    } else if (t == "hypopnea") {
+                    } else if (matchSignal(CPAP_Hypopnea, t)) {
                         HY->AddEvent(tt, duration + 10); // Only Hyponea's Need the extra duration???
-                    } else if (t == "apnea") {
+                    } else if (matchSignal(CPAP_Apnea, t)) {
                         UA->AddEvent(tt, duration);
-                    } else if (t == "central apnea") {
+                    } else if (matchSignal(CPAP_ClearAirway, t)) {
                         // Not all machines have it, so only create it when necessary..
                         if (!CA) {
                             if (!(CA = sess->AddEventList(CPAP_ClearAirway, EVL_Event))) { return false; }
@@ -2007,57 +1996,62 @@ bool ResmedLoader::LoadEVE(Session *sess, EDFParser &edf)
                 // pos++;
             }
 
-            while ((data[pos] == 0) && pos < recs) { pos++; }
+            while ((data[pos] == 0) && (pos < recs)) { pos++; }
 
             if (pos >= recs) { break; }
         }
 
         sess->updateLast(tt);
-        // qDebug(data);
     }
 
     return true;
 }
 bool ResmedLoader::LoadBRP(Session *sess, EDFParser &edf)
 {
-    QString t;
     sess->updateFirst(edf.startdate);
+
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
 
     for (int s = 0; s < edf.GetNumSignals(); s++) {
         EDFSignal &es = edf.edfsignals[s];
-        //qDebug() << "BRP:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum;
+
         long recs = es.nr * edf.GetNumDataRecords();
         ChannelID code;
 
-        if (es.label == "Flow") {
+        if (matchSignal(CPAP_FlowRate, es.label)) {
+            code = CPAP_FlowRate;
             es.gain *= 60.0;
             es.physical_minimum *= 60.0;
             es.physical_maximum *= 60.0;
             es.physical_dimension = "L/M";
-            code = CPAP_FlowRate;
-        } else if (es.label.startsWith("Mask Pres")) {
+
+        } else if (matchSignal(CPAP_MaskPressureHi, es.label)) {
             code = CPAP_MaskPressureHi;
-        } else if (es.label.startsWith("Resp Event")) {
+
+        } else if (matchSignal(CPAP_RespEvent, es.label)) {
             code = CPAP_RespEvent;
+
         } else {
             qDebug() << "Unobserved ResMed BRP Signal " << es.label;
             continue;
         }
 
-        double rate = double(duration) / double(recs);
-        EventList *a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
-        a->setDimension(es.physical_dimension);
-        a->AddWaveform(edf.startdate, es.data, recs, duration);
-        sess->setMin(code, a->Min());
-        sess->setMax(code, a->Max());
-        sess->setPhysMin(code, es.physical_minimum);
-        sess->setPhysMax(code, es.physical_maximum);
+        if (code) {
+            double rate = double(duration) / double(recs);
+            EventList *a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
+            a->setDimension(es.physical_dimension);
+            a->AddWaveform(edf.startdate, es.data, recs, duration);
+            sess->setMin(code, a->Min());
+            sess->setMax(code, a->Max());
+            sess->setPhysMin(code, es.physical_minimum);
+            sess->setPhysMax(code, es.physical_maximum);
+        }
     }
 
     return true;
 }
+
 void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, ChannelID code,
                                long recs, qint64 duration, EventDataType t_min, EventDataType t_max, bool square)
 {
@@ -2071,10 +2065,9 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
     time.start();
 #endif
 
-
     double rate = (duration / recs); // milliseconds per record
     double tt = edf.startdate;
-    //sess->UpdateFirst(tt);
+
     EventStoreType c, last;
 
     int startpos = 0;
@@ -2118,8 +2111,8 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
             return;
         }
 
-        for (; sptr < eptr; sptr++) { //int i=startpos;i<recs;i++) {
-            c = *sptr; //es.data[i];
+        for (; sptr < eptr; sptr++) {
+            c = *sptr;
 
             if (last != c) {
                 if (square) {
@@ -2204,12 +2197,11 @@ void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, Cha
     }
 
 #endif
-
-    //return el;
 }
+
+// Load SAD Oximetry Signals
 bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
 {
-    QString t;
     sess->updateFirst(edf.startdate);
     qint64 duration = edf.GetNumDataRecords() * edf.GetDuration();
     sess->updateLast(edf.startdate + duration);
@@ -2220,37 +2212,30 @@ bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
         long recs = es.nr * edf.GetNumDataRecords();
         ChannelID code;
 
-        if (es.label.startsWith("Puls")) {
-            code = OXI_Pulse;
-        } else if (es.label == "SpO2") {
-            code = OXI_SPO2;
-        } else {
-            qDebug() << "Unobserved ResMed SAD Signal " << es.label;
-            continue;
-        }
-
         bool hasdata = false;
 
-        for (int i = 0; i < recs; i++) {
+        for (int i = 0; i < recs; ++i) {
             if (es.data[i] != -1) {
                 hasdata = true;
                 break;
             }
         }
+        if (!hasdata) continue;
 
-        if (hasdata) {
-            if (code == OXI_Pulse) {
-                ToTimeDelta(sess, edf, es, code, recs, duration);
-                sess->setPhysMax(code, 180);
-                sess->setPhysMin(code, 18);
-            } else if (code == OXI_SPO2) {
-                es.physical_minimum = 60;
-                ToTimeDelta(sess, edf, es, code, recs, duration);
-                sess->setPhysMax(code, 100);
-                sess->setPhysMin(code, 60);
-            }
+        if (matchSignal(code = OXI_Pulse, es.label)) {
+            ToTimeDelta(sess, edf, es, code, recs, duration);
+            sess->setPhysMax(code, 180);
+            sess->setPhysMin(code, 18);
+
+        } else if (matchSignal(code = OXI_SPO2, es.label)) {
+            es.physical_minimum = 60;
+            ToTimeDelta(sess, edf, es, code, recs, duration);
+            sess->setPhysMax(code, 100);
+            sess->setPhysMin(code, 60);
+
+        } else {
+            qDebug() << "Unobserved ResMed SAD Signal " << es.label;
         }
-
     }
 
     return true;
@@ -2282,38 +2267,30 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
         rate = double(duration) / double(recs);
 
         //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
-        if (es.label == "Snore Index") {
-            code = CPAP_Snore;
-            ToTimeDelta(sess, edf, es, code, recs, duration, es.digital_maximum);
-        } else if (es.label.startsWith("Therapy Pres")) {
-            code = CPAP_Pressure; //TherapyPressure;
+        if (matchSignal(code = CPAP_Snore, es.label)) {
+            ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
+        } else if (matchSignal(code = CPAP_Pressure, es.label)) {
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (es.label == "Insp Pressure") {
-            code = CPAP_IPAP;
+        } else if (matchSignal(code = CPAP_IPAP, es.label)) {
             sess->settings[CPAP_Mode] = MODE_BIPAP;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if ((es.label == "MV") || (es.label == "VM")) {
-            code = CPAP_MinuteVent;
+        } else if (matchSignal(code = CPAP_MinuteVent,es.label)) {
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if ((es.label == "RR") || (es.label == "AF") || (es.label == "FR")) {
-            code = CPAP_RespRate;
+        } else if (matchSignal(code = CPAP_RespRate, es.label)) {
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
-        } else if ((es.label == "Vt") || (es.label == "VC")) {
-            code = CPAP_TidalVolume;
+        } else if (matchSignal(code = CPAP_TidalVolume, es.label)) {
             es.gain *= 1000.0;
             es.physical_maximum *= 1000.0;
             es.physical_minimum *= 1000.0;
             //            es.digital_maximum*=1000.0;
             //            es.digital_minimum*=1000.0;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if ((es.label == "Leak") || (es.label.startsWith("Leck")) || (es.label.startsWith("Lekk"))
-                   || (es.label.startsWith("Läck")) || es.label.startsWith("LÃ¤ck")) {
-            code = CPAP_Leak;
+        } else if (matchSignal(code = CPAP_Leak, es.label)) {
             es.gain *= 60;
             es.physical_maximum *= 60;
             es.physical_minimum *= 60;
@@ -2323,38 +2300,31 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0, true);
             sess->setPhysMax(code, 120.0);
             sess->setPhysMin(code, 0);
-        } else if (es.label == "FFL Index") {
-            code = CPAP_FLG;
+        } else if (matchSignal(code = CPAP_FLG, es.label)) {
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (es.label.startsWith("Mask Pres")) {
-            code = CPAP_MaskPressure;
+        } else if (matchSignal(code = CPAP_MaskPressure, es.label)) {
             es.physical_maximum = 25;
             es.physical_minimum = 4;
 
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (es.label.startsWith("Exp Press")) {
-            code = CPAP_EPAP; //ExpiratoryPressure
+        } else if (matchSignal(code = CPAP_EPAP, es.label)) { // Expiratory Pressure
             es.physical_maximum = 25;
             es.physical_minimum = 4;
 
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (es.label.startsWith("I:E")) {
-            code = CPAP_IE; //I:E ratio?
+        } else if (matchSignal(code = CPAP_IE, es.label)) { //I:E ratio
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label.startsWith("Ti")) {
-            code = CPAP_Ti;
+        } else if (matchSignal(code = CPAP_Ti, es.label)) {
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label.startsWith("Te")) {
-            code = CPAP_Te;
+        } else if (matchSignal(code = CPAP_Te, es.label)) {
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (es.label.startsWith("TgMV")) {
-            code = CPAP_TgMV;
+        } else if (matchSignal(code = CPAP_TgMV, es.label)) {
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
@@ -2387,241 +2357,85 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
     return true;
 }
 
-const QString RMS9_STR_Escape = "S9 Escape";
-const QString RMS9_STR_EscapeAuto = "S9 Escape Auto";
-const QString RMS9_STR_Elite = "S9 Elite";
-const QString RMS9_STR_AutoSet = "S9 AutoSet";
-const QString RMS9_STR_AutoSetForHer = "S9 AutoSet for Her";
-const QString RMS9_STR_AutoSetCS = "S9 AutoSet CS";
-const QString RMS9_STR_AutoSet25 = "S9 AutoSet 25";
-const QString RMS9_STR_VPAP_S = "S9 VPAP S";
-const QString RMS9_STR_VPAP_Auto = "S9 VPAP Auto";
-const QString RMS9_STR_VPAP_Adapt = "S9 VPAP Adapt";
-const QString RMS9_STR_VPAP_ST = "S9 VPAP ST";
-const QString RMS9_STR_VPAP_STA = "S9 VPAP ST-A";
-const QString RMS9_STR_VPAP_ST22 = "S9 VPAP ST 22";
-
 void ResInitModelMap()
 {
-    // Escape Series
-    RMS9ModelMap[36001] = RMS9ModelMap[36011] = RMS9ModelMap[36021] = RMS9ModelMap[36141] =
-    RMS9ModelMap[36201] = RMS9ModelMap[36221] = RMS9ModelMap[36261] = RMS9ModelMap[36301] =
-    RMS9ModelMap[36361] = RMS9_STR_Escape;
-
-    // Escape Auto Series
-    RMS9ModelMap[36002] = RMS9ModelMap[36012] = RMS9ModelMap[36022] = RMS9ModelMap[36302] =
-    RMS9ModelMap[36362] = RMS9_STR_EscapeAuto;
-
-    // Elite Series
-    RMS9ModelMap[36003] = RMS9ModelMap[36013] = RMS9ModelMap[36023] = RMS9ModelMap[36103] =
-    RMS9ModelMap[36113] = RMS9ModelMap[36123] = RMS9ModelMap[36143] = RMS9ModelMap[36203] =
-    RMS9ModelMap[36223] = RMS9ModelMap[36243] = RMS9ModelMap[36263] = RMS9ModelMap[36303] =
-    RMS9ModelMap[36343] = RMS9ModelMap[36363] = RMS9_STR_Elite;
-
-    // AutoSet Series
-    RMS9ModelMap[36005] = RMS9ModelMap[36015] = RMS9ModelMap[36025] = RMS9ModelMap[36105] =
-    RMS9ModelMap[36115] = RMS9ModelMap[36125] = RMS9ModelMap[36145] = RMS9ModelMap[36205] =
-    RMS9ModelMap[36225] = RMS9ModelMap[36245] = RMS9ModelMap[36265] = RMS9ModelMap[36305] =
-    RMS9ModelMap[36325] = RMS9ModelMap[36345] = RMS9ModelMap[36365] = RMS9_STR_AutoSet;
-
-    // AutoSet CS Series
-    RMS9ModelMap[36100] = RMS9ModelMap[36110] = RMS9ModelMap[36120] = RMS9ModelMap[36140] =
-    RMS9ModelMap[36200] = RMS9ModelMap[36220] = RMS9ModelMap[36360] = RMS9_STR_AutoSetCS;
-
-    // AutoSet 25 Series
-    RMS9ModelMap[36106] = RMS9ModelMap[36116] = RMS9ModelMap[36126] = RMS9ModelMap[36146] =
-    RMS9ModelMap[36206] = RMS9ModelMap[36226] = RMS9ModelMap[36366] = RMS9_STR_AutoSet25;
-
-    // Girly "For Her" AutoSet Series
-    RMS9ModelMap[36065] = RMS9_STR_AutoSetForHer;
-
-    // VPAP S Series (+H5i +Climate Control)
-    RMS9ModelMap[36004] = RMS9ModelMap[36014] = RMS9ModelMap[36024] = RMS9ModelMap[36114] =
-    RMS9ModelMap[36124] = RMS9ModelMap[36144] = RMS9ModelMap[36204] = RMS9ModelMap[36224] =
-    RMS9ModelMap[36284] = RMS9ModelMap[36304] = RMS9_STR_VPAP_S;
-
-    // VPAP Auto Series (+H5i +Climate Control)
-    RMS9ModelMap[36006] = RMS9ModelMap[36016] = RMS9ModelMap[36026] = RMS9_STR_VPAP_Auto;
-
-
-    // VPAP Adapt Series (+H5i +Climate Control)
-    // Trev's 36037 supports variable EPAP...
-    RMS9ModelMap[36037] = RMS9ModelMap[36007] = RMS9ModelMap[36017] = RMS9ModelMap[36027] =
-    RMS9ModelMap[36367] = RMS9_STR_VPAP_Adapt;
-
-    // VPAP ST Series (+H5i +Climate Control)
-    RMS9ModelMap[36008] = RMS9ModelMap[36018] = RMS9ModelMap[36028] = RMS9ModelMap[36108] =
-    RMS9ModelMap[36148] = RMS9ModelMap[36208] = RMS9ModelMap[36228] = RMS9ModelMap[36368] =
-    RMS9_STR_VPAP_ST;
-
-    // VPAP ST 22 Series
-    RMS9ModelMap[36118] = RMS9ModelMap[36128] = RMS9_STR_VPAP_ST22;
-
-    // VPAP ST-A Series
-    RMS9ModelMap[36039] = RMS9ModelMap[36159] = RMS9ModelMap[36169] = RMS9ModelMap[36379] =
-    RMS9_STR_VPAP_STA;
-
-
-    //    36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203,
-    //    36223, 36243, 36263, 36303, 36343, 36363 S9 Elite Series
-    //    36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205,
-    //    36225, 36245, 36265, 36305, 36325, 36345, 36365 S9 AutoSet Series
-    //    36065 S9 AutoSet for Her
-    //    36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301,
-    //    36361 S9 Escape
-    //    36002, 36012, 36022, 36302, 36362 S9 Escape Auto
-    //    36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224,
-    //    36284, 36304 S9 VPAP S (+ H5i, + Climate Control)
-    //    36006, 36016, 36026 S9 VPAP AUTO (+ H5i, + Climate Control)
-
-    //    36007, 36017, 36027, 36367
-    //    S9 VPAP ADAPT (+ H5i, + Climate
-    //    Control)
-    //    36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 S9 VPAP ST (+ H5i, + Climate Control)
-    //    36100, 36110, 36120, 36140, 36200, 36220, 36360 S9 AUTOSET CS
-    //    36106, 36116, 36126, 36146, 36206, 36226, 36366 S9 AUTOSET 25
-    //    36118, 36128 S9 VPAP ST 22
-    //    36039, 36159, 36169, 36379 S9 VPAP ST-A
-    //    24921, 24923, 24925, 24926, 24927 ResMed Power Station II (RPSII)
-    //    33030 S8 Compact
-    //    33001, 33007, 33013, 33036, 33060 S8 Escape
-    //    33032 S8 Lightweight
-    //    33033 S8 AutoScore
-    //    33048, 33051, 33052, 33053, 33054, 33061 S8 Escape II
-    //    33055 S8 Lightweight II
-    //    33021 S8 Elite
-    //    33039, 33045, 33062, 33072, 33073, 33074, 33075 S8 Elite II
-    //    33044 S8 AutoScore II
-    //    33105, 33112, 33126 S8 AutoSet (including Spirit & Vantage)
-    //    33128, 33137 S8 Respond
-    //    33129, 33141, 33150 S8 AutoSet II
-    //    33136, 33143, 33144, 33145, 33146, 33147, 33148 S8 AutoSet Spirit II
-    //    33138 S8 AutoSet C
-    //    26101, 26121 VPAP Auto 25
-    //    26119, 26120 VPAP S
-    //    26110, 26122 VPAP ST
-    //    26104, 26105, 26125, 26126 S8 Auto 25
-    //    26102, 26103, 26106, 26107, 26108, 26109, 26123, 26127 VPAP IV
-    //    26112, 26113, 26114, 26115, 26116, 26117, 26118, 26124 VPAP IV ST
-
-
-    /* S8 Series
-    RMS9ModelMap[33007]="S8 Escape";
-    RMS9ModelMap[33039]="S8 Elite II";
-    RMS9ModelMap[33051]="S8 Escape II";
-    RMS9ModelMap[33064]="S8 Escape II AutoSet";
-    RMS9ModelMap[33064]="S8 Escape II AutoSet";
-    RMS9ModelMap[33129]="S8 AutoSet II";
-    */
-
+    // don't really need this anymore
+    Resmed_Model_Map = {
+        { "S9 Escape",      { 36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301, 36361 } },
+        { "S9 Escape Auto", { 36002, 36012, 36022, 36302, 36362 } },
+        { "S9 Elite",       { 36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203, 36223, 36243, 36263, 36303, 36343, 36363 } },
+        { "S9 Autoset",     { 36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205, 36225, 36245, 36265, 36305, 36325, 36345, 36365 } },
+        { "S9 AutoSet CS",  { 36100, 36110, 36120, 36140, 36200, 36220, 36360 } },
+        { "S9 AutoSet 25",  { 36106, 36116, 36126, 36146, 36206, 36226, 36366 } },
+        { "S9 AutoSet for Her", { 36065 } },
+        { "S9 VPAP S",      { 36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224, 36284, 36304 } },
+        { "S9 VPAP Auto",   { 36006, 36016, 36026 } },
+        { "S9 VPAP Adapt",  { 36037, 36007, 36017, 36027, 36367 } },
+        { "S9 VPAP ST",     { 36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 } },
+        { "S9 VPAP ST 22",  { 36118, 36128 } },
+        { "S9 VPAP ST-A",   { 36039, 36159, 36169, 36379 } },
+/* S8 Series
+        { "S8 Escape",      { 33007 } },
+        { "S8 Elite II",    { 33039 } },
+        { "S8 Escape II",   { 33051 } },
+        { "S8 Escape II AutoSet", { 33064 } },
+        { "S8 AutoSet II",  { 33129 } },
+            */
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // Translation lookup table for non-english machines
     ////////////////////////////////////////////////////////////////////////////
 
-    resmed_codes[CPAP_FlowRate] = {"Flow"};
+    // Only put the first part, enough to be identifiable, because ResMed likes
+    // to signal names crop short
+    resmed_codes = {
+        { CPAP_FlowRate, { "Flow" } },
+        { CPAP_MaskPressureHi, { "Mask Pres", } },
+        { CPAP_MaskPressure, { "Mask Pres", } },
+        { CPAP_RespEvent, { "Resp Event" } },
+        { CPAP_Pressure, { "Therapy Pres", } },
+        { CPAP_IPAP, { "Insp Pres" } },
+        { CPAP_EPAP, { "Exp Pres", } },
+        { CPAP_Leak, { "Leak", "Leck", "Lekk", "Läck", "LÃ¤ck", } },
+        { CPAP_RespRate, { "RR", "AF", "FR" } },
+        { CPAP_MinuteVent, { "MV", "VM" } },
+        { CPAP_TidalVolume, { "Vt", "VC" } },
+        { CPAP_IE, { "I:E" } },
+        { CPAP_Snore, { "Snore" } },
+        { CPAP_FLG, { "FFL Index" } },
+        { CPAP_Ti, { "Ti" } },
+        { CPAP_Te, { "Te" } },
+        { CPAP_TgMV, { "TgMV" } },
+        { OXI_Pulse, { "Pulse", "Puls", "Pols" } },
+        { OXI_SPO2, { "SpO2" } },
 
-    resmed_codes[CPAP_MaskPressureHi] = {
-        "Mask Pres",
-        "Mask Pressure" // VPAP
+        { CPAP_Obstructive, { "Obstructive apnea" } },
+        { CPAP_Hypopnea, { "Hypopnea" } },
+        { CPAP_Apnea, { "Apnea" } },
+        { CPAP_ClearAirway, { "Central apnea" } },
+        { CPAP_Mode, { "Mode", "Modus", "Funktion" } },
+
+        { RMS9_SetPressure, { "SetPressure", "Eingest. Druck", "Ingestelde druk", "Pres. prescrite", "Inställt tryck", "InstÃ¤llt tryck" } },
+        { RMS9_EPR, { "EPR" } },
+        { RMS9_EPRSet, { "EPR Level", "EPR-Stufe", "EPR-niveau", "Niveau EPR", "EPR-nivå", "EPR-nivÃ¥" } },
+
+        { CPAP_PressureMax, {
+              "Max Pressure",
+              "Max. Druck",       // German
+              "Max druk",         // Dutch
+              "Pression max.",    // French
+              "Max tryck",        // Swedish
+        } },
+        { CPAP_PressureMin, {
+              "Min Pressure",
+              "Min. Druck",       // German
+              "Min druk",         // Dutch
+              "Pression min.",    // French
+              "Min tryck",        // Swedish
+        } },
+
     };
-    resmed_codes[CPAP_MaskPressure] = {
-        "Mask Pres",
-        "Mask Pressure" // VPAP
-    };
-
-    resmed_codes[CPAP_RespEvent] = {"Resp Event"};
-    resmed_codes[CPAP_Pressure] = {"Therapy Pres"};
-    resmed_codes[CPAP_IPAP] = {"Insp Pressure"};
-    resmed_codes[CPAP_EPAP] = {"Exp Press", "Exp Pressure"};
-
-    resmed_codes[CPAP_Leak] = {
-        "Leak",
-        "Leck.",
-        "Läcka"
-    };
-
-    resmed_codes[CPAP_RespRate] = {
-            "RR",
-            "AF",
-            "FR"
-    };
-    resmed_codes[CPAP_TidalVolume] = {
-        "Vt",
-        "VC",
-    };
-    resmed_codes[CPAP_MinuteVent] = {
-        "MV",
-        "VM"
-    };
-
-    resmed_codes[CPAP_IE] = {"I:E"};
-    resmed_codes[CPAP_Snore] = {"Snore Index"};
-    resmed_codes[CPAP_FLG] = {"FFL Index"};
-    resmed_codes[CPAP_RespEvent] = {"RE"};
-    resmed_codes[CPAP_Ti] = {"Ti"};
-    resmed_codes[CPAP_Te] = {"Te"};
-
-    // SAD (oximetry)
-
-    resmed_codes[OXI_Pulse] = {
-        "Pulse",
-        "Puls",   // German & Swedish
-        "Pols",   // Dutch
-    };
-
-    resmed_codes[OXI_SPO2] = {"SpO2"};
-
-    // Event annotations
-    resmed_codes[CPAP_Obstructive] = {"Obstructive apnea"};
-    resmed_codes[CPAP_Hypopnea] = {"Hypopnea"};
-    resmed_codes[CPAP_Apnea] = {"Apnea"};
-    resmed_codes[CPAP_ClearAirway] = {"Central apnea"};
-
-    resmed_codes[CPAP_Mode] = {
-        "Mode",
-        "Modus",    // Dutch & German
-        "Funktion", // Swedish
-    };
-
-    resmed_codes[RMS9_SetPressure] = {
-        "Set Pressure",      // English - Prescription
-        "Eingest. Druck",    // German
-        "Ingestelde druk",   // Dutch
-        "Pres. prescrite",   // French
-        "Inställt tryck",    // Swedish
-        "InstÃ¤llt tryck",   // Swedish, QT5.2
-    };
-
-    resmed_codes[RMS9_EPR] = {"EPR"};
-
-    resmed_codes[RMS9_EPRSet] = {
-        "EPR Level",
-        "EPR-Stufe",        // French
-        "EPR-niveau",       // Dutch
-        "Niveau EPR",       // German
-        "EPR-nivå",         // Swedish
-        "EPR-nivÃ¥",        // Swedish, QT5.2
-    };
-
-
-    resmed_codes[CPAP_PressureMax] = {
-        "Max Pressure",
-        "Max. Druck",       // German
-        "Max druk",         // Dutch
-        "Pression max.",    // French
-        "Max tryck",        // Swedish
-    };
-
-    resmed_codes[CPAP_PressureMin] = {
-        "Min Pressure",
-        "Min. Druck",       // German
-        "Min druk",         // Dutch
-        "Pression min.",    // French
-        "Min tryck",        // Swedish
-    };
-
-    // STR.edf
 }
 
 
@@ -2635,4 +2449,48 @@ void ResmedLoader::Register()
     ResInitModelMap();
     resmed_initialized = true;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Model number information
+//    36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203,
+//    36223, 36243, 36263, 36303, 36343, 36363 S9 Elite Series
+//    36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205,
+//    36225, 36245, 36265, 36305, 36325, 36345, 36365 S9 AutoSet Series
+//    36065 S9 AutoSet for Her
+//    36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301,
+//    36361 S9 Escape
+//    36002, 36012, 36022, 36302, 36362 S9 Escape Auto
+//    36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224,
+//    36284, 36304 S9 VPAP S (+ H5i, + Climate Control)
+//    36006, 36016, 36026 S9 VPAP AUTO (+ H5i, + Climate Control)
+
+//    36007, 36017, 36027, 36367
+//    S9 VPAP ADAPT (+ H5i, + Climate
+//    Control)
+//    36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 S9 VPAP ST (+ H5i, + Climate Control)
+//    36100, 36110, 36120, 36140, 36200, 36220, 36360 S9 AUTOSET CS
+//    36106, 36116, 36126, 36146, 36206, 36226, 36366 S9 AUTOSET 25
+//    36118, 36128 S9 VPAP ST 22
+//    36039, 36159, 36169, 36379 S9 VPAP ST-A
+//    24921, 24923, 24925, 24926, 24927 ResMed Power Station II (RPSII)
+//    33030 S8 Compact
+//    33001, 33007, 33013, 33036, 33060 S8 Escape
+//    33032 S8 Lightweight
+//    33033 S8 AutoScore
+//    33048, 33051, 33052, 33053, 33054, 33061 S8 Escape II
+//    33055 S8 Lightweight II
+//    33021 S8 Elite
+//    33039, 33045, 33062, 33072, 33073, 33074, 33075 S8 Elite II
+//    33044 S8 AutoScore II
+//    33105, 33112, 33126 S8 AutoSet (including Spirit & Vantage)
+//    33128, 33137 S8 Respond
+//    33129, 33141, 33150 S8 AutoSet II
+//    33136, 33143, 33144, 33145, 33146, 33147, 33148 S8 AutoSet Spirit II
+//    33138 S8 AutoSet C
+//    26101, 26121 VPAP Auto 25
+//    26119, 26120 VPAP S
+//    26110, 26122 VPAP ST
+//    26104, 26105, 26125, 26126 S8 Auto 25
+//    26102, 26103, 26106, 26107, 26108, 26109, 26123, 26127 VPAP IV
+//    26112, 26113, 26114, 26115, 26116, 26117, 26118, 26124 VPAP IV ST
 
