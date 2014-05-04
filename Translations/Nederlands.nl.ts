@@ -436,7 +436,7 @@ CA is Clear Airway, wat gelijk staat met Centrale Apneu</translatorcomment>
         <translation type="obsolete">UF3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="215"/>
+        <location filename="../sleepyhead/daily.cpp" line="217"/>
         <source>Selection AHI</source>
         <translation>Selectie AHI</translation>
     </message>
@@ -449,17 +449,17 @@ CA is Clear Airway, wat gelijk staat met Centrale Apneu</translatorcomment>
         <translation type="obsolete">PR</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="239"/>
+        <location filename="../sleepyhead/daily.cpp" line="241"/>
         <source>U1</source>
         <translation>U1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="240"/>
+        <location filename="../sleepyhead/daily.cpp" line="242"/>
         <source>U2</source>
         <translation>U2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="241"/>
+        <location filename="../sleepyhead/daily.cpp" line="243"/>
         <source>U3</source>
         <translation>U3</translation>
     </message>
@@ -468,10 +468,10 @@ CA is Clear Airway, wat gelijk staat met Centrale Apneu</translatorcomment>
         <translation type="obsolete">O2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="323"/>
-        <location filename="../sleepyhead/daily.cpp" line="324"/>
-        <location filename="../sleepyhead/daily.cpp" line="334"/>
-        <location filename="../sleepyhead/daily.cpp" line="335"/>
+        <location filename="../sleepyhead/daily.cpp" line="325"/>
+        <location filename="../sleepyhead/daily.cpp" line="326"/>
+        <location filename="../sleepyhead/daily.cpp" line="336"/>
+        <location filename="../sleepyhead/daily.cpp" line="337"/>
         <source>Events/hour</source>
         <translation>Incidenten/uur</translation>
     </message>
@@ -484,34 +484,34 @@ CA is Clear Airway, wat gelijk staat met Centrale Apneu</translatorcomment>
         <translation type="obsolete">Geen gegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="478"/>
+        <location filename="../sleepyhead/daily.cpp" line="480"/>
         <source>No %1 events are recorded this day</source>
         <translation>Er zijn vandaag geen %1 incidenten geweest</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="574"/>
+        <location filename="../sleepyhead/daily.cpp" line="576"/>
         <source>%1 event</source>
         <translation>%1 incident</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="575"/>
+        <location filename="../sleepyhead/daily.cpp" line="577"/>
         <source>%1 events</source>
         <translation>%1 incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="940"/>
+        <location filename="../sleepyhead/daily.cpp" line="942"/>
         <source>PAP Mode: %1&lt;br/&gt;</source>
         <translation>Soort PAP: %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1182"/>
+        <location filename="../sleepyhead/daily.cpp" line="1184"/>
         <source>Oximetry data exists for this day, but its timestamps are too different, so the Graphs will not be linked.</source>
         <translatorcomment>WJG: spelling oxymetrie (zie Van Dale)
 AK: mee eens</translatorcomment>
         <translation>Oxymetriegegevens beschikbaar, maar de tijden verschillen teveel: de grafieken worden niet verbonden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1238"/>
+        <location filename="../sleepyhead/daily.cpp" line="1242"/>
         <source>No Graphs :(</source>
         <translation>Geen grafieken :(</translation>
     </message>
@@ -543,12 +543,12 @@ Maar het is een vierde soort apparaat, tegen Centrale Apneus</translatorcomment>
         <translation type="obsolete">Datum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1140"/>
+        <location filename="../sleepyhead/daily.cpp" line="1142"/>
         <source>Sleep</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1140"/>
+        <location filename="../sleepyhead/daily.cpp" line="1142"/>
         <source>Wake</source>
         <translation>Einde</translation>
     </message>
@@ -600,33 +600,33 @@ Toch ief, staat in de tabel</translatorcomment>
         <translation type="obsolete">Exh&amp;nbsp;Pufje</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1312"/>
+        <location filename="../sleepyhead/daily.cpp" line="1316"/>
         <source>Event Breakdown</source>
         <translation>Verdeling incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1339"/>
+        <location filename="../sleepyhead/daily.cpp" line="1343"/>
         <source>Sessions all off!</source>
         <translatorcomment>Niet gevonden</translatorcomment>
         <translation>Alle sessies uit!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1340"/>
+        <location filename="../sleepyhead/daily.cpp" line="1344"/>
         <source>Sessions exist for this day but are switched off.</source>
         <translation>Er zijn wel sessies, maar die staan uit.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1342"/>
+        <location filename="../sleepyhead/daily.cpp" line="1346"/>
         <source>Impossibly short session</source>
         <translation>Onmogelijk korte sessie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1343"/>
+        <location filename="../sleepyhead/daily.cpp" line="1347"/>
         <source>Zero hours??</source>
         <translation>Nul uren???</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1346"/>
+        <location filename="../sleepyhead/daily.cpp" line="1350"/>
         <source>BRICK :(</source>
         <translatorcomment>Arie: Als er niets uit komt is het echt fout
 Volgens mij zit er een foutje in deze string: dat eerste ( hoort er niet in dacht ik...
@@ -639,23 +639,23 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Sorry, je apparaat bewaart geen gegevens.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1348"/>
+        <location filename="../sleepyhead/daily.cpp" line="1352"/>
         <source>Complain to your Equipment Provider!</source>
         <translation>Klaag bij je leverancier!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1026"/>
-        <location filename="../sleepyhead/daily.cpp" line="1027"/>
+        <location filename="../sleepyhead/daily.cpp" line="1028"/>
+        <location filename="../sleepyhead/daily.cpp" line="1029"/>
         <source>Avg</source>
         <translation>Gem.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1028"/>
+        <location filename="../sleepyhead/daily.cpp" line="1030"/>
         <source>Med</source>
         <translation>Med.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1033"/>
+        <location filename="../sleepyhead/daily.cpp" line="1035"/>
         <source>Statistics</source>
         <translation>Statistieken</translation>
     </message>
@@ -668,7 +668,7 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Min.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1038"/>
+        <location filename="../sleepyhead/daily.cpp" line="1040"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
@@ -677,17 +677,17 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Max.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1111"/>
+        <location filename="../sleepyhead/daily.cpp" line="1113"/>
         <source>&lt;b&gt;Please Note:&lt;/b&gt; This day just contains summary data, only limited information is available .</source>
         <translation>&lt;b&gt;Let op:&lt;/b&gt; Deze dag heeft alleen overzichtsgegevens; alleen beperkte informatie dus.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1365"/>
+        <location filename="../sleepyhead/daily.cpp" line="1369"/>
         <source>No data available</source>
         <translation>Geen gegevens beschikbaar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="896"/>
+        <location filename="../sleepyhead/daily.cpp" line="898"/>
         <source>Oximeter Information</source>
         <translation>Oxymeterinformatie</translation>
     </message>
@@ -702,45 +702,45 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation>Int. SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="796"/>
+        <location filename="../sleepyhead/daily.cpp" line="798"/>
         <source>Duration</source>
         <translation>Tijdsduur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="808"/>
+        <location filename="../sleepyhead/daily.cpp" line="810"/>
         <source>Oximetery Sessions</source>
         <translation>Oxymetrie sessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="814"/>
+        <location filename="../sleepyhead/daily.cpp" line="816"/>
         <source>Position Sensor Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="819"/>
+        <location filename="../sleepyhead/daily.cpp" line="821"/>
         <source>Unknown Session</source>
         <translation>Onbekende sessie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="900"/>
+        <location filename="../sleepyhead/daily.cpp" line="902"/>
         <source>SpO2 Desaturations</source>
         <translatorcomment>WJG: hoofdletter D?</translatorcomment>
         <translation>SpO2 desaturaties</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="901"/>
+        <location filename="../sleepyhead/daily.cpp" line="903"/>
         <source>Pulse Change events</source>
         <translatorcomment>AK: Oei! Bedoeld worden plotselinge, kortdurende wijzigingen in de polsslag. Maar hoe maak je dat kort?</translatorcomment>
         <translation>Polsslag incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="902"/>
+        <location filename="../sleepyhead/daily.cpp" line="904"/>
         <source>SpO2 Baseline Used</source>
         <translatorcomment>WJG: hoofdletter B?</translatorcomment>
         <translation>SpO2 basislijn gebruikt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="867"/>
+        <location filename="../sleepyhead/daily.cpp" line="869"/>
         <source>Machine Settings</source>
         <translation>Apparaatinstellingen</translation>
     </message>
@@ -753,7 +753,7 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Bevochtiger</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="777"/>
+        <location filename="../sleepyhead/daily.cpp" line="779"/>
         <source>Session Information</source>
         <translation>Sessie-informatie</translation>
     </message>
@@ -775,7 +775,7 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Einde</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="805"/>
+        <location filename="../sleepyhead/daily.cpp" line="807"/>
         <source>CPAP Sessions</source>
         <translation>CPAP-sessies</translation>
     </message>
@@ -788,12 +788,12 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="obsolete">Oxymeter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="811"/>
+        <location filename="../sleepyhead/daily.cpp" line="813"/>
         <source>Sleep Stage Sessions</source>
         <translation>Slaapfasesessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="857"/>
+        <location filename="../sleepyhead/daily.cpp" line="859"/>
         <source>One or more waveform record for this session had faulty source data. Some waveform overlay points may not match up correctly.</source>
         <translatorcomment>WJG: tikfout</translatorcomment>
         <translation>Een of meer golfvormgegevens had foutieve brongegevens. Sommige kunnen niet goed aansluiten.</translation>
@@ -803,37 +803,37 @@ Oh, dat is een smiley   ;-)</translatorcomment>
         <translation type="vanished">Instelling PAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1347"/>
+        <location filename="../sleepyhead/daily.cpp" line="1351"/>
         <source>Sorry, your machine only provides compliance data.</source>
         <translation>Sorry, jouw apparaat geeft uitsluitend gegevens over compliantie.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1633"/>
+        <location filename="../sleepyhead/daily.cpp" line="1637"/>
         <source>Pick a Colour</source>
         <translation>Kies een kleur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1895"/>
+        <location filename="../sleepyhead/daily.cpp" line="1899"/>
         <source>This bookmarked is in a currently disabled area..</source>
         <translation>Deze bladwijzer staat in een uitgeschakeld gebied..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="1913"/>
+        <location filename="../sleepyhead/daily.cpp" line="1917"/>
         <source>Bookmark at %1</source>
         <translation>Bladwijzer bij %1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2123"/>
+        <location filename="../sleepyhead/daily.cpp" line="2127"/>
         <source>Show all graphs</source>
         <translation>Toon alle grafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2129"/>
+        <location filename="../sleepyhead/daily.cpp" line="2133"/>
         <source>No Graphs On!</source>
         <translation>Alle grafieken staan uit!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/daily.cpp" line="2140"/>
+        <location filename="../sleepyhead/daily.cpp" line="2144"/>
         <source>Hide all graphs</source>
         <translation>Verberg alle grafieken</translation>
     </message>
@@ -1131,7 +1131,7 @@ AK: klopt</translatorcomment>
     </message>
     <message>
         <location filename="../sleepyhead/mainwindow.ui" line="778"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="540"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="620"/>
         <source>Oximetry</source>
         <translation>Oxymetrie</translation>
     </message>
@@ -1433,12 +1433,40 @@ AK: Waar staat dat Welkomst-/Startscherm???
         <translation>Wijzig &amp;Gegevensmap</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="269"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="274"/>
         <source>Loading Data</source>
         <translation>Gegevens laden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="416"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="430"/>
+        <source>Datacard Located</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="431"/>
+        <source>A %1 datacard structure was detected at
+%2
+
+Would you like to import from this location?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="432"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="433"/>
+        <source>Select another folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="501"/>
+        <source>Please wait, SleepyHead is importing data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="511"/>
         <source>Importing Data</source>
         <translation>Gegevens importeren</translation>
     </message>
@@ -1611,7 +1639,7 @@ AK: SBI</translatorcomment>
         <translation type="obsolete">Slechtste &amp;nbsp;%1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="536"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="616"/>
         <source>CPAP</source>
         <translation>CPAP</translation>
     </message>
@@ -1729,7 +1757,7 @@ AK: SBI</translatorcomment>
         <translation type="obsolete">Laatste gebruik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="741"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="821"/>
         <source>Loading</source>
         <translation>Laden...</translation>
     </message>
@@ -1742,7 +1770,7 @@ AK: De site wijzigt niet, is een algemene verwijzing. De vertaling wordt tzt in 
 &lt;a href=&apos;http://sleepyhead.sourceforge.net&apos;&gt;http://sleepyhead.sourceforge.net&lt;/a&gt; &lt;hr&gt;Deze software is vrijgegeven onder de GNU Public License &lt;br&gt; &lt;i&gt; Deze software sluit elke vorm van aansprakelijkheid uit, zowel expliciet als impliciet. Het wordt geleverd zonder waarborg voor geschiktheid voor een bepaald doel. Er zijn geen garanties met betrekking tot de juistheid van de gegevens die dit programma toont.&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="527"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="607"/>
         <source>About SleepyHead</source>
         <translation>Over SleepyHead</translation>
     </message>
@@ -1922,48 +1950,49 @@ Modus: </translation>
         <translation>Laden...</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="315"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="394"/>
         <source>Access to Import has been blocked while recalculations are in progress.</source>
         <translation>Tijden een herberekening kan niet geïmporteerd worden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="350"/>
         <source>Import from where?</source>
-        <translation>Waar vandaan importeren?</translation>
+        <translation type="vanished">Waar vandaan importeren?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="351"/>
         <source>Do you just want to Import from the usual (remembered) locations?
 </source>
-        <translation>Wil je van de gebruikelijke (opgeslagen) lokatie importeren?</translation>
+        <translation type="vanished">Wil je van de gebruikelijke (opgeslagen) lokatie importeren?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="351"/>
         <source>The Usual</source>
-        <translation>Gebruikelijk</translation>
+        <translation type="vanished">Gebruikelijk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="352"/>
         <source>New Location</source>
-        <translation>Nieuw</translation>
+        <translation type="vanished">Nieuw</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="352"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="433"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="443"/>
         <source>Remember this Location?</source>
-        <translation>Deze lokatie bewaren?</translation>
+        <translation type="vanished">Deze lokatie bewaren?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="444"/>
         <source>Would you like to remember this import location for next time?</source>
-        <translation>Wil je deze lokatie bewaren voor de volgende keer?</translation>
+        <translation type="vanished">Wil je deze lokatie bewaren voor de volgende keer?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="463"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="537"/>
+        <source>Data successfully imported from the following locations
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="543"/>
         <source>Import Problem
 
 Couldn&apos;t find any new Machine Data at the locations given</source>
@@ -1972,227 +2001,232 @@ Couldn&apos;t find any new Machine Data at the locations given</source>
 Kon geen nieuwe gegevens op de bekende lokaties vinden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="524"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="604"/>
         <source>Welcome to SleepyHead</source>
         <translation>Welkom bij SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="528"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="608"/>
         <source>This software has been created to assist you in reviewing the data produced by CPAP Machines, used in the treatment of various Sleep Disorders.</source>
         <translation>Deze software is gemaakt om u te helpen bij het beoordelen van de gegevens van CPAP machines, die worden gebruikt bij de behandeling van verschillende slaapstoornissen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="530"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="610"/>
         <source>SleepyHead has been designed by a software developer with personal experience with a sleep disorder, and shaped by the feedback of many other willing testers dealing with similar conditions.</source>
         <translation>SleepyHead is ontworpen door een softwareontwikkelaar met persoonlijke ervaring met een slaapstoornis en gevormd door de feedback van vele andere welwillende testers die omgaan met vergelijkbare omstandigheden.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="532"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="612"/>
         <source>This is a beta release, some features may not yet behave as expected.</source>
         <translation>Dit is een bètaversie, mogelijk dat bepaalde functies zich nog niet gedragen als verwacht.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="533"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="613"/>
         <source>Please report any bugs you find to SleepyHead&apos;s SourceForge page.</source>
         <translation>Geef alle bugs die je vindt op bij de SourceForge pagina van SleepyHead.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="535"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="615"/>
         <source>Currenly supported machines:</source>
         <translation>Momenteel ondersteunde machines:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="537"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="617"/>
         <source>Philips Respironics System One (CPAP, Auto, BiPAP &amp; ASV models)</source>
         <translation>Philips Respironics System One (CPAP, AutoPAP, BiPAP &amp; ASV modellen)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="538"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="618"/>
         <source>ResMed S9 models (CPAP, Auto, VPAP)</source>
         <translation>ResMed S9 modellen (CPAP, AutoPAP, VPAP)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="539"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="619"/>
         <source>DeVilbiss Intellipap (Auto)</source>
         <translation>DeVilbiss Intellipap (Auto)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="541"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="621"/>
         <source>Contec CMS50D+, CMS50E and CMS50F (not 50FW) Oximeters</source>
         <translation>Contec CMS50D+, CMS50E en CMS50F (niet de 50FW) Oxymeters</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="542"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="622"/>
         <source>ResMed S9 Oximeter Attachment</source>
         <translation>ResMed S9 Oxymeter adapter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="543"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="623"/>
         <source>Online Help Resources</source>
         <translation>Online hulp</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="544"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="624"/>
         <source>Note:</source>
         <translation>Let op:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="545"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="625"/>
         <source>I don&apos;t recommend using this built in web browser to do any major surfing in, it will work, but it&apos;s mainly meant as a help browser.</source>
         <translation>Deze ingebouwde webbrowser is niet geschikt op uitgebreid te surfen, het werkt maar is vooral bedoeld als help browser.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="547"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="627"/>
         <source>(It doesn&apos;t support SSL encryption, so it&apos;s not a good idea to type your passwords or personal details anywhere.)</source>
         <translation>(Ondersteunt geen SSL-encryptie, dus het is geen goed idee om uw wachtwoorden of persoonlijke gegevens ergens te typen.)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="550"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="630"/>
         <source>SleepyHead&apos;s Online &lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=SleepyHead_Users_Guide&quot;&gt;Users Guide&lt;/a&gt;&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="552"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="632"/>
         <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Frequently_Asked_Questions&quot;&gt;Frequently Asked Questions&lt;/a&gt;&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="554"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="634"/>
         <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Glossary&quot;&gt;Glossary of Sleep Disorder Terms&lt;/a&gt;&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="556"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="636"/>
         <source>&lt;a href=&quot;http://sourceforge.net/apps/mediawiki/sleepyhead/index.php?title=Main_Page&quot;&gt;SleepyHead Wiki&lt;/a&gt;&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="558"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="638"/>
         <source>SleepyHead&apos;s &lt;a href=&apos;http://www.sourceforge.net/projects/sleepyhead&apos;&gt;Project Website&lt;/a&gt; on SourceForge&lt;br/&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="560"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="640"/>
         <source>Got a neat idea on how to improve SleepyHead? Check out SleepyHeads &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt;Idea Torrent&lt;/a&gt;</source>
         <translation>Heb je een leuk idee om SleepyHead te verbeteren? Ga naar SleepyHead&apos;s &lt;a href=&quot;http://sourceforge.net/apps/ideatorrent/sleepyhead/&quot;&gt;Idea Torrent (in het Engels).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="562"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="642"/>
         <source>Further Information</source>
         <translation>Verdere informatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="564"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="644"/>
         <source>Here are the &lt;a href=&apos;qrc:/docs/release_notes.html&apos;&gt;release notes&lt;/a&gt; for this version.</source>
         <translation>Hier staan de &lt;a href=&apos;qrc:/docs/release_notes.html&apos;&gt;release notes&lt;/a&gt; voor deze versie.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="566"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="646"/>
         <source>Plus a few &lt;a href=&apos;qrc:/docs/usage.html&apos;&gt;usage notes&lt;/a&gt;, and some important information for Mac users.</source>
         <translation>Plus een paar &lt;a href=&apos;qrc:/docs/usage.html&apos;&gt;gebruiks-aantekeningen&lt;/a&gt;, en belangrijke informatie voor Mac gebruikers.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="568"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="648"/>
         <source>About &lt;a href=&apos;http://en.wikipedia.org/wiki/Sleep_apnea&apos;&gt;Sleep Apnea&lt;/a&gt; on Wikipedia</source>
         <translation>Informatie over &lt;a href=&apos;http://nl.wikipedia.org/wiki/Slaapapneu&apos;&gt;Slaapapneu&lt;/a&gt; op de Nederlandse Wikipedia</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="571"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="651"/>
         <source>Friendly forums to talk and learn about Sleep Apnea:</source>
         <translation>Vriendelijke forums om te praten en leren over slaapapneu:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="572"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="652"/>
         <source>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</source>
         <translation>&lt;a href=&apos;http://www.apneuvereniging.nl/forum&apos;&gt;ApneuVereniging&lt;/a&gt;,</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="573"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="653"/>
         <source>&lt;a href=&apos;http://s7.zetaboards.com/Apnea_Board/index&apos;&gt;Apnea Board&lt;/a&gt;</source>
         <translation>&lt;a href=&apos;http://www.cpaptalk.com&apos;&gt;CPAPTalk Forum&lt;/a&gt;,</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="581"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="661"/>
         <source>Copyright:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="581"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="661"/>
         <source>&amp;copy;2011-2014</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="583"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="663"/>
         <source>License:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="584"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="664"/>
         <source>This software is released freely under the &lt;a href=&quot;qrc:/COPYING&quot;&gt;GNU Public License&lt;/a&gt;.</source>
         <translation>De software wordt vrijgegeven onder de &lt;a href=&quot;qrc:/COPYING&quot;&gt;GNU Public License&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="587"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="667"/>
         <source>DISCLAIMER:</source>
         <translation>AANSPRAKELIJKHEID:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="589"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="669"/>
         <source>This is &lt;font color=&apos;red&apos;&gt;&lt;u&gt;NOT&lt;/u&gt;&lt;/font&gt; medical software. This application is merely a data viewer, and no guarantee is made regarding accuracy or correctness of any calculations or data displayed.</source>
         <translation>Dit is GEEN MEDISCHE SOFTWARE, maar meer een onderzoeksgereedschap voor de visuele interpretatie van gegevens uit ondersteunde apparatuur.Deze software is NIET TOEPASBAAR voor medische diagnose, CPAP compliantie rapportage of vergelijkbare doelen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="591"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="671"/>
         <source>The author will NOT be held liable by anyone who harms themselves or others by use or misuse of this software.</source>
         <translation>De auteur en al zijn collegas accepteren GEEN ENKELE AANSPRAKELIJKHEID voor schade, in welke vorm ook, door het gebruik of misbruik van deze software.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="593"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="673"/>
         <source>Your doctor should always be your first and best source of guidance regarding the important matter of managing your health.</source>
         <translation>Uw arts is altijd de eerste en beste bron van hulp voor het belangrijke onderwerp van uw gezondheid!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="595"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="675"/>
         <source>*** &lt;u&gt;Use at your own risk&lt;/u&gt; ***</source>
         <translation>*** &lt;u&gt;Het gebruik van deze software is geheel voor eigen risico&lt;/u&gt; ***</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="774"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="854"/>
         <source>Build Date</source>
         <translation>Versiedatum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="774"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="854"/>
         <source>Data Folder Location</source>
         <translation>Locatie folder SleepyHeadData</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="775"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="855"/>
         <source>Copyright</source>
         <translation>Copyright</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="776"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="856"/>
         <source>This software is released under the GNU Public License v3.0&lt;br/&gt;</source>
         <translation>De software wordt vrijgegeven onder de GNU Public License v3.0&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="780"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="860"/>
         <source>SleepyHead Project Page</source>
         <translation>SleepyHead Project pagina</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="783"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="863"/>
         <source>SleepyHead Wiki</source>
         <translation>SleepyHead Wiki</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1820"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="878"/>
+        <source>James Marshall, Rich Freeman, John Masters, Keary Griffin, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1900"/>
         <source>There was a problem opening Somnopose Data File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1824"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1904"/>
         <source>Somnopause Data Import complete</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2205,22 +2239,22 @@ Kon geen nieuwe gegevens op de bekende lokaties vinden</translation>
         <translation type="vanished">&lt;p&gt;De auteur wil James Marshall en Rich Freeman bedanken voor hun hulp bij dit project&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="821"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="901"/>
         <source>This software comes with absolutely no warranty, either express of implied.</source>
         <translation>Deze software sluit elke vorm van aansprakelijkheid uit, zowel expliciet als impliciet.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="822"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="902"/>
         <source>It comes with no guarantee of fitness for any particular purpose.</source>
         <translation>Het wordt geleverd zonder waarborg voor geschiktheid voor een bepaald doel.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="823"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="903"/>
         <source>No guarantees are made regarding the accuracy of any data this program displays.</source>
         <translation>Er zijn geen garanties met betrekking tot de juistheid van de gegevens die dit programma toont.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="825"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="905"/>
         <source>This is NOT medical software, it is merely a research tool that provides a visual interpretation of data recorded by supported devices.</source>
         <translation>Dit is GEEN MEDISCHE SOFTWARE, maar meer een onderzoeksgereedschap voor de visuele interpretatie van gegevens uit ondersteunde apparatuur.</translation>
     </message>
@@ -2233,7 +2267,7 @@ Kon geen nieuwe gegevens op de bekende lokaties vinden</translation>
         <translation type="vanished">De auteur en al zijn collegas accepteren GEEN ENKELE AANSPRAKELIJKHEID voor schade, in welke vorm ook, door het gebruik of misbruik van deze software.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="832"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="912"/>
         <source>Use this software entirely at your own risk.</source>
         <translation>Het gebruik van deze software is geheel voor eigen risico.</translation>
     </message>
@@ -2242,199 +2276,194 @@ Kon geen nieuwe gegevens op de bekende lokaties vinden</translation>
         <translation type="vanished">Wanneer u dit programma de moeite waard vindt, steun dan de ontwikkeling met een PayPal donatie aan de auteur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="787"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="867"/>
         <source>Don&apos;t forget to Like/+1 SleepyHead on &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; or &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+</source>
         <translation>Vergeet niet om SleepyHead op &lt;a href=&quot;http://www.facebook.com/SleepyHeadCPAP&quot;&gt;Facebook&lt;/a&gt; of &lt;a href=&quot;http://plus.google.com/u/0/b/101426655252362287937&quot;&gt;Google+ een like of +1 te geven!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="792"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="872"/>
         <source>SleepyHead, brought to you by Jedimark</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="796"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="876"/>
         <source>Kudos &amp; Credits</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="797"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="877"/>
         <source>Bugfixes, Patches and Platform Help:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="798"/>
-        <source>James Marshall, Rich Freeman, John Masters, Patricia Shanahan, Alec Clews, manders99, and Sean Stangl.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="801"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="881"/>
         <source>Translators:</source>
         <translation>Vertalingen:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="801"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="881"/>
         <source>Arie Klerk (Dutch), Steffen Reitz (German).</source>
         <translation>Arie Klerk (Nederlands), Steffen Reitz (Deutsch).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="804"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="884"/>
         <source>3rd Party Libaries:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="805"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="885"/>
         <source>SleepyHead is built using the &lt;a href=&quot;http://qt-project.org&quot;&gt;Qt Application Framework&lt;/a&gt;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="807"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="887"/>
         <source>It uses the cross platform &lt;a href=&quot;http://code.google.com/p/qextserialport&quot;&gt;QExtSerialPort&lt;/a&gt; library for serial port access in the Oximetry module.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="809"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="889"/>
         <source>In the updater code, SleepyHead uses &lt;a href=&quot;http://sourceforge.net/projects/quazip&quot;&gt;QuaZip&lt;/a&gt; by Sergey A. Tachenov, which is a C++ wrapper over Gilles Vollant&apos;s ZIP/UNZIP package.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="811"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="891"/>
         <source>Special thanks to Pugsy from &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; for her help with documentation and tutorials, as well as everyone who helped out by testing and sharing their CPAP data.</source>
         <translation>Een speciaal woord van dank voor Pugsy van &lt;a href=&apos;http://cpaptalk.com&apos;&gt;CPAPTalk&lt;/a&gt; voor haar hulp bij de documentatie en handleidingen, en voor iedereen die heeft meegewerkt door hun CPAP gegevens te testen en delen met elkaar.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="816"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="896"/>
         <source>Thanks for using SleepyHead. If you find it within your means, please consider encouraging future development by making a donation via Paypal.</source>
         <translation>Bedankt voor het gebruik van Sleepyhead. Als je het goed kunt gebruiken, dan kun je overwegen de toekomstige ontwikkeling te steunen door middel van een donatie via Paypal.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="827"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="907"/>
         <source>This software is NOT suitable for medical diagnostics purposes, neither is it fit for CPAP complaince reporting purposes, or ANY other medical use for that matter.</source>
         <translation>Deze software is NIET TOEPASBAAR voor medische diagnose, CPAP compliantie rapportage of vergelijkbare doelen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="830"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="910"/>
         <source>The author and anyone associated with him accepts NO responsibilty for damages, issues or non-issues resulting from the use or mis-use of this software.</source>
         <translation>De auteur en al zijn collegas accepteren GEEN ENKELE AANSPRAKELIJKHEID voor schade, in welke vorm ook, door het gebruik of misbruik van deze software.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="898"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="978"/>
         <source>Access to Preferences has been blocked until recalculation completes.</source>
         <translation>Toegang tot de Voorkeuren is geblokkeerd gedurende herberekening.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="933"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1013"/>
         <source>Question</source>
         <translation>Vraag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="934"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1014"/>
         <source>Do you have a CMS50[x] Oximeter?
 One is required to use this section.</source>
         <translation>Heeft u een CMS50[x] oxymeter?
 Die is vereist voor gebruik van deze sectie.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="996"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1076"/>
         <source>There was an error saving screenshot to file &quot;%1&quot;</source>
         <translation>Er is iets fout gegaan bij het opslaan van een beeldschermafdruk naar het bestand &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="998"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1078"/>
         <source>Screenshot saved to file &quot;%1&quot;</source>
         <translation>Schermafbeelding bewaard als bestand &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1015"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1095"/>
         <source>Printing Disabled</source>
         <translation>Afdrukken is uitgeschakeld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1016"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1096"/>
         <source>Please rebuild SleepyHead with Qt 4.8.5 or greater, as printing causes a crash with this version of Qt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1358"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1379"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1438"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1459"/>
         <source>Gah!</source>
         <translation>Bah!</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1358"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1379"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1438"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1459"/>
         <source>If you can read this, the restart command didn&apos;t work. Your going to have to do it yourself manually.</source>
         <translation>Als je dit kunt lezen, heeft het herstartcommando niet gewerkt. Je zult het handmatig moeten doen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1461"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1541"/>
         <source>Are you sure?</source>
         <translation>Weet je het zeker?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1462"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1542"/>
         <source>Are you sure you want to purge all CPAP data for the following machine:
 </source>
         <translation>Weet je zeker dat je alle CPAP-gegevens wilt wissen van het volgende apparaat:
 </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1622"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1702"/>
         <source>Performance will be degraded during these recalculations.</source>
         <translation>Tijdens herberekening gaan de prestaties van de PC achteruit.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1623"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1703"/>
         <source>Recalculating Indices</source>
         <translation>Herberekening van de indexen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1635"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1715"/>
         <source>Loading Event Data</source>
         <translation>Incidenten laden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1637"/>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1693"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1717"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1773"/>
         <source>Recalculating Summaries</source>
         <translation>Opnieuw berekenen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1705"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1785"/>
         <source>Restart Required</source>
         <translation>Herstart nodig</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1706"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1786"/>
         <source>Recalculations are complete, the application now needs to restart to display the changes.</source>
         <translation>Herberekening voltooid, de applicatie moet nu herstarten om de wijzigingen zichtbaar te maken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1711"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1791"/>
         <source>Recalculations are now complete.</source>
         <translation>Herberekening voltooid.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1711"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1791"/>
         <source>Task Completed</source>
         <translation>Taak voltooid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1735"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1815"/>
         <source>There was a problem opening ZEO File: </source>
         <translation>Er was een probleem met het openen van het Zeo bestand: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1739"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1819"/>
         <source>Zeo CSV Import complete</source>
         <translation>Import van het Zeo csv bestand voltooid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1761"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1841"/>
         <source>There was a problem opening MSeries block File: </source>
         <translation>Er was een probleem bij het openen van het M-Series blokbestand: </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="1765"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="1845"/>
         <source>MSeries Import complete</source>
         <translation>Import M-Series voltooid</translation>
     </message>
@@ -4010,7 +4039,7 @@ Probeer hem eerst te synchroniseren met de klok van de PC ( niet mogelijk voor P
         <translation>Contec CMS50</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2232"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2168"/>
         <source>Pixmap caching is an graphics acceleration technique. May cause problems with font drawing in graph display area on your platform.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4116,64 +4145,64 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Algemeen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1425"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1553"/>
         <source>General Settings</source>
         <translation>Algemene instellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1446"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1574"/>
         <source>Daily view navigation buttons will skip over days without data records</source>
         <translation>De navigatieknoppen slaan de dagen zonder gegevens over</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1449"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1577"/>
         <source>Skip over Empty Days</source>
         <translation>Sla lege dagen over</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1456"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1584"/>
         <source>Allow use of multiple CPU cores where available to improve performance. 
 Mainly affects the importer.</source>
         <translation>Gebruik meerdere CPU-cores voor betere prestaties.
 Werkt vooral bij importeren.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1460"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1588"/>
         <source>Enable Multithreading</source>
         <translation>Multithreading inschakelen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1467"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1595"/>
         <source>Bypass the login screen and load the most recent User Profile</source>
         <translation>Sla het inlogscherm over en laad het meest recente gebruikersprofiel</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1470"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1598"/>
         <source>Skip Login Screen</source>
         <translation>Sla login-scherm over</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1489"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1434"/>
         <source>Changes to the following settings needs a restart, but not a recalc.</source>
         <translation>Wijzigingen in de volgende instellingen werken pas na een herstart, maar er is geen herberekening nodig.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1492"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1437"/>
         <source>Preferred Calculation Methods</source>
         <translation>Voorkeur berekeningsmethoden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1519"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1464"/>
         <source>Middle Calculations</source>
         <translation>Gemiddelden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1526"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1471"/>
         <source>Upper Percentile</source>
         <translation>Bovenste percentiel</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1533"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1478"/>
         <source>For consistancy, ResMed users should use 95% here,
 as this is the only value available on summary-only days.</source>
         <translatorcomment>20/9 WJG: koppelteken en extra woorje</translatorcomment>
@@ -4181,99 +4210,96 @@ as this is the only value available on summary-only days.</source>
 want dit is de enige waarde die beschikbaar is op de dagen met alleen een samenvatting.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1547"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1492"/>
         <source>Median is recommended for ResMed users.</source>
         <translation>Mediaan wordt aanbevolen voor ResMed-gebruikers.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1551"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1496"/>
         <source>Median</source>
         <translation>Mediaan</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1556"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1501"/>
         <source>Weighted Average</source>
         <translation>Gewogen gemiddelde</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1561"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1506"/>
         <source>Normal Average</source>
         <translation>Normaal gemiddelde</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1581"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1526"/>
         <source>ResMed users probably should use 99th Percentile for visual consistency.</source>
         <translatorcomment>20/9 WJG: koppelteken en Van Dale zegt &apos;het&apos; tegen percentiel</translatorcomment>
         <translation>ResMed-gebruikers moeten waarschijnlijk het 99e percentiel gebruiken voor visuele consistentie.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1585"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1530"/>
         <source>True Maximum</source>
         <translation>Ware maximum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1590"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1535"/>
         <source>99% Percentile</source>
         <translation>99% percentiel</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1598"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1543"/>
         <source>Maximum Calcs</source>
         <translation>Berekening maximum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1615"/>
         <source>Import Locations</source>
         <translatorcomment>20/9 WJG: spelling</translatorcomment>
-        <translation>Importlocaties</translation>
+        <translation type="vanished">Importlocaties</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1646"/>
         <source>Add</source>
-        <translation>Toevoegen</translation>
+        <translation type="vanished">Toevoegen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1653"/>
         <source>Remove</source>
-        <translation>Verwijderen</translation>
+        <translation type="vanished">Verwijderen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1694"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1630"/>
         <source>Automatically Check For Updates</source>
         <translation>Automatisch controleren op updates</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1711"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1647"/>
         <source>Check for new version every</source>
         <translation>Controleer elke</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1718"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1654"/>
         <source>Sourceforge hosts this project for free.. Please be considerate of their resources..</source>
         <translation>Sourceforge hosts dit project gratis .. Maak er zorgvuldig gebruik van..</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1734"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1670"/>
         <source>days.</source>
         <translation>dagen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1799"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1735"/>
         <source>&amp;Check for Updates now</source>
         <translation>Nu &amp;controleren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1822"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1758"/>
         <source>Last Checked For Updates: </source>
         <translation>Laatste controle:</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1835"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1771"/>
         <source>TextLabel</source>
         <translation>Tekstlabel</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1857"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1793"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -4291,83 +4317,83 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1866"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1802"/>
         <source>I want to try experimental and test builds (Advanced users only please.)</source>
         <translation>Ik wil experimentele en testupdates proberen (s.v.p. alleen gevorderde gebruikers!)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1890"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1826"/>
         <source>&amp;Appearance</source>
         <translation>&amp;Uiterlijk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1922"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1858"/>
         <source>Graph Settings</source>
         <translation>Grafiekinstellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1929"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1865"/>
         <source>Bar Tops</source>
         <translation>Staafgrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1934"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1870"/>
         <source>Line Chart</source>
         <translation>Lijngrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1942"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1878"/>
         <source>Overview Linecharts</source>
         <translation>Overzicht lijngrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1967"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1903"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This makes scrolling when zoomed in easier on sensitive bidirectional TouchPads&lt;/p&gt;&lt;p&gt;50ms is recommended value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>Dit maakt scrollen makkelijker bij een tablet, 50 ms wordt aanbevolen.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="1995"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1931"/>
         <source>milliseconds</source>
         <translation>milliseconden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2061"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1997"/>
         <source>Scroll Dampening</source>
         <translation>Scrollen dempen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2153"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2089"/>
         <source>Overlay Flags</source>
         <translation>Markeringen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2119"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2055"/>
         <source>The visual method of displaying waveform overlay flags.
 </source>
         <translation>De visuele methode voor het tonen van markeringen in golfvormgrafieken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2124"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2060"/>
         <source>Standard Bars</source>
         <translation>Standaardbalken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2129"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2065"/>
         <source>Top &amp; Bottom Markers</source>
         <translation>Onder en boven</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2137"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2073"/>
         <source>Graph Height</source>
         <translation>Grafiekhoogte</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2087"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2023"/>
         <source>Default display height of graphs in pixels</source>
         <translation>Standaardhoogte grafieken in pixels</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2015"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="1951"/>
         <source>How long you want the tooltips to stay visible.</source>
         <translation>Hoe lang moeten de tooltips zichtbaar blijven?</translation>
     </message>
@@ -4401,22 +4427,22 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Sans&apos;; font-size:10pt;&quot;&gt;Het proces van import neemt de starttijd van de eerste CPAP sessie van de vorige nacht. (Vergeet niet om eerst je CPAP gegevens te importeren!)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2071"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2007"/>
         <source>Tooltip Timeout</source>
         <translation>Tooltip timeout</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2106"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2042"/>
         <source>Graph Tooltips</source>
         <translation>Grafiek tekstballonnen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2188"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2124"/>
         <source>Other Visual Settings</source>
         <translation>Overige visuele instellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2194"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2130"/>
         <source>Anti-Aliasing applies smoothing to graph plots.. 
 Certain plots look more attractive with this on. 
 This also affects printed reports.
@@ -4429,22 +4455,22 @@ Dit is ook van invloed op afgedrukte rapporten.
 Probeer het en kijk of je het leuk vindt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2201"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2137"/>
         <source>Use Anti-Aliasing</source>
         <translation>Gebruik Anti-aliasing</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2208"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2144"/>
         <source>Makes certain plots look more &quot;square waved&quot;.</source>
         <translation>Zorgt ervoor dat sommige grafieken  er hoekiger uitzien.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2211"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2147"/>
         <source>Square Wave Plots</source>
         <translation>Hoekige golfgrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2218"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2154"/>
         <source>Allows graphs to be &quot;screenshotted&quot; for display purposes.
 The Event Breakdown PIE chart uses this method, as does
 the printing code.
@@ -4458,7 +4484,7 @@ Helaas veroorzaken sommige oudere computers en versies van Qt
 dat hierdoor deze toepassing instabiel wordt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2225"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2161"/>
         <source>Show event breakdown pie chart</source>
         <translation>Toon cirkeldiagram</translation>
     </message>
@@ -4475,89 +4501,89 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pixmap caching is een graphische versnellingstechniek. Het kan echter wel problemen opleveren met de tekst bij de grafieken, afhankelijk van het computerplatform.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2235"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2171"/>
         <source>Use Pixmap Caching</source>
         <translation>Gebruik Pixmap Caching</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2242"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2178"/>
         <source>Turn on/off the spinning &quot;context&quot; cube.
 It really doesn&apos;t use that much resources.. :)</source>
         <translation>Zet de ronddraaiende kubus aan.
 Gebruikt echt niet zoveel geheugen... :)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2246"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2182"/>
         <source>Animations &amp;&amp; Fancy Stuff</source>
         <translation>Animaties en grappige dingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2253"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2189"/>
         <source>Whether to allow changing yAxis scales by double clicking on yAxis labels</source>
         <translation>Toestaan om de automatische y-as instelling te wijzigen door dubbelklikken op een label</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2256"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2192"/>
         <source>Allow YAxis Scaling</source>
         <translation>Sta automatische y-as instelling toe</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2275"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2211"/>
         <source>Application Fonts</source>
         <translation>Tekstinstellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2310"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2246"/>
         <source>Font</source>
         <translation>Lettertype</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2329"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2265"/>
         <source>Size</source>
         <translation>Grootte</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2348"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2284"/>
         <source>Bold  </source>
         <translation>Vet</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2370"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2306"/>
         <source>Italic</source>
         <translation>Cursief</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2383"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2319"/>
         <source>Application</source>
         <translation>Toepassing</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2447"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2383"/>
         <source>Graph Text</source>
         <translation>Grafiektekst</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2508"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2444"/>
         <source>Graph Titles</source>
         <translation>Gafiektitels</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2569"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2505"/>
         <source>Big  Text</source>
         <translation>Grote tekst</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2630"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2566"/>
         <source>Details</source>
         <translation>Details</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2687"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2623"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Annuleren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.ui" line="2694"/>
+        <location filename="../sleepyhead/preferencesdialog.ui" line="2630"/>
         <source>&amp;Ok</source>
         <translation>&amp;OK</translation>
     </message>
@@ -4567,12 +4593,12 @@ Gebruikt echt niet zoveel geheugen... :)</translation>
         <translation>Neuskussens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="382"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="358"/>
         <source>Data Reindex Required</source>
         <translation>Gegevens opnieuw indexeren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="383"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="359"/>
         <source>A data reindexing proceedure is required to apply these changes. This operation may take a couple of minutes to complete.
 
 Are you sure you want to make these changes?</source>
@@ -4581,12 +4607,12 @@ Are you sure you want to make these changes?</source>
 Weet je zeker dat je deze wijzigingen wilt doorvoeren?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="389"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="365"/>
         <source>Restart Required</source>
         <translation>Herstart vereist</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="390"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="366"/>
         <source>One or more of the changes you have made will require this application to be restarted,
 in order for these changes to come into effect.
 
@@ -4596,47 +4622,46 @@ Would you like do this now?</source>
 Wil je dit nu doen?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="598"/>
         <source>Add this Location to the Import List</source>
-        <translation>Voeg deze locatie toe aan de importlijst</translation>
+        <translation type="vanished">Voeg deze locatie toe aan de importlijst</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="735"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="674"/>
         <source>Daily Graphs</source>
         <translation>Dagelijkse grafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="736"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="675"/>
         <source>Overview Graphs</source>
         <translation>Overzichtgrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="748"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="687"/>
         <source>Graph</source>
         <translation>Grafiek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="933"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="872"/>
         <source>This may not be a good idea</source>
         <translation>Dit lijkt me niet zo&apos;n goed idee</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="934"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="873"/>
         <source>ResMed S9 machines routinely delete certain data from your SD card older than 7 and 30 days (depending on resolution).</source>
         <translation>ResMed S9 apparaten wissen bepaalde gegevens van je SD kaart als ze ouder zijn dan 7 en 30 dagen (afhankelijk van de resolutie).</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="935"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="874"/>
         <source>If you ever need to reimport this data again (whether in SleepyHead or ResScan) this data won&apos;t come back.</source>
         <translation>Als je ooit gegevens opnieuw moet inlezen (in SleepyHead of in ResScan), krijg je deze gegevens niet terug.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="936"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="875"/>
         <source>If you need to conserve disk space, please remember to carry out manual backups.</source>
         <translation>Als je zuinig moet zijn met schijfruimte, vergeet dan niet om zelf backups te maken.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="937"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="876"/>
         <source>Are you sure you want to disable these backups?</source>
         <translation>Weet je zeker dat je deze automatische backups wilt uitschakelen?</translation>
     </message>
@@ -4649,22 +4674,22 @@ Wil je dit nu doen?</translation>
         <translation type="obsolete">Max.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="779"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="718"/>
         <source>N/A</source>
         <translation>nvt</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="812"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="751"/>
         <source>Oximetry Graphs</source>
         <translation>Oxymetriegrafieken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="847"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="786"/>
         <source>Confirmation</source>
         <translation>Bevestiging</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/preferencesdialog.cpp" line="848"/>
+        <location filename="../sleepyhead/preferencesdialog.cpp" line="787"/>
         <source>Are you sure you want to reset your graph preferences to the defaults?</source>
         <translation>Weet je zeker dat je de grafieken opnieuw wilt instellen op standaardwaarden?</translation>
     </message>
@@ -4847,145 +4872,145 @@ Het programma wordt nu afgesloten!</translation>
     <name>QObject</name>
     <message>
         <location filename="../sleepyhead/Graphs/gGraphView.cpp" line="396"/>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="371"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="375"/>
         <source>No Data</source>
         <translation>Geen gegevens</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="262"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="264"/>
         <source>cm</source>
         <translation>cm</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="263"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="265"/>
         <source>&quot;</source>
         <translation>inch</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="264"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="266"/>
         <source>ft</source>
         <translation>ft</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="265"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="267"/>
         <source>lb</source>
         <translation>lb</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="266"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="268"/>
         <source>oz</source>
         <translation>oz</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="267"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="269"/>
         <source>Kg</source>
         <translation>kg</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="268"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="270"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="274"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="270"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="279"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="283"/>
         <source>cmH2O</source>
         <translation>cmWk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="269"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="271"/>
         <source>Hours</source>
         <translation>Uren</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="271"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="227"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="273"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="236"/>
         <source>bpm</source>
         <translation>slagen per minuut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="272"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="274"/>
         <source>L/m</source>
         <translation>l/min</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="274"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="276"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="67"/>
         <source>Error</source>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="275"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="277"/>
         <location filename="../sleepyhead/main.cpp" line="248"/>
         <source>Warning</source>
         <translation>Waarschuwing</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="297"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="299"/>
         <source>Min EPAP</source>
         <translation>Min. EPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="298"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="300"/>
         <source>Max EPAP</source>
         <translation>Max. EPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="300"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="302"/>
         <source>Min IPAP</source>
         <translation>Min. IPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="301"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="303"/>
         <source>Max IPAP</source>
         <translation>Max. IPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="342"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="344"/>
         <source>ÇSR</source>
         <translation>CSR</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="406"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="410"/>
         <location filename="../sleepyhead/SleepLib/common.h" line="78"/>
         <source>On</source>
         <translation>Aan</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="407"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="411"/>
         <location filename="../sleepyhead/SleepLib/common.h" line="79"/>
         <source>Off</source>
         <translation>Uit</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="277"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="279"/>
         <source>BMI</source>
         <translation>BMI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="278"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="280"/>
         <source>Weight</source>
         <translation>Gewicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="279"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="281"/>
         <source>Zombie</source>
         <translation>Zombie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="280"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="223"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="224"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="282"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="232"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="233"/>
         <source>Pulse Rate</source>
         <translatorcomment>20/9 WJG: overal gebruiken we polsslag - moeten we daar eigenlijk niet hartslag van maken? Dat lijkt me eigenlijk beter...
 Toch maar niet (nog)</translatorcomment>
         <translation>Polsslag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="281"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="227"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="283"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="236"/>
         <source>SpO2</source>
         <translation>SpO2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="282"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="231"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="284"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="240"/>
         <source>Plethy</source>
         <translatorcomment>20/9 WJG: Wat is dat?
 AK: Het kwam me bekend voor:
@@ -4997,32 +5022,32 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
         <translation>Plethy</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="289"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="291"/>
         <source>Oximeter</source>
         <translation>oxymeter</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="293"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="295"/>
         <source>CPAP</source>
         <translation>CPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="294"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="296"/>
         <source>BiPAP</source>
         <translation>BiPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="295"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="297"/>
         <source>Bi-Level</source>
         <translation>Bi-level</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="296"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="298"/>
         <source>EPAP</source>
         <translation>EPAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="299"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="301"/>
         <source>IPAP</source>
         <translation>IPAP</translation>
     </message>
@@ -5035,188 +5060,188 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
         <translation type="vanished">IPAP hoog</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="302"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="304"/>
         <source>APAP</source>
         <translation>APAP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="303"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="305"/>
         <source>ASV</source>
         <translation>ASV</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="304"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="306"/>
         <source>ST/ASV</source>
         <translation>ST/ASV</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="306"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="308"/>
         <source>Humidifier</source>
         <translation>Bevochtiger</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="308"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="310"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="168"/>
         <source>H</source>
         <translation>H</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="309"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="311"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="164"/>
         <source>OA</source>
         <translation>OA</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="310"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="312"/>
         <source>A</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="311"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="313"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="160"/>
         <source>CA</source>
         <translation>CA</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="312"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="314"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="176"/>
         <source>FL</source>
         <translation>FL</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="313"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="315"/>
         <source>LE</source>
         <translation>LE</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="314"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="203"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="316"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="212"/>
         <source>EP</source>
         <translation>EP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="315"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="317"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="183"/>
         <source>VS</source>
         <translation>VS</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="317"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="319"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="187"/>
         <source>VS2</source>
         <translation>VS2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="318"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="320"/>
         <source>RERA</source>
         <translation>RERA (RE)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="319"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="321"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="191"/>
         <source>PP</source>
         <translation>PP</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="320"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="322"/>
         <source>P</source>
         <translation>P</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="321"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="323"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="180"/>
         <source>RE</source>
         <translation>RE</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="322"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="199"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="324"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="208"/>
         <source>NR</source>
         <translation>NR</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="323"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="325"/>
         <source>NRI</source>
         <translation>NRI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="324"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="326"/>
         <source>O2</source>
         <translation>O2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="325"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="235"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="327"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="244"/>
         <source>PC</source>
         <translation>PC</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="326"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="207"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="328"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="216"/>
         <source>UF1</source>
         <translation>UF1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="327"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="211"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="329"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="220"/>
         <source>UF2</source>
         <translation>UF2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="328"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="215"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="330"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="224"/>
         <source>UF3</source>
         <translation>UF3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="332"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="334"/>
         <source>PS</source>
         <translation>PS</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="333"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="327"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="335"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="336"/>
         <source>AHI</source>
         <translation>AHI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="334"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="339"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="336"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="348"/>
         <source>RDI</source>
         <translation>RDI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="335"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="337"/>
         <source>AI</source>
         <translation>AI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="336"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="338"/>
         <source>HI</source>
         <translation>HI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="337"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="339"/>
         <source>UAI</source>
         <translation>UAI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="338"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="340"/>
         <source>CAI</source>
         <translation>CAI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="339"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="341"/>
         <source>FLI</source>
         <translation>FLI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="340"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="342"/>
         <source>REI</source>
         <translation>REI</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="341"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="343"/>
         <source>EPI</source>
         <translation>EPI</translation>
     </message>
@@ -5225,318 +5250,332 @@ http://www.apneaboard.com/forums/Thread-CMS50D--3956
         <translation type="vanished">ÃSR</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="343"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="345"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="156"/>
         <source>PB</source>
         <translation>PB</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="347"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="349"/>
         <source>IE</source>
         <translation>I/E</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="348"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="308"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="350"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="317"/>
         <source>Insp. Time</source>
         <translation>Inademtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="349"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="305"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="351"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="314"/>
         <source>Exp. Time</source>
         <translation>Uitademtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="350"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="311"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="352"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="320"/>
         <source>Resp. Event</source>
         <translation>Incident</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="351"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="353"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="174"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="314"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="323"/>
         <source>Flow Limitation</source>
         <translation>Stroombeperking</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="352"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="354"/>
         <source>Flow Limit</source>
         <translation>Stroombeperking</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="353"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="355"/>
         <source>Pat. Trig. Breath</source>
         <translation>Pat. Veroorz. Ademh.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="354"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="356"/>
         <source>Tgt. Min. Vent</source>
         <translation>Doel min. vent.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="355"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="319"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="357"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="328"/>
         <source>Target Vent.</source>
         <translation>Doelventilatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="356"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="285"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="358"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="294"/>
         <source>Minute Vent.</source>
         <translation>Minuutventilatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="357"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="276"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="277"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="359"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="285"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="286"/>
         <source>Tidal Volume</source>
         <translation>Teugvolume</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="358"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="289"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="360"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="298"/>
         <source>Resp. Rate</source>
         <translation>Ademtempo</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="359"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="280"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="281"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="361"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="289"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="290"/>
         <source>Snore</source>
         <translation>Snurken</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="360"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="362"/>
         <source>Leak</source>
         <translation>Lekkage</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="361"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="363"/>
         <source>Leaks</source>
         <translation>Maskerlek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="362"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="331"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="366"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="340"/>
         <source>Total Leaks</source>
         <translation>Totale lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="363"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="367"/>
         <source>Unintentional Leaks</source>
         <translation>Onbedoelde lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="364"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="368"/>
         <source>MaskPressure</source>
         <translation>Maskerdruk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="365"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="264"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="265"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="369"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="273"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="274"/>
         <source>Flow Rate</source>
         <translation>Stroomsnelheid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="366"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="370"/>
         <source>Sleep Stage</source>
         <translation>Slaapfase</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="367"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="371"/>
         <source>Usage</source>
         <translation>Gebruik</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="368"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="372"/>
         <source>Sessions</source>
         <translation>Sessies</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="369"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="373"/>
         <source>Pr. Relief</source>
         <translation>Drukvermindering</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="372"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="376"/>
         <source>Bookmarks</source>
         <translation>Bladwijzers</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="376"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="380"/>
         <source>Mode</source>
         <translation>Modus</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="377"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="381"/>
         <source>Model</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="378"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="382"/>
         <source>Brand</source>
         <translation>Merk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="379"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="383"/>
         <source>Serial</source>
         <translation>Serienummer</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="380"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="384"/>
         <source>Machine</source>
         <translation>Apparaat</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="381"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="385"/>
         <source>Channel</source>
         <translation>Kanaal</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="382"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="386"/>
         <source>Settings</source>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="387"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="388"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="356"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="357"/>
+        <source>Inclination</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="389"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="352"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="353"/>
+        <source>Orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="391"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="388"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="392"/>
         <source>DOB</source>
         <translation>Geboortedatum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="389"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="393"/>
         <source>Phone</source>
         <translation>Telefoon</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="390"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="394"/>
         <source>Address</source>
         <translation>Adres</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="391"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="395"/>
         <source>Email</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="392"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="396"/>
         <source>Patient ID</source>
         <translation>Patient-ID</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="393"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="397"/>
         <source>Date</source>
         <translation>Datum</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="395"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="399"/>
         <source>Bedtime</source>
         <translation>Gaan slapen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="396"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="400"/>
         <source>Wake-up</source>
         <translation>Opgestaan</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="397"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="401"/>
         <source>Mask Time</source>
         <translation>Maskertijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="398"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="402"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="399"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="403"/>
         <source>None</source>
         <translation>Geen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="400"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="404"/>
         <source>Ready</source>
         <translation>Klaar</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="402"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="406"/>
         <source>First</source>
         <translation>Eerste dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="403"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="407"/>
         <source>Last</source>
         <translation>Laatste dag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="404"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="408"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="405"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="409"/>
         <source>End</source>
         <translation>Einde</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="409"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="413"/>
         <source>Min</source>
         <translation>Min.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="410"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="414"/>
         <source>Max</source>
         <translation>Max.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="412"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="416"/>
         <source>Average</source>
         <translation>Gemiddeld</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="413"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="417"/>
         <source>Median</source>
         <translation>Mediaan</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="414"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="418"/>
         <source>Avg</source>
         <translation>Gem.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="415"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="419"/>
         <source>W-Avg</source>
         <translation>Gew. gem.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="283"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="285"/>
         <source>Pressure</source>
         <translation>Druk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="285"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="287"/>
         <source>Daily</source>
         <translation>Dagelijks</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="286"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="288"/>
         <source>Overview</source>
         <translation>Overzicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="287"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="289"/>
         <source>Oximetry</source>
         <translation>Oxymetrie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="290"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="292"/>
         <source>Event Flags</source>
         <translation>Markeringen</translation>
     </message>
@@ -5688,7 +5727,7 @@ Weet je zeker dat je deze wilt gebruiken?
 </translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="373"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="377"/>
         <source>SleepyHead</source>
         <translation>SleepyHead</translation>
     </message>
@@ -5718,29 +5757,44 @@ Weet je zeker dat je deze wilt gebruiken?
         <translation>Volgelaatsmasker</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="251"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="293"/>
         <source>Import Error</source>
         <translation>Importfout</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="252"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="294"/>
         <source>This Machine Record cannot be imported in this profile.
 The Day records overlap with already existing content.</source>
         <translation>Deze apparaatgegevens kunnen niet in dit profiel worden geimporteerd.
 De gegevens overlappen reeds bestaande gegevens.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="839"/>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="401"/>
+        <source>Non Data Capable Machine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="402"/>
+        <source>Your Philips Respironics CPAP machine (Model %1) is unfortunately not a data capable model.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/SleepLib/loader_plugins/prs1_loader.cpp" line="403"/>
+        <source>I&apos;m sorry to report that SleepyHead can only track hours of use for this machine.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sleepyhead/mainwindow.cpp" line="919"/>
         <source>About SleepyHead</source>
         <translation>Over SleepyHead</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="854"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="934"/>
         <source>&amp;Close</source>
         <translation>&amp;Sluiten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/mainwindow.cpp" line="858"/>
+        <location filename="../sleepyhead/mainwindow.cpp" line="938"/>
         <source>&amp;Donate</source>
         <translation>&amp;Doneren</translation>
     </message>
@@ -5929,17 +5983,17 @@ Alsjeblieft niets aanraken tot ik klaar ben!</translation>
         <translation>Dec.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="323"/>
+        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="326"/>
         <source>Events</source>
         <translation>Incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="323"/>
+        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="326"/>
         <source>Duration</source>
         <translation>Tijdsduur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="337"/>
+        <location filename="../sleepyhead/Graphs/gLineOverlay.cpp" line="340"/>
         <source>(%%1 in events)</source>
         <translation>(%%1 in incidenten)</translation>
     </message>
@@ -6083,8 +6137,8 @@ Alsjeblieft niets aanraken tot ik klaar ben!</translation>
     </message>
     <message>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="156"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="224"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="294"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="233"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="303"/>
         <source>%</source>
         <translation>%</translation>
     </message>
@@ -6108,14 +6162,15 @@ Alsjeblieft niets aanraken tot ik klaar ben!</translation>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="183"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="187"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="191"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="195"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="199"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="197"/>
         <location filename="../sleepyhead/SleepLib/schema.cpp" line="203"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="207"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="211"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="215"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="235"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="239"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="208"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="212"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="216"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="220"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="224"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="244"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="248"/>
         <source>events/hr</source>
         <translation>gebeurtenissen per uur</translation>
     </message>
@@ -6196,388 +6251,379 @@ Alsjeblieft niets aanraken tot ik klaar ben!</translation>
         <translation>Een kleine drukgolf waarmee een afgesloten luchtweg wordt gedetecteerd.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="193"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="364"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="195"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="201"/>
         <source>Large Leak</source>
         <translation>Groot lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="194"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="196"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="202"/>
         <source>A large mask leak affecting machine performance.</source>
         <translation>Dusdanige lekkage dat het apparaat niet meer goed detecteert.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="195"/>
+        <location filename="../sleepyhead/SleepLib/common.cpp" line="365"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="197"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="203"/>
         <source>LL</source>
         <translation>LL</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="197"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="206"/>
         <source>Non Responding Event</source>
         <translation>Gebeurtenis zonder reactie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="198"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="207"/>
         <source>A type of respiratory event that won&apos;t respond to a pressure increase.</source>
         <translation>Een ademhalingsgebeurtenis die niet door drukverhoging ophoudt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="201"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="210"/>
         <source>Expiratory Puff</source>
         <translation>Uitademstoot</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="202"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="211"/>
         <source>Intellipap event where you breathe out your mouth.</source>
         <translation>Een Intellipap gebeurtenis waarbij je door de mond uitademt.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="205"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="214"/>
         <source>User Flag #1</source>
         <translation>Gebruikersvlag #1</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="206"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="210"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="214"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="215"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="219"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="223"/>
         <source>A user definable event detected by SleepyHead&apos;s flow waveform processor.</source>
         <translation>Door de gebruiker instelbare gebeurtenis die door SleepyHead wordt herkend.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="209"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="218"/>
         <source>User Flag #2</source>
         <translation>Gebruikersvlag #2</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="213"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="222"/>
         <source>User Flag #3</source>
         <translation>Gebruikersvlag #3</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="223"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="232"/>
         <source>Heart rate in beats per minute</source>
         <translation>Pols in slagen per minuut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="226"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="235"/>
         <source>Blood-oxygen saturation percentage</source>
         <translation>Bloedzuurstof saturatie in procent</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="226"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="235"/>
         <source>SpO2 %</source>
         <translation>SpO2 %</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="229"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="238"/>
         <source>Plethysomogram</source>
         <translation>Plethysomogram</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="231"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="240"/>
         <source>hz</source>
         <translation>hz</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="230"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="239"/>
         <source>An optical Photo-plethysomogram showing heart rhythm</source>
         <translation>Een optische plethysomogram die het hartritme laat zien</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="233"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="242"/>
         <source>Pulse Change</source>
         <translation>Wijziging in polsslag</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="234"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="243"/>
         <source>A sudden (user definable) change in heart rate</source>
         <translation>Een plotselinge verandering in polsslag (instelbaar)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="237"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="246"/>
         <source>SpO2 Drop</source>
         <translation>SpO2 verlaging</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="238"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="247"/>
         <source>A sudden (user definable) drop in blood oxygen saturation</source>
         <translation>Een plotselinge verlaging in zuurstofsaturatie (instelbaar)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="239"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="248"/>
         <source>SD</source>
         <translation>SD</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="265"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="274"/>
         <source>Breathing flow rate waveform</source>
         <translation>Ademhalings golfvorm</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="266"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="278"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="286"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="298"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="324"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="332"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="336"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="275"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="287"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="295"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="307"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="333"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="341"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="345"/>
         <source>L/min</source>
         <translation>l/min</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="268"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="269"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="272"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="273"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="277"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="278"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="281"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="282"/>
         <source>Mask Pressure</source>
         <translation>Maskerdruk</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="273"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="282"/>
         <source>Mask Pressure (High resolution)</source>
         <translation>Maskerdruk (hoge resolutie)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="277"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="286"/>
         <source>Amount of air displaced per breath</source>
         <translation>Hoeveelheid lucht verplaatst door ademhaling</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="281"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="290"/>
         <source>Graph displaying snore volume</source>
         <translation>Grafiek die de mate van snurken weergeeft</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="282"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="320"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="291"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="329"/>
         <source>??</source>
         <translation>??</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="284"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="293"/>
         <source>Minute Ventilation</source>
         <translation>Minuutventilatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="285"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="294"/>
         <source>Amount of air displaced per minute</source>
         <translation>Hoeveelheid verplaatste lucht per minuut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="288"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="297"/>
         <source>Respiratory Rate</source>
         <translation>Ademhalingstempo</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="289"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="298"/>
         <source>Rate of breaths per minute</source>
         <translation>Tempo van de ademhaling per minuut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="290"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="299"/>
         <source>Bpm</source>
         <translation>slagen per minuut</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="292"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="301"/>
         <source>Patient Triggered Breaths</source>
         <translation>Pat. Veroorz. Ademh.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="293"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="302"/>
         <source>Percentage of breaths triggered by patient</source>
         <translation>Percentage ademhalingen door de patient</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="293"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="302"/>
         <source>Pat. Trig. Breaths</source>
         <translation>Pat. geact. teugen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="296"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="297"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="305"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="306"/>
         <source>Leak Rate</source>
         <translation>Leksnelheid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="297"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="306"/>
         <source>Rate of detected mask leakage</source>
         <translation>Snelheid van de maskerlekkage</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="300"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="301"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="309"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="310"/>
         <source>I:E Ratio</source>
         <translation>I:E verhouding</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="301"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="310"/>
         <source>Ratio between Inspiratory and Expiratory time</source>
         <translation>Verhouding tussen inadem- en uitademtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="302"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="311"/>
         <source>ratio</source>
         <translation>verhouding</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="304"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="313"/>
         <source>Expiratory Time</source>
         <translation>Uitademtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="304"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="313"/>
         <source>Time taken to breathe out</source>
         <translation>Tijdsduur van het uitademen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="305"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="308"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="314"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="317"/>
         <source>seconds</source>
         <translation>seconden</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="307"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="316"/>
         <source>Inspiratory Time</source>
         <translation>Inademtijd</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="307"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="316"/>
         <source>Time taken to breathe in</source>
         <translation>Tijdsduur van het inademen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="310"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="319"/>
         <source>Respiratory Event</source>
         <translation>Ademhalingsgebeurtenis</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="311"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="320"/>
         <source>A ResMed data source showing Respiratory Events</source>
         <translation>Een ResMed gegevensblok met ademhalingsgebeurtenissen</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="312"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="321"/>
         <source>events</source>
         <translation>incidenten</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="315"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="324"/>
         <source>Graph showing severity of flow limitations</source>
         <translation>Grafiek die de ernst van de stroombeperking aangeeft</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="315"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="324"/>
         <source>Flow Limit.</source>
         <translation>Stroombeperk.</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="316"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="325"/>
         <source>0-1</source>
         <translation>0=open, 1=dicht</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="318"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="327"/>
         <source>Target Minute Ventilation</source>
         <translation>Doelminuutventilatie</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="319"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="328"/>
         <source>Target Minute Ventilation?</source>
         <translation>Doelminuutventilatie?</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="322"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="331"/>
         <source>Maximum Leak</source>
         <translation>Maximum lekkage</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="323"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="332"/>
         <source>The maximum rate of mask leakage</source>
         <translation>De maximum leksnelheid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="323"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="332"/>
         <source>Max Leaks</source>
         <translation>Max. lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="326"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="335"/>
         <source>Apnea Hypopnea Index</source>
         <translation>Apneu-hypopneu Index</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="327"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="336"/>
         <source>Graph showing running AHI for the past hour</source>
         <translation>Grafiek met de voortschrijdende AHI van het afgelopen uur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="328"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="340"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="337"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="349"/>
         <source>events/hour</source>
         <translation>gebeurtenissen per uur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="330"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="339"/>
         <source>Total Leak Rate</source>
         <translation>Totale lekkage</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="331"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="340"/>
         <source>Detected mask leakage including natural Mask leakages</source>
         <translation>Gedetecteerde maskerlekkage inclusief de bedoelde lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="334"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="343"/>
         <source>Median Leak Rate</source>
         <translation>Mediaan van de lekkage</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="335"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
         <source>Median rate of detected mask leakage</source>
         <translation>De mediaan van de leksnelheid</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="335"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
         <source>Median Leaks</source>
         <translation>Mediaan lek</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="338"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="347"/>
         <source>Respiratory Disturbance Index</source>
         <translation>Ademhalings Stoornis Index (RDI)</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="339"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="348"/>
         <source>Graph showing running RDI for the past hour</source>
         <translation>Grafiek met de voorstschrijdende RDI van het afgelopen uur</translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="385"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="343"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
-        <source>Orientation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="353"/>
         <source>Sleep position in degrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="344"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="348"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="353"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="357"/>
         <source>degrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sleepyhead/SleepLib/common.cpp" line="384"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="347"/>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="348"/>
-        <source>Inclination</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sleepyhead/SleepLib/schema.cpp" line="348"/>
+        <location filename="../sleepyhead/SleepLib/schema.cpp" line="357"/>
         <source>Upright angle in degrees</source>
         <translation type="unfinished"></translation>
     </message>
