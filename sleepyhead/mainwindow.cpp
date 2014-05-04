@@ -114,6 +114,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->action_Screenshot->setEnabled(false);
 #endif
 #endif
+    auto machines = p_profile->GetMachines(MT_CPAP);
+    for (auto it = machines.begin(); it != machines.end(); ++it) {
+        QString mclass=(*it)->GetClass();
+        if (mclass == STR_MACH_ResMed) {
+            qDebug() << "ResMed machine found.. locking Session splitting capabilities";
+
+            // Have to sacrifice these features to get access to summary data.
+            p_profile->session->setCombineCloseSessions(0);
+            p_profile->session->setDaySplitTime(QTime(12,0,0));
+            p_profile->session->setIgnoreShortSessions(false);
+            break;
+        }
+    }
+
 
     overview = nullptr;
     daily = nullptr;

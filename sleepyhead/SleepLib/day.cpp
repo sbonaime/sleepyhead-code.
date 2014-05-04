@@ -421,7 +421,8 @@ qint64 Day::total_time()
     }
 
     if (total != d_totaltime) {
-        qDebug() << "Sessions Times overlaps!" << total << d_totaltime;
+        // They can overlap.. tough.
+//        qDebug() << "Sessions Times overlaps!" << total << d_totaltime;
     }
 
     return total; //d_totaltime;

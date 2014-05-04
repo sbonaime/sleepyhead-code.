@@ -70,6 +70,18 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
         }*/
     }
 
+    auto machines = p_profile->GetMachines(MT_CPAP);
+    for (auto it = machines.begin(); it != machines.end(); ++it) {
+        QString mclass=(*it)->GetClass();
+        if (mclass == STR_MACH_ResMed) {
+            ui->combineSlider->setEnabled(false);
+            ui->IgnoreSlider->setEnabled(false);
+            ui->timeEdit->setEnabled(false);
+            break;
+        }
+    }
+
+
     QLocale locale = QLocale::system();
     QString shortformat = locale.dateFormat(QLocale::ShortFormat);
 

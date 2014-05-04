@@ -118,6 +118,8 @@ QDate Machine::AddSession(Session *s, Profile *p)
     int combine_sessions = PROFILE.session->combineCloseSessions();
     int ignore_sessions = PROFILE.session->ignoreShortSessions();
 
+    // ResMed machines can't do this.. but don't really want to do a slow string compare here
+
     int session_length = s->last() - s->first();
     session_length /= 60000;
 

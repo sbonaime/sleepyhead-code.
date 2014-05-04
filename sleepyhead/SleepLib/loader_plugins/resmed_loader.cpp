@@ -1267,6 +1267,12 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
     QString backupfile, backfile, crcfile, yearstr, bkuppath;
 
+    // Have to sacrifice these features to get access to summary data.
+    p_profile->session->setCombineCloseSessions(0);
+    p_profile->session->setDaySplitTime(QTime(12,0,0));
+    p_profile->session->setIgnoreShortSessions(false);
+
+
     /////////////////////////////////////////////////////////////////////////////
     // Scan through new file list and import sessions
     /////////////////////////////////////////////////////////////////////////////
