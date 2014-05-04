@@ -39,7 +39,7 @@ exists(../.git):{
     DEFINES += GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
     DEFINES += GIT_REVISION=\\\"$$system(git rev-parse --short HEAD)\\\"
 
-    contains(GIT_BRANCH,"unstable"):DEFINES += UNSTABLE_BUILD
+    contains(GIT_BRANCH,"testing"):DEFINES += TEST_BUILD
 
 } else {
     DEFINES += GIT_BRANCH=\\\"UNKNOWN\\\"

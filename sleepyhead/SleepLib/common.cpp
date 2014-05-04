@@ -25,8 +25,8 @@ const QString getDeveloperName()
 const QString getAppName()
 {
     QString name = STR_AppName;
-#ifdef UNSTABLE_BUILD
-    name += STR_Unstable;
+#ifdef TEST_BUILD
+    name += STR_TestBuild;
 #endif
     return name;
 }
@@ -34,8 +34,8 @@ const QString getAppName()
 const QString getDefaultAppRoot()
 {
     QString approot = STR_AppRoot;
-#ifdef UNSTABLE_BUILD
-    approot += STR_Unstable;
+#ifdef TEST_BUILD
+    approot += STR_TestBuild;
 #endif
     return approot;
 }

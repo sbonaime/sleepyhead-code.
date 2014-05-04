@@ -99,10 +99,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString version = FullVersionString;
 
-    if (QString(GIT_BRANCH) != "master") { version += QString(" ") + QString(GIT_BRANCH); }
+//    if (QString(GIT_BRANCH) != "master") { version += QString(" ") + QString(GIT_BRANCH); }
 
-    this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(
-                             version).arg(PREF[STR_GEN_Profile].toString()));
+    this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));
     //ui->tabWidget->setCurrentIndex(1);
 
 #ifdef Q_OS_MAC

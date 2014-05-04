@@ -101,8 +101,8 @@ void initTranslations(QSettings & settings) {
         QComboBox lang_combo(&langsel);
         QPushButton lang_okbtn("->", &langsel);
 
-        QVBoxLayout layout1(&langsel);
-        QVBoxLayout layout2(&langsel);
+        QVBoxLayout layout1;
+        QVBoxLayout layout2;
 
         lang_layout.addLayout(&layout1);
         lang_layout.addLayout(&layout2);
@@ -124,6 +124,7 @@ void initTranslations(QSettings & settings) {
             const QString & name = it.value();
             lang_combo.addItem(name, code);
         }
+
 
 
         langsel.connect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));

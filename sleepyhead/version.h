@@ -20,8 +20,8 @@ const int revision_number = 4;
 const int release_number = 5;
 
 
-#ifdef UNSTABLE_BUILD
-const QString ReleaseStatus = "unstable";
+#ifdef TEST_BUILD
+const QString ReleaseStatus = "testing";
 #else
 const QString ReleaseStatus = "beta";
 #endif

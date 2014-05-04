@@ -50,8 +50,8 @@ QString htmlHeader()
                    "<div align=center><table cellpadding=3 cellspacing=0 border=0 width=100%>"
                    //"<tr>"
                    //"<td bgcolor='red' width=100% colspan=3 align=center><font color='yellow'><b>"+QObject::tr("Warning:")+"</b> "+
-                   //               #ifdef UNSTABLE_BUILD
-                   //               QObject::tr("This is an unstable build so expect the possibility things will go wrong.")+"<br/>"+
+                   //               #ifdef TEST_BUILD
+                   //               QObject::tr("This is an testing build so expect the possibility things will go wrong.")+"<br/>"+
                    //               QObject::tr("Please report bugs you find here to SleepyHead's developer mailing list.")+
                    //               #else
                    //               QObject::tr("This is a beta software and some functionality may not work as intended yet.")+"<br/>"+

@@ -51,10 +51,10 @@ QString weightString(float kg, UnitSystem us = US_Undefined);
 bool removeDir(const QString &path);
 
 
-#ifdef UNSTABLE_BUILD
-const QString STR_Unstable = "-Unstable";
+#ifdef TEST_BUILD
+const QString STR_TestBuild = "-Testing";
 #else
-const QString STR_Unstable = "";
+const QString STR_TestBuild = "";
 #endif
 
 const QString getAppName();
