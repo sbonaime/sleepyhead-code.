@@ -103,6 +103,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef TEST_BUILD
     version += QString(STR_TestBuild);
+#else
+    ui->warningLabel->hide();
 #endif
 
     this->setWindowTitle(STR_TR_SleepyHead + QString(" v%1 (" + tr("Profile") + ": %2)").arg(version).arg(PREF[STR_GEN_Profile].toString()));

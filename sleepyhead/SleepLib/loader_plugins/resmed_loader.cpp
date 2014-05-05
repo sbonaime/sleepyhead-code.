@@ -121,24 +121,32 @@ EDFParser::EDFParser(QString name)
 }
 EDFParser::~EDFParser()
 {
-    QVector<EDFSignal>::iterator s;
-
-    for (s = edfsignals.begin(); s != edfsignals.end(); s++) {
+    for (auto s = edfsignals.begin(); s != edfsignals.end(); s++) {
         if ((*s).data) { delete [](*s).data; }
     }
 
     if (buffer) { delete [] buffer; }
 }
+
+// Read a 16 bits integer
 qint16 EDFParser::Read16()
 {
-    if ((pos + long(sizeof(qint16))) > filesize) {
+    if ((pos + 2) > filesize) {
         return 0;
     }
 
+#ifdef LITTLE_ENDIAN
+    // Intel, etc...
     qint16 res = *(qint16 *)&buffer[pos];
-    pos += sizeof(qint16);
+#else
+    // ARM, PPC, etc..
+    qint16 res = buffer[pos] | (buffer[pos+1] << 8);
+#endif
+
+    pos += 2;
     return res;
 }
+
 QString EDFParser::Read(unsigned n)
 {
     if ((pos + n) > filesize) {
@@ -287,14 +295,18 @@ bool EDFParser::Parse()
     for (int x = 0; x < num_data_records; x++) {
         for (int i = 0; i < num_signals; i++) {
             EDFSignal &sig = edfsignals[i];
+#if LITTLE_ENDIAN
+            // Intel x86, etc..
             memcpy((char *)&sig.data[sig.pos], (char *)&buffer[pos], sig.nr * 2);
             sig.pos += sig.nr;
             pos += sig.nr * 2;
-            // big endian will probably screw up without this..
-            /*for (int j=0;j<sig.nr;j++) {
+#else
+            // ARM, PPC, etc..
+            for (int j=0;j<sig.nr;j++) {
                 qint16 t=Read16();
                 sig.data[sig.pos++]=t;
-            } */
+            }
+#endif
         }
     }
 
@@ -302,49 +314,59 @@ bool EDFParser::Parse()
 }
 bool EDFParser::Open(QString name)
 {
-
-    //Urk.. This needs fixing for VC++, as it doesn't have packed attribute type..
+    Q_ASSERT(buffer == nullptr);
 
     if (name.endsWith(STR_ext_gz)) {
+        // Open and decempress file to buffer
+
         filename = name.mid(0, -3);
+
+        // Get file length from inside gzip file
         QFile fi(name);
-        fi.open(QFile::ReadOnly);
-        fi.seek(fi.size() - 4);
+
+        if (!fi.open(QFile::ReadOnly) || !fi.seek(fi.size() - 4)) {
+            goto badfile;
+        }
+
         unsigned char ch[4];
         fi.read((char *)ch, 4);
         filesize = ch[0] | (ch [1] << 8) | (ch[2] << 16) | (ch[3] << 24);
+
         datasize = filesize - EDFHeaderSize;
-
-        if (datasize < 0) { return false; }
-
-        qDebug() << "Size of" << name << "uncompressed=" << filesize;
-        gzFile f = gzopen(name.toLatin1(), "rb");
-
-        if (!f) {
-            qDebug() << "EDFParser::Open() Couldn't open file" << name;
-            return false;
+        if (datasize < 0) {
+            goto badfile;
         }
 
+        // Open gzip file for reading
+        gzFile f = gzopen(name.toLatin1(), "rb");
+        if (!f) {
+            goto badfile;
+        }
+
+        // Decompressed header and data block
         gzread(f, (char *)&header, EDFHeaderSize);
         buffer = new char [datasize];
-        //gzbuffer(f,65536*2);
         gzread(f, buffer, datasize);
         gzclose(f);
     } else {
+
+        // Open and read uncompressed file
         QFile f(name);
 
         if (!f.open(QIODevice::ReadOnly)) {
-            return false;
+            goto badfile;
         }
 
         filename = name;
         filesize = f.size();
         datasize = filesize - EDFHeaderSize;
 
-        if (datasize < 0) { return false; }
+        if (datasize < 0) {
+            goto badfile;
+        }
 
         f.read((char *)&header, EDFHeaderSize);
-        //qDebug() << "Opening " << name;
+
         buffer = new char [datasize];
         f.read(buffer, datasize);
         f.close();
@@ -352,6 +374,10 @@ bool EDFParser::Open(QString name)
 
     pos = 0;
     return true;
+
+badfile:
+    qDebug() << "EDFParser::Open() Couldn't open file" << name;
+    return false;
 }
 
 ResmedLoader::ResmedLoader()
@@ -1555,7 +1581,14 @@ int ResmedLoader::Open(QString &path, Profile *profile)
 
             // Add the session to the machine & profile objects
             //if (!dodgy)
-            m->AddSession(sess, profile);
+
+            if (sess->length() > 0) {
+                m->AddSession(sess, profile);
+            } else {
+                // Hmm.. this means a ton of these could slow down import.
+                // I could instead set these to disabled by default, or implement a dodgy session marker
+                delete sess;
+            }
         }
     }
 
