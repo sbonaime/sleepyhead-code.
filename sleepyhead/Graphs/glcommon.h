@@ -73,9 +73,12 @@ void LinedRoundedRectangle(int x, int y, int w, int h, int radius, int lw, QColo
     */
 void RoundedRectangle(int x, int y, int w, int h, int radius, const QColor color);
 
-#ifdef BUILD_WITH_MSVC
-// Visual C++ doesn't have either of these in it's maths header.. I'm not surprised at Microsofts maths abilities..
+#ifndef M_PI
 const double M_PI = 3.141592653589793;
+#endif
+
+#ifdef BUILD_WITH_MSVC
+// Visual C++ doesn't have round in it's maths header..
 
 double round(double number);
 #endif
