@@ -91,7 +91,7 @@ Statistics::Statistics(QObject *parent) :
         { SC_MIN, tr("Min %1") },
         { SC_MAX, tr("Max %1") },
         { SC_CPH, tr("%1 Index") },
-        { SC_SPH, tr("% of night in %1") },
+        { SC_SPH, tr("% of time in %1") },
     };
     machinenames = {
         { MT_UNKNOWN, STR_TR_Unknown },
@@ -120,15 +120,15 @@ QString htmlHeader()
         if (!PROFILE.user->DOB().isNull()) {
             userinfo += QString(QObject::tr("DOB: %1")).arg(PROFILE.user->DOB().toString()) + "<br/>";
         }
-    }
-    if (!PROFILE.user->phone().isEmpty()) {
-        userinfo += QString(QObject::tr("Phone: %1")).arg(PROFILE.user->phone()) + "<br/>";
-    }
-    if (!PROFILE.user->email().isEmpty()) {
-        userinfo += QString(QObject::tr("Email: %1")).arg(PROFILE.user->email()) + "<br/><br/>";
-    }
-    if (!PROFILE.user->address().isEmpty()) {
-        userinfo +=  QObject::tr("Address:")+"<br/>"+address;
+        if (!PROFILE.user->phone().isEmpty()) {
+            userinfo += QString(QObject::tr("Phone: %1")).arg(PROFILE.user->phone()) + "<br/>";
+        }
+        if (!PROFILE.user->email().isEmpty()) {
+            userinfo += QString(QObject::tr("Email: %1")).arg(PROFILE.user->email()) + "<br/><br/>";
+        }
+        if (!PROFILE.user->address().isEmpty()) {
+            userinfo +=  QObject::tr("Address:")+"<br/>"+address;
+        }
     }
 
 
@@ -600,7 +600,7 @@ QString Statistics::GenerateHTML()
         } else if (row.calc == SC_COLUMNHEADERS) {
             html += QString("<tr><td><b>%1</b></td>").arg(tr("Details"));
             for (int j=0; j < periods.size(); j++) {
-                html += QString("<td><b>%1</b></td>").arg(periods.at(j).header);
+                html += QString("<td onmouseover='ChangeColor(this, \"#eeeeee\");' onmouseout='ChangeColor(this, \"#ffffff\");' onclick='alert(\"overview=%1,%2\");'><b>%3</b></td>").arg(periods.at(j).start.toString(Qt::ISODate)).arg(periods.at(j).end.toString(Qt::ISODate)).arg(periods.at(j).header);
             }
             html += "</tr>\n";
             continue;
