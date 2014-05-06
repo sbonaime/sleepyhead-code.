@@ -1492,7 +1492,7 @@ void gGraphView::paintGL()
         redrawtimer->stop();
     }
 
-    bool something_fun = PROFILE.ExistsAndTrue("AnimationsAndTransitions");
+    bool something_fun = PROFILE.appearance->animations();
 
     if (width() <= 0) { return; }
 

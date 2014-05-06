@@ -15,6 +15,10 @@
 #include <QtOpenGL/qgl.h>
 #include <QColor>
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 #ifdef Q_OS_MAC
 # define USE_RENDERTEXT
 # include "OpenGL/glu.h"

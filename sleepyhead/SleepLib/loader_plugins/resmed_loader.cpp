@@ -1489,19 +1489,18 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                     // VPAP Auto has EPAP, Min EPAP, IPAP and Max IPAP, and PS
                     // VPAP Adapt 36007 has just EPAP and PSLo/Hi,
                     // VPAP Adapt 36037 has EPAPLo, EPAPHi and PSLo/Hi
-                    QHash<ChannelID, QString> hash = {
-                        { CPAP_EPAP, "EPAP" },
-                        { CPAP_IPAP, "IPAP" },
-                        { CPAP_EPAPLo, "Min EPAP" },
-                        { CPAP_EPAPHi, "Max EPAP" },
-                        { CPAP_IPAPLo, "Min IPAP" },
-                        { CPAP_IPAPHi, "Max IPAP" },
-                        { CPAP_PS, "PS" },
-                        { CPAP_PSMin, "Min PS" },
-                        { CPAP_PSMax, "Max PS" },
-                        { CPAP_RespRate, "RR" }, // Is this a setting to force respiratory rate on S/T machines? or an average
-                        { CPAP_PresReliefSet, "Easy-Breathe" },
-                    };
+                    QHash<ChannelID, QString> hash;
+                    hash[CPAP_EPAP] = "EPAP";
+                    hash[CPAP_IPAP] = "IPAP";
+                    hash[CPAP_EPAPLo] = "Min EPAP";
+                    hash[CPAP_EPAPHi] = "Max EPAP";
+                    hash[CPAP_IPAPLo] = "Min IPAP";
+                    hash[CPAP_IPAPHi] = "Max IPAP";
+                    hash[CPAP_PS] = "PS";
+                    hash[CPAP_PSMin] = "Min PS";
+                    hash[CPAP_PSMax] = "Max PS";
+                    hash[CPAP_RespRate] = "RR"; // Is this a setting to force respiratory rate on S/T machines? or an average
+                    hash[CPAP_PresReliefSet] = "Easy-Breathe";
 
                     for (auto it = hash.begin(); it != hash.end(); ++it) {
                         auto a = stredf.lookup.find(it.value());
@@ -2401,28 +2400,27 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
 void ResInitModelMap()
 {
     // don't really need this anymore
-    Resmed_Model_Map = {
-        { "S9 Escape",      { 36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301, 36361 } },
-        { "S9 Escape Auto", { 36002, 36012, 36022, 36302, 36362 } },
-        { "S9 Elite",       { 36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203, 36223, 36243, 36263, 36303, 36343, 36363 } },
-        { "S9 Autoset",     { 36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205, 36225, 36245, 36265, 36305, 36325, 36345, 36365 } },
-        { "S9 AutoSet CS",  { 36100, 36110, 36120, 36140, 36200, 36220, 36360 } },
-        { "S9 AutoSet 25",  { 36106, 36116, 36126, 36146, 36206, 36226, 36366 } },
-        { "S9 AutoSet for Her", { 36065 } },
-        { "S9 VPAP S",      { 36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224, 36284, 36304 } },
-        { "S9 VPAP Auto",   { 36006, 36016, 36026 } },
-        { "S9 VPAP Adapt",  { 36037, 36007, 36017, 36027, 36367 } },
-        { "S9 VPAP ST",     { 36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 } },
-        { "S9 VPAP ST 22",  { 36118, 36128 } },
-        { "S9 VPAP ST-A",   { 36039, 36159, 36169, 36379 } },
-/* S8 Series
-        { "S8 Escape",      { 33007 } },
-        { "S8 Elite II",    { 33039 } },
-        { "S8 Escape II",   { 33051 } },
-        { "S8 Escape II AutoSet", { 33064 } },
-        { "S8 AutoSet II",  { 33129 } },
-            */
-    };
+//    Resmed_Model_Map = {
+//        { "S9 Escape",      { 36001, 36011, 36021, 36141, 36201, 36221, 36261, 36301, 36361 } },
+//        { "S9 Escape Auto", { 36002, 36012, 36022, 36302, 36362 } },
+//        { "S9 Elite",       { 36003, 36013, 36023, 36103, 36113, 36123, 36143, 36203, 36223, 36243, 36263, 36303, 36343, 36363 } },
+//        { "S9 Autoset",     { 36005, 36015, 36025, 36105, 36115, 36125, 36145, 36205, 36225, 36245, 36265, 36305, 36325, 36345, 36365 } },
+//        { "S9 AutoSet CS",  { 36100, 36110, 36120, 36140, 36200, 36220, 36360 } },
+//        { "S9 AutoSet 25",  { 36106, 36116, 36126, 36146, 36206, 36226, 36366 } },
+//        { "S9 AutoSet for Her", { 36065 } },
+//        { "S9 VPAP S",      { 36004, 36014, 36024, 36114, 36124, 36144, 36204, 36224, 36284, 36304 } },
+//        { "S9 VPAP Auto",   { 36006, 36016, 36026 } },
+//        { "S9 VPAP Adapt",  { 36037, 36007, 36017, 36027, 36367 } },
+//        { "S9 VPAP ST",     { 36008, 36018, 36028, 36108, 36148, 36208, 36228, 36368 } },
+//        { "S9 VPAP ST 22",  { 36118, 36128 } },
+//        { "S9 VPAP ST-A",   { 36039, 36159, 36169, 36379 } },
+//      //S8 Series
+//        { "S8 Escape",      { 33007 } },
+//        { "S8 Elite II",    { 33039 } },
+//        { "S8 Escape II",   { 33051 } },
+//        { "S8 Escape II AutoSet", { 33064 } },
+//        { "S8 AutoSet II",  { 33129 } },
+//    };
 
     ////////////////////////////////////////////////////////////////////////////
     // Translation lookup table for non-english machines
@@ -2430,53 +2428,68 @@ void ResInitModelMap()
 
     // Only put the first part, enough to be identifiable, because ResMed likes
     // to signal names crop short
-    resmed_codes = {
-        { CPAP_FlowRate, { "Flow" } },
-        { CPAP_MaskPressureHi, { "Mask Pres", } },
-        { CPAP_MaskPressure, { "Mask Pres", } },
-        { CPAP_RespEvent, { "Resp Event" } },
-        { CPAP_Pressure, { "Therapy Pres", } },
-        { CPAP_IPAP, { "Insp Pres" } },
-        { CPAP_EPAP, { "Exp Pres", } },
-        { CPAP_Leak, { "Leak", "Leck", "Lekk", "Läck", "LÃ¤ck", } },
-        { CPAP_RespRate, { "RR", "AF", "FR" } },
-        { CPAP_MinuteVent, { "MV", "VM" } },
-        { CPAP_TidalVolume, { "Vt", "VC" } },
-        { CPAP_IE, { "I:E" } },
-        { CPAP_Snore, { "Snore" } },
-        { CPAP_FLG, { "FFL Index" } },
-        { CPAP_Ti, { "Ti" } },
-        { CPAP_Te, { "Te" } },
-        { CPAP_TgMV, { "TgMV" } },
-        { OXI_Pulse, { "Pulse", "Puls", "Pols" } },
-        { OXI_SPO2, { "SpO2" } },
+    // Read this from a table?
 
-        { CPAP_Obstructive, { "Obstructive apnea" } },
-        { CPAP_Hypopnea, { "Hypopnea" } },
-        { CPAP_Apnea, { "Apnea" } },
-        { CPAP_ClearAirway, { "Central apnea" } },
-        { CPAP_Mode, { "Mode", "Modus", "Funktion" } },
 
-        { RMS9_SetPressure, { "SetPressure", "Eingest. Druck", "Ingestelde druk", "Pres. prescrite", "Inställt tryck", "InstÃ¤llt tryck" } },
-        { RMS9_EPR, { "EPR" } },
-        { RMS9_EPRSet, { "EPR Level", "EPR-Stufe", "EPR-niveau", "Niveau EPR", "EPR-nivå", "EPR-nivÃ¥" } },
-
-        { CPAP_PressureMax, {
-              "Max Pressure",
-              "Max. Druck",       // German
-              "Max druk",         // Dutch
-              "Pression max.",    // French
-              "Max tryck",        // Swedish
-        } },
-        { CPAP_PressureMin, {
-              "Min Pressure",
-              "Min. Druck",       // German
-              "Min druk",         // Dutch
-              "Pression min.",    // French
-              "Min tryck",        // Swedish
-        } },
-
-    };
+    resmed_codes[CPAP_FlowRate].push_back("Flow");
+    resmed_codes[CPAP_MaskPressureHi].push_back("Mask Pres");
+    resmed_codes[CPAP_MaskPressure].push_back("Mask Pres");
+    resmed_codes[CPAP_RespEvent].push_back("Resp Event");
+    resmed_codes[CPAP_Pressure].push_back("Therapy Pres");
+    resmed_codes[CPAP_IPAP].push_back("Insp Pres");
+    resmed_codes[CPAP_EPAP].push_back("Exp Pres");
+    resmed_codes[CPAP_Leak].push_back("Leak");
+    resmed_codes[CPAP_Leak].push_back("Leck");
+    resmed_codes[CPAP_Leak].push_back("Lekk");
+    resmed_codes[CPAP_Leak].push_back("Läck");
+    resmed_codes[CPAP_Leak].push_back("LÃ¤ck");
+    resmed_codes[CPAP_RespRate].push_back("RR");
+    resmed_codes[CPAP_RespRate].push_back("AF");
+    resmed_codes[CPAP_RespRate].push_back("FR");
+    resmed_codes[CPAP_MinuteVent].push_back("MV");
+    resmed_codes[CPAP_MinuteVent].push_back("VM");
+    resmed_codes[CPAP_TidalVolume].push_back("Vt");
+    resmed_codes[CPAP_TidalVolume].push_back("VC");
+    resmed_codes[CPAP_IE].push_back("I:E");
+    resmed_codes[CPAP_Snore].push_back("Snore");
+    resmed_codes[CPAP_FLG].push_back("FFL Index");
+    resmed_codes[CPAP_Ti].push_back("Ti");
+    resmed_codes[CPAP_Te].push_back("Te");
+    resmed_codes[CPAP_TgMV].push_back("TgMV");
+    resmed_codes[OXI_Pulse].push_back("Pulse");
+    resmed_codes[OXI_Pulse].push_back("Puls");
+    resmed_codes[OXI_Pulse].push_back("Pols");
+    resmed_codes[OXI_SPO2].push_back("SpO2");
+    resmed_codes[CPAP_Obstructive].push_back("Obstructive apnea");
+    resmed_codes[CPAP_Hypopnea].push_back("Hypopnea");
+    resmed_codes[CPAP_Apnea].push_back("Apnea");
+    resmed_codes[CPAP_ClearAirway].push_back("Central apnea");
+    resmed_codes[CPAP_Mode].push_back("Mode");
+    resmed_codes[CPAP_Mode].push_back("Modus");
+    resmed_codes[CPAP_Mode].push_back("Funktion");
+    resmed_codes[RMS9_SetPressure].push_back("SetPressure");
+    resmed_codes[RMS9_SetPressure].push_back("Eingest. Druck");
+    resmed_codes[RMS9_SetPressure].push_back("Ingestelde druk");
+    resmed_codes[RMS9_SetPressure].push_back("Pres. prescrite");
+    resmed_codes[RMS9_SetPressure].push_back("Inställt tryck");
+    resmed_codes[RMS9_SetPressure].push_back("InstÃ¤llt tryck");
+    resmed_codes[RMS9_EPR].push_back("EPR");
+    resmed_codes[RMS9_EPRSet].push_back("EPR Level");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-Stufe");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-niveau");
+    resmed_codes[RMS9_EPRSet].push_back("Niveau EPR");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-nivå");
+    resmed_codes[RMS9_EPRSet].push_back("EPR-nivÃ¥");
+    resmed_codes[CPAP_PressureMax].push_back("Max Pressure");
+    resmed_codes[CPAP_PressureMax].push_back("Max. Druck");
+    resmed_codes[CPAP_PressureMax].push_back("Max druk");
+    resmed_codes[CPAP_PressureMax].push_back("Pression max.");
+    resmed_codes[CPAP_PressureMax].push_back("Max tryck");
+    resmed_codes[CPAP_PressureMin].push_back("Min Pressure");
+    resmed_codes[CPAP_PressureMin].push_back("Min. Druck");
+    resmed_codes[CPAP_PressureMin].push_back("Min druk");
+    resmed_codes[CPAP_PressureMin].push_back("Pression min.");
+    resmed_codes[CPAP_PressureMin].push_back("Min tryck");
 }
 
 

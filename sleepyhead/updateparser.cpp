@@ -13,6 +13,11 @@
 
 #include "updateparser.h"
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
+
 Update::Update()
 {
     size = 0;

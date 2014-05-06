@@ -51,6 +51,10 @@ QString weightString(float kg, UnitSystem us = US_Undefined);
 bool removeDir(const QString &path);
 
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 #ifdef TEST_BUILD
 const QString STR_TestBuild = "-Testing";
 #else

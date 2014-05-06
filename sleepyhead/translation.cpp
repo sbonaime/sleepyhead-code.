@@ -22,23 +22,31 @@
 #include <QSettings>
 #include <QTranslator>
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 #include "translation.h"
 
 void initTranslations(QSettings & settings) {
 
-
-    QStringList welcome={"Welcome", "Welkom", "Willkommen", "Bienvenue", u8"歡迎", u8"ようこそ！"};
+    QStringList welcome;
+    welcome.push_back("Welcome");
+    welcome.push_back("Welkom");
+    welcome.push_back("Willkommen");
+    welcome.push_back("Bienvenue");
+    welcome.push_back("歡迎");
+    welcome.push_back("ようこそ！");
 
     // (Ordinary character sets will just use the name before the first '.' in the filename.)
     // (This u8 stuff deliberately kills Qt4.x build support - if you know another way feel free to
     //  change it, but Qt4 support is still going to die sooner or later)
     // Add any languages with special character set needs to this list
-    QHash<QString, QString> langNames={
-        { "cn", u8"漢語繁體字" },
-        { "es", u8"Español" },
-        { "bg", u8"български" },
-        { "fr", u8"Français" },
-    };
+    QHash<QString, QString> langNames;
+    langNames["cn"]="漢語繁體字";
+    langNames["es"] = "Español";
+    langNames["bg"] = "български";
+    langNames["fr"] = "Français";
     // CHECK: Will the above break with MS VisualC++ compiler?
 
     QHash<QString, QString> langFiles;
@@ -90,7 +98,7 @@ void initTranslations(QSettings & settings) {
         QFont font;
         font.setPointSize(25);
         langsel.setFont(font);
-        langsel.setWindowTitle(u8"Language / Taal / Sprache / Langue / 语言 / ... ");
+        langsel.setWindowTitle("Language / Taal / Sprache / Langue / 语言 / ... ");
         QHBoxLayout lang_layout(&langsel);
 
         QLabel img;

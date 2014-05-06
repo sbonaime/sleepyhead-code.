@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION,4) {
     QT += webkit
 }
 
-CONFIG += c++11
+#CONFIG += c++11
 CONFIG += rtti
 
 
@@ -56,6 +56,8 @@ unix:!macx {
 }
 
 macx {
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+
   LIBS             += -lz
   ICON              = icons/iconfile.icns
 }

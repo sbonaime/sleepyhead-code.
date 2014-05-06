@@ -31,76 +31,71 @@ QString formatTime(float time)
 Statistics::Statistics(QObject *parent) :
     QObject(parent)
 {
-    rows = {
-                { tr("CPAP Statistics"), SC_HEADING, MT_CPAP },
-                { "", SC_DAYS, MT_CPAP },
-                { "", SC_COLUMNHEADERS, MT_CPAP },
-                { tr("CPAP Usage"),  SC_SUBHEADING, MT_CPAP },
-                { tr("Average Hours per Night"),      SC_HOURS,     MT_CPAP },
-                { tr("Compliancy"),  SC_COMPLIANCE,  MT_CPAP },
+    rows.push_back(StatisticsRow(tr("CPAP Statistics"), SC_HEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("",   SC_DAYS, MT_CPAP));
+    rows.push_back(StatisticsRow("", SC_COLUMNHEADERS, MT_CPAP));
+    rows.push_back(StatisticsRow(tr("CPAP Usage"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow(tr("Average Hours per Night"),      SC_HOURS,     MT_CPAP));
+    rows.push_back(StatisticsRow(tr("Compliancy"),  SC_COMPLIANCE,  MT_CPAP));
 
-                { tr("Therapy Efficiacy"),  SC_SUBHEADING, MT_CPAP },
-                { "AHI",        SC_AHI,     MT_CPAP },
-                { "Obstructive",   SC_CPH,     MT_CPAP },
-                { "Hypopnea",   SC_CPH,     MT_CPAP },
-                { "ClearAirway",   SC_CPH,     MT_CPAP },
-                { "FlowLimit",  SC_CPH,     MT_CPAP },
-                { "RERA",       SC_CPH,     MT_CPAP },
-                { "CSR", SC_SPH, MT_CPAP },
+    rows.push_back(StatisticsRow(tr("Therapy Efficiacy"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("AHI",        SC_AHI,     MT_CPAP));
+    rows.push_back(StatisticsRow("Obstructive",   SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("Hypopnea",   SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("ClearAirway",   SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("FlowLimit",  SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("RERA",       SC_CPH,     MT_CPAP));
+    rows.push_back(StatisticsRow("CSR", SC_SPH, MT_CPAP));
 
-                { tr("Leak Statistics"),  SC_SUBHEADING, MT_CPAP },
-                { "Leak",       SC_WAVG,    MT_CPAP },
-                { "Leak",       SC_90P,     MT_CPAP },
+    rows.push_back(StatisticsRow(tr("Leak Statistics"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("Leak",       SC_WAVG,    MT_CPAP));
+    rows.push_back(StatisticsRow("Leak",       SC_90P,     MT_CPAP));
 
-                { tr("Pressure Statistics"),  SC_SUBHEADING, MT_CPAP },
-                { "Pressure",   SC_WAVG,    MT_CPAP },
-                { "Pressure",   SC_MIN,     MT_CPAP },
-                { "Pressure",   SC_MAX,     MT_CPAP },
-                { "Pressure",   SC_90P,     MT_CPAP },
-                { "EPAP",       SC_WAVG,    MT_CPAP },
-                { "EPAP",       SC_MIN,     MT_CPAP },
-                { "EPAP",       SC_MAX,     MT_CPAP },
-                { "IPAP",       SC_WAVG,    MT_CPAP },
-                { "IPAP",       SC_90P,     MT_CPAP },
-                { "IPAP",       SC_MIN,     MT_CPAP },
-                { "IPAP",       SC_MAX,     MT_CPAP },
+    rows.push_back(StatisticsRow(tr("Pressure Statistics"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("Pressure",   SC_WAVG,    MT_CPAP));
+    rows.push_back(StatisticsRow("Pressure",   SC_MIN,     MT_CPAP));
+    rows.push_back(StatisticsRow("Pressure",   SC_MAX,     MT_CPAP));
+    rows.push_back(StatisticsRow("Pressure",   SC_90P,     MT_CPAP));
+    rows.push_back(StatisticsRow("EPAP",       SC_WAVG,    MT_CPAP));
+    rows.push_back(StatisticsRow("EPAP",       SC_MIN,     MT_CPAP));
+    rows.push_back(StatisticsRow("EPAP",       SC_MAX,     MT_CPAP));
+    rows.push_back(StatisticsRow("IPAP",       SC_WAVG,    MT_CPAP));
+    rows.push_back(StatisticsRow("IPAP",       SC_90P,     MT_CPAP));
+    rows.push_back(StatisticsRow("IPAP",       SC_MIN,     MT_CPAP));
+    rows.push_back(StatisticsRow("IPAP",       SC_MAX,     MT_CPAP));
 
-                { tr("Oximeter Statistics"), SC_HEADING, MT_OXIMETER },
-                { "",           SC_DAYS,    MT_OXIMETER },
-                { "",           SC_COLUMNHEADERS, MT_OXIMETER },
+    rows.push_back(StatisticsRow(tr("Oximeter Statistics"), SC_HEADING, MT_OXIMETER));
+    rows.push_back(StatisticsRow("",           SC_DAYS,    MT_OXIMETER));
+    rows.push_back(StatisticsRow("",           SC_COLUMNHEADERS, MT_OXIMETER));
 
-                { tr("Blood Oxygen Saturation"),  SC_SUBHEADING, MT_CPAP },
-                { "SPO2",       SC_WAVG,     MT_OXIMETER },
-                { "SPO2",       SC_MIN,     MT_OXIMETER },
-                { "SPO2Drop",   SC_CPH,     MT_OXIMETER },
-                { "SPO2Drop",   SC_SPH,     MT_OXIMETER },
-                { tr("Pulse Rate"),  SC_SUBHEADING, MT_CPAP },
-                { "Pulse",      SC_WAVG,     MT_OXIMETER },
-                { "Pulse",      SC_MIN,     MT_OXIMETER },
-                { "Pulse",      SC_MAX,     MT_OXIMETER },
-                { "PulseChange",   SC_CPH,     MT_OXIMETER },
-    };
+    rows.push_back(StatisticsRow(tr("Blood Oxygen Saturation"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("SPO2",       SC_WAVG,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("SPO2",       SC_MIN,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("SPO2Drop",   SC_CPH,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("SPO2Drop",   SC_SPH,     MT_OXIMETER));
+    rows.push_back(StatisticsRow(tr("Pulse Rate"),  SC_SUBHEADING, MT_CPAP));
+    rows.push_back(StatisticsRow("Pulse",      SC_WAVG,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("Pulse",      SC_MIN,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("Pulse",      SC_MAX,     MT_OXIMETER));
+    rows.push_back(StatisticsRow("PulseChange",   SC_CPH,     MT_OXIMETER));
 
     // These are for formatting the headers for the first column
-    calcnames = {
-        { SC_UNDEFINED, "" },
-        { SC_MEDIAN, tr("%1 Median") },
-        { SC_AVG, tr("Average %1") },
-        { SC_WAVG, tr("Average %1") },
-        { SC_90P, tr("90% %1") }, // this gets converted to whatever the upper percentile is set to
-        { SC_MIN, tr("Min %1") },
-        { SC_MAX, tr("Max %1") },
-        { SC_CPH, tr("%1 Index") },
-        { SC_SPH, tr("% of time in %1") },
-    };
-    machinenames = {
-        { MT_UNKNOWN, STR_TR_Unknown },
-        { MT_CPAP, STR_TR_CPAP },
-        { MT_OXIMETER, STR_TR_Oximetry },
-        { MT_SLEEPSTAGE, STR_TR_SleepStage },
+    calcnames[SC_UNDEFINED] = "";
+    calcnames[SC_MEDIAN] = tr("%1 Median");
+    calcnames[SC_AVG] = tr("Average %1");
+    calcnames[SC_WAVG] = tr("Average %1");
+    calcnames[SC_90P] = tr("90% %1"); // this gets converted to whatever the upper percentile is set to
+    calcnames[SC_MIN] = tr("Min %1");
+    calcnames[SC_MAX] = tr("Max %1");
+    calcnames[SC_CPH] = tr("%1 Index");
+    calcnames[SC_SPH] = tr("% of time in %1");
+
+    machinenames[MT_UNKNOWN] = STR_TR_Unknown;
+    machinenames[MT_CPAP] = STR_TR_CPAP;
+    machinenames[MT_OXIMETER] = STR_TR_Oximetry;
+    machinenames[MT_SLEEPSTAGE] = STR_TR_SleepStage;
 //        { MT_JOURNAL, STR_TR_Journal },
 //        { MT_POSITION, STR_TR_Position },
-    };
 
 }
 
