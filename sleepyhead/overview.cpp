@@ -121,7 +121,7 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 
     if (mididx == 2) { ST_mid = ST_AVG; }
 
-    SummaryType ST_max = PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
+    SummaryType ST_max = PROFILE.general->prefCalcMax() ? ST_PERC : ST_MAX;
     const EventDataType maxperc = 0.995F;
 
 
