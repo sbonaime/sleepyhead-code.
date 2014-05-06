@@ -172,6 +172,8 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
         return;
     }
 
+    top++;
+
     // lines=w.lines();
     EventDataType miny, maxy;
     double minx, maxx;

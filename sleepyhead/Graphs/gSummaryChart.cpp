@@ -396,7 +396,6 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
 
     points->setSize(10);
 
-
     GraphType graphtype = m_graphtype;
 
     if (graphtype == GT_LINE || graphtype == GT_POINTS) {
@@ -423,7 +422,6 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
     qint64 minx = w.min_x, maxx = w.max_x;
     qint64 xx = maxx - minx;
     float days = double(xx) / 86400000.0;
-
 
     EventDataType maxy;
     EventDataType miny;
@@ -714,7 +712,7 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                         GLuint col1 = col.rgba();
                         GLuint col2 = m_colors[j].rgba();
                         px2 = px + barw;
-                        py2 = (top + height - 2) - h;
+                        py2 = (top + height - 1) - h;
 
                         // If more than 1 day between records, skip the vertical crud.
                         if ((px2 - lastX[j]) > barw + 1) {
