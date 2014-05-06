@@ -111,6 +111,26 @@ QString htmlHeader()
     address.replace("\n", "<br/>");
     //   "a:link,a:visited { color: '#000020'; text-decoration: none; font-weight: bold;}"
     //   "a:hover { background-color: inherit; color: red; text-decoration:none; font-weight: bold; }"
+
+    QString userinfo;
+
+    if (!PROFILE.user->firstName().isEmpty()) {
+        userinfo = QString(QObject::tr("Name: %1, %2")).arg(PROFILE.user->lastName()).arg(PROFILE.user->firstName()) + "<br/>";
+        if (!PROFILE.user->DOB().isNull()) {
+            userinfo += QString(QObject::tr("DOB: %1")).arg(PROFILE.user->DOB().toString()) + "<br/>";
+        }
+    }
+    if (!PROFILE.user->phone().isEmpty()) {
+        userinfo += QString(QObject::tr("Phone: %1")).arg(PROFILE.user->phone()) + "<br/>";
+    }
+    if (!PROFILE.user->email().isEmpty()) {
+        userinfo += QString(QObject::tr("Email: %1")).arg(PROFILE.user->email()) + "<br/><br/>";
+    }
+    if (!PROFILE.user->address().isEmpty()) {
+        userinfo +=  QObject::tr("Address:")+"<br/>"+address;
+    }
+
+
     return QString("<html><head>"
                    "</head>"
                    "<style type='text/css'>"
@@ -126,16 +146,7 @@ QString htmlHeader()
                    "</head>"
                    "<body leftmargin=0 topmargin=0 rightmargin=0>"
                    "<div align=center><table cellpadding=3 cellspacing=0 border=0 width=100%>"
-                   "<td>" +
-                   QString(QObject::tr("Name: %1, %2")).arg(PROFILE.user->lastName()).arg(
-                       PROFILE.user->firstName()) + "<br/>" +
-                   QString(QObject::tr("DOB: %1")).arg(PROFILE.user->DOB().toString()) + "<br/>" +
-                   QString(QObject::tr("Phone: %1")).arg(PROFILE.user->phone()) + "<br/>" +
-                   QString(QObject::tr("Email: %1")).arg(PROFILE.user->email()) + "<br/><br/>" +
-                   QObject::tr("Address:") + "<br/>" +
-                   address +
-
-                   "</td>"
+                   "<td>"+userinfo+"</td>"
                    "<td align='right'>"
                    "<h1>" + STR_TR_SleepyHead + "</h1><br/>"
                    "<font size='+3'>" + QObject::tr("Usage Statistics") + "</font>"
@@ -444,7 +455,7 @@ bool operator <(const UsageData &c1, const UsageData &c2)
 QString Statistics::GenerateHTML()
 {
 
-    QString heading_color="#f8f0ff";
+    QString heading_color="#ffffff";
     QString subheading_color="#efefef";
 
     QString html = htmlHeader();
