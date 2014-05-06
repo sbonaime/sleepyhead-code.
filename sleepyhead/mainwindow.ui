@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>863</width>
-    <height>637</height>
+    <width>975</width>
+    <height>735</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -153,6 +153,76 @@ color: yellow;</string>
               <string>about:blank</string>
              </url>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>8</number>
+             </property>
+             <property name="leftMargin">
+              <number>8</number>
+             </property>
+             <property name="topMargin">
+              <number>4</number>
+             </property>
+             <property name="rightMargin">
+              <number>4</number>
+             </property>
+             <property name="bottomMargin">
+              <number>4</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="reportModeLabel">
+               <property name="text">
+                <string>Report Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="reportModeStandard">
+               <property name="text">
+                <string>Standard</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="reportModeMonthly">
+               <property name="text">
+                <string>Monthly</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -505,7 +575,7 @@ QToolBox::tab:selected  {
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>516</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="palette">
@@ -919,7 +989,7 @@ border: 2px solid #56789a; border-radius: 30px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>498</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="palette">
@@ -2067,7 +2137,7 @@ border-radius: 10px;
           <x>0</x>
           <y>0</y>
           <width>180</width>
-          <height>498</height>
+          <height>596</height>
          </rect>
         </property>
         <property name="mouseTracking">
@@ -2128,7 +2198,7 @@ border-radius: 10px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>863</width>
+     <width>975</width>
      <height>22</height>
     </rect>
    </property>

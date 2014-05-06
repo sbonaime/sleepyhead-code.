@@ -307,6 +307,10 @@ class MainWindow : public QMainWindow
 
     void on_statisticsView_linkClicked(const QUrl &arg1);
 
+    void on_reportModeMonthly_clicked();
+
+    void on_reportModeStandard_clicked();
+
 private:
     QString getWelcomeHTML();
     void FreeSessions();

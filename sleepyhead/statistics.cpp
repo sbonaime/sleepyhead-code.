@@ -46,6 +46,7 @@ Statistics::Statistics(QObject *parent) :
                 { "ClearAirway",   SC_CPH,     MT_CPAP },
                 { "FlowLimit",  SC_CPH,     MT_CPAP },
                 { "RERA",       SC_CPH,     MT_CPAP },
+                { "CSR", SC_SPH, MT_CPAP },
 
                 { tr("Leak Statistics"),  SC_SUBHEADING, MT_CPAP },
                 { "Leak",       SC_WAVG,    MT_CPAP },
@@ -452,6 +453,24 @@ bool operator <(const UsageData &c1, const UsageData &c2)
     //return c1.value < c2.value;
 }
 
+struct Period {
+    Period() {
+    }
+    Period(QDate start, QDate end, QString header) {
+        this->start = start;
+        this->end = end;
+        this->header = header;
+    }
+    Period(const Period & copy) {
+        start=copy.start;
+        end=copy.end;
+        header=copy.header;
+    }
+    QDate start;
+    QDate end;
+    QString header;
+};
+
 QString Statistics::GenerateHTML()
 {
 
@@ -517,8 +536,14 @@ QString Statistics::GenerateHTML()
     html += "<div align=center>";
     html += QString("<table cellpadding=2 cellspacing=0 border=1 width=90%>");
 
+    int number_periods = 0;
+    if (p_profile->general->statReportMode() == 1) {
+        number_periods = 12;
+    }
 
-    QDate last = lastcpap, first = lastcpap, week = lastcpap, month = lastcpap, sixmonth = lastcpap, year = lastcpap;
+    QDate last = lastcpap, first = lastcpap;
+
+    QList<Period> periods;
 
     bool skipsection = false;;
     for (auto i = rows.begin(); i != rows.end(); ++i) {
@@ -529,20 +554,38 @@ QString Statistics::GenerateHTML()
             last = p_profile->LastGoodDay(row.type);
             first  = p_profile->FirstGoodDay(row.type);
 
-            week = last.addDays(-6);
-            month = last.addDays(-29);
-            sixmonth = last.addMonths(-6);
-            year = last.addMonths(-12);
+            periods.clear();
+            if (number_periods == 0) {
+                periods.push_back(Period(last,last,tr("Most Recent")));
+                periods.push_back(Period(qMax(last.addDays(-6), first), last, tr("Last Week")));
+                periods.push_back(Period(qMax(last.addDays(-29),first), last, tr("Last 30 Days")));
+                periods.push_back(Period(qMax(last.addMonths(-6), first), last, tr("Last 6 Months")));
+                periods.push_back(Period(qMax(last.addMonths(-12), first), last, tr("Last Year")));
+            } else {
+                QDate l=last,s=last;
 
-            if (week < first) { week = first; }
-            if (month < first) { month = first; }
-            if (sixmonth < first) { sixmonth = first; }
-            if (year < first) { year = first; }
+                periods.push_back(Period(last,last,tr("Last Session")));
+
+                bool done=false;
+                for (int j=0; j < number_periods; j++) {
+                    s=QDate(l.year(), l.month(), 1);
+                    if (s < first) {
+                        done = true;
+                        s = first;
+                    }
+                    if (p_profile->countDays(row.type, s, l)>0) {
+                        periods.push_back(Period(s, l, s.toString("MMMM")));
+                    }
+                    l= s.addDays(-1);
+                    if (done || (l < first)) break;
+                }
+            }
 
             int days = PROFILE.countDays(row.type, first, last);
             skipsection = (days == 0);
             if (days > 0) {
-                html+=QString("<tr bgcolor='"+heading_color+"'><td colspan=6 align=center><font size=+3>%1</font></td></tr>\n").arg(row.src);
+                html+=QString("<tr bgcolor='%1'><td colspan=%2 align=center><font size=+3>%3</font></td></tr>\n").
+                        arg(heading_color).arg(periods.size()+1).arg(row.src);
             }
             continue;
         }
@@ -555,9 +598,11 @@ QString Statistics::GenerateHTML()
         } else if ((row.calc == SC_HOURS) || (row.calc == SC_COMPLIANCE)) {
             name = row.src;
         } else if (row.calc == SC_COLUMNHEADERS) {
-            html += QString("<tr><td><b>%1</b></td><td><b>%2</b></td><td><b>%3</b></td><td><b>%4</b></td><td><b>%5</b></td><td><b>%6</td></tr>")
-                    .arg(tr("Details")).arg(tr("Most Recent")).arg(tr("Last 7 Days")).arg(tr("Last 30 Days")).arg(
-                        tr("Last 6 months")).arg(tr("Last Year"));
+            html += QString("<tr><td><b>%1</b></td>").arg(tr("Details"));
+            for (int j=0; j < periods.size(); j++) {
+                html += QString("<td><b>%1</b></td>").arg(periods.at(j).header);
+            }
+            html += "</tr>\n";
             continue;
         } else if (row.calc == SC_DAYS) {
             QDate first=p_profile->FirstGoodDay(row.type);
@@ -566,28 +611,26 @@ QString Statistics::GenerateHTML()
             int value=p_profile->countDays(row.type, first, last);
 
             if (value == 0) {
-                html+="<tr><td colspan=6 align=center>"+
-                        QString(tr("No %1 data available.")).arg(machine)
-                        +"</td></tr>";
+                html+=QString("<tr><td colspan=%1 align=center>%2</td></tr>\n").arg(periods.size()+1).
+                        arg(QString(tr("No %1 data available.")).arg(machine));
             } else if (value == 1) {
-                html+="<tr><td colspan=6 align=center>"+
-                        QString("%1 day of %2 Data on %3")
+                html+=QString("<tr><td colspan=%1 align=center>%2</td></tr>\n").arg(periods.size()+1).
+                        arg(QString("%1 day of %2 Data on %3")
                             .arg(value)
                             .arg(machine)
-                            .arg(last.toString())
-                        +"</td></tr>\n";
+                            .arg(last.toString()));
             } else {
-                html+="<tr><td colspan=6 align=center>"+
-                        QString("%1 days of %2 Data, between %3 and %4")
+                html+=QString("<tr><td colspan=%1 align=center>%2</td></tr>\n").arg(periods.size()+1).
+                        arg(QString("%1 days of %2 Data, between %3 and %4")
                             .arg(value)
                             .arg(machine)
                             .arg(first.toString())
-                            .arg(last.toString())
-                        +"</td></tr>\n";
+                            .arg(last.toString()));
             }
             continue;
         } else if (row.calc == SC_SUBHEADING) {  // subheading..
-            html+=QString("<tr bgcolor='"+subheading_color+"'><td colspan=6 align=center><b>%1</b></td></tr>\n").arg(row.src);
+            html+=QString("<tr bgcolor='%1'><td colspan=%2 align=center><b>%3</b></td></tr>\n").
+                    arg(subheading_color).arg(periods.size()+1).arg(row.src);
             continue;
         } else if (row.calc == SC_UNDEFINED) {
             continue;
@@ -598,14 +641,12 @@ QString Statistics::GenerateHTML()
             }
             name = calcnames[row.calc].arg(row.src);
         }
-
-        html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%4</td><td>%5</td><td>%6</td></tr>\n")
-        .arg(name)
-        .arg(row.value(last,last))
-        .arg(row.value(week,last))
-        .arg(row.value(month,last))
-        .arg(row.value(sixmonth,last))
-        .arg(row.value(year,last));
+        html += QString("<tr><td>%1</td>").arg(name);
+        for (int j=0; j < periods.size(); j++) {
+            html += QString("<td>%2</td>")
+                .arg(row.value(periods.at(j).start,periods.at(j).end));
+        }
+        html += "</tr>\n";
     }
 
     html += "</table>";
@@ -1152,8 +1193,7 @@ QString Statistics::GenerateHTML()
 QString StatisticsRow::value(QDate start, QDate end)
 {
     const int decimals=2;
-    QString value = "???";
-    qDebug() << "Calculating " << src << calc << "for" << start << end;
+    QString value = "";
     float days = PROFILE.countDays(type, start, end);
 
     // Handle special data sources first

@@ -259,6 +259,7 @@ const QString STR_US_PrefCalcPercentile = "PrefCalcPercentile";
 const QString STR_US_PrefCalcMax = "PrefCalcMax";
 const QString STR_US_TooltipTimeout = "TooltipTimeout";
 const QString STR_US_ScrollDampening = "ScrollDampening";
+const QString STR_US_StatReportMode = "StatReportMode";
 
 // Parent class for subclasses that manipulate the profile.
 class ProfileSettings
@@ -640,6 +641,7 @@ class UserSettings : public ProfileSettings
         initPref(STR_US_PrefCalcMax, (int)0);
         initPref(STR_US_TooltipTimeout, (int)2500);
         initPref(STR_US_ScrollDampening, (int)50);
+        initPref(STR_US_StatReportMode, 0);
     }
 
     UnitSystem unitSystem() const { return (UnitSystem)getPref(STR_US_UnitSystem).toInt(); }
@@ -655,7 +657,7 @@ class UserSettings : public ProfileSettings
     int prefCalcMax() const { return getPref(STR_US_PrefCalcMax).toInt(); }
     int tooltipTimeout() const { return getPref(STR_US_TooltipTimeout).toInt(); }
     int scrollDampening() const { return getPref(STR_US_ScrollDampening).toInt(); }
-
+    int statReportMode() const { return getPref(STR_US_StatReportMode).toInt(); }
 
     void setUnitSystem(UnitSystem us) { setPref(STR_US_UnitSystem, (int)us); }
     void setEventWindowSize(double size) { setPref(STR_US_EventWindowSize, size); }
@@ -670,6 +672,7 @@ class UserSettings : public ProfileSettings
     void setPrefCalcMax(int i) { setPref(STR_US_PrefCalcMax, i); }
     void setTooltipTimeout(int i) { setPref(STR_US_TooltipTimeout, i); }
     void setScrollDampening(int i) { setPref(STR_US_ScrollDampening, i); }
+    void setStatReportMode(int i) { setPref(STR_US_StatReportMode, i); }
 };
 
 namespace Profiles {

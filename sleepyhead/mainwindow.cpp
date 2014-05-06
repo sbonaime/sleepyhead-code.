@@ -159,6 +159,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionDebug->setChecked(PROFILE.general->showDebug());
 
+    switch(PROFILE.general->statReportMode()) {
+        case 0:
+            ui->reportModeStandard->setChecked(true);
+            break;
+        case 1:
+            ui->reportModeMonthly->setChecked(true);
+            break;
+        default:
+            PROFILE.general->setStatReportMode(0);
+    }
     if (!PROFILE.general->showDebug()) {
         ui->logText->hide();
     }
@@ -1960,4 +1970,20 @@ void MainWindow::on_statisticsView_linkClicked(const QUrl &arg1)
 {
     //qDebug() << arg1;
     on_recordsBox_linkClicked(arg1);
+}
+
+void MainWindow::on_reportModeMonthly_clicked()
+{
+    if (PROFILE.general->statReportMode() != 1) {
+        PROFILE.general->setStatReportMode(1);
+        GenerateStatistics();
+    }
+}
+
+void MainWindow::on_reportModeStandard_clicked()
+{
+    if (PROFILE.general->statReportMode() != 0) {
+        PROFILE.general->setStatReportMode(0);
+        GenerateStatistics();
+    }
 }
