@@ -1402,6 +1402,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
         }
 
         if ((++cnt % 10) == 0) {
+            // TODO: Change me to emit once MachineLoader is QObjectified...
             if (qprogress) { qprogress->setValue(10.0 + (float(cnt) / float(size) * 90.0)); }
 
             QApplication::processEvents();
@@ -2091,6 +2092,7 @@ bool ResmedLoader::LoadBRP(Session *sess, EDFParser &edf)
     return true;
 }
 
+// Convert EDFSignal data to sleepyheads Time-Delta Event format
 void ResmedLoader::ToTimeDelta(Session *sess, EDFParser &edf, EDFSignal &es, ChannelID code,
                                long recs, qint64 duration, EventDataType t_min, EventDataType t_max, bool square)
 {
@@ -2330,9 +2332,9 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
             //            es.digital_minimum*=1000.0;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
         } else if (matchSignal(code = CPAP_Leak, es.label)) {
-            es.gain *= 60;
-            es.physical_maximum *= 60;
-            es.physical_minimum *= 60;
+            es.gain *= 60.0;
+            es.physical_maximum *= 60.0;
+            es.physical_minimum *= 60.0;
             //            es.digital_maximum*=60.0;
             //            es.digital_minimum*=60.0;
             es.physical_dimension = "L/M";

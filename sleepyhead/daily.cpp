@@ -554,6 +554,7 @@ void Daily::UpdateEventsTree(QTreeWidget *tree,Day *day)
                 && (code!=CPAP_UserFlag3)
                 && (code!=CPAP_NRI)
                 && (code!=CPAP_LeakFlag)
+                && (code!=PRS1_10)
                 && (code!=CPAP_ExP)
                 && (code!=CPAP_FlowLimit)
                 && (code!=CPAP_PressurePulse)
@@ -1021,7 +1022,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
 
     float percentile=PROFILE.general->prefCalcPercentile()/100.0;
 
-    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_MAX : ST_PERC;
+    SummaryType ST_max=PROFILE.general->prefCalcMax() ? ST_PERC : ST_MAX;
     const EventDataType maxperc=0.995F;
 
     QString midname;
@@ -1069,7 +1070,7 @@ QString Daily::getStatisticsInfo(Day * cpap,Day * oxi,Day *pos)
 
             if (!schema::channel[code].units().isEmpty()) tooltip+=" ("+schema::channel[code].units()+")";
 
-            if (ST_max==ST_MAX) {
+            if (ST_max == ST_MAX) {
                 mx=day->Max(code);
             } else {
                 mx=day->percentile(code,maxperc);

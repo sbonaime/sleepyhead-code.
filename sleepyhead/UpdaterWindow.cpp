@@ -191,29 +191,74 @@ void UpdaterWindow::requestFile()
             qint64)));
 }
 
+// Compare supplied version string with current version
+// < 0 = this one is newer or version supplied is dodgy, 0 = same, and > 0 there is a newer version
+int compareVersion(QString version)
+{
+    QStringList parts = version.split(".");
+    bool ok;
+
+    if (parts.size() < 3) {
+        // dodgy version string supplied.
+        return -1;
+    }
+
+    short major = parts[0].toInt(&ok);
+    if (!ok) return -1;
+
+    short minor = parts[1].toInt(&ok);
+    if (!ok) return -1;
+
+    short patch = parts[2].toInt(&ok);
+    if (!ok) return -1;
+
+    if (major > major_version) {
+        return 1;
+    } else if (major < major_version) {
+        return -1;
+    }
+
+    if (minor > minor_version) {
+        return 1;
+    } else if (minor < minor_version) {
+        return -1;
+    }
+
+    // Still here.. check patch version
+    if (patch > patch_number) {
+        return 1;
+    } else if (patch < patch_number) {
+        return -1;
+    }
+
+    // Versions match
+    return 0;
+}
+
 void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 {
     QXmlInputSource src(dev);
     QXmlSimpleReader reader;
     reader.setContentHandler(&updateparser);
-    UpdateStatus AcceptUpdates = PREF[STR_PREF_AllowEarlyUpdates].toBool() ? UPDATE_TESTING :
-                                 UPDATE_BETA;
+    UpdateStatus AcceptUpdates = PREF[STR_PREF_AllowEarlyUpdates].toBool() ?
+                                 UPDATE_TESTING : UPDATE_BETA;
 
     if (reader.parse(src)) {
         ui->plainTextEdit->appendPlainText(tr("XML update structure parsed cleanly"));
 
         QStringList versions;
 
-        for (QHash<QString, Release>::iterator it = updateparser.releases.begin();
-                it != updateparser.releases.end(); it++) {
+        for (auto it = updateparser.releases.begin(); it != updateparser.releases.end(); ++it) {
             versions.push_back(it.key());
         }
 
+        // Um... not optimal.
         qSort(versions);
 
         QString platform = PlatformString.toLower();
         release = nullptr;
 
+        // Find the highest version number available for this platform
         for (int i = versions.size() - 1; i >= 0; i--) {
             QString verstr = versions[i];
             release = &updateparser.releases[verstr];
@@ -264,7 +309,8 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
         }
 
         if (!upq && !upd) {
-            mainwin->Notify(tr("No new updates were found for your platform."), tr("SleepyHead Updates"),
+            mainwin->Notify(tr("No new updates were found for your platform."),
+                            tr("SleepyHead Updates"),
                             5000);
             PREF[STR_GEN_UpdatesLastChecked] = QDateTime::currentDateTime();
             close();
@@ -281,22 +327,22 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 
 
         if (updates.size() > 0) {
-            QString html = "<html><h3>" + tr("SleepyHead v%1, codename \"%2\"").arg(release->version).arg(
-                               release->codename) + "</h3><p>" + release->notes[""] + "</p><b>";
+            QString html = "<html><h3>" + tr("SleepyHead v%1, codename \"%2\"").arg(release->version).
+                    arg(release->codename) + "</h3><p>" + release->notes[""] + "</p><b>";
             html += platform.left(1).toUpper() + platform.mid(1);
             html += " " + tr("platform notes") + "</b><p>" + release->notes[platform] + "</p></html>";
             ui->webView->setHtml(html);
             QString info;
 
-            if (VersionString < release->version) {
+            if (compareVersion(release->version)) {
                 ui->Title->setText("<font size=+1>" + tr("A new version of SleepyHead is available!") + "</font>");
-                info = tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").arg(
-                           latestapp).arg(FullVersionString);
+                info = tr("Shiny new <b>v%1</b> is available. You're running old and busted v%2").
+                        arg(latestapp).arg(FullVersionString);
                 ui->notesTabWidget->setCurrentIndex(0);
             } else {
                 ui->Title->setText("<font size=+1>" + tr("An update for SleepyHead is available.") + "</font>");
-                info = tr("Version <b>%1</b> is available. You're currently running v%1").arg(latestapp).arg(
-                           FullVersionString);
+                info = tr("Version <b>%1</b> is available. You're currently running v%1").
+                        arg(latestapp).arg(FullVersionString);
                 ui->notesTabWidget->setCurrentIndex(1);
             }
 
