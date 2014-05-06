@@ -1932,7 +1932,8 @@ void MainWindow::on_actionImport_Somnopose_Data_triggered()
 
 void MainWindow::GenerateStatistics()
 {
-    QString html = Statistics::GenerateHTML();
+    Statistics stats;
+    QString html = stats.GenerateHTML();
 
     updateFavourites();
 

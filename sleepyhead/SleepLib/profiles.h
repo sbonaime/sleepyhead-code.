@@ -98,6 +98,9 @@ class Profile : public Preferences
     bool contains(QString key) { return p_preferences.contains(key); }
 
     int countDays(MachineType mt = MT_UNKNOWN, QDate start = QDate(), QDate end = QDate());
+
+    int countCompliantDays(MachineType mt, QDate start, QDate end);
+
     EventDataType calcCount(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),
                             QDate end = QDate());
     double calcSum(ChannelID code, MachineType mt = MT_CPAP, QDate start = QDate(),

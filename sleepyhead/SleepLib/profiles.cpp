@@ -629,6 +629,40 @@ int Profile::countDays(MachineType mt, QDate start, QDate end)
 
 }
 
+int Profile::countCompliantDays(MachineType mt, QDate start, QDate end)
+{
+    EventDataType compliance = cpap->complianceHours();
+
+    if (!start.isValid()) {
+        return 0;
+    }
+
+    if (!end.isValid()) {
+        return 0;
+    }
+
+    QDate date = start;
+
+    if (date.isNull()) {
+        return 0;
+    }
+
+    int days = 0;
+
+    do {
+        Day *day = GetGoodDay(date, mt);
+
+        if (day) {
+            if ((day->machine->GetType() == mt) && (day->hours() > compliance)) { days++; }
+        }
+
+        date = date.addDays(1);
+    } while (date <= end);
+
+    return days;
+}
+
+
 EventDataType Profile::calcCount(ChannelID code, MachineType mt, QDate start, QDate end)
 {
     if (!start.isValid()) {

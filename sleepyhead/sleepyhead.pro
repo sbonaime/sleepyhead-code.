@@ -212,7 +212,8 @@ OTHER_FILES += \
     ../update.xml \
     docs/changelog.txt \
     docs/update_notes.html \
-    docs/intro.html
+    docs/intro.html \
+    docs/statistics.xml
 
 win32 {
     CONFIG(debug, debug|release) {
