@@ -541,7 +541,7 @@ QString Statistics::GenerateHTML()
     QList<Period> periods;
 
     bool skipsection = false;;
-    for (auto i = rows.begin(); i != rows.end(); ++i) {
+    for (QList<StatisticsRow>::iterator i = rows.begin(); i != rows.end(); ++i) {
         StatisticsRow &row = (*i);
         QString name;
 

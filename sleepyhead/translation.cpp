@@ -127,13 +127,11 @@ void initTranslations(QSettings & settings) {
         layout2.addWidget(&lang_combo, 1);
         layout2.addWidget(&lang_okbtn);
 
-        for (auto it = langNames.begin(); it != langNames.end(); ++it) {
+        for (QHash<QString, QString>::iterator it = langNames.begin(); it != langNames.end(); ++it) {
             const QString & code = it.key();
             const QString & name = it.value();
             lang_combo.addItem(name, code);
         }
-
-
 
         langsel.connect(&lang_okbtn, SIGNAL(clicked()), &langsel, SLOT(close()));
 

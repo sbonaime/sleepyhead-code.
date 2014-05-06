@@ -72,7 +72,7 @@ Profile::~Profile()
         delete session;
         delete general;
 
-        for (auto it = machlist.begin(); it != machlist.end(); it++) {
+        for (QHash<MachineID, Machine *>::iterator it = machlist.begin(); it != machlist.end(); it++) {
             delete it.value();
         }
         m_opened=false;

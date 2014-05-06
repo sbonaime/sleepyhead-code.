@@ -422,8 +422,8 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     new_sessions.clear(); // this hash is used by OpenFile
 
     // for each p0/p1/p2/etc... folder
-    for (auto p = paths.begin(); p != paths.end(); p++) {
-        dir.setPath(*p);
+    for (int p=0; p < size; ++p) {
+        dir.setPath(paths.at(p));
 
         if (!dir.exists() || !dir.isReadable()) { continue; }
 
@@ -465,7 +465,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
 
     // Scan through new sessions and parse event and waveform data
     // NOTE: this function could be multithreaded.
-    for (auto it = new_sessions.begin(); it != new_sessions.end(); ++it) {
+    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end(); ++it) {
         sid = it.key();
 
         if (sessfiles.contains(sid)) {
@@ -497,7 +497,7 @@ int PRS1Loader::OpenMachine(Machine *m, QString path, Profile *profile)
     cnt = 0;
 
     // Scan through parsed sessions, do a little cleanup and add to machine object
-    for (auto it = new_sessions.begin(); it != new_sessions.end(); ++it) {
+    for (QHash<SessionID, Session *>::iterator it = new_sessions.begin(); it != new_sessions.end(); ++it) {
         Session *sess = it.value();
 
         if ((sess->length()) <= 0) {

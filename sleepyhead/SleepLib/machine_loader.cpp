@@ -28,7 +28,7 @@ void RegisterLoader(MachineLoader *loader)
 }
 void DestroyLoaders()
 {
-    for (auto  i = m_loaders.begin(); i != m_loaders.end(); i++) {
+    for (QList<MachineLoader *>::iterator i = m_loaders.begin(); i != m_loaders.end(); i++) {
         delete(*i);
     }
 
@@ -41,7 +41,7 @@ MachineLoader::MachineLoader()
 
 MachineLoader::~MachineLoader()
 {
-    for (auto m = m_machlist.begin(); m != m_machlist.end(); m++) {
+    for (QList<Machine *>::iterator m = m_machlist.begin(); m != m_machlist.end(); m++) {
         delete *m;
     }
 }

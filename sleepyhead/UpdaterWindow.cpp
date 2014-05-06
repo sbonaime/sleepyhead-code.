@@ -248,7 +248,7 @@ void UpdaterWindow::ParseUpdateXML(QIODevice *dev)
 
         QStringList versions;
 
-        for (auto it = updateparser.releases.begin(); it != updateparser.releases.end(); ++it) {
+        for (QHash<QString, Release>::iterator it = updateparser.releases.begin(); it != updateparser.releases.end(); ++it) {
             versions.push_back(it.key());
         }
 

@@ -117,8 +117,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->action_Screenshot->setEnabled(false);
 #endif
 #endif
-    auto machines = p_profile->GetMachines(MT_CPAP);
-    for (auto it = machines.begin(); it != machines.end(); ++it) {
+    QList<Machine *> machines = p_profile->GetMachines(MT_CPAP);
+    for (QList<Machine *>::iterator it = machines.begin(); it != machines.end(); ++it) {
         QString mclass=(*it)->GetClass();
         if (mclass == STR_MACH_ResMed) {
             qDebug() << "ResMed machine found.. locking Session splitting capabilities";

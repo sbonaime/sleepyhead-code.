@@ -37,8 +37,8 @@ const QString STR_UnknownModel = "Resmed S9 ???";
 const QString & lookupModel(quint16 model)
 {
 
-    auto end = Resmed_Model_Map.end();
-    for (auto it = Resmed_Model_Map.begin(); it != end; ++it) {
+    QHash<QString, QList<quint16> >::iterator end = Resmed_Model_Map.end();
+    for (QHash<QString, QList<quint16> >::iterator it = Resmed_Model_Map.begin(); it != end; ++it) {
         QList<quint16> & list = it.value();
         for (int i=0; i < list.size(); ++i) {
             if (list.at(i) == model) {
@@ -61,7 +61,7 @@ const QString STR_ext_gz = ".gz";
 EDFSignal *EDFParser::lookupSignal(ChannelID ch)
 {
     // Get list of all known foreign language names for this channel
-    auto channames = resmed_codes.find(ch);
+    QHash<ChannelID, QStringList>::iterator channames = resmed_codes.find(ch);
 
     if (channames == resmed_codes.end()) {
         // no alternatives strings found for this channel
@@ -70,7 +70,7 @@ EDFSignal *EDFParser::lookupSignal(ChannelID ch)
 
     // Scan through EDF's list of signals to see if any match
     for (int i = 0; i < channames.value().size(); i++) {
-        auto jj = lookup.find(channames.value()[i]);
+        QHash<QString, EDFSignal *>::iterator jj = lookup.find(channames.value()[i]);
 
         if (jj == lookup.end()) {
             continue;
@@ -87,7 +87,7 @@ EDFSignal *EDFParser::lookupSignal(ChannelID ch)
 // Check if given string matches any alternative signal names for this channel
 bool matchSignal(ChannelID ch, const QString & name)
 {
-    auto channames = resmed_codes.find(ch);
+    QHash<ChannelID, QStringList>::iterator channames = resmed_codes.find(ch);
 
     if (channames == resmed_codes.end()) {
         return false;
@@ -121,7 +121,7 @@ EDFParser::EDFParser(QString name)
 }
 EDFParser::~EDFParser()
 {
-    for (auto s = edfsignals.begin(); s != edfsignals.end(); s++) {
+    for (QVector<EDFSignal>::iterator s = edfsignals.begin(); s != edfsignals.end(); s++) {
         if ((*s).data) { delete [](*s).data; }
     }
 
@@ -572,7 +572,7 @@ int ResmedLoader::Open(QString &path, Profile *profile)
     ///////////////////////////////////////////////////////////////////////////////////
     // Parse the idmap into machine objects properties, (overwriting any old values)
     ///////////////////////////////////////////////////////////////////////////////////
-    for (auto i = idmap.begin(); i != idmap.end(); i++) {
+    for (QHash<QString, QString>::iterator i = idmap.begin(); i != idmap.end(); i++) {
         m->properties[i.key()] = i.value();
     }
 
@@ -1502,8 +1502,8 @@ int ResmedLoader::Open(QString &path, Profile *profile)
                     hash[CPAP_RespRate] = "RR"; // Is this a setting to force respiratory rate on S/T machines? or an average
                     hash[CPAP_PresReliefSet] = "Easy-Breathe";
 
-                    for (auto it = hash.begin(); it != hash.end(); ++it) {
-                        auto a = stredf.lookup.find(it.value());
+                    for (QHash<ChannelID, QString>::iterator it = hash.begin(); it != hash.end(); ++it) {
+                        QHash<QString, EDFSignal *>::iterator a = stredf.lookup.find(it.value());
                         if (a != stredf.lookup.end()) {
                             sig = a.value();
                             sess->settings[it.key()] = EventDataType(sig->data[dn] * sig->gain);

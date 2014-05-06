@@ -1259,8 +1259,8 @@ EventDataType gGraph::MaxY()
         return rmax_y = f_maxy;
     }
 
-    auto iterEnd = m_layers.constEnd();
-    for (auto iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
+    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
+    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
         Layer *layer = *iter;
         if (layer->isEmpty()) {
             continue;
@@ -1291,8 +1291,8 @@ EventDataType gGraph::physMinY()
 
     //if (m_enforceMinY) return rmin_y=f_miny;
 
-    auto iterEnd = m_layers.constEnd();
-    for (auto iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
+    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
+    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
         Layer *layer = *iter;
         if (layer->isEmpty()) {
             continue;
@@ -1322,8 +1322,8 @@ EventDataType gGraph::physMaxY()
 
     // if (m_enforceMaxY) return rmax_y=f_maxy;
 
-    auto iterEnd = m_layers.constEnd();
-    for (auto iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
+    QVector<Layer *>::const_iterator iterEnd = m_layers.constEnd();
+    for (QVector<Layer *>::const_iterator iter = m_layers.constBegin(); iter != iterEnd; ++iter) {
         Layer *layer = *iter;
         if (layer->isEmpty()) {
             continue;
