@@ -34,11 +34,9 @@ gXGrid::gXGrid(QColor col)
 gXGrid::~gXGrid()
 {
 }
-void gXGrid::paint(gGraph &w, int left, int top, int width, int height)
+void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     int x, y;
-
-    gVertexBuffer *stippled, * lines;
 
     EventDataType miny, maxy;
 
@@ -109,16 +107,13 @@ void gXGrid::paint(gGraph &w, int left, int top, int width, int height)
         min_ytick = 100;
     }
 
-
-    stippled = w.backlines();
-    lines = w.backlines();
-
     for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
         ty = (i - miny) * ymult;
         h = top + height - ty;
 
         if (m_show_major_lines && (i > miny)) {
-            stippled->add(left, h, left + width, h, m_major_color.rgba());
+            painter.setPen(QPen(m_major_color,1,Qt::DashDotDotLine));
+            painter.drawLine(left, h, left + width, h);
         }
 
         double z = (min_ytick / 4) * ymult;
@@ -134,18 +129,9 @@ void gXGrid::paint(gGraph &w, int left, int top, int width, int height)
             //                break;
             //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                stippled->add(left, g, left + width, g, m_minor_color.rgba());
+                painter.setPen(QPen(m_minor_color,1,Qt::DashDotDotLine));
+                painter.drawLine(left, g, left + width, g);
             }
-
-            if (stippled->full()) {
-                break;
-            }
-        }
-
-        if (lines->full() || stippled->full()) {
-            qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<
-                       miny << "MaxY =" << maxy << "min_ytick=" << min_ytick;
-            break;
         }
     }
 }
@@ -164,7 +150,7 @@ gYAxis::gYAxis(QColor col)
 gYAxis::~gYAxis()
 {
 }
-void gYAxis::paint(gGraph &w, int left, int top, int width, int height)
+void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
 
     int x, y; //,yh=0;
@@ -371,9 +357,7 @@ void gYAxis::paint(gGraph &w, int left, int top, int width, int height)
             min_ytick = 100;
         }
 
-        lines = w.backlines();
-
-        GLuint line_color = m_line_color.rgba();
+        painter.setPen(m_line_color);
 
         for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
             ty = (i - miny) * ymult;
@@ -394,7 +378,7 @@ void gYAxis::paint(gGraph &w, int left, int top, int width, int height)
 
             w.renderText(fd, left + width - 8 - x, (h + (y / 2.0)), 0, m_text_color, defaultfont);
 
-            lines->add(left + width - 4, h, left + width, h, line_color);
+            painter.drawLine(left + width - 4, h, left + width, h);
 
             double z = (min_ytick / 4) * ymult;
             double g = h;
@@ -404,19 +388,7 @@ void gYAxis::paint(gGraph &w, int left, int top, int width, int height)
 
                 if (g > top + height) { break; }
 
-                lines->add(left + width - 3, g, left + width, g, line_color);
-
-                if (lines->full()) {
-                    qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<
-                               miny << "MaxY =" << maxy << "min_ytick=" << min_ytick;
-                    break;
-                }
-            }
-
-            if (lines->full()) {
-                qWarning() << "vertarray bounds exceeded in gYAxis for " << w.title() << "graph" << "MinY =" <<
-                           miny << "MaxY =" << maxy << "min_ytick=" << min_ytick;
-                break;
+                painter.drawLine(left + width - 3, g, left + width, g);
             }
         }
     }

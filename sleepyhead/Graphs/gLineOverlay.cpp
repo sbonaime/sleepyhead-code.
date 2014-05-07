@@ -16,30 +16,17 @@
 gLineOverlayBar::gLineOverlayBar(ChannelID code, QColor color, QString label, FlagType flt)
     : Layer(code), m_flag_color(color), m_label(label), m_flt(flt)
 {
-    addVertexBuffer(points = new gVertexBuffer(2048, GL_POINTS));
-    points->setSize(4);
-    points->setColor(m_flag_color);
-    addVertexBuffer(quads = new gVertexBuffer(2048, GL_QUADS));
-    //addGLBuf(lines=new GLBuffer(color,1024,GL_LINES));
-    points->setAntiAlias(true);
-    quads->setAntiAlias(true);
-    quads->setColor(m_flag_color);
-    //lines->setAntiAlias(true);
 }
 gLineOverlayBar::~gLineOverlayBar()
 {
-    //delete lines;
-    //delete quads;
-    //delete points;
 }
 
-void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height)
+void gLineOverlayBar::paint(QPainter &painter, gGraph &w, int left, int topp, int width, int height)
 {
     if (!m_visible) { return; }
 
     if (!m_day) { return; }
 
-    gVertexBuffer *lines = w.lines();
     int start_py = topp;
 
     double xx = w.max_x - w.min_x;
@@ -56,18 +43,16 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
     double X;
     double Y;
 
-    bool verts_exceeded = false;
-
     m_count = 0;
     m_sum = 0;
     m_flag_color = schema::channel[m_code].defaultColor();
 
-    lines->setColor(m_flag_color);
-    points->setColor(m_flag_color);
 
     if (m_flt == FT_Span) {
         m_flag_color.setAlpha(128);
     }
+
+    painter.setPen(m_flag_color);
 
     EventStoreType raw;
 
@@ -149,16 +134,7 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
                         x1 = width + left;
                     }
 
-                    quads->add(x2, start_py,
-                               x1, start_py,
-                               x1, start_py + height,
-                               x2, start_py + height,
-                               m_flag_color.rgba());
-
-                    if (quads->full()) {
-                        verts_exceeded = true;
-                        break;
-                    }
+                    painter.fillRect(x2, start_py, x1-x2, height, QBrush(m_flag_color));
                 }
             } else if (m_flt == FT_Dot) {
                 ////////////////////////////////////////////////////////////////////////////
@@ -178,22 +154,15 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
 
                     if ((odt == ODT_Bars) || (xx < 3600000)) {
                         // show the fat dots in the middle
-                        points->add(x1, double(height) / double(yy)*double(-20 - w.min_y) + topp);
+                        painter.setPen(QPen(m_flag_color,4));
 
-                        if (points->full()) {
-                            verts_exceeded = true;
-                            break;
-                        }
+                        painter.drawPoint(x1, double(height) / double(yy)*double(-20 - w.min_y) + topp);
+                        painter.setPen(QPen(m_flag_color,1));
+
                     } else {
                         // thin lines down the bottom
-                        lines->add(x1, start_py + 1, x1, start_py + 1 + 12);
-
-                        if (lines->full()) {
-                            verts_exceeded = true;
-                            break;
-                        }
+                        painter.drawLine(x1, start_py + 1, x1, start_py + 1 + 12);
                     }
-
                 }
             } else if (m_flt == FT_Bar) {
                 ////////////////////////////////////////////////////////////////////////////
@@ -215,20 +184,13 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
                     if ((odt == ODT_Bars) || (xx < 3600000)) {
                         z = top;
 
-                        points->add(x1, top);
-                        lines->add(x1, top, x1, bottom);
+                        painter.setPen(QPen(m_flag_color,4));
+                        painter.drawPoint(x1, top);
+                        painter.setPen(QPen(m_flag_color,1));
+                        painter.drawLine(x1, top, x1, bottom);
 
-                        if (points->full()) {
-                            verts_exceeded = true;
-                            break;
-                        }
                     } else {
-                        lines->add(x1, z, x1, z - 12);
-                    }
-
-                    if (lines->full()) {
-                        verts_exceeded = true;
-                        break;
+                        painter.drawLine(x1, z, x1, z - 12);
                     }
 
                     if (xx < (1800000)) {
@@ -238,18 +200,8 @@ void gLineOverlayBar::paint(gGraph &w, int left, int topp, int width, int height
                 }
             }
 
-            if (verts_exceeded) {
-                break;
-            }
         }
 
-        if (verts_exceeded) {
-            break;
-        }
-    }
-
-    if (verts_exceeded) {
-        qWarning() << "exceeded maxverts in gLineOverlay::Plot()";
     }
 }
 
@@ -262,7 +214,7 @@ gLineOverlaySummary::~gLineOverlaySummary()
 {
 }
 
-void gLineOverlaySummary::paint(gGraph &w, int left, int top, int width, int height)
+void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
 

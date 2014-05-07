@@ -30,7 +30,7 @@ class AHIChart: public Layer
     ~AHIChart();
 
     //! \brief Draws the precalculated data to the Vertex buffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief AHI/hr Calculations are done for this day here.
     //! This also uses the sliding window method
@@ -55,7 +55,6 @@ class AHIChart: public Layer
     EventDataType m_miny;
     EventDataType m_maxy;
     QColor m_color;
-    gVertexBuffer *lines;
 };
 
 /*! \class gLineChart
@@ -75,7 +74,7 @@ class gLineChart: public Layer
     virtual ~gLineChart();
 
     //! \brief The drawing code that fills the vertex buffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief Set Use Square plots for non EVL_Waveform data
     void SetSquarePlot(bool b) { m_square_plot = b; }
@@ -122,10 +121,6 @@ class gLineChart: public Layer
     bool m_square_plot;
     bool m_disable_accel;
     QColor m_line_color;
-
-    gVertexBuffer *lines;
-    //GLShortBuffer * lines;
-    //GLShortBuffer * outlines;
 
     //! \brief Used by accelerated waveform plots. Must be >= Screen Resolution (or at least graph width)
     static const int max_drawlist_size = 10000;

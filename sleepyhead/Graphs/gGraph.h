@@ -6,7 +6,7 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
- 
+
 #ifndef graphs_ggraph_h
 #define graphs_ggraph_h
 
@@ -128,7 +128,7 @@ class gGraph : public QObject
     void drawGLBuf();
 
     //! \brief Returns the Graph's (vertical) title
-    QString title() { return m_title; }
+    inline QString & title() { return m_title; }
 
     //! \brief Sets the Graph's (vertical) title
     void setTitle(const QString title) { m_title = title; }
@@ -235,7 +235,7 @@ class gGraph : public QObject
     Day *day() { return m_day; }
 
     //! \brief The Layer, layout and title drawing code
-    virtual void paint(int originX, int originY, int width, int height);
+    virtual void paint(QPainter &painter, int originX, int originY, int width, int height);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
     void ToolTip(QString text, int x, int y, int timeout = 0);

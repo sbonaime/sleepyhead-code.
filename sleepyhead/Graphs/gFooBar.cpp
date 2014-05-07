@@ -29,7 +29,7 @@ gShadowArea::gShadowArea(QColor shadow_color, QColor line_color)
 gShadowArea::~gShadowArea()
 {
 }
-void gShadowArea::paint(gGraph &w, int left, int top, int width, int height)
+void gShadowArea::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
 
@@ -42,19 +42,16 @@ void gShadowArea::paint(gGraph &w, int left, int top, int width, int height)
     int start_px = left - 1;
     int end_px = left + width;
 
-    //float h=top;
-
     double rmx = w.rmax_x - w.rmin_x;
     double px = ((1.0 / rmx) * (w.min_x - w.rmin_x)) * width;
     double py = ((1.0 / rmx) * (w.max_x - w.rmin_x)) * width;
 
-    quads->add(start_px, top, start_px, top + height, start_px + px, top + height, start_px + px, top,
-               m_shadow_color.rgba());
-    quads->add(start_px + py, top, start_px + py, top + height, end_px, top + height, end_px, top,
-               m_shadow_color.rgba());
+    painter.fillRect(start_px, top, px, height, QBrush(m_shadow_color));
+    painter.fillRect(start_px + py, top, end_px-start_px-py, height, QBrush(m_shadow_color));
 
-    lines->add(start_px + px, top, start_px + py, top, m_line_color.rgba());
-    lines->add(start_px + px, top + height + 1, start_px + py, top + height + 1, m_line_color.rgba());
+    painter.setPen(m_line_color);
+    painter.drawLine(start_px + px, top, start_px + py, top);
+    painter.drawLine(start_px + px, top + height + 1, start_px + py, top + height + 1);
 }
 
 gFooBar::gFooBar(int offset, QColor handle_color, QColor line_color)
@@ -64,7 +61,7 @@ gFooBar::gFooBar(int offset, QColor handle_color, QColor line_color)
 gFooBar::~gFooBar()
 {
 }
-void gFooBar::paint(gGraph &w, int left, int top, int width, int height)
+void gFooBar::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     Q_UNUSED(top);
     Q_UNUSED(left);

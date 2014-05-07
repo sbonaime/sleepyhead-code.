@@ -106,8 +106,8 @@ class gToolTip : public QObject
         */
     virtual void display(QString text, int x, int y, int timeout = 0);
 
-    //! \brief Queue the actual OpenGL drawing instructions
-    virtual void paint(); //actually paints it.
+    //! \brief Draw the tooltip
+    virtual void paint(QPainter &paint); //actually paints it.
 
     //! \brief Close the tooltip early.
     void cancel();
@@ -226,12 +226,6 @@ class gGraphView : public QGLWidget
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
 
-    //! \brief Start the animation sequence changing/reloading day data. (fade out)
-    void fadeOut();
-
-    //! \brief Start the animation sequence showing new Day's data. (fade in)
-    void fadeIn(bool dir = false);
-
     //! \brief Call UpdateGL unless animation is in progress
     void redraw();
 
@@ -318,17 +312,14 @@ class gGraphView : public QGLWidget
     //! \brief Trash all graph objects listed (without destroying Graph contents)
     void trashGraphs();
 
-    //! \brief Use a QGLFrameBufferObject to render to a pixmap
-    QImage fboRenderPixmap(int w, int h);
-
-    //! \brief Use a QGLPixelBuffer to render to a pixmap
-    QImage pbRenderPixmap(int w, int h);
-
     //! \brief Enable or disable the Text Pixmap Caching system preference overide
     void setUsePixmapCache(bool b) { use_pixmap_cache = b; }
 
     //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
     bool usePixmapCache();
+
+    //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
+    bool renderGraphs(QPainter &painter);
 
   protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
@@ -345,9 +336,6 @@ class gGraphView : public QGLWidget
 
     //! \brief Calculates the sum of all graph heights, taking scaling into consideration
     float scaleHeight();
-
-    //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
-    bool renderGraphs();
 
     //! \brief Update the OpenGL area when the screen is resized
     virtual void resizeEvent(QResizeEvent *);
@@ -375,7 +363,7 @@ class gGraphView : public QGLWidget
     void queGraph(gGraph *, int originX, int originY, int width, int height);
 
     //! \brief Render the annoying spinning graph empty cube
-    void renderCube(float alpha = 1);
+    void renderCube(QPainter &painter, float alpha = 1);
 
     Day *m_day;
 

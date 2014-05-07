@@ -34,7 +34,7 @@ class SummaryChart: public Layer
     virtual ~SummaryChart();
 
     //! \brief Drawing code that fills the Vertex buffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief Precalculation code prior to drawing. Day object is not needed here, it's just here for Layer compatability.
     virtual void SetDay(Day *day = nullptr);

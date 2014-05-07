@@ -26,7 +26,7 @@ class gLineOverlayBar: public Layer
     virtual ~gLineOverlayBar();
 
     //! \brief The drawing code that fills the OpenGL vertex GLBuffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     virtual EventDataType Miny() { return 0; }
     virtual EventDataType Maxy() { return 0; }
@@ -44,9 +44,6 @@ class gLineOverlayBar: public Layer
     FlagType m_flt;
     int m_count;
     double m_sum;
-
-    gVertexBuffer *quads;
-    gVertexBuffer *points;
 };
 
 /*! \class gLineOverlaySummary
@@ -58,7 +55,7 @@ class gLineOverlaySummary: public Layer
     gLineOverlaySummary(QString text, int x, int y);
     virtual ~gLineOverlaySummary();
 
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
     virtual EventDataType Miny() { return 0; }
     virtual EventDataType Maxy() { return 0; }
 

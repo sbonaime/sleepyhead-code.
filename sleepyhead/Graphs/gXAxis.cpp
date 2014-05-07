@@ -55,7 +55,7 @@ gXAxis::gXAxis(QColor col, bool fadeout)
 gXAxis::~gXAxis()
 {
 }
-void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
+void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     Q_UNUSED(height)
     QString months[] = {
@@ -66,7 +66,7 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
 
 
 
-    QPainter painter; // Only need this for pixmap caching
+    QPainter painter2; // Only need this for pixmap caching
 
     // pixmap caching screws font size when printing
 
@@ -80,9 +80,9 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
 
             m_image = QImage(width + 22, height + 4, QImage::Format_ARGB32_Premultiplied);
             m_image.fill(Qt::transparent);
-            painter.begin(&m_image);
-            painter.setPen(Qt::black);
-            painter.setFont(*defaultfont);
+            painter2.begin(&m_image);
+            painter2.setPen(Qt::black);
+            painter2.setFont(*defaultfont);
         }
 
         double px, py;
@@ -187,8 +187,7 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
             aligned_start += step;
         }
 
-        gVertexBuffer *lines = w.backlines();
-        lines->setColor(Qt::black);
+        painter.setPen(QColor(Qt::black));
 
 
         //int utcoff=m_utcfix ? tz_hours : 0;
@@ -225,9 +224,9 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
             if (py < start_px) { continue; }
 
             if (usepixmap) {
-                painter.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
+                painter2.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
             } else {
-                lines->add(py, top, py, mintop);
+                painter.drawLine(py, top+2, py, mintop+2);
             }
         }
 
@@ -239,8 +238,10 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
             px += left;
 
             if (usepixmap) {
-                painter.drawLine(px - left + 20, 0, px - left + 20, majtop - top);
-            } else { lines->add(px, top, px, majtop); }
+                painter2.drawLine(px - left + 20, 0, px - left + 20, majtop - top);
+            } else {
+                painter.drawLine(px, top+2, px, majtop+2);
+            }
 
             j = i;
 
@@ -281,7 +282,7 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
 
             if ((tx + x) < (left + width)) {
                 if (!usepixmap) { w.renderText(tmpstr, tx, texttop, 0, Qt::black, defaultfont); }
-                else { painter.drawText(tx - left + 20, texttop - top, tmpstr); }
+                else { painter2.drawText(tx - left + 20, texttop - top, tmpstr); }
             }
 
             py = px;
@@ -292,34 +293,22 @@ void gXAxis::paint(gGraph &w, int left, int top, int width, int height)
                 if (py >= left + width) { break; }
 
                 if (usepixmap) {
-                    painter.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
-                } else { lines->add(py, top, py, mintop); }
-            }
-
-            if (lines->full()) {
-                qWarning() << "maxverts exceeded in gXAxis::Plot()";
-                break;
+                    painter2.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
+                } else {
+                    painter.drawLine(py, top+2, py, mintop+2);
+                }
             }
         }
 
         if (usepixmap) {
-            painter.end();
-            m_image = QGLWidget::convertToGLFormat(m_image);
-            m_textureID = w.graphView()->bindTexture(m_image, GL_TEXTURE_2D, GL_RGBA,
-                          QGLContext::NoBindOption);
-
+            painter2.end();
         }
 
         w.invalidate_xAxisImage = false;
     }
 
     if (usepixmap && !m_image.isNull()) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_TEXTURE_2D);
-        w.graphView()->drawTexture(QPoint(left - 20, (top + height) - m_image.height() + 4), m_textureID);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
+        painter.drawImage(QPoint(left - 20, top + height - m_image.height() + 4), m_image);
     }
 }
 

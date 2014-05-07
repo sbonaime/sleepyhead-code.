@@ -101,14 +101,12 @@ void gToolTip::cancel()
     timer->stop();
 }
 
-void gToolTip::paint()     //actually paints it.
+void gToolTip::paint(QPainter &painter)     //actually paints it.
 {
     if (!m_visible) { return; }
 
     int x = m_pos.x();
     int y = m_pos.y();
-
-    QPainter painter(m_graphview);
 
     QRect rect(x, y, 0, 0);
     painter.setFont(*defaultfont);
@@ -152,8 +150,6 @@ void gToolTip::paint()     //actually paints it.
     painter.setFont(*defaultfont);
 
     painter.drawText(rect, Qt::AlignCenter, m_text);
-
-    painter.end();
 }
 
 void gToolTip::timerDone()
@@ -219,14 +215,15 @@ void gGraphView::queGraph(gGraph *g, int left, int top, int width, int height)
     dl_mutex.unlock();
 #endif
 }
+
 void gGraphView::trashGraphs()
 {
-    //for (int i=0;i<m_graphs.size();i++) {
-    //delete m_graphs[i];
-    //}
+    // Don't actually want to delete them here.. we are just borrowing the graphs
     m_graphs.clear();
     m_graphsbytitle.clear();
 }
+
+// Take the next graph to render from the drawing list
 gGraph *gGraphView::popGraph()
 {
     gGraph *g;
@@ -243,134 +240,6 @@ gGraph *gGraphView::popGraph()
     dl_mutex.unlock();
 #endif
     return g;
-}
-
-// Render all qued text via QPainter method
-void gGraphView::DrawTextQue(QPainter &painter)
-{
-    int w, h;
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    int dpr = devicePixelRatio();
-#endif
-
-    for (int i = 0; i < m_textque_items; i++) {
-        TextQue &q = m_textque[i];
-        painter.setBrush(q.color);
-        painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-        QFont font = *q.font;
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-        int fs = font.pointSize();
-
-        if (fs > 0) {
-            font.setPointSize(fs * dpr);
-        } else {
-            font.setPixelSize(font.pixelSize()*dpr);
-        }
-
-#endif
-        painter.setFont(font);
-
-        if (q.angle == 0) { // normal text
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-            painter.drawText(q.x * dpr, q.y * dpr, q.text);
-#else
-            painter.drawText(q.x, q.y, q.text);
-#endif
-        } else { // rotated text
-            w = painter.fontMetrics().width(q.text);
-            h = painter.fontMetrics().xHeight() + 2;
-
-            painter.translate(q.x, q.y);
-            painter.rotate(-q.angle);
-            painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
-            painter.rotate(+q.angle);
-            painter.translate(-q.x, -q.y);
-        }
-
-        q.text.clear();
-    }
-
-    m_textque_items = 0;
-}
-
-QImage gGraphView::pbRenderPixmap(int w, int h)
-{
-    QImage pm = QImage();
-    QGLFormat pbufferFormat = format();
-    QGLPixelBuffer pbuffer(w, h, pbufferFormat, this);
-
-    if (pbuffer.isValid()) {
-        pbuffer.makeCurrent();
-        initializeGL();
-        resizeGL(w, h);
-        glClearColor(255, 255, 255, 255);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        renderGraphs();
-        glFlush();
-        pm = pbuffer.toImage();
-        pbuffer.doneCurrent();
-        QPainter painter(&pm);
-        DrawTextQue(painter);
-        painter.end();
-    }
-
-    return pm;
-}
-
-QImage gGraphView::fboRenderPixmap(int w, int h)
-{
-    QImage pm = QImage();
-
-    if (fbo_unsupported) {
-        return pm;
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = devicePixelRatio();
-    w *= dpr;
-    h *= dpr;
-#endif
-
-    if ((w > max_fbo_width) || (h > max_fbo_height)) {
-        qWarning() <<
-                   "gGraphView::fboRenderPixmap called with dimensiopns exceeding maximum frame buffer object size";
-        return pm;
-    }
-
-    if (!fbo) {
-        fbo = new QGLFramebufferObject(max_fbo_width, max_fbo_height,
-                                       QGLFramebufferObject::Depth); //NoAttachment);
-    }
-
-    if (fbo && fbo->isValid()) {
-        makeCurrent();
-
-        if (fbo->bind()) {
-            initializeGL();
-            resizeGL(w, h);
-            glClearColor(255, 255, 255, 255);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            renderGraphs(); // render graphs sans text
-            glFlush();
-            fbo->release();
-            pm = fbo->toImage().copy(0, max_fbo_height - h, w, h);
-            doneCurrent();
-
-            QPainter painter(&pm);
-            DrawTextQue(painter); //Just use this on mac to
-            painter.end();
-
-        }
-    } else {
-        delete fbo;
-        fbo = nullptr;
-        fbo_unsupported = true;
-    }
-
-    return pm;
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
@@ -504,7 +373,39 @@ bool gGraphView::usePixmapCache()
     return use_pixmap_cache & PROFILE.appearance->usePixmapCaching();
 }
 
+// Render all qued text via QPainter method
+void gGraphView::DrawTextQue(QPainter &painter)
+{
+    int w, h;
 
+    for (int i = 0; i < m_textque_items; i++) {
+        TextQue &q = m_textque[i];
+        painter.setPen(q.color);
+        painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
+        QFont font = *q.font;
+        painter.setFont(font);
+
+        if (q.angle == 0) { // normal text
+
+            painter.drawText(q.x, q.y, q.text);
+        } else { // rotated text
+            w = painter.fontMetrics().width(q.text);
+            h = painter.fontMetrics().xHeight() + 2;
+
+            painter.translate(q.x, q.y);
+            painter.rotate(-q.angle);
+            painter.drawText(floor(-w / 2.0), floor(-h / 2.0), q.text);
+            painter.rotate(+q.angle);
+            painter.translate(-q.x, -q.y);
+        }
+
+        q.text.clear();
+    }
+
+    m_textque_items = 0;
+}
+
+// Render graphs with QPainter or pixmap caching, depending on preferences
 void gGraphView::DrawTextQue()
 {
     const qint64 expire_after_ms = 4000; // expire string pixmaps after this many milliseconds
@@ -600,10 +501,10 @@ void gGraphView::DrawTextQue()
                 w = fm.width(q.text);
                 h = fm.height();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-                w *= dpr;
-                h *= dpr;
-#endif
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//                w *= dpr;
+//                h *= dpr;
+//#endif
 
                 rect.setWidth(w);
                 rect.setHeight(h);
@@ -618,16 +519,16 @@ void gGraphView::DrawTextQue()
                 imgpainter.setBrush(b);
 
                 QFont font = *q.font;
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-                int fs = font.pointSize();
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//                int fs = font.pointSize();
 
-                if (fs > 0) {
-                    font.setPointSize(fs * dpr);
-                } else {
-                    font.setPixelSize(font.pixelSize()*dpr);
-                }
+//                if (fs > 0) {
+//                    font.setPointSize(fs * dpr);
+//                } else {
+//                    font.setPixelSize(font.pixelSize()*dpr);
+//                }
 
-#endif
+//#endif
                 imgpainter.setFont(font);
 
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
@@ -645,10 +546,10 @@ void gGraphView::DrawTextQue()
                 int h = pc->image.height();
                 int w = pc->image.width();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-                h /= dpr;
-                w /= dpr;
-#endif
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//                h /= dpr;
+//                w /= dpr;
+//#endif
 
                 if (q.angle != 0) {
                     float xxx = q.x - h - (h / 2);
@@ -748,6 +649,8 @@ void gGraphView::addGraph(gGraph *g, short group)
         // updateScrollBar();
     }
 }
+
+// Calculate total height of all graphs including spacers
 float gGraphView::totalHeight()
 {
     float th = 0;
@@ -760,6 +663,7 @@ float gGraphView::totalHeight()
 
     return ceil(th);
 }
+
 float gGraphView::findTop(gGraph *graph)
 {
     float th = -m_offsetY;
@@ -772,9 +676,9 @@ float gGraphView::findTop(gGraph *graph)
         th += m_graphs[i]->height() * m_scaleY + graphSpacer;
     }
 
-    //th-=m_offsetY;
     return ceil(th);
 }
+
 float gGraphView::scaleHeight()
 {
     float th = 0;
@@ -787,6 +691,7 @@ float gGraphView::scaleHeight()
 
     return ceil(th);
 }
+
 void gGraphView::resizeEvent(QResizeEvent *e)
 {
     QGLWidget::resizeEvent(e); // This ques a redraw event..
@@ -797,6 +702,7 @@ void gGraphView::resizeEvent(QResizeEvent *e)
         m_graphs[i]->resize(e->size().width(), m_graphs[i]->height()*m_scaleY);
     }
 }
+
 void gGraphView::scrollbarValueChanged(int val)
 {
     //qDebug() << "Scrollbar Changed" << val;
@@ -847,6 +753,7 @@ void gGraphView::GetRXBounds(qint64 &st, qint64 &et)
     st = g->rmin_x;
     et = g->rmax_x;
 }
+
 void gGraphView::ResetBounds(bool refresh) //short group)
 {
     Q_UNUSED(refresh)
@@ -901,6 +808,7 @@ void gGraphView::ResetBounds(bool refresh) //short group)
 
     updateScale();
 }
+
 void gGraphView::GetXBounds(qint64 &st, qint64 &et)
 {
     st = m_minx;
@@ -938,6 +846,7 @@ void gGraphView::SetXBounds(qint64 minx, qint64 maxx, short group, bool refresh)
 
     if (refresh) { redraw(); }
 }
+
 void gGraphView::updateScale()
 {
     float th = totalHeight(); // height of all graphs
@@ -1014,32 +923,37 @@ void gGraphView::initializeGL()
 
 void gGraphView::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+    float dpr = devicePixelRatio();
+#else
+    float dpr = 1;
+#endif
+
+    glViewport(0, 0, w / dpr, h / dpr);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = devicePixelRatio();
     glOrtho(0, w / dpr, h / dpr, 0, -1, 1);
-#else
-    glOrtho(0, w, h, 0, -1, 1);
-#endif
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
-void gGraphView::renderCube(float alpha)
+void gGraphView::renderCube(QPainter &painter, float alpha)
 {
     if (cubeimg.size() == 0) { return; }
 
     //    glPushMatrix();
     float w = width();
     float h = height();
+
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     float dpr = devicePixelRatio();
     w *= dpr;
     h *= dpr;
 #endif
+
+    painter.beginNativePainting();
 
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
@@ -1204,9 +1118,11 @@ void gGraphView::renderCube(float alpha)
     glLoadIdentity();
 
     //  glPopMatrix();
+    painter.endNativePainting();
+
 }
 
-bool gGraphView::renderGraphs()
+bool gGraphView::renderGraphs(QPainter &painter)
 {
     float px = m_offsetX;
     float py = -m_offsetY;
@@ -1276,12 +1192,12 @@ bool gGraphView::renderGraphs()
 
             if (m_showsplitter) {
                 // draw the splitter handle
-                QColor ca = QColor(128, 128, 128, 255);
-                backlines->add(0, py + h, w, py + h, ca.rgba());
-                ca = QColor(192, 192, 192, 255);
-                backlines->add(0, py + h + 1, w, py + h + 1, ca.rgba());
-                ca = QColor(90, 90, 90, 255);
-                backlines->add(0, py + h + 2, w, py + h + 2, ca.rgba());
+                painter.setPen(QColor(128,128,128,255));
+                painter.drawLine(0, py + h, w, py + h);
+                painter.setPen(QColor(192, 192, 192, 255));
+                painter.drawLine(0, py + h + 1, w, py + h + 1);
+                painter.setPen(QColor(90, 90, 90, 255));
+                painter.drawLine(0, py + h + 2, w, py + h + 2);
             }
 
         }
@@ -1295,7 +1211,7 @@ bool gGraphView::renderGraphs()
     for (int i = 0; i < s; i++) {
         gGraph *g = m_drawlist.at(0);
         m_drawlist.pop_front();
-        g->paint(g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+        g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
     }
 
     backlines->draw();
@@ -1310,21 +1226,14 @@ bool gGraphView::renderGraphs()
     // can't draw snapshot text using this DrawTextQue function
     // TODO: Find a better solution for detecting when in snapshot mode
     if (m_graphs.size() > 1) {
-        DrawTextQue();
+        DrawTextQue(painter);
 
         // Draw a gradient behind pinned graphs
-        //   glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glBegin(GL_QUADS);
-        glColor4f(0.85, 0.85, 1.0, 1.0); // Gradient End
-        glVertex2f(0, pinned_height);
-        glVertex2f(0, 0);
-        glColor4f(1.0, 1.0, 1.0, 1.0); // Gradient start
-        glVertex2f(width(), 0);
-        glVertex2f(width(), pinned_height);
-        glEnd();
+        QLinearGradient linearGrad(QPointF(100, 100), QPointF(width() / 2, 100));
+        linearGrad.setColorAt(0, QColor(216, 216, 255));
+        linearGrad.setColorAt(1, Qt::white);
 
-        // glDisable(GL_BLEND);
+        painter.fillRect(0, 0, width(), pinned_height, QBrush(linearGrad));
     }
 
     py = 0; // start drawing at top...
@@ -1352,12 +1261,12 @@ bool gGraphView::renderGraphs()
 
             if (m_showsplitter) {
                 // draw the splitter handle
-                QColor ca = QColor(128, 128, 128, 255);
-                backlines->add(0, py + h, w, py + h, ca.rgba());
-                ca = QColor(192, 192, 192, 255);
-                backlines->add(0, py + h + 1, w, py + h + 1, ca.rgba());
-                ca = QColor(90, 90, 90, 255);
-                backlines->add(0, py + h + 2, w, py + h + 2, ca.rgba());
+                painter.setPen(QColor(128, 128, 128, 255));
+                painter.drawLine(0, py + h, w, py + h);
+                painter.setPen(QColor(192, 192, 192, 255));
+                painter.drawLine(0, py + h + 1, w, py + h + 1);
+                painter.setPen(QColor(90, 90, 90, 255));
+                painter.drawLine(0, py + h + 2, w, py + h + 2);
             }
 
         }
@@ -1384,7 +1293,7 @@ bool gGraphView::renderGraphs()
         for (int i = 0; i < s; i++) {
             gGraph *g = m_drawlist.at(0);
             m_drawlist.pop_front();
-            g->paint(g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+            g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
         }
 
 #ifdef ENABLED_THREADED_DRAWING
@@ -1392,18 +1301,6 @@ bool gGraphView::renderGraphs()
 #endif
     //int elapsed=time.elapsed();
     //QColor col=Qt::black;
-
-
-    backlines->draw();
-
-    for (int i = 0; i < m_graphs.size(); i++)
-    {
-        m_graphs[i]->drawGLBuf();
-    }
-
-    quads->draw();
-    lines->draw();
-
 
     //    lines->setSize(linesize);
 
@@ -1413,73 +1310,7 @@ bool gGraphView::renderGraphs()
 
     return numgraphs > 0;
 }
-void gGraphView::fadeOut()
-{
-    if (!PROFILE.ExistsAndTrue("AnimationsAndTransitions")) { return; }
 
-    //if (m_fadingOut) {
-    //        return;
-    //    }
-    //if (m_inAnimation) {
-    //        m_inAnimation=false;
-    //  }
-    //clone graphs to shapshot graphview object, render, and then fade in, before switching back to normal mode
-    /*gGraphView *sg=mainwin->snapshotGraph();
-    sg->trashGraphs();
-    sg->setFixedSize(width(),height());
-    sg->m_graphs=m_graphs;
-    sg->showSplitter(); */
-
-    //bool restart=false;
-    //if (!m_inAnimation)
-    //  restart=true;
-
-    bool b = m_inAnimation;
-    m_inAnimation = false;
-
-    previous_day_snapshot = renderPixmap(width(), height(), false);
-    m_inAnimation = b;
-    //m_fadingOut=true;
-    //m_fadingIn=false;
-    //m_inAnimation=true;
-    //m_limbo=false;
-    //m_animationStarted.start();
-    //  updateGL();
-}
-void gGraphView::fadeIn(bool dir)
-{
-    static bool firstdraw = true;
-    m_tooltip->cancel();
-
-    if (firstdraw || !PROFILE.ExistsAndTrue("AnimationsAndTransitions")) {
-        updateGL();
-        firstdraw = false;
-        return;
-    }
-
-    if (m_fadingIn) {
-        m_fadingIn = false;
-        m_inAnimation = false;
-        updateGL();
-        return;
-        // previous_day_snapshot=current_day_snapshot;
-    }
-
-    m_inAnimation = false;
-    current_day_snapshot = renderPixmap(width(), height(), false);
-    //    qDebug() << current_day_snapshot.depth() << "bit image depth";
-    //    if (current_day_snapshot.hasAlpha()){
-    //        qDebug() << "Snapshots are not storing alpha channel needed for texture blending";
-    //    }
-    m_inAnimation = true;
-
-    m_animationStarted.start();
-    m_fadingIn = true;
-    m_limbo = false;
-    m_fadedir = dir;
-    updateGL();
-
-}
 
 void gGraphView::paintGL()
 {
@@ -1492,146 +1323,41 @@ void gGraphView::paintGL()
         redrawtimer->stop();
     }
 
-    bool something_fun = PROFILE.appearance->animations();
+    bool render_cube = PROFILE.appearance->animations(); // do something to
 
     if (width() <= 0) { return; }
-
     if (height() <= 0) { return; }
 
-    glClearColor(255, 255, 255, 255);
-    //glClearDepth(1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Create QPainter object, note this is only valid from paintGL events!
+    QPainter painter(this);
 
-    bool numgraphs = true;
-    const int animTimeout = 200;
-    float phase = 0;
+    QRect bgrect(0, 0, width(), height());
+    painter.fillRect(bgrect,QBrush(QColor(255,255,255)));
 
-    int elapsed = 0;
+    bool graphs_drawn = true;
 
-    if (m_inAnimation || m_fadingIn) {
-        elapsed = m_animationStarted.elapsed();
+    graphs_drawn = renderGraphs(painter);
 
-        if (elapsed > animTimeout) {
-            if (m_fadingOut) {
-                m_fadingOut = false;
-                m_animationStarted.start();
-                elapsed = 0;
-                m_limbo = true;
-            } else if (m_fadingIn) {
-                m_fadingIn = false;
-                m_inAnimation = false; // end animation
-                m_limbo = false;
-                m_fadingOut = false;
-            }
+    if (!graphs_drawn) { // No graphs drawn?
+        int x, y;
+        GetTextExtent(m_emptytext, x, y, bigfont);
+        int tp;
 
-            //
+        if (render_cube && this->isVisible()) {
+            renderCube(painter);
+
+            tp = height() - (y / 2);
         } else {
-            phase = float(elapsed) / float(animTimeout); //percentage of way through animation timeslot
-
-            if (phase > 1.0) { phase = 1.0; }
-
-            if (phase < 0) { phase = 0; }
+            tp = height() / 2 + y / 2;
         }
 
-        if (m_inAnimation) {
-            if (m_fadingOut) {
-                //  bindTexture(previous_day_snapshot);
-            } else if (m_fadingIn) {
-                //int offset,offset2;
-                float aphase;
-                aphase = 1.0 - phase;
-                /*if (m_fadedir) { // forwards
-                    //offset2=-width();
-                    //offset=0;
-                    aphase=phase;
-                    phase=1.0-phase;
-                } else { // backwards
-                    aphase=phase;
-                    phase=phase
-                    //offset=-width();
-                    //offset2=0;//-width();
-                }*/
-                //offset=0; offset2=0;
-
-                glEnable(GL_BLEND);
-
-                glDisable(GL_ALPHA_TEST);
-                glAlphaFunc(GL_GREATER, 0.0);
-                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                glColor4f(aphase, aphase, aphase, aphase);
-
-                bindTexture(previous_day_snapshot);
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex2f(0, 0);
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex2f(width(), 0);
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex2f(width(), height());
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex2f(0, height());
-                glEnd();
-
-                glColor4f(phase, phase, phase, phase);
-                //              glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                bindTexture(current_day_snapshot);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex2f(0, 0);
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex2f(width(), 0);
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex2f(width(), height());
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex2f(0, height());
-                glEnd();
-
-                glDisable(GL_ALPHA_TEST);
-                glDisable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-        }
+        // Then display the empty text message
+        QColor col = Qt::black;
+        AddTextQue(m_emptytext, (width() / 2) - x / 2, tp, 0.0, col, bigfont);
     }
+    DrawTextQue(painter);
 
-    // Need a really good condition/excuse to switch this on.. :-}
-    bool bereallyannoying = false;
-
-    if (!m_inAnimation || (!m_fadingIn)) {
-        // Not in animation sequence, draw graphs like normal
-        if (bereallyannoying) {
-            renderCube(0.7F);
-        }
-
-        numgraphs = renderGraphs();
-
-        if (!numgraphs) { // No graphs drawn?
-            int x, y;
-            GetTextExtent(m_emptytext, x, y, bigfont);
-            int tp;
-
-            if (something_fun && this->isVisible()) {// Do something fun instead
-                if (!bereallyannoying) {
-                    renderCube();
-                }
-
-                tp = height() - (y / 2);
-            } else {
-                tp = height() / 2 + y / 2;
-            }
-
-            // Then display the empty text message
-            QColor col = Qt::black;
-            AddTextQue(m_emptytext, (width() / 2) - x / 2, tp, 0.0, col, bigfont);
-
-        }
-
-        DrawTextQue();
-    }
-
-    m_tooltip->paint();
+    m_tooltip->paint(painter);
 
 #ifdef DEBUG_EFFICIENCY
     const int rs = 10;
@@ -1660,32 +1386,26 @@ void gGraphView::paintGL()
              "Kb";
 
         int w, h;
-        GetTextExtent(ss, w,
-                      h); // this uses tightBoundingRect, which is different on Mac than it is on Windows & Linux.
+        // this uses tightBoundingRect, which is different on Mac than it is on Windows & Linux.
+        GetTextExtent(ss, w, h);
         QColor col = Qt::white;
-        quads->add(width() - m_graphs[0]->marginRight(), 0, width() - m_graphs[0]->marginRight(), w,
-                   width(), w, width(), 0, col.rgba());
-        quads->draw();
-        //renderText(0,0,0,ss,*defaultfont);
 
-        //     int xx=3;
+        painter.fillRect(width() - m_graphs[0]->marginRight(), 0, m_graphs[0]->marginRight(), w, QBrush(col));
 #ifndef Q_OS_MAC
         //   if (usePixmapCache()) xx+=4; else xx-=3;
 #endif
-        AddTextQue(ss, width(), w / 2, 90, col, defaultfont);
-        DrawTextQue();
+        AddTextQue(ss, width(), w / 2, 90, QColor(Qt::black), defaultfont);
+        DrawTextQue(painter);
     }
 
 #endif
 
     swapBuffers(); // Dump to screen.
 
-    if (this->isVisible()) {
-        if (m_limbo || m_inAnimation || (something_fun && (bereallyannoying || !numgraphs))) {
-            redrawtimer->setInterval(1000.0 / 50);
-            redrawtimer->setSingleShot(true);
-            redrawtimer->start();
-        }
+    if (this->isVisible() && !graphs_drawn && render_cube) { // keep the cube spinning
+        redrawtimer->setInterval(1000.0 / 50); // 50 FPS
+        redrawtimer->setSingleShot(true);
+        redrawtimer->start();
     }
 }
 
