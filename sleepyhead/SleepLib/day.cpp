@@ -383,20 +383,27 @@ qint64 Day::total_time()
 
     // Remember sessions may overlap..
 
+    qint64 first, last;
     QList<Session *>::iterator end = sessions.end();
     for (QList<Session *>::iterator it = sessions.begin(); it != end; ++it) {
         Session &sess = *(*it);
 
         if (sess.enabled()) {
-            range.insert(sess.first(), 0);
-            range.insert(sess.last(), 1);
-            d_totaltime += sess.length();
+            first = sess.first();
+            last = sess.last();
+
+            // This algorithm relies on non zero length, and correctly ordered sessions
+            if (last > first) {
+                range.insert(first, 0);
+                range.insert(last, 1);
+                d_totaltime += sess.length();
+            }
         }
     }
 
-    qint64 ti = 0;
     bool b;
     int nest = 0;
+    qint64 ti = 0;
     qint64 total = 0;
 
     // This is my implementation of a typical "brace counting" algorithm mentioned here:

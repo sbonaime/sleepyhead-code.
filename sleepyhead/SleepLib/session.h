@@ -61,6 +61,9 @@ class Session
     //! \brief Put the events away until needed again, freeing memory
     void TrashEvents();
 
+    //! \brief Returns true if session contains an empty duration
+    inline bool isEmpty() { return (s_first == s_last); }
+
     //! \brief Search for Event code happening within dist milliseconds of supplied time (ms since epoch)
     bool SearchEvent(ChannelID code, qint64 time, qint64 dist = 15000);
 
