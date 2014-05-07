@@ -1582,14 +1582,13 @@ int ResmedLoader::Open(QString &path, Profile *profile)
             // Add the session to the machine & profile objects
             //if (!dodgy)
 
-            // FIXME: Deliberately broken, uncomment
-//            if (sess->length() > 0) {
+            if (sess->length() > 0) {
                 m->AddSession(sess, profile);
-//            } else {
+            } else {
 //                // Hmm.. this means a ton of these could slow down import.
 //                // I could instead set these to disabled by default, or implement a dodgy session marker
-//                delete sess;
-//            }
+                delete sess;
+            }
         }
     }
 
