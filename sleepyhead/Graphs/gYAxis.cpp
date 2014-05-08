@@ -112,13 +112,14 @@ void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
         h = top + height - ty;
 
         if (m_show_major_lines && (i > miny)) {
-            painter.setPen(QPen(m_major_color,1,Qt::DashDotDotLine));
+            painter.setPen(QPen(m_major_color,1));
             painter.drawLine(left, h, left + width, h);
         }
 
         double z = (min_ytick / 4) * ymult;
         double g = h;
 
+        painter.setPen(QPen(m_minor_color,1));
         for (int i = 0; i < 3; i++) {
             g += z;
 
@@ -129,7 +130,6 @@ void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
             //                break;
             //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                painter.setPen(QPen(m_minor_color,1,Qt::DashDotDotLine));
                 painter.drawLine(left, g, left + width, g);
             }
         }

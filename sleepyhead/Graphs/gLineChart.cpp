@@ -245,12 +245,16 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
 
     int codepoints;
 
-    painter.setClipRect(left, top, width, height);
+    painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
+    QVector<QLine> lines;
+    lines.reserve(100000);
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
-        painter.setPen(m_colors[gi]);
+        painter.setPen(QPen(m_colors[gi],1.5));
+
+        lines.clear();
 
         codepoints = 0;
 
@@ -501,7 +505,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                         for (int i = minz; i < maxz; i++, drl++) {
                             ax1 = drl->x();
                             ay1 = drl->y();
-                            painter.drawLine(xst + i, yst - ax1, xst + i, yst - ay1);
+                            lines.append(QLine(xst + i, yst - ax1, xst + i, yst - ay1));
                         }
 
                     } else { // Zoomed in Waveform
@@ -524,7 +528,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                             py = yst - ((data - miny) * ymult); // Same for Y scale, with precomputed gain
                             //py=yst-((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
 
-                            painter.drawLine(lastpx, lastpy, px, py);
+                            lines.append(QLine(lastpx, lastpy, px, py));
 
                             lastpx = px;
                             lastpy = py;
@@ -601,15 +605,15 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                painter.drawLine(lastpx, lastpy, px, lastpy);
-                                painter.drawLine(px, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, lastpy));
+                                lines.append(QLine(px, lastpy, px, py));
                             } else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
 
-                                painter.drawLine(lastpx, lastpy, px, lastpy);
-                                painter.drawLine(px, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, lastpy));
+                                lines.append(QLine(px, lastpy, px, py));
                             }
 
                             lastpx = px;
@@ -637,12 +641,12 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                painter.drawLine(lastpx, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, py));
                             } else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
-                                painter.drawLine(lastpx, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, py));
                             }
 
                             lastpx = px;
@@ -659,6 +663,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                 if (done) { break; }
             }
         }
+        painter.drawLines(lines);
 
         ////////////////////////////////////////////////////////////////////
         // Draw Legends on the top line
