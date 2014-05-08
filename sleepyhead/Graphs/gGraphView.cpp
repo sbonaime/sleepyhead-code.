@@ -1305,7 +1305,8 @@ void gGraphView::paintGL()
         redrawtimer->stop();
     }
 
-    bool render_cube = PROFILE.appearance->animations(); // do something to
+    bool render_cube = false; //PROFILE.appearance->animations(); // do something to
+
 
     if (width() <= 0) { return; }
     if (height() <= 0) { return; }
