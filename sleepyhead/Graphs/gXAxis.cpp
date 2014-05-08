@@ -64,6 +64,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
     //static QString dow[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
 
+    QVector<QLine> ticks;
 
     QPainter painter2; // Only need this for pixmap caching
 
@@ -220,9 +221,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
             if (py < start_px) { continue; }
 
             if (usepixmap) {
-                painter2.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
+                ticks.append(QLine(py - left + 20, 0, py - left + 20, mintop - top));
             } else {
-                painter.drawLine(py, top+2, py, mintop+2);
+                ticks.append(QLine(py, top+2, py, mintop+2));
             }
         }
 
@@ -234,9 +235,9 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
             px += left;
 
             if (usepixmap) {
-                painter2.drawLine(px - left + 20, 0, px - left + 20, majtop - top);
+                ticks.append(QLine(px - left + 20, 0, px - left + 20, majtop - top));
             } else {
-                painter.drawLine(px, top+2, px, majtop+2);
+                ticks.append(QLine(px, top+2, px, majtop+2));
             }
 
             j = i;
@@ -289,15 +290,18 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
                 if (py >= left + width) { break; }
 
                 if (usepixmap) {
-                    painter2.drawLine(py - left + 20, 0, py - left + 20, mintop - top);
+                    ticks.append(QLine(py - left + 20, 0, py - left + 20, mintop - top));
                 } else {
-                    painter.drawLine(py, top+2, py, mintop+2);
+                    ticks.append(QLine(py, top+2, py, mintop+2));
                 }
             }
         }
 
         if (usepixmap) {
+            painter2.drawLines(ticks);
             painter2.end();
+        } else {
+            painter.drawLines(ticks);
         }
 
         w.invalidate_xAxisImage = false;
