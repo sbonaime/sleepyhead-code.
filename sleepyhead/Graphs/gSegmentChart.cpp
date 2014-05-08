@@ -118,7 +118,6 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, int left, int top, int w
             // length of this segment in degrees
             float len = 360.0 / float(m_total) * float(data);
 
-            qDebug() << m_names[m];
             // Setup the shiny radial gradient
 
             painter.setRenderHint(QPainter::Antialiasing);
@@ -141,18 +140,18 @@ void gSegmentChart::paint(QPainter &painter, gGraph &w, int left, int top, int w
             painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
 
 
-            if (len > 10) {
-                float angle = (sum+90.0) + len/2.0;
-                double tpx = (start_px + width/2) + (sin(angle * (M_PI / 180.0)) * (radius / 1.7));
-                double tpy = (start_py + height/2) + (cos(angle * (M_PI / 180.0)) * (radius / 1.7));
+            // Draw text labels if they fit
+            if (len > 20) {
+                float angle = (sum+90.0) + len / 2.0;
+                double tpx = (pierect.x() + pierect.width()/2)  + (sin((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
+                double tpy = (pierect.y() + pierect.height()/2) + (cos((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
 
                 QString txt = m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 int x, y;
                 GetTextExtent(txt, x, y);
                 // antialiasing looks like crap here..
                 painter.setPen(QColor(Qt::black));
-                painter.drawText(tpx - (x / 2.0), (tpy - y / 2.0), txt);
-                //painter.drawText(txt, tpx - (x / 2.0), (tpy + y / 2.0), 0, Qt::black, defaultfont,false);
+                painter.drawText(tpx - (x / 2.0), tpy+3, txt);
             }
             sum += len;
 

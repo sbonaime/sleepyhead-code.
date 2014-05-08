@@ -1304,7 +1304,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
 
     //    lines->setSize(linesize);
 
-    //   DrawTextQue();
+     DrawTextQue(painter);
     //glDisable(GL_TEXTURE_2D);
     //glDisable(GL_DEPTH_TEST);
 

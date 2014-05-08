@@ -164,8 +164,6 @@ gGraph::gGraph(gGraphView *graphview, QString title, QString units, int height, 
     invalidate_yAxisImage = true;
     invalidate_xAxisImage = true;
 
-    m_quad = new gVertexBuffer(64, GL_QUADS);
-    m_quad->forceAntiAlias(true);
     m_enforceMinY = m_enforceMaxY = false;
     m_showTitle = true;
     m_printing = false;
@@ -179,7 +177,6 @@ gGraph::~gGraph()
     }
 
     m_layers.clear();
-    delete m_quad;
 
     timer->stop();
     disconnect(timer, 0, 0, 0);
@@ -247,7 +244,6 @@ void gGraph::drawGLBuf()
         m_layers[i]->drawGLBuf(linesize);
     }
 
-    m_quad->draw();
 }
 void gGraph::setDay(Day *day)
 {
@@ -389,16 +385,7 @@ void gGraph::paint(QPainter &painter, int originX, int originY, int width, int h
 
     if (isPinned()) {
         // Fill the background on pinned graphs
-
-        //        m_graphview->quads->add(originX+left,originY+top, originX+width-right,originY+top, originX+width-right,originY+height-bottom, originX+left,originY+height-bottom, 0xffffffff);
         painter.fillRect(originX + left, originY + top, width - right, height - bottom - top, QBrush(QColor(Qt::white)));
-//        glBegin(GL_QUADS);
-//        glColor4f(1.0, 1.0, 1.0, 1.0); // Gradient End
-//        glVertex2i(originX + left, originY + top);
-//        glVertex2i(originX + width - right, originY + top);
-//        glVertex2i(originX + width - right, originY + height - bottom);
-//        glVertex2i(originX + left, originY + height - bottom);
-//        glEnd();
     }
 
     for (int i = 0; i < m_layers.size(); i++) {

@@ -344,7 +344,6 @@ class gGraph : public QObject
     short m_group;
     short m_lastx23;
     Day *m_day;
-    gVertexBuffer *m_quad;
     bool m_enforceMinY, m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;
