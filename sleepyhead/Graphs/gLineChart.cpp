@@ -252,13 +252,13 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
-        painter.setPen(QPen(m_colors[gi],1.5));
 
         lines.clear();
 
         codepoints = 0;
 
-        for (int svi = 0; svi < m_day->size(); svi++) {
+        int daysize = m_day->size();
+        for (int svi = 0; svi < daysize; svi++) {
             Session *sess = (*m_day)[svi];
 
             if (!sess) {
@@ -273,9 +273,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
             schema::Channel ch = schema::channel[code];
             bool fndbetter = false;
 
-            for (QList<schema::Channel *>::iterator l = ch.m_links.begin(); l != ch.m_links.end(); l++) {
-                schema::Channel *c = *l;
-                ci = (*m_day)[svi]->eventlist.find(c->id());
+            QList<schema::Channel *>::iterator mlend=ch.m_links.end();
+            for (QList<schema::Channel *>::iterator l = ch.m_links.begin(); l != mlend; l++) {
+                schema::Channel &c = *(*l);
+                ci = (*m_day)[svi]->eventlist.find(c.id());
 
                 if (ci != (*m_day)[svi]->eventlist.end()) {
                     fndbetter = true;
@@ -304,7 +305,8 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
             // Max number of samples taken from samples per pixel for better min/max values
             const int num_averages = 20;
 
-            for (int n = 0; n < evec.size(); n++) { // for each segment
+            int evecsize=evec.size();
+            for (int n = 0; n < evecsize; ++n) { // for each segment
                 EventList &el = *evec[n];
 
                 accel = (el.type() == EVL_Waveform); // Turn on acceleration if this is a waveform.
@@ -663,6 +665,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                 if (done) { break; }
             }
         }
+        painter.setPen(QPen(m_colors[gi],1.5));
         painter.drawLines(lines);
 
         ////////////////////////////////////////////////////////////////////
