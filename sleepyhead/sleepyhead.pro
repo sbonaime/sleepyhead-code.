@@ -65,13 +65,19 @@ macx {
 win32 {
   DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
   RC_FILE          += win_icon.rc
-  LIBS             += -lsetupapi -lz
+  LIBS             += -lsetupapi
+
+  INCLUDEPATH += $$PWD
+  INCLUDEPATH += $$[QT_INSTALL_PREFIX]/../src/qtbase/src/3rdparty/zlib
+
 }
-if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc") {
+if (win32-msvc2008|win32-msvc2010|win32-msvc2012) {
+!equals(TEMPLATE_PREFIX, "vc") {
    LIBS += -ladvapi32
    DEFINES += BUILD_WITH_MSVC=1
-}
 
+}
+}
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -235,6 +241,7 @@ win32 {
     for(FILE,TRANS_FILES_WIN){
         system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
     }
+
 }
 
 mac {

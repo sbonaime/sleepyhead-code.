@@ -1057,7 +1057,7 @@ EventDataType Session::physMin(ChannelID id)
         return 0;
     }
 
-    EventDataType min = round(Min(id));
+    EventDataType min = floor(Min(id));
     m_physmin[id] = min;
     return min;
 }
@@ -1077,7 +1077,7 @@ EventDataType Session::physMax(ChannelID id)
         return 0;
     }
 
-    EventDataType max = round(Max(id) + 0.5);
+    EventDataType max = ceil(Max(id) + 0.5);
     m_physmax[id] = max;
     return max;
 }
