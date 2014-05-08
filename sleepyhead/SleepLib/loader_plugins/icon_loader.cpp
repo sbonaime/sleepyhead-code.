@@ -832,7 +832,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         ti = qint64(sessid) * 1000L;
         sess->really_set_first(ti);
         EventList *LK = sess->AddEventList(CPAP_LeakTotal, EVL_Event, 1);
-        EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1);
+        EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
         EventList *FLG = sess->AddEventList(CPAP_FLG, EVL_Event);
         EventList *OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
         EventList *H = sess->AddEventList(CPAP_Hypopnea, EVL_Event);

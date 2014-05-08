@@ -249,6 +249,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
     painter.setClipping(true);
     QVector<QLine> lines;
     lines.reserve(100000);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
@@ -699,6 +700,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
         }
     }
     painter.setClipping(false);
+    painter.setRenderHint(QPainter::Antialiasing, false);
 }
 
 
