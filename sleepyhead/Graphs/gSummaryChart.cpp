@@ -19,18 +19,6 @@ extern QLabel *qstatus2;
 SummaryChart::SummaryChart(QString label, GraphType type)
     : Layer(NoChannel), m_label(label), m_graphtype(type)
 {
-    //QColor color=Qt::black;
-    addVertexBuffer(quads = new gVertexBuffer(20000, GL_QUADS));
-    addVertexBuffer(lines = new gVertexBuffer(20000, GL_LINES));
-    addVertexBuffer(outlines = new gVertexBuffer(20000, GL_LINES));
-    addVertexBuffer(points = new gVertexBuffer(20000, GL_POINTS));
-    quads->forceAntiAlias(true);
-
-    outlines->setSize(1);
-
-    //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
-    //lines->forceAntiAlias(false);
-
     m_empty = true;
     hl_day = -1;
     m_machinetype = MT_CPAP;

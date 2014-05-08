@@ -26,6 +26,7 @@ class gFlagsLabelArea: public gSpacer
     gFlagsLabelArea(gFlagsGroup *group);
     virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height) {
         Q_UNUSED(w)
+        Q_UNUSED(painter)
         Q_UNUSED(left)
         Q_UNUSED(top)
         Q_UNUSED(width)

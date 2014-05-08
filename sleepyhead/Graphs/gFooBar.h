@@ -27,8 +27,6 @@ class gShadowArea: public Layer
   protected:
     QColor m_shadow_color;
     QColor m_line_color;
-    gVertexBuffer *quads;
-    gVertexBuffer *lines;
 };
 
 /*! \class gFooBar

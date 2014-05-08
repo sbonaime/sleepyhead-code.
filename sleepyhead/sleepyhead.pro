@@ -97,7 +97,6 @@ SOURCES += \
     Graphs/gFooBar.cpp \
     Graphs/gGraph.cpp \
     Graphs/gGraphView.cpp \
-    Graphs/GLBuffer.cpp \
     Graphs/glcommon.cpp \
     Graphs/gLineChart.cpp \
     Graphs/gLineOverlay.cpp \
@@ -105,7 +104,6 @@ SOURCES += \
     Graphs/gspacer.cpp \
     Graphs/gStatsLine.cpp \
     Graphs/gSummaryChart.cpp \
-    Graphs/gVertexBuffer.cpp \
     Graphs/gXAxis.cpp \
     Graphs/gYAxis.cpp \
     Graphs/layer.cpp \

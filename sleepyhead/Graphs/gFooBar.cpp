@@ -20,11 +20,6 @@
 gShadowArea::gShadowArea(QColor shadow_color, QColor line_color)
     : Layer(NoChannel), m_shadow_color(shadow_color), m_line_color(line_color)
 {
-    addVertexBuffer(quads = new gVertexBuffer(20, GL_QUADS));
-    addVertexBuffer(lines = new gVertexBuffer(20, GL_LINES));
-    quads->forceAntiAlias(true);
-    lines->setAntiAlias(true);
-    lines->setSize(2);
 }
 gShadowArea::~gShadowArea()
 {

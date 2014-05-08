@@ -243,7 +243,7 @@ gGraph *gGraphView::popGraph()
 }
 
 gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
-  : QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer | QGL::NoOverlay), parent, shared),
+  : QGLWidget(QGLFormat(QGL::Rgba | QGL::DoubleBuffer), parent, shared),
     m_offsetY(0), m_offsetX(0), m_scaleY(1.0), m_scrollbar(nullptr)
 {
     m_shared = shared;
@@ -277,12 +277,6 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
         m_threads.push_back(gt);
         //gt->start();
     }*/
-
-    lines = new gVertexBuffer(100000, GL_LINES); // big fat shared line list
-    backlines = new gVertexBuffer(10000, GL_LINES); // big fat shared line list
-    quads = new gVertexBuffer(1024, GL_QUADS); // big fat shared line list
-    quads->forceAntiAlias(true);
-    frontlines = new gVertexBuffer(20000, GL_LINES);
 
     //vlines=new gVertexBuffer(20000,GL_LINES);
 
@@ -353,11 +347,6 @@ gGraphView::~gGraphView()
 
     delete m_tooltip;
     m_graphs.clear();
-
-    delete frontlines;
-    delete lines;
-    delete backlines;
-    delete quads;
 
     if (m_scrollbar) {
         this->disconnect(m_scrollbar, SIGNAL(sliderMoved(int)), 0, 0);
@@ -955,167 +944,167 @@ void gGraphView::renderCube(QPainter &painter, float alpha)
 
     painter.beginNativePainting();
 
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+//    glViewport(0, 0, w, h);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100.0f);
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
 
-    /*glShadeModel(GL_SMOOTH);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-    glClearDepth(1.0f); */
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+//    /*glShadeModel(GL_SMOOTH);
+//    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+//    glClearDepth(1.0f); */
+//    glEnable(GL_DEPTH_TEST);
+//    glDepthFunc(GL_LEQUAL);
+//    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    // This code has been shamelessly pinched of the interwebs..
-    // When I'm feeling more energetic, I'll change it to a textured sheep or something.
-    static float rotqube = 0;
+//    // This code has been shamelessly pinched of the interwebs..
+//    // When I'm feeling more energetic, I'll change it to a textured sheep or something.
+//    static float rotqube = 0;
 
-    static float xpos = 0, ypos = 7;
+//    static float xpos = 0, ypos = 7;
 
-    glLoadIdentity();
+//    glLoadIdentity();
 
-    glAlphaFunc(GL_GREATER, 0.1F);
-    glEnable(GL_ALPHA_TEST);
-    glEnable(GL_CULL_FACE);
-    glDisable(GL_COLOR_MATERIAL);
+//    glAlphaFunc(GL_GREATER, 0.1F);
+//    glEnable(GL_ALPHA_TEST);
+//    glEnable(GL_CULL_FACE);
+//    glDisable(GL_COLOR_MATERIAL);
 
-    //int imgcount=cubeimg.size();
+//    //int imgcount=cubeimg.size();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    double xx = 0.0, yy = 0.0;
+//    double xx = 0.0, yy = 0.0;
 
-    // set this to 0 to make the cube stay in the center of the screen
-    if (1) {
-        xx = sin(M_PI / 180.0 * xpos) * 2; // ((4.0/width()) * m_mouse.rx())-2.0;
-        yy = cos(M_PI / 180.0 * ypos) * 2; //2-((4.0/height()) * m_mouse.ry());
-        xpos += 1;
-        ypos += 1.32F;
+//    // set this to 0 to make the cube stay in the center of the screen
+//    if (1) {
+//        xx = sin(M_PI / 180.0 * xpos) * 2; // ((4.0/width()) * m_mouse.rx())-2.0;
+//        yy = cos(M_PI / 180.0 * ypos) * 2; //2-((4.0/height()) * m_mouse.ry());
+//        xpos += 1;
+//        ypos += 1.32F;
 
-        if (xpos > 360) { xpos -= 360.0F; }
+//        if (xpos > 360) { xpos -= 360.0F; }
 
-        if (ypos > 360) { ypos -= 360.0F; }
-    }
-
-
-    //m_mouse.x();
-    glTranslatef(xx, 0.0f, -7.0f + yy);
-    glRotatef(rotqube, 0.0f, 1.0f, 0.0f);
-    glRotatef(rotqube, 1.0f, 1.0f, 1.0f);
+//        if (ypos > 360) { ypos -= 360.0F; }
+//    }
 
 
-    int i = 0;
-    glEnable(GL_TEXTURE_2D);
-    cubetex = bindTexture(*cubeimg[0]);
+//    //m_mouse.x();
+//    glTranslatef(xx, 0.0f, -7.0f + yy);
+//    glRotatef(rotqube, 0.0f, 1.0f, 0.0f);
+//    glRotatef(rotqube, 1.0f, 1.0f, 1.0f);
 
-    //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
-    i++;
-    glColor4f(1, 1, 1, alpha);
 
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
-    glEnd();
-    // Back Face
-    //bindTexture(*cubeimg[i % imgcount]);
-    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-    i++;
-    glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
-    glEnd();
-    // Top Face
-    //bindTexture(*cubeimg[i % imgcount]);
-    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-    i++;
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f,  1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-    glEnd();
-    // Bottom Face
-    //bindTexture(*cubeimg[i % imgcount]);
-    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-    i++;
-    glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);	// Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);	// Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-    glEnd();
-    // Right face
-    //bindTexture(*cubeimg[i % imgcount]);
-    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
-    i++;
-    glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
-    glEnd();
-    // Left Face
-    //GLuint tex=bindTexture(*images["mask"]);
-    //glBindTexture(GL_TEXTURE_2D, tex);
-    i++;
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
-    glEnd();
+//    int i = 0;
+//    glEnable(GL_TEXTURE_2D);
+//    cubetex = bindTexture(*cubeimg[0]);
 
-    glDisable(GL_BLEND);
-    glBindTexture(GL_TEXTURE_2D, 0);
+//    //glBindTexture(GL_TEXTURE_2D, cubetex); //texid[i % imgcount]);
+//    i++;
+//    glColor4f(1, 1, 1, alpha);
 
-    glDisable(GL_ALPHA_TEST);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_CULL_FACE);
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
+//    glEnd();
+//    // Back Face
+//    //bindTexture(*cubeimg[i % imgcount]);
+//    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+//    i++;
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
+//    glEnd();
+//    // Top Face
+//    //bindTexture(*cubeimg[i % imgcount]);
+//    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+//    i++;
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(1.0f,  1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+//    glEnd();
+//    // Bottom Face
+//    //bindTexture(*cubeimg[i % imgcount]);
+//    //glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+//    i++;
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Top Right Of The Texture and Quad
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(1.0f, -1.0f, -1.0f);	// Top Left Of The Texture and Quad
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+//    glEnd();
+//    // Right face
+//    //bindTexture(*cubeimg[i % imgcount]);
+//    //    glBindTexture(GL_TEXTURE_2D, texid[i % imgcount]);
+//    i++;
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(1.0f, -1.0f, -1.0f);	// Bottom Right Of The Texture and Quad
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(1.0f,  1.0f, -1.0f);	// Top Right Of The Texture and Quad
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(1.0f,  1.0f,  1.0f);	// Top Left Of The Texture and Quad
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(1.0f, -1.0f,  1.0f);	// Bottom Left Of The Texture and Quad
+//    glEnd();
+//    // Left Face
+//    //GLuint tex=bindTexture(*images["mask"]);
+//    //glBindTexture(GL_TEXTURE_2D, tex);
+//    i++;
+//    glBegin(GL_QUADS);
+//    glTexCoord2f(0.0f, 0.0f);
+//    glVertex3f(-1.0f, -1.0f, -1.0f);	// Bottom Left Of The Texture and Quad
+//    glTexCoord2f(1.0f, 0.0f);
+//    glVertex3f(-1.0f, -1.0f,  1.0f);	// Bottom Right Of The Texture and Quad
+//    glTexCoord2f(1.0f, 1.0f);
+//    glVertex3f(-1.0f,  1.0f,  1.0f);	// Top Right Of The Texture and Quad
+//    glTexCoord2f(0.0f, 1.0f);
+//    glVertex3f(-1.0f,  1.0f, -1.0f);	// Top Left Of The Texture and Quad
+//    glEnd();
 
-    glDisable(GL_DEPTH_TEST);
+//    glDisable(GL_BLEND);
+//    glBindTexture(GL_TEXTURE_2D, 0);
 
-    rotqube += 0.9f;
+//    glDisable(GL_ALPHA_TEST);
+//    glDisable(GL_TEXTURE_2D);
+//    glDisable(GL_CULL_FACE);
 
-    // Restore boring 2D reality..
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+//    glDisable(GL_DEPTH_TEST);
 
-    glOrtho(0, width(), height(), 0, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+//    rotqube += 0.9f;
+
+//    // Restore boring 2D reality..
+//    glViewport(0, 0, w, h);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+
+//    glOrtho(0, width(), height(), 0, -1, 1);
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
 
     //  glPopMatrix();
     painter.endNativePainting();
@@ -1213,15 +1202,6 @@ bool gGraphView::renderGraphs(QPainter &painter)
         m_drawlist.pop_front();
         g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
     }
-
-    backlines->draw();
-
-    for (int i = 0; i < m_graphs.size(); i++) {
-        m_graphs[i]->drawGLBuf();
-    }
-
-    quads->draw();
-    lines->draw();
 
     // can't draw snapshot text using this DrawTextQue function
     // TODO: Find a better solution for detecting when in snapshot mode

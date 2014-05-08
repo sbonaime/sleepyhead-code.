@@ -216,6 +216,8 @@ gLineOverlaySummary::~gLineOverlaySummary()
 
 void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
+    Q_UNUSED(painter)
+
     if (!m_visible) { return; }
 
     if (!m_day) { return; }

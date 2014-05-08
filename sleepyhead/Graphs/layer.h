@@ -134,8 +134,8 @@ class Layer
     //void X() { return m_X; }
     //void Y() { return m_Y; }
 
-    //! \brief Draw all this layers custom GLBuffers (ie. the actual OpenGL Vertices)
-    virtual void drawGLBuf(float linesize);
+//    //! \brief Draw all this layers custom GLBuffers (ie. the actual OpenGL Vertices)
+//    virtual void drawGLBuf(float linesize);
 
     //! \brief not sure why I needed the reference counting stuff.
     short m_refcount;
@@ -146,9 +146,9 @@ class Layer
     }
 
   protected:
-    //! \brief Add a GLBuffer (vertex) object customized to this layer
-    void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
-    void addVertexBuffer(gVertexBuffer *buf) { mv_buffers.push_back(buf); }
+//    //! \brief Add a GLBuffer (vertex) object customized to this layer
+//    void addGLBuf(GLBuffer *buf) { mgl_buffers.push_back(buf); }
+//    void addVertexBuffer(gVertexBuffer *buf) { mv_buffers.push_back(buf); }
 
     //QRect bounds; // bounds, relative to top of individual graph.
     Day *m_day;
@@ -166,9 +166,9 @@ class Layer
     LayerPosition m_position;
     QRect m_rect;
 
-    //! \brief A vector containing all this layers custom drawing buffers
-    QVector<GLBuffer *> mgl_buffers;
-    QVector<gVertexBuffer *> mv_buffers;
+//    //! \brief A vector containing all this layers custom drawing buffers
+//    QVector<GLBuffer *> mgl_buffers;
+//    QVector<gVertexBuffer *> mv_buffers;
 
     //! \brief Mouse wheel moved somewhere over this layer
     virtual bool wheelEvent(QWheelEvent *event, gGraph *graph) {
@@ -241,8 +241,8 @@ class LayerGroup : public Layer
     //! \brief Calls SetDay for all Layers contained in this object
     virtual void SetDay(Day *d);
 
-    //! \brief Calls drawGLBuf for all Layers contained in this object
-    virtual void drawGLBuf(float linesize);
+//    //! \brief Calls drawGLBuf for all Layers contained in this object
+//    virtual void drawGLBuf(float linesize);
 
     //! \brief Return the list of Layers this object holds
     QVector<Layer *> &getLayers() { return layers; }
