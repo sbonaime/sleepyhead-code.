@@ -298,8 +298,6 @@ class gGraphView : public QGLWidget
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day *day);
 
-    gVertexBuffer *lines, *backlines, *quads, *frontlines;
-
     //! \brief pops a graph off the list for multithreaded drawing code
     gGraph *popGraph(); // exposed for multithreaded drawing
 

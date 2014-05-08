@@ -124,8 +124,8 @@ class gGraph : public QObject
     //         Applies the Graph Preference min/max settings.
     void roundY(EventDataType &miny, EventDataType &maxy);
 
-    //! \brief Process all Layers GLBuffer (Vertex) objects, drawing the actual OpenGL stuff.
-    void drawGLBuf();
+//    //! \brief Process all Layers GLBuffer (Vertex) objects, drawing the actual OpenGL stuff.
+//    void drawGLBuf();
 
     //! \brief Returns the Graph's (vertical) title
     inline QString & title() { return m_title; }
@@ -255,32 +255,18 @@ class gGraph : public QObject
     }
 
     //! \brief Returns this graphs left margin
-    short marginLeft();
+    inline short marginLeft() { return m_marginleft; }
     //! \brief Returns this graphs right margin
-    short marginRight();
+    inline short marginRight() { return m_marginright; }
     //! \brief Returns this graphs top margin
-    short marginTop();
+    inline short marginTop() { return m_margintop; }
     //! \brief Returns this graphs bottom margin
-    short marginBottom();
-
-    //! \brief Returns the main gGraphView objects gVertexBuffer line list.
-    gVertexBuffer *lines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer background line list.
-    gVertexBuffer *backlines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer front line list.
-    gVertexBuffer *frontlines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer quads list.
-    gVertexBuffer *quads();
+    inline short marginBottom() { return m_marginbottom; }
 
     const inline QRect &rect() const { return m_rect; }
 
     bool isPinned() { return m_pinned; }
     void setPinned(bool b) { m_pinned = b; }
-
-    // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
-    //GLShortBuffer * stippled();
-
-    //gVertexBuffer * vlines(); // testing new vertexbuffer
 
     short left, right, top, bottom; // dirty magin hacks..
 

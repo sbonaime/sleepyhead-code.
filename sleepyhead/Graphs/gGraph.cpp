@@ -233,18 +233,18 @@ float gGraph::printScaleX() { return m_graphview->printScaleX(); }
 float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 
 
-void gGraph::drawGLBuf()
-{
+//void gGraph::drawGLBuf()
+//{
 
-    float linesize = 1;
+//    float linesize = 1;
 
-    if (m_printing) { linesize = 4; } //ceil(m_graphview->printScaleY());
+//    if (m_printing) { linesize = 4; } //ceil(m_graphview->printScaleY());
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        m_layers[i]->drawGLBuf(linesize);
-    }
+//    for (int i = 0; i < m_layers.size(); i++) {
+//        m_layers[i]->drawGLBuf(linesize);
+//    }
 
-}
+//}
 void gGraph::setDay(Day *day)
 {
     m_day = day;
@@ -1293,26 +1293,6 @@ void gGraph::SetMaxY(EventDataType v)
 {
     rmax_y = max_y = v;
 }
-
-gVertexBuffer *gGraph::lines()
-{
-    return m_graphview->lines;
-}
-
-gVertexBuffer *gGraph::backlines()
-{
-    return m_graphview->backlines;
-}
-
-gVertexBuffer *gGraph::quads()
-{
-    return m_graphview->quads;
-}
-
-short gGraph::marginLeft() { return m_marginleft; }//*m_graphview->printScaleX(); }
-short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScaleX(); }
-short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
-short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
 Layer *gGraph::getLineChart()
 {
