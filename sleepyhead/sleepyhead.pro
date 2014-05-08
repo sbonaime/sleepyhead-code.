@@ -77,6 +77,9 @@ if (win32-msvc2008|win32-msvc2010|win32-msvc2012) {
    DEFINES += BUILD_WITH_MSVC=1
 
 }
+} else {
+    # MingW needs this
+    LIBS += -lz
 }
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
