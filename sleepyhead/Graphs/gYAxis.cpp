@@ -106,20 +106,20 @@ void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
     if (min_ytick >= 1000000) {
         min_ytick = 100;
     }
+    QVector<QLine> majorlines;
+    QVector<QLine> minorlines;
 
     for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
         ty = (i - miny) * ymult;
         h = top + height - ty;
 
         if (m_show_major_lines && (i > miny)) {
-            painter.setPen(QPen(m_major_color,1));
-            painter.drawLine(left, h, left + width, h);
+            majorlines.append(QLine(left, h, left + width, h));
         }
 
         double z = (min_ytick / 4) * ymult;
         double g = h;
 
-        painter.setPen(QPen(m_minor_color,1));
         for (int i = 0; i < 3; i++) {
             g += z;
 
@@ -130,10 +130,14 @@ void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
             //                break;
             //          }
             if (m_show_minor_lines) {// && (i > miny)) {
-                painter.drawLine(left, g, left + width, g);
+                minorlines.append(QLine(left, g, left + width, g));
             }
         }
     }
+    painter.setPen(QPen(m_major_color,1));
+    painter.drawLines(majorlines);
+    painter.setPen(QPen(m_minor_color,1));
+    painter.drawLines(minorlines);
 }
 
 
@@ -355,7 +359,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
             min_ytick = 100;
         }
 
-        painter.setPen(m_line_color);
+        QVector<QLine> ticks;
 
         for (double i = miny; i <= maxy + min_ytick - 0.00001; i += min_ytick) {
             ty = (i - miny) * ymult;
@@ -376,7 +380,7 @@ void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
 
             w.renderText(fd, left + width - 8 - x, (h + (y / 2.0)), 0, m_text_color, defaultfont);
 
-            painter.drawLine(left + width - 4, h, left + width, h);
+            ticks.append(QLine(left + width - 4, h, left + width, h));
 
             double z = (min_ytick / 4) * ymult;
             double g = h;
@@ -386,9 +390,11 @@ void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
 
                 if (g > top + height) { break; }
 
-                painter.drawLine(left + width - 3, g, left + width, g);
+                ticks.append(QLine(left + width - 3, g, left + width, g));
             }
         }
+        painter.setPen(m_line_color);
+        painter.drawLines(ticks);
     }
 }
 const QString gYAxis::Format(EventDataType v, int dp)
