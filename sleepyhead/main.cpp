@@ -53,6 +53,7 @@ void MyOutputHandler(QtMsgType type, const char *msgtxt)
 #else
 void MyOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgtxt)
 {
+    Q_UNUSED(context)
 #endif
 
     if (!mainwin) {

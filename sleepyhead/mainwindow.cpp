@@ -285,11 +285,14 @@ void MainWindow::Notify(QString s, QString title, int ms)
         // As a workaround, add an extra line to bump the message back
         // into the visible area.
         QString msg = s;
+
+#ifdef Q_OS_UNIX
         char *desktop = getenv("DESKTOP_SESSION");
 
         if (desktop && !strncmp(desktop, "gnome", 5)) {
             msg += "\n";
         }
+#endif
 
         systray->showMessage(title, msg, QSystemTrayIcon::Information, ms);
     } else {

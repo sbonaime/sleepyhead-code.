@@ -893,9 +893,9 @@ void gGraphView::initializeGL()
 {
     setAutoFillBackground(false);
     setAutoBufferSwap(false);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_TEXTURE_2D);
+//    glDisable(GL_LIGHTING);
+//    glDisable(GL_DEPTH_TEST);
+//    glDisable(GL_TEXTURE_2D);
 
     if (cubeimg.size() > 0) {
         cubetex = bindTexture(*cubeimg[0]);
@@ -906,30 +906,32 @@ void gGraphView::initializeGL()
     //        texid[i]=bindTexture(*images[i]);
     //    }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+//    glBindTexture(GL_TEXTURE_2D, 0);
     // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 }
 
-void gGraphView::resizeGL(int w, int h)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = devicePixelRatio();
-#else
-    float dpr = 1;
-#endif
+//void gGraphView::resizeGL(int w, int h)
+//{
 
-    glViewport(0, 0, w / dpr, h / dpr);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//    float dpr = devicePixelRatio();
+//#else
+//    float dpr = 1;
+//#endif
 
-    glOrtho(0, w / dpr, h / dpr, 0, -1, 1);
+//    glViewport(0, 0, w / dpr, h / dpr);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
+//    glOrtho(0, w / dpr, h / dpr, 0, -1, 1);
+
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+//}
 
 void gGraphView::renderCube(QPainter &painter, float alpha)
 {
+
     if (cubeimg.size() == 0) { return; }
 
     //    glPushMatrix();

@@ -22,8 +22,8 @@ EventList::EventList(EventListType et, EventDataType gain, EventDataType offset,
 
     if (min == max) { // Update Min & Max unless forceably set here..
         m_update_minmax = true;
-        m_min2 = m_min = 999999999;
-        m_max2 = m_max = -999999999;
+        m_min2 = m_min = 999999999.0F;
+        m_max2 = m_max = -999999999.0F;
     } else {
         m_update_minmax = false;
     }
@@ -35,8 +35,8 @@ EventList::EventList(EventListType et, EventDataType gain, EventDataType offset,
 
 void EventList::clear()
 {
-    m_min2 = m_min = 999999999;
-    m_max2 = m_max = -999999999;
+    m_min2 = m_min = 999999999.0F;
+    m_max2 = m_max = -999999999.0F;
     m_update_minmax = true;
     m_first = m_last = 0;
     m_count = 0;
@@ -310,7 +310,7 @@ void EventList::AddWaveform(qint64 start, char *data, int recs, qint64 duration)
     if (m_update_minmax) {
         for (sp = data; sp < ep; sp++) {
             raw = *sp;
-            val = EventDataType(val) * m_gain + m_offset;
+            val = EventDataType(raw) * m_gain + m_offset;
 
             if (m_min > val) { m_min = val; }
 
@@ -321,7 +321,7 @@ void EventList::AddWaveform(qint64 start, char *data, int recs, qint64 duration)
     } else {
         for (sp = data; sp < ep; sp++) {
             raw = *sp;
-            val = EventDataType(val) * m_gain + m_offset;
+            val = EventDataType(raw) * m_gain + m_offset;
             *dp++ = raw;
         }
     }

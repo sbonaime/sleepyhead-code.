@@ -43,8 +43,8 @@ void SummaryChart::SetDay(Day *nullday)
     m_days.clear();
     m_hours.clear();
     m_goodcodes.clear();
-    m_miny = 999999999;
-    m_maxy = -999999999;
+    m_miny = 999999999.0F;
+    m_maxy = -999999999.0F;
     m_physmaxy = 0;
     m_physminy = 0;
     m_minx = 0;
@@ -382,8 +382,6 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
 {
     if (!m_visible) { return; }
 
-    points->setSize(10);
-
     GraphType graphtype = m_graphtype;
 
     if (graphtype == GT_LINE || graphtype == GT_POINTS) {
@@ -420,8 +418,6 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
     EventDataType ymult = float(height - 2) / yy;
 
     barw = (float(width) / float(days));
-
-    float dpr = w.graphView()->devicePixelRatio();
 
     graph = &w;
     float px = left;
@@ -744,7 +740,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
                         }
 
                         if (zd == hl_day) {
-                            painter.setPen(QPen(col2,5));
+                            painter.setPen(QPen(col2,10));
                             painter.drawPoint(px2 - barw / 2, py2);
                         }
 
@@ -915,10 +911,7 @@ jumpnext:
         w.renderText(a, legendx, top - 4);
         //  legendx-=bw/2;
 
-        int tp = top - 5 - bh / 2;
         painter.fillRect(legendx - bw, top-w.marginTop()-1, bh, w.marginTop(), QBrush(m_colors[j]));
-//        w.quads()->add(legendx - bw, tp + bh / 2, legendx, tp + bh / 2, legendx, tp - bh / 2, legendx - bw,
-//                       tp - bh / 2, m_colors[j].rgba());
         legendx -= bw * 2;
 
 

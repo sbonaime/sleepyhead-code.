@@ -40,7 +40,6 @@ gXAxis::gXAxis(QColor col, bool fadeout)
     m_show_major_ticks = true;
     m_utcfix = false;
     m_fadeout = fadeout;
-    m_textureID = 0;
     //    QDateTime d=QDateTime::currentDateTime();
     //    QTime t1=d.time();
     //    QTime t2=d.toUTC().time();
@@ -75,9 +74,6 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
     if (!usepixmap || (usepixmap && w.invalidate_xAxisImage)) {
 
         if (usepixmap) {
-            // Unbind any previous texture
-            if (m_textureID) { w.graphView()->deleteTexture(m_textureID); }
-
             m_image = QImage(width + 22, height + 4, QImage::Format_ARGB32_Premultiplied);
             m_image.fill(Qt::transparent);
             painter2.begin(&m_image);

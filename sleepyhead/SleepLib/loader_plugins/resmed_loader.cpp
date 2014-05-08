@@ -149,7 +149,7 @@ qint16 EDFParser::Read16()
 
 QString EDFParser::Read(unsigned n)
 {
-    if ((pos + n) > filesize) {
+    if ((pos + long(n)) > filesize) {
         return "";
     }
 

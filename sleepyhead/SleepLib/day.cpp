@@ -305,7 +305,7 @@ EventDataType Day::percentile(ChannelID code, EventDataType percentile)
 
 EventDataType Day::p90(ChannelID code)
 {
-    return percentile(code, 0.90);
+    return percentile(code, 0.90F);
 }
 
 EventDataType Day::avg(ChannelID code)

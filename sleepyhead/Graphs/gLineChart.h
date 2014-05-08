@@ -14,7 +14,6 @@
 
 #include <QVector>
 
-#include "Graphs/gVertexBuffer.h"
 #include "Graphs/layer.h"
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"

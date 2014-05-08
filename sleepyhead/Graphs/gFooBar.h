@@ -12,7 +12,6 @@
 #ifndef GFOOBAR_H
 #define GFOOBAR_H
 
-#include "Graphs/gVertexBuffer.h"
 #include "Graphs/layer.h"
 
 /*! \class gShadowArea

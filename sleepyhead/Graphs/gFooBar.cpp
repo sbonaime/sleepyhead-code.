@@ -14,7 +14,6 @@
 #include <cmath>
 
 #include "Graphs/gGraph.h"
-#include "Graphs/gVertexBuffer.h"
 #include "Graphs/gYAxis.h"
 
 gShadowArea::gShadowArea(QColor shadow_color, QColor line_color)
@@ -58,10 +57,11 @@ gFooBar::~gFooBar()
 }
 void gFooBar::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
-    Q_UNUSED(top);
-    Q_UNUSED(left);
-    Q_UNUSED(width);
-    Q_UNUSED(height);
+    Q_UNUSED(top)
+    Q_UNUSED(left)
+    Q_UNUSED(width)
+    Q_UNUSED(height)
+    Q_UNUSED(painter)
 
     if (!m_visible) { return; }
 

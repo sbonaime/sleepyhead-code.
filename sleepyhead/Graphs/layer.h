@@ -16,8 +16,6 @@
 #include <QVector>
 #include <QWheelEvent>
 
-#include "Graphs/GLBuffer.h"
-#include "Graphs/gVertexBuffer.h"
 #include "SleepLib/common.h"
 #include "SleepLib/day.h"
 #include "SleepLib/machine_common.h"

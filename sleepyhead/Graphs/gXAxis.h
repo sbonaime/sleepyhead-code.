@@ -12,6 +12,7 @@
 #ifndef GXAXIS_H
 #define GXAXIS_H
 
+#include <QImage>
 #include "Graphs/layer.h"
 
 /*! \class gXAxis
@@ -51,6 +52,5 @@ class gXAxis: public Layer
     float tz_hours;
 
     QImage m_image;
-    GLuint m_textureID;
 };
 #endif // GXAXIS_H

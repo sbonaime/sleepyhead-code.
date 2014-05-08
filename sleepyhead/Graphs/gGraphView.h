@@ -323,8 +323,8 @@ class gGraphView : public QGLWidget
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
     virtual void initializeGL();
 
-    //! \brief Resize the OpenGL ViewPort prior to redrawing
-    virtual void resizeGL(int width, int height);
+    // //! \brief Resize the OpenGL ViewPort prior to redrawing
+    //virtual void resizeGL(int width, int height);
 
     //! \brief The heart of the OpenGL drawing code
     virtual void paintGL();

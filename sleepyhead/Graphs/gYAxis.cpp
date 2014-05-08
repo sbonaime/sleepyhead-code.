@@ -143,8 +143,6 @@ gYAxis::gYAxis(QColor col)
 {
     m_line_color = col;
     m_text_color = col;
-    m_textureID = 0;
-
     m_yaxis_scale = 1;
 }
 gYAxis::~gYAxis()

@@ -291,7 +291,7 @@ void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, int left, int top,
             if (sph > 100) { sph = 100; }
         }
 
-        a += " " + QObject::tr("(\%%1 in events)").arg(sph, 0, 'f',
+        a += " " + QObject::tr("(%%%1 in events)").arg(sph, 0, 'f',
                 2); // eg: %num of time in a span, like Periodic Breathing
     }
 

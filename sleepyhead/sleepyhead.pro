@@ -153,7 +153,6 @@ HEADERS  += \
     Graphs/gFooBar.h \
     Graphs/gGraph.h \
     Graphs/gGraphView.h \
-    Graphs/GLBuffer.h \
     Graphs/glcommon.h \
     Graphs/gLineChart.h \
     Graphs/gLineOverlay.h \
@@ -161,7 +160,6 @@ HEADERS  += \
     Graphs/gspacer.h \
     Graphs/gStatsLine.h \
     Graphs/gSummaryChart.h \
-    Graphs/gVertexBuffer.h \
     Graphs/gXAxis.h \
     Graphs/gYAxis.h \
     Graphs/layer.h \

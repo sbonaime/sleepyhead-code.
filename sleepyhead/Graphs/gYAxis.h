@@ -12,6 +12,7 @@
 #ifndef GYAXIS_H
 #define GYAXIS_H
 
+#include <QImage>
 #include "Graphs/layer.h"
 
 /*! \class gXGrid
@@ -100,8 +101,6 @@ class gYAxis: public Layer
     virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph);
 
     QImage m_image;
-    GLuint m_textureID;
-
 };
 
 /*! \class gYAxisTime

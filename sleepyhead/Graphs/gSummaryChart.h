@@ -79,10 +79,6 @@ class SummaryChart: public Layer
     QHash<int, EventDataType> m_hours;
     QHash<int, Day *> m_days;
 
-    gVertexBuffer *quads;
-    gVertexBuffer *lines;
-    gVertexBuffer *outlines;
-    gVertexBuffer *points;
     bool m_empty;
     int m_fday;
     QString m_label;
