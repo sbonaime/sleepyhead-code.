@@ -295,8 +295,9 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
 
             QVector<EventList *> &evec = ci.value();
             num_points = 0;
+            int evecsize=evec.size();
 
-            for (int i = 0; i < evec.size(); i++) {
+            for (int i = 0; i < evecsize; i++) {
                 num_points += evec[i]->count();
             }
 
@@ -306,7 +307,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
             // Max number of samples taken from samples per pixel for better min/max values
             const int num_averages = 20;
 
-            int evecsize=evec.size();
             for (int n = 0; n < evecsize; ++n) { // for each segment
                 EventList &el = *evec[n];
 

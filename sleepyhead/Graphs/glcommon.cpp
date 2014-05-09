@@ -13,9 +13,12 @@
 #include "glcommon.h"
 
 #ifdef BUILD_WITH_MSVC
+
+#if (_MSC_VER < 1800)
 double round(double number)
 {
     return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
 }
+#endif
 #endif
 

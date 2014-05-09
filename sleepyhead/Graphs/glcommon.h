@@ -61,9 +61,10 @@ const double M_PI = 3.141592653589793;
 #endif
 
 #ifdef BUILD_WITH_MSVC
-// Visual C++ doesn't have round in it's maths header..
-
+// Visual C++ earlier than 2013 doesn't have round in it's maths header..
+#if (_MSC_VER < 1800)
 double round(double number);
+#endif
 #endif
 
 #endif // GLCOMMON_H
