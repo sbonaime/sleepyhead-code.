@@ -567,7 +567,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
                 }
 
                 QColor col1 = col;
-                QColor col2 = brighten(col);
+                QColor col2 = Qt::white;
                 //outlines->setColor(Qt::black);
 
                 int np = d.value().size();
@@ -587,7 +587,7 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
                     //tmp-=miny;
                     h = tmp * ymult;
 
-                    QLinearGradient gradient(QPoint(0,0),QPoint(barw,0));
+                    QLinearGradient gradient(x1, py-h, x1+barw, py-h);
                     gradient.setColorAt(0,col1);
                     gradient.setColorAt(1,col2);
                     painter.fillRect(x1, py-h, barw, h, QBrush(gradient));
@@ -683,9 +683,9 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
 
                     if (graphtype == GT_BAR) {
                         QColor col1 = col;
-                        QColor col2 = brighten(col);
+                        QColor col2 = Qt::white;
 
-                        QLinearGradient gradient(0,0,barw,h);
+                        QLinearGradient gradient(x1, py-h, x1+barw, py-h);
                         gradient.setColorAt(0,col1);
                         gradient.setColorAt(1,col2);
                         painter.fillRect(x1, py-h, barw, h, QBrush(gradient));
@@ -740,15 +740,15 @@ void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int wi
                         }
 
                         if (zd == hl_day) {
-                            painter.setPen(QPen(col2,10));
+                            painter.setPen(QPen(brighten(col2),10));
                             painter.drawPoint(px2 - barw / 2, py2);
                         }
 
                         if (lastdaygood) {
-                            painter.setPen(QPen(col2,1));
+                            painter.setPen(QPen(col2,p_profile->appearance->lineThickness()));
                             painter.drawLine(lastX[j] - barw / 2, lastY[j], px2 - barw / 2, py2);
                         } else {
-                            painter.setPen(QPen(col1,1));
+                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
                             painter.drawLine(px + barw / 2 - 1, py2, px + barw / 2 + 1, py2);
                         }
 

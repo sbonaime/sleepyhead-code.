@@ -660,7 +660,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                 if (done) { break; }
             }
         }
-        painter.setPen(QPen(m_colors[gi],1));
+        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
         painter.drawLines(lines);
         w.graphView()->lines_drawn_this_frame+=lines.count();
         lines.clear();
@@ -760,7 +760,7 @@ void AHIChart::paint(QPainter &painter, gGraph &w, int left, int top, int width,
     double top1 = top + height;
     bool done = false;
 
-    painter.setPen(QPen(m_color,1.5));
+    painter.setPen(QPen(m_color,p_profile->appearance->lineThickness()));
     painter.setClipRect(left, top, width, height);
     painter.setClipping(true);
 
