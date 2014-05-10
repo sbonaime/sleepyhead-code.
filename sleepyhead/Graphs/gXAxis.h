@@ -13,6 +13,7 @@
 #define GXAXIS_H
 
 #include <QImage>
+#include <QPixmap>
 #include "Graphs/layer.h"
 
 /*! \class gXAxis

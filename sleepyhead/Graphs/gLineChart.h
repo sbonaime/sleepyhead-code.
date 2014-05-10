@@ -133,6 +133,8 @@ class gLineChart: public Layer
     QVector<QColor> m_colors;
     QVector<bool> m_square;
     QHash<ChannelID, bool> m_enabled;
+
+    QVector<QLine> lines;
 };
 
 #endif // GLINECHART_H

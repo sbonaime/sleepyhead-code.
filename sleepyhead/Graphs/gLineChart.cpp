@@ -28,6 +28,7 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     addPlot(code, col, square_plot);
     m_line_color = col;
     m_report_empty = false;
+    lines.reserve(50000);
 }
 gLineChart::~gLineChart()
 {
@@ -127,12 +128,7 @@ void gLineChart::SetDay(Day *d)
 
     }
 
-    //if (m_code==CPAP_Leak) {
-    // subtract_offset=profile.cpap.[IntentionalLeak].toDouble();
-    //} else
     subtract_offset = 0;
-
-
 }
 EventDataType gLineChart::Miny()
 {
@@ -247,8 +243,6 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
 
     painter.setClipRect(left, top, width, height+1);
     painter.setClipping(true);
-    QVector<QLine> lines;
-    lines.reserve(100000);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     for (int gi = 0; gi < m_codes.size(); gi++) {
@@ -666,8 +660,10 @@ void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int widt
                 if (done) { break; }
             }
         }
-        painter.setPen(QPen(m_colors[gi],1.5));
+        painter.setPen(QPen(m_colors[gi],1));
         painter.drawLines(lines);
+        w.graphView()->lines_drawn_this_frame+=lines.count();
+        lines.clear();
 
         ////////////////////////////////////////////////////////////////////
         // Draw Legends on the top line

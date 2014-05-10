@@ -18,6 +18,7 @@
 #include <QLabel>
 #include <QPixmapCache>
 #include <QTimer>
+#include <QFontMetrics>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 # include <QWindow>
@@ -38,11 +39,6 @@
 #include "SleepLib/profiles.h"
 
 extern MainWindow *mainwin;
-
-// for profiling purposes, a count of lines drawn in a single frame
-int lines_drawn_this_frame = 0;
-int quads_drawn_this_frame = 0;
-
 extern QLabel *qstatus2;
 
 gToolTip::gToolTip(gGraphView *graphview)
@@ -135,9 +131,6 @@ void gToolTip::paint(QPainter &painter)     //actually paints it.
         rect.setY(0);
         rect.setHeight(h);
     }
-
-    lines_drawn_this_frame += 4;
-    quads_drawn_this_frame += 1;
 
     QBrush brush(QColor(255, 255, 128, 230));
     brush.setStyle(Qt::SolidPattern);
@@ -248,11 +241,9 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
 {
     m_shared = shared;
     m_sizer_index = m_graph_index = 0;
-    m_textque_items = 0;
     m_button_down = m_graph_dragging = m_sizer_dragging = false;
     m_lastypos = m_lastxpos = 0;
     m_horiz_travel = 0;
-    pixmap_cache_size = 0;
     m_minx = m_maxx = 0;
     m_day = nullptr;
     m_selected_graph = nullptr;
@@ -278,13 +269,6 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
         //gt->start();
     }*/
 
-    //vlines=new gVertexBuffer(20000,GL_LINES);
-
-    //stippled->setSize(1.5);
-    //stippled->forceAntiAlias(false);
-    //lines->setSize(1.5);
-    //backlines->setSize(1.5);
-
     setFocusPolicy(Qt::StrongFocus);
     m_showsplitter = true;
     timer = new QTimer(this);
@@ -307,6 +291,7 @@ gGraphView::gGraphView(QWidget *parent, gGraphView *shared)
     m_blockUpdates = false;
     use_pixmap_cache = true;
 
+   // pixmapcache.setCacheLimit(10240*2);
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     m_dpr = this->windowHandle()->devicePixelRatio();
 #else
@@ -337,14 +322,6 @@ gGraphView::~gGraphView()
         m_graphs[i]=NULL;
     }
 
-    QHash<QString, myPixmapCache *>::iterator it;
-
-    for (it = pixmap_cache.begin(); it != pixmap_cache.end(); it++) {
-        delete(*it);
-    }
-
-    pixmap_cache.clear();
-
     delete m_tooltip;
     m_graphs.clear();
 
@@ -359,15 +336,20 @@ gGraphView::~gGraphView()
 bool gGraphView::usePixmapCache()
 {
     //use_pixmap_cache is an overide setting
-    return use_pixmap_cache & PROFILE.appearance->usePixmapCaching();
+    return PROFILE.appearance->usePixmapCaching();
 }
 
+#define CACHE_DRAWTEXT
+#ifndef CACHE_DRAWTEXT
 // Render all qued text via QPainter method
 void gGraphView::DrawTextQue(QPainter &painter)
 {
     int w, h;
 
-    for (int i = 0; i < m_textque_items; i++) {
+    // not sure if global antialiasing would be better..
+    //painter.setRenderHint(QPainter::TextAntialiasing, PROFILE.appearance->antiAliasing());
+    int m_textque_items = m_textque.size();
+    for (int i = 0; i < m_textque_items; ++i) {
         TextQue &q = m_textque[i];
         painter.setPen(q.color);
         painter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
@@ -387,188 +369,88 @@ void gGraphView::DrawTextQue(QPainter &painter)
             painter.rotate(+q.angle);
             painter.translate(-q.x, -q.y);
         }
-
+        strings_drawn_this_frame++;
         q.text.clear();
     }
 
-    m_textque_items = 0;
+    m_textque.clear();
 }
 
+#else
 // Render graphs with QPainter or pixmap caching, depending on preferences
-void gGraphView::DrawTextQue()
+void gGraphView::DrawTextQue(QPainter &painter)
 {
-    const qint64 expire_after_ms = 4000; // expire string pixmaps after this many milliseconds
-    //const qint64 under_limit_cache_bonus=30000; // If under the limit, give a bonus to the millisecond timeout.
-    const qint32 max_pixmap_cache = 4 *
-                                    1048576; // Maximum size of pixmap cache (it can grow over this, but only temporarily)
-
-    quint64 ti = 0, exptime = 0;
-    int w, h;
-    QHash<QString, myPixmapCache *>::iterator it;
-    QPainter painter;
-
-    // Purge the Pixmap cache of any old text strings
-    if (usePixmapCache()) {
-        // Current time in milliseconds since epoch.
-        ti = QDateTime::currentDateTime().toMSecsSinceEpoch();
-
-        if (pixmap_cache_size >
-                max_pixmap_cache) { // comment this if block out to only cleanup when past the maximum cache size
-            // Expire any strings not used
-            QList<QString> expire;
-
-            exptime = expire_after_ms;
-
-            // Uncomment the next line to allow better use of pixmap cache memory
-            //if (pixmap_cache_size < max_pixmap_cache) exptime+=under_limit_cache_bonus;
-
-            for (it = pixmap_cache.begin(); it != pixmap_cache.end(); it++) {
-                if ((*it)->last_used < (ti - exptime)) {
-                    expire.push_back(it.key());
-                }
-            }
-
-
-            // TODO: Force expiry if over an upper memory threshold.. doesn't appear to be necessary.
-
-            for (int i = 0; i < expire.count(); i++) {
-                const QString key = expire.at(i);
-                // unbind the texture
-                myPixmapCache *pc = pixmap_cache[key];
-                deleteTexture(pc->textureID);
-                QImage &pm = pc->image;
-                pixmap_cache_size -= pm.width() * pm.height() * (pm.depth() / 8);
-                // free the pixmap
-                //delete pc->pixmap;
-
-                // free the myPixmapCache object
-                delete pc;
-
-                // pull the dead record from the cache.
-                pixmap_cache.remove(key);
-            }
-        }
-    }
-
-    //glPushAttrib(GL_COLOR_BUFFER_BIT);
-    painter.begin(this);
-
-    int buf = 4;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = devicePixelRatio();
-    buf *= dpr;
-#endif
-
     // process the text drawing queue
-    for (int i = 0; i < m_textque_items; i++) {
+    int m_textque_items = m_textque.size();
+
+    int h,w;
+
+
+    for (int i = 0; i < m_textque_items; ++i) {
         TextQue &q = m_textque[i];
 
         // can do antialiased text via texture cache fine on mac
         if (usePixmapCache()) {
             // Generate the pixmap cache "key"
-            QString hstr = QString("%4:%5:%6%7").arg(q.text).arg(q.color.name()).arg(q.font->key()).arg(
-                               q.antialias);
+            QString hstr = QString("%1:%2:%3").
+                    arg(q.text).
+                    arg(q.color.name()).
+                    arg(q.font->pointSize());
 
-            QImage pm;
-
-            it = pixmap_cache.find(hstr);
-            myPixmapCache *pc = nullptr;
-
-            if (it != pixmap_cache.end()) {
-                pc = (*it);
-
-            } else {
-                // not found.. create the image and store it in a cache
-
-                //This is much slower than other text rendering methods, but caching more than makes up for the speed decrease.
-                pc = new myPixmapCache;
-                pc->last_used = ti; // set the last_used value.
+            QPixmap pm;
+            const int buf = 8;
+            if (!QPixmapCache::find(hstr, &pm)) {
 
                 QFontMetrics fm(*q.font);
-                QRect rect = fm.boundingRect(q.text);
+                QRect rect=fm.tightBoundingRect(q.text);
                 w = fm.width(q.text);
-                h = fm.height();
+                h = fm.height()+buf;
 
-//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-//                w *= dpr;
-//                h *= dpr;
-//#endif
-
-                rect.setWidth(w);
-                rect.setHeight(h);
-
-                pm = QImage(w + buf, h + buf, QImage::Format_ARGB32_Premultiplied);
-
+                pm=QPixmap(w, h);
                 pm.fill(Qt::transparent);
 
                 QPainter imgpainter(&pm);
 
-                QBrush b(q.color);
-                imgpainter.setBrush(b);
+                imgpainter.setPen(q.color);
 
-                QFont font = *q.font;
-//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-//                int fs = font.pointSize();
-
-//                if (fs > 0) {
-//                    font.setPointSize(fs * dpr);
-//                } else {
-//                    font.setPixelSize(font.pixelSize()*dpr);
-//                }
-
-//#endif
-                imgpainter.setFont(font);
+                imgpainter.setFont(*q.font);
 
                 imgpainter.setRenderHint(QPainter::TextAntialiasing, q.antialias);
-                imgpainter.drawText(buf / 2, h, q.text);
+                imgpainter.drawText(0, h-buf, q.text);
                 imgpainter.end();
 
-                pc->image = pm;
-                pixmap_cache_size += pm.width() * pm.height() * (pm.depth() / 8);
-                pixmap_cache[hstr] = pc;
-
+                QPixmapCache::insert(hstr, pm);
+                strings_drawn_this_frame++;
+            } else {
+                //cached
+                strings_cached_this_frame++;
             }
 
-            if (pc) {
-                pc->last_used = ti;
-                int h = pc->image.height();
-                int w = pc->image.width();
+            h = pm.height();
+            w = pm.width();
+            if (q.angle != 0) {
+                float xxx = q.x - h - (h / 2);
+                float yyy = q.y + w / 2; // + buf / 2;
 
-//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-//                h /= dpr;
-//                w /= dpr;
-//#endif
+                xxx+=4;
+                yyy+=4;
 
-                if (q.angle != 0) {
-                    float xxx = q.x - h - (h / 2);
-                    float yyy = q.y + w / 2 + buf / 2;
-
-                    painter.translate(xxx, yyy);
-                    painter.rotate(-q.angle);
-                    painter.drawImage(QRect(0, h / 2, w, h), pc->image, pc->image.rect());
-                    painter.rotate(+q.angle);
-                    painter.translate(-xxx, -yyy);
-                } else {
-                    painter.drawImage(QRect(q.x - buf / 2, q.y - h + buf / 2, w, h), pc->image, pc->image.rect());
-                }
+                painter.translate(xxx, yyy);
+                painter.rotate(-q.angle);
+                painter.drawPixmap(QRect(0, h / 2, w, h), pm);
+                painter.rotate(+q.angle);
+                painter.translate(-xxx, -yyy);
+            } else {
+                painter.drawPixmap(QRect(q.x - buf / 2, q.y - h + buf, w, h), pm);
             }
         } else {
             // Just draw the fonts..
-            QBrush b(q.color);
-            painter.setBrush(b);
+            painter.setPen(QColor("red")); //q.color);
             painter.setFont(*q.font);
 
             if (q.angle == 0) {
-                // *********************************************************
-                // Holy crap this is slow
-                // The following line is responsible for 77% of drawing time
-                // *********************************************************
-
                 painter.drawText(q.x, q.y, q.text);
             } else {
-                QBrush b(q.color);
-                painter.setBrush(b);
                 painter.setFont(*q.font);
 
                 w = painter.fontMetrics().width(q.text);
@@ -580,42 +462,35 @@ void gGraphView::DrawTextQue()
                 painter.rotate(+q.angle);
                 painter.translate(-q.x, -q.y);
             }
+            strings_drawn_this_frame++;
+
         }
 
-        q.text.clear();
+        //q.text.clear();
         //q.text.squeeze();
     }
 
-    if (!usePixmapCache()) {
-        painter.end();
-    }
-
-    //qDebug() << "rendered" << m_textque_items << "text items";
-    m_textque_items = 0;
+    m_textque.clear();
 }
+#endif
 
-void gGraphView::AddTextQue(QString &text, short x, short y, float angle, QColor color,
+void gGraphView::AddTextQue(const QString &text, short x, short y, float angle, QColor color,
                             QFont *font, bool antialias)
 {
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.lock();
 #endif
-
-    if (m_textque_items >= textque_max) {
-        DrawTextQue();
-    }
-
-    TextQue &q = m_textque[m_textque_items++];
+    m_textque.append(TextQue(x,y,angle,text,color,font,antialias));
 #ifdef ENABLED_THREADED_DRAWING
     text_mutex.unlock();
 #endif
-    q.text = text;
-    q.x = x;
-    q.y = y;
-    q.angle = angle;
-    q.color = color;
-    q.font = font;
-    q.antialias = antialias;
+//    q.text = text;
+//    q.x = x;
+//    q.y = y;
+//    q.angle = angle;
+//    q.color = color;
+//    q.font = font;
+//    q.antialias = antialias;
 }
 
 void gGraphView::addGraph(gGraph *g, short group)
@@ -1205,8 +1080,6 @@ bool gGraphView::renderGraphs(QPainter &painter)
         g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
     }
 
-    // can't draw snapshot text using this DrawTextQue function
-    // TODO: Find a better solution for detecting when in snapshot mode
     if (m_graphs.size() > 1) {
         DrawTextQue(painter);
 
@@ -1319,6 +1192,11 @@ void gGraphView::paintGL()
 
     bool graphs_drawn = true;
 
+    lines_drawn_this_frame = 0;
+    quads_drawn_this_frame = 0;
+    strings_drawn_this_frame = 0;
+    strings_cached_this_frame = 0;
+
     graphs_drawn = renderGraphs(painter);
 
     if (!graphs_drawn) { // No graphs drawn?
@@ -1361,12 +1239,11 @@ void gGraphView::paintGL()
         }
 
         double fps = v / double(rs);
-        ss = "Debug Mode " + QString::number(fps, 'f', 1) +
-             "fps " + QString::number(lines_drawn_this_frame, 'f', 0) +
-             " lines " + QString::number(quads_drawn_this_frame, 'f', 0) +
-             " quads " + QString::number(pixmap_cache.count(), 'f', 0) +
-             " strings " + QString::number(pixmap_cache_size / 1024.0, 'f', 1) +
-             "Kb";
+        ss = "Debug Mode " + QString::number(fps, 'f', 1) + "fps "
+                + QString::number(lines_drawn_this_frame, 'f', 0) + " lines "
+//                + QString::number(quads_drawn_this_frame, 'f', 0) + " quads "
+                + QString::number(strings_drawn_this_frame, 'f', 0) + " strings "
+                + QString::number(strings_cached_this_frame, 'f', 0) + " cached ";
 
         int w, h;
         // this uses tightBoundingRect, which is different on Mac than it is on Windows & Linux.

@@ -266,9 +266,9 @@ void MainWindow::closeEvent(QCloseEvent * event)
 extern MainWindow *mainwin;
 MainWindow::~MainWindow()
 {
-    if (systraymenu) { delete systraymenu; }
+//    if (systraymenu) { delete systraymenu; }
 
-    if (systray) { delete systray; }
+//    if (systray) { delete systray; }
 
     // Trash anything allocated by the Graph objects
     DestroyGraphGlobals();

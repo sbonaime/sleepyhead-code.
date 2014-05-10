@@ -21,6 +21,7 @@
 #include <QWaitCondition>
 #include <QPixmap>
 #include <QRect>
+#include <QPixmapCache>
 
 #include <Graphs/gGraph.h>
 #include <Graphs/glcommon.h>
@@ -36,6 +37,22 @@ const int textque_max = 512;
     \brief Holds a single item of text for the drawing queue
     */
 struct TextQue {
+    TextQue() {
+    }
+    TextQue(short x, short y, float angle, QString text, QColor color, QFont * font, bool antialias):
+    x(x), y(y), angle(angle), text(text), color(color), font(font), antialias(antialias)
+    {
+    }
+    TextQue(const TextQue & copy) {
+        x=copy.x;
+        y=copy.y;
+        text=copy.text;
+        angle=copy.angle;
+        color=copy.color;
+        font=copy.font;
+        antialias=copy.antialias;
+    }
+
     //! \variable contains the x axis screen position to draw the text
     short x;
     //! \variable contains the y axis screen position to draw the text
@@ -133,16 +150,6 @@ class gToolTip : public QObject
     void timerDone();
 };
 
-/*! \struct myPixmapCache
-    \brief My version of Pixmap cache with texture binding support
-
- */
-struct myPixmapCache {
-    quint64 last_used;
-    QImage image;
-    GLuint textureID;
-};
-
 /*! \class gGraphView
     \brief Main OpenGL Graph Area, derived from QGLWidget
 
@@ -237,11 +244,11 @@ class gGraphView : public QGLWidget
     void selectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
-    void AddTextQue(QString &text, short x, short y, float angle = 0.0,
+    void AddTextQue(const QString &text, short x, short y, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
-    //! \brief Draw all Text in the text drawing queue
-    void DrawTextQue();
+//    //! \brief Draw all Text in the text drawing queue
+//    void DrawTextQue();
 
     //! \brief Draw all text components using QPainter object painter
     void DrawTextQue(QPainter &painter);
@@ -318,6 +325,12 @@ class gGraphView : public QGLWidget
 
     //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
     bool renderGraphs(QPainter &painter);
+
+    // for profiling purposes, a count of lines drawn in a single frame
+    int lines_drawn_this_frame;
+    int quads_drawn_this_frame;
+    int strings_drawn_this_frame;
+    int strings_cached_this_frame;
 
   protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
@@ -401,9 +414,8 @@ class gGraphView : public QGLWidget
     int m_graph_index;
 
     //! \brief List of all queue text to draw.. not sure why I didn't use a vector here.. Might of been a leak issue
-    TextQue m_textque[textque_max];
+    QVector<TextQue> m_textque;
 
-    int m_textque_items;
     int m_lastxpos, m_lastypos;
 
     QString m_emptytext;
@@ -425,10 +437,9 @@ class gGraphView : public QGLWidget
 
     QTime m_animationStarted;
 
-    // turn this into a struct later..
-    QHash<QString, myPixmapCache *> pixmap_cache;
-    qint32 pixmap_cache_size;
     bool use_pixmap_cache;
+
+    QPixmapCache pixmapcache;
 
     QTime horizScrollTime, vertScrollTime;
 

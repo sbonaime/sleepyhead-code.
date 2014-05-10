@@ -26,8 +26,6 @@ QFont *defaultfont = nullptr;
 QFont *mediumfont = nullptr;
 QFont *bigfont = nullptr;
 QHash<QString, QImage *> images;
-bool fbo_unsupported = false;
-QGLFramebufferObject *fbo = nullptr;
 
 static bool globalsInitialized = false;
 
@@ -108,17 +106,6 @@ void DestroyGraphGlobals()
 
     for (QHash<QString, QImage *>::iterator i = images.begin(); i != images.end(); i++) {
         delete i.value();
-    }
-
-    // Clear the frame buffer object.
-    if (fbo) {
-        if (fbo->isBound()) {
-            fbo->release();
-        }
-
-        delete fbo;
-        fbo = nullptr;
-        fbo_unsupported = true; // just in case shutdown order gets messed up
     }
 
     globalsInitialized = false;
@@ -268,8 +255,7 @@ void gGraph::qglColor(QColor col)
     m_graphview->qglColor(col);
 }
 
-void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font,
-                        bool antialias)
+void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font, bool antialias)
 {
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
 }
@@ -1081,9 +1067,9 @@ void gGraph::ZoomX(double mult, int origin_px)
     //updateSelectionTime(max-min);
 }
 
-void gGraph::DrawTextQue()
+void gGraph::DrawTextQue(QPainter &painter)
 {
-    m_graphview->DrawTextQue();
+    m_graphview->DrawTextQue(painter);
 }
 
 // margin recalcs..

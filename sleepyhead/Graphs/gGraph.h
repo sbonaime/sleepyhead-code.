@@ -11,11 +11,11 @@
 #define graphs_ggraph_h
 
 #include <QFont>
-#include <QGLFramebufferObject>
 #include <QObject>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QString>
+#include <QPainter>
 
 #include "Graphs/layer.h"
 
@@ -26,14 +26,10 @@ extern QFont *defaultfont;
 extern QFont *mediumfont;
 extern QFont *bigfont;
 extern QHash<QString, QImage *> images;
-extern bool fbo_unsupported;
-extern QGLFramebufferObject *fbo;
 
 bool InitGraphGlobals();
 void DestroyGraphGlobals();
 
-const int max_fbo_width = 2048;
-const int max_fbo_height = 2048;
 const int mouse_movement_threshold = 6;
 
 /*! \class gGraph
@@ -41,7 +37,7 @@ const int mouse_movement_threshold = 6;
     */
 class gGraph : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
   public:
     friend class gGraphView;
 
@@ -226,7 +222,7 @@ class gGraph : public QObject
     void setGroup(short group) { m_group = group; }
 
     //! \brief Forces the main gGraphView object to draw all Text Components
-    void DrawTextQue();
+    void DrawTextQue(QPainter &painter);
 
     //! \brief Sends supplied day object to all Graph layers so they can precalculate stuff
     void setDay(Day *day);

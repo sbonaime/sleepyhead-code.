@@ -303,6 +303,7 @@ void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
         } else {
             painter.drawLines(ticks);
         }
+        w.graphView()->lines_drawn_this_frame += ticks.size();
 
         w.invalidate_xAxisImage = false;
     }

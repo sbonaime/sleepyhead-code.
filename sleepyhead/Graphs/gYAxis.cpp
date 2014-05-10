@@ -138,6 +138,7 @@ void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
     painter.drawLines(majorlines);
     painter.setPen(QPen(m_minor_color,1));
     painter.drawLines(minorlines);
+    w.graphView()->lines_drawn_this_frame += majorlines.size() + minorlines.size();
 }
 
 
@@ -395,6 +396,8 @@ void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, i
         }
         painter.setPen(m_line_color);
         painter.drawLines(ticks);
+        w.graphView()->lines_drawn_this_frame += ticks.size();
+
     }
 }
 const QString gYAxis::Format(EventDataType v, int dp)
