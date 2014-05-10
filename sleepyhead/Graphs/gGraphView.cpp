@@ -445,7 +445,7 @@ void gGraphView::DrawTextQue(QPainter &painter)
             }
         } else {
             // Just draw the fonts..
-            painter.setPen(QColor("red")); //q.color);
+            painter.setPen(QColor(q.color));
             painter.setFont(*q.font);
 
             if (q.angle == 0) {
