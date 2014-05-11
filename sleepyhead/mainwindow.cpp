@@ -242,17 +242,20 @@ void MainWindow::closeEvent(QCloseEvent * event)
 {
     if (daily) {
         daily->close();
-        delete daily;
+        daily->deleteLater();
+//        delete daily;
     }
 
     if (overview) {
         overview->close();
-        delete overview;
+        overview->deleteLater();
+//        delete overview;
     }
 
     if (oximetry) {
         oximetry->close();
-        delete oximetry;
+        oximetry->deleteLater();
+//        delete oximetry;
     }
 
     // Shutdown and Save the current User profile

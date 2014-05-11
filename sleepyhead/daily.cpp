@@ -396,21 +396,29 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     previous_date=QDate();
 }
 
+
 Daily::~Daily()
 {
-    GraphView->SaveSettings("Daily");
 //    disconnect(sessbar, SIGNAL(toggledSession(Session*)), this, SLOT(doToggleSession(Session*)));
 
-    disconnect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
     // Save any last minute changes..
-    if (previous_date.isValid())
-        Unload(previous_date);
 
 //    delete splitter;
     delete ui;
     delete icon_on;
     delete icon_off;
 }
+
+void Daily::closeEvent(QCloseEvent *event)
+{
+    disconnect(webView,SIGNAL(linkClicked(QUrl)),this,SLOT(Link_clicked(QUrl)));
+
+    if (previous_date.isValid())
+        Unload(previous_date);
+    GraphView->SaveSettings("Daily");
+    QWidget::closeEvent(event);
+}
+
 
 void Daily::doToggleSession(Session * sess)
 {

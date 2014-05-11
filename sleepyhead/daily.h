@@ -79,6 +79,8 @@ public:
         */
     explicit Daily(QWidget *parent, gGraphView *shared);
     ~Daily();
+    void closeEvent(QCloseEvent *);
+
     /*! \fn ReloadGraphs()
         \brief Reload all graph information from disk and updates the view.
         */

@@ -306,6 +306,7 @@ class Oximetry : public QWidget
   public:
     explicit Oximetry(QWidget *parent, gGraphView *shared = nullptr);
     ~Oximetry();
+    void closeEvent(QCloseEvent *);
 
     //! \brief Calls updateGL to redraw the graphs
     void RedrawGraphs();

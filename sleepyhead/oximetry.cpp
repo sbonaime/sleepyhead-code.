@@ -1249,9 +1249,15 @@ Oximetry::Oximetry(QWidget *parent, gGraphView *shared) :
 
 Oximetry::~Oximetry()
 {
+    delete ui;
+}
+
+void Oximetry::closeEvent(QCloseEvent *event)
+{
     delete oximeter;
     GraphView->SaveSettings("Oximetry");
-    delete ui;
+
+    QWidget::closeEvent(event);
 }
 
 void Oximetry::on_RefreshPortsButton_clicked()

@@ -39,6 +39,7 @@ class Overview : public QWidget
   public:
     explicit Overview(QWidget *parent, gGraphView *shared = nullptr);
     ~Overview();
+    void closeEvent(QCloseEvent *);
 
     //! \brief Returns Overview gGraphView object containing it's graphs
     gGraphView *graphView() { return GraphView; }
