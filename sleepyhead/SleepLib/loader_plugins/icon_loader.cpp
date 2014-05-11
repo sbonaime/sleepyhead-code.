@@ -303,7 +303,7 @@ QDateTime FPIconLoader::readFPDateTime(quint8 *data)
     quint8 hour = ts & 0x1f; // 10        16
     QDate date = QDate(2000 + year, month, day);
     QTime time = QTime(hour, minute, second);
-    QDateTime datetime = QDateTime(date, time);
+    QDateTime datetime = QDateTime(date, time, Qt::UTC);
     return datetime;
 }
 
@@ -641,7 +641,7 @@ bool FPIconLoader::OpenSummary(Machine *mach, QString filename, Profile *profile
         minute = (ts >> 6) & 0x3f;
         hour = (ts >> 12) & 0x1f;
 
-        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second));
+        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
 
         date = datetime.date();
         ts = datetime.toTime_t();
@@ -793,7 +793,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         minute = (ts >> 6) & 0x3f;
         hour = (ts >> 12) & 0x1f;
 
-        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second));
+        datetime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), Qt::UTC);
         //datetime=datetime.toTimeSpec(Qt::UTC);
 
         ts = datetime.toTime_t();
@@ -821,6 +821,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
 
     qint64 ti;
     quint8 pressure, leak, a1, a2, a3;
+    quint8 sa1, sa2;  // The two sense awake bits per 2 minutes
     SessionID sessid;
     Session *sess;
     int idx;
@@ -849,17 +850,34 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
                 a1 = data[idx + 2];
                 a2 = data[idx + 3];
                 a3 = data[idx + 4];
+                sa1 = (a3 >> 6) & 1;  // Sense awake bit for first minutes
+                sa2 = (a3 >> 7) & 1;  // Sense awake bit for second minutes
                 PR->AddEvent(ti, pressure);
                 LK->AddEvent(ti, leak);
+                for (int k = 0; k < 6; k++) {  // There are 6 flag sets per 2 minutes
 
-                if (a1 > 0) { OA->AddEvent(ti, a1); }
+                    //if (a1 > 0) { OA->AddEvent(ti, a1); }
+                    if ((a1 & 1) == 1) { OA->AddEvent(ti, 1); }
 
-                if (a2 > 0) { H->AddEvent(ti, a2); }
+                    //if (a2 > 0) { H->AddEvent(ti, a2); }
+                    if ((a2 & 1) == 1) { H->AddEvent(ti, 1); }
 
-                if (a3 > 0) { FL->AddEvent(ti, a3); }
+                    //if (a3 > 0) { FL->AddEvent(ti, a3); }
+                    if ((a3 & 1) == 1) { FL->AddEvent(ti, 1); }
 
-                FLG->AddEvent(ti, a3);
-                ti += 120000L;
+                    // These should be flags as above, but for now I re-used the redundant FLG graph
+                    if (k == 0) { FLG->AddEvent(ti, sa1); }
+                    else if (k == 3) { FLG->AddEvent(ti, sa2); }
+                    else { FLG->AddEvent(ti, 0); }
+
+                    a1 = a1 >> 1;
+                    a2 = a2 >> 1;
+                    a3 = a3 >> 1;
+                    ti += 20000L;  // Increment 20 seconds
+                }
+                //FLG->AddEvent(ti, a3);
+                //ti += 120000L;
+
                 idx += 5;
             }
         }
