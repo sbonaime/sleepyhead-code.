@@ -31,6 +31,7 @@
 #include <QFontMetrics>
 #include <QTextDocument>
 #include <QTranslator>
+#include <QPushButton>
 #include <cmath>
 
 // Custom loaders that don't autoscan..
@@ -345,6 +346,51 @@ void MainWindow::Startup()
     qprogress->hide();
     qstatus->setText("");
 
+    if (PROFILE.p_preferences[STR_PREF_ReimportBackup].toBool()) {
+        PROFILE.p_preferences[STR_PREF_ReimportBackup]=false;
+        QList<Machine *> machlist = PROFILE.GetMachines(MT_CPAP);
+
+        QStringList paths;
+        Q_FOREACH(Machine *m, machlist) {
+            if (m->properties.contains("BackupPath")) {
+                paths.push_back(PROFILE.Get(m->properties["BackupPath"]));
+            }
+        }
+        if (paths.size() > 0) {
+            if (QMessageBox::question(this,"Question","Recently CPAP data was purged.\n\nWould you like to automatically reimport from Backup folder?",QMessageBox::Yes, QMessageBox::No)==QMessageBox::Yes) {
+                Q_FOREACH(QString path, paths) {
+                    QDialog popup(this, Qt::SplashScreen);
+                    QLabel waitmsg(tr("Please wait, importing from backup folder(s)..."));
+                    QVBoxLayout waitlayout(&popup);
+                    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
+                    waitlayout.addWidget(qprogress,1);
+                    qprogress->setVisible(true);
+                    popup.show();
+                    int c=PROFILE.Import(path);
+                    popup.hide();
+                    ui->statusbar->insertWidget(2,qprogress,1);
+                    qprogress->setVisible(false);
+                    if (c>0) {
+                        PROFILE.Save();
+
+                        GenerateStatistics();
+
+                        if (overview) { overview->ReloadGraphs(); }
+                        if (daily) { daily->ReloadGraphs(); }
+
+                        QString str=tr("Data successfully imported from the following locations\n\n");
+                        for (int i=0; i<paths.size(); i++) {
+                            str += paths.at(i) + "\n";
+                        }
+                        mainwin->Notify(str);
+                    } else {
+                        mainwin->Notify(tr("Import Problem\n\nCouldn't find any new Machine Data at the locations given"));
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 #ifdef Q_OS_UNIX
@@ -437,13 +483,16 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QTime time;
     time.start();
-    QDialog popup;
+    QDialog popup(this, Qt::FramelessWindowHint);
     QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
     QVBoxLayout waitlayout(&popup);
+    QPushButton skipbtn("Click here to choose a folder");
     waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
     waitlayout.addWidget(qprogress,1);
+    waitlayout.addWidget(&skipbtn);
+    popup.connect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
     qprogress->setValue(0);
-    const int timeout = 10000;
+    const int timeout = 20000;
     qprogress->setMaximum(timeout);
     qprogress->setVisible(true);
     popup.show();
@@ -469,8 +518,13 @@ void MainWindow::on_action_Import_Data_triggered()
         qprogress->setValue(el);
         QApplication::processEvents();
         if (el > timeout) break;
+        if (!popup.isVisible()) break;
     } while (datacard.size() == 0);
     popup.hide();
+    popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
+
+    skipbtn.setVisible(false);
+    popup.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     QStringList importFrom;
     bool asknew = false;
     qprogress->setVisible(false);
@@ -1603,13 +1657,17 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
             return;
         }
 
+        PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
         if (QMessageBox::question(this, tr("Are you sure?"),
                                   tr("Are you sure you want to purge all CPAP data for the following machine:\n") +
                                   m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
                                   m->properties[STR_PROP_ModelNumber] + " (" + m->properties[STR_PROP_Serial] + ")",
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+
+
             m->Purge(3478216);
-            PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
+           // PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
+            PROFILE.Save();
             // delete or not to delete.. this needs to delete later.. :/
             //delete m;
             RestartApplication();
