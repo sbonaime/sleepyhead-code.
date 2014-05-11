@@ -434,26 +434,46 @@ void MainWindow::on_action_Import_Data_triggered()
     MachineLoader * datacard_loader = nullptr;
 
     QList<MachineLoader *>loaders = GetLoaders();
-    QStringList AutoScannerPaths = getDriveList();
 
-    Q_FOREACH(const QString &path, AutoScannerPaths) {
-        qDebug() << "Scanning" << path;
-        // Scan through available machine loaders and test if this folder contains valid folder structure
-        Q_FOREACH(MachineLoader * loader, loaders) {
-            if (loader->Detect(path)) {
-                datacard[loader->ClassName()] = path;
+    QTime time;
+    time.start();
+    QDialog popup;
+    QLabel waitmsg(tr("Please wait, scanning for CPAP data cards..."));
+    QVBoxLayout waitlayout(&popup);
+    waitlayout.addWidget(&waitmsg,1,Qt::AlignCenter);
+    waitlayout.addWidget(qprogress,1);
+    qprogress->setValue(0);
+    const int timeout = 10000;
+    qprogress->setMaximum(timeout);
+    qprogress->setVisible(true);
+    popup.show();
+    QApplication::processEvents();
+    do {
+        QStringList AutoScannerPaths = getDriveList();
+        Q_FOREACH(const QString &path, AutoScannerPaths) {
+            qDebug() << "Scanning" << path;
+            // Scan through available machine loaders and test if this folder contains valid folder structure
+            Q_FOREACH(MachineLoader * loader, loaders) {
+                if (loader->Detect(path)) {
+                    datacard[loader->ClassName()] = path;
 
-                qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
-                if (datacard_path.isEmpty()) {
-                    datacard_loader = loader;
-                    datacard_path = path;
+                    qDebug() << "Found" << loader->ClassName() << "datacard at" << path;
+                    if (datacard_path.isEmpty()) {
+                        datacard_loader = loader;
+                        datacard_path = path;
+                    }
                 }
             }
         }
-    }
-
+        int el=time.elapsed();
+        qprogress->setValue(el);
+        QApplication::processEvents();
+        if (el > timeout) break;
+    } while (datacard.size() == 0);
+    popup.hide();
     QStringList importFrom;
     bool asknew = false;
+    qprogress->setVisible(false);
 
     if (datacard.size() > 0) {
         if (datacard.size() > 1) {
@@ -465,19 +485,26 @@ void MainWindow::on_action_Import_Data_triggered()
                 arg(datacard_loader->ClassName()).arg(datacard_path), tr("Yes"),
             tr("Select another folder"), tr("Cancel"), 0, 2);
         if (res == 1) {
+            waitmsg.setText(tr("Please wait, launching file dialog..."));
             asknew = true;
         } else {
             importFrom.push_back(datacard_path);
         }
 
-        if (res == 2) { return; }
+        if (res == 2) {
+            // Give the communal progress bar back
+            ui->statusbar->insertWidget(2,qprogress,1);
+            return;
+        }
 
     } else {
+        waitmsg.setText(tr("No CPAP data card detected, launching file dialog..."));
         asknew = true;
     }
 
     if (asknew) {
-        mainwin->Notify("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder.","Import Reminder",8000);
+        popup.show();
+        mainwin->Notify(tr("Please remember to point the importer at the root folder or drive letter of your data-card, and not a subfolder."),tr("Import Reminder"),8000);
 
         QFileDialog w;
 #if QT_VERSION  < QT_VERSION_CHECK(5,0,0)
@@ -511,8 +538,12 @@ void MainWindow::on_action_Import_Data_triggered()
 #endif
 
         if (w.exec() != QDialog::Accepted) {
+            popup.hide();
+            ui->statusbar->insertWidget(2,qprogress,1);
+
             return;
         }
+        popup.hide();
 
         for (int i = 0; i < w.selectedFiles().size(); i++) {
             QString newdir = w.selectedFiles().at(i);
@@ -528,13 +559,10 @@ void MainWindow::on_action_Import_Data_triggered()
 
     QStringList goodlocations;
 
-    QDialog dlg(this,Qt::SplashScreen);
-    QVBoxLayout layout;
-    dlg.setLayout(&layout);
-    QLabel label(tr("Please wait, SleepyHead is importing data..."));
-    layout.addWidget(&label,1);
-    layout.addWidget(qprogress,1);
-    dlg.show();
+    waitmsg.setText(tr("Please wait, SleepyHead is importing data..."));
+    qprogress->setVisible(true);
+
+    popup.show();
     for (int i = 0; i < importFrom.size(); i++) {
         QString dir = importFrom[i];
 
@@ -555,7 +583,7 @@ void MainWindow::on_action_Import_Data_triggered()
             qprogress->hide();
         }
     }
-    dlg.hide();
+    popup.hide();
 
     ui->statusbar->insertWidget(2,qprogress,1);
 
