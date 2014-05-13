@@ -18,44 +18,6 @@
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
 
-/*! \class AHIChart
-    \brief Another graph calculating the AHI/hour, this one looks at all the sessions for a day. Currently Unused.
-    */
-class AHIChart: public Layer
-{
-  public:
-    //! \brief Constructs an AHIChart object, with QColor col for the line plots.
-    AHIChart(QColor col = QColor("black"));
-    ~AHIChart();
-
-    //! \brief Draws the precalculated data to the Vertex buffers
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
-
-    //! \brief AHI/hr Calculations are done for this day here.
-    //! This also uses the sliding window method
-    virtual void SetDay(Day *d);
-
-    //! \brief Returns the minimum AHI/hr value caculated
-    virtual EventDataType Miny() { return m_miny; }
-
-    //! \brief Returns the maximum AHI/hr value caculated
-    virtual EventDataType Maxy() { return m_maxy; }
-
-    //! \brief Returns true if no data was available
-    virtual bool isEmpty() { return m_data.size() == 0; }
-
-  protected:
-    //! \brief Contains the plot data (Y-axis) generated for this day
-    QVector<EventDataType> m_data;
-
-    //! \brief Contains the time codes (X-axis) generated for this day
-    QVector<quint64> m_time;
-
-    EventDataType m_miny;
-    EventDataType m_maxy;
-    QColor m_color;
-};
-
 /*! \class gLineChart
     \brief Draws a 2D linechart from all Session data in a day. EVL_Waveforms typed EventLists are accelerated.
     */
