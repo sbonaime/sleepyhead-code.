@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>721</width>
-    <height>572</height>
+    <height>610</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -51,7 +51,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
@@ -1882,7 +1882,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="7" column="1">
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -1895,7 +1895,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </spacer>
             </item>
-            <item row="5" column="1" colspan="2">
+            <item row="6" column="1" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
                <widget class="QSlider" name="scrollDampeningSlider">
@@ -1943,7 +1943,7 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </item>
-            <item row="4" column="1" colspan="2">
+            <item row="5" column="1" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
                <widget class="QSlider" name="tooltipTimeoutSlider">
@@ -1991,7 +1991,7 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_46">
               <property name="text">
                <string>Scroll Dampening</string>
@@ -2001,7 +2001,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="label_45">
               <property name="text">
                <string>Tooltip Timeout</string>
@@ -2093,6 +2093,42 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_48">
+              <property name="text">
+               <string>Line Thickness</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QSlider" name="lineThicknessSlider">
+                <property name="toolTip">
+                 <string>The pixel thickness of line plots</string>
+                </property>
+                <property name="minimum">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <number>8</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TicksBelow</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </item>
@@ -2175,8 +2211,7 @@ this application to be unstable with this feature enabled.</string>
             <item>
              <widget class="QCheckBox" name="animationsAndTransitionsCheckbox">
               <property name="toolTip">
-               <string>Turn on/off the spinning &quot;context&quot; cube.
-It really doesn't use that much resources.. :)</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These features have recently been pruned. They will come back later. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>Animations &amp;&amp; Fancy Stuff</string>

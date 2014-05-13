@@ -156,6 +156,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent, Profile *_profile) :
     ui->bigFontBold->setChecked(bigfont->weight() == QFont::Bold);
     ui->bigFontItalic->setChecked(bigfont->italic());
 
+    ui->lineThicknessSlider->setValue(profile->appearance->lineThickness()*2);
+
     ui->startedUsingMask->setDate(profile->cpap->maskStartDate());
 
     ui->leakModeCombo->setCurrentIndex(profile->cpap->leakMode());
@@ -388,6 +390,8 @@ bool PreferencesDialog::Save()
     profile->appearance->setUsePixmapCaching(ui->usePixmapCaching->isChecked());
     profile->appearance->setSquareWavePlots(ui->useSquareWavePlots->isChecked());
     profile->appearance->setGraphSnapshots(ui->enableGraphSnapshots->isChecked());
+    profile->appearance->setLineThickness(float(ui->lineThicknessSlider->value()) / 2.0);
+
     profile->general->setSkipEmptyDays(ui->skipEmptyDays->isChecked());
 
     profile->general->setTooltipTimeout(ui->tooltipTimeoutSlider->value() * 50);

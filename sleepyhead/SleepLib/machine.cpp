@@ -221,6 +221,7 @@ bool Machine::Purge(int secret)
     // Boring api key to stop this function getting called by accident :)
     if (secret != 3478216) { return false; }
 
+    // FIXME: should really clear out the majority of the machine properties here
 
     // It would be joyous if this function screwed up..
 
@@ -266,6 +267,9 @@ bool Machine::Purge(int secret)
         //  qWarning() << "Could not purge path\n" << path << "\n\n" << could_not_kill << " file(s) remain.. Suggest manually deleting this path\n";
         //    return false;
     }
+    // PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
+
+    PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
 
     return true;
 }

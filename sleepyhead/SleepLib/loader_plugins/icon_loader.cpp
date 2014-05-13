@@ -121,6 +121,7 @@ int FPIconLoader::Open(QString &path, Profile *profile)
         try {
             if (m) { OpenMachine(m, npath, profile); }
         } catch (OneTypePerDay e) {
+            Q_UNUSED(e)
             profile->DelMachine(m);
             MachList.erase(MachList.find(sn));
             QMessageBox::warning(nullptr, "Import Error",
@@ -477,9 +478,9 @@ bool FPIconLoader::OpenFLW(Machine *mach, QString filename, Profile *profile)
     const double rate = 1000.0 / double(samples_per_block);
 
     // F&P Overwrites this file, not appends to it.
-    flow = new EventList(EVL_Waveform, 1.0, 0, 0, 0, rate);
+    flow = new EventList(EVL_Waveform, 1.0F, 0, 0, 0, rate);
     //leak=new EventList(EVL_Event,1.0,0,0,0,rate*double(samples_per_block)); // 1 per second
-    pressure = new EventList(EVL_Event, 0.01, 0, 0, 0,
+    pressure = new EventList(EVL_Event, 0.01F, 0, 0, 0,
                              rate * double(samples_per_block)); // 1 per second
 
     flow->setFirst(ti);
@@ -832,7 +833,7 @@ bool FPIconLoader::OpenDetail(Machine *mach, QString filename, Profile *profile)
         ti = qint64(sessid) * 1000L;
         sess->really_set_first(ti);
         EventList *LK = sess->AddEventList(CPAP_LeakTotal, EVL_Event, 1);
-        EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1);
+        EventList *PR = sess->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
         EventList *FLG = sess->AddEventList(CPAP_FLG, EVL_Event);
         EventList *OA = sess->AddEventList(CPAP_Obstructive, EVL_Event);
         EventList *H = sess->AddEventList(CPAP_Hypopnea, EVL_Event);

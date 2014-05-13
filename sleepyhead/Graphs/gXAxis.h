@@ -12,6 +12,8 @@
 #ifndef GXAXIS_H
 #define GXAXIS_H
 
+#include <QImage>
+#include <QPixmap>
 #include "Graphs/layer.h"
 
 /*! \class gXAxis
@@ -21,7 +23,7 @@ class gXAxis: public Layer
   public:
     gXAxis(QColor col = Qt::black, bool fadeout = true);
     virtual ~gXAxis();
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
     static const int Margin = 20; // How much room does this take up. (Bottom margin)
     void SetShowMinorLines(bool b) { m_show_minor_lines = b; }
     void SetShowMajorLines(bool b) { m_show_major_lines = b; }
@@ -51,6 +53,5 @@ class gXAxis: public Layer
     float tz_hours;
 
     QImage m_image;
-    GLuint m_textureID;
 };
 #endif // GXAXIS_H

@@ -12,18 +12,10 @@
 #ifndef GLCOMMON_H
 #define GLCOMMON_H
 
-#include <QtOpenGL/qgl.h>
 #include <QColor>
 
 #ifndef nullptr
 #define nullptr NULL
-#endif
-
-#ifdef Q_OS_MAC
-# define USE_RENDERTEXT
-# include "OpenGL/glu.h"
-#else
-# include "GL/glu.h"
 #endif
 
 #define MIN(a,b) (((a)<(b)) ? (a) : (b));
@@ -64,27 +56,15 @@ const QColor COLOR_ALT_BG2 =
     COLOR_White;               // Alternating Background Color 2 (Event Flags)
 
 
-/*! \brief Draw an outline of a rounded rectangle
-    \param radius Radius of corner rounding
-    \param lw Line Width
-    \param color Color of drawn lines
-    */
-void LinedRoundedRectangle(int x, int y, int w, int h, int radius, int lw, QColor color);
-
-/*! \brief Draws a filled rounded rectangle
-    \param radius Radius of corner rounding
-    \param color Color of entire rectangle
-    */
-void RoundedRectangle(int x, int y, int w, int h, int radius, const QColor color);
-
 #ifndef M_PI
 const double M_PI = 3.141592653589793;
 #endif
 
 #ifdef BUILD_WITH_MSVC
-// Visual C++ doesn't have round in it's maths header..
-
+// Visual C++ earlier than 2013 doesn't have round in it's maths header..
+#if (_MSC_VER < 1800)
 double round(double number);
+#endif
 #endif
 
 #endif // GLCOMMON_H

@@ -291,7 +291,7 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
                     2);
 
             if (cpap->machine->GetClass() == STR_MACH_PRS1) {
-                stats += QObject::tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4\%")
+                stats += QObject::tr("REI=%1 VSI=%2 FLI=%3 PB/CSR=%4%%")
                          .arg(rei, 0, 'f', 2).arg(vsi, 0, 'f', 2)
                          .arg(fli, 0, 'f', 2).arg(csr, 0, 'f', 2);
             } else if (cpap->machine->GetClass() == STR_MACH_ResMed) {
@@ -532,9 +532,6 @@ void Report::PrintReport(gGraphView *gv, QString name, QDate date)
 
     int page = 1;
     int gcnt = 0;
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = gv->devicePixelRatio();
-#endif
 
     for (int i = 0; i < graphs.size(); i++) {
 

@@ -12,6 +12,7 @@
 #ifndef GYAXIS_H
 #define GYAXIS_H
 
+#include <QImage>
 #include "Graphs/layer.h"
 
 /*! \class gXGrid
@@ -25,7 +26,7 @@ class gXGrid: public Layer
     virtual ~gXGrid();
 
     //! \brief Draw the horizontal lines by adding the to the Vertex GLbuffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief set the visibility status of Major lines
     void setShowMinorLines(bool b) { m_show_minor_lines = b; }
@@ -56,7 +57,7 @@ class gYAxis: public Layer
     virtual ~gYAxis();
 
     //! \brief Draw the horizontal tickers display
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //        void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
     //        void SetShowMajorLines(bool b) { m_show_major_lines=b; }
@@ -96,13 +97,10 @@ class gYAxis: public Layer
 
     QColor m_line_color;
     QColor m_text_color;
-    gVertexBuffer *lines;
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
     virtual bool mouseDoubleClickEvent(QMouseEvent *event, gGraph *graph);
 
     QImage m_image;
-    GLuint m_textureID;
-
 };
 
 /*! \class gYAxisTime

@@ -1215,10 +1215,10 @@ QString StatisticsRow::value(QDate start, QDate end)
                 value = QString("%1").arg(p_profile->calcWavg(code, type, start, end), 0, 'f', decimals);
                     break;
             case SC_MEDIAN:
-                value = QString("%1").arg(p_profile->calcPercentile(code, 0.5, type, start, end), 0, 'f', decimals);
+                value = QString("%1").arg(p_profile->calcPercentile(code, 0.5F, type, start, end), 0, 'f', decimals);
                 break;
             case SC_90P:
-                value = QString("%1").arg(p_profile->calcPercentile(code, 0.9, type, start, end), 0, 'f', decimals);
+                value = QString("%1").arg(p_profile->calcPercentile(code, 0.9F, type, start, end), 0, 'f', decimals);
                 break;
             case SC_MIN:
                 value = QString("%1").arg(p_profile->calcMin(code, type, start, end), 0, 'f', decimals);

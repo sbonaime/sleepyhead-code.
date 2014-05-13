@@ -6,16 +6,16 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of the Linux
  * distribution for more details. */
- 
+
 #ifndef graphs_ggraph_h
 #define graphs_ggraph_h
 
 #include <QFont>
-#include <QGLFramebufferObject>
 #include <QObject>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QString>
+#include <QPainter>
 
 #include "Graphs/layer.h"
 
@@ -26,14 +26,10 @@ extern QFont *defaultfont;
 extern QFont *mediumfont;
 extern QFont *bigfont;
 extern QHash<QString, QImage *> images;
-extern bool fbo_unsupported;
-extern QGLFramebufferObject *fbo;
 
 bool InitGraphGlobals();
 void DestroyGraphGlobals();
 
-const int max_fbo_width = 2048;
-const int max_fbo_height = 2048;
 const int mouse_movement_threshold = 6;
 
 /*! \class gGraph
@@ -41,7 +37,7 @@ const int mouse_movement_threshold = 6;
     */
 class gGraph : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
   public:
     friend class gGraphView;
 
@@ -124,11 +120,11 @@ class gGraph : public QObject
     //         Applies the Graph Preference min/max settings.
     void roundY(EventDataType &miny, EventDataType &maxy);
 
-    //! \brief Process all Layers GLBuffer (Vertex) objects, drawing the actual OpenGL stuff.
-    void drawGLBuf();
+//    //! \brief Process all Layers GLBuffer (Vertex) objects, drawing the actual OpenGL stuff.
+//    void drawGLBuf();
 
     //! \brief Returns the Graph's (vertical) title
-    QString title() { return m_title; }
+    inline QString & title() { return m_title; }
 
     //! \brief Sets the Graph's (vertical) title
     void setTitle(const QString title) { m_title = title; }
@@ -226,7 +222,7 @@ class gGraph : public QObject
     void setGroup(short group) { m_group = group; }
 
     //! \brief Forces the main gGraphView object to draw all Text Components
-    void DrawTextQue();
+    void DrawTextQue(QPainter &painter);
 
     //! \brief Sends supplied day object to all Graph layers so they can precalculate stuff
     void setDay(Day *day);
@@ -235,7 +231,7 @@ class gGraph : public QObject
     Day *day() { return m_day; }
 
     //! \brief The Layer, layout and title drawing code
-    virtual void paint(int originX, int originY, int width, int height);
+    virtual void paint(QPainter &painter, int originX, int originY, int width, int height);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
     void ToolTip(QString text, int x, int y, int timeout = 0);
@@ -255,32 +251,18 @@ class gGraph : public QObject
     }
 
     //! \brief Returns this graphs left margin
-    short marginLeft();
+    inline short marginLeft() { return m_marginleft; }
     //! \brief Returns this graphs right margin
-    short marginRight();
+    inline short marginRight() { return m_marginright; }
     //! \brief Returns this graphs top margin
-    short marginTop();
+    inline short marginTop() { return m_margintop; }
     //! \brief Returns this graphs bottom margin
-    short marginBottom();
-
-    //! \brief Returns the main gGraphView objects gVertexBuffer line list.
-    gVertexBuffer *lines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer background line list.
-    gVertexBuffer *backlines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer front line list.
-    gVertexBuffer *frontlines();
-    //! \brief Returns the main gGraphView objects gVertexBuffer quads list.
-    gVertexBuffer *quads();
+    inline short marginBottom() { return m_marginbottom; }
 
     const inline QRect &rect() const { return m_rect; }
 
     bool isPinned() { return m_pinned; }
     void setPinned(bool b) { m_pinned = b; }
-
-    // //! \brief Returns the main gGraphView objects gVertexBuffer stippled line list.
-    //GLShortBuffer * stippled();
-
-    //gVertexBuffer * vlines(); // testing new vertexbuffer
 
     short left, right, top, bottom; // dirty magin hacks..
 
@@ -344,7 +326,6 @@ class gGraph : public QObject
     short m_group;
     short m_lastx23;
     Day *m_day;
-    gVertexBuffer *m_quad;
     bool m_enforceMinY, m_enforceMaxY;
     bool m_showTitle;
     bool m_printing;

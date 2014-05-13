@@ -17,8 +17,10 @@ gStatsLine::gStatsLine(ChannelID code, QString label, QColor textcolor)
     : Layer(code), m_label(label), m_textcolor(textcolor)
 {
 }
-void gStatsLine::paint(gGraph &w, int left, int top, int width, int height)
+void gStatsLine::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
+    Q_UNUSED(painter)
+
     if (!m_visible) { return; }
 
     //if (m_empty) return;

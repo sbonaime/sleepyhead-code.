@@ -244,6 +244,7 @@ const QString STR_AS_OverviewLinechartMode = "OverviewLinechartMode";
 const QString STR_AS_UsePixmapCaching = "UsePixmapCaching";
 const QString STR_AS_AllowYAxisScaling = "AllowYAxisScaling";
 const QString STR_AS_GraphTooltips = "GraphTooltips";
+const QString STR_AS_LineThickness = "LineThickness";
 
 // UserSettings Strings
 const QString STR_US_UnitSystem = "UnitSystem";
@@ -568,6 +569,7 @@ class AppearanceSettings : public ProfileSettings
         initPref(STR_AS_UsePixmapCaching, true);
         initPref(STR_AS_OverlayType, ODT_Bars);
         initPref(STR_AS_OverviewLinechartMode, OLC_Bartop);
+        initPref(STR_AS_LineThickness, 1.0);
     }
 
     //! \brief Returns the normal (unscaled) height of a graph
@@ -586,6 +588,10 @@ class AppearanceSettings : public ProfileSettings
     bool allowYAxisScaling() const { return getPref(STR_AS_AllowYAxisScaling).toBool(); }
     //! \brief Whether to show graph tooltips
     bool graphTooltips() const { return getPref(STR_AS_GraphTooltips).toBool(); }
+    //! \brief Pen width of line plots
+    float lineThickness() const { return getPref(STR_AS_LineThickness).toFloat(); }
+
+
     //! \brief Returns the type of overlay flags (which are displayed over the Flow Waveform)
     OverlayDisplayType overlayType() const {
         return (OverlayDisplayType)getPref(STR_AS_OverlayType).toInt();
@@ -617,6 +623,8 @@ class AppearanceSettings : public ProfileSettings
     void setOverviewLinechartMode(OverviewLinechartModes od) {
         setPref(STR_AS_OverviewLinechartMode, (int)od);
     }
+    //! \brief Set the pen width of line plots.
+    void setLineThickness(float size) { setPref(STR_AS_LineThickness, size); }
 };
 
 /*! \class UserSettings

@@ -28,10 +28,7 @@ gLineChart::gLineChart(ChannelID code, QColor col, bool square_plot, bool disabl
     addPlot(code, col, square_plot);
     m_line_color = col;
     m_report_empty = false;
-    addVertexBuffer(lines = new gVertexBuffer(100000, GL_LINES));
-    lines->setColor(col);
-    lines->setAntiAlias(true);
-    lines->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    lines.reserve(50000);
 }
 gLineChart::~gLineChart()
 {
@@ -131,12 +128,7 @@ void gLineChart::SetDay(Day *d)
 
     }
 
-    //if (m_code==CPAP_Leak) {
-    // subtract_offset=profile.cpap.[IntentionalLeak].toDouble();
-    //} else
     subtract_offset = 0;
-
-
 }
 EventDataType gLineChart::Miny()
 {
@@ -156,7 +148,7 @@ EventDataType gLineChart::Maxy()
 }
 
 // Time Domain Line Chart
-void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
+void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) {
         return;
@@ -174,7 +166,6 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
 
     top++;
 
-    // lines=w.lines();
     EventDataType miny, maxy;
     double minx, maxx;
 
@@ -226,12 +217,12 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
     int minz, maxz;
 
     // Draw bounding box
-    gVertexBuffer *outlines = w.lines();
-    GLuint blk = QColor(Qt::black).rgba();
-    outlines->add(left, top, left, top + height, blk);
-    outlines->add(left, top + height, left + width, top + height, blk);
-    outlines->add(left + width, top + height, left + width, top, blk);
-    outlines->add(left + width, top, left, top, blk);
+    painter.setPen(QColor(Qt::black));
+    painter.drawLine(left, top, left, top + height);
+    painter.drawLine(left, top + height, left + width, top + height);
+    painter.drawLine(left + width, top + height, left + width, top);
+    painter.drawLine(left + width, top, left, top);
+
     width--;
     height -= 2;
 
@@ -250,16 +241,19 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
 
     int codepoints;
 
-    //GLuint color;
+    painter.setClipRect(left, top, width, height+1);
+    painter.setClipping(true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
     for (int gi = 0; gi < m_codes.size(); gi++) {
         ChannelID code = m_codes[gi];
-        //m_line_color=m_colors[gi];
-        lines->setColor(m_colors[gi]);
-        //color=m_line_color.rgba();
+
+        lines.clear();
 
         codepoints = 0;
 
-        for (int svi = 0; svi < m_day->size(); svi++) {
+        int daysize = m_day->size();
+        for (int svi = 0; svi < daysize; svi++) {
             Session *sess = (*m_day)[svi];
 
             if (!sess) {
@@ -274,9 +268,10 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
             schema::Channel ch = schema::channel[code];
             bool fndbetter = false;
 
-            for (QList<schema::Channel *>::iterator l = ch.m_links.begin(); l != ch.m_links.end(); l++) {
-                schema::Channel *c = *l;
-                ci = (*m_day)[svi]->eventlist.find(c->id());
+            QList<schema::Channel *>::iterator mlend=ch.m_links.end();
+            for (QList<schema::Channel *>::iterator l = ch.m_links.begin(); l != mlend; l++) {
+                schema::Channel &c = *(*l);
+                ci = (*m_day)[svi]->eventlist.find(c.id());
 
                 if (ci != (*m_day)[svi]->eventlist.end()) {
                     fndbetter = true;
@@ -294,17 +289,19 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
 
             QVector<EventList *> &evec = ci.value();
             num_points = 0;
+            int evecsize=evec.size();
 
-            for (int i = 0; i < evec.size(); i++) {
+            for (int i = 0; i < evecsize; i++) {
                 num_points += evec[i]->count();
             }
 
             total_points += num_points;
             codepoints += num_points;
-            const int num_averages =
-                20; // Max n umber of samples taken from samples per pixel for better min/max values
 
-            for (int n = 0; n < evec.size(); n++) { // for each segment
+            // Max number of samples taken from samples per pixel for better min/max values
+            const int num_averages = 20;
+
+            for (int n = 0; n < evecsize; ++n) { // for each segment
                 EventList &el = *evec[n];
 
                 accel = (el.type() == EVL_Waveform); // Turn on acceleration if this is a waveform.
@@ -423,21 +420,8 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                 double time;
                 EventDataType data;
                 EventDataType gain = el.gain();
-                //EventDataType nmult=ymult*gain;
-                //EventDataType ymin=EventDataType(miny)/gain;
-
-                //const QVector<EventStoreType> & dat=el.getData();
-                //const QVector<quint32> & tim=el.getTime();
-                //quint32 * tptr;
-
-
-                //qint64 stime=el.first();
 
                 done = false;
-
-                //                if (!accel) {
-                lines->setSize(1.5);
-                //                } else lines->setSize(1);
 
                 if (el.type() == EVL_Waveform) { // Waveform Plot
                     if (idx > sam) { idx -= sam; }
@@ -450,12 +434,6 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                         //////////////////////////////////////////////////////////////////
                         // Accelerated Waveform Plot
                         //////////////////////////////////////////////////////////////////
-
-                        //                        qint64 tmax=(maxx-time)/rate;
-                        //                        if ((tmax*sam) < siz) {
-                        //                            siz=idx+tmax*sam;
-                        //                            done=true;
-                        //                        }
 
                         for (int i = idx; i < siz; i += sam, ptr += sam) {
                             time += rate;
@@ -519,34 +497,18 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
 
 
                         // Cap within VertexBuffer capacity, one vertex per line point
-                        int np = (maxz - minz) * 2;
+//                        int np = (maxz - minz) * 2;
 
-                        int j = lines->Max() - lines->cnt();
-
-                        if (np < j) {
-                            for (int i = minz; i < maxz; i++, drl++) {
-                                ax1 = drl->x();
-                                ay1 = drl->y();
-                                lines->unsafe_add(xst + i, yst - ax1, xst + i, yst - ay1);
-
-                                //if (lines->full()) break;
-                            }
-                        } else {
-                            qDebug() << "gLineChart full trying to draw" << schema::channel[code].label();
-                            done = true;
+                        for (int i = minz; i < maxz; i++, drl++) {
+                            ax1 = drl->x();
+                            ay1 = drl->y();
+                            lines.append(QLine(xst + i, yst - ax1, xst + i, yst - ay1));
                         }
 
                     } else { // Zoomed in Waveform
                         //////////////////////////////////////////////////////////////////
                         // Normal Waveform Plot
                         //////////////////////////////////////////////////////////////////
-
-                        // Cap within VertexBuffer capacity, one vertex per line point
-                        //                        int np=((siz-idx)/sam)*2;
-                        //                        int j=lines->Max()-lines->cnt();
-                        //                        if (np > j) {
-                        //                            siz=j*sam;
-                        //                        }
 
                         // Prime first point
                         data = (*ptr + el.offset()) * gain;
@@ -563,17 +525,13 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                             py = yst - ((data - miny) * ymult); // Same for Y scale, with precomputed gain
                             //py=yst-((data - ymin) * nmult);   // Same for Y scale, with precomputed gain
 
-                            lines->add(lastpx, lastpy, px, py);
+                            lines.append(QLine(lastpx, lastpy, px, py));
 
                             lastpx = px;
                             lastpy = py;
 
                             if (time > maxx) {
                                 done = true;
-                                break;
-                            }
-
-                            if (lines->full()) {
                                 break;
                             }
                         }
@@ -619,18 +577,10 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
 
                     siz -= idx;
 
-                    // Check if would overflow lines gVertexBuffer
                     int gs = siz << 1;
-                    int j = lines->Max() - lines->cnt();
 
                     if (square_plot) {
                         gs <<= 1;
-                    }
-
-                    if (gs > j) {
-                        qDebug() << "Would overflow line points.. increase default VertexBuffer size in gLineChart";
-                        siz = (j >> square_plot) ? 2 : 1;
-                        done = true; // end after this partial draw..
                     }
 
                     // Unrolling square plot outside of loop to gain a minor speed improvement.
@@ -652,12 +602,15 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                lines->unsafe_add(lastpx, lastpy, px, lastpy, px, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, lastpy));
+                                lines.append(QLine(px, lastpy, px, py));
                             } else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
-                                lines->unsafe_add(lastpx, lastpy, px, lastpy, px, lastpy, px, py);
+
+                                lines.append(QLine(lastpx, lastpy, px, lastpy));
+                                lines.append(QLine(px, lastpy, px, py));
                             }
 
                             lastpx = px;
@@ -685,12 +638,12 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                                 // Cap px to right margin
                                 if (px > xst + width) { px = xst + width; }
 
-                                lines->unsafe_add(lastpx, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, py));
                             } else {
                                 // Letting the scissor do the dirty work for non horizontal lines
                                 // This really should be changed, as it might be cause that weird
                                 // display glitch on Linux..
-                                lines->unsafe_add(lastpx, lastpy, px, py);
+                                lines.append(QLine(lastpx, lastpy, px, py));
                             }
 
                             lastpx = px;
@@ -707,6 +660,10 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
                 if (done) { break; }
             }
         }
+        painter.setPen(QPen(m_colors[gi],p_profile->appearance->lineThickness()));
+        painter.drawLines(lines);
+        w.graphView()->lines_drawn_this_frame+=lines.count();
+        lines.clear();
 
         ////////////////////////////////////////////////////////////////////
         // Draw Legends on the top line
@@ -716,17 +673,19 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
         int bw = fm.width('X');
         int bh = fm.height() / 1.8;
 
-        if ((codepoints > 0)) { //(m_codes.size()>1) &&
+
+        if ((codepoints > 0)) {
             QString text = schema::channel[code].label();
             int wid, hi;
             GetTextExtent(text, wid, hi);
             legendx -= wid;
+            painter.setClipping(false);
             w.renderText(text, legendx, top - 4);
+            legendx -= bw /2;
+            painter.fillRect(legendx - bw, top - w.marginTop()-2, bh, w.marginTop()+1, QBrush(m_colors[gi]));
+            painter.setClipping(true);
 
-            int tp = top - 5 - bh / 2;
-            w.quads()->add(legendx - bw, tp + bh / 2, legendx, tp + bh / 2, legendx, tp - bh / 2, legendx - bw,
-                           tp - bh / 2, m_colors[gi].rgba());
-            legendx -= bw * 2;
+            legendx -= bw*2;
         }
     }
 
@@ -738,219 +697,7 @@ void gLineChart::paint(gGraph &w, int left, int top, int width, int height)
             GetTextExtent(msg, x, y, bigfont);
             //DrawText(w,msg,left+(width/2.0)-(x/2.0),scry-w.GetBottomMargin()-height/2.0+y/2.0,0,Qt::gray,bigfont);
         }
-    } else {
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-        float dpr = w.graphView()->devicePixelRatio();
-        lines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width + 1)*dpr, (height + 1)*dpr);
-#else
-        lines->scissor(left, w.flipY(top + height + 2), width + 1, height + 1);
-#endif
     }
-}
-
-
-AHIChart::AHIChart(QColor col)
-    : Layer(NoChannel), m_color(col)
-{
-    m_miny = m_maxy = 0;
-    addVertexBuffer(lines = new gVertexBuffer(100000, GL_LINES));
-    lines->setColor(col);
-    lines->setAntiAlias(true);
-    lines->setSize(1.5);
-}
-
-AHIChart::~AHIChart()
-{
-}
-
-void AHIChart::paint(gGraph &w, int left, int top, int width, int height)
-{
-    if (!m_visible) {
-        return;
-    }
-
-    if (!m_day) {
-        return;
-    }
-
-    // Draw bounding box
-    gVertexBuffer *outlines = w.lines();
-    GLuint blk = QColor(Qt::black).rgba();
-    outlines->add(left, top, left, top + height, blk);
-    outlines->add(left, top + height, left + width, top + height, blk);
-    outlines->add(left + width, top + height, left + width, top, blk);
-    outlines->add(left + width, top, left, top, blk);
-    width--;
-    height -= 2;
-
-    EventDataType miny, maxy;
-    double minx, maxx;
-
-    maxx = w.max_x, minx = w.min_x;
-
-    // hmmm.. subtract_offset..
-
-    if (w.zoomY() == 0 && PROFILE.appearance->allowYAxisScaling()) {
-        miny = w.physMinY();
-        maxy = w.physMaxY();
-    } else {
-        miny = w.min_y, maxy = w.max_y;
-    }
-
-    w.roundY(miny, maxy);
-
-    double xx = maxx - minx;
-    double xmult = double(width) / xx;
-
-    EventDataType yy = maxy - miny;
-    EventDataType ymult = EventDataType(height - 3) / yy; // time to pixel conversion multiplier
-
-    bool first = true;
-    double px, py;
-    double lastpx, lastpy;
-    double top1 = top + height;
-    bool done = false;
-
-    //GLuint color=m_color.rgba();
-    for (int i = 0; i < m_time.size(); i++) {
-        qint64 ti = m_time[i];
-        EventDataType v = m_data[i];
-
-        if (ti < minx) { continue; }
-
-        if (ti > maxx) { done = true; }
-
-        if (first) {
-            if (i > 0) {
-                ti = m_time[i - 1];
-                v = m_data[i - 1];
-                i--;
-            }
-
-            px = left + (double(ti - minx) * xmult);
-            py = top1 - (double(v - miny) * ymult);
-            first = false;
-        } else {
-            px = left + (double(ti - minx) * xmult);
-            py = top1 - (double(v - miny) * ymult);
-            lines->add(px, py, lastpx, lastpy);
-        }
-
-        lastpx = px;
-        lastpy = py;
-
-        if (done) { break; }
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    float dpr = w.graphView()->devicePixelRatio();
-    lines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width + 1)*dpr, (height + 1)*dpr);
-#else
-    lines->scissor(left, w.flipY(top + height + 2), width + 1, height + 1);
-#endif
-}
-
-void AHIChart::SetDay(Day *d)
-{
-    m_day = d;
-    m_data.clear();
-    m_time.clear();
-    m_maxy = 0;
-    m_miny = 0;
-
-    if (!d) { return; }
-
-    m_miny = 9999;
-    QList<Session *>::iterator s;
-    qint64 first = d->first();
-    qint64 last = d->last();
-    qint64 f;
-
-    qint64 winsize = 30000; // 30 second windows
-
-    for (qint64 ti = first; ti < last; ti += winsize) {
-        f = ti - 3600000L;
-        //if (f<first) f=first;
-        EventList *el[6];
-        EventDataType ahi = 0;
-        int cnt = 0;
-
-        qint64 clockdrift = (qint64(PROFILE.cpap->clockDrift()) * 1000L), drift = 0;
-
-        bool fnd = false;
-
-        for (s = d->begin(); s != d->end(); s++) {
-            if (!(*s)->enabled()) { continue; }
-
-            Session *sess = *s;
-
-            if ((ti < sess->first()) || (f > sess->last())) { continue; }
-
-            drift = (sess->machine()->GetType() == MT_CPAP) ? clockdrift : 0;
-
-            // Drop off suddenly outside of sessions
-            //if (ti>sess->last()) continue;
-
-            fnd = true;
-
-            if (sess->eventlist.contains(CPAP_Obstructive)) {
-                el[0] = sess->eventlist[CPAP_Obstructive][0];
-            } else { el[0] = nullptr; }
-
-            if (sess->eventlist.contains(CPAP_Apnea)) {
-                el[1] = sess->eventlist[CPAP_Apnea][0];
-            } else { el[1] = nullptr; }
-
-            if (sess->eventlist.contains(CPAP_Hypopnea)) {
-                el[2] = sess->eventlist[CPAP_Hypopnea][0];
-            } else { el[2] = nullptr; }
-
-            if (sess->eventlist.contains(CPAP_ClearAirway)) {
-                el[3] = sess->eventlist[CPAP_ClearAirway][0];
-            } else { el[3] = nullptr; }
-
-            if (sess->eventlist.contains(CPAP_NRI)) {
-                el[4] = sess->eventlist[CPAP_NRI][0];
-            } else { el[4] = nullptr; }
-
-            int znt = 5;
-
-            if (PROFILE.general->calculateRDI()) {
-                if (sess->eventlist.contains(CPAP_RERA)) {// What about ExP??
-                    el[5] = sess->eventlist[CPAP_RERA][0];
-                    znt++;
-                } else { el[5] = nullptr; }
-            }
-
-            qint64 t;
-
-            for (int i = 0; i < znt; i++) {
-                if (!el[i]) { continue; }
-
-                for (quint32 j = 0; j < el[i]->count(); j++) {
-                    t = el[i]->time(j) + drift;
-
-                    if ((t >= f) && (t < ti)) {
-                        cnt++;
-                    }
-                }
-            }
-        }
-
-        if (!fnd) { cnt = 0; }
-
-        double g = double(ti - f) / 3600000.0;
-
-        if (g > 0) { ahi = cnt / g; }
-
-        if (ahi < m_miny) { m_miny = ahi; }
-
-        if (ahi > m_maxy) { m_maxy = ahi; }
-
-        m_time.append(ti);
-        m_data.append(ahi);
-    }
-
-    m_minx = first;
-    m_maxx = last;
+    painter.setClipping(false);
+    painter.setRenderHint(QPainter::Antialiasing, false);
 }

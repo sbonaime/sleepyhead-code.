@@ -14,49 +14,9 @@
 
 #include <QVector>
 
-#include "Graphs/gVertexBuffer.h"
 #include "Graphs/layer.h"
 #include "SleepLib/event.h"
 #include "SleepLib/day.h"
-
-/*! \class AHIChart
-    \brief Another graph calculating the AHI/hour, this one looks at all the sessions for a day. Currently Unused.
-    */
-class AHIChart: public Layer
-{
-  public:
-    //! \brief Constructs an AHIChart object, with QColor col for the line plots.
-    AHIChart(QColor col = QColor("black"));
-    ~AHIChart();
-
-    //! \brief Draws the precalculated data to the Vertex buffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
-
-    //! \brief AHI/hr Calculations are done for this day here.
-    //! This also uses the sliding window method
-    virtual void SetDay(Day *d);
-
-    //! \brief Returns the minimum AHI/hr value caculated
-    virtual EventDataType Miny() { return m_miny; }
-
-    //! \brief Returns the maximum AHI/hr value caculated
-    virtual EventDataType Maxy() { return m_maxy; }
-
-    //! \brief Returns true if no data was available
-    virtual bool isEmpty() { return m_data.size() == 0; }
-
-  protected:
-    //! \brief Contains the plot data (Y-axis) generated for this day
-    QVector<EventDataType> m_data;
-
-    //! \brief Contains the time codes (X-axis) generated for this day
-    QVector<quint64> m_time;
-
-    EventDataType m_miny;
-    EventDataType m_maxy;
-    QColor m_color;
-    gVertexBuffer *lines;
-};
 
 /*! \class gLineChart
     \brief Draws a 2D linechart from all Session data in a day. EVL_Waveforms typed EventLists are accelerated.
@@ -75,7 +35,7 @@ class gLineChart: public Layer
     virtual ~gLineChart();
 
     //! \brief The drawing code that fills the vertex buffers
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief Set Use Square plots for non EVL_Waveform data
     void SetSquarePlot(bool b) { m_square_plot = b; }
@@ -123,10 +83,6 @@ class gLineChart: public Layer
     bool m_disable_accel;
     QColor m_line_color;
 
-    gVertexBuffer *lines;
-    //GLShortBuffer * lines;
-    //GLShortBuffer * outlines;
-
     //! \brief Used by accelerated waveform plots. Must be >= Screen Resolution (or at least graph width)
     static const int max_drawlist_size = 10000;
 
@@ -139,6 +95,8 @@ class gLineChart: public Layer
     QVector<QColor> m_colors;
     QVector<bool> m_square;
     QHash<ChannelID, bool> m_enabled;
+
+    QVector<QLine> lines;
 };
 
 #endif // GLINECHART_H

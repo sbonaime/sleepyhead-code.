@@ -149,7 +149,7 @@ qint16 EDFParser::Read16()
 
 QString EDFParser::Read(unsigned n)
 {
-    if ((pos + n) > filesize) {
+    if ((pos + long(n)) > filesize) {
         return "";
     }
 
@@ -2262,12 +2262,14 @@ bool ResmedLoader::LoadSAD(Session *sess, EDFParser &edf)
         }
         if (!hasdata) continue;
 
-        if (matchSignal(code = OXI_Pulse, es.label)) {
+        if (matchSignal(OXI_Pulse, es.label)) {
+            code = OXI_Pulse;
             ToTimeDelta(sess, edf, es, code, recs, duration);
             sess->setPhysMax(code, 180);
             sess->setPhysMin(code, 18);
 
-        } else if (matchSignal(code = OXI_SPO2, es.label)) {
+        } else if (matchSignal(OXI_SPO2, es.label)) {
+            code = OXI_SPO2;
             es.physical_minimum = 60;
             ToTimeDelta(sess, edf, es, code, recs, duration);
             sess->setPhysMax(code, 100);
@@ -2307,30 +2309,37 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
         rate = double(duration) / double(recs);
 
         //qDebug() << "EVE:" << es.digital_maximum << es.digital_minimum << es.physical_maximum << es.physical_minimum << es.gain;
-        if (matchSignal(code = CPAP_Snore, es.label)) {
+        if (matchSignal(CPAP_Snore, es.label)) {
+            code = CPAP_Snore;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_Pressure, es.label)) {
+        } else if (matchSignal(CPAP_Pressure, es.label)) {
+            code = CPAP_Pressure;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_IPAP, es.label)) {
+        } else if (matchSignal(CPAP_IPAP, es.label)) {
+            code = CPAP_IPAP;
             sess->settings[CPAP_Mode] = MODE_BIPAP;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_MinuteVent,es.label)) {
+        } else if (matchSignal(CPAP_MinuteVent,es.label)) {
+            code = CPAP_MinuteVent;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_RespRate, es.label)) {
+        } else if (matchSignal(CPAP_RespRate, es.label)) {
+            code = CPAP_RespRate;
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
-        } else if (matchSignal(code = CPAP_TidalVolume, es.label)) {
+        } else if (matchSignal(CPAP_TidalVolume, es.label)) {
+            code = CPAP_TidalVolume;
             es.gain *= 1000.0;
             es.physical_maximum *= 1000.0;
             es.physical_minimum *= 1000.0;
             //            es.digital_maximum*=1000.0;
             //            es.digital_minimum*=1000.0;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_Leak, es.label)) {
+        } else if (matchSignal(CPAP_Leak, es.label)) {
+            code = CPAP_Leak;
             es.gain *= 60.0;
             es.physical_maximum *= 60.0;
             es.physical_minimum *= 60.0;
@@ -2340,31 +2349,38 @@ bool ResmedLoader::LoadPLD(Session *sess, EDFParser &edf)
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0, true);
             sess->setPhysMax(code, 120.0);
             sess->setPhysMin(code, 0);
-        } else if (matchSignal(code = CPAP_FLG, es.label)) {
+        } else if (matchSignal(CPAP_FLG, es.label)) {
+            code = CPAP_FLG;
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_MaskPressure, es.label)) {
+        } else if (matchSignal(CPAP_MaskPressure, es.label)) {
+            code = CPAP_MaskPressure;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
 
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_EPAP, es.label)) { // Expiratory Pressure
+        } else if (matchSignal(CPAP_EPAP, es.label)) { // Expiratory Pressure
+            code = CPAP_EPAP;
             es.physical_maximum = 25;
             es.physical_minimum = 4;
 
             ToTimeDelta(sess, edf, es, code, recs, duration, 0, 0);
-        } else if (matchSignal(code = CPAP_IE, es.label)) { //I:E ratio
+        } else if (matchSignal(CPAP_IE, es.label)) { //I:E ratio
+            code = CPAP_IE;
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (matchSignal(code = CPAP_Ti, es.label)) {
+        } else if (matchSignal(CPAP_Ti, es.label)) {
+            code = CPAP_Ti;
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (matchSignal(code = CPAP_Te, es.label)) {
+        } else if (matchSignal(CPAP_Te, es.label)) {
+            code = CPAP_Te;
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);
-        } else if (matchSignal(code = CPAP_TgMV, es.label)) {
+        } else if (matchSignal(CPAP_TgMV, es.label)) {
+            code = CPAP_TgMV;
             a = sess->AddEventList(code, EVL_Waveform, es.gain, es.offset, 0, 0, rate);
             a->AddWaveform(edf.startdate, es.data, recs, duration);
             //a=ToTimeDelta(sess,edf,es, code,recs,duration,0,0);

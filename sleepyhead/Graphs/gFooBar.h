@@ -12,7 +12,6 @@
 #ifndef GFOOBAR_H
 #define GFOOBAR_H
 
-#include "Graphs/gVertexBuffer.h"
 #include "Graphs/layer.h"
 
 /*! \class gShadowArea
@@ -23,12 +22,10 @@ class gShadowArea: public Layer
   public:
     gShadowArea(QColor shadow_color = QColor(40, 40, 40, 40), QColor line_color = Qt::blue);
     virtual ~gShadowArea();
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
   protected:
     QColor m_shadow_color;
     QColor m_line_color;
-    gVertexBuffer *quads;
-    gVertexBuffer *lines;
 };
 
 /*! \class gFooBar
@@ -41,7 +38,7 @@ class gFooBar: public Layer
     gFooBar(int offset = 10, QColor handle_color = QColor("orange"),
             QColor line_color = QColor("dark grey"));
     virtual ~gFooBar();
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
     static const int Margin = 15;
   protected:
     int m_offset;

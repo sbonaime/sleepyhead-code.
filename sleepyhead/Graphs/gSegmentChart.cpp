@@ -17,12 +17,6 @@ gSegmentChart::gSegmentChart(GraphSegmentType type, QColor gradient_color, QColo
       m_outline_color(outline_color)
 {
     m_empty = true;
-    addGLBuf(poly = new GLFloatBuffer(4000, GL_POLYGON));
-    addGLBuf(lines = new GLFloatBuffer(4000, GL_LINE_LOOP));
-    lines->setSize(1);
-    poly->forceAntiAlias(false);
-    lines->forceAntiAlias(true);
-    lines->setAntiAlias(true);
 }
 gSegmentChart::~gSegmentChart()
 {
@@ -69,7 +63,7 @@ bool gSegmentChart::isEmpty()
     return m_empty;
 }
 
-void gSegmentChart::paint(gGraph &w, int left, int top, int width, int height)
+void gSegmentChart::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
 
@@ -82,12 +76,6 @@ void gSegmentChart::paint(gGraph &w, int left, int top, int width, int height)
     float diameter = MIN(width, height);
     diameter -= 8;
     float radius = diameter / 2.0;
-
-    float j = 0.0;
-    float sum = 0.0;
-    float step = 1.0 / 720.0;
-    float px, py;
-    float q;
 
     float xmult = float(width) / float(m_total);
     float ymult = float(height) / float(m_total);
@@ -113,9 +101,9 @@ void gSegmentChart::paint(gGraph &w, int left, int top, int width, int height)
     bool line_first = true;
     int line_last;
 
-    gVertexBuffer *quads = w.quads();
-    gVertexBuffer *lines2 = w.lines();
+    float sum = -90.0;
 
+    painter.setFont(*defaultfont);
     for (unsigned m = 0; m < size; m++) {
         data = m_values[m];
 
@@ -126,62 +114,64 @@ void gSegmentChart::paint(gGraph &w, int left, int top, int width, int height)
         /////////////////////////////////////////////////////////////////////////////////////
         if (m_graph_type == GST_Pie) {
             QColor &col = schema::channel[m_codes[m % m_colors.size()]].defaultColor();
-            j = float(data) / float(m_total); // ratio of this pie slice
 
-            // Draw Filling
-            poly->add(start_px + xoffset, start_py + height - yoffset, m_gradient_color);
+            // length of this segment in degrees
+            float len = 360.0 / float(m_total) * float(data);
 
-            for (q = sum; q < sum + j; q += step) {
-                px = start_px + xoffset + sin(q * 2 * M_PI) * radius;
-                py = start_py + height - (yoffset + cos(q * 2 * M_PI) * radius);
-                poly->add(px, py, col);
-            }
+            // Setup the shiny radial gradient
 
-            q = sum + j;
-            px = start_px + xoffset + sin(q * 2 * M_PI) * radius;
-            py = start_py + height - (yoffset + cos(q * 2 * M_PI) * radius);
-            poly->add(px, py, col);
+            painter.setRenderHint(QPainter::Antialiasing);
+            QRect pierect(start_px+1, start_py+1, width-2, height-2);
 
-            if (m_total != data) {
-                // Draw the center point first
-                lines->add(start_px + xoffset, start_py + height - yoffset, m_outline_color);
-            }
+            painter.setPen(QPen(col, 0));
+            QRadialGradient gradient(pierect.center(), pierect.width()/2, pierect.center());
+            gradient.setColorAt(0, Qt::white);
+            gradient.setColorAt(1, col);
 
-            for (q = sum; q < sum + j; q += step) {
-                px = start_px + xoffset + sin(q * 2 * M_PI) * radius;
-                py = start_py + height - (yoffset + cos(q * 2 * M_PI) * radius);
-                lines->add(px, py, m_outline_color);
-            }
+            // draw filled pie
+            painter.setBrush(gradient);
+            painter.setBackgroundMode(Qt::OpaqueMode);
+            painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
 
-            double tpx = start_px + xoffset + sin((sum + (j / 2.0)) * 2 * M_PI) * (radius / 1.7);
-            double tpy = start_py + height - (yoffset + cos((sum + (j / 2.0)) * 2 * M_PI) * (radius / 1.7));
-            q = sum + j;
-            px = start_px + xoffset + sin(q * 2 * M_PI) * radius;
-            py = start_py + height - (yoffset + cos(q * 2 * M_PI) * radius);
-            lines->add(px, py, m_outline_color);
+            // draw outline
+            painter.setBackgroundMode(Qt::TransparentMode);
+            painter.setBrush(QBrush(col,Qt::NoBrush));
+            painter.setPen(QPen(QColor(Qt::black),1.5));
+            painter.drawPie(pierect, -sum * 16.0, -len * 16.0);
 
-            if (j > .09) {
-                QString a = m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
+
+            // Draw text labels if they fit
+            if (len > 20) {
+                float angle = (sum+90.0) + len / 2.0;
+                double tpx = (pierect.x() + pierect.width()/2)  + (sin((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
+                double tpy = (pierect.y() + pierect.height()/2) + (cos((180 - angle) * (M_PI / 180.0)) * (radius / 1.65));
+
+                QString txt = m_names[m]; //QString::number(floor(100.0/m_total*data),'f',0)+"%";
                 int x, y;
-                GetTextExtent(a, x, y);
-                w.renderText(a, tpx - (x / 2.0), (tpy + y / 2.0), 0, Qt::black, defaultfont,
-                             false); // antialiasing looks like crap here..
+                GetTextExtent(txt, x, y);
+                // antialiasing looks like crap here..
+                painter.setPen(QColor(Qt::black));
+                painter.drawText(tpx - (x / 2.0), tpy+3, txt);
             }
+            sum += len;
 
-            sum = q;
-
+        } else if (m_graph_type == GST_CandleStick) {
             /////////////////////////////////////////////////////////////////////////////////////
             // CandleStick Chart
             /////////////////////////////////////////////////////////////////////////////////////
-        } else if (m_graph_type == GST_CandleStick) {
+
             QColor &col = m_colors[m % m_colors.size()];
+
             float bw = xmult * float(data);
 
-            quads->add(xp, start_py, xp + bw, start_py, m_gradient_color.rgba());
-            quads->add(xp + bw, start_py + height, xp, start_py + height, col.rgba());
+            QLinearGradient linearGrad(QPointF(0, 0), QPointF(bw, 0));
+            linearGrad.setColorAt(0, col);
+            linearGrad.setColorAt(1, Qt::white);
+            painter.fillRect(xp, start_py, bw, height, QBrush(linearGrad));
 
-            lines2->add(xp, start_py, xp + bw, start_py, m_outline_color.rgba());
-            lines2->add(xp + bw, start_py + height, xp, start_py + height, m_outline_color.rgba());
+            painter.setPen(m_outline_color);
+            painter.drawLine(xp, start_py, xp + bw, start_py);
+            painter.drawLine(xp + bw, start_py + height, xp, start_py + height);
 
             if (!m_names[m].isEmpty()) {
                 int px, py;
@@ -198,12 +188,13 @@ void gSegmentChart::paint(gGraph &w, int left, int top, int width, int height)
             /////////////////////////////////////////////////////////////////////////////////////
         } else if (m_graph_type == GST_Line) {
             QColor col = Qt::black; //m_colors[m % m_colors.size()];
+            painter.setPen(col);
             float h = (top + height) - (float(data) * ymult);
 
             if (line_first) {
                 line_first = false;
             } else {
-                lines->add(xp, line_last, xp + line_step, h, col);
+                painter.drawLine(xp, line_last, xp + line_step, h);
                 xp += line_step;
             }
 

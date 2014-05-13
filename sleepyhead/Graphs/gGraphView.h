@@ -21,6 +21,7 @@
 #include <QWaitCondition>
 #include <QPixmap>
 #include <QRect>
+#include <QPixmapCache>
 
 #include <Graphs/gGraph.h>
 #include <Graphs/glcommon.h>
@@ -36,6 +37,22 @@ const int textque_max = 512;
     \brief Holds a single item of text for the drawing queue
     */
 struct TextQue {
+    TextQue() {
+    }
+    TextQue(short x, short y, float angle, QString text, QColor color, QFont * font, bool antialias):
+    x(x), y(y), angle(angle), text(text), color(color), font(font), antialias(antialias)
+    {
+    }
+    TextQue(const TextQue & copy) {
+        x=copy.x;
+        y=copy.y;
+        text=copy.text;
+        angle=copy.angle;
+        color=copy.color;
+        font=copy.font;
+        antialias=copy.antialias;
+    }
+
     //! \variable contains the x axis screen position to draw the text
     short x;
     //! \variable contains the y axis screen position to draw the text
@@ -106,8 +123,8 @@ class gToolTip : public QObject
         */
     virtual void display(QString text, int x, int y, int timeout = 0);
 
-    //! \brief Queue the actual OpenGL drawing instructions
-    virtual void paint(); //actually paints it.
+    //! \brief Draw the tooltip
+    virtual void paint(QPainter &paint); //actually paints it.
 
     //! \brief Close the tooltip early.
     void cancel();
@@ -131,16 +148,6 @@ class gToolTip : public QObject
 
     //! \brief Timeout to hide tooltip, and redraw without it.
     void timerDone();
-};
-
-/*! \struct myPixmapCache
-    \brief My version of Pixmap cache with texture binding support
-
- */
-struct myPixmapCache {
-    quint64 last_used;
-    QImage image;
-    GLuint textureID;
 };
 
 /*! \class gGraphView
@@ -226,12 +233,6 @@ class gGraphView : public QGLWidget
     //! \brief Set a redraw timer for ms milliseconds, clearing any previous redraw timer.
     void timedRedraw(int ms);
 
-    //! \brief Start the animation sequence changing/reloading day data. (fade out)
-    void fadeOut();
-
-    //! \brief Start the animation sequence showing new Day's data. (fade in)
-    void fadeIn(bool dir = false);
-
     //! \brief Call UpdateGL unless animation is in progress
     void redraw();
 
@@ -243,11 +244,11 @@ class gGraphView : public QGLWidget
     void selectionTime();
 
     //! \brief Add the Text information to the Text Drawing Queue (called by gGraphs renderText method)
-    void AddTextQue(QString &text, short x, short y, float angle = 0.0,
+    void AddTextQue(const QString &text, short x, short y, float angle = 0.0,
                     QColor color = Qt::black, QFont *font = defaultfont, bool antialias = true);
 
-    //! \brief Draw all Text in the text drawing queue
-    void DrawTextQue();
+//    //! \brief Draw all Text in the text drawing queue
+//    void DrawTextQue();
 
     //! \brief Draw all text components using QPainter object painter
     void DrawTextQue(QPainter &painter);
@@ -304,8 +305,6 @@ class gGraphView : public QGLWidget
     //! \brief Sends day object to be distributed to all Graphs Layers objects
     void setDay(Day *day);
 
-    gVertexBuffer *lines, *backlines, *quads, *frontlines;
-
     //! \brief pops a graph off the list for multithreaded drawing code
     gGraph *popGraph(); // exposed for multithreaded drawing
 
@@ -318,24 +317,27 @@ class gGraphView : public QGLWidget
     //! \brief Trash all graph objects listed (without destroying Graph contents)
     void trashGraphs();
 
-    //! \brief Use a QGLFrameBufferObject to render to a pixmap
-    QImage fboRenderPixmap(int w, int h);
-
-    //! \brief Use a QGLPixelBuffer to render to a pixmap
-    QImage pbRenderPixmap(int w, int h);
-
     //! \brief Enable or disable the Text Pixmap Caching system preference overide
     void setUsePixmapCache(bool b) { use_pixmap_cache = b; }
 
     //! \brief Return whether or not the Pixmap Cache for text rendering is being used.
     bool usePixmapCache();
 
+    //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
+    bool renderGraphs(QPainter &painter);
+
+    // for profiling purposes, a count of lines drawn in a single frame
+    int lines_drawn_this_frame;
+    int quads_drawn_this_frame;
+    int strings_drawn_this_frame;
+    int strings_cached_this_frame;
+
   protected:
     //! \brief Set up the OpenGL basics for the QGLWidget underneath
     virtual void initializeGL();
 
-    //! \brief Resize the OpenGL ViewPort prior to redrawing
-    virtual void resizeGL(int width, int height);
+    // //! \brief Resize the OpenGL ViewPort prior to redrawing
+    //virtual void resizeGL(int width, int height);
 
     //! \brief The heart of the OpenGL drawing code
     virtual void paintGL();
@@ -345,9 +347,6 @@ class gGraphView : public QGLWidget
 
     //! \brief Calculates the sum of all graph heights, taking scaling into consideration
     float scaleHeight();
-
-    //! \brief Graph drawing routines, returns true if there weren't any graphs to draw
-    bool renderGraphs();
 
     //! \brief Update the OpenGL area when the screen is resized
     virtual void resizeEvent(QResizeEvent *);
@@ -375,7 +374,7 @@ class gGraphView : public QGLWidget
     void queGraph(gGraph *, int originX, int originY, int width, int height);
 
     //! \brief Render the annoying spinning graph empty cube
-    void renderCube(float alpha = 1);
+    void renderCube(QPainter &painter, float alpha = 1);
 
     Day *m_day;
 
@@ -415,9 +414,8 @@ class gGraphView : public QGLWidget
     int m_graph_index;
 
     //! \brief List of all queue text to draw.. not sure why I didn't use a vector here.. Might of been a leak issue
-    TextQue m_textque[textque_max];
+    QVector<TextQue> m_textque;
 
-    int m_textque_items;
     int m_lastxpos, m_lastypos;
 
     QString m_emptytext;
@@ -439,10 +437,9 @@ class gGraphView : public QGLWidget
 
     QTime m_animationStarted;
 
-    // turn this into a struct later..
-    QHash<QString, myPixmapCache *> pixmap_cache;
-    qint32 pixmap_cache_size;
     bool use_pixmap_cache;
+
+    QPixmapCache pixmapcache;
 
     QTime horizScrollTime, vertScrollTime;
 

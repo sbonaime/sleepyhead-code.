@@ -19,18 +19,6 @@ extern QLabel *qstatus2;
 SummaryChart::SummaryChart(QString label, GraphType type)
     : Layer(NoChannel), m_label(label), m_graphtype(type)
 {
-    //QColor color=Qt::black;
-    addVertexBuffer(quads = new gVertexBuffer(20000, GL_QUADS));
-    addVertexBuffer(lines = new gVertexBuffer(20000, GL_LINES));
-    addVertexBuffer(outlines = new gVertexBuffer(20000, GL_LINES));
-    addVertexBuffer(points = new gVertexBuffer(20000, GL_POINTS));
-    quads->forceAntiAlias(true);
-
-    outlines->setSize(1);
-
-    //lines->setBlendFunc(GL_SRC_COLOR, GL_ZERO);
-    //lines->forceAntiAlias(false);
-
     m_empty = true;
     hl_day = -1;
     m_machinetype = MT_CPAP;
@@ -55,8 +43,8 @@ void SummaryChart::SetDay(Day *nullday)
     m_days.clear();
     m_hours.clear();
     m_goodcodes.clear();
-    m_miny = 999999999;
-    m_maxy = -999999999;
+    m_miny = 999999999.0F;
+    m_maxy = -999999999.0F;
     m_physmaxy = 0;
     m_physminy = 0;
     m_minx = 0;
@@ -390,11 +378,9 @@ QColor brighten(QColor color)
 
 }
 
-void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
+void SummaryChart::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
-
-    points->setSize(10);
 
     GraphType graphtype = m_graphtype;
 
@@ -403,21 +389,13 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
         graphtype = pts ? GT_POINTS : GT_LINE;
     }
 
-    if (graphtype == GT_POINTS) {
-        lines->setSize(4);
-    } else {
-        lines->setSize(1.5);
-    }
-
-
     rtop = top;
-    gVertexBuffer *outlines2 = w.lines();
-    //  outlines2->setColor(Qt::black);
-    outlines2->add(left, top, left, top + height, left, top + height, left + width, top + height,
-                   QColor("black").rgba());
-    outlines2->add(left + width, top + height, left + width, top, left + width, top, left, top,
-                   QColor("black").rgba());
-    //if (outlines->full()) qDebug() << "WTF??? Outlines full in SummaryChart::paint()";
+
+    painter.setPen(QColor(Qt::black));
+    painter.drawLine(left, top, left, top+height);
+    painter.drawLine(left, top+height, left+width, top+height);
+    painter.drawLine(left+width, top+height, left+width, top);
+    painter.drawLine( left+width, top, left, top);
 
     qint64 minx = w.min_x, maxx = w.max_x;
     qint64 xx = maxx - minx;
@@ -440,8 +418,6 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
     EventDataType ymult = float(height - 2) / yy;
 
     barw = (float(width) / float(days));
-
-    float dpr = w.graphView()->devicePixelRatio();
 
     graph = &w;
     float px = left;
@@ -484,7 +460,6 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
     QVector<bool> goodcodes;
     goodcodes.resize(m_goodcodes.size());
 
-    points->setSize(5.0 * dpr);
     lastdaygood = true;
 
     for (int i = 0; i < numcodes; i++) {
@@ -534,6 +509,10 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
     short px2, py2;
     const qint64 ms_per_day = 86400000L;
 
+
+    painter.setClipRect(left, top, width, height);
+    painter.setClipping(true);
+
     for (qint64 Q = minx; Q <= maxx + ms_per_day; Q += ms_per_day) {
         zd = Q / ms_per_day;
         d = m_values.find(zd);
@@ -555,7 +534,7 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
             //x1-=(barw/2.0);
             int x2 = px + barw;
 
-            if (x1 < left) { x1 = left; }
+            //if (x1 < left) { x1 = left; }
 
             if (x2 > left + width) { x2 = left + width; }
 
@@ -568,10 +547,12 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                 col.setAlpha(64);
 
                 if (graphtype != GT_POINTS) {
-                    quads->add(x1 - 1, top, x1 - 1, top + height, x2, top + height, x2, top, col.rgba());
+                    painter.fillRect(x1-1, top, barw, height, QBrush(col));
+//                    quads->add(x1 - 1, top, x1 - 1, top + height, x2, top + height, x2, top, col.rgba());
                 } else {
-                    quads->add((x1 + barw / 2) - 5, top, (x1 + barw / 2) - 5, top + height, (x2 - barw / 2) + 5,
-                               top + height, (x2 - barw / 2) + 5, top, col.rgba());
+                    painter.fillRect((x1+barw/2)-5, top, barw, height, QBrush(col));
+//                    quads->add((x1 + barw / 2) - 5, top, (x1 + barw / 2) - 5, top + height, (x2 - barw / 2) + 5,
+//                               top + height, (x2 - barw / 2) + 5, top, col.rgba());
                 }
             }
 
@@ -585,8 +566,8 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                     col = QColor("gold");
                 }
 
-                GLuint col1 = col.rgba();
-                GLuint col2 = brighten(col).rgba();
+                QColor col1 = col;
+                QColor col2 = Qt::white;
                 //outlines->setColor(Qt::black);
 
                 int np = d.value().size();
@@ -606,11 +587,18 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                     //tmp-=miny;
                     h = tmp * ymult;
 
-                    quads->add(x1, py, x1, py - h, x2, py - h, x2, py, col1, col2);
+                    QLinearGradient gradient(x1, py-h, x1+barw, py-h);
+                    gradient.setColorAt(0,col1);
+                    gradient.setColorAt(1,col2);
+                    painter.fillRect(x1, py-h, barw, h, QBrush(gradient));
+//                    quads->add(x1, py, x1, py - h, x2, py - h, x2, py, col1, col2);
 
-                    if (h > 0 && barw > 2) {
-                        outlines->add(x1, py, x1, py - h, x1, py - h, x2, py - h, QColor("black").rgba());
-                        outlines->add(x1, py, x2, py, x2, py, x2, py - h, QColor("black").rgba());
+                    if ((h > 0) && (barw > 2)) {
+                        painter.setPen(QColor(Qt::black));
+                        painter.drawLine(x1, py, x1, py - h);
+                        painter.drawLine(x1, py - h, x2, py - h);
+                        painter.drawLine(x1, py, x2, py);
+                        painter.drawLine(x2, py, x2, py - h);
                     }
 
                     totalvalues[0] += hours * tmp;
@@ -694,17 +682,23 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                     h = tmp * ymult; // height in pixels
 
                     if (graphtype == GT_BAR) {
-                        GLuint col1 = col.rgba();
-                        GLuint col2 = brighten(col).rgba();
+                        QColor col1 = col;
+                        QColor col2 = Qt::white;
 
-                        quads->add(x1, py, x1, py - h, col1);
-                        quads->add(x2, py - h, x2, py, col2);
+                        QLinearGradient gradient(x1, py-h, x1+barw, py-h);
+                        gradient.setColorAt(0,col1);
+                        gradient.setColorAt(1,col2);
+                        painter.fillRect(x1, py-h, barw, h, QBrush(gradient));
+
+//                        quads->add(x1, py, x1, py - h, col1);
+//                        quads->add(x2, py - h, x2, py, col2);
 
                         if (h > 0 && barw > 2) {
-                            outlines->add(x1, py, x1, py - h, x1, py - h, x2, py - h, QColor("black").rgba());
-                            outlines->add(x1, py, x2, py, x2, py, x2, py - h, QColor("black").rgba());
-
-                            if (outlines->full()) { qDebug() << "WTF??? Outlines full in SummaryChart::paint()"; }
+                            painter.setPen(QColor(Qt::black));
+                            painter.drawLine(x1, py, x1, py - h);
+                            painter.drawLine(x1, py - h, x2, py - h);
+                            painter.drawLine(x1, py, x2, py);
+                            painter.drawLine(x2, py, x2, py - h);
                         } // if (bar
 
                         py -= h;
@@ -721,19 +715,22 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
 
                         if (lastdaygood) {
                             if (lastY[j] != py2) { // vertical line
-                                lines->add(lastX[j], lastY[j], px, py2, col2);
+                                painter.setPen(col2);
+                                painter.drawLine(lastX[j], lastY[j], px, py2);
                             }
 
-                            lines->add(px - 1, py2, px2 + 1, py2, col1);
+                            painter.setPen(col1);
+                            painter.drawLine(px - 1, py2, px2 + 1, py2);
                         } else {
-                            lines->add(x1 - 1, py2, x2 + 1, py2, col1);
+                            painter.setPen(col1);
+                            painter.drawLine(x1 - 1, py2, x2 + 1, py2);
                         }
 
                         lastX[j] = px2;
                         lastY[j] = py2;
                     } else if (graphtype == GT_POINTS) {
-                        GLuint col1 = col.rgba();
-                        GLuint col2 = m_colors[j].rgba();
+                        QColor col1 = col;
+                        QColor  col2 = m_colors[j];
                         px2 = px + barw;
                         py2 = (top + height - 2) - h;
 
@@ -743,13 +740,16 @@ void SummaryChart::paint(gGraph &w, int left, int top, int width, int height)
                         }
 
                         if (zd == hl_day) {
-                            points->add(px2 - barw / 2, py2, col2);
+                            painter.setPen(QPen(brighten(col2),10));
+                            painter.drawPoint(px2 - barw / 2, py2);
                         }
 
                         if (lastdaygood) {
-                            lines->add(lastX[j] - barw / 2, lastY[j], px2 - barw / 2, py2, col2);
+                            painter.setPen(QPen(col2,p_profile->appearance->lineThickness()));
+                            painter.drawLine(lastX[j] - barw / 2, lastY[j], px2 - barw / 2, py2);
                         } else {
-                            lines->add(px + barw / 2 - 1, py2, px + barw / 2 + 1, py2, col1);
+                            painter.setPen(QPen(col1,p_profile->appearance->lineThickness()));
+                            painter.drawLine(px + barw / 2 - 1, py2, px + barw / 2 + 1, py2);
                         }
 
                         lastX[j] = px2;
@@ -779,16 +779,17 @@ jumpnext:
         daynum++;
         //lastQ=Q;
     }
+    painter.setClipping(false);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-    quads->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width)*dpr, (height + 1)*dpr);
-    lines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width + 1)*dpr, (height + 1)*dpr);
-    outlines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width)*dpr, (height + 1)*dpr);
-#else
-    lines->scissor(left, w.flipY(top + height + 2), width + 1, height + 2);
-    outlines->scissor(left, w.flipY(top + height + 2), width, height + 2);
-    quads->scissor(left, w.flipY(top + height + 2), width, height + 2);
-#endif
+//#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//    quads->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width)*dpr, (height + 1)*dpr);
+//    lines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width + 1)*dpr, (height + 1)*dpr);
+//    outlines->scissor(left * dpr, w.flipY(top + height + 2)*dpr, (width)*dpr, (height + 1)*dpr);
+//#else
+//    lines->scissor(left, w.flipY(top + height + 2), width + 1, height + 2);
+//    outlines->scissor(left, w.flipY(top + height + 2), width, height + 2);
+//    quads->scissor(left, w.flipY(top + height + 2), width, height + 2);
+//#endif
     // Draw Ledgend
     px = left + width - 3;
     py = top - 5;
@@ -910,9 +911,7 @@ jumpnext:
         w.renderText(a, legendx, top - 4);
         //  legendx-=bw/2;
 
-        int tp = top - 5 - bh / 2;
-        w.quads()->add(legendx - bw, tp + bh / 2, legendx, tp + bh / 2, legendx, tp - bh / 2, legendx - bw,
-                       tp - bh / 2, m_colors[j].rgba());
+        painter.fillRect(legendx - bw, top-w.marginTop()-1, bh, w.marginTop(), QBrush(m_colors[j]));
         legendx -= bw * 2;
 
 

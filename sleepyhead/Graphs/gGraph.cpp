@@ -26,8 +26,6 @@ QFont *defaultfont = nullptr;
 QFont *mediumfont = nullptr;
 QFont *bigfont = nullptr;
 QHash<QString, QImage *> images;
-bool fbo_unsupported = false;
-QGLFramebufferObject *fbo = nullptr;
 
 static bool globalsInitialized = false;
 
@@ -110,17 +108,6 @@ void DestroyGraphGlobals()
         delete i.value();
     }
 
-    // Clear the frame buffer object.
-    if (fbo) {
-        if (fbo->isBound()) {
-            fbo->release();
-        }
-
-        delete fbo;
-        fbo = nullptr;
-        fbo_unsupported = true; // just in case shutdown order gets messed up
-    }
-
     globalsInitialized = false;
 }
 
@@ -164,8 +151,6 @@ gGraph::gGraph(gGraphView *graphview, QString title, QString units, int height, 
     invalidate_yAxisImage = true;
     invalidate_xAxisImage = true;
 
-    m_quad = new gVertexBuffer(64, GL_QUADS);
-    m_quad->forceAntiAlias(true);
     m_enforceMinY = m_enforceMaxY = false;
     m_showTitle = true;
     m_printing = false;
@@ -179,7 +164,6 @@ gGraph::~gGraph()
     }
 
     m_layers.clear();
-    delete m_quad;
 
     timer->stop();
     disconnect(timer, 0, 0, 0);
@@ -236,19 +220,18 @@ float gGraph::printScaleX() { return m_graphview->printScaleX(); }
 float gGraph::printScaleY() { return m_graphview->printScaleY(); }
 
 
-void gGraph::drawGLBuf()
-{
+//void gGraph::drawGLBuf()
+//{
 
-    float linesize = 1;
+//    float linesize = 1;
 
-    if (m_printing) { linesize = 4; } //ceil(m_graphview->printScaleY());
+//    if (m_printing) { linesize = 4; } //ceil(m_graphview->printScaleY());
 
-    for (int i = 0; i < m_layers.size(); i++) {
-        m_layers[i]->drawGLBuf(linesize);
-    }
+//    for (int i = 0; i < m_layers.size(); i++) {
+//        m_layers[i]->drawGLBuf(linesize);
+//    }
 
-    m_quad->draw();
-}
+//}
 void gGraph::setDay(Day *day)
 {
     m_day = day;
@@ -272,13 +255,12 @@ void gGraph::qglColor(QColor col)
     m_graphview->qglColor(col);
 }
 
-void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font,
-                        bool antialias)
+void gGraph::renderText(QString text, int x, int y, float angle, QColor color, QFont *font, bool antialias)
 {
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
 }
 
-void gGraph::paint(int originX, int originY, int width, int height)
+void gGraph::paint(QPainter &painter, int originX, int originY, int width, int height)
 {
     m_rect = QRect(originX, originY, width, height);
 
@@ -295,55 +277,6 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
     if (m_showTitle) {
         int title_x, yh;
-        /*        if (titleImage.isNull()) {
-                    // Render the title to a texture so we don't have to draw the vertical text every time..
-
-                    GetTextExtent("Wy@",x,yh,mediumfont); // This gets a better consistent height. should be cached.
-
-                    GetTextExtent(title(),x,y,mediumfont);
-
-                    y=yh;
-                    QPixmap tpm=QPixmap(x+4,y+4);
-
-                    tpm.fill(Qt::transparent); //empty it
-                    QPainter pmp(&tpm);
-
-                    pmp.setRenderHint(QPainter::TextAntialiasing, true);
-
-                    QBrush brush2(Qt::black); // text color
-                    pmp.setBrush(brush2);
-
-                    pmp.setFont(*mediumfont);
-
-                    pmp.drawText(2,y,title()); // draw from the bottom
-                    pmp.end();
-
-                    // convert to QImage and bind to a texture for future use
-                    titleImage=QGLWidget::convertToGLFormat(tpm.toImage().mirrored(false,true));
-                    titleImageTex=m_graphview->bindTexture(titleImage);
-                }
-                y=titleImage.height();
-                x=titleImage.width(); //vertical text
-
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                title_x=y*2;
-
-                glEnable(GL_TEXTURE_2D);
-
-                // Rotate and draw vertical texture containing graph titles
-                glPushMatrix();
-                glTranslatef(marginLeft()+4,originY+height/2+x/2, 0);
-                glRotatef(-90,0,0,1);
-                m_graphview->drawTexture(QPoint(0,y/2),titleImageTex);
-                glPopMatrix();
-
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_BLEND);
-
-                // All that to replace this little, but -hideously- slow line of text..
-               */
 
         QFontMetrics fm(*mediumfont);
 
@@ -354,17 +287,17 @@ void gGraph::paint(int originX, int originY, int width, int height)
         //GetTextExtent(title(),x,y,mediumfont);
         title_x = yh * 2;
 
-
-        renderText(title(), marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black,
-                   mediumfont);
+        QString & txt = title();
+        graphView()->AddTextQue(txt, marginLeft() + title_x + 4, originY + height / 2 - y / 2, 90, Qt::black, mediumfont);
         left += title_x;
     } else { left = 0; }
 
     //#define DEBUG_LAYOUT
 #ifdef DEBUG_LAYOUT
     QColor col = Qt::red;
-    lines()->add(0, originY, 0, originY + height, col);
-    lines()->add(left, originY, left, originY + height, col);
+    painter.setPen(col);
+    painter.drawLine(0, originY, 0, originY + height);
+    painter.drawLine(left, originY, left, originY + height);
 #endif
     int tmp;
 
@@ -392,19 +325,23 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
         if (ll->position() == LayerLeft) {
             ll->m_rect = QRect(originX + left, originY + top, tmp, height - top - bottom);
-            ll->paint(*this, originX + left, originY + top, tmp, height - top - bottom);
+            ll->paint(painter, *this, originX + left, originY + top, tmp, height - top - bottom);
             left += tmp;
 #ifdef DEBUG_LAYOUT
-            lines()->add(originX + left - 1, originY, originX + left - 1, originY + height, col);
+            QColor col = Qt::red;
+            painter.setPen(col);
+            painter.drawLine(originX + left - 1, originY, originX + left - 1, originY + height);
 #endif
         }
 
         if (ll->position() == LayerRight) {
             right += tmp;
             ll->m_rect = QRect(originX + width - right, originY + top, tmp, height - top - bottom);
-            ll->paint(*this, originX + width - right, originY + top, tmp, height - top - bottom);
+            ll->paint(painter, *this, originX + width - right, originY + top, tmp, height - top - bottom);
 #ifdef DEBUG_LAYOUT
-            lines()->add(originX + width - right, originY, originX + width - right, originY + height, col);
+            QColor col = Qt::red;
+            painter.setPen(col);
+            painter.drawLine(originX + width - right, originY, originX + width - right, originY + height);
 #endif
         }
     }
@@ -421,28 +358,20 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
         if (ll->position() == LayerTop) {
             ll->m_rect = QRect(originX + left, originY + top, width - left - right, tmp);
-            ll->paint(*this, originX + left, originY + top, width - left - right, tmp);
+            ll->paint(painter, *this, originX + left, originY + top, width - left - right, tmp);
             top += tmp;
         }
 
         if (ll->position() == LayerBottom) {
             bottom += tmp;
             ll->m_rect = QRect(originX + left, originY + height - bottom, width - left - right, tmp);
-            ll->paint(*this, originX + left, originY + height - bottom, width - left - right, tmp);
+            ll->paint(painter, *this, originX + left, originY + height - bottom, width - left - right, tmp);
         }
     }
 
     if (isPinned()) {
         // Fill the background on pinned graphs
-
-        //        m_graphview->quads->add(originX+left,originY+top, originX+width-right,originY+top, originX+width-right,originY+height-bottom, originX+left,originY+height-bottom, 0xffffffff);
-        glBegin(GL_QUADS);
-        glColor4f(1.0, 1.0, 1.0, 1.0); // Gradient End
-        glVertex2i(originX + left, originY + top);
-        glVertex2i(originX + width - right, originY + top);
-        glVertex2i(originX + width - right, originY + height - bottom);
-        glVertex2i(originX + left, originY + height - bottom);
-        glEnd();
+        painter.fillRect(originX + left, originY + top, width - right, height - bottom - top, QBrush(QColor(Qt::white)));
     }
 
     for (int i = 0; i < m_layers.size(); i++) {
@@ -452,23 +381,22 @@ void gGraph::paint(int originX, int originY, int width, int height)
 
         if (ll->position() == LayerCenter) {
             ll->m_rect = QRect(originX + left, originY + top, width - left - right, height - top - bottom);
-            ll->paint(*this, originX + left, originY + top, width - left - right, height - top - bottom);
+            ll->paint(painter, *this, originX + left, originY + top, width - left - right, height - top - bottom);
         }
     }
 
     if (m_selection.width() > 0 && m_selecting_area) {
         QColor col(128, 128, 255, 128);
-        quads()->add(originX + m_selection.x(), originY + top,
-                     originX + m_selection.x() + m_selection.width(), originY + top, col.rgba());
-        quads()->add(originX + m_selection.x() + m_selection.width(), originY + height - bottom,
-                     originX + m_selection.x(), originY + height - bottom, col.rgba());
+        painter.fillRect(originX + m_selection.x(), originY + top, m_selection.width(), height - bottom - top,QBrush(col));
+//        quads()->add(originX + m_selection.x(), originY + top,
+//                     originX + m_selection.x() + m_selection.width(), originY + top, col.rgba());
+//        quads()->add(originX + m_selection.x() + m_selection.width(), originY + height - bottom,
+//                     originX + m_selection.x(), originY + height - bottom, col.rgba());
     }
 }
 
 QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 {
-    QPixmap pm = QPixmap();
-
     gGraphView *sg = mainwin->snapshotGraph();
 
     if (!sg) {
@@ -524,29 +452,14 @@ QPixmap gGraph::renderPixmap(int w, int h, bool printing)
 
     float dpr = sg->devicePixelRatio();
     sg->setDevicePixelRatio(1);
-#ifdef Q_OS_WIN
 
-    if (pm.isNull()) {
-        pm = sg->renderPixmap(w, h, false);
-    }
+    QPixmap pm(w,h);
 
-    if (pm.isNull()) { // Works, but gives shader warnings
-        pm = QPixmap::fromImage(sg->pbRenderPixmap(w, h));
-    }
+    QPainter painter(&pm);
+    painter.fillRect(0,0,w,h,QBrush(QColor(Qt::white)));
+    sg->renderGraphs(painter);
+    painter.end();
 
-    if (pm.isNull()) { // crashes on mine, not sure what to do about it
-        pm = QPixmap::fromImage(sg->fboRenderPixmap(w, h));
-    }
-
-#else
-    pm = QPixmap::fromImage(sg->fboRenderPixmap(w, h));
-
-    if (pm.isNull()) { // not sure if this will work with printing
-        qDebug() << "Had to use PixelBuffer for snapshots\n";
-        pm = QPixmap::fromImage(sg->pbRenderPixmap(w, h));
-    }
-
-#endif
     sg->setDevicePixelRatio(dpr);
     //sg->doneCurrent();
     sg->trashGraphs();
@@ -1154,9 +1067,9 @@ void gGraph::ZoomX(double mult, int origin_px)
     //updateSelectionTime(max-min);
 }
 
-void gGraph::DrawTextQue()
+void gGraph::DrawTextQue(QPainter &painter)
 {
-    m_graphview->DrawTextQue();
+    m_graphview->DrawTextQue(painter);
 }
 
 // margin recalcs..
@@ -1366,26 +1279,6 @@ void gGraph::SetMaxY(EventDataType v)
 {
     rmax_y = max_y = v;
 }
-
-gVertexBuffer *gGraph::lines()
-{
-    return m_graphview->lines;
-}
-
-gVertexBuffer *gGraph::backlines()
-{
-    return m_graphview->backlines;
-}
-
-gVertexBuffer *gGraph::quads()
-{
-    return m_graphview->quads;
-}
-
-short gGraph::marginLeft() { return m_marginleft; }//*m_graphview->printScaleX(); }
-short gGraph::marginRight() { return m_marginright; } //*m_graphview->printScaleX(); }
-short gGraph::marginTop() { return m_margintop; } //*m_graphview->printScaleY(); }
-short gGraph::marginBottom() { return m_marginbottom; } //*m_graphview->printScaleY(); }
 
 Layer *gGraph::getLineChart()
 {

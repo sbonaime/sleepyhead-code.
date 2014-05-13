@@ -299,13 +299,19 @@ Overview::Overview(QWidget *parent, gGraphView *shared) :
 }
 Overview::~Overview()
 {
-    GraphView->SaveSettings("Overview");//no trans
-    disconnect(this, SLOT(dateStart_currentPageChanged(int, int)));
-    disconnect(this, SLOT(dateEnd_currentPageChanged(int, int)));
     delete ui;
     delete icon_on;
     delete icon_off;
 }
+
+void Overview::closeEvent(QCloseEvent *event)
+{
+    GraphView->SaveSettings("Overview");//no trans
+    disconnect(this, SLOT(dateStart_currentPageChanged(int, int)));
+    disconnect(this, SLOT(dateEnd_currentPageChanged(int, int)));
+    QWidget::closeEvent(event);
+}
+
 gGraph *Overview::createGraph(QString name, QString units, YTickerType yttype)
 {
     int default_height = PROFILE.appearance->graphHeight();

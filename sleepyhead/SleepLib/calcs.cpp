@@ -367,7 +367,7 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
     if (calcResp) {
         RR = m_session->AddEventList(CPAP_RespRate, EVL_Event);
         minrr = RR->Min(), maxrr = RR->Max();
-        RR->setGain(0.2);
+        RR->setGain(0.2F);
         RR->setFirst(time + minute);
         RR->getData().resize(nm);
         RR->getTime().resize(nm);
@@ -391,12 +391,12 @@ void FlowParser::calc(bool calcResp, bool calcTv, bool calcTi, bool calcTe, bool
 
     if (calcTi) {
         Ti = m_session->AddEventList(CPAP_Ti, EVL_Event);
-        Ti->setGain(0.02);
+        Ti->setGain(0.02F);
     }
 
     if (calcTe) {
         Te = m_session->AddEventList(CPAP_Te, EVL_Event);
-        Te->setGain(0.02);
+        Te->setGain(0.02F);
     }
 
 
@@ -641,13 +641,13 @@ void FlowParser::flagEvents()
     //EventList * uf2=m_session->AddEventList(CPAP_UserFlag2,EVL_Event);
     //EventList * uf3=m_session->AddEventList(CPAP_UserFlag3,EVL_Event);
 
-    const EventDataType perc = 0.6;
+    const EventDataType perc = 0.6F;
     int idx = float(br.size()) * perc;
     nth_element(br.begin(), br.begin() + idx, br.end() - 1);
 
     EventDataType peak = br[idx]; //*(br.begin()+idx);
 
-    EventDataType cutoffval = peak * (PROFILE.cpap->userFlowRestriction() / 100.0);
+    EventDataType cutoffval = peak * (PROFILE.cpap->userFlowRestriction() / 100.0F);
 
     int bs, bm, be, bs1, bm1, be1;
 
@@ -906,14 +906,14 @@ int calcAHIGraph(Session *session)
            f;
 
     EventList *AHI = new EventList(EVL_Event);
-    AHI->setGain(0.02);
+    AHI->setGain(0.02F);
     session->eventlist[CPAP_AHI].push_back(AHI);
 
     EventList *RDI = nullptr;
 
     if (calcrdi) {
         RDI = new EventList(EVL_Event);
-        RDI->setGain(0.02);
+        RDI->setGain(0.02F);
         session->eventlist[CPAP_RDI].push_back(RDI);
     }
 
@@ -926,7 +926,7 @@ int calcAHIGraph(Session *session)
     int cnt = 0;
 
     double events;
-    double hours = (window_size / 60.0);
+    double hours = (window_size / 60.0F);
 
     if (zeroreset) {
         // I personally don't see the point of resetting each hour.

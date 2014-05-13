@@ -24,8 +24,9 @@ class gFlagsLabelArea: public gSpacer
 {
   public:
     gFlagsLabelArea(gFlagsGroup *group);
-    virtual void paint(gGraph &w, int left, int top, int width, int height) {
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height) {
         Q_UNUSED(w)
+        Q_UNUSED(painter)
         Q_UNUSED(left)
         Q_UNUSED(top)
         Q_UNUSED(width)
@@ -58,7 +59,7 @@ class gFlagsLine: public Layer
     virtual ~gFlagsLine();
 
     //! \brief Drawing code to add the flags and span markers to the Vertex buffers.
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! \brief Returns true if should always show this flag, even if it's empty
     bool isAlwaysVisible() { return m_always_visible; }
@@ -82,8 +83,6 @@ class gFlagsLine: public Layer
     int total_lines, line_num;
     FlagType m_flt;
     QColor m_flag_color;
-    gVertexBuffer *quads;
-    gVertexBuffer *lines;
     int m_lx, m_ly;
 };
 
@@ -99,7 +98,7 @@ class gFlagsGroup: public LayerGroup
     virtual ~gFlagsGroup();
 
     //! Draw filled rectangles behind Event Flag's, and an outlines around them all, Calls the individual paint for each gFlagLine
-    virtual void paint(gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
 
     //! Returns the first time represented by all gFlagLine layers, in milliseconds since epoch
     virtual qint64 Minx();
@@ -124,7 +123,6 @@ class gFlagsGroup: public LayerGroup
   protected:
     virtual bool mouseMoveEvent(QMouseEvent *event, gGraph *graph);
 
-    gVertexBuffer *quads, *lines;
     QVector<gFlagsLine *> lvisible;
     float m_barh;
     bool m_empty;

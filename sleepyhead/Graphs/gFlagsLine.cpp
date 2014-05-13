@@ -32,10 +32,6 @@ bool gFlagsLabelArea::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
 
 gFlagsGroup::gFlagsGroup()
 {
-    addVertexBuffer(quads = new gVertexBuffer(512, GL_QUADS));
-    addVertexBuffer(lines = new gVertexBuffer(20, GL_LINE_LOOP));
-    quads->setAntiAlias(true);
-    lines->setAntiAlias(false);
     m_barh = 0;
     m_empty = true;
 }
@@ -91,7 +87,7 @@ void gFlagsGroup::SetDay(Day *d)
     m_barh = 0;
 }
 
-void gFlagsGroup::paint(gGraph &g, int left, int top, int width, int height)
+void gFlagsGroup::paint(QPainter &painter, gGraph &g, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
 
@@ -108,23 +104,19 @@ void gFlagsGroup::paint(gGraph &g, int left, int top, int width, int height)
         if (i & 1) { barcol = COLOR_ALT_BG1; }
         else { barcol = COLOR_ALT_BG2; }
 
-        quads->add(left, linetop, left, linetop + m_barh,   left + width - 1, linetop + m_barh,
-                   left + width - 1, linetop, barcol.rgba());
+        painter.fillRect(left, linetop, width-1, m_barh, QBrush(barcol));
 
         // Paint the actual flags
         lvisible[i]->m_rect = QRect(left, linetop, width, m_barh);
-        lvisible[i]->paint(g, left, linetop, width, m_barh);
+        lvisible[i]->paint(painter, g, left, linetop, width, m_barh);
         linetop += m_barh;
     }
 
-    gVertexBuffer *outlines = g.lines();
-    outlines->add(left - 1, top, left - 1, top + height, COLOR_Outline.rgba());
-    outlines->add(left - 1, top + height, left + width, top + height, COLOR_Outline.rgba());
-    outlines->add(left + width, top + height, left + width, top, COLOR_Outline.rgba());
-    outlines->add(left + width, top, left - 1, top, COLOR_Outline.rgba());
-
-    //lines->add(left-1, top, left-1, top+height);
-    //lines->add(left+width, top+height, left+width, top);
+    painter.setPen(COLOR_Outline);
+    painter.drawLine(left - 1, top, left - 1, top + height);
+    painter.drawLine(left - 1, top + height, left + width, top + height);
+    painter.drawLine(left + width, top + height, left + width, top);
+    painter.drawLine(left + width, top, left - 1, top);
 }
 
 bool gFlagsGroup::mouseMoveEvent(QMouseEvent *event, gGraph *graph)
@@ -162,25 +154,16 @@ gFlagsLine::gFlagsLine(ChannelID code, QColor flag_color, QString label, bool al
     : Layer(code), m_label(label), m_always_visible(always_visible), m_flt(flt),
       m_flag_color(flag_color)
 {
-    addVertexBuffer(quads = new gVertexBuffer(2048, GL_QUADS));
-    //addGLBuf(lines=new GLBuffer(flag_color,1024,GL_LINES));
-    quads->setAntiAlias(true);
-    //lines->setAntiAlias(true);
-    //GetTextExtent(m_label,m_lx,m_ly);
-    //m_static.setText(m_label);;
 }
 gFlagsLine::~gFlagsLine()
 {
-    //delete lines;
-    //delete quads;
 }
-void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
+void gFlagsLine::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
 {
     if (!m_visible) { return; }
 
     if (!m_day) { return; }
 
-    lines = w.lines();
     double minx;
     double maxx;
 
@@ -207,9 +190,7 @@ void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
 
     float bartop = top + 2;
     float bottom = top + height - 2;
-    bool verts_exceeded = false;
     qint64 X, X2, L;
-    lines->setColor(schema::channel[m_code].defaultColor());
 
     qint64 start;
     quint32 *tptr;
@@ -219,6 +200,11 @@ void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
 
     qint64 clockdrift = qint64(PROFILE.cpap->clockDrift()) * 1000L;
     qint64 drift = 0;
+
+    QVector<QLine> vlines;
+
+    QColor color=schema::channel[m_code].defaultColor();
+    QBrush brush(color);
 
     for (QList<Session *>::iterator s = m_day->begin(); s != m_day->end(); s++) {
         if (!(*s)->enabled()) {
@@ -266,17 +252,6 @@ void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
                 // Draw Event Flag Bars
                 ///////////////////////////////////////////////////////////////////////////
 
-                // Check bounds outside of loop is faster..
-                // This will have to be reverted if multithreaded drawing is ever brought back
-
-                int rem = lines->Max() - lines->cnt();
-
-                if ((np << 1) > rem) {
-                    qDebug() << "gFlagsLine would overfill lines for" << schema::channel[m_code].label();
-                    np = rem >> 1;
-                    verts_exceeded = true;
-                }
-
                 for (int i = 0; i < np; i++) {
                     X = start + *tptr++;
 
@@ -285,22 +260,12 @@ void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
                     }
 
                     x1 = (X - minx) * xmult + left;
-                    lines->add(x1, bartop, x1, bottom);
-
-                    //if (lines->full()) { verts_exceeded=true; break; }
+                    vlines.append(QLine(x1, bartop, x1, bottom));
                 }
             } else if (m_flt == FT_Span) {
                 ///////////////////////////////////////////////////////////////////////////
                 // Draw Event Flag Spans
                 ///////////////////////////////////////////////////////////////////////////
-                quads->setColor(m_flag_color);
-                int rem = quads->Max() - quads->cnt();
-
-                if ((np << 2) > rem) {
-                    qDebug() << "gFlagsLine would overfill quads for" << schema::channel[m_code].label();
-                    np = rem >> 2;
-                    verts_exceeded = true;
-                }
 
                 for (; dptr < eptr; dptr++) {
                     X = start + * tptr++;
@@ -315,21 +280,14 @@ void gFlagsLine::paint(gGraph &w, int left, int top, int width, int height)
                     x1 = double(X - minx) * xmult + left;
                     x2 = double(X2 - minx) * xmult + left;
 
-                    quads->add(x2, bartop, x1, bartop, x1, bottom, x2, bottom);
-                    //if (quads->full()) { verts_exceeded=true; break; }
-
+                    painter.fillRect(x2, bartop, x1-x2, bottom-bartop, brush);
                 }
             }
-
-            if (verts_exceeded) { break; }
         }
-
-        if (verts_exceeded) { break; }
     }
 
-    if (verts_exceeded) {
-        qWarning() << "maxverts exceeded in gFlagsLine::plot()";
-    }
+    painter.setPen(color);
+    painter.drawLines(vlines);
 }
 
 bool gFlagsLine::mouseMoveEvent(QMouseEvent *event, gGraph *graph)

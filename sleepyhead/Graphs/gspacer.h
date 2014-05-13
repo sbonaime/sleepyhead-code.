@@ -22,8 +22,9 @@ class gSpacer: public Layer
 {
   public:
     gSpacer(int space = 20); // orientation?
-    virtual void paint(gGraph &g, int left, int top, int width, int height) {
+    virtual void paint(QPainter &painter, gGraph &g, int left, int top, int width, int height) {
         Q_UNUSED(g)
+        Q_UNUSED(painter)
         Q_UNUSED(left)
         Q_UNUSED(top)
         Q_UNUSED(width)

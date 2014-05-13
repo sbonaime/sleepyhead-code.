@@ -63,15 +63,21 @@ macx {
 }
 
 win32 {
-  DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
-  RC_FILE          += win_icon.rc
-  LIBS             += -lsetupapi -lz
-}
-if (win32-msvc2008|win32-msvc2010|win32-msvc2012):!equals(TEMPLATE_PREFIX, "vc") {
-   LIBS += -ladvapi32
-   DEFINES += BUILD_WITH_MSVC=1
-}
+    DEFINES          += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
+    RC_FILE          += win_icon.rc
+    LIBS             += -lsetupapi
 
+    INCLUDEPATH += $$PWD
+    INCLUDEPATH += $$[QT_INSTALL_PREFIX]/../src/qtbase/src/3rdparty/zlib
+
+    if (*-msvc*):!equals(TEMPLATE_PREFIX, "vc") {
+        LIBS += -ladvapi32
+        DEFINES += BUILD_WITH_MSVC=1
+    } else {
+        # MingW needs this
+        LIBS += -lz
+    }
+}
 
 #include(..3rdparty/qextserialport/src/qextserialport.pri)
 #include(3rdparty/quazip-0.5.1/quazip/quazip.pri)
@@ -97,7 +103,6 @@ SOURCES += \
     Graphs/gFooBar.cpp \
     Graphs/gGraph.cpp \
     Graphs/gGraphView.cpp \
-    Graphs/GLBuffer.cpp \
     Graphs/glcommon.cpp \
     Graphs/gLineChart.cpp \
     Graphs/gLineOverlay.cpp \
@@ -105,7 +110,6 @@ SOURCES += \
     Graphs/gspacer.cpp \
     Graphs/gStatsLine.cpp \
     Graphs/gSummaryChart.cpp \
-    Graphs/gVertexBuffer.cpp \
     Graphs/gXAxis.cpp \
     Graphs/gYAxis.cpp \
     Graphs/layer.cpp \
@@ -149,7 +153,6 @@ HEADERS  += \
     Graphs/gFooBar.h \
     Graphs/gGraph.h \
     Graphs/gGraphView.h \
-    Graphs/GLBuffer.h \
     Graphs/glcommon.h \
     Graphs/gLineChart.h \
     Graphs/gLineOverlay.h \
@@ -157,7 +160,6 @@ HEADERS  += \
     Graphs/gspacer.h \
     Graphs/gStatsLine.h \
     Graphs/gSummaryChart.h \
-    Graphs/gVertexBuffer.h \
     Graphs/gXAxis.h \
     Graphs/gYAxis.h \
     Graphs/layer.h \
@@ -235,6 +237,7 @@ win32 {
     for(FILE,TRANS_FILES_WIN){
         system(xcopy /y $$quote($$FILE) $$quote($$DDIR))
     }
+
 }
 
 mac {

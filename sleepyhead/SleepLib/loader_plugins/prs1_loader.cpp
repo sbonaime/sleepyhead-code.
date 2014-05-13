@@ -288,6 +288,7 @@ int PRS1Loader::Open(QString &path, Profile *profile)
                 OpenMachine(m, newpath + "/" + (*sn), profile);
             }
         } catch (OneTypePerDay e) {
+            Q_UNUSED(e)
             profile->DelMachine(m);
             PRS1List.erase(PRS1List.find(s));
             QMessageBox::warning(nullptr, QObject::tr("Import Error"),
@@ -726,8 +727,6 @@ bool PRS1Loader::ParseSummary(Machine *mach, qint32 sequence, quint32 timestamp,
     // Summary files vary too much between Families/versions
 
 
-    unsigned duration;
-
     if (size < 59) {
 //        duration = data[offset + 0x12] | (data[offset + 0x13] << 8);
 //        duration *= 2;
@@ -849,16 +848,16 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
     EventList *CSR = session->AddEventList(CPAP_CSR, EVL_Event);
     EventList *LEAK = session->AddEventList(CPAP_LeakTotal, EVL_Event);
     EventList *SNORE = session->AddEventList(CPAP_Snore, EVL_Event);
-    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1);
-    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1);
-    EventList *PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1);
-    EventList *IPAPLo = session->AddEventList(CPAP_IPAPLo, EVL_Event, 0.1);
-    EventList *IPAPHi = session->AddEventList(CPAP_IPAPHi, EVL_Event, 0.1);
+    EventList *IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F);
+    EventList *EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F);
+    EventList *PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F);
+    EventList *IPAPLo = session->AddEventList(CPAP_IPAPLo, EVL_Event, 0.1F);
+    EventList *IPAPHi = session->AddEventList(CPAP_IPAPHi, EVL_Event, 0.1F);
     EventList *RR = session->AddEventList(CPAP_RespRate, EVL_Event);
     EventList *PTB = session->AddEventList(CPAP_PTB, EVL_Event);
 
     EventList *MV = session->AddEventList(CPAP_MinuteVent, EVL_Event);
-    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10);
+    EventList *TV = session->AddEventList(CPAP_TidalVolume, EVL_Event, 10.0F);
 
     EventList *CA = nullptr; //session->AddEventList(CPAP_ClearAirway, EVL_Event);
     EventList *VS = nullptr, * FL = nullptr; //,* RE=nullptr,* VS2=nullptr;
@@ -934,7 +933,7 @@ bool PRS1Loader::Parse002v5(qint32 sequence, quint32 timestamp, unsigned char *b
 
         case 0x01: // Unknown
             if (!Code[1]) {
-                if (!(Code[1] = session->AddEventList(cpapcode, EVL_Event, 0.1))) { return false; }
+                if (!(Code[1] = session->AddEventList(cpapcode, EVL_Event, 0.1F))) { return false; }
             }
 
             Code[1]->AddEvent(t, 0);
@@ -1176,7 +1175,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
         return false;
     }
 
-    unsigned char code;
+    unsigned char code=0;
     EventList *Code[0x20] = {0};
     EventDataType data[10];
     int cnt = 0;
@@ -1263,7 +1262,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
             if (family == 0 && familyVersion >= 4) {
                 if (!PRESSURE) {
-                    PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1);
+                    PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
 
                     if (!PRESSURE) { return false; }
                 }
@@ -1276,11 +1275,11 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
         case 0x02: // Pressure
             if (family == 0 && familyVersion >= 4) {  // BiPAP Pressure
                 if (!EPAP) {
-                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1))) { return false; }
+                    if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
 
-                    if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1))) { return false; }
+                    if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
 
-                    if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1))) { return false; }
+                    if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
                 }
 
                 EPAP->AddEvent(t, data[0] = buffer[pos++]);
@@ -1288,7 +1287,7 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
                 PS->AddEvent(t, data[1] - data[0]);
             } else {
                 if (!PRESSURE) {
-                    PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1);
+                    PRESSURE = session->AddEventList(CPAP_Pressure, EVL_Event, 0.1F);
 
                     if (!PRESSURE) { return false; }
                 }
@@ -1300,11 +1299,11 @@ bool PRS1Loader::Parse002(qint32 sequence, quint32 timestamp, unsigned char *buf
 
         case 0x03: // BIPAP Pressure
             if (!EPAP) {
-                if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1))) { return false; }
+                if (!(EPAP = session->AddEventList(CPAP_EPAP, EVL_Event, 0.1F))) { return false; }
 
-                if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1))) { return false; }
+                if (!(IPAP = session->AddEventList(CPAP_IPAP, EVL_Event, 0.1F))) { return false; }
 
-                if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1))) { return false; }
+                if (!(PS = session->AddEventList(CPAP_PS, EVL_Event, 0.1F))) { return false; }
             }
 
             EPAP->AddEvent(t, data[0] = buffer[pos++]);
@@ -1663,11 +1662,6 @@ bool PRS1Loader::OpenFile(Machine *mach, QString filename)
 
 bool PRS1Loader::OpenWaveforms(SessionID sid, QString filename)
 {
-
-    if (sid == 1532) {
-        int i=5;
-    }
-
     Session *session = new_sessions[sid];
     //int sequence,seconds,br,htype,version,numsignals;
     QFile file(filename);
