@@ -21,8 +21,13 @@ gLineOverlayBar::~gLineOverlayBar()
 {
 }
 
-void gLineOverlayBar::paint(QPainter &painter, gGraph &w, int left, int topp, int width, int height)
+void gLineOverlayBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int topp = region.boundingRect().top(); // FIXME: Misspelling intentional.
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) { return; }
 
     if (!m_day) { return; }
@@ -214,9 +219,14 @@ gLineOverlaySummary::~gLineOverlaySummary()
 {
 }
 
-void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gLineOverlaySummary::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     Q_UNUSED(painter)
+
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
 
     if (!m_visible) { return; }
 

@@ -21,10 +21,13 @@
 class gXAxis: public Layer
 {
   public:
+    static const int Margin = 20; // How much room does this take up. (Bottom margin)
+
+  public:
     gXAxis(QColor col = Qt::black, bool fadeout = true);
     virtual ~gXAxis();
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
-    static const int Margin = 20; // How much room does this take up. (Bottom margin)
+
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
     void SetShowMinorLines(bool b) { m_show_minor_lines = b; }
     void SetShowMajorLines(bool b) { m_show_major_lines = b; }
     bool ShowMinorLines() { return m_show_minor_lines; }
@@ -36,7 +39,6 @@ class gXAxis: public Layer
     void setUtcFix(bool b) { m_utcfix = b; }
 
   protected:
-    //        virtual const wxString & Format(double v) { static wxString t; wxDateTime d; d.Set(v); t=d.Format(wxT("%H:%M")); return t; };
     bool m_show_major_lines;
     bool m_show_minor_lines;
     bool m_show_minor_ticks;
@@ -54,4 +56,5 @@ class gXAxis: public Layer
 
     QImage m_image;
 };
+
 #endif // GXAXIS_H

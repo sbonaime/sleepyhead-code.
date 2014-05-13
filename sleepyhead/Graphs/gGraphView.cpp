@@ -183,8 +183,7 @@ void gThread::run()
             g = graphview->popGraph();
 
             if (g) {
-                g->paint(g->m_lastbounds.x(), g->m_lastbounds.y(), g->m_lastbounds.width(),
-                         g->m_lastbounds.height());
+                g->paint(QRegion(g->m_lastbounds));
                 //int i=0;
             } else {
                 //mutex.lock();
@@ -1077,7 +1076,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
     for (int i = 0; i < s; i++) {
         gGraph *g = m_drawlist.at(0);
         m_drawlist.pop_front();
-        g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+        g->paint(painter, QRegion(g->m_rect));
     }
 
     if (m_graphs.size() > 1) {
@@ -1148,7 +1147,7 @@ bool gGraphView::renderGraphs(QPainter &painter)
         for (int i = 0; i < s; i++) {
             gGraph *g = m_drawlist.at(0);
             m_drawlist.pop_front();
-            g->paint(painter, g->m_rect.x(), g->m_rect.y(), g->m_rect.width(), g->m_rect.height());
+            g->paint(painter, QRegion(g->m_rect));
         }
 
 #ifdef ENABLED_THREADED_DRAWING

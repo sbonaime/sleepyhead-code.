@@ -63,8 +63,13 @@ bool gSegmentChart::isEmpty()
     return m_empty;
 }
 
-void gSegmentChart::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gSegmentChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) { return; }
 
     if (!m_day) { return; }

@@ -17,9 +17,14 @@ gStatsLine::gStatsLine(ChannelID code, QString label, QColor textcolor)
     : Layer(code), m_label(label), m_textcolor(textcolor)
 {
 }
-void gStatsLine::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gStatsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
     Q_UNUSED(painter)
+
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
 
     if (!m_visible) { return; }
 
@@ -28,7 +33,6 @@ void gStatsLine::paint(QPainter &painter, gGraph &w, int left, int top, int widt
 
     int z = (width + gYAxis::Margin) / 5;
     int p = left - gYAxis::Margin;
-
 
     top += 4;
     w.renderText(m_label, p, top);
@@ -48,7 +52,6 @@ void gStatsLine::paint(QPainter &painter, gGraph &w, int left, int top, int widt
     w.renderText(st_max, p, top);
 
 }
-
 
 void gStatsLine::SetDay(Day *d)
 {

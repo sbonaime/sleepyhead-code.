@@ -23,8 +23,13 @@ gShadowArea::gShadowArea(QColor shadow_color, QColor line_color)
 gShadowArea::~gShadowArea()
 {
 }
-void gShadowArea::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gShadowArea::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) { return; }
 
     double xx = w.max_x - w.min_x;
@@ -52,16 +57,15 @@ gFooBar::gFooBar(int offset, QColor handle_color, QColor line_color)
     : Layer(NoChannel), m_offset(offset), m_handle_color(handle_color), m_line_color(line_color)
 {
 }
+
 gFooBar::~gFooBar()
 {
 }
-void gFooBar::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+
+void gFooBar::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    Q_UNUSED(top)
-    Q_UNUSED(left)
-    Q_UNUSED(width)
-    Q_UNUSED(height)
-    Q_UNUSED(painter)
+    Q_UNUSED(painter);
+    Q_UNUSED(region);
 
     if (!m_visible) { return; }
 

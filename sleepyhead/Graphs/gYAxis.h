@@ -26,7 +26,7 @@ class gXGrid: public Layer
     virtual ~gXGrid();
 
     //! \brief Draw the horizontal lines by adding the to the Vertex GLbuffers
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
     //! \brief set the visibility status of Major lines
     void setShowMinorLines(bool b) { m_show_minor_lines = b; }
@@ -52,17 +52,16 @@ class gXGrid: public Layer
 class gYAxis: public Layer
 {
   public:
+    //! \brief Left Margin space in pixels
+    static const int Margin = 60;
+
+  public:
     //! \brief Construct a gYAxis object, with QColor col for tickers & text
     gYAxis(QColor col = Qt::black);
     virtual ~gYAxis();
 
     //! \brief Draw the horizontal tickers display
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
-
-    //        void SetShowMinorLines(bool b) { m_show_minor_lines=b; }
-    //        void SetShowMajorLines(bool b) { m_show_major_lines=b; }
-    //        bool ShowMinorLines() { return m_show_minor_lines; }
-    //        bool ShowMajorLines() { return m_show_major_lines; }
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
     //! \brief Sets the visibility status of minor ticks
     void SetShowMinorTicks(bool b) { m_show_minor_ticks = b; }
@@ -79,18 +78,14 @@ class gYAxis: public Layer
     //! \brief Formats the ticker value.. Override to implement other types
     virtual const QString Format(EventDataType v, int dp);
 
-    //! \brief Left Margin space in pixels
-    static const int Margin = 60;
-
     //! \brief Set the scale of the Y axis values.. Values can be multiplied by this to convert formats
     void SetScale(float f) { m_yaxis_scale = f; }
 
-    //! \brief Returns the scale of the Y axis values.. Values can be multiplied by this to convert formats
+    //! \brief Returns the scale of the Y axis values..
+    //         Values can be multiplied by this to convert formats
     float Scale() { return m_yaxis_scale; }
 
   protected:
-    //bool m_show_major_lines;
-    //bool m_show_minor_lines;
     bool m_show_minor_ticks;
     bool m_show_major_ticks;
     float m_yaxis_scale;

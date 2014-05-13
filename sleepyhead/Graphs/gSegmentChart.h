@@ -27,7 +27,7 @@ class gSegmentChart : public Layer
     virtual ~gSegmentChart();
 
     //! \brief The drawing code that fills the Vertex buffers
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
     //! \brief Pre-fills a buffer with the data needed to draw
     virtual void SetDay(Day *d);

@@ -260,9 +260,13 @@ void gGraph::renderText(QString text, int x, int y, float angle, QColor color, Q
     m_graphview->AddTextQue(text, x, y, angle, color, font, antialias);
 }
 
-void gGraph::paint(QPainter &painter, int originX, int originY, int width, int height)
+void gGraph::paint(QPainter &painter, const QRegion &region)
 {
-    m_rect = QRect(originX, originY, width, height);
+    m_rect = region.boundingRect();
+    int originX = m_rect.left();
+    int originY = m_rect.top();
+    int width = m_rect.width();
+    int height = m_rect.height();
 
     int fw, font_height;
     GetTextExtent("Wg@", fw, font_height);
@@ -324,8 +328,9 @@ void gGraph::paint(QPainter &painter, int originX, int originY, int width, int h
         tmp = ll->Width() * m_graphview->printScaleX();
 
         if (ll->position() == LayerLeft) {
-            ll->m_rect = QRect(originX + left, originY + top, tmp, height - top - bottom);
-            ll->paint(painter, *this, originX + left, originY + top, tmp, height - top - bottom);
+            QRect rect(originX + left, originY + top, tmp, height - top - bottom);
+            ll->m_rect = rect;
+            ll->paint(painter, *this, QRegion(rect));
             left += tmp;
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
@@ -336,8 +341,9 @@ void gGraph::paint(QPainter &painter, int originX, int originY, int width, int h
 
         if (ll->position() == LayerRight) {
             right += tmp;
-            ll->m_rect = QRect(originX + width - right, originY + top, tmp, height - top - bottom);
-            ll->paint(painter, *this, originX + width - right, originY + top, tmp, height - top - bottom);
+            QRect rect(originX + width - right, originY + top, tmp, height - top - bottom);
+            ll->m_rect = rect;
+            ll->paint(painter, *this, QRegion(rect));
 #ifdef DEBUG_LAYOUT
             QColor col = Qt::red;
             painter.setPen(col);
@@ -357,15 +363,17 @@ void gGraph::paint(QPainter &painter, int originX, int originY, int width, int h
         tmp = ll->Height() * m_graphview->printScaleY();
 
         if (ll->position() == LayerTop) {
-            ll->m_rect = QRect(originX + left, originY + top, width - left - right, tmp);
-            ll->paint(painter, *this, originX + left, originY + top, width - left - right, tmp);
+            QRect rect(originX + left, originY + top, width - left - right, tmp);
+            ll->m_rect = rect;
+            ll->paint(painter, *this, QRegion(rect));
             top += tmp;
         }
 
         if (ll->position() == LayerBottom) {
             bottom += tmp;
-            ll->m_rect = QRect(originX + left, originY + height - bottom, width - left - right, tmp);
-            ll->paint(painter, *this, originX + left, originY + height - bottom, width - left - right, tmp);
+            QRect rect(originX + left, originY + height - bottom, width - left - right, tmp);
+            ll->m_rect = rect;
+            ll->paint(painter, *this, QRegion(rect));
         }
     }
 
@@ -380,8 +388,9 @@ void gGraph::paint(QPainter &painter, int originX, int originY, int width, int h
         if (!ll->visible()) { continue; }
 
         if (ll->position() == LayerCenter) {
-            ll->m_rect = QRect(originX + left, originY + top, width - left - right, height - top - bottom);
-            ll->paint(painter, *this, originX + left, originY + top, width - left - right, height - top - bottom);
+            QRect rect(originX + left, originY + top, width - left - right, height - top - bottom);
+            ll->m_rect = rect;
+            ll->paint(painter, *this, QRegion(rect));
         }
     }
 

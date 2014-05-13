@@ -12,6 +12,7 @@
 #ifndef GLINECHART_H
 #define GLINECHART_H
 
+#include <QPainter>
 #include <QVector>
 
 #include "Graphs/layer.h"
@@ -35,7 +36,7 @@ class gLineChart: public Layer
     virtual ~gLineChart();
 
     //! \brief The drawing code that fills the vertex buffers
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
 
     //! \brief Set Use Square plots for non EVL_Waveform data
     void SetSquarePlot(bool b) { m_square_plot = b; }

@@ -34,8 +34,13 @@ gXGrid::gXGrid(QColor col)
 gXGrid::~gXGrid()
 {
 }
-void gXGrid::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gXGrid::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     int x, y;
 
     EventDataType miny, maxy;
@@ -153,8 +158,12 @@ gYAxis::gYAxis(QColor col)
 gYAxis::~gYAxis()
 {
 }
-void gYAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gYAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
 
     int x, y; //,yh=0;
 

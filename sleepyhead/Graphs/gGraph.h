@@ -231,7 +231,7 @@ class gGraph : public QObject
     Day *day() { return m_day; }
 
     //! \brief The Layer, layout and title drawing code
-    virtual void paint(QPainter &painter, int originX, int originY, int width, int height);
+    virtual void paint(QPainter &painter, const QRegion &region);
 
     //! \brief Gives the supplied data to the main ToolTip object for display
     void ToolTip(QString text, int x, int y, int timeout = 0);

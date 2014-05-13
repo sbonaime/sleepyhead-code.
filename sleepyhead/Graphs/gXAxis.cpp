@@ -54,9 +54,13 @@ gXAxis::gXAxis(QColor col, bool fadeout)
 gXAxis::~gXAxis()
 {
 }
-void gXAxis::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gXAxis::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
-    Q_UNUSED(height)
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     QString months[] = {
         QObject::tr("Jan"), QObject::tr("Feb"), QObject::tr("Mar"), QObject::tr("Apr"), QObject::tr("May"), QObject::tr("Jun"),
         QObject::tr("Jul"), QObject::tr("Aug"), QObject::tr("Sep"), QObject::tr("Oct"), QObject::tr("Nov"), QObject::tr("Dec")

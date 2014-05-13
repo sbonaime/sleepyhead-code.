@@ -148,8 +148,14 @@ EventDataType gLineChart::Maxy()
 }
 
 // Time Domain Line Chart
-void gLineChart::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    // TODO: Just use QRect directly.
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) {
         return;
     }

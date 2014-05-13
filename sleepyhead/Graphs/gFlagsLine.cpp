@@ -87,8 +87,13 @@ void gFlagsGroup::SetDay(Day *d)
     m_barh = 0;
 }
 
-void gFlagsGroup::paint(QPainter &painter, gGraph &g, int left, int top, int width, int height)
+void gFlagsGroup::paint(QPainter &painter, gGraph &g, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) { return; }
 
     if (!m_day) { return; }
@@ -107,8 +112,9 @@ void gFlagsGroup::paint(QPainter &painter, gGraph &g, int left, int top, int wid
         painter.fillRect(left, linetop, width-1, m_barh, QBrush(barcol));
 
         // Paint the actual flags
-        lvisible[i]->m_rect = QRect(left, linetop, width, m_barh);
-        lvisible[i]->paint(painter, g, left, linetop, width, m_barh);
+        QRect rect(left, linetop, width, m_barh);
+        lvisible[i]->m_rect = rect;
+        lvisible[i]->paint(painter, g, QRegion(rect));
         linetop += m_barh;
     }
 
@@ -158,8 +164,13 @@ gFlagsLine::gFlagsLine(ChannelID code, QColor flag_color, QString label, bool al
 gFlagsLine::~gFlagsLine()
 {
 }
-void gFlagsLine::paint(QPainter &painter, gGraph &w, int left, int top, int width, int height)
+void gFlagsLine::paint(QPainter &painter, gGraph &w, const QRegion &region)
 {
+    int left = region.boundingRect().left();
+    int top = region.boundingRect().top();
+    int width = region.boundingRect().width();
+    int height = region.boundingRect().height();
+
     if (!m_visible) { return; }
 
     if (!m_day) { return; }

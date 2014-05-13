@@ -22,7 +22,7 @@ class gStatsLine : public Layer
 {
   public:
     gStatsLine(ChannelID code, QString label = "", QColor textcolor = Qt::black);
-    virtual void paint(QPainter &painter, gGraph &w, int left, int top, int width, int height);
+    virtual void paint(QPainter &painter, gGraph &w, const QRegion &region);
     void SetDay(Day *d);
 
   protected:

@@ -117,7 +117,7 @@ class Layer
         \param int width
         \param int height
       */
-    virtual void paint(QPainter &painter, gGraph &gv, int left, int top, int width, int height) = 0;
+    virtual void paint(QPainter &painter, gGraph &gv, const QRegion &region) = 0;
 
     //! \brief Set the layout position and order for this layer.
     void setLayout(LayerPosition position, short width, short height, short order);
