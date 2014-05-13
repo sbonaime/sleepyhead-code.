@@ -170,6 +170,7 @@ void gLineChart::paint(QPainter &painter, gGraph &w, const QRegion &region)
         return;
     }
 
+
     top++;
 
     EventDataType miny, maxy;

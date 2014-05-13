@@ -980,7 +980,7 @@ EventDataType Session::Min(ChannelID id)
     bool first = true;
     EventDataType min = 0, t1;
 
-    int evec_size=evec.size();
+    int evec_size = evec.size();
 
     for (int i = 0; i < evec_size; ++i) {
         if (evec[i]->count() != 0) {
@@ -1000,6 +1000,7 @@ EventDataType Session::Min(ChannelID id)
     m_min[id] = min;
     return min;
 }
+
 EventDataType Session::Max(ChannelID id)
 {
     QHash<ChannelID, EventDataType>::iterator i = m_max.find(id);
