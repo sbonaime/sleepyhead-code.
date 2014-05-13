@@ -223,7 +223,6 @@ bool Machine::Purge(int secret)
 
     // FIXME: should really clear out the majority of the machine properties here
 
-
     // It would be joyous if this function screwed up..
 
     QString path = profile->Get(properties[STR_PROP_Path]); //STR_GEN_DataFolder)+"/"+m_class+"_";
@@ -269,6 +268,8 @@ bool Machine::Purge(int secret)
         //    return false;
     }
     // PROFILE.machlist.erase(PROFILE.machlist.find(m->id()));
+
+    PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
 
     return true;
 }

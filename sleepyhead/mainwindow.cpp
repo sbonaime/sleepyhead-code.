@@ -350,6 +350,7 @@ void MainWindow::Startup()
     qstatus->setText("");
 
     if (PROFILE.p_preferences[STR_PREF_ReimportBackup].toBool()) {
+        importCPAPBackups();
         PROFILE.p_preferences[STR_PREF_ReimportBackup]=false;
     }
 
@@ -394,7 +395,15 @@ void MainWindow::importCPAPBackups()
     }
 
     if (paths.size() > 0) {
-        if (QMessageBox::question(this,"Question","Recently CPAP data was purged.\n\nWould you like to automatically reimport from Backup folder?",QMessageBox::Yes, QMessageBox::No)==QMessageBox::Yes) {
+        if (QMessageBox::question(
+                    this,
+                    tr("Question"),
+                    tr("CPAP data was recently purged and needs to be re-imported.")+"\n\n"+
+                    tr("Would you like this done automatically from the Backup Folder?")+"\n\n"+
+                    paths.join("\n"),
+                    QMessageBox::Yes | QMessageBox::No,
+                    QMessageBox::Yes) == QMessageBox::Yes)
+        {
             int c=0;
             Q_FOREACH(QString path, paths) {
                 c+=importCPAP(path,tr("Please wait, importing from backup folder(s)..."));
@@ -1682,7 +1691,7 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
 
         if (QMessageBox::question(this,
                                   tr("Are you sure?"),
-                                  tr("Are you sure you want to purge all CPAP data for the following machine:\n") +
+                                  tr("Are you sure you want to purge all CPAP data for the following machine:\n\n") +
                                   m->properties[STR_PROP_Brand] + " " + m->properties[STR_PROP_Model] + " " +
                                   m->properties[STR_PROP_ModelNumber] + " (" + m->properties[STR_PROP_Serial] + ")",
                                   QMessageBox::Yes | QMessageBox::No,
@@ -1692,7 +1701,6 @@ void MainWindow::on_actionAll_Data_for_current_CPAP_machine_triggered()
             if (m->Purge(3478216)) {
                 // Turn on automatic re-import
                 // Note: I deliberately haven't added a Profile help for this
-                PROFILE.p_preferences[STR_PREF_ReimportBackup] = true;
                 PROFILE.Save();
             }
             // delete or not to delete.. this needs to delete later.. :/
