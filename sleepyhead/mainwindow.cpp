@@ -524,7 +524,6 @@ QStringList MainWindow::detectCPAPCards()
         QStringList AutoScannerPaths = getDriveList();
 
         Q_FOREACH(const QString &path, AutoScannerPaths) {
-            qDebug() << "Scanning" << path;
             // Scan through available machine loaders and test if this folder contains valid folder structure
             Q_FOREACH(MachineLoader * loader, loaders) {
                 if (loader->Detect(path)) {
@@ -540,7 +539,7 @@ QStringList MainWindow::detectCPAPCards()
         if (el > timeout) break;
         if (!popup.isVisible()) break;
         // needs a slight delay here
-
+        QThread::msleep(200);
     } while (datapaths.size() == 0);
     popup.hide();
     popup.disconnect(&skipbtn, SIGNAL(clicked()), &popup, SLOT(hide()));
