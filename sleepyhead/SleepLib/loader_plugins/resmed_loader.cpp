@@ -135,12 +135,12 @@ qint16 EDFParser::Read16()
         return 0;
     }
 
-#ifdef LITTLE_ENDIAN
+#ifdef Q_LITTLE_ENDIAN
     // Intel, etc...
     qint16 res = *(qint16 *)&buffer[pos];
 #else
     // ARM, PPC, etc..
-    qint16 res = buffer[pos] | (buffer[pos+1] << 8);
+    qint16 res = quint8(buffer[pos]) | (qint8(buffer[pos+1]) << 8);
 #endif
 
     pos += 2;
@@ -292,10 +292,13 @@ bool EDFParser::Parse()
         sig.pos = 0;
     }
 
+    if (num_signals == 2) {
+        int i=5;
+    }
     for (int x = 0; x < num_data_records; x++) {
         for (int i = 0; i < num_signals; i++) {
             EDFSignal &sig = edfsignals[i];
-#if LITTLE_ENDIAN
+#ifdef Q_LITTLE_ENDIAN
             // Intel x86, etc..
             memcpy((char *)&sig.data[sig.pos], (char *)&buffer[pos], sig.nr * 2);
             sig.pos += sig.nr;
