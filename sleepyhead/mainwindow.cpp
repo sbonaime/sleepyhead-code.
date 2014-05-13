@@ -400,7 +400,7 @@ void MainWindow::importCPAPBackups()
                     tr("Question"),
                     tr("CPAP data was recently purged and needs to be re-imported.")+"\n\n"+
                     tr("Would you like this done automatically from the Backup Folder?")+"\n\n"+
-                    paths.join("\n"),
+                    QDir::toNativeSeparators(paths.join("\n")),
                     QMessageBox::Yes | QMessageBox::No,
                     QMessageBox::Yes) == QMessageBox::Yes)
         {
@@ -409,10 +409,8 @@ void MainWindow::importCPAPBackups()
                 c+=importCPAP(path,tr("Please wait, importing from backup folder(s)..."));
             }
             if (c>0) {
-                QString str=tr("Data successfully imported from the following locations\n\n");
-                for (int i=0; i<paths.size(); i++) {
-                    str += paths.at(i) + "\n";
-                }
+                QString str=tr("Data successfully imported from the following locations\n\n")+
+                        QDir::toNativeSeparators(paths.join("\n"));
                 mainwin->Notify(str);
                 finishCPAPImport();
             } else {
@@ -484,8 +482,8 @@ QStringList getDriveList()
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        QString name = fileInfo.fileName();
-        if (name[0].toUpper() > 'C') { // Only bother looking after the C: drive
+        QString name = fileInfo.filePath();
+        if (name.at(0).toUpper() != QChar('C')) { // Ignore the C drive
             drivelist.push_back(name);
         }
     }
@@ -578,7 +576,8 @@ void MainWindow::on_action_Import_Data_triggered()
                                         tr("CPAP Data Located"),
                                         QString((tr("CPAP Datacard structures were detected at the following locations:")+
                                                    "\n\n%1\n\n"+
-                                                   tr("Would you like to import from the path(s) shown above?"))).arg(datapaths.join("\n")),
+                                                   tr("Would you like to import from the path(s) shown above?"))).
+                                            arg(QDir::toNativeSeparators(datapaths.join("\n"))),
                                         tr("Yes"),
                                         tr("Select another folder"),
                                         tr("Cancel"),
