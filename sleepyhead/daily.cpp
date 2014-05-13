@@ -46,6 +46,12 @@
 //extern QProgressBar *qprogress;
 extern MainWindow * mainwin;
 
+
+// This was Sean Stangl's idea.. but I couldn't apply that patch.
+inline QString channelInfo(ChannelID code) {
+    return schema::channel[code].fullname()+"\n"+schema::channel[code].description()+"\n("+schema::channel[code].units()+")";
+}
+
 Daily::Daily(QWidget *parent,gGraphView * shared)
     :QWidget(parent), ui(new Ui::Daily)
 {
@@ -121,42 +127,50 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     layout->addWidget(scrollbar,0);
 
     int default_height=PROFILE.appearance->graphHeight();
-    SF=new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
 
+    gGraph *GAHI = nullptr,
+//            *TAP = nullptr,
+            *SF = nullptr,
+            *AHI = nullptr;
+
+    graphlist["SF"] = SF = new gGraph(GraphView,STR_TR_EventFlags,STR_TR_EventFlags,default_height);
     SF->setPinned(true);
-    FRW=new gGraph(GraphView,STR_TR_FlowRate, schema::channel[CPAP_FlowRate].fullname()+"\n"+schema::channel[CPAP_FlowRate].description()+"\n("+schema::channel[CPAP_FlowRate].units()+")",default_height);
-    //FRW->setPinned(true);
 
+    ChannelID cpapcodes[] = {
+        CPAP_FlowRate, CPAP_MaskPressure, CPAP_Pressure, CPAP_Leak, CPAP_Snore, CPAP_RespRate,
+        CPAP_TidalVolume, CPAP_MinuteVent, CPAP_FLG, CPAP_PTB, CPAP_RespEvent, CPAP_Ti, CPAP_Te,
+        CPAP_IE, ZEO_SleepStage, POS_Inclination, POS_Orientation
+    };
+
+    int cpapsize = sizeof(cpapcodes) / sizeof(ChannelID);
+
+    ChannelID oxicodes[] = {
+        OXI_Pulse, OXI_SPO2, OXI_Plethy
+    };
+    int oxisize = sizeof(oxicodes) / sizeof(ChannelID);
+
+
+    for (int i=0; i < cpapsize; ++i) {
+        ChannelID code = cpapcodes[i];
+        graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height);
+    }
+
+    int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1; // Contemplating killing this setting...
+    for (int i=0; i < oxisize; ++i) {
+        ChannelID code = oxicodes[i];
+        graphlist[schema::channel[code].label()] = new gGraph(GraphView, schema::channel[code].label(), channelInfo(code), default_height, oxigrp);
+    }
 
     if (PROFILE.general->calculateRDI()) {
-        AHI=new gGraph(GraphView,STR_TR_RDI,   schema::channel[CPAP_RDI].fullname()+"\n"+schema::channel[CPAP_RDI].description()+"\n("+schema::channel[CPAP_RDI].units()+")",default_height);
-    } else AHI=new gGraph(GraphView,STR_TR_AHI,schema::channel[CPAP_AHI].fullname()+"\n"+schema::channel[CPAP_AHI].description()+"\n("+schema::channel[CPAP_AHI].units()+")",default_height);
+        AHI=new gGraph(GraphView,STR_TR_RDI, channelInfo(CPAP_RDI), default_height);
+    } else {
+        AHI=new gGraph(GraphView,STR_TR_AHI, channelInfo(CPAP_AHI), default_height);
+    }
 
-    MP=new gGraph(GraphView,schema::channel[CPAP_MaskPressure].label(), schema::channel[CPAP_MaskPressure].fullname()+"\n"+schema::channel[CPAP_MaskPressure].description()+"\n("+schema::channel[CPAP_MaskPressure].units()+")",default_height);
-    PRD=new gGraph(GraphView,schema::channel[CPAP_Pressure].label(),    schema::channel[CPAP_Pressure].fullname()+"\n"+schema::channel[CPAP_Pressure].description()+"\n("+schema::channel[CPAP_Pressure].units()+")",default_height);
-    LEAK=new gGraph(GraphView,STR_TR_Leak,                              schema::channel[CPAP_Leak].fullname()+"\n"+schema::channel[CPAP_Leak].description()+"\n("+schema::channel[CPAP_Leak].units()+")",default_height);
-    SNORE=new gGraph(GraphView,STR_TR_Snore,                            schema::channel[CPAP_Snore].fullname()+"\n"+schema::channel[CPAP_Snore].description()+"\n("+schema::channel[CPAP_Snore].units()+")",default_height);
-    RR=new gGraph(GraphView,STR_TR_RespRate,                            schema::channel[CPAP_RespRate].fullname()+"\n"+schema::channel[CPAP_RespRate].description()+"\n("+schema::channel[CPAP_RespRate].units()+")",default_height);
-    TV=new gGraph(GraphView,STR_TR_TidalVolume,                         schema::channel[CPAP_TidalVolume].fullname()+"\n"+schema::channel[CPAP_TidalVolume].description()+"\n("+schema::channel[CPAP_TidalVolume].units()+")",default_height);
-    MV=new gGraph(GraphView,STR_TR_MinuteVent,                          schema::channel[CPAP_MinuteVent].fullname()+"\n"+schema::channel[CPAP_MinuteVent].description()+"\n("+schema::channel[CPAP_MinuteVent].units()+")",default_height);
-    //TgMV=new gGraph(GraphView,STR_TR_TgtMinVent,                      schema::channel[CPAP_TgMV].fullname()+"\n"+schema::channel[CPAP_TgMV].description()+"\n("+schema::channel[CPAP_TgMV].units()+")",default_height);
-    FLG=new gGraph(GraphView,STR_TR_FlowLimit,                          schema::channel[CPAP_FLG].fullname()+"\n"+schema::channel[CPAP_FLG].description()+"\n("+schema::channel[CPAP_FLG].units()+")",default_height);
-    PTB=new gGraph(GraphView,STR_TR_PatTrigBreath,                      schema::channel[CPAP_PTB].fullname()+"\n"+schema::channel[CPAP_PTB].description()+"\n("+schema::channel[CPAP_PTB].units()+")",default_height);
-    RE=new gGraph(GraphView,STR_TR_RespEvent,                           schema::channel[CPAP_RespEvent].fullname()+"\n"+schema::channel[CPAP_RespEvent].description()+"\n("+schema::channel[CPAP_RespEvent].units()+")",default_height);
-    TI=new gGraph(GraphView,STR_TR_InspTime,                            schema::channel[CPAP_Ti].fullname()+"\n"+schema::channel[CPAP_Ti].description()+"\n("+schema::channel[CPAP_Ti].units()+")",default_height);
-    TE=new gGraph(GraphView,STR_TR_ExpTime,                             schema::channel[CPAP_Te].fullname()+"\n"+schema::channel[CPAP_Te].description()+"\n("+schema::channel[CPAP_Te].units()+")",default_height);
-    IE=new gGraph(GraphView,schema::channel[CPAP_IE].label(),           schema::channel[CPAP_IE].fullname()+"\n"+schema::channel[CPAP_IE].description()+"\n("+schema::channel[CPAP_IE].units()+")",default_height);
+    graphlist["AHI"] = AHI;
 
-    STAGE=new gGraph(GraphView,STR_TR_SleepStage,                       schema::channel[ZEO_SleepStage].fullname()+"\n"+schema::channel[ZEO_SleepStage].description()+"\n("+schema::channel[ZEO_SleepStage].units()+")",default_height);
-    int oxigrp=PROFILE.ExistsAndTrue("SyncOximetry") ? 0 : 1;
-    PULSE=new gGraph(GraphView,STR_TR_PulseRate,                        schema::channel[OXI_Pulse].fullname()+"\n"+schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    SPO2=new gGraph(GraphView,STR_TR_SpO2,                              schema::channel[OXI_SPO2].fullname()+"\n"+schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    INTPULSE=new gGraph(GraphView,tr("Int. Pulse"),                     schema::channel[OXI_Pulse].fullname()+"\n"+schema::channel[OXI_Pulse].description()+"\n("+schema::channel[OXI_Pulse].units()+")",default_height,oxigrp);
-    INTSPO2=new gGraph(GraphView,tr("Int. SpO2"),                       schema::channel[OXI_SPO2].fullname()+"\n"+schema::channel[OXI_SPO2].description()+"\n("+schema::channel[OXI_SPO2].units()+")",default_height,oxigrp);
-    PLETHY=new gGraph(GraphView,STR_TR_Plethy,                          schema::channel[OXI_Plethy].fullname()+"\n"+schema::channel[OXI_Plethy].description()+"\n("+schema::channel[OXI_Plethy].units()+")",default_height,oxigrp);
-
-    INC=new gGraph(GraphView,STR_TR_Inclination,                        schema::channel[POS_Inclination].fullname()+"\n"+schema::channel[POS_Inclination].description()+"\n("+schema::channel[POS_Inclination].units()+")",default_height);
-    ORI=new gGraph(GraphView,STR_TR_Orientation,                        schema::channel[POS_Orientation].fullname()+"\n"+schema::channel[POS_Orientation].description()+"\n("+schema::channel[POS_Orientation].units()+")",default_height);
+    graphlist["INTPULSE"] = new gGraph(GraphView,tr("Int. Pulse"), channelInfo(OXI_Pulse), default_height, oxigrp);
+    graphlist["INTSPO2"] = new gGraph(GraphView,tr("Int. SpO2"), channelInfo(OXI_SPO2), default_height, oxigrp);
 
     // Event Pie Chart (for snapshot purposes)
     // TODO: Convert snapGV to generic for snapshotting multiple graphs (like reports does)
@@ -166,8 +180,7 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 //    TAP->AddLayer(AddCPAP(tap));
     //TAP->setMargins(0,0,0,0);
 
-
-    GAHI=new gGraph(snapGV,tr("Breakdown"),tr("events"),172);
+    graphlist["EventBreakdown"] = GAHI = new gGraph(snapGV,tr("Breakdown"),tr("events"),172);
     gSegmentChart * evseg=new gSegmentChart(GST_Pie);
     evseg->AddSlice(CPAP_Hypopnea,QColor(0x40,0x40,0xff,0xff),STR_TR_H);
     evseg->AddSlice(CPAP_Apnea,QColor(0x20,0x80,0x20,0xff),STR_TR_UA);
@@ -180,13 +193,13 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     GAHI->AddLayer(AddCPAP(evseg));
     GAHI->setMargins(0,0,0,0);
-    //SF->AddLayer(AddCPAP(evseg),LayerRight,100);
 
     gFlagsGroup *fg=new gFlagsGroup();
     SF->AddLayer(AddCPAP(fg));
+    // Spans
     fg->AddLayer((new gFlagsLine(CPAP_CSR, COLOR_CSR, STR_TR_PB, false, FT_Span)));
     fg->AddLayer((new gFlagsLine(PRS1_10, COLOR_LargeLeak, STR_TR_LL, false, FT_Span)));
-
+    // Flags
     fg->AddLayer((new gFlagsLine(CPAP_ClearAirway, COLOR_ClearAirway, STR_TR_CA,false)));
     fg->AddLayer((new gFlagsLine(CPAP_Obstructive, COLOR_Obstructive, STR_TR_OA,true)));
     fg->AddLayer((new gFlagsLine(CPAP_Apnea, COLOR_Apnea, STR_TR_UA)));
@@ -212,25 +225,45 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     SF->AddLayer(new gXAxis(COLOR_Text,false),LayerBottom,0,20); //gXAxis::Margin);
 
 
+    // The following list contains graphs that don't have standard xgrid/yaxis labels
+    QStringList skipgraph;
+    skipgraph.push_back("EventBreakdown");
+    skipgraph.push_back("SF");
+
+    QHash<QString, gGraph *>::iterator it;
+
+    for (it = graphlist.begin(); it != graphlist.end(); ++it) {
+        if (skipgraph.contains(it.key())) continue;
+        it.value()->AddLayer(new gXGrid());
+    }
+
+
     gLineChart *l;
     l=new gLineChart(CPAP_FlowRate,COLOR_Black,false,false);
     gLineOverlaySummary *los=new gLineOverlaySummary(tr("Selection AHI"),5,-4);
     AddCPAP(l);
-    FRW->AddLayer(new gXGrid());
+
+    gGraph *FRW = graphlist[schema::channel[CPAP_FlowRate].label()];
+
+    // Draw layer is important... spans first..
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_CSR, COLOR_CSR, STR_TR_CSR, FT_Span)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_10, COLOR_LargeLeak, STR_TR_LL, FT_Span)));
+
+    // Then the graph itself
     FRW->AddLayer(l);
-    FRW->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-    FRW->AddLayer(new gXAxis(),LayerBottom,0,20);
+
+    // Then the LineOverlaySummaries
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Hypopnea,COLOR_Hypopnea,STR_TR_H))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_PressurePulse,COLOR_PressurePulse,STR_TR_PP,FT_Dot)));
     //FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_Pressure, COLOR_White,STR_TR_P,FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0B,COLOR_Blue,"0B",FT_Dot)));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(PRS1_0E,COLOR_DarkRed,"0E",FT_Dot)));
+
+    gLineOverlayBar * rera = new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE);
     if (PROFILE.general->calculateRDI()) {
-        FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE))));
+        FRW->AddLayer(AddCPAP(los->add(rera)));
     } else {
-        FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_RERA, COLOR_RERA, STR_TR_RE)));
+        FRW->AddLayer(AddCPAP(rera));
     }
     FRW->AddLayer(AddCPAP(los->add(new gLineOverlayBar(CPAP_Apnea, COLOR_Apnea, STR_TR_UA))));
     FRW->AddLayer(AddCPAP(new gLineOverlayBar(CPAP_VSnore, COLOR_VibratorySnore, STR_TR_VS)));
@@ -249,31 +282,9 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
 
     FRW->AddLayer(AddCPAP(los));
 
-
-
-    gGraph *graphs[]={ PRD, LEAK, AHI, SNORE, PTB, MP, RR, MV, TV, FLG, IE, TI, TE, SPO2, PLETHY, PULSE, STAGE, INTSPO2, INTPULSE, ORI, INC };
-    int ng=sizeof(graphs)/sizeof(gGraph*);
-    for (int i=0;i<ng;i++){
-        graphs[i]->AddLayer(new gXGrid());
-    }
-    /*PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_Pressure,"Pressure")),LayerBottom,0,20,1);
-    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_EPAP,"EPAP")),LayerBottom,0,20,1);
-    PRD->AddLayer(AddCPAP(new gStatsLine(CPAP_IPAP,"IPAP")),LayerBottom,0,20,1);
-    LEAK->AddLayer(AddCPAP(new gStatsLine(CPAP_Leak)),LayerBottom,0,20,1);
-    SNORE->AddLayer(AddCPAP(new gStatsLine(CPAP_Snore)),LayerBottom,0,20,1);
-    PTB->AddLayer(AddCPAP(new gStatsLine(CPAP_PatientTriggeredBreaths)),LayerBottom,0,20,1);
-    RR->AddLayer(AddCPAP(new gStatsLine(CPAP_RespiratoryRate)),LayerBottom,0,20,1);
-    MV->AddLayer(AddCPAP(new gStatsLine(CPAP_MinuteVentilation)),LayerBottom,0,20,1);
-    TV->AddLayer(AddCPAP(new gStatsLine(CPAP_TidalVolume)),LayerBottom,0,20,1);
-    FLG->AddLayer(AddCPAP(new gStatsLine(CPAP_FlowLimitGraph)),LayerBottom,0,20,1);
-    IE->AddLayer(AddCPAP(new gStatsLine(CPAP_IE)),LayerBottom,0,20,1);
-    TE->AddLayer(AddCPAP(new gStatsLine(CPAP_Te)),LayerBottom,0,20,1);
-    TI->AddLayer(AddCPAP(new gStatsLine(CPAP_Ti)),LayerBottom,0,20,1); */
-
-
     bool square=PROFILE.appearance->squareWavePlots();
     gLineChart *pc=new gLineChart(CPAP_Pressure, COLOR_Pressure, square);
-    PRD->AddLayer(AddCPAP(pc));
+    graphlist[schema::channel[CPAP_Pressure].label()]->AddLayer(AddCPAP(pc));
     pc->addPlot(CPAP_EPAP, COLOR_EPAP, square);
     pc->addPlot(CPAP_IPAPLo, COLOR_IPAPLo, square);
     pc->addPlot(CPAP_IPAP, COLOR_IPAP, square);
@@ -289,68 +300,64 @@ Daily::Daily(QWidget *parent,gGraphView * shared)
     gLineChart *lc=new gLineChart(CPAP_LeakTotal, COLOR_LeakTotal, square);
     lc->addPlot(CPAP_Leak, COLOR_Leak, square);
     lc->addPlot(CPAP_MaxLeak, COLOR_MaxLeak, square);
-    LEAK->AddLayer(AddCPAP(lc));
+    graphlist[schema::channel[CPAP_Leak].label()]->AddLayer(AddCPAP(lc));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_Leak, COLOR_Leak,square)));
     //LEAK->AddLayer(AddCPAP(new gLineChart(CPAP_MaxLeak, COLOR_MaxLeak,square)));
-    SNORE->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
+    graphlist[schema::channel[CPAP_Snore].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_Snore, COLOR_Snore, true)));
 
-    PTB->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
-    MP->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
-    RR->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
+    graphlist[schema::channel[CPAP_PTB].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_PTB, COLOR_PTB, square)));
+    graphlist[schema::channel[CPAP_MaskPressure].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_MaskPressure, COLOR_MaskPressure, false)));
+    graphlist[schema::channel[CPAP_RespRate].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_RespRate, COLOR_RespRate, square)));
 
-    INC->AddLayer(AddPOS(new gLineChart(POS_Inclination)));
-    ORI->AddLayer(AddPOS(new gLineChart(POS_Orientation)));
+    graphlist[schema::channel[POS_Inclination].label()]->AddLayer(AddPOS(new gLineChart(POS_Inclination)));
+    graphlist[schema::channel[POS_Orientation].label()]->AddLayer(AddPOS(new gLineChart(POS_Orientation)));
 
-    // Delete me!!
-//    lc->addPlot(CPAP_Test1, COLOR_DarkRed,square);
-
-    MV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, COLOR_MinuteVent, square)));
+    graphlist[schema::channel[CPAP_MinuteVent].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_MinuteVent, COLOR_MinuteVent, square)));
     lc->addPlot(CPAP_TgMV,COLOR_TgMV,square);
 
-    TV->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,COLOR_TidalVolume,square)));
+    graphlist[schema::channel[CPAP_TidalVolume].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_TidalVolume,COLOR_TidalVolume,square)));
     //lc->addPlot(CPAP_Test2,COLOR_DarkYellow,square);
 
-
-
-    //TV->AddLayer(AddCPAP(new gLineChart("TidalVolume2",COLOR_Magenta,square)));
-    FLG->AddLayer(AddCPAP(new gLineChart(CPAP_FLG, COLOR_FLG, true)));
-    //RE->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,COLOR_Magenta,true)));
-    IE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, COLOR_IE, square)));
-    TE->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, COLOR_Te, square)));
-    TI->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, COLOR_Ti, square)));
+    //graphlist[schema::channel[CPAP_TidalVolume].label()]->AddLayer(AddCPAP(new gLineChart("TidalVolume2",COLOR_Magenta,square)));
+    graphlist[schema::channel[CPAP_FLG].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_FLG, COLOR_FLG, true)));
+    //graphlist[schema::channel[CPAP_RespiratoryEvent].label()]->AddLayer(AddCPAP(new gLineChart(CPAP_RespiratoryEvent,COLOR_Magenta,true)));
+    graphlist[schema::channel[CPAP_IE].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_IE, COLOR_IE, square)));
+    graphlist[schema::channel[CPAP_Te].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Te, COLOR_Te, square)));
+    graphlist[schema::channel[CPAP_Ti].label()]->AddLayer(AddCPAP(lc=new gLineChart(CPAP_Ti, COLOR_Ti, square)));
     //lc->addPlot(CPAP_Test2,COLOR:DarkYellow,square);
 
-    STAGE->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, COLOR_SleepStage, true)));
+    graphlist[schema::channel[ZEO_SleepStage].label()]->AddLayer(AddSTAGE(new gLineChart(ZEO_SleepStage, COLOR_SleepStage, true)));
 
     gLineOverlaySummary *los1=new gLineOverlaySummary(tr("Events/hour"),5,-4);
     gLineOverlaySummary *los2=new gLineOverlaySummary(tr("Events/hour"),5,-4);
-    PULSE->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
-    PULSE->AddLayer(AddOXI(los1));
-    SPO2->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
-    SPO2->AddLayer(AddOXI(los2));
+    graphlist[schema::channel[OXI_Pulse].label()]->AddLayer(AddOXI(los1->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
+    graphlist[schema::channel[OXI_Pulse].label()]->AddLayer(AddOXI(los1));
+    graphlist[schema::channel[OXI_SPO2].label()]->AddLayer(AddOXI(los2->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
+    graphlist[schema::channel[OXI_SPO2].label()]->AddLayer(AddOXI(los2));
 
-    PULSE->AddLayer(AddOXI(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
-    SPO2->AddLayer(AddOXI(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
-    PLETHY->AddLayer(AddOXI(new gLineChart(OXI_Plethy, COLOR_Plethy,false)));
+    graphlist[schema::channel[OXI_Pulse].label()]->AddLayer(AddOXI(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
+    graphlist[schema::channel[OXI_SPO2].label()]->AddLayer(AddOXI(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
+    graphlist[schema::channel[OXI_Plethy].label()]->AddLayer(AddOXI(new gLineChart(OXI_Plethy, COLOR_Plethy,false)));
 
+
+    // Fix me
     gLineOverlaySummary *los3=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
+    graphlist["INTPULSE"]->AddLayer(AddCPAP(los3));
+    graphlist["INTPULSE"]->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
     gLineOverlaySummary *los4=new gLineOverlaySummary(tr("Events/hour"),5,-4);
+    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
+    graphlist["INTSPO2"]->AddLayer(AddCPAP(los4));
+    graphlist["INTSPO2"]->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
 
-    INTPULSE->AddLayer(AddCPAP(los3->add(new gLineOverlayBar(OXI_PulseChange, COLOR_PulseChange, STR_TR_PC,FT_Span))));
-    INTPULSE->AddLayer(AddCPAP(los3));
-    INTSPO2->AddLayer(AddCPAP(los4->add(new gLineOverlayBar(OXI_SPO2Drop, COLOR_SPO2Drop, STR_TR_O2,FT_Span))));
-    INTSPO2->AddLayer(AddCPAP(los4));
-    INTPULSE->AddLayer(AddCPAP(new gLineChart(OXI_Pulse, COLOR_Pulse, square)));
-    INTSPO2->AddLayer(AddCPAP(new gLineChart(OXI_SPO2, COLOR_SPO2, true)));
+    graphlist[schema::channel[CPAP_PTB].label()]->setForceMaxY(100);
+    graphlist[schema::channel[OXI_SPO2].label()]->setForceMaxY(100);
 
+    for (it = graphlist.begin(); it != graphlist.end(); ++it) {
+        if (skipgraph.contains(it.key())) continue;
 
-    PTB->setForceMaxY(100);
-    SPO2->setForceMaxY(100);
-    INTSPO2->setForceMaxY(100);
-
-    for (int i=0;i<ng;i++){
-        graphs[i]->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
-        graphs[i]->AddLayer(new gXAxis(),LayerBottom,0,20);
+        it.value()->AddLayer(new gYAxis(),LayerLeft,gYAxis::Margin);
+        it.value()->AddLayer(new gXAxis(),LayerBottom,0,20);
     }
 
     layout->layout();
@@ -1323,11 +1330,11 @@ void Daily::Load(QDate date)
                 if ((oai+hi+cai+uai+rei+fli)>0) {
                     html+="<tr><td align=center>&nbsp;</td></tr>";
                     html+=QString("<tr><td align=center><b>%1</b></td></tr>").arg(tr("Event Breakdown"));
-                    GAHI->setShowTitle(false);
+                    eventBreakdownPie()->setShowTitle(false);
 
                     int w=155;
                     int h=155;
-                    QPixmap pixmap=GAHI->renderPixmap(w,h,false);
+                    QPixmap pixmap=eventBreakdownPie()->renderPixmap(w,h,false);
                     if (!pixmap.isNull()) {
                         QByteArray byteArray;
                         QBuffer buffer(&byteArray); // use buffer to store pixmap into byteArray

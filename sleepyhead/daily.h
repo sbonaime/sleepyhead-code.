@@ -129,7 +129,7 @@ public:
         \brief Returns a pointer to the Event Breakdown Piechart for the Report Printing module
         \returns gGraph * object containing this chart
         */
-    gGraph * eventBreakdownPie() { return GAHI; }
+    gGraph * eventBreakdownPie() { return graphlist["EventBreakdown"]; }
     QWidget * sessionBar() { return sessbar; }
 
     void clearLastDay();
@@ -305,9 +305,7 @@ private:
     QString getEventBreakdown(Day *cpap);
     QString getSleepTime(Day *cpap, Day *oxi);
 
-    gGraph *PRD,*FRW,*GAHI,*TAP,*LEAK,*SF,*TAP_EAP,*TAP_IAP,*PULSE,*SPO2,
-           *SNORE,*RR,*MP,*MV,*TV,*FLG,*PTB,*OF, *THPR,
-           *PLETHY,*TI,*TE, *RE, *IE, *AHI, *RDI, *STAGE, *INTPULSE, *INTSPO2, *INC, *ORI;
+    QHash<QString, gGraph *> graphlist;
 
     QList<Layer *> OXIData;
     QList<Layer *> CPAPData;
@@ -327,7 +325,6 @@ private:
     void UpdateOXIGraphs(Day *day);
     void UpdateSTAGEGraphs(Day *day);
     void UpdatePOSGraphs(Day *day);
-
 
     Ui::Daily *ui;
     QDate previous_date;
